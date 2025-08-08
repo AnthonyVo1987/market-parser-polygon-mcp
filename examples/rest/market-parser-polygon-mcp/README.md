@@ -32,14 +32,15 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
    - [Polygon.io API key](https://polygon.io/)
    - [OpenAI API key](https://platform.openai.com/)
 
-3. **Create a `.env` file in the same directory as `market_parser_demo.py`:**
+3. **Create a `.env` at the project root (recommended):**
 
    ```env
    POLYGON_API_KEY=your_polygon_api_key_here
    OPENAI_API_KEY=your_openai_api_key_here
+   # Optional: pricing for cost estimates (USD)
+   OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
+   OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
    ```
-
-   Both keys are required for the CLI to work.
 
 4. **Run the CLI (dependencies will be auto-installed from `pyproject.toml`):**
 
@@ -50,6 +51,27 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
 5. **Type your question and press Enter!**
 
    Type `exit` to quit.
+
+---
+
+## Chatbot GUI (Optional)
+
+You can also use a web-based Chatbot GUI (Gradio) that runs the same agent and MCP server.
+
+- Install deps (already in `pyproject.toml`): `gradio`
+- Run the GUI:
+
+  ```sh
+  uv run chat_ui.py
+  ```
+
+- The app will print a local URL (default `http://127.0.0.1:7860`) to open in your browser.
+- Pricing env vars (set in `.env`) will be used for cost estimates just like the CLI.
+
+Environment variables:
+
+- `OPENAI_MODEL` (optional, default `gpt-5-nano`)
+- `HOST` and `PORT` to override GUI host/port
 
 ---
 
@@ -116,12 +138,7 @@ Be speficific in your prompt. The better the prompt - the better the response.
 
 - **Missing API Key:**
 
-  If you see an error about `POLYGON_API_KEY` or `OPENAI_API_KEY`, make sure your `.env` file is in the same directory and contains both keys:
-
-  ```env
-  POLYGON_API_KEY=your_polygon_api_key_here
-  OPENAI_API_KEY=your_openai_api_key_here
-  ```
+  If you see an error about `POLYGON_API_KEY` or `OPENAI_API_KEY`, make sure your `.env` file is in the project root.
 
 - **Dependencies:**
 
@@ -129,11 +146,12 @@ Be speficific in your prompt. The better the prompt - the better the response.
   - `python-dotenv`
   - `rich`
   - `pydantic-ai-slim[openai]`
+  - `gradio`
 
   If you prefer, you can use pip instead:
 
   ```sh
-  pip install python-dotenv rich "pydantic-ai-slim[openai]"
+  pip install python-dotenv rich "pydantic-ai-slim[openai]" gradio
   python market_parser_demo.py
   ```
 
@@ -152,7 +170,7 @@ Be speficific in your prompt. The better the prompt - the better the response.
 - Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
 - Sends your natural language query to OpenAI `gpt-5-nano` via PydanticAI (OpenAI Responses API)
-- Prints the answer in a readable format
+- Prints the answer in a readable format (CLI) or in a chat (GUI)
 
 ---
 
