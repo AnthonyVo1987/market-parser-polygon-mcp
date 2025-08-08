@@ -4,16 +4,16 @@
   <img src="../../../images/logo.png" alt="Project Logo" width="100%"/>
 </div>
 
-A simple Python CLI for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and Anthropic [Claude 4](https://www.anthropic.com/news/claude-4) via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
+A simple Python CLI for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
 
 ## Features
 
-- **Ask questions like:**  
-  `Tesla price now`  
-  `AAPL volume last week`  
-  `Show me the price of MSFT on 2023-01-01`
+- **Ask questions like:**
+  - `Tesla price now`
+  - `AAPL volume last week`
+  - `Show me the price of MSFT on 2023-01-01`
 
-- **Rich CLI output:**  
+- **Rich CLI output:**
   Answers are formatted for easy reading in your terminal.
 
 ## Disclaimer
@@ -25,34 +25,39 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
 ## Quickstart (with [uv](https://github.com/astral-sh/uv))
 
 1. **Install [uv](https://github.com/astral-sh/uv) if you don’t have it:**
-    ```sh
-    curl -Ls https://astral.sh/uv/install.sh | sh
-    ```
+
+   ```sh
+   curl -Ls https://astral.sh/uv/install.sh | sh
+   ```
 
 2. **Get your API keys:**
    - [Polygon.io API key](https://polygon.io/)
-   - [Anthropic API key (Claude)](https://console.anthropic.com/)
+   - [OpenAI API key](https://platform.openai.com/)
 
 3. **Create a `.env` file in the same directory as `market_parser_demo.py`:**
-    ```
-    POLYGON_API_KEY=your_polygon_api_key_here
-    ANTHROPIC_API_KEY=your_anthropic_api_key_here
-    ```
-    Both keys are required for the CLI to work.
+
+   ```env
+   POLYGON_API_KEY=your_polygon_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+   Both keys are required for the CLI to work.
 
 4. **Run the CLI (dependencies will be auto-installed from `pyproject.toml`):**
-    ```sh
-    uv run market_parser_demo.py
-    ```
 
-5. **Type your question and press Enter!**  
+   ```sh
+   uv run market_parser_demo.py
+   ```
+
+5. **Type your question and press Enter!**
+
    Type `exit` to quit.
 
 ---
 
 ## Example Usage
 
-```
+```text
 > Tesla price now
 ✔ Query processed successfully!
 Agent Response:
@@ -63,9 +68,9 @@ $TSLA is currently trading at $XXX.XX (as of 2024-06-07 15:30:00 UTC).
 Goodbye!
 ```
 
-For reference, this is the system prompt used with every query: 
+For reference, this is the system prompt used with every query:
 
-```
+```text
 system_prompt=(
     "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. "
     "Use the latest data available. Always double check your math. "
@@ -80,53 +85,51 @@ Be speficific in your prompt. The better the prompt - the better the response.
 
 ## Troubleshooting
 
-- **Missing API Key:**  
-  If you see an error about `POLYGON_API_KEY` or `ANTHROPIC_API_KEY`, make sure your `.env` file is in the same directory and contains both keys:
-  ```
+- **Missing API Key:**
+
+  If you see an error about `POLYGON_API_KEY` or `OPENAI_API_KEY`, make sure your `.env` file is in the same directory and contains both keys:
+
+  ```env
   POLYGON_API_KEY=your_polygon_api_key_here
-  ANTHROPIC_API_KEY=your_anthropic_api_key_here
+  OPENAI_API_KEY=your_openai_api_key_here
   ```
 
-- **Dependencies:**  
+- **Dependencies:**
+
   If you get `ModuleNotFoundError`, make sure your `pyproject.toml` lists:
-    - `python-dotenv`
-    - `rich`
-    - `pydantic_ai`
+  - `python-dotenv`
+  - `rich`
+  - `pydantic-ai-slim[openai]`
 
   If you prefer, you can use pip instead:
+
   ```sh
-  pip install python-dotenv rich pydantic_ai
+  pip install python-dotenv rich "pydantic-ai-slim[openai]"
   python market_parser_demo.py
   ```
 
 - **Incorrect Responses**
-AI Data can be incorrect. Like all LLM generated responses, please double check 
 
-- **Other errors:**  
+  AI Data can be incorrect. Like all LLM generated responses, please double check.
+
+- **Other errors:**
+
   All errors are printed in red in the terminal for easy debugging.
-  If you get a 529, anthropic is rate limiting your requests.
 
 ---
 
 ## How it Works
 
-- Loads your Polygon and Anthropic API keys from `.env`
+- Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
-- Sends your natural language query to Anthropic Claude via PydanticAI
+- Sends your natural language query to OpenAI `gpt-5-nano` via PydanticAI (OpenAI Responses API)
 - Prints the answer in a readable format
 
 ---
 
----
+## Local Path
 
-## Enhancement Ideas
-
-- Historical memory from previous chats
-- Better error handling based on error codes
-- Prompt chunking into individual tasks 
-- Other tools or MCPs servers added to the agentic flow
-
----
+- /mnt/d/Github/market-parser-polygon-mcp/examples/rest/market-parser-polygon-mcp
 
 ## License
 

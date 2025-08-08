@@ -71,8 +71,14 @@ async def cli_async():
     print("Welcome to the Market Parser CLI. Type 'exit' to quit.")
     try:
         server = create_polygon_mcp_server()
+        from pydantic_ai.models.openai import OpenAIResponsesModel
+
+        # Configure OpenAI Responses API model with gpt-5-nano
+        # Uses OPENAI_API_KEY from environment automatically
+        model = OpenAIResponsesModel('gpt-5-nano')
+
         agent = Agent(
-            model="anthropic:claude-4-sonnet-20250514",
+            model=model,
             mcp_servers=[server],
             system_prompt=(
                 "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. "
