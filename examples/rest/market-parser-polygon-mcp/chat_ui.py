@@ -61,7 +61,7 @@ async def _shutdown():
 # -------- Chat handlers --------
 async def handle_user_message(
     user_message: str,
-    chat_history: list[tuple[str, str]],
+    chat_history: list[dict],  # gr.Chatbot with type='messages'
     pyd_message_history: list | None,
     tracker: TokenCostTracker,
     cost_markdown: str,
@@ -69,12 +69,15 @@ async def handle_user_message(
     if pyd_message_history is None:
         pyd_message_history = []
 
+    # Append the user message to the visible chat
+    chat_history = chat_history + [{"role": "user", "content": user_message}]
+
     # Run the agent with persisted message history
     response = await agent.run(user_message, message_history=pyd_message_history)
 
     # Append assistant output to chat
     output_text = getattr(response, "output", "") or ""
-    chat_history = chat_history + [(user_message, output_text)]
+    chat_history = chat_history + [{"role": "assistant", "content": output_text}]
 
     # Update token & cost usage and format a compact summary for the UI
     try:
@@ -113,7 +116,7 @@ with gr.Blocks() as demo:
         "This UI uses the same agent as the CLI and the Polygon MCP server. Set pricing env vars for cost estimates."
     )
 
-    chatbot = gr.Chatbot(height=500)
+    chatbot = gr.Chatbot(height=500, type="messages")
     msg = gr.Textbox(placeholder="Ask about markets, e.g. 'NVDA snapshot'…")
     send = gr.Button("Send")
     clear = gr.Button("Clear")
