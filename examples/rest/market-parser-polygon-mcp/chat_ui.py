@@ -1,6 +1,7 @@
 import asyncio
 from datetime import date
 import os
+import tempfile
 
 import gradio as gr
 from dotenv import find_dotenv, load_dotenv
@@ -53,9 +54,9 @@ async def _startup():
 
 async def _shutdown():
     global _mcp_ctx
-    if _mcp_ctx is not None:
-        await _mcp_ctx.__aexit__(None, None, None)
-        _mcp_ctx = None
+    # Avoid explicit shutdown to prevent task/cancel scope mismatches in GUI lifecycles.
+    # MCP server processes will terminate when the app process exits.
+    return
 
 
 # -------- Chat handlers --------
@@ -69,15 +70,20 @@ async def handle_user_message(
     if pyd_message_history is None:
         pyd_message_history = []
 
+    # Ensure MCP servers are running
+    await _startup()
+
     # Append the user message to the visible chat
     chat_history = chat_history + [{"role": "user", "content": user_message}]
 
     # Run the agent with persisted message history
+    print(f"[GUI] User: {user_message}")
     response = await agent.run(user_message, message_history=pyd_message_history)
 
     # Append assistant output to chat
     output_text = getattr(response, "output", "") or ""
     chat_history = chat_history + [{"role": "assistant", "content": output_text}]
+    print(f"[GUI] Assistant: {output_text[:200]}{'...' if len(output_text) > 200 else ''}")
 
     # Update token & cost usage and format a compact summary for the UI
     try:
@@ -110,6 +116,38 @@ async def handle_user_message(
     return "", chat_history, pyd_message_history, tracker, cost_markdown
 
 
+def _build_markdown_export(chat_messages: list[dict], tracker: TokenCostTracker) -> str:
+    lines: list[str] = ["# Market Parser Chat Export\n"]
+    for m in chat_messages or []:
+        role = m.get("role", "")
+        content = m.get("content", "")
+        if role == "user":
+            lines.append("\n## User\n")
+            lines.append(content)
+        elif role == "assistant":
+            lines.append("\n## Assistant\n")
+            lines.append(content)
+    # Append totals if available
+    lines.append("\n---\n")
+    lines.append("## Session Totals\n")
+    lines.append(
+        f"Input tokens: {tracker.total_input_tokens:,}  |  Input cost: ${tracker.total_input_cost_usd:.6f}"
+    )
+    lines.append(
+        f"Output tokens: {tracker.total_output_tokens:,}  |  Output cost: ${tracker.total_output_cost_usd:.6f}"
+    )
+    lines.append(
+        f"Total cost: ${(tracker.total_input_cost_usd + tracker.total_output_cost_usd):.6f}"
+    )
+    return "\n".join(lines) + "\n"
+
+
+def export_markdown(chat_messages: list[dict], tracker: TokenCostTracker):
+    text = _build_markdown_export(chat_messages, tracker)
+    # Provide text in a textbox for easy copy
+    return text
+
+
 with gr.Blocks() as demo:
     gr.Markdown("# Market Parser – Chatbot GUI")
     gr.Markdown(
@@ -122,6 +160,8 @@ with gr.Blocks() as demo:
     clear = gr.Button("Clear")
 
     costs = gr.Markdown()
+    export_md = gr.Textbox(label="Markdown export", lines=10)
+    export_btn = gr.Button("Export chat to Markdown")
 
     # State: Pydantic-AI message history and TokenCostTracker
     pyd_history_state = gr.State([])
@@ -140,13 +180,13 @@ with gr.Blocks() as demo:
         [msg, chatbot, pyd_history_state, tracker_state, costs],
     )
 
-    def _clear(chat_history: list[tuple[str, str]]):
-        return [], [], TokenCostTracker(), ""
+    def _clear(chat_history: list[dict]):
+        return [], [], TokenCostTracker(), "", ""
 
-    clear.click(_clear, [chatbot], [chatbot, pyd_history_state, tracker_state, costs])
+    clear.click(_clear, [chatbot], [chatbot, pyd_history_state, tracker_state, costs, export_md])
 
-    demo.load(lambda: asyncio.run(_startup()))
-    demo.unload(lambda: asyncio.run(_shutdown()))
+    export_btn.click(export_markdown, [chatbot, tracker_state], [export_md])
+
 
 
 if __name__ == "__main__":
