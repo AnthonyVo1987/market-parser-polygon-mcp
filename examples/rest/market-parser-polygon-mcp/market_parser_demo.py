@@ -7,7 +7,10 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.mcp import MCPServerStdio
 
 # Load env from nearest .env up the directory tree (project root or example dir)
-load_dotenv(find_dotenv())
+_ENV_PATH = find_dotenv()
+load_dotenv(_ENV_PATH)
+if _ENV_PATH:
+    print(f"Loaded .env from: {_ENV_PATH}")
 
 # ------------- MCP Server Factory -------------
 def create_polygon_mcp_server():
