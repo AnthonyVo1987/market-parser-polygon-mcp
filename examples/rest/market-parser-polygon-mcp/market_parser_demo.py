@@ -1,12 +1,13 @@
 import os
 import asyncio
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from rich.console import Console
 from rich.markdown import Markdown
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.mcp import MCPServerStdio
 
-load_dotenv()
+# Load env from nearest .env up the directory tree (project root or example dir)
+load_dotenv(find_dotenv())
 
 # ------------- MCP Server Factory -------------
 def create_polygon_mcp_server():
@@ -32,12 +33,37 @@ class TokenCostTracker:
     """Tracks per-message and cumulative token usage and costs."""
 
     def __init__(self) -> None:
-        # Prices are USD per 1M tokens
-        self.input_price_per_million: float = self._read_price(
-            os.getenv("OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M")
+        # Prices can be set via usd per 1M tokens OR per token
+        self.input_price_per_million: float
+        self.output_price_per_million: float
+        self.input_price_per_token: float
+        self.output_price_per_token: float
+
+        (
+            self.input_price_per_million,
+            self.input_price_per_token,
+        ) = self._read_price_config(
+            [
+                "OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M",
+                "OPENAI_INPUT_PRICE_PER_1M",
+            ],
+            [
+                "OPENAI_GPT5_NANO_INPUT_PRICE_PER_TOKEN",
+                "OPENAI_INPUT_PRICE_PER_TOKEN",
+            ],
         )
-        self.output_price_per_million: float = self._read_price(
-            os.getenv("OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M")
+        (
+            self.output_price_per_million,
+            self.output_price_per_token,
+        ) = self._read_price_config(
+            [
+                "OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M",
+                "OPENAI_OUTPUT_PRICE_PER_1M",
+            ],
+            [
+                "OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_TOKEN",
+                "OPENAI_OUTPUT_PRICE_PER_TOKEN",
+            ],
         )
 
         self.total_input_tokens: int = 0
@@ -48,14 +74,30 @@ class TokenCostTracker:
         self._printed_pricing_hint: bool = False
 
     @staticmethod
-    def _read_price(value: str | None) -> float:
+    def _safe_float(value: str | None) -> float:
         try:
-            return float(value) if value is not None and value != "" else 0.0
+            return float(value) if value else 0.0
         except Exception:
             return 0.0
 
-    @staticmethod
-    def _calc_cost(tokens: int, price_per_million: float) -> float:
+    def _read_price_config(
+        self, per_million_envs: list[str], per_token_envs: list[str]
+    ) -> tuple[float, float]:
+        per_million = 0.0
+        per_token = 0.0
+        for key in per_million_envs:
+            per_million = self._safe_float(os.getenv(key))
+            if per_million:
+                break
+        for key in per_token_envs:
+            per_token = self._safe_float(os.getenv(key))
+            if per_token:
+                break
+        return per_million, per_token
+
+    def _calc_cost(self, tokens: int, price_per_million: float, price_per_token: float) -> float:
+        if price_per_token:
+            return tokens * price_per_token
         return (tokens / 1_000_000.0) * price_per_million
 
     def record_and_print(self, response) -> None:
@@ -89,8 +131,12 @@ class TokenCostTracker:
             response_tokens = 0
 
         # Calculate costs for this message
-        input_cost = self._calc_cost(request_tokens, self.input_price_per_million)
-        output_cost = self._calc_cost(response_tokens, self.output_price_per_million)
+        input_cost = self._calc_cost(
+            request_tokens, self.input_price_per_million, self.input_price_per_token
+        )
+        output_cost = self._calc_cost(
+            response_tokens, self.output_price_per_million, self.output_price_per_token
+        )
 
         # Update totals
         self.total_input_tokens += int(request_tokens)
@@ -100,10 +146,20 @@ class TokenCostTracker:
 
         # Pricing hint if prices are unset
         if not self._printed_pricing_hint and (
-            self.input_price_per_million == 0.0 or self.output_price_per_million == 0.0
+            (self.input_price_per_million == 0.0 and self.input_price_per_token == 0.0)
+            or (self.output_price_per_million == 0.0 and self.output_price_per_token == 0.0)
         ):
             console.print(
-                "[yellow]Tip: set `OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M` and `OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M` in .env for accurate cost estimates.[/yellow]"
+                "[yellow]Tip: set pricing in .env for accurate cost estimates. Supported envs:"
+            )
+            console.print(
+                "[yellow]  - OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M or OPENAI_INPUT_PRICE_PER_1M[/yellow]"
+            )
+            console.print(
+                "[yellow]  - OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M or OPENAI_OUTPUT_PRICE_PER_1M[/yellow]"
+            )
+            console.print(
+                "[yellow]  - Alternatively per-token: OPENAI_GPT5_NANO_INPUT_PRICE_PER_TOKEN / OPENAI_INPUT_PRICE_PER_TOKEN and matching OUTPUT vars[/yellow]"
             )
             self._printed_pricing_hint = True
 
