@@ -1,8 +1,6 @@
 # Market Parser with Polygon MCP Server
 
-<div align="center">
-  <img src="../../../images/logo.png" alt="Project Logo" width="100%"/>
-</div>
+![Project Logo](../../../images/logo.png)
 
 A simple Python CLI for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
 
@@ -52,6 +50,37 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
 5. **Type your question and press Enter!**
 
    Type `exit` to quit.
+
+---
+
+## Pricing and Cost Estimates
+
+Set these optional env vars to compute accurate cost estimates (USD per 1M tokens):
+
+```env
+# Example values below — update with current OpenAI pricing for gpt-5-nano
+OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
+OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
+```
+
+At the end of each request, the CLI prints:
+
+- Per message: input tokens, output tokens, input cost, output cost
+- Session cumulative totals across the current run
+
+Example snippet:
+
+```text
+Per Message Usage & Cost:
+  - Input tokens: 1,234 | Input cost: $0.000123
+  - Output tokens: 2,345 | Output cost: $0.000938
+  - Message total cost: $0.001061
+
+Session Total (Cumulative):
+  - Total input tokens: 8,765 | Total input cost: $0.000877
+  - Total output tokens: 9,876 | Total output cost: $0.003950
+  - Session total cost: $0.004827
+```
 
 ---
 

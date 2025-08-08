@@ -28,6 +28,109 @@ def create_polygon_mcp_server():
 # ------------- CLI Logic -------------
 console = Console()
 
+class TokenCostTracker:
+    """Tracks per-message and cumulative token usage and costs."""
+
+    def __init__(self) -> None:
+        # Prices are USD per 1M tokens
+        self.input_price_per_million: float = self._read_price(
+            os.getenv("OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M")
+        )
+        self.output_price_per_million: float = self._read_price(
+            os.getenv("OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M")
+        )
+
+        self.total_input_tokens: int = 0
+        self.total_output_tokens: int = 0
+        self.total_input_cost_usd: float = 0.0
+        self.total_output_cost_usd: float = 0.0
+
+        self._printed_pricing_hint: bool = False
+
+    @staticmethod
+    def _read_price(value: str | None) -> float:
+        try:
+            return float(value) if value is not None and value != "" else 0.0
+        except Exception:
+            return 0.0
+
+    @staticmethod
+    def _calc_cost(tokens: int, price_per_million: float) -> float:
+        return (tokens / 1_000_000.0) * price_per_million
+
+    def record_and_print(self, response) -> None:
+        """Record usage/cost for this response and print per-message and session totals."""
+        # Try to get usage from the response
+        usage = None
+        try:
+            # pydantic-ai AgentRunResult typically exposes usage() method
+            if hasattr(response, "usage"):
+                usage = response.usage()
+        except Exception:
+            usage = None
+
+        # Fallback attempt: some responses might have .data or similar
+        if usage is None:
+            # If usage is unavailable, skip printing detailed token info
+            console.print("[yellow]Token usage not available from provider response.[/yellow]")
+            return
+
+        # Extract tokens
+        request_tokens = getattr(usage, "request_tokens", None)
+        response_tokens = getattr(usage, "response_tokens", None)
+        if request_tokens is None and hasattr(usage, "input_tokens"):
+            request_tokens = getattr(usage, "input_tokens")
+        if response_tokens is None and hasattr(usage, "output_tokens"):
+            response_tokens = getattr(usage, "output_tokens")
+
+        if request_tokens is None:
+            request_tokens = 0
+        if response_tokens is None:
+            response_tokens = 0
+
+        # Calculate costs for this message
+        input_cost = self._calc_cost(request_tokens, self.input_price_per_million)
+        output_cost = self._calc_cost(response_tokens, self.output_price_per_million)
+
+        # Update totals
+        self.total_input_tokens += int(request_tokens)
+        self.total_output_tokens += int(response_tokens)
+        self.total_input_cost_usd += input_cost
+        self.total_output_cost_usd += output_cost
+
+        # Pricing hint if prices are unset
+        if not self._printed_pricing_hint and (
+            self.input_price_per_million == 0.0 or self.output_price_per_million == 0.0
+        ):
+            console.print(
+                "[yellow]Tip: set `OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M` and `OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M` in .env for accurate cost estimates.[/yellow]"
+            )
+            self._printed_pricing_hint = True
+
+        # Print per-message summary
+        console.print("[bold]Per Message Usage & Cost:[/bold]")
+        console.print(
+            f"  - Input tokens: {request_tokens:,} | Input cost: ${input_cost:.6f}"
+        )
+        console.print(
+            f"  - Output tokens: {response_tokens:,} | Output cost: ${output_cost:.6f}"
+        )
+        console.print(
+            f"  - Message total cost: ${(input_cost + output_cost):.6f}"
+        )
+
+        # Print session cumulative summary
+        console.print("[bold]Session Total (Cumulative):[/bold]")
+        console.print(
+            f"  - Total input tokens: {self.total_input_tokens:,} | Total input cost: ${self.total_input_cost_usd:.6f}"
+        )
+        console.print(
+            f"  - Total output tokens: {self.total_output_tokens:,} | Total output cost: ${self.total_output_cost_usd:.6f}"
+        )
+        console.print(
+            f"  - Session total cost: ${(self.total_input_cost_usd + self.total_output_cost_usd):.6f}\n"
+        )
+
 def print_agent_response(response):
     console.print("\n[bold green]✔ Query processed successfully![/bold green]")
     console.print("[bold]Agent Response:[/bold]")
@@ -96,6 +199,8 @@ async def cli_async():
             return str(date.today())
 
 
+        token_tracker = TokenCostTracker()
+
         async with agent.run_mcp_servers():
             message_history = []
             while True:
@@ -113,6 +218,8 @@ async def cli_async():
                         print("\r", end="")
                         print_agent_response(response)
                         print_tools_used(response)
+                        # Token & cost usage
+                        token_tracker.record_and_print(response)
                         # Use the agent's own message objects for the next run
                         message_history = response.all_messages()
                     except Exception as agent_err:
