@@ -5,7 +5,7 @@ description = "This shows off the Polygon.io MCP server in action within an agen
 authors = [{ name = "Alex Novotny", email = "alex.novotny@polygon.io" }]
 requires-python = ">=3.10"
 dependencies = [
-    "pydantic-ai-slim[openai]",
+    "pydantic-ai-slim[openai,mcp]",
     "python-dotenv",
     "rich",
     "gradio>=4.0.0"
