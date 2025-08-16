@@ -78,7 +78,7 @@ Minimal Dockerfile outline (example):
 FROM python:3.12-slim
 
 WORKDIR /app
-COPY ./examples/rest/market-parser-polygon-mcp /app
+COPY . /app
 
 # Install system deps if needed
 RUN pip install --no-cache-dir --upgrade pip \

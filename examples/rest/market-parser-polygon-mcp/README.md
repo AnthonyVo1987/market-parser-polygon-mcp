@@ -1,6 +1,6 @@
 # Market Parser with Polygon MCP Server
 
-![Project Logo](../../../images/logo.png)
+![Project Logo](images/logo.png)
 
 A simple Python CLI for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
 
@@ -176,8 +176,8 @@ Be speficific in your prompt. The better the prompt - the better the response.
 
 ## Local Path
 
-- /mnt/d/Github/market-parser-polygon-mcp/examples/rest/market-parser-polygon-mcp
+- /mnt/d/Github/market-parser-polygon-mcp
 
 ## License
 
-This project is licensed under the [MIT License](../../../LICENSE).
+This project is licensed under the [MIT License](LICENSE).
