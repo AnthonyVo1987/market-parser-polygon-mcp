@@ -4,18 +4,20 @@
 
 claude "[feat] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s) in new_task.md"
 
-- I interrupted this bug fix because after reviewing the critical bug analysis report, its not a bug but more of an architectural issue
-- Let's re-architect the button prompts and structured UI display with new behavior as follows:
+- The project file and folder structure has gotten completley massive, confusing, and unweildy
+- Re-orgranize the entire project structure folder Hierachy using mandatory Sequential Thinking + Context7 to research best practices for re-organization according to our app's stack and architecture
+- This is a non exhaustive list, but I can see that we need folders for:
+- Test scripts, which are currently incorrectly un organized in top level folder, confusing the user which files are actual source code vs test files
+- Log files - similiar to above where they are currently incorrectly un organized in top level folder
+- Backup Files
+- Etc - re-organize anything else not mentioned
 
-- Button Prompt should now NEVER OUTPUT into the chat box area.  Chatbox is now ONLY reserved for user input queries to decouple it from button prompts
-- Button Prompts should now ONLY Output response in structured JSON output
-- Button prompts should now have explicit raw JSON output textboxes for EACH button prompt. So for example, we have 3x button prompts now, so each of those needs it's own deterministic JSN raw output response for viewing
-- Once a button prompt has a successfuly raw JSON ouput, now the App's UI code can parse the raw JSON output as an intermediate step, and THEN the structured UI data can be displayed
-- This sill streamline the process by inserting an intermediate raw JSON response parsing step first, and THEN the UI can be updated with the proper parsed\extracted content
-- FSM States, Flags, and variables may have to be updated to handle all the new behavior
-- Add new debug logs to help debug the new feature and to also output the raw JSON reponses too in the logs for easier debugging
-- update test scripts
-- With the new raw JSON output payload boxes, now we have visiblity on what the real response is, and to always have a unified output format for easier UI Parsing and Extraction
+- Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
+- Code review after wards with using Sequential Thinking + Context7
+
+## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
+- SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
+- User will then start testing out the new changes
 
 
 

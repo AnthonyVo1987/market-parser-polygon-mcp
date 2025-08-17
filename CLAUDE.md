@@ -10,88 +10,104 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 
 **Important: YOU MUST USE subagents when available for the task.**
 
-### Detected Tech Stack
+### Detected Tech Stack (Enhanced JSON Architecture)
 
-- **Backend Framework**: Python with Pydantic AI Agent Framework
-- **Frontend Framework**: Gradio v4+ for reactive web GUI interface
-- **AI Integration**: OpenAI gpt-5-nano via Pydantic AI with MCP server integration
+- **Backend Framework**: Python with Pydantic AI Agent Framework + JSON schema validation
+- **Frontend Framework**: Gradio v4+ with enhanced JSON display components and real-time feedback
+- **AI Integration**: OpenAI gpt-5-nano via Pydantic AI with structured JSON output optimization
 - **Data Source**: Polygon.io MCP server for real-time financial market data
-- **State Management**: Custom deterministic FSM (Finite State Machine) implementation
+- **JSON Architecture**: Comprehensive schema-driven system with validation and fallback strategies
+- **Data Processing**: Dual parser architecture (JSON primary, regex fallback) with confidence scoring
+- **State Management**: Enhanced FSM with JSON validation states and workflow orchestration
 - **Build Tools**: uv for dependency management and package execution
 - **CLI Framework**: Rich console for enhanced terminal formatting and interaction
-- **Test Framework**: pytest with async support for comprehensive testing
+- **Test Framework**: pytest with comprehensive JSON validation and production testing suites
 - **Configuration**: python-dotenv for secure environment variable management
-- **Data Processing**: Custom response parsing with confidence scoring and validation
-- **Prompt Engineering**: Structured template system for consistent AI interactions
+- **Monitoring**: Advanced debug logging with JSON workflow tracking and performance metrics
+- **Schema Management**: JSON Schema Draft 2020-12 compliant with versioning support
+- **Data Validation**: Multi-layer validation with business rules and auto-correction capabilities
+- **Debug System**: Comprehensive JSON workflow logging with error tracking and performance analysis
 
-### Agent Task Assignments
+### Agent Task Assignments (JSON-Optimized)
 
-| Task Category | Agent | Specific Responsibilities | Critical Notes |
-|---------------|-------|---------------------------|-----------------|
-| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. Security-aware review with severity tagging | Always use before merging. Security-focused reviews |
-| **Performance & Optimization** | `@performance-optimizer` | Cost optimization, latency improvements, token usage optimization, scaling analysis | Focus on AI costs and real-time data processing |
-| **Python Backend Development** | `@backend-developer` | Core Python development, async patterns, Pydantic AI integration, FSM implementation | Primary agent for Python-specific work |
-| **API Design & Integration** | `@api-architect` | MCP server contracts, Polygon.io integration, prompt template architecture, response schemas | Handles external API contracts and data flow |
-| **Frontend & UI Development** | `@frontend-developer` | Gradio interface enhancements, UI/UX improvements, async event handling, accessibility | Gradio-specific implementations |
-| **Codebase Analysis** | `@code-archaeologist` | Deep exploration, architecture decisions, technical debt analysis, refactoring planning | Use for major architectural changes |
-| **Documentation & Guides** | `@documentation-specialist` | README updates, API documentation, user guides, architectural documentation | User-facing and technical documentation |
+| Task Category | Agent | JSON Architecture Responsibilities | Critical Notes |
+|---------------|-------|----------------------------------|-----------------|
+| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. JSON schema validation, security review of parsers | Always validate JSON handling security and schema integrity |
+| **Performance & Optimization** | `@performance-optimizer` | JSON parsing optimization, schema validation performance, debug logging efficiency | Focus on JSON processing speed and memory usage |
+| **JSON Schema Architecture** | `@backend-developer` | JSON schema design, validation rules, parser implementation, fallback strategies | Primary agent for all JSON system components |
+| **Data Validation & Parsing** | `@backend-developer` | Schema validation logic, business rules, confidence scoring, error correction | Handles JSON parsing accuracy and data integrity |
+| **API Design & Integration** | `@api-architect` | JSON response schemas, MCP integration patterns, structured prompt design | Ensures JSON contracts with external services |
+| **Frontend & UI Development** | `@frontend-developer` | JSON display components, real-time UI updates, enhanced data visualization | Gradio JSON textboxes and structured data displays |
+| **State Management & FSM** | `@backend-developer` | JSON-aware FSM states, workflow orchestration, debug state tracking | Enhanced FSM with JSON validation integration |
+| **Monitoring & Debug Systems** | `@backend-developer` | JSON debug logger, workflow tracking, performance metrics, error analysis | Comprehensive JSON workflow monitoring |
+| **Documentation & Training** | `@documentation-specialist` | JSON architecture guides, schema documentation, migration procedures | JSON system usage and troubleshooting guides |
+| **Testing & Validation** | `@backend-developer` | JSON schema testing, validation testing, production bug testing | Comprehensive JSON system validation |
 
-### Specialized Domain Assignments
+### Specialized JSON Domain Assignments
 
-| Specialized Domain | Primary Agent | Secondary Agent | Task Focus |
-|--------------------|---------------|-----------------|------------|
-| **FSM State Management** | `@backend-developer` | `@code-archaeologist` | State transitions, workflow optimization, deterministic behavior |
-| **Financial Data Processing** | `@backend-developer` | `@api-architect` | Prompt engineering, response parsing, financial calculation accuracy |
-| **AI Agent Configuration** | `@backend-developer` | `@performance-optimizer` | Pydantic AI setup, system prompts, cost tracking, model optimization |
-| **MCP Server Integration** | `@api-architect` | `@backend-developer` | Server contracts, data flow, error handling, connection management |
-| **Gradio UI State Coordination** | `@frontend-developer` | `@backend-developer` | Event handling, FSM integration, user feedback, loading states |
-| **Testing & Validation** | `@backend-developer` | `@code-reviewer` | Unit tests, integration tests, FSM testing, prompt validation |
-| **CLI Development** | `@backend-developer` | `@frontend-developer` | Rich console features, CLI UX, terminal interfaces |
-| **Security & Compliance** | `@code-reviewer` | `@backend-developer` | API key protection, input validation, secure logging |
+| JSON Domain | Primary Agent | Secondary Agent | Specific Focus |
+|-------------|---------------|-----------------|----------------|
+| **JSON Schema Evolution** | `@backend-developer` | `@api-architect` | Schema versioning, compatibility, migration strategies |
+| **Parser Architecture** | `@backend-developer` | `@performance-optimizer` | Dual parser system, fallback strategies, performance optimization |
+| **Validation Workflows** | `@backend-developer` | `@code-reviewer` | Schema validation, business rules, error handling, auto-correction |
+| **Debug & Monitoring** | `@backend-developer` | `@performance-optimizer` | Workflow tracking, performance metrics, error analysis |
+| **UI JSON Integration** | `@frontend-developer` | `@backend-developer` | JSON textboxes, real-time displays, confidence indicators |
+| **Schema Documentation** | `@documentation-specialist` | `@backend-developer` | API references, migration guides, troubleshooting docs |
+| **Production Testing** | `@backend-developer` | `@code-reviewer` | JSON validation testing, integration testing, bug verification |
+| **Cost Optimization** | `@performance-optimizer` | `@backend-developer` | JSON processing efficiency, validation caching, resource usage |
 
-### Critical Project Coordination Rules
+### Enhanced Architecture Coordination Rules
 
-**1. Financial Data Accuracy:**
-- Always use `@backend-developer` for financial calculations and data parsing
-- Require `@code-reviewer` validation for any mathematical logic changes
-- Use `@api-architect` for data contract changes that affect accuracy
+**1. JSON Schema Integrity:**
+- NEVER modify schemas without `@backend-developer` involvement and `@code-reviewer` validation
+- Use `@api-architect` for external contract changes affecting JSON structure
+- Require comprehensive testing before schema version updates
 
-**2. FSM Architecture Preservation:**
-- NEVER modify FSM logic without `@backend-developer` involvement
-- Use `@code-archaeologist` for major state management refactoring
-- Coordinate UI changes through both `@frontend-developer` and `@backend-developer`
+**2. Parser System Reliability:**
+- Maintain dual parser architecture (JSON + regex fallback) for maximum compatibility
+- Use `@backend-developer` for primary JSON parser enhancements
+- Coordinate fallback strategy changes with `@performance-optimizer`
 
-**3. Real-time Data Integration:**
-- `@api-architect` handles contract design and error scenarios
-- `@backend-developer` implements async patterns and connection management
-- `@performance-optimizer` ensures optimal latency and cost efficiency
+**3. Debug & Monitoring Excellence:**
+- Implement comprehensive JSON workflow logging for production troubleshooting
+- Use `@backend-developer` for debug system enhancements
+- Monitor performance metrics through `@performance-optimizer`
 
-**4. AI Agent Cost Management:**
-- `@performance-optimizer` monitors token usage and cost optimization
-- `@backend-developer` implements efficient prompt templates and response parsing
-- `@code-reviewer` validates cost-effective patterns before deployment
+**4. UI/Backend JSON Coordination:**
+- Synchronize JSON display components between `@frontend-developer` and `@backend-developer`
+- Ensure real-time UI updates reflect JSON validation states
+- Maintain consistent confidence scoring across UI components
 
-### Development Workflow Protocol
+### Enhanced Development Workflow (JSON-Focused)
 
-1. **Planning Phase**: Use `@code-archaeologist` for impact analysis on complex features touching multiple domains
-2. **Design Phase**: Use `@api-architect` for external integrations, `@frontend-developer` for UI/UX design
-3. **Implementation Phase**: Primary specialist based on domain, with secondary for cross-cutting concerns
-4. **Quality Gate**: MANDATORY `@code-reviewer` for all changes before merging
-5. **Optimization**: Use `@performance-optimizer` for cost and latency concerns
-6. **Documentation**: Use `@documentation-specialist` for user-facing docs and architectural updates
+1. **Schema Design Phase**: Use `@backend-developer` with `@api-architect` for external contract alignment
+2. **Validation Implementation**: Primary `@backend-developer` with `@code-reviewer` for security validation
+3. **UI Integration**: Coordinate `@frontend-developer` and `@backend-developer` for JSON display components
+4. **Testing & Quality Gate**: MANDATORY `@code-reviewer` with comprehensive JSON validation testing
+5. **Performance Optimization**: Use `@performance-optimizer` for JSON processing efficiency
+6. **Documentation Updates**: Use `@documentation-specialist` for JSON architecture guides
 
-### Agent Collaboration Patterns
+### JSON Architecture Best Practices
 
-**High-Risk Coordination (Multiple Agents Required):**
-- FSM + Gradio integration: `@frontend-developer` + `@backend-developer`
-- Financial data accuracy: `@backend-developer` + `@api-architect` + `@code-reviewer`
-- Performance optimization: `@performance-optimizer` + `@backend-developer`
+**Schema Management:**
+- Version all schemas with backward compatibility considerations
+- Implement comprehensive validation with graceful error handling
+- Maintain fallback strategies for production reliability
 
-**Single Agent Sufficient:**
-- Pure Python logic: `@backend-developer`
-- UI-only changes: `@frontend-developer`
-- Documentation updates: `@documentation-specialist`
-- Architecture analysis: `@code-archaeologist`
+**Parser Implementation:**
+- Primary JSON parser with regex fallback for maximum compatibility
+- Confidence scoring for data quality assessment
+- Comprehensive error handling with detailed logging
+
+**UI Integration:**
+- Real-time JSON textboxes for debugging and transparency
+- Structured data displays with confidence indicators
+- Enhanced loading states with progress tracking
+
+**Monitoring & Debug:**
+- Comprehensive workflow tracking with unique identifiers
+- Performance metrics for optimization insights
+- Error analysis with context preservation
 
 ## ⚠️ CRITICAL: Tech-Lead-Orchestrator Enforcement Protocols
 
