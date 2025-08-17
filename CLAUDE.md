@@ -32,6 +32,8 @@ OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
 ### Testing
 
 - **Run tests**: `uv run pytest` (pytest is in dev dependencies)
+- **Run specific test**: `uv run pytest path/to/test_file.py`
+- **Run integration tests**: `uv run pytest test_*integration*.py`
 - **Install dev dependencies**: `uv install --dev`
 
 ### Environment Management
@@ -86,12 +88,42 @@ The agent uses a consistent system prompt across both interfaces:
 ## File Structure
 
 - `market_parser_demo.py` - CLI application
-- `chat_ui.py` - Web GUI application  
+- `chat_ui.py` - Web GUI application (primary enhanced version)
+- `chat_ui_enhanced.py`, `chat_ui_final.py` - Archived GUI versions
+- `stock_data_fsm/` - Finite State Machine module for GUI state management
+  - `states.py` - Application states enum and context data classes
+  - `transitions.py` - State transition rules and validation logic
+  - `manager.py` - Main FSM controller with transition orchestration
+  - `tests/` - Comprehensive test suite for FSM components
+- `prompt_templates.py` - Structured prompt templates for analysis types
+- `response_parser.py` - Response parsing utilities for structured data extraction
 - `pyproject.toml` - Project configuration and dependencies
 - `uv.lock` - Lock file for reproducible builds
 - `docs/` - Documentation including feature specifications and deployment guides
-- `examples/rest/` - Example implementations
+- `test_*.py` - Test files including integration and unit tests
 - `images/` - Project assets
+
+## Development Patterns
+
+### MCP Server Integration
+The project uses the Polygon.io MCP server via `uvx` for real-time financial data access. The `create_polygon_mcp_server()` function in `market_parser_demo.py:16` handles server initialization and connection management.
+
+### State Management (GUI)
+The `stock_data_fsm` module implements a deterministic finite state machine for robust GUI workflow management:
+- States are defined in `stock_data_fsm/states.py:12` with `AppState` enum
+- Transitions managed by `StateManager` class in `stock_data_fsm/manager.py:25`
+- Context data flows through `StateContext` objects for stateful operations
+
+### Agent Configuration
+Both CLI and GUI share identical agent setup with:
+- Model: `gpt-5-nano` via OpenAI Responses API
+- System prompt focused on financial analysis accuracy
+- Token cost tracking via `TokenCostTracker` class
+
+### Testing Strategy
+- Unit tests for FSM components in `stock_data_fsm/tests/`
+- Integration tests: `test_integration.py` and `test_actual_integration.py`
+- Module-specific tests: `test_prompt_templates.py`, `test_response_parser.py`
 
 ## Future Development
 
@@ -103,3 +135,11 @@ The `docs/FEATURE_SCOPE_STOCK_DATA_GUI.md` contains detailed specifications for 
 - Support/resistance level visualization
 
 When implementing new features, refer to existing patterns in the shared agent configuration and cost tracking systems.
+
+## Important Development Notes
+
+- **Environment Setup**: Create `.env` file with required API keys before running applications (see template in Required Environment Variables section)
+- **External Dependencies**: The Polygon.io MCP server requires `uvx` to be available in the system PATH
+- **Architecture Preservation**: All file modifications during development should preserve the FSM state management patterns
+- **Cost Tracking**: Token cost tracking is enabled by default - check `TokenCostTracker` usage when adding new agent interactions
+- **Model Configuration**: Default model is `gpt-5-nano` but can be overridden via `OPENAI_MODEL` environment variable
