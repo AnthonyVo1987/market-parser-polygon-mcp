@@ -66,6 +66,14 @@ coverage.xml
 
 # Environment variables
 .env
+.env.local
+.env.*.local
+
+# Security sensitive files
+*.key
+*.pem
+*.p12
+credentials.json
 
 # Project-specific ignores
 .cursor/

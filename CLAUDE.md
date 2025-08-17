@@ -120,15 +120,33 @@ This project uses `uv` for dependency management and Python package execution. A
 
 ### Required Environment Variables
 
-Create a `.env` file in the project root with:
+⚠️ **CRITICAL SECURITY REQUIREMENT**: Never commit API keys to version control.
 
-```env
-POLYGON_API_KEY=your_polygon_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
-# Optional: pricing for cost estimates (USD)
-OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
-OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
-```
+1. **Copy the secure template:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Add your actual API keys to `.env`:**
+   ```env
+   POLYGON_API_KEY=your_polygon_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   # Optional: pricing for cost estimates (USD)
+   OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
+   OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
+   ```
+
+3. **Verify security:**
+   ```bash
+   # Ensure .env is protected
+   grep -q "^.env$" .gitignore && echo "✅ Protected" || echo "❌ Security risk!"
+   ```
+
+**Security Features:**
+- Input validation and sanitization via `security_utils.py`
+- Secure logging that redacts sensitive data automatically
+- Environment variable validation on startup
+- See `SECURITY.md` for complete security guidelines
 
 ## Common Development Commands
 
