@@ -17,10 +17,10 @@
 - ✅ **MUST ensure handoff occurs** - Don't leave user to manually trigger delegations
 
 **CONTEXT7 CLARIFICATION:**
-- ❌ **CONTEXT7 ≠ WebSearch/WebFetch** - You previously confused these concepts
-- ✅ **CONTEXT7 = Existing documentation patterns** - Reference patterns already provided in task documents
-- ✅ **NO web research required** - All needed patterns are in the task documentation
-- ✅ **Reference specific line numbers** - Point to existing Context7 patterns in documentation
+- ❌ **CONTEXT7 ≠ WebSearch/WebFetch** - These are different tools with different purposes
+- ✅ **CONTEXT7 = MCP Server Tool** - Use mcp__context7__ tools to fetch library documentation
+- ✅ **Dynamic Documentation Retrieval** - Gets up-to-date patterns from external library sources
+- ✅ **Focused Topic Queries** - Request specific documentation topics for targeted information
 
 **ROLE RESTRICTIONS FOR @tech-lead-orchestrator:**
 - ❌ **DO NOT implement any code yourself**
@@ -83,40 +83,61 @@ NOT this fabricated format:
 
 **ALL SPECIALIST AGENTS MUST FOLLOW THESE PROTOCOLS:**
 
-### 1. SEQUENTIAL THINKING ENFORCEMENT
-**EVERY specialist agent MUST:**
+### 1. SEQUENTIAL THINKING MCP TOOL ENFORCEMENT
+**EVERY specialist agent MUST use the mcp__sequential-thinking__sequentialthinking tool:**
 
-- 🧠 **Start with Sequential Thinking**: Begin each response with `<thinking>` tags containing step-by-step analysis
-- 📝 **Plan Before Action**: Outline approach, identify risks, consider alternatives
-- 🔍 **Validate Understanding**: Confirm task requirements and expected outcomes
-- ⚡ **Think Through Dependencies**: Identify what needs to be done first/last
+- 🧠 **Use MCP Sequential Thinking Tool**: Call `mcp__sequential-thinking__sequentialthinking` for complex problem analysis
+- 📝 **Plan Before Action**: Use tool to outline approach, identify risks, consider alternatives
+- 🔍 **Validate Understanding**: Confirm task requirements and expected outcomes through structured thinking
+- ⚡ **Think Through Dependencies**: Use tool to identify what needs to be done first/last
 
-**Example Required Format:**
+**Tool Usage Pattern:**
+```python
+# Start complex analysis with sequential thinking tool
+mcp__sequential-thinking__sequentialthinking({
+  "thought": "Understanding the task: [what needs to be done]",
+  "nextThoughtNeeded": true,
+  "thoughtNumber": 1,
+  "totalThoughts": 5
+})
+
+# Continue with subsequent thoughts
+mcp__sequential-thinking__sequentialthinking({
+  "thought": "Current state analysis: [what exists now]",
+  "nextThoughtNeeded": true,
+  "thoughtNumber": 2,
+  "totalThoughts": 5
+})
+# ... continue until nextThoughtNeeded: false
 ```
-<thinking>
-1. Understanding the task: [what needs to be done]
-2. Current state analysis: [what exists now]
-3. Approach planning: [how to accomplish it]
-4. Risk assessment: [potential issues]
-5. Implementation steps: [ordered sequence]
-6. Validation strategy: [how to verify success]
-</thinking>
+
+### 2. CONTEXT7 MCP SERVER TOOL MANDATE
+**EVERY specialist agent MUST use Context7 MCP server tool for up-to-date library documentation:**
+
+- 🔧 **Context7 = MCP Server Tool**: Use `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs` tools
+- 📚 **Purpose**: Retrieves current library documentation and code examples from external sources
+- 🔍 **Usage Pattern**: First resolve library ID, then fetch focused documentation for specific topics
+- 📋 **Topics**: Request documentation for "async handling", "event listeners", "chatbot components", etc.
+
+**Required Context7 Tool Usage:**
+```python
+# Step 1: Resolve library ID
+mcp__context7__resolve-library-id({"libraryName": "gradio"})
+# Returns: /gradio-app/gradio
+
+# Step 2: Get focused documentation
+mcp__context7__get-library-docs({
+  "context7CompatibleLibraryID": "/gradio-app/gradio",
+  "topic": "async handling",
+  "tokens": 2000
+})
 ```
 
-### 2. CONTEXT7 REFERENCE MANDATE
-**EVERY specialist agent MUST use Context7 patterns PROVIDED IN DOCUMENTATION:**
-
-- 📚 **Context7 = Existing Patterns**: Reference patterns already provided in new_task.md lines 182-205
-- 📄 **NO WebSearch/WebFetch**: All needed patterns are already documented in task files
-- 🔍 **Reference Line Numbers**: Point to specific Context7 patterns in documentation
-- 📋 **Document Line References**: Cite specific line numbers from task documentation
-
-**Required Context7 Reference Topics (NO WEB RESEARCH):**
-- Gradio 4.0+ patterns already provided in new_task.md lines 182-205
-- Modern async handling patterns documented in new_task.md lines 224-365
-- Chatbot message format examples in new_task.md lines 190-193
-- Error handling patterns specified in new_task.md lines 200-204
-- Implementation examples provided throughout new_task.md documentation
+**Common Topics for Market Parser Project:**
+- "async handling" - For button click handlers
+- "event listeners" - For modern event chaining
+- "chatbot components" - For message formatting
+- "interface components" - For component configuration
 
 ### 3. IMPLEMENTATION PROTOCOLS
 **ALL implementations MUST:**
@@ -537,9 +558,9 @@ uv run python validate_fixes.py
    - DO NOT fabricate agent names like "web-research-specialist" or "gradio-ui-specialist"
 
 2. **CONTEXT7 CLARIFICATION**:
-   - Context7 = patterns already provided in new_task.md lines 182-205
-   - DO NOT use WebSearch/WebFetch tools
-   - Reference specific line numbers from existing documentation
+   - Context7 = MCP server tool for retrieving library documentation
+   - Use mcp__context7__resolve-library-id and mcp__context7__get-library-docs
+   - Fetch focused documentation for specific implementation topics
 
 3. **DELEGATION EXECUTION MANDATE**:
    - MUST provide the exact command to start first delegation

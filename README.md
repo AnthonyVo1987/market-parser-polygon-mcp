@@ -174,10 +174,50 @@ Be speficific in your prompt. The better the prompt - the better the response.
 
 ---
 
+## MCP Server Tools Available
+
+This project includes access to several MCP (Model Context Protocol) server tools:
+
+### Context7 Documentation Tool
+- **Purpose**: Retrieves up-to-date library documentation and code examples
+- **Tools**: `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs`
+- **Usage**: 
+  ```python
+  # Resolve library ID first
+  mcp__context7__resolve-library-id({"libraryName": "gradio"})
+  # Then fetch focused documentation
+  mcp__context7__get-library-docs({
+    "context7CompatibleLibraryID": "/gradio-app/gradio",
+    "topic": "async handling",
+    "tokens": 2000
+  })
+  ```
+
+### Sequential Thinking Tool
+- **Purpose**: Structured problem-solving and analysis through step-by-step reasoning
+- **Tool**: `mcp__sequential-thinking__sequentialthinking`
+- **Usage**:
+  ```python
+  mcp__sequential-thinking__sequentialthinking({
+    "thought": "Understanding the problem: [analysis]",
+    "nextThoughtNeeded": true,
+    "thoughtNumber": 1,
+    "totalThoughts": 5
+  })
+  ```
+
+### Polygon.io Financial Data
+- **Purpose**: Real-time stock market data and financial information
+- **Integration**: Built-in via Polygon MCP server
+- **Features**: Stock prices, volume data, historical information, technical indicators
+
+---
+
 ## How it Works
 
 - Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
+- Connects to Context7 and Sequential Thinking MCP servers for enhanced functionality
 - Sends your natural language query to OpenAI `gpt-5-nano` via PydanticAI (OpenAI Responses API)
 - Prints the answer in a readable format (CLI) or in a chat (GUI)
 

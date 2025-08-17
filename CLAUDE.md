@@ -82,10 +82,16 @@ This project combines several specialized domains that require careful coordinat
 - ✅ **MUST include handoff instructions** - Specify what each agent should do
 
 ### Context7 Protocol Enforcement
-- ❌ **Context7 ≠ WebSearch/WebFetch** - Context7 means existing documentation patterns
-- ✅ **Context7 = Documented patterns** - Reference patterns already in task documents
-- ✅ **NO web research required** - All patterns provided in documentation
-- ✅ **Reference specific line numbers** - Point to existing Context7 patterns
+- ❌ **Context7 ≠ WebSearch/WebFetch** - These are different tools with different purposes
+- ✅ **Context7 = MCP Server Tool** - Use mcp__context7__ tools to fetch library documentation
+- ✅ **Dynamic Documentation Retrieval** - Gets up-to-date patterns from external library sources
+- ✅ **Focused Topic Queries** - Request specific documentation topics for targeted information
+
+### Sequential Thinking Tool Requirements
+- ✅ **Use MCP Sequential Thinking Tool** - Use `mcp__sequential-thinking__sequentialthinking` for complex analysis
+- ✅ **Structured Problem Solving** - Break down complex tasks into step-by-step reasoning
+- ✅ **Thought Progression** - Use sequential thoughts with proper numbering and continuation
+- ✅ **Adaptive Analysis** - Adjust total thoughts as understanding deepens, revise previous thinking if needed
 
 **VIOLATION CONSEQUENCES:**
 - Fabricating agent names → Task rejection and re-delegation
