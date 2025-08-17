@@ -22,7 +22,7 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
 
 ## Quickstart (with [uv](https://github.com/astral-sh/uv))
 
-1. **Install [uv](https://github.com/astral-sh/uv) if you don’t have it:**
+1. **Install [uv](https://github.com/astral-sh/uv) if you don't have it:**
 
    ```sh
    curl -Ls https://astral.sh/uv/install.sh | sh
@@ -64,6 +64,15 @@ You can also use a web-based Chatbot GUI (Gradio) that runs the same agent and M
   ```sh
   uv run chat_ui.py
   ```
+  
+  **Features Available in Web UI:**
+  - 🧠 **FSM-Driven State Management** - Robust workflow management  
+  - 📊 **Structured Data Analysis** - Stock Snapshot, Support & Resistance, Technical Analysis buttons
+  - 🎯 **Smart Ticker Detection** - Automatic extraction from conversation context
+  - ⏳ **Real-time Loading States** - Step-by-step progress feedback during analysis
+  - 🛡️ **Advanced Error Handling** - User-friendly error messages and recovery
+  - 📈 **Enhanced Data Display** - Structured tables with confidence scoring
+  - 🔍 **Debug Monitoring** - FSM state tracking and troubleshooting info
 
 - The app will print a local URL (default `http://127.0.0.1:7860`) to open in your browser.
 - Pricing env vars (set in `.env`) will be used for cost estimates just like the CLI.

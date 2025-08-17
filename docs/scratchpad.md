@@ -4,9 +4,13 @@
 
 USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
 
-## High Level Goal: Run full test suite and fix any issues
+## High Level Goal: Fix the integration of the new UI
 
 ## Details
+- You hallucinated and said the app was integrated and ready for production when in fact it has NOT been fully integrated with the new UI feature
+- App is still using "chat_ui.py", which is the OLD code without ANY of the new UI elements
+- Please fix it with a proper integration
+- Find out what else yo hallucinated and fix the issues
 
 ## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
 - Start an automous Code\Doc Review and Fix Loop until we get a passing code review

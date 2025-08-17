@@ -13,6 +13,7 @@ This project uses `uv` for dependency management and Python package execution. A
 ### Required Environment Variables
 
 Create a `.env` file in the project root with:
+
 ```env
 POLYGON_API_KEY=your_polygon_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
@@ -24,14 +25,17 @@ OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
 ## Common Development Commands
 
 ### Running the Application
+
 - **CLI interface**: `uv run market_parser_demo.py`
-- **Web GUI interface**: `uv run chat_ui.py` (opens at http://127.0.0.1:7860)
+- **Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
 
 ### Testing
+
 - **Run tests**: `uv run pytest` (pytest is in dev dependencies)
 - **Install dev dependencies**: `uv install --dev`
 
 ### Environment Management
+
 - **Install dependencies**: `uv install`
 - **Update dependencies**: `uv lock --upgrade`
 - **Check environment**: `uv --version` and verify `.env` file exists
@@ -45,9 +49,15 @@ OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
    - Implements `create_polygon_mcp_server()` factory function
    - Main async CLI loop with Rich console formatting
 
-2. **chat_ui.py**: Gradio web interface
-   - Reuses server factory and cost tracking from CLI
-   - Implements async message handling for web interface
+2. **chat_ui.py**: Enhanced Gradio web interface with comprehensive features
+   - 🧠 **FSM-Driven State Management** - Robust workflow with state transitions
+   - 📊 **Structured Stock Analysis** - Dedicated buttons for Snapshot, S&R, Technical Analysis  
+   - 🎯 **Context-Aware Prompts** - Intelligent ticker extraction and structured prompts
+   - ⏳ **Real-time Processing Status** - Loading states with step-by-step progress
+   - 🛡️ **Advanced Error Handling** - User-friendly messages and graceful recovery
+   - 📈 **Enhanced Data Display** - DataFrames with confidence scoring and warnings
+   - 🔍 **Debug Monitoring** - FSM state tracking and system diagnostics
+   - 💾 **Export Functionality** - Enhanced markdown export with detailed formatting
    - Provides chat export functionality
 
 ### Key Architectural Patterns
@@ -68,7 +78,8 @@ OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
 ### System Prompt Configuration
 
 The agent uses a consistent system prompt across both interfaces:
-```
+
+```text
 "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. Use the latest data available. Always double check your math. For any questions about the current date, use the 'get_today_date' tool. For long or complex queries, break the query into logical subtasks and process each subtask in order."
 ```
 
@@ -85,6 +96,7 @@ The agent uses a consistent system prompt across both interfaces:
 ## Future Development
 
 The `docs/FEATURE_SCOPE_STOCK_DATA_GUI.md` contains detailed specifications for planned GUI enhancements including:
+
 - Structured data display components
 - Finite State Machine architecture for button-triggered actions
 - Technical indicator displays

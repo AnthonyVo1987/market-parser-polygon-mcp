@@ -152,6 +152,7 @@ class TickerExtractor:
             r'ticker\s*:?\s*([A-Z]{1,5})',  # ticker: AAPL
             r'symbol\s*:?\s*([A-Z]{1,5})',  # symbol: AAPL
             r'\b([A-Z]{1,5})\s+(?:analysis|snapshot|data)',  # AAPL analysis
+            r'\babout\s+([A-Z]{2,5})\b',  # about NVDA
         ]
         
         for pattern in ticker_indicators:
@@ -194,6 +195,8 @@ class TickerExtractor:
         recent_messages = chat_history[-10:]  # Last 10 messages
         
         for message in reversed(recent_messages):
+            if message is None:
+                continue
             content = message.get("content", "")
             if content:
                 ticker_match = self._extract_explicit_ticker(content)
@@ -220,7 +223,8 @@ class TickerExtractor:
             "THE", "AND", "FOR", "ARE", "BUT", "NOT", "YOU", "ALL", "CAN", 
             "HAD", "HER", "WAS", "ONE", "OUR", "OUT", "DAY", "GET", "HAS", 
             "HIM", "HIS", "HOW", "ITS", "NEW", "NOW", "OLD", "SEE", "TWO",
-            "WHO", "BOY", "DID", "ITS", "LET", "PUT", "SAY", "SHE", "TOO", "USE"
+            "WHO", "BOY", "DID", "ITS", "LET", "PUT", "SAY", "SHE", "TOO", "USE",
+            "APPLE", "DATA", "TEXT", "ME", "MY", "WE", "HE", "SHE", "THEY", "IT"
         }
         
         return ticker not in false_positives
@@ -333,7 +337,7 @@ class PromptTemplateManager:
             context_text = ""
             if chat_history:
                 recent_messages = chat_history[-5:]
-                context_text = " ".join([msg.get("content", "") for msg in recent_messages])
+                context_text = " ".join([msg.get("content", "") for msg in recent_messages if msg is not None])
             
             ticker_context = self.ticker_extractor.extract_ticker(context_text, chat_history)
         
