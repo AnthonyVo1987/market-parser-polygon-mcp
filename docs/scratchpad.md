@@ -2,7 +2,25 @@
 
 
 
-scope out the feasibility, complexity, and initial implementation plan and task breakdown for new potential feature with the following details:
+USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
+
+Scope out and update the scope doc to enforce a "single source of truth FSM (Finite State Machine)"
+- Current scope already has some state management, but let's make it a full on deterministic FSM
+- So research the best practices to implement a FSM according to our app's architecture, app stack, and the scope doc details
+- Update the entire implementation plan with the updated details
+
+## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
+- Start an automous Code\Doc Review and Fix Loop until we get a passing code review
+- If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
+
+
+
+###
+
+
+
+
+ the feasibility, complexity, and initial implementation plan and task breakdown for new potential feature with the following details:
 
 USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
 
@@ -27,6 +45,9 @@ USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE 
 
 5. Generate a new.md doc in the docs folder for the new scoping details
 
-## ACTIONS TO BE PERFORM ONLY AFTER INITIAL CHANGES
+## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
 - Start an automous Code\Doc Review and Fix Loop until we get a passing code review
-- If PASSING code review, perform an autonomous git commit and push to the repo
+- If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
+
+
+
