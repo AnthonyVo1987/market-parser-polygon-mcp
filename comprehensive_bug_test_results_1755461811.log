@@ -1,0 +1,490 @@
+COMPREHENSIVE BUG FIX VALIDATION RESULTS
+==================================================
+
+TEST: Bug #1 - Default Ticker Fix
+SUCCESS: False
+TIME: 0.1s
+OUTPUT:
+======================================================================
+🧪 DEFAULT TICKER FIX VALIDATION - Bug #1
+======================================================================
+Testing NVDA default ticker configuration in chat_ui.py...
+
+🔍 Testing chat_ui.py for default ticker configuration...
+✅ Default ticker 'NVDA' found in chat_ui.py configuration
+   Pattern matched: value\s*=\s*["\']NVDA["\']
+🔐 Testing ticker validation compatibility...
+✅ Ticker validation maintains compatibility with default fallback
+📋 Testing ticker field properties...
+🎯 Testing ticker input field configuration...
+✏️ Testing user override capability...
+🔄 Testing FSM integration with default ticker...
+📝 Testing prompt generation with default ticker...
+📊 Test Results Summary:
+   Total tests: 7
+   Passed: 2
+   Failed: 5
+   Errors: 0
+   Success rate: 28.6%
+
+❌ BUG #1 FIX VALIDATION: FAILED!
+   Issues found:
+   - test_ticker_field_properties (__main__.TestDefaultTickerFix.test_ticker_field_properties): Traceback (most recent call last):
+   - test_ticker_input_field_configuration (__main__.TestDefaultTickerFix.test_ticker_input_field_configuration): Traceback (most recent call last):
+   - test_user_can_override_default_ticker (__main__.TestDefaultTickerFix.test_user_can_override_default_ticker): Traceback (most recent call last):
+   - test_fsm_integration_with_default_ticker (__main__.TestDefaultTickerIntegration.test_fsm_integration_with_default_ticker): Traceback (most recent call last):
+   - test_prompt_generation_with_default_ticker (__main__.TestDefaultTickerIntegration.test_prompt_generation_with_default_ticker): Traceback (most recent call last):
+2025-08-17 13:16:21,269 - stock_fsm.8150e188 - INFO - StateManager initialized with session 8150e188
+INFO:stock_fsm.8150e188:StateManager initialized with session 8150e188
+2025-08-17 13:16:21,269 - stock_fsm.8150e188 - INFO - Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+INFO:stock_fsm.8150e188:Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+
+----------------------------------------
+
+TEST: Bug #2 - Response Parser Fix
+SUCCESS: False
+TIME: 2.2s
+OUTPUT:
+======================================================================
+🧪 RESPONSE PARSER FIX VALIDATION - Bug #2
+======================================================================
+Testing enhanced response parser with real AI outputs...
+
+🔄 Testing backwards compatibility with existing formats...
+   Legacy format fields: 9/9
+   Success rate: 100.0%
+   Confidence: high
+✅ Backwards compatibility maintained!
+📊 Testing comprehensive AI response format variations...
+   nvidia_snapshot_complete: 8/9 fields (88.9%)
+   alternative_ai_format: 2/9 fields (22.2%)
+⚠️ Testing edge cases and error handling...
+   empty_response: 0/9 fields, failed
+   no_numbers: 0/9 fields, failed
+   partial_data: 1/9 fields, low
+   malformed_currency: 0/9 fields, failed
+   mixed_formats: 2/9 fields, low
+✅ Edge cases handled gracefully!
+🔥 Testing failed production response that extracted 0/9 fields...
+   Response length: 209 chars
+   Fields extracted: 9/9
+   Success rate: 100.0%
+   Confidence: high
+   Extracted data: ['current_price', 'percentage_change', 'dollar_change', 'volume', 'vwap', 'open', 'high', 'low', 'close']
+✅ Previously failed response now extracts data successfully!
+🔍 Testing individual field extraction accuracy...
+   current_price: '$875.42' (expected: '$875.42')
+   percentage_change: '+3.2%' (expected: '+3.2%')
+   volume: '38,700,000' (expected: '38.7M')
+🎯 Testing partial response data extraction...
+   Partial response fields: 4/9
+   Success rate: 44.4%
+   Confidence: low
+✅ Partial responses extract available data correctly!
+⏱️ Testing parser performance benchmarks...
+   Parse time: 0.17ms
+   Fields extracted: 8/9
+✅ Performance benchmarks met!
+🎯 Testing confidence scoring regression...
+🎯 Testing S&R parsing regression...
+✅ S&R parsing maintains functionality!
+📈 Testing technical indicators regression...
+✅ Technical indicators parsing maintains functionality!
+📊 Test Results Summary:
+   Total tests: 10
+   Passed: 7
+   Failed: 3
+   Errors: 0
+   Success rate: 70.0%
+
+❌ BUG #2 FIX VALIDATION: FAILED!
+   Issues found:
+   - test_comprehensive_ai_response_formats (__main__.TestResponseParserFix.test_comprehensive_ai_response_formats): Traceback (most recent call last):
+   - test_field_extraction_accuracy (__main__.TestResponseParserFix.test_field_extraction_accuracy): Traceback (most recent call last):
+   - test_confidence_scoring_regression (__main__.TestResponseParserRegression.test_confidence_scoring_regression): Traceback (most recent call last):
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 279 character response
+INFO:response_parser:Snapshot parsing completed: 9/9 fields (100.0% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 286 character response
+INFO:response_parser:Snapshot parsing completed: 8/9 fields (88.9% success rate)
+INFO:response_parser:Parsing stock snapshot from 287 character response
+INFO:response_parser:Snapshot parsing completed: 2/9 fields (22.2% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 0 character response
+INFO:response_parser:Snapshot parsing completed: 0/9 fields (0.0% success rate)
+INFO:response_parser:Parsing stock snapshot from 53 character response
+INFO:response_parser:Snapshot parsing completed: 0/9 fields (0.0% success rate)
+INFO:response_parser:Parsing stock snapshot from 19 character response
+INFO:response_parser:Snapshot parsing completed: 1/9 fields (11.1% success rate)
+INFO:response_parser:Parsing stock snapshot from 33 character response
+INFO:response_parser:Snapshot parsing completed: 0/9 fields (0.0% success rate)
+INFO:response_parser:Parsing stock snapshot from 50 character response
+INFO:response_parser:Snapshot parsing completed: 2/9 fields (22.2% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 209 character response
+INFO:response_parser:Snapshot parsing completed: 9/9 fields (100.0% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 286 character response
+INFO:response_parser:Snapshot parsing completed: 8/9 fields (88.9% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 119 character response
+INFO:response_parser:Snapshot parsing completed: 4/9 fields (44.4% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 295 character response
+INFO:response_parser:Snapshot parsing completed: 8/9 fields (88.9% success rate)
+
+----------------------------------------
+
+TEST: Integration Testing
+SUCCESS: False
+TIME: 2.4s
+OUTPUT:
+======================================================================
+🧪 BUG FIXES INTEGRATION VALIDATION
+======================================================================
+Testing both bug fixes working together in realistic workflows...
+
+🔍 Testing data quality validation...
+🔄 Testing default ticker → parser integration flow...
+🎯 Testing end-to-end workflow simulation...
+🛡️ Testing error recovery with bug fixes...
+⏱️ Testing performance with both bug fixes...
+   FSM transitions: 0.33ms
+   Parser processing: 0.18ms
+   Total workflow: 0.51ms
+✅ Performance impact is acceptable
+🔄 Testing existing ticker functionality regression...
+✅ Existing ticker functionality maintained
+🔄 Testing FSM state integrity...
+🧪 Testing original test suite compatibility...
+✅ Original test suite compatibility maintained
+📊 Integration Test Results:
+   Total tests: 8
+   Passed: 3
+   Failed: 1
+   Errors: 4
+   Success rate: 37.5%
+
+❌ INTEGRATION VALIDATION: FAILED!
+   Issues found:
+   - test_data_quality_validation (__main__.TestBugFixesIntegration.test_data_quality_validation): Traceback (most recent call last):
+   - test_default_ticker_to_parser_flow (__main__.TestBugFixesIntegration.test_default_ticker_to_parser_flow): Traceback (most recent call last):
+   - test_end_to_end_workflow_simulation (__main__.TestBugFixesIntegration.test_end_to_end_workflow_simulation): Traceback (most recent call last):
+   - test_error_recovery_with_fixes (__main__.TestBugFixesIntegration.test_error_recovery_with_fixes): Traceback (most recent call last):
+   - test_fsm_state_integrity (__main__.TestRegressionValidation.test_fsm_state_integrity): Traceback (most recent call last):
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:response_parser:Parsing stock snapshot from 303 character response
+INFO:response_parser:Snapshot parsing completed: 8/9 fields (88.9% success rate)
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:stock_data_fsm.transitions:Validated 29 state transitions
+2025-08-17 13:16:25,815 - stock_fsm.0b3bd0b6 - INFO - StateManager initialized with session 0b3bd0b6
+INFO:stock_fsm.0b3bd0b6:StateManager initialized with session 0b3bd0b6
+2025-08-17 13:16:25,815 - stock_fsm.0b3bd0b6 - INFO - Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+INFO:stock_fsm.0b3bd0b6:Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:stock_data_fsm.transitions:Validated 29 state transitions
+2025-08-17 13:16:25,816 - stock_fsm.2e56375a - INFO - StateManager initialized with session 2e56375a
+INFO:stock_fsm.2e56375a:StateManager initialized with session 2e56375a
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:stock_data_fsm.transitions:Validated 29 state transitions
+2025-08-17 13:16:25,817 - stock_fsm.b35c45be - INFO - StateManager initialized with session b35c45be
+INFO:stock_fsm.b35c45be:StateManager initialized with session b35c45be
+2025-08-17 13:16:25,817 - stock_fsm.b35c45be - INFO - Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+INFO:stock_fsm.b35c45be:Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-17 13:16:25,817 - stock_fsm.b35c45be - WARNING - Invalid transition: IDLE + 'prepare_prompt'
+WARNING:stock_fsm.b35c45be:Invalid transition: IDLE + 'prepare_prompt'
+2025-08-17 13:16:25,817 - stock_fsm.b35c45be - WARNING - Invalid transition: IDLE + 'error'
+WARNING:stock_fsm.b35c45be:Invalid transition: IDLE + 'error'
+INFO:response_parser:ResponseParser initialized with comprehensive pattern libraries
+INFO:stock_data_fsm.transitions:Validated 29 state transitions
+2025-08-17 13:16:25,819 - stock_fsm.bc5642e0 - INFO - StateManager initialized with session bc5642e0
+INFO:stock_fsm.bc5642e0:StateManager initialized with session bc5642e0
+2025-08-17 13:16:25,819 - stock_fsm.bc5642e0 - INFO - Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+INFO:stock_fsm.bc5642e0:Guard failed: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-17 13:16:25,819 - stock_fsm.bc5642e0 - WARNING - Invalid transition: IDLE + 'prepare_prompt'
+WARNING:stock_fsm.bc5642e0:Invalid transition: IDLE + 'prepare_prompt'
+2025-08-17 13:16:25,819 - stock_fsm.bc5642e0 - WARNING - Invalid transition: IDLE + 'prompt_ready'
+WARNING:stock_fsm.bc5642e0:Invalid transition: IDLE + 'prompt_ready'
+INFO:response_parser:Parsing stock snapshot from 303 character response
+INFO:response_parser:Snapshot parsing completed: 8/9 fields (88.9% success rate)
+INFO:stock_data_fsm.transitions:Validated 29 state transitions
+2025-08-17 13:16:25,821 - stock_fsm.1ae27ace - INFO - StateManager initialized with session 1ae27ace
+INFO:stock_fsm.1ae27ace:StateManager initialized with session 1ae27ace
+
+----------------------------------------
+
+TEST: Regression Validation
+SUCCESS: False
+TIME: 25.9s
+OUTPUT:
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /mnt/d/Github/market-parser-polygon-mcp/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /mnt/d/Github/market-parser-polygon-mcp
+configfile: pyproject.toml
+plugins: anyio-4.10.0
+collecting ... collected 159 items
+
+test_response_parser.py::TestResponseParser::test_case_insensitive_matching PASSED [  0%]
+test_response_parser.py::TestResponseParser::test_confidence_calculation_failed PASSED [  1%]
+test_response_parser.py::TestResponseParser::test_confidence_calculation_high PASSED [  1%]
+test_response_parser.py::TestResponseParser::test_end_to_end_parsing_workflow PASSED [  2%]
+test_response_parser.py::TestResponseParser::test_multiple_pattern_matching PASSED [  3%]
+test_response_parser.py::TestResponseParser::test_parse_any_invalid_data_type PASSED [  3%]
+test_response_parser.py::TestResponseParser::test_parse_any_routing PASSED [  4%]
+test_response_parser.py::TestResponseParser::test_parse_result_dataframe_conversions PASSED [  5%]
+test_response_parser.py::TestResponseParser::test_parse_result_to_dict PASSED [  5%]
+test_response_parser.py::TestResponseParser::test_parse_stock_snapshot_empty_response PASSED [  6%]
+test_response_parser.py::TestResponseParser::test_parse_stock_snapshot_invalid_price PASSED [  6%]
+test_response_parser.py::TestResponseParser::test_parse_stock_snapshot_partial_data PASSED [  7%]
+test_response_parser.py::TestResponseParser::test_parse_stock_snapshot_success PASSED [  8%]
+test_response_parser.py::TestResponseParser::test_parse_support_resistance_partial PASSED [  8%]
+test_response_parser.py::TestResponseParser::test_parse_support_resistance_relationship_validation PASSED [  9%]
+test_response_parser.py::TestResponseParser::test_parse_support_resistance_success PASSED [ 10%]
+test_response_parser.py::TestResponseParser::test_parse_technical_indicators_success PASSED [ 10%]
+test_response_parser.py::TestResponseParser::test_parse_technical_rsi_validation PASSED [ 11%]
+test_response_parser.py::TestResponseParser::test_parse_technical_with_emas_smas PASSED [ 11%]
+test_response_parser.py::TestResponseParser::test_parse_time_tracking PASSED [ 12%]
+test_response_parser.py::TestResponseParser::test_parser_exception_handling PASSED [ 13%]
+test_response_parser.py::TestResponseParser::test_parsing_statistics PASSED [ 13%]
+test_response_parser.py::TestResponseParser::test_percentage_validation PASSED [ 14%]
+test_response_parser.py::TestResponseParser::test_price_validation_failure PASSED [ 15%]
+test_response_parser.py::TestResponseParser::test_price_validation_success PASSED [ 15%]
+test_response_parser.py::TestResponseParser::test_rsi_validation PASSED  [ 16%]
+test_response_parser.py::TestResponseParser::test_volume_validation PASSED [ 16%]
+test_response_parser.py::TestConfidenceLevel::test_confidence_level_values PASSED [ 17%]
+test_response_parser.py::TestDataType::test_data_type_values PASSED      [ 18%]
+test_prompt_templates.py::TestTickerExtractor::test_conversation_ticker_tracking PASSED [ 18%]
+test_prompt_templates.py::TestTickerExtractor::test_extract_explicit_ticker_dollar_symbol PASSED [ 19%]
+test_prompt_templates.py::TestTickerExtractor::test_extract_explicit_ticker_with_stock PASSED [ 20%]
+test_prompt_templates.py::TestTickerExtractor::test_extract_from_company_name_apple PASSED [ 20%]
+test_prompt_templates.py::TestTickerExtractor::test_extract_from_company_name_tesla PASSED [ 21%]
+test_prompt_templates.py::TestTickerExtractor::test_extract_from_context PASSED [ 22%]
+test_prompt_templates.py::TestTickerExtractor::test_fallback_to_placeholder PASSED [ 22%]
+test_prompt_templates.py::TestTickerExtractor::test_invalid_ticker_filtering PASSED [ 23%]
+test_prompt_templates.py::TestTickerExtractor::test_last_mentioned_ticker PASSED [ 23%]
+test_prompt_templates.py::TestPromptTemplate::test_generate_basic_prompt PASSED [ 24%]
+test_prompt_templates.py::TestPromptTemplate::test_generate_prompt_with_custom_instructions PASSED [ 25%]
+test_prompt_templates.py::TestPromptTemplate::test_generate_prompt_without_company_name PASSED [ 25%]
+test_prompt_templates.py::TestPromptTemplateManager::test_enhanced_system_prompt PASSED [ 26%]
+test_prompt_templates.py::TestPromptTemplateManager::test_generate_prompt_with_chat_history PASSED [ 27%]
+test_prompt_templates.py::TestPromptTemplateManager::test_generate_snapshot_prompt_with_ticker PASSED [ 27%]
+test_prompt_templates.py::TestPromptTemplateManager::test_generate_support_resistance_prompt PASSED [ 28%]
+test_prompt_templates.py::TestPromptTemplateManager::test_generate_technical_prompt PASSED [ 28%]
+test_prompt_templates.py::TestPromptTemplateManager::test_manager_initialization PASSED [ 29%]
+test_prompt_templates.py::TestPromptTemplateManager::test_prompt_consistency_across_tickers PASSED [ 30%]
+test_prompt_templates.py::TestPromptValidation::test_prompt_consistency_tests PASSED [ 30%]
+test_prompt_templates.py::TestPromptValidation::test_template_parsing_compatibility PASSED [ 31%]
+test_prompt_templates.py::TestPromptFormatting::test_prompt_section_structure PASSED [ 32%]
+test_prompt_templates.py::TestPromptFormatting::test_snapshot_template_required_fields PASSED [ 32%]
+test_prompt_templates.py::TestPromptFormatting::test_support_resistance_template_levels PASSED [ 33%]
+test_prompt_templates.py::TestPromptFormatting::test_technical_template_indicators PASSED [ 33%]
+test_prompt_templates.py::TestErrorHandling::test_empty_ticker_handling PASSED [ 34%]
+test_prompt_templates.py::TestErrorHandling::test_invalid_prompt_type PASSED [ 35%]
+test_prompt_templates.py::TestErrorHandling::test_malformed_chat_history PASSED [ 35%]
+test_prompt_templates.py::TestIntegrationScenarios::test_company_name_to_ticker_conversation PASSED [ 36%]
+test_prompt_templates.py::TestIntegrationScenarios::test_mixed_explicit_and_context_tickers PASSED [ 37%]
+test_prompt_templates.py::TestIntegrationScenarios::test_multi_ticker_conversation PASSED [ 37%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_concurrent_session_isolation PASSED [ 38%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_emergency_situations PASSED [ 38%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_fsm_health_monitoring PASSED [ 39%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_full_snapshot_workflow FAILED [ 40%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_multiple_error_recovery_attempts PASSED [ 40%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_performance_with_many_transitions PASSED [ 41%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_regular_chat_mixed_with_button_requests FAILED [ 42%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_serialization_round_trip PASSED [ 42%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_support_resistance_workflow_with_parse_failure FAILED [ 43%]
+stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_technical_analysis_with_ai_error PASSED [ 44%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_clear_data_actions PASSED [ 44%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_error_handling_actions PASSED [ 45%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_button_clicked PASSED [ 45%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_button_clicked_with_ticker_normalization PASSED [ 46%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_parse_failed_fallback PASSED [ 47%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_parse_success PASSED [ 47%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_prepare_prompt_invalid_type PASSED [ 48%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_prepare_prompt_no_type PASSED [ 49%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_prepare_prompt_snapshot PASSED [ 49%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_prepare_prompt_support_resistance PASSED [ 50%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_prepare_prompt_technical PASSED [ 50%]
+stock_data_fsm/tests/test_manager.py::TestStateActions::test_on_response_received PASSED [ 51%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_action_execution_error FAILED [ 52%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_can_transition PASSED [ 52%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_complete_successful_workflow FAILED [ 53%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_context_serialization PASSED [ 54%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_emergency_reset PASSED [ 54%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_error_recovery_max_attempts PASSED [ 55%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_error_recovery_workflow PASSED [ 55%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_fsm_health_validation PASSED [ 56%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_get_available_events PASSED [ 57%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_get_current_state PASSED [ 57%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_guard_function_error PASSED [ 58%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_initialization PASSED [ 59%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_invalid_transition PASSED [ 59%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_is_in_state PASSED [ 60%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_pickle_serialization_compatibility PASSED [ 61%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_regular_chat_handling PASSED [ 61%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_statistics_tracking PASSED [ 62%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_string_representations PASSED [ 62%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_transition_with_guard_failure PASSED [ 63%]
+stock_data_fsm/tests/test_manager.py::TestStateManager::test_valid_transition PASSED [ 64%]
+stock_data_fsm/tests/test_states.py::TestAppState::test_all_states_defined PASSED [ 64%]
+stock_data_fsm/tests/test_states.py::TestAppState::test_state_string_representation PASSED [ 65%]
+stock_data_fsm/tests/test_states.py::TestAppState::test_state_uniqueness PASSED [ 66%]
+stock_data_fsm/tests/test_states.py::TestTransitionRecord::test_basic_creation PASSED [ 66%]
+stock_data_fsm/tests/test_states.py::TestTransitionRecord::test_timestamp_auto_generation PASSED [ 67%]
+stock_data_fsm/tests/test_states.py::TestTransitionRecord::test_to_dict PASSED [ 67%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_add_transition_record PASSED [ 68%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_clear_data_no_preserve_history PASSED [ 69%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_clear_data_preserve_history PASSED [ 69%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_default_initialization PASSED [ 70%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_error_attempts_management PASSED [ 71%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_get_history_summary_empty PASSED [ 71%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_get_history_summary_with_data PASSED [ 72%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_invalid_state_initialization PASSED [ 72%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_string_representations PASSED [ 73%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_to_dict_basic PASSED [ 74%]
+stock_data_fsm/tests/test_states.py::TestStateContext::test_to_dict_with_history PASSED [ 74%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_can_retry_from_error PASSED [ 75%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_has_ai_response PASSED [ 76%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_has_parsed_data PASSED [ 76%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_has_prompt PASSED [ 77%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_has_ticker_or_default PASSED [ 77%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_has_valid_button_type PASSED [ 78%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_is_idle_ready PASSED [ 79%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_is_valid_data_type PASSED [ 79%]
+stock_data_fsm/tests/test_transitions.py::TestTransitionGuards::test_under_max_error_attempts PASSED [ 80%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_all_states_reachable PASSED [ 81%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_critical_transitions_exist PASSED [ 81%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_error_transitions_from_all_states PASSED [ 82%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_get_available_events PASSED [ 83%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_get_reachable_states PASSED [ 83%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_get_transition_graph PASSED [ 84%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_get_transition_rule_invalid PASSED [ 84%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_get_transition_rule_valid PASSED [ 85%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_initialization PASSED [ 86%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_is_valid_transition_invalid PASSED [ 86%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_is_valid_transition_with_guard PASSED [ 87%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_is_valid_transition_without_guard PASSED [ 88%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_no_duplicate_transitions PASSED [ 88%]
+stock_data_fsm/tests/test_transitions.py::TestStateTransitions::test_validate_state_machine_completeness PASSED [ 89%]
+test_integration.py::TestSystemIntegration::test_conversation_context_tracking FAILED [ 89%]
+test_integration.py::TestSystemIntegration::test_end_to_end_parsing_workflow PASSED [ 90%]
+test_integration.py::TestSystemIntegration::test_error_handling_and_recovery PASSED [ 91%]
+test_integration.py::TestSystemIntegration::test_fsm_state_transitions PASSED [ 91%]
+test_integration.py::TestSystemIntegration::test_prompt_template_integration PASSED [ 92%]
+test_integration.py::TestSystemIntegration::test_ticker_extraction_scenarios FAILED [ 93%]
+test_integration.py::TestUIIntegration::test_clear_enhanced_functionality PASSED [ 93%]
+test_integration.py::TestUIIntegration::test_debug_state_info PASSED     [ 94%]
+test_integration.py::TestUIIntegration::test_markdown_export PASSED      [ 94%]
+test_integration.py::TestUIIntegration::test_processing_status_management PASSED [ 95%]
+test_integration.py::TestPerformanceAndReliability::test_memory_usage_stability PASSED [ 96%]
+test_integration.py::TestPerformanceAndReliability::test_parsing_performance PASSED [ 96%]
+test_integration.py::TestPerformanceAndReliability::test_prompt_generation_consistency PASSED [ 97%]
+test_integration.py::TestRealWorldScenarios::test_concurrent_operations_simulation PASSED [ 98%]
+test_integration.py::TestRealWorldScenarios::test_error_recovery_workflow PASSED [ 98%]
+test_integration.py::TestRealWorldScenarios::test_malformed_input_handling PASSED [ 99%]
+test_integration.py::TestRealWorldScenarios::test_multi_ticker_conversation PASSED [100%]
+
+=================================== FAILURES ===================================
+________________ TestFSMIntegration.test_full_snapshot_workflow ________________
+stock_data_fsm/tests/test_integration.py:58: in test_full_snapshot_workflow
+    self.assertTrue(success)
+E   AssertionError: False is not true
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:42,359 - stock_fsm.integration-test - INFO - StateManager initialized with session integration-test
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.integration-test:manager.py:319 StateManager initialized with session integration-test
+_______ TestFSMIntegration.test_regular_chat_mixed_with_button_requests ________
+stock_data_fsm/tests/test_integration.py:217: in test_regular_chat_mixed_with_button_requests
+    self.assertEqual(self.manager.get_current_state(), AppState.IDLE)
+E   AssertionError: AppState.AI_PROCESSING != AppState.IDLE
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:50,884 - stock_fsm.integration-test - INFO - StateManager initialized with session integration-test
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.integration-test:manager.py:319 StateManager initialized with session integration-test
+____ TestFSMIntegration.test_support_resistance_workflow_with_parse_failure ____
+stock_data_fsm/tests/test_integration.py:108: in test_support_resistance_workflow_with_parse_failure
+    self.assertTrue(success)
+E   AssertionError: False is not true
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:50,901 - stock_fsm.integration-test - INFO - StateManager initialized with session integration-test
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.integration-test:manager.py:319 StateManager initialized with session integration-test
+_________________ TestStateManager.test_action_execution_error _________________
+stock_data_fsm/tests/test_manager.py:302: in test_action_execution_error
+    self.assertFalse(success)
+E   AssertionError: True is not false
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:50,937 - stock_fsm.test-session - INFO - StateManager initialized with session test-session
+2025-08-17 13:16:50,937 - stock_fsm.test-session - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-17 13:16:50,937 - stock_fsm.test-session - INFO - Button clicked: snapshot
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.test-session:manager.py:319 StateManager initialized with session test-session
+INFO     stock_fsm.test-session:manager.py:424 Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+INFO     stock_fsm.test-session:manager.py:39 Button clicked: snapshot
+______________ TestStateManager.test_complete_successful_workflow ______________
+stock_data_fsm/tests/test_manager.py:230: in test_complete_successful_workflow
+    self.assertTrue(success)
+E   AssertionError: False is not true
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - StateManager initialized with session test-session
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Button clicked: snapshot
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Transitioning: BUTTON_TRIGGERED -prepare_prompt-> PROMPT_PREPARING
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Prompt prepared for snapshot: 218 characters
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Transitioning: PROMPT_PREPARING -prompt_ready-> AI_PROCESSING
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Prompt ready for AI processing: snapshot
+2025-08-17 13:16:50,957 - stock_fsm.test-session - INFO - Guard failed: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.test-session:manager.py:319 StateManager initialized with session test-session
+INFO     stock_fsm.test-session:manager.py:424 Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+INFO     stock_fsm.test-session:manager.py:39 Button clicked: snapshot
+INFO     stock_fsm.test-session:manager.py:424 Transitioning: BUTTON_TRIGGERED -prepare_prompt-> PROMPT_PREPARING
+INFO     stock_fsm.test-session:manager.py:77 Prompt prepared for snapshot: 218 characters
+INFO     stock_fsm.test-session:manager.py:424 Transitioning: PROMPT_PREPARING -prompt_ready-> AI_PROCESSING
+INFO     stock_fsm.test-session:manager.py:82 Prompt ready for AI processing: snapshot
+INFO     stock_fsm.test-session:manager.py:414 Guard failed: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
+___________ TestSystemIntegration.test_conversation_context_tracking ___________
+test_integration.py:218: in test_conversation_context_tracking
+    self.assertEqual(result.symbol, "AAPL")
+E   AssertionError: '[TICKER]' != 'AAPL'
+E   - [TICKER]
+E   + AAPL
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:51,071 - stock_fsm.c433358a - INFO - StateManager initialized with session c433358a
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.c433358a:manager.py:319 StateManager initialized with session c433358a
+WARNING  prompt_templates:prompt_templates.py:143 No ticker found, using placeholder
+____________ TestSystemIntegration.test_ticker_extraction_scenarios ____________
+test_integration.py:175: in test_ticker_extraction_scenarios
+    self.assertEqual(result.symbol, expected_ticker)
+E   AssertionError: 'STOCK' != 'MSFT'
+E   - STOCK
+E   + MSFT
+----------------------------- Captured stderr call -----------------------------
+2025-08-17 13:16:51,089 - stock_fsm.71a257e4 - INFO - StateManager initialized with session 71a257e4
+------------------------------ Captured log call -------------------------------
+INFO     stock_fsm.71a257e4:manager.py:319 StateManager initialized with session 71a257e4
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6
+  /mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+.venv/lib/python3.12/site-packages/pydantic_ai/agent/__init__.py:310
+  /mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/pydantic_ai/agent/__init__.py:310: DeprecationWarning: `mcp_servers` is deprecated, use `toolsets` instead
+    warnings.warn('`mcp_servers` is deprecated, use `toolsets` instead', DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_full_snapshot_workflow
+FAILED stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_regular_chat_mixed_with_button_requests
+FAILED stock_data_fsm/tests/test_integration.py::TestFSMIntegration::test_support_resistance_workflow_with_parse_failure
+FAILED stock_data_fsm/tests/test_manager.py::TestStateManager::test_action_execution_error
+FAILED stock_data_fsm/tests/test_manager.py::TestStateManager::test_complete_successful_workflow
+FAILED test_integration.py::TestSystemIntegration::test_conversation_context_tracking
+FAILED test_integration.py::TestSystemIntegration::test_ticker_extraction_scenarios
+================== 7 failed, 152 passed, 2 warnings in 24.00s ==================
+
+----------------------------------------
+

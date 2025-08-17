@@ -2,7 +2,7 @@ _## This is a temporary staging area to convert user request into formal new_tas
 
 
 
-claude "use @documentation-specialist to read raw_task.md and update new_task.md"
+claude "[BUG_REPORT] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s) in new_task.md"
 
 
 

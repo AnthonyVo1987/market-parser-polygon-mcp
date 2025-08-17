@@ -619,6 +619,7 @@ def create_enhanced_chat_interface():
                     ticker_input = gr.Textbox(
                         placeholder="Ticker (e.g., AAPL)", 
                         label="Stock Ticker",
+                        value="NVDA",
                         scale=2
                     )
         
