@@ -22,8 +22,9 @@ from dotenv import find_dotenv, load_dotenv
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIResponsesModel
 
-# Import our FSM components
+# Import our FSM components and parser
 from stock_data_fsm import StateManager, AppState
+from response_parser import ResponseParser, DataType
 
 # Reuse server factory and token tracking from CLI
 from market_parser_demo import create_polygon_mcp_server, TokenCostTracker
@@ -141,25 +142,44 @@ async def handle_fsm_user_message(
             print(f"[GUI] AI Response received: {len(response.output)} characters")
         
         if fsm_manager.get_current_state() == AppState.PARSING_RESPONSE:
-            # Parse the AI response based on button type
+            # Parse the AI response using the comprehensive ResponseParser
             button_type = fsm_manager.context.button_type
             ai_response = fsm_manager.context.ai_response
+            ticker = fsm_manager.context.ticker
+            
+            # Initialize parser
+            parser = ResponseParser(log_level=logging.INFO)
             
             try:
+                # Parse based on button type using the new parser
                 if button_type == 'snapshot':
-                    parsed_data = _parse_stock_snapshot(ai_response)
-                    snapshot_df = parsed_data
+                    parse_result = parser.parse_stock_snapshot(ai_response, ticker)
+                    snapshot_df = parse_result.to_dataframe()
                 elif button_type == 'support_resistance':
-                    parsed_data = _parse_support_resistance(ai_response)
-                    sr_df = parsed_data
+                    parse_result = parser.parse_support_resistance(ai_response, ticker)
+                    sr_df = parse_result.to_dataframe()
                 elif button_type == 'technical':
-                    parsed_data = _parse_technical_indicators(ai_response)
-                    tech_df = parsed_data
+                    parse_result = parser.parse_technical_indicators(ai_response, ticker)
+                    tech_df = parse_result.to_dataframe()
+                
+                # Store parse result in FSM context for debug display
+                fsm_manager.context.parsed_data = {
+                    'parse_result': parse_result.to_dict(),
+                    'confidence': parse_result.confidence.value,
+                    'warnings': parse_result.warnings
+                }
                 
                 fsm_manager.transition('parse_success', parsed_data={'parsed': True})
             except Exception as e:
                 print(f"[GUI] Parse failed: {e}")
-                # Fallback to raw display
+                # Fallback to raw display - create empty dataframes
+                if button_type == 'snapshot':
+                    snapshot_df = pd.DataFrame({'Metric': ['Parse Failed'], 'Value': [str(e)]})
+                elif button_type == 'support_resistance':
+                    sr_df = pd.DataFrame({'Level': ['Parse Failed'], 'Price': [str(e)]})
+                elif button_type == 'technical':
+                    tech_df = pd.DataFrame({'Indicator': ['Parse Failed'], 'Value': [str(e)]})
+                
                 fsm_manager.transition('parse_failed')
         
         if fsm_manager.get_current_state() == AppState.UPDATING_UI:
@@ -250,92 +270,9 @@ async def handle_button_click(
 
 
 # -------- Data Parsing Functions --------
-
-def _parse_stock_snapshot(ai_response: str) -> pd.DataFrame:
-    """Parse stock snapshot data from AI response."""
-    import re
-    
-    patterns = {
-        'Current Price': r'(?:price|trading at|current)[:\s]*\$?([\d,]+\.?\d*)',
-        'Percentage Change': r'(?:up|down|changed?)[:\s]*([\d\.\-\+]+)%',
-        'Dollar Change': r'(?:\$|\+|\-)([\d\.\-\+]+)(?:\s|$)',
-        'Volume': r'volume[:\s]*([\d,]+)',
-        'VWAP': r'(?:vwap|volume weighted)[:\s]*\$?([\d,]+\.?\d*)',
-        'Open': r'open[:\s]*\$?([\d,]+\.?\d*)',
-        'High': r'high[:\s]*\$?([\d,]+\.?\d*)',
-        'Low': r'low[:\s]*\$?([\d,]+\.?\d*)',
-        'Close': r'close[:\s]*\$?([\d,]+\.?\d*)'
-    }
-    
-    data = {}
-    for key, pattern in patterns.items():
-        match = re.search(pattern, ai_response, re.IGNORECASE)
-        if match:
-            data[key] = match.group(1)
-        else:
-            data[key] = 'N/A'
-    
-    # Convert to DataFrame for display
-    df_data = [{'Metric': k, 'Value': v} for k, v in data.items()]
-    return pd.DataFrame(df_data) if df_data else pd.DataFrame({'Metric': ['No Data'], 'Value': ['N/A']})
-
-
-def _parse_support_resistance(ai_response: str) -> pd.DataFrame:
-    """Parse support and resistance levels from AI response."""
-    import re
-    
-    patterns = {
-        'S1 (Support 1)': r'S1[:\s]*\$?([\d,]+\.?\d*)',
-        'S2 (Support 2)': r'S2[:\s]*\$?([\d,]+\.?\d*)',
-        'S3 (Support 3)': r'S3[:\s]*\$?([\d,]+\.?\d*)',
-        'R1 (Resistance 1)': r'R1[:\s]*\$?([\d,]+\.?\d*)',
-        'R2 (Resistance 2)': r'R2[:\s]*\$?([\d,]+\.?\d*)',
-        'R3 (Resistance 3)': r'R3[:\s]*\$?([\d,]+\.?\d*)'
-    }
-    
-    data = {}
-    for key, pattern in patterns.items():
-        match = re.search(pattern, ai_response, re.IGNORECASE)
-        if match:
-            data[key] = f"${match.group(1)}"
-        else:
-            data[key] = 'N/A'
-    
-    # Convert to DataFrame for display
-    df_data = [{'Level': k, 'Price': v} for k, v in data.items()]
-    return pd.DataFrame(df_data) if df_data else pd.DataFrame({'Level': ['No Data'], 'Price': ['N/A']})
-
-
-def _parse_technical_indicators(ai_response: str) -> pd.DataFrame:
-    """Parse technical indicators from AI response."""
-    import re
-    
-    patterns = {
-        'RSI': r'RSI[:\s]*([\d\.]+)',
-        'MACD': r'MACD[:\s]*([\d\.\-\+]+)',
-        'EMA 5': r'EMA[\s]*5[:\s]*\$?([\d,]+\.?\d*)',
-        'EMA 10': r'EMA[\s]*10[:\s]*\$?([\d,]+\.?\d*)',
-        'EMA 20': r'EMA[\s]*20[:\s]*\$?([\d,]+\.?\d*)',
-        'EMA 50': r'EMA[\s]*50[:\s]*\$?([\d,]+\.?\d*)',
-        'EMA 200': r'EMA[\s]*200[:\s]*\$?([\d,]+\.?\d*)',
-        'SMA 5': r'SMA[\s]*5[:\s]*\$?([\d,]+\.?\d*)',
-        'SMA 10': r'SMA[\s]*10[:\s]*\$?([\d,]+\.?\d*)',
-        'SMA 20': r'SMA[\s]*20[:\s]*\$?([\d,]+\.?\d*)',
-        'SMA 50': r'SMA[\s]*50[:\s]*\$?([\d,]+\.?\d*)',
-        'SMA 200': r'SMA[\s]*200[:\s]*\$?([\d,]+\.?\d*)'
-    }
-    
-    data = {}
-    for key, pattern in patterns.items():
-        match = re.search(pattern, ai_response, re.IGNORECASE)
-        if match:
-            data[key] = match.group(1)
-        else:
-            data[key] = 'N/A'
-    
-    # Convert to DataFrame for display
-    df_data = [{'Indicator': k, 'Value': v} for k, v in data.items()]
-    return pd.DataFrame(df_data) if df_data else pd.DataFrame({'Indicator': ['No Data'], 'Value': ['N/A']})
+# Note: Data parsing is now handled by the comprehensive ResponseParser class
+# located in response_parser.py. This provides robust parsing with multiple
+# extraction strategies, data validation, and confidence scoring.
 
 
 # -------- Utility Functions --------
@@ -374,19 +311,26 @@ def _get_debug_state_info(fsm_manager: StateManager) -> str:
         f"**Current State:** {fsm_manager.get_current_state().name}",
         f"**Button Type:** {fsm_manager.context.button_type or 'None'}",
         f"**Ticker:** {fsm_manager.context.ticker or 'None'}",
-        f"**Error Attempts:** {fsm_manager.context.error_recovery_attempts}",
+        f"**Error Attempts:** {fsm_manager.context.error_attempts}",
         f"**Total Transitions:** {len(fsm_manager.context.transition_history)}",
     ]
     
     if fsm_manager.context.error_message:
         state_info.append(f"**Error:** {fsm_manager.context.error_message}")
     
+    # Add parsing information if available
+    if fsm_manager.context.parsed_data and 'parse_result' in fsm_manager.context.parsed_data:
+        parse_info = fsm_manager.context.parsed_data
+        state_info.append(f"**Parse Confidence:** {parse_info.get('confidence', 'N/A').title()}")
+        if parse_info.get('warnings'):
+            state_info.append(f"**Parse Warnings:** {len(parse_info['warnings'])}")
+    
     # Add recent transitions
     if fsm_manager.context.transition_history:
         recent_transitions = fsm_manager.context.transition_history[-3:]
         state_info.append("**Recent Transitions:**")
         for trans in recent_transitions:
-            state_info.append(f"  • {trans.from_state.name} → {trans.to_state.name} ({trans.event})")
+            state_info.append(f"  • {trans.from_state} → {trans.to_state} ({trans.event})")
     
     return "\n".join(state_info)
 
