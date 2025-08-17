@@ -2,13 +2,70 @@
 
 
 
+  Updated Prompt for Tech-Lead-Orchestrator Assignment
+
+  @tech-lead-orchestrator: Please read and analyze the comprehensive fix plan in new_task.md for our Market Parser Polygon MCP 
+  application.
+
+  **Your Assignment:**
+  - Analyze the critical UI issues outlined in new_task.md
+  - Create a strategic delegation plan following the MANDATORY SPECIALIST AGENT REQUIREMENTS
+  - Identify which specialist agents are needed for each phase of the fix
+  - Provide specific handoff instructions that enforce sequential thinking and Context7 research
+
+  **Key Context:**
+  - Application is completely non-functional due to outdated Gradio 3.x patterns
+  - Primary issues: async function mishandling, deprecated chatbot format, function signature mismatches
+  - Modern Gradio 4.0+ patterns must be implemented through proper research
+  - FSM state management architecture must be preserved
+
+  **CRITICAL ENFORCEMENT REQUIREMENTS:**
+  All specialist agents you recommend MUST:
+  1. 🧠 **Use Sequential Thinking**: Start with <thinking> tags for step-by-step analysis
+  2. 🌐 **Research with Context7**: Use WebSearch/WebFetch for latest Gradio 4.0+ best practices
+  3. 📚 **Document Sources**: Cite specific documentation used in implementations
+  4. ✅ **Follow Quality Gates**: Verify modern standards, error handling, testing
+
+  **Required Delegation Format:**
+  Each agent assignment must include:
+  - Specific research requirements (what to look up)
+  - Sequential thinking mandate with example topics
+  - Quality validation checkpoints
+  - Modern pattern enforcement rules
+
+  **Your Role Boundaries:**
+  - DO NOT implement any code yourself
+  - ONLY provide strategic analysis and delegation plan
+  - Focus on coordination that enforces proper methodology
+  - Return structured delegation plan for manual execution with research requirements
+
+  Please analyze new_task.md and provide a delegation strategy that ensures all specialists will use sequential thinking and Context7 
+  research before implementing any fixes.
+
+  This updated prompt ensures:
+
+  1. Sequential Thinking Enforcement - Every specialist must use <thinking> tags
+  2. Context7 Research Mandate - All agents must research before implementing
+  3. Quality Gates - Validation requirements for modern patterns
+  4. Documentation Requirements - Source citation and methodology tracking
+  5. Structured Methodology - Clear research and implementation protocols
+
+  The tech-lead-orchestrator will now create delegation plans that enforce these protocols for every specialist agent.
+
+
+
+
+
+
 USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
 
-## High Level Goal: Fix ALL issues in completly broken app after integrating new UI feature
+## High Level Goal: Investigate ALL issues in completly broken app after integrating new UI feature
 
 ## Details
 - App is completely broken.  Review the logs and fix the issues.
 - No Button prompts work or even user input chat
+- DO NOT FIX ANYTHING YET; Just generate a plan for all the fixes so I can review
+- Provide post mortem how the app got broken even though you lied and said it is production ready when it is clearly not even working
 
 ## Logs
 
