@@ -5,15 +5,10 @@
 **⚠️ CRITICAL BUG REPORT - PRODUCTION SYSTEM FAILING:**
 
 **MANDATORY AGENT VERIFICATION:**
-
-- ❌ **DO NOT fabricate specialist agent names** - You previously created fake
-  agents like "web-research-specialist" and "gradio-ui-specialist"
-- ✅ **MUST READ CLAUDE.md Agent Task Assignments** - Only use real agents
-  listed in the updated table (lines 27-37)
-- ✅ **MUST verify agent exists before assignment** - Check CLAUDE.md Enhanced
-  AI Team Configuration
-- ✅ **MUST understand agent specialties** - Use agents according to their
-  defined roles and specialized domains
+- ❌ **DO NOT fabricate specialist agent names** - You previously created fake agents like "web-research-specialist" and "gradio-ui-specialist"
+- ✅ **MUST READ CLAUDE.md Agent Task Assignments** - Only use real agents listed in the updated table (lines 27-37)
+- ✅ **MUST verify agent exists before assignment** - Check CLAUDE.md Enhanced AI Team Configuration
+- ✅ **MUST understand agent specialties** - Use agents according to their defined roles and specialized domains
 
 **ENHANCED AGENT TASK ASSIGNMENTS (FROM CLAUDE.md LINES 27-37):**
 
@@ -43,84 +38,60 @@
 **CRITICAL PROJECT COORDINATION RULES (CLAUDE.md LINES 52-73):**
 
 **1. Financial Data Accuracy:**
-
 - Always use `@backend-developer` for financial calculations and data parsing
 - Require `@code-reviewer` validation for any mathematical logic changes
 - Use `@api-architect` for data contract changes that affect accuracy
 
 **2. FSM Architecture Preservation:**
-
 - NEVER modify FSM logic without `@backend-developer` involvement
 - Use `@code-archaeologist` for major state management refactoring
-- Coordinate UI changes through both `@frontend-developer` and
-  `@backend-developer`
+- Coordinate UI changes through both `@frontend-developer` and `@backend-developer`
 
 **3. Real-time Data Integration:**
-
 - `@api-architect` handles contract design and error scenarios
 - `@backend-developer` implements async patterns and connection management
 - `@performance-optimizer` ensures optimal latency and cost efficiency
 
 **4. AI Agent Cost Management:**
-
 - `@performance-optimizer` monitors token usage and cost optimization
-- `@backend-developer` implements efficient prompt templates and response
-  parsing
+- `@backend-developer` implements efficient prompt templates and response parsing
 - `@code-reviewer` validates cost-effective patterns before deployment
 
 **ENHANCED DEVELOPMENT WORKFLOW PROTOCOL (CLAUDE.md LINES 74-95):**
 
-1. **Planning Phase**: Use `@code-archaeologist` for impact analysis on complex
-   features touching multiple domains
-2. **Design Phase**: Use `@api-architect` for external integrations,
-   `@frontend-developer` for UI/UX design
-3. **Implementation Phase**: Primary specialist based on domain, with secondary
-   for cross-cutting concerns
+1. **Planning Phase**: Use `@code-archaeologist` for impact analysis on complex features touching multiple domains
+2. **Design Phase**: Use `@api-architect` for external integrations, `@frontend-developer` for UI/UX design
+3. **Implementation Phase**: Primary specialist based on domain, with secondary for cross-cutting concerns
 4. **Quality Gate**: MANDATORY `@code-reviewer` for all changes before merging
 5. **Optimization**: Use `@performance-optimizer` for cost and latency concerns
-6. **Documentation**: Use `@documentation-specialist` for user-facing docs and
-   architectural updates
+6. **Documentation**: Use `@documentation-specialist` for user-facing docs and architectural updates
 
 **AGENT COLLABORATION PATTERNS (CLAUDE.md LINES 83-95):**
 
 **High-Risk Coordination (Multiple Agents Required):**
-
 - FSM + Gradio integration: `@frontend-developer` + `@backend-developer`
-- Financial data accuracy: `@backend-developer` + `@api-architect` +
-  `@code-reviewer`
+- Financial data accuracy: `@backend-developer` + `@api-architect` + `@code-reviewer`
 - Performance optimization: `@performance-optimizer` + `@backend-developer`
 
 **Single Agent Sufficient:**
-
 - Pure Python logic: `@backend-developer`
 - UI-only changes: `@frontend-developer`
 - Documentation updates: `@documentation-specialist`
 - Architecture analysis: `@code-archaeologist`
 
 **DELEGATION EXECUTION ENFORCEMENT:**
-
-- ❌ **DO NOT stop after creating delegation plan** - You previously created
-  plans but never triggered execution
-- ✅ **MUST initiate first specialist delegation** - Actually start the
-  delegation sequence you create
-- ✅ **MUST provide execution commands** - Include specific commands for
-  starting the delegation chain
-- ✅ **MUST ensure handoff occurs** - Don't leave user to manually trigger
-  delegations
+- ❌ **DO NOT stop after creating delegation plan** - You previously created plans but never triggered execution
+- ✅ **MUST initiate first specialist delegation** - Actually start the delegation sequence you create
+- ✅ **MUST provide execution commands** - Include specific commands for starting the delegation chain
+- ✅ **MUST ensure handoff occurs** - Don't leave user to manually trigger delegations
 
 **CONTEXT7 CLARIFICATION:**
-
-- ❌ **CONTEXT7 ≠ WebSearch/WebFetch** - These are different tools with
-  different purposes
-- ✅ **CONTEXT7 = MCP Server Tool** - Use mcp__context7__ tools to fetch
-  library documentation
-- ✅ **Dynamic Documentation Retrieval** - Gets up-to-date patterns from
-  external library sources
-- ✅ **Focused Topic Queries** - Request specific documentation topics for
-  targeted information
+- ❌ **CONTEXT7 ≠ WebSearch/WebFetch** - These are different tools with different purposes
+- ✅ **CONTEXT7 = MCP Server Tool** - Use mcp__context7__ tools to fetch library documentation
+- ✅ **Dynamic Documentation Retrieval** - Gets up-to-date patterns from external library sources
+- ✅ **Focused Topic Queries** - Request specific documentation topics for targeted information
 
 **ROLE RESTRICTIONS FOR @tech-lead-orchestrator:**
-
 - ❌ **DO NOT implement any code yourself**
 - ❌ **DO NOT make direct file changes**
 - ❌ **DO NOT write or modify code**
@@ -133,19 +104,13 @@
 - ✅ **MUST initiate the delegation sequence you create**
 
 **REQUIRED DELIVERABLES:**
-
-1. **Strategic Analysis**: Brief assessment of the technical issues and fix
-   complexity
-2. **Specialist Agent Selection**: List of required agents with specific
-   reasons
-3. **Delegation Plan**: Structured task breakdown with specific agent
-   assignments
+1. **Strategic Analysis**: Brief assessment of the technical issues and fix complexity
+2. **Specialist Agent Selection**: List of required agents with specific reasons
+3. **Delegation Plan**: Structured task breakdown with specific agent assignments
 4. **Handoff Instructions**: Exact instructions for each specialist agent
-5. **Coordination Strategy**: How tasks should be sequenced and dependencies
-   managed
+5. **Coordination Strategy**: How tasks should be sequenced and dependencies managed
 
 **EXPECTED OUTPUT FORMAT:**
-
 ```markdown
 ## Strategic Analysis
 [Brief technical assessment]
@@ -169,19 +134,16 @@
 
 **CORRECTED EXAMPLE COMMAND:**
 Instead of fabricating agents, use this format:
-
-```bash
+```
 @frontend-developer: [task instructions with Context7 line references]
 ```
 
 NOT this fabricated format:
-
-```bash
+```
 @web-research-specialist: [instructions] ❌ DOES NOT EXIST
 ```
 
 **BOUNDARIES:**
-
 - Your role is COORDINATION and PLANNING only
 - Specialist agents will execute the actual implementation
 - You provide the roadmap, not the implementation
@@ -191,20 +153,14 @@ NOT this fabricated format:
 **ALL SPECIALIST AGENTS MUST FOLLOW THESE PROTOCOLS:**
 
 ### 1. SEQUENTIAL THINKING MCP TOOL ENFORCEMENT
-
 **EVERY specialist agent MUST use the mcp__sequential-thinking__sequentialthinking tool:**
 
-- 🧠 **Use MCP Sequential Thinking Tool**: Call
-  `mcp__sequential-thinking__sequentialthinking` for complex problem analysis
-- 📝 **Plan Before Action**: Use tool to outline approach, identify risks,
-  consider alternatives
-- 🔍 **Validate Understanding**: Confirm task requirements and expected
-  outcomes through structured thinking
-- ⚡ **Think Through Dependencies**: Use tool to identify what needs to be done
-  first/last
+- 🧠 **Use MCP Sequential Thinking Tool**: Call `mcp__sequential-thinking__sequentialthinking` for complex problem analysis
+- 📝 **Plan Before Action**: Use tool to outline approach, identify risks, consider alternatives
+- 🔍 **Validate Understanding**: Confirm task requirements and expected outcomes through structured thinking
+- ⚡ **Think Through Dependencies**: Use tool to identify what needs to be done first/last
 
 **Tool Usage Pattern:**
-
 ```python
 # Start complex analysis with sequential thinking tool
 mcp__sequential-thinking__sequentialthinking({
@@ -225,21 +181,14 @@ mcp__sequential-thinking__sequentialthinking({
 ```
 
 ### 2. CONTEXT7 MCP SERVER TOOL MANDATE
+**EVERY specialist agent MUST use Context7 MCP server tool for up-to-date library documentation:**
 
-**EVERY specialist agent MUST use Context7 MCP server tool for up-to-date
-library documentation:**
-
-- 🔧 **Context7 = MCP Server Tool**: Use `mcp__context7__resolve-library-id`
-  and `mcp__context7__get-library-docs` tools
-- 📚 **Purpose**: Retrieves current library documentation and code examples
-  from external sources
-- 🔍 **Usage Pattern**: First resolve library ID, then fetch focused
-  documentation for specific topics
-- 📋 **Topics**: Request documentation for "async handling", "event
-  listeners", "chatbot components", etc.
+- 🔧 **Context7 = MCP Server Tool**: Use `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs` tools
+- 📚 **Purpose**: Retrieves current library documentation and code examples from external sources
+- 🔍 **Usage Pattern**: First resolve library ID, then fetch focused documentation for specific topics
+- 📋 **Topics**: Request documentation for "async handling", "event listeners", "chatbot components", etc.
 
 **Required Context7 Tool Usage:**
-
 ```python
 # Step 1: Resolve library ID
 mcp__context7__resolve-library-id({"libraryName": "gradio"})
@@ -254,7 +203,6 @@ mcp__context7__get-library-docs({
 ```
 
 **Common Topics for Market Parser Project:**
-
 - "async handling" - For button click handlers
 - "event listeners" - For modern event chaining
 - "chatbot components" - For message formatting
@@ -262,20 +210,17 @@ mcp__context7__get-library-docs({
 
 ### 3. MANDATORY TESTING PROTOCOL REQUIREMENTS
 
-#### 🧪 CRITICAL: ALL BUG FIXES MUST INCLUDE TEST SCRIPT CREATION
+**🧪 CRITICAL: ALL BUG FIXES MUST INCLUDE TEST SCRIPT CREATION**
 
 **TESTING MANDATE FOR ALL SPECIALIST AGENTS:**
 
 - ✅ **MUST create test script for every bug fix** - No exceptions
-- ✅ **MUST include validation criteria** - Define what constitutes a
-  successful fix
+- ✅ **MUST include validation criteria** - Define what constitutes a successful fix
 - ✅ **MUST test error scenarios** - Verify error handling works correctly
-- ✅ **MUST validate production scenarios** - Test with real-world data and
-  inputs
+- ✅ **MUST validate production scenarios** - Test with real-world data and inputs
 - ✅ **MUST document test procedures** - Clear instructions for running tests
 
 **Required Test Script Structure:**
-
 ```python
 #!/usr/bin/env python3
 """
@@ -350,19 +295,13 @@ if __name__ == "__main__":
 ```
 
 **Testing Success Criteria Standards:**
-
-- **Response Parser Fixes**: Must extract >90% of expected fields from real AI
-  responses
-- **Message History Fixes**: Zero None content entries allowed in production
-  scenarios
-- **FSM Error Recovery**: Must recover from ERROR state in <2 seconds with
-  user feedback
-- **UI Integration**: All button operations must work sequentially without
-  errors
+- **Response Parser Fixes**: Must extract >90% of expected fields from real AI responses
+- **Message History Fixes**: Zero None content entries allowed in production scenarios
+- **FSM Error Recovery**: Must recover from ERROR state in <2 seconds with user feedback
+- **UI Integration**: All button operations must work sequentially without errors
 - **Performance**: No regression in response times or memory usage
 
 ### 4. IMPLEMENTATION PROTOCOLS
-
 **ALL implementations MUST:**
 
 - ✅ **Follow Modern Standards**: Use only current best practices from research
@@ -372,7 +311,6 @@ if __name__ == "__main__":
 - 🔬 **Validate Success**: Demonstrate fix meets defined success criteria
 
 ### 5. QUALITY GATES
-
 **Before completing any task, agents MUST:**
 
 - ✅ Verify code follows researched best practices
@@ -383,15 +321,11 @@ if __name__ == "__main__":
 - ✅ **NEW: Create and run test script validating the fix**
 - ✅ **NEW: Document test results and success criteria met**
 
-#### FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN TASK REJECTION
+**FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN TASK REJECTION**
 
 ## 📋 Executive Summary
 
-The Market Parser Polygon MCP application has **CRITICAL PRODUCTION BUGS**
-affecting button processing and structured data display functionality. While
-basic operation works, the core features for financial analysis are completely
-broken. Testing reveals multiple failure points in the button workflow and
-message handling system.
+The Market Parser Polygon MCP application has **CRITICAL PRODUCTION BUGS** affecting button processing and structured data display functionality. While basic operation works, the core features for financial analysis are completely broken. Testing reveals multiple failure points in the button workflow and message handling system.
 
 ## 🔴 Current Critical Status
 
@@ -406,8 +340,7 @@ message handling system.
   - ❌ **CRITICAL**: Structured data display in tables (0/9 fields parsing)
   - ❌ **CRITICAL**: Sequential button operations after first use
   - ❌ **CRITICAL**: Message history handling causing crashes
-- **Root Cause**: Multiple bugs in response parsing, message formatting, and
-  button state management
+- **Root Cause**: Multiple bugs in response parsing, message formatting, and button state management
 
 ### Error Logs and Symptoms
 
@@ -433,11 +366,8 @@ AssertionError: Expected code to be unreachable, but got: {'role': 'user', 'cont
 ```
 
 **Test Case Results:**
-
-1. **Stock Snapshot Button**: ✅ AI response received, ❌ Data parsing failed
-   (0/9 fields)
-2. **Support & Resistance Button**: ❌ Complete failure with message history
-   corruption
+1. **Stock Snapshot Button**: ✅ AI response received, ❌ Data parsing failed (0/9 fields)
+2. **Support & Resistance Button**: ❌ Complete failure with message history corruption
 3. **Technical Analysis Button**: ❌ Blocked by FSM error state
 
 ### File Structure Context
@@ -523,19 +453,16 @@ def handle_error():
 ### Phase 1: Critical Data Display & Parsing Fixes (IMMEDIATE)
 
 #### Task 1.1: Fix Response Parser Data Extraction
-
 **File**: `response_parser.py`
 
-**Current Issue:**
-
+**Current Issue**:
 ```python
 # AI response received successfully (240 chars) but parser extracts 0/9 fields
 # Test shows: "Confidence: Failed (0/9 fields), Parse Time: 0.1ms"
 # Actual AI response contains valid stock data but parser fails to extract it
 ```
 
-**Fix Implementation:**
-
+**Fix Implementation**:
 ```python
 # REQUIRED: Debug and fix regex patterns in response_parser.py
 # 1. Log actual AI response content to see format
@@ -564,8 +491,7 @@ def parse_snapshot_response(response_text: str) -> dict:
     return extracted_data
 ```
 
-**MANDATORY: Create test script `test_response_parser_fix.py`:**
-
+**MANDATORY: Create test script `test_response_parser_fix.py`**:
 ```python
 #!/usr/bin/env python3
 """
@@ -590,25 +516,21 @@ def test_real_ai_response_parsing():
         assert success_rate >= 0.9, f"Only extracted {fields_extracted}/9 fields"
 ```
 
-**Repeat for:**
-
+**Repeat for**:
 - `sr_btn.click()` - Line ~695
 - `tech_btn.click()` - Line ~705
 
 #### Task 1.2: Fix Message History Corruption
-
 **File**: `chat_ui.py` (Line 289 and message handling functions)
 
-**Current Issue:**
-
+**Current Issue**:
 ```python
 # CRITICAL: Message history contains entries with None content
 # Error: AssertionError: Expected code to be unreachable, but got: {'role': 'user', 'content': None}
 # This causes complete failure in pydantic_ai.models.openai.py
 ```
 
-**Fix Implementation:**
-
+**Fix Implementation**:
 ```python
 def sanitize_message_history(history):
     """Remove invalid messages from history before sending to AI"""
@@ -627,8 +549,7 @@ clean_history = sanitize_message_history(message_history)
 response = await agent.run(prompt, message_history=clean_history)
 ```
 
-**MANDATORY: Create test script `test_message_history_fix.py`:**
-
+**MANDATORY: Create test script `test_message_history_fix.py`**:
 ```python
 #!/usr/bin/env python3
 """
@@ -653,19 +574,16 @@ def test_none_content_prevention():
 ```
 
 #### Task 1.3: Fix FSM Error State Recovery
-
 **File**: `stock_data_fsm/transitions.py` and `stock_data_fsm/manager.py`
 
-**Current Issue:**
-
+**Current Issue**:
 ```python
 # CRITICAL: FSM gets stuck in ERROR state with no recovery path
 # Log shows: "Invalid transition: ERROR + 'button_click'"
 # After one failure, system becomes completely unusable
 ```
 
-**Fix Implementation:**
-
+**Fix Implementation**:
 ```python
 # Add error recovery transitions in transitions.py
 ERROR_RECOVERY_TRANSITIONS = [
@@ -688,8 +606,7 @@ def handle_error_recovery(self, error_msg: str):
     }
 ```
 
-**MANDATORY: Create test script `test_fsm_error_recovery_fix.py`:**
-
+**MANDATORY: Create test script `test_fsm_error_recovery_fix.py`**:
 ```python
 #!/usr/bin/env python3
 """
@@ -712,11 +629,9 @@ def test_error_state_button_recovery():
 ### Phase 2: Modern Event Handling Patterns
 
 #### Task 2.1: Replace Lambda Event Chains
-
 **File**: `chat_ui.py` (Lines 710-720)
 
-**Current Pattern:**
-
+**Current Pattern**:
 ```python
 msg.submit(
     lambda *args: handle_user_message(*args),
@@ -725,8 +640,7 @@ msg.submit(
 )
 ```
 
-**Modern Pattern:**
-
+**Modern Pattern**:
 ```python
 msg.submit(
     handle_user_message,
@@ -740,9 +654,7 @@ msg.submit(
 ```
 
 #### Task 2.2: Implement Error Handling
-
-**Add new error handling wrapper:**
-
+**Add new error handling wrapper**:
 ```python
 def safe_handler(fn):
     """Wrapper for safe error handling in Gradio"""
@@ -759,8 +671,7 @@ def safe_handler(fn):
 ### Phase 3: Function Signature Alignment
 
 #### Task 3.1: Standardize Handler Functions
-
-**Ensure all handlers match expected signatures:**
+**Ensure all handlers match expected signatures**:
 
 ```python
 # Button click handler
@@ -797,11 +708,9 @@ async def handle_button_click(
 ### Phase 4: Testing and Validation
 
 #### Task 4.1: Update Integration Tests
-
 **File**: `test_integration.py`
 
 Update tests to use modern message format:
-
 ```python
 def test_chatbot_message_format():
     """Test modern message format"""
@@ -813,8 +722,7 @@ def test_chatbot_message_format():
 ```
 
 #### Task 4.2: Create Validation Script
-
-**MANDATORY: Create comprehensive validation script `validate_critical_fixes.py`:**
+**MANDATORY: Create comprehensive validation script `validate_critical_fixes.py`**:
 
 ```python
 #!/usr/bin/env python3
@@ -897,37 +805,31 @@ if __name__ == "__main__":
 ## 📝 Implementation Checklist
 
 ### Pre-Implementation
-
 - [ ] Backup current `chat_ui.py` as `chat_ui_broken.py.backup`
 - [ ] Verify Gradio version is 4.0+ with `pip show gradio`
 - [ ] Review this entire document
 
 ### Phase 1: Critical Fixes (IMMEDIATE)
-
 - [ ] Task 1.1: Fix response parser data extraction + CREATE TEST SCRIPT
 - [ ] Task 1.2: Fix message history corruption + CREATE TEST SCRIPT
 - [ ] Task 1.3: Fix FSM error state recovery + CREATE TEST SCRIPT
 - [ ] Test: Run all individual test scripts and validate success criteria
 
 ### Phase 2: Event Handling (HIGH PRIORITY)
-
 - [ ] Task 2.1: Replace lambda event chains with modern patterns
 - [ ] Task 2.2: Implement proper error handling
 - [ ] Test: Events chain correctly without errors
 
 ### Phase 3: Function Signatures (MEDIUM PRIORITY)
-
 - [ ] Task 3.1: Standardize all handler function signatures
 - [ ] Test: All functions return correct number of outputs
 
 ### Phase 4: Validation (FINAL)
-
 - [ ] Task 4.1: Update integration tests
 - [ ] Task 4.2: Create and run comprehensive validation script
 - [ ] Full system test: All features working
 
 ### NEW: Mandatory Testing Validation
-
 - [ ] All test scripts created and passing
 - [ ] Success criteria documented and met
 - [ ] Regression testing completed
@@ -935,15 +837,11 @@ if __name__ == "__main__":
 
 ## 🎯 Success Criteria
 
-1. **Data Parsing Fixed**: Stock Snapshot button extracts all 9 fields
-   (currently 0/9)
-2. **Sequential Operations**: Support & Resistance button works after Stock
-   Snapshot
-3. **Technical Analysis**: Technical Analysis button works after previous
-   operations
+1. **Data Parsing Fixed**: Stock Snapshot button extracts all 9 fields (currently 0/9)
+2. **Sequential Operations**: Support & Resistance button works after Stock Snapshot
+3. **Technical Analysis**: Technical Analysis button works after previous operations  
 4. **Message History**: No more 'content': None errors in Pydantic AI
-5. **FSM Recovery**: System can recover from ERROR state and continue
-   processing
+5. **FSM Recovery**: System can recover from ERROR state and continue processing
 6. **Structured Display**: All data tables populate with extracted information
 7. **NEW: Test Coverage**: All fixes have corresponding test scripts that pass
 8. **NEW: Success Validation**: All success criteria measurably demonstrated
@@ -990,7 +888,7 @@ uv run python validate_critical_fixes.py
 
 ## 🎯 PROMPT FOR TECH-LEAD-ORCHESTRATOR
 
-```markdown
+```
 @tech-lead-orchestrator: Please read and analyze the comprehensive fix plan in new_task.md for our Market Parser Polygon MCP application.
 
 **CRITICAL CORRECTIVE REQUIREMENTS:**
@@ -1044,7 +942,6 @@ Please analyze new_task.md and provide corrected delegation strategy that follow
 ```
 
 **WHAT NOT TO DO:**
-
 ❌ Create fake agents like "web-research-specialist"  
 ❌ Confuse Context7 with WebSearch/WebFetch tools  
 ❌ Stop after creating plan without triggering execution  
@@ -1061,34 +958,26 @@ Please analyze new_task.md and provide corrected delegation strategy that follow
 **Major Update**: Integrated Enhanced AI Team Configuration with Specialized Domain Assignments and Critical Project Coordination Rules
 
 ## 🔬 COMPREHENSIVE TESTING GAP ANALYSIS
-
 **Analysis Date**: 2025-08-17  
 **Analysis Method**: Systematic Sequential Thinking + Production Bug Investigation  
 **Tools Used**: Code Archaeologist Analysis + Context7 Pattern Research
 
 ### Critical Testing Gaps That Allowed Production Bugs
 
-The three critical production bugs identified in lines 225-259 reveal systematic
-testing deficiencies across multiple layers of the application. This analysis
-identifies specific test scenarios that would have caught each failure before
-production deployment.
+The three critical production bugs identified in lines 225-259 reveal systematic testing deficiencies across multiple layers of the application. This analysis identifies specific test scenarios that would have caught each failure before production deployment.
 
 ---
 
 ### 1. 🚨 **RESPONSE PARSER FAILURE** (0/9 Fields Extracted)
 
 **Production Evidence:**
-
-- Log: "Snapshot parsing completed: 0/9 fields, Confidence: Failed (0/9
-  fields), Parse Time: 0.1ms"
+- Log: "Snapshot parsing completed: 0/9 fields, Confidence: Failed (0/9 fields), Parse Time: 0.1ms"
 - AI Response: 240 characters received with valid stock data
-- Issue: Regex patterns in `response_parser.py` lines 424-605 failed to match
-  actual AI output format
+- Issue: Regex patterns in `response_parser.py` lines 424-605 failed to match actual AI output format
 
 **Missing Test Categories:**
 
 #### A. **Real AI Response Format Testing**
-
 ```python
 # CRITICAL GAP: No tests with actual OpenAI gpt-5-nano responses
 class TestRealAIResponseFormats(unittest.TestCase):
@@ -1115,7 +1004,6 @@ class TestRealAIResponseFormats(unittest.TestCase):
 ```
 
 #### B. **Pattern Validation and Monitoring**
-
 ```python
 class TestPatternValidation(unittest.TestCase):
     
@@ -1135,16 +1023,13 @@ class TestPatternValidation(unittest.TestCase):
 ### 2. 🚨 **MESSAGE HISTORY CORRUPTION** (None Content)
 
 **Production Evidence:**
-
-- Error: `AssertionError: Expected code to be unreachable, but got: {'role':
-  'user', 'content': None}`
+- Error: `AssertionError: Expected code to be unreachable, but got: {'role': 'user', 'content': None}`
 - Location: `chat_ui.py` line 289, Pydantic AI model integration
 - Issue: Message history contained None content causing complete system failure
 
 **Missing Test Categories:**
 
 #### A. **Message Content Validation Testing**
-
 ```python
 class TestMessageHistoryIntegrity(unittest.TestCase):
     
@@ -1170,7 +1055,6 @@ class TestMessageHistoryIntegrity(unittest.TestCase):
 ```
 
 #### B. **Pydantic AI Integration Testing**
-
 ```python
 class TestPydanticAIIntegration(unittest.TestCase):
     
@@ -1190,7 +1074,6 @@ class TestPydanticAIIntegration(unittest.TestCase):
 ### 3. 🚨 **FSM ERROR RECOVERY FAILURE** (Invalid Transition)
 
 **Production Evidence:**
-
 - Log: "Invalid transition: ERROR + 'button_click'"
 - Location: `stock_data_fsm/manager.py` lines 372-468 (transition logic)
 - Issue: No valid transition path from ERROR state back to operational states
@@ -1198,7 +1081,6 @@ class TestPydanticAIIntegration(unittest.TestCase):
 **Missing Test Categories:**
 
 #### A. **Error State Recovery Path Testing**
-
 ```python
 class TestFSMErrorRecovery(unittest.TestCase):
     
@@ -1225,7 +1107,6 @@ class TestFSMErrorRecovery(unittest.TestCase):
 ```
 
 #### B. **FSM Completeness Validation Testing**
-
 ```python
 class TestFSMCompleteness(unittest.TestCase):
     
@@ -1249,8 +1130,7 @@ class TestFSMCompleteness(unittest.TestCase):
 
 ### 4. 🔧 **MANDATORY TESTING PROTOCOL REQUIREMENTS**
 
-Based on the production failure analysis, the following testing protocols MUST
-be implemented before any future releases:
+Based on the production failure analysis, the following testing protocols MUST be implemented before any future releases:
 
 #### A. **Pre-Production Testing Checklist**
 
@@ -1326,43 +1206,28 @@ class MandatoryErrorConditionTests(unittest.TestCase):
 The following criteria MUST be met for all future testing:
 
 #### A. **Response Parser Testing Standards**
-
-- ✅ **Real AI Response Coverage**: Test with 100+ actual OpenAI gpt-5-nano
-  responses
-- ✅ **Field Extraction Rate**: Parser must extract >90% of fields from valid
-  responses
-- ✅ **Pattern Coverage**: Each regex pattern must have >80% success rate in
-  production
+- ✅ **Real AI Response Coverage**: Test with 100+ actual OpenAI gpt-5-nano responses
+- ✅ **Field Extraction Rate**: Parser must extract >90% of fields from valid responses
+- ✅ **Pattern Coverage**: Each regex pattern must have >80% success rate in production
 - ✅ **Fallback Testing**: Validate graceful degradation when parsing fails
 
 #### B. **Message History Testing Standards**
-
-- ✅ **Content Validation**: Zero None content entries allowed in message
-  history
-- ✅ **Pydantic AI Compatibility**: All messages must pass Pydantic AI
-  validation
-- ✅ **State Consistency**: Message history must remain consistent during all
-  operations
-- ✅ **Concurrent Operation Safety**: Message history safe during concurrent
-  button clicks
+- ✅ **Content Validation**: Zero None content entries allowed in message history
+- ✅ **Pydantic AI Compatibility**: All messages must pass Pydantic AI validation
+- ✅ **State Consistency**: Message history must remain consistent during all operations
+- ✅ **Concurrent Operation Safety**: Message history safe during concurrent button clicks
 
 #### C. **FSM Error Recovery Testing Standards**
-
-- ✅ **Recovery Path Coverage**: Test all possible recovery paths from ERROR
-  state
+- ✅ **Recovery Path Coverage**: Test all possible recovery paths from ERROR state
 - ✅ **Button Recovery**: Validate button clicks work from ERROR state
 - ✅ **Auto-Recovery**: Test automatic recovery mechanisms
 - ✅ **Emergency Recovery**: Validate force recovery from any system state
 
 #### D. **Integration Testing Standards**
-
-- ✅ **End-to-End Workflows**: Test complete workflows from button click to
-  data display
+- ✅ **End-to-End Workflows**: Test complete workflows from button click to data display
 - ✅ **Error Scenario Integration**: Test error scenarios in full UI context
-- ✅ **Production Environment**: Test with real API keys and production
-  configuration
-- ✅ **Performance Under Load**: Test system behavior under production-like
-  load
+- ✅ **Production Environment**: Test with real API keys and production configuration
+- ✅ **Performance Under Load**: Test system behavior under production-like load
 
 ---
 
@@ -1387,19 +1252,19 @@ The following criteria MUST be met for all future testing:
 
 **PRIORITY 2 - Integration Testing (48 hours):**
 
-1. **End-to-End Workflow Testing**
+4. **End-to-End Workflow Testing**
    - Implement complete button operation test suites
    - Test error scenarios in full UI context
    - Validate system usability after all error types
 
-2. **Production Environment Testing**
+5. **Production Environment Testing**
    - Test with real API keys and live data
    - Validate performance under production load
    - Test concurrent user operations
 
 **PRIORITY 3 - Continuous Testing (Ongoing):**
 
-1. **Automated Testing Pipeline**
+6. **Automated Testing Pipeline**
    - Implement pre-commit testing hooks
    - Set up CI/CD pipeline with mandatory tests
    - Implement production monitoring and alerting
@@ -1409,31 +1274,24 @@ The following criteria MUST be met for all future testing:
 ## 🚀 **TESTING IMPLEMENTATION STRATEGY**
 
 ### Phase 1: Immediate Critical Tests (Day 1)
-
 - Implement real AI response parser testing
 - Add message history validation tests
 - Create FSM error recovery test suite
 
 ### Phase 2: Integration Testing (Day 2)
-
 - End-to-end workflow testing
 - Production environment integration tests
 - Error scenario integration testing
 
 ### Phase 3: Automated Testing Pipeline (Day 3)
-
 - CI/CD integration with mandatory test gates
 - Production monitoring and alerting
 - Continuous testing automation
 
 ### Success Criteria
-
 - ✅ Zero production bugs reach live system
 - ✅ All error scenarios have validated recovery paths
 - ✅ System maintains usability under all error conditions
 - ✅ 100% test coverage for critical failure paths identified
 
-This comprehensive testing strategy addresses the root causes of all three
-production bugs and establishes mandatory testing protocols to prevent similar
-failures in the future.
-
+This comprehensive testing strategy addresses the root causes of all three production bugs and establishes mandatory testing protocols to prevent similar failures in the future.

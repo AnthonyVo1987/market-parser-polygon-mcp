@@ -13,48 +13,85 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 ### Detected Tech Stack
 
 - **Backend Framework**: Python with Pydantic AI Agent Framework
-- **Frontend Framework**: Gradio for web GUI interface
-- **Database/API**: Polygon.io MCP server for real-time financial data
-- **Build Tools**: uv for dependency management and package execution
-- **Test Tools**: pytest for testing framework
-- **State Management**: Custom FSM (Finite State Machine) implementation
-- **CLI Framework**: Rich for terminal formatting
+- **Frontend Framework**: Gradio v4+ for reactive web GUI interface
 - **AI Integration**: OpenAI gpt-5-nano via Pydantic AI with MCP server integration
+- **Data Source**: Polygon.io MCP server for real-time financial market data
+- **State Management**: Custom deterministic FSM (Finite State Machine) implementation
+- **Build Tools**: uv for dependency management and package execution
+- **CLI Framework**: Rich console for enhanced terminal formatting and interaction
+- **Test Framework**: pytest with async support for comprehensive testing
+- **Configuration**: python-dotenv for secure environment variable management
+- **Data Processing**: Custom response parsing with confidence scoring and validation
+- **Prompt Engineering**: Structured template system for consistent AI interactions
 
 ### Agent Task Assignments
 
-| Task | Agent | Notes |
-|------|-------|-------|
-| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. Security-aware review with severity tagging |
-| **Performance Optimization** | `@performance-optimizer` | For cost optimization, latency improvements, and scaling concerns |
-| **Backend Development** | `@backend-developer` | Python development, async patterns, agent framework integration |
-| **API Design & Contracts** | `@api-architect` | MCP server integration, prompt template design, response schemas |
-| **Frontend Development** | `@frontend-developer` | Gradio interface enhancements, UI/UX improvements, accessibility |
-| **Codebase Analysis** | `@code-archaeologist` | Deep exploration for refactoring, architecture decisions, technical debt |
-| **Documentation** | `@documentation-specialist` | README updates, API docs, architectural guides, user manuals |
-| **FSM State Management** | `@backend-developer` | Finite state machine logic, state transitions, workflow optimization |
-| **Financial Data Analysis** | `@backend-developer` | Prompt engineering, response parsing, financial calculation logic |
-| **Testing & Validation** | `@backend-developer` | Unit tests, integration tests, FSM testing, prompt validation |
-| **AI Agent Configuration** | `@backend-developer` | Pydantic AI setup, system prompts, cost tracking, model configuration |
-| **CLI Development** | `@backend-developer` | Rich console enhancements, CLI UX improvements, terminal interfaces |
+| Task Category | Agent | Specific Responsibilities | Critical Notes |
+|---------------|-------|---------------------------|-----------------|
+| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. Security-aware review with severity tagging | Always use before merging. Security-focused reviews |
+| **Performance & Optimization** | `@performance-optimizer` | Cost optimization, latency improvements, token usage optimization, scaling analysis | Focus on AI costs and real-time data processing |
+| **Python Backend Development** | `@backend-developer` | Core Python development, async patterns, Pydantic AI integration, FSM implementation | Primary agent for Python-specific work |
+| **API Design & Integration** | `@api-architect` | MCP server contracts, Polygon.io integration, prompt template architecture, response schemas | Handles external API contracts and data flow |
+| **Frontend & UI Development** | `@frontend-developer` | Gradio interface enhancements, UI/UX improvements, async event handling, accessibility | Gradio-specific implementations |
+| **Codebase Analysis** | `@code-archaeologist` | Deep exploration, architecture decisions, technical debt analysis, refactoring planning | Use for major architectural changes |
+| **Documentation & Guides** | `@documentation-specialist` | README updates, API documentation, user guides, architectural documentation | User-facing and technical documentation |
 
-### Specialized Project Guidance
+### Specialized Domain Assignments
 
-This project combines several specialized domains that require careful coordination:
+| Specialized Domain | Primary Agent | Secondary Agent | Task Focus |
+|--------------------|---------------|-----------------|------------|
+| **FSM State Management** | `@backend-developer` | `@code-archaeologist` | State transitions, workflow optimization, deterministic behavior |
+| **Financial Data Processing** | `@backend-developer` | `@api-architect` | Prompt engineering, response parsing, financial calculation accuracy |
+| **AI Agent Configuration** | `@backend-developer` | `@performance-optimizer` | Pydantic AI setup, system prompts, cost tracking, model optimization |
+| **MCP Server Integration** | `@api-architect` | `@backend-developer` | Server contracts, data flow, error handling, connection management |
+| **Gradio UI State Coordination** | `@frontend-developer` | `@backend-developer` | Event handling, FSM integration, user feedback, loading states |
+| **Testing & Validation** | `@backend-developer` | `@code-reviewer` | Unit tests, integration tests, FSM testing, prompt validation |
+| **CLI Development** | `@backend-developer` | `@frontend-developer` | Rich console features, CLI UX, terminal interfaces |
+| **Security & Compliance** | `@code-reviewer` | `@backend-developer` | API key protection, input validation, secure logging |
 
-1. **Financial Data Processing**: Use `@backend-developer` for prompt templates, response parsing, and financial calculation accuracy
-2. **State Machine Architecture**: The FSM pattern is critical - always use `@backend-developer` to preserve state management integrity
-3. **AI Agent Integration**: Complex Pydantic AI + MCP setup requires `@backend-developer` for proper async patterns and cost tracking
-4. **Real-time Data Handling**: Polygon.io integration needs `@api-architect` for contract design and `@backend-developer` for implementation
-5. **GUI State Coordination**: Gradio + FSM integration requires careful coordination between `@frontend-developer` and `@backend-developer`
+### Critical Project Coordination Rules
 
-### Development Workflow
+**1. Financial Data Accuracy:**
+- Always use `@backend-developer` for financial calculations and data parsing
+- Require `@code-reviewer` validation for any mathematical logic changes
+- Use `@api-architect` for data contract changes that affect accuracy
 
-1. **Feature Planning**: Use `@code-archaeologist` for impact analysis on complex architecture
-2. **Implementation**: Use appropriate specialist agent based on task type
-3. **Quality Gate**: ALWAYS use `@code-reviewer` before merging
-4. **Performance**: Use `@performance-optimizer` for cost tracking and latency optimization
-5. **Documentation**: Use `@documentation-specialist` for user-facing docs and API specifications
+**2. FSM Architecture Preservation:**
+- NEVER modify FSM logic without `@backend-developer` involvement
+- Use `@code-archaeologist` for major state management refactoring
+- Coordinate UI changes through both `@frontend-developer` and `@backend-developer`
+
+**3. Real-time Data Integration:**
+- `@api-architect` handles contract design and error scenarios
+- `@backend-developer` implements async patterns and connection management
+- `@performance-optimizer` ensures optimal latency and cost efficiency
+
+**4. AI Agent Cost Management:**
+- `@performance-optimizer` monitors token usage and cost optimization
+- `@backend-developer` implements efficient prompt templates and response parsing
+- `@code-reviewer` validates cost-effective patterns before deployment
+
+### Development Workflow Protocol
+
+1. **Planning Phase**: Use `@code-archaeologist` for impact analysis on complex features touching multiple domains
+2. **Design Phase**: Use `@api-architect` for external integrations, `@frontend-developer` for UI/UX design
+3. **Implementation Phase**: Primary specialist based on domain, with secondary for cross-cutting concerns
+4. **Quality Gate**: MANDATORY `@code-reviewer` for all changes before merging
+5. **Optimization**: Use `@performance-optimizer` for cost and latency concerns
+6. **Documentation**: Use `@documentation-specialist` for user-facing docs and architectural updates
+
+### Agent Collaboration Patterns
+
+**High-Risk Coordination (Multiple Agents Required):**
+- FSM + Gradio integration: `@frontend-developer` + `@backend-developer`
+- Financial data accuracy: `@backend-developer` + `@api-architect` + `@code-reviewer`
+- Performance optimization: `@performance-optimizer` + `@backend-developer`
+
+**Single Agent Sufficient:**
+- Pure Python logic: `@backend-developer`
+- UI-only changes: `@frontend-developer`
+- Documentation updates: `@documentation-specialist`
+- Architecture analysis: `@code-archaeologist`
 
 ## ⚠️ CRITICAL: Tech-Lead-Orchestrator Enforcement Protocols
 
