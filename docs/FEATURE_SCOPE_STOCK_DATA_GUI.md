@@ -4,8 +4,8 @@
 This document outlines the feasibility, complexity, and implementation plan for adding GUI elements to the Market Parser application that display structured stock data populated by specific AI prompt actions triggered via buttons.
 
 **Feasibility:** ✅ HIGH - Fully achievable with current Gradio framework  
-**Complexity:** 🟡 MEDIUM - Requires careful state management and response parsing  
-**Estimated Timeline:** 2-3 days for complete implementation  
+**Complexity:** 🟡 MEDIUM-HIGH - Deterministic FSM adds robustness but increases initial complexity  
+**Estimated Timeline:** 3-4 days for complete implementation with FSM  
 
 ## Feature Overview
 
@@ -44,24 +44,254 @@ gr.Blocks() layout:
     └── Button Row (Stock Snapshot | S&R | Technical)
 ```
 
-### State Management
+### Finite State Machine Architecture
+
+#### State Definitions
 ```python
-# New state components
-button_triggered = gr.State(False)
-current_ticker = gr.State("")
-parsed_data = gr.State({
-    "snapshot": None,
-    "support_resistance": None,
-    "technical": None
-})
+from enum import Enum, auto
+from dataclasses import dataclass
+from typing import Optional, Dict, Any, Callable
+import logging
+import time
+
+class AppState(Enum):
+    """Deterministic application states"""
+    IDLE = auto()                # Waiting for user interaction
+    BUTTON_TRIGGERED = auto()     # Button clicked, preparing prompt
+    PROMPT_PREPARING = auto()     # Building prompt with ticker info
+    AI_PROCESSING = auto()        # Waiting for AI response
+    RESPONSE_RECEIVED = auto()     # AI response received
+    PARSING_RESPONSE = auto()     # Extracting structured data
+    UPDATING_UI = auto()          # Updating dataframe components
+    ERROR = auto()                # Error state with recovery options
+
+@dataclass
+class StateContext:
+    """Context data passed through state transitions"""
+    current_state: AppState
+    previous_state: Optional[AppState]
+    button_type: Optional[str]  # 'snapshot', 'support_resistance', 'technical'
+    ticker: Optional[str]
+    prompt: Optional[str]
+    ai_response: Optional[str]
+    parsed_data: Dict[str, Any]
+    error_message: Optional[str]
+    transition_history: list
 ```
 
-### Data Flow
-1. User clicks action button → Sets `button_triggered=True` → Inserts prompt
-2. AI processes prompt → Returns formatted response
-3. Response parser extracts structured data (only if `button_triggered=True`)
-4. GUI elements update with parsed data
-5. Reset `button_triggered=False` after update
+#### State Transition Rules
+```python
+class StateTransitions:
+    """Define valid state transitions with guards and actions"""
+    
+    # Transition format: (current_state, event) -> (next_state, guard, action)
+    TRANSITIONS = {
+        # From IDLE
+        (AppState.IDLE, 'button_click'): (
+            AppState.BUTTON_TRIGGERED,
+            lambda ctx: ctx.button_type in ['snapshot', 'sr', 'technical'],
+            'record_button_type'
+        ),
+        (AppState.IDLE, 'user_chat'): (
+            AppState.IDLE,  # Regular chat doesn't change state
+            None,
+            'process_regular_chat'
+        ),
+        
+        # From BUTTON_TRIGGERED
+        (AppState.BUTTON_TRIGGERED, 'prepare_prompt'): (
+            AppState.PROMPT_PREPARING,
+            None,
+            'extract_ticker_and_build_prompt'
+        ),
+        
+        # From PROMPT_PREPARING
+        (AppState.PROMPT_PREPARING, 'prompt_ready'): (
+            AppState.AI_PROCESSING,
+            lambda ctx: ctx.prompt is not None,
+            'send_to_ai'
+        ),
+        (AppState.PROMPT_PREPARING, 'prompt_failed'): (
+            AppState.ERROR,
+            None,
+            'log_prompt_error'
+        ),
+        
+        # From AI_PROCESSING
+        (AppState.AI_PROCESSING, 'response_received'): (
+            AppState.RESPONSE_RECEIVED,
+            lambda ctx: ctx.ai_response is not None,
+            'store_response'
+        ),
+        (AppState.AI_PROCESSING, 'ai_timeout'): (
+            AppState.ERROR,
+            None,
+            'handle_ai_timeout'
+        ),
+        
+        # From RESPONSE_RECEIVED
+        (AppState.RESPONSE_RECEIVED, 'parse'): (
+            AppState.PARSING_RESPONSE,
+            None,
+            'parse_ai_response'
+        ),
+        
+        # From PARSING_RESPONSE
+        (AppState.PARSING_RESPONSE, 'parse_success'): (
+            AppState.UPDATING_UI,
+            lambda ctx: ctx.parsed_data is not None,
+            'prepare_ui_updates'
+        ),
+        (AppState.PARSING_RESPONSE, 'parse_failed'): (
+            AppState.UPDATING_UI,  # Still update UI with raw text
+            None,
+            'fallback_to_raw_display'
+        ),
+        
+        # From UPDATING_UI
+        (AppState.UPDATING_UI, 'update_complete'): (
+            AppState.IDLE,
+            None,
+            'finalize_and_cleanup'
+        ),
+        
+        # From ERROR - Recovery transitions
+        (AppState.ERROR, 'retry'): (
+            AppState.IDLE,
+            None,
+            'reset_context'
+        ),
+        (AppState.ERROR, 'abort'): (
+            AppState.IDLE,
+            None,
+            'cleanup_and_reset'
+        ),
+    }
+```
+
+#### State Manager Implementation
+```python
+class StateManager:
+    """Single source of truth for application state"""
+    
+    def __init__(self):
+        self.context = StateContext(
+            current_state=AppState.IDLE,
+            previous_state=None,
+            button_type=None,
+            ticker=None,
+            prompt=None,
+            ai_response=None,
+            parsed_data={},
+            error_message=None,
+            transition_history=[]
+        )
+        self.logger = logging.getLogger(__name__)
+        self.actions = self._register_actions()
+    
+    def transition(self, event: str, **kwargs) -> bool:
+        """Execute a state transition if valid"""
+        current = self.context.current_state
+        transition_key = (current, event)
+        
+        if transition_key not in StateTransitions.TRANSITIONS:
+            self.logger.warning(f"Invalid transition: {current} + {event}")
+            return False
+        
+        next_state, guard, action_name = StateTransitions.TRANSITIONS[transition_key]
+        
+        # Check guard condition
+        if guard and not guard(self.context):
+            self.logger.info(f"Guard failed for transition: {current} -> {next_state}")
+            return False
+        
+        # Execute transition
+        self.context.previous_state = current
+        self.context.current_state = next_state
+        self.context.transition_history.append({
+            'from': current.name,
+            'to': next_state.name,
+            'event': event,
+            'timestamp': time.time()
+        })
+        
+        # Execute action if defined
+        if action_name and action_name in self.actions:
+            try:
+                self.actions[action_name](self.context, **kwargs)
+            except Exception as e:
+                self.logger.error(f"Action {action_name} failed: {e}")
+                self._transition_to_error(str(e))
+                return False
+        
+        self.logger.info(f"State transition: {current.name} -> {next_state.name}")
+        return True
+    
+    def _transition_to_error(self, error_msg: str):
+        """Emergency transition to ERROR state"""
+        self.context.error_message = error_msg
+        self.context.previous_state = self.context.current_state
+        self.context.current_state = AppState.ERROR
+    
+    def get_state(self) -> AppState:
+        """Get current state"""
+        return self.context.current_state
+    
+    def can_transition(self, event: str) -> bool:
+        """Check if a transition is valid from current state"""
+        return (self.context.current_state, event) in StateTransitions.TRANSITIONS
+    
+    def get_history(self) -> list:
+        """Get transition history for debugging"""
+        return self.context.transition_history
+    
+    def _register_actions(self) -> Dict[str, Callable]:
+        """Register action functions"""
+        return {
+            'record_button_type': self._record_button_type,
+            'extract_ticker_and_build_prompt': self._build_prompt,
+            'send_to_ai': self._send_to_ai,
+            'parse_ai_response': self._parse_response,
+            'prepare_ui_updates': self._prepare_updates,
+            'finalize_and_cleanup': self._cleanup,
+            'reset_context': self._reset,
+            # ... other actions
+        }
+```
+
+### State Diagram
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> BUTTON_TRIGGERED: button_click [valid_button]
+    IDLE --> IDLE: user_chat
+    
+    BUTTON_TRIGGERED --> PROMPT_PREPARING: prepare_prompt
+    
+    PROMPT_PREPARING --> AI_PROCESSING: prompt_ready [has_prompt]
+    PROMPT_PREPARING --> ERROR: prompt_failed
+    
+    AI_PROCESSING --> RESPONSE_RECEIVED: response_received [has_response]
+    AI_PROCESSING --> ERROR: ai_timeout
+    
+    RESPONSE_RECEIVED --> PARSING_RESPONSE: parse
+    
+    PARSING_RESPONSE --> UPDATING_UI: parse_success [has_data]
+    PARSING_RESPONSE --> UPDATING_UI: parse_failed
+    
+    UPDATING_UI --> IDLE: update_complete
+    
+    ERROR --> IDLE: retry
+    ERROR --> IDLE: abort
+```
+
+### Data Flow with FSM
+1. **User Action** → FSM validates transition → State changes to `BUTTON_TRIGGERED`
+2. **Prompt Preparation** → FSM ensures proper state → Moves to `PROMPT_PREPARING`
+3. **AI Processing** → FSM tracks async operation → Maintains `AI_PROCESSING` state
+4. **Response Handling** → FSM orchestrates parsing → Controls `PARSING_RESPONSE` state
+5. **UI Updates** → FSM ensures single update source → Executes in `UPDATING_UI` state
+6. **Completion** → FSM cleanly returns to `IDLE` → Ready for next interaction
 
 ## Dependencies & Requirements
 
@@ -112,19 +342,23 @@ Include specific values and interpretations."
 
 ## Implementation Tasks
 
-### Phase 1: UI Components (3-4 hours)
+### Phase 1: FSM Foundation (4-5 hours)
+- [ ] Implement AppState enum with all states
+- [ ] Create StateContext dataclass
+- [ ] Build StateTransitions class with transition rules
+- [ ] Implement StateManager with transition logic
+- [ ] Add comprehensive logging for state changes
+- [ ] Create unit tests for state transitions
+- [ ] Implement error recovery mechanisms
+
+### Phase 2: Gradio Integration (3-4 hours)  
+- [ ] Create gr.State component for StateManager
 - [ ] Add gr.Dataframe for stock snapshot display
 - [ ] Add gr.Dataframe for support/resistance levels
 - [ ] Add gr.Dataframe for technical indicators
-- [ ] Create button row with three action buttons
+- [ ] Create button row with FSM event triggers
 - [ ] Implement responsive layout with gr.Row/gr.Column
-
-### Phase 2: State Management (2-3 hours)
-- [ ] Implement button_triggered state flag
-- [ ] Add current_ticker state for tracking active stock
-- [ ] Create parsed_data state dictionary
-- [ ] Modify handle_user_message to check trigger source
-- [ ] Add state reset logic after updates
+- [ ] Add state visualization component (optional debug mode)
 
 ### Phase 3: Response Parsing (4-5 hours)
 - [ ] Create ResponseParser class with methods:
@@ -150,31 +384,55 @@ Include specific values and interpretations."
 
 ## Code Examples
 
-### Button Implementation
+### Button Implementation with FSM
 ```python
 import gradio as gr
+from typing import Tuple
 
-# Button row with predefined prompts
+# Initialize FSM
+state_manager = StateManager()
+
+# Button row with FSM integration
 with gr.Row():
     snapshot_btn = gr.Button("📊 Stock Snapshot", variant="secondary")
     sr_btn = gr.Button("📈 Support & Resistance", variant="secondary")
     tech_btn = gr.Button("🔧 Technical Analysis", variant="secondary")
 
-# Button click handlers
-def trigger_snapshot(ticker_state):
-    ticker = ticker_state or 'the last mentioned stock'
-    prompt = f"Provide a comprehensive stock snapshot for {ticker}. Include: Current price, Percentage change, $ Change, Volume, VWAP (Volume Weighted Average Price), Open, High, Low, Close. Format numbers clearly with appropriate units."
-    return prompt, True  # Return prompt and set button_triggered flag
+# FSM state as Gradio component
+fsm_state = gr.State(state_manager)
+
+# Button click handlers with FSM
+async def handle_snapshot_click(fsm: StateManager, ticker: str, chat_history):
+    """Handle snapshot button click through FSM"""
+    if not fsm.can_transition('button_click'):
+        return chat_history, fsm
+    
+    # Trigger FSM transition
+    fsm.context.button_type = 'snapshot'
+    fsm.context.ticker = ticker or 'last mentioned'
+    
+    # Execute state machine sequence
+    fsm.transition('button_click')
+    fsm.transition('prepare_prompt')
+    
+    # Build prompt based on FSM state
+    if fsm.get_state() == AppState.PROMPT_PREPARING:
+        prompt = f"Provide a comprehensive stock snapshot for {fsm.context.ticker}..."
+        fsm.context.prompt = prompt
+        fsm.transition('prompt_ready')
+    
+    # Continue with AI processing
+    if fsm.get_state() == AppState.AI_PROCESSING:
+        response = await agent.run(fsm.context.prompt)
+        fsm.context.ai_response = response.output
+        fsm.transition('response_received')
+    
+    return chat_history, fsm
 
 snapshot_btn.click(
-    trigger_snapshot,
-    inputs=[current_ticker],
-    outputs=[msg, button_triggered]
-).then(
-    handle_user_message,
-    inputs=[msg, chatbot, pyd_history_state, tracker_state, button_triggered],
-    outputs=[msg, chatbot, pyd_history_state, tracker_state, costs, 
-             snapshot_df, sr_df, tech_df]
+    handle_snapshot_click,
+    inputs=[fsm_state, current_ticker, chatbot],
+    outputs=[chatbot, fsm_state]
 )
 ```
 
@@ -206,47 +464,151 @@ class ResponseParser:
                 data[key] = match.group(1)
         
         return pd.DataFrame([data]) if data else pd.DataFrame()
+    
+    @staticmethod
+    def parse_support_resistance(text: str) -> pd.DataFrame:
+        """Extract support and resistance levels from AI response."""
+        patterns = {
+            'S1': r'S1[:\s]*\$?([\d,]+\.?\d*)',
+            'S2': r'S2[:\s]*\$?([\d,]+\.?\d*)',
+            'S3': r'S3[:\s]*\$?([\d,]+\.?\d*)',
+            'R1': r'R1[:\s]*\$?([\d,]+\.?\d*)',
+            'R2': r'R2[:\s]*\$?([\d,]+\.?\d*)',
+            'R3': r'R3[:\s]*\$?([\d,]+\.?\d*)'
+        }
+        data = {}
+        for key, pattern in patterns.items():
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                data[key] = match.group(1)
+        return pd.DataFrame([data]) if data else pd.DataFrame()
+    
+    @staticmethod
+    def parse_technical_indicators(text: str) -> pd.DataFrame:
+        """Extract technical indicators from AI response."""
+        patterns = {
+            'RSI': r'RSI[:\s]*([\d\.]+)',
+            'MACD': r'MACD[:\s]*([\d\.\-\+]+)',
+            'EMA_5': r'EMA[\s]*5[:\s]*\$?([\d,]+\.?\d*)',
+            'SMA_5': r'SMA[\s]*5[:\s]*\$?([\d,]+\.?\d*)',
+            # Additional patterns for other MAs...
+        }
+        data = {}
+        for key, pattern in patterns.items():
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                data[key] = match.group(1)
+        return pd.DataFrame([data]) if data else pd.DataFrame()
 ```
 
-### Modified Message Handler
+### Modified Message Handler with FSM
 ```python
 import pandas as pd
-from typing import Optional
+from typing import Optional, Tuple
+import time
 
-async def handle_user_message(
+async def handle_user_message_fsm(
     user_message: str,
     chat_history: list[dict],
     pyd_message_history: list | None,
     tracker: TokenCostTracker,
-    cost_markdown: str,
-    is_button_triggered: bool = False,
+    fsm: StateManager,
     snapshot_df: pd.DataFrame = None,
     sr_df: pd.DataFrame = None,
     tech_df: pd.DataFrame = None
-):
-    # Existing chat logic...
-    response = await agent.run(user_message, message_history=pyd_message_history)
-    output_text = getattr(response, "output", "") or ""
+) -> Tuple:
+    """Handle messages with FSM state management"""
     
-    # Parse and update dataframes ONLY if button-triggered
-    if is_button_triggered:
-        parser = ResponseParser()
+    # Check if this is a regular chat (FSM stays in IDLE)
+    if fsm.get_state() == AppState.IDLE and not fsm.context.button_type:
+        # Regular chat - no state change needed
+        response = await agent.run(user_message, message_history=pyd_message_history)
+        chat_history.append({"role": "user", "content": user_message})
+        chat_history.append({"role": "assistant", "content": response.output})
+        return chat_history, pyd_message_history, tracker, fsm, snapshot_df, sr_df, tech_df
+    
+    # FSM-controlled processing for button triggers
+    try:
+        # Process through FSM states
+        if fsm.get_state() == AppState.AI_PROCESSING:
+            response = await agent.run(fsm.context.prompt, message_history=pyd_message_history)
+            fsm.context.ai_response = response.output
+            fsm.transition('response_received')
+            
+            # Move to parsing
+            fsm.transition('parse')
+            
+        if fsm.get_state() == AppState.PARSING_RESPONSE:
+            parser = ResponseParser()
+            button_type = fsm.context.button_type
+            
+            try:
+                if button_type == 'snapshot':
+                    fsm.context.parsed_data['snapshot'] = parser.parse_stock_snapshot(
+                        fsm.context.ai_response
+                    )
+                elif button_type == 'sr':
+                    fsm.context.parsed_data['sr'] = parser.parse_support_resistance(
+                        fsm.context.ai_response
+                    )
+                elif button_type == 'technical':
+                    fsm.context.parsed_data['technical'] = parser.parse_technical_indicators(
+                        fsm.context.ai_response
+                    )
+                
+                fsm.transition('parse_success')
+            except Exception as e:
+                fsm.logger.warning(f"Parse failed: {e}")
+                fsm.transition('parse_failed')
         
-        if "snapshot" in user_message.lower():
-            snapshot_df = parser.parse_stock_snapshot(output_text)
-        elif "support" in user_message.lower() or "resistance" in user_message.lower():
-            sr_df = parser.parse_support_resistance(output_text)
-        elif "technical" in user_message.lower():
-            tech_df = parser.parse_technical_indicators(output_text)
+        if fsm.get_state() == AppState.UPDATING_UI:
+            # Update dataframes based on parsed data
+            if 'snapshot' in fsm.context.parsed_data:
+                snapshot_df = fsm.context.parsed_data['snapshot']
+            if 'sr' in fsm.context.parsed_data:
+                sr_df = fsm.context.parsed_data['sr']
+            if 'technical' in fsm.context.parsed_data:
+                tech_df = fsm.context.parsed_data['technical']
+            
+            # Update chat history
+            chat_history.append({"role": "user", "content": fsm.context.prompt})
+            chat_history.append({"role": "assistant", "content": fsm.context.ai_response})
+            
+            # Complete the cycle
+            fsm.transition('update_complete')
+            
+    except Exception as e:
+        fsm._transition_to_error(str(e))
+        fsm.transition('abort')  # Recovery
     
-    # Reset button trigger flag
-    is_button_triggered = False
-    
-    return (
-        "", chat_history, pyd_message_history, tracker, cost_markdown,
-        is_button_triggered, snapshot_df, sr_df, tech_df
-    )
+    return chat_history, pyd_message_history, tracker, fsm, snapshot_df, sr_df, tech_df
 ```
+
+## FSM Benefits
+
+### Deterministic Behavior
+- **Every state transition is explicit** - No ambiguous state combinations
+- **Guards prevent invalid transitions** - System can't enter undefined states
+- **Complete transition history** - Full audit trail for debugging
+- **Predictable error recovery** - Always returns to safe state
+
+### Single Source of Truth
+- **StateManager owns all state** - No scattered boolean flags
+- **Context object carries all data** - Clear data flow through states
+- **Centralized transition logic** - Easy to understand and modify
+- **Consistent state access** - All components read from same source
+
+### Enhanced Debugging
+- **State visualization** - Can display current state in UI
+- **Transition logging** - Every state change is logged with timestamp
+- **History replay** - Can reconstruct sequence of events
+- **State assertions** - Can validate expected states in tests
+
+### Maintainability
+- **Add new states easily** - Just extend enum and transition rules
+- **Modify transitions safely** - Changes isolated to transition table
+- **Test state logic independently** - Unit test each transition
+- **Clear documentation** - State diagram shows complete flow
 
 ## Challenges & Solutions
 
@@ -330,11 +692,11 @@ async def handle_user_message(
 
 ## Conclusion
 
-This feature is **highly feasible** with **medium complexity**. The main technical challenges revolve around reliable response parsing and state management, both of which have clear solutions. The modular implementation approach allows for incremental development and testing, reducing overall project risk.
+This feature is **highly feasible** with **medium-high complexity** due to the FSM implementation. The main technical challenges revolve around reliable response parsing and state management, both of which have clear solutions. The modular implementation approach allows for incremental development and testing, reducing overall project risk.
 
 **Recommended Approach:** Implement in phases with Phase 1-3 as MVP, followed by iterative improvements based on user feedback.
 
-**Total Estimated Time:** 15-20 hours of development + 5 hours testing/refinement
+**Total Estimated Time:** 20-25 hours of development + 5-7 hours testing/refinement (includes FSM implementation)
 
 ---
 
