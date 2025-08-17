@@ -136,6 +136,26 @@ async def _shutdown():
 
 # -------- Enhanced Chat Handlers with Loading States --------
 
+def sanitize_message_history(history):
+    """Remove invalid messages from history before sending to AI to prevent Pydantic AI crashes"""
+    if not history:
+        return []
+    
+    sanitized = []
+    for msg in history:
+        # Handle dict format messages
+        if isinstance(msg, dict):
+            if msg.get('content') is not None and msg.get('content') != "":
+                sanitized.append(msg)
+        # Handle tuple/list format messages
+        elif isinstance(msg, (list, tuple)) and len(msg) >= 2:
+            if msg[1] is not None and msg[1] != "":
+                # Convert to standard dict format
+                sanitized.append({'role': msg[0] if len(msg) > 0 else 'user', 'content': msg[1]})
+    
+    return sanitized
+
+
 async def handle_user_message(
     user_message: str,
     chat_history: List[Dict],
@@ -169,7 +189,9 @@ async def handle_user_message(
             chat_history = chat_history + [{"role": "user", "content": user_message}]
             
             print(f"[GUI] Regular Chat - User: {user_message}")
-            response = await agent.run(user_message, message_history=pyd_message_history)
+            # Sanitize message history to prevent Pydantic AI crashes from None content
+            clean_history = sanitize_message_history(pyd_message_history)
+            response = await agent.run(user_message, message_history=clean_history)
             
             chat_history = chat_history + [{"role": "assistant", "content": response.output}]
             pyd_message_history.append({"role": "user", "content": user_message})
@@ -201,6 +223,9 @@ async def handle_user_message(
         error_message = f"❌ Error processing message: {str(e)}"
         print(f"[GUI] Error in regular chat: {e}")
         traceback.print_exc()
+        
+        # Use modern Gradio error handling
+        gr.Error(f"Failed to process message: {str(e)}")
         
         # Add error message to chat
         chat_history = chat_history + [
@@ -245,6 +270,7 @@ async def handle_button_click(
         if not success:
             processing_status.error("FSM transition failed")
             debug_state = _get_debug_state_info(fsm_manager)
+            gr.Warning("FSM state transition failed. Please try again.")
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
                 fsm_manager, snapshot_df, sr_df, tech_df, f"{processing_status.status_message}\n{debug_state}"
@@ -271,6 +297,7 @@ async def handle_button_click(
             print(f"[GUI] Enhanced prompt generated for {ticker_context.symbol} (confidence: {ticker_context.confidence})")
         else:
             processing_status.error(f"Unknown button type: {button_type}")
+            gr.Error(f"Unknown analysis type: {button_type}")
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
                 fsm_manager, snapshot_df, sr_df, tech_df, processing_status.status_message
@@ -286,7 +313,9 @@ async def handle_button_click(
         await _startup()  # Ensure MCP servers are running
         
         print(f"[GUI] Sending prompt to AI: {fsm_manager.context.prompt[:100]}...")
-        response = await agent.run(fsm_manager.context.prompt, message_history=pyd_message_history)
+        # Sanitize message history to prevent Pydantic AI crashes from None content
+        clean_history = sanitize_message_history(pyd_message_history)
+        response = await agent.run(fsm_manager.context.prompt, message_history=clean_history)
         fsm_manager.context.ai_response = response.output
         fsm_manager.transition('response_received')
         
@@ -358,6 +387,9 @@ async def handle_button_click(
         
         processing_status.complete(f"✅ {button_type.replace('_', ' ').title()} analysis complete")
         
+        # Modern Gradio success notification
+        gr.Info(f"✅ {button_type.replace('_', ' ').title()} analysis completed for {fsm_manager.context.ticker}")
+        
         print(f"[GUI] Button processing completed successfully for {fsm_manager.context.ticker}")
         
         return (
@@ -369,6 +401,9 @@ async def handle_button_click(
         processing_status.error(f"Button processing error: {str(e)}")
         print(f"[GUI] Error in button processing: {e}")
         traceback.print_exc()
+        
+        # Modern Gradio error handling with user-friendly message
+        gr.Error(f"Failed to process {button_type.replace('_', ' ').title()} analysis: {str(e)}")
         
         # Force FSM to error state and provide recovery
         fsm_manager._emergency_transition_to_error(str(e))
@@ -443,10 +478,14 @@ def _get_debug_state_info(fsm_manager: StateManager) -> str:
 
 
 def _clear_enhanced():
-    """Enhanced clear function with status reset"""
+    """Enhanced clear function with status reset and modern user feedback"""
     processing_status.reset()
     fsm_manager = StateManager()
     empty_df = pd.DataFrame()
+    
+    # Modern Gradio success notification
+    gr.Info("Chat cleared successfully! Ready for new analysis.")
+    
     return (
         [],  # chatbot
         [],  # pyd_history_state
@@ -462,7 +501,7 @@ def _clear_enhanced():
 
 
 def export_markdown(chat_history: List[Dict], tracker: TokenCostTracker) -> str:
-    """Export chat session to markdown with enhanced formatting"""
+    """Export chat session to markdown with enhanced formatting and user feedback"""
     lines: List[str] = [
         "# 📊 Stock Market Analysis Chat Export\n",
         f"**Export Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}",
@@ -490,6 +529,9 @@ def export_markdown(chat_history: List[Dict], tracker: TokenCostTracker) -> str:
         f"- **Tokens:** {getattr(tracker, 'total_tokens', 0):,}",
         f"- **Cost:** ${getattr(tracker, 'total_cost', getattr(tracker, 'total_costs', 0.0)):.4f}",
     ])
+    
+    # Modern Gradio success notification
+    gr.Info(f"Chat exported successfully! {len(chat_history)} messages exported.")
     
     return "\n".join(lines)
 
@@ -657,18 +699,16 @@ def create_enhanced_chat_interface():
         
         # -------- Event Handlers with Enhanced Features --------
         
-        # Define async wrapper functions for button handlers
-        async def handle_snapshot_click(ticker, *args):
-            return await handle_button_click('snapshot', ticker, *args)
+        # Modern async handlers with direct function references
+        from functools import partial
         
-        async def handle_sr_click(ticker, *args):
-            return await handle_button_click('support_resistance', ticker, *args)
+        # Use partial application instead of lambda wrappers for better performance
+        handle_snapshot_click = partial(handle_button_click, 'snapshot')
+        handle_sr_click = partial(handle_button_click, 'support_resistance') 
+        handle_tech_click = partial(handle_button_click, 'technical')
         
-        async def handle_tech_click(ticker, *args):
-            return await handle_button_click('technical', ticker, *args)
-        
-        # Enhanced message handling with loading states
-        msg.submit(
+        # Enhanced message handling with modern event chaining
+        msg_event = msg.submit(
             handle_user_message,
             inputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs_state,
@@ -680,7 +720,14 @@ def create_enhanced_chat_interface():
             ]
         )
         
-        send.click(
+        # Modern event chaining pattern: chain input focus after message sent
+        msg_event.then(
+            lambda: gr.update(value=""),
+            inputs=[],
+            outputs=[msg]
+        )
+        
+        send_event = send.click(
             handle_user_message,
             inputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs_state,
@@ -692,8 +739,15 @@ def create_enhanced_chat_interface():
             ]
         )
         
-        # Enhanced stock analysis buttons with comprehensive error handling
-        snapshot_btn.click(
+        # Chain input clearing for send button as well
+        send_event.then(
+            lambda: gr.update(value=""),
+            inputs=[],
+            outputs=[msg]
+        )
+        
+        # Enhanced stock analysis buttons with comprehensive error handling and state management
+        snapshot_event = snapshot_btn.click(
             handle_snapshot_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
@@ -705,7 +759,14 @@ def create_enhanced_chat_interface():
             ]
         )
         
-        sr_btn.click(
+        # Modern UX: Chain button state management to prevent double-clicks
+        snapshot_event.then(
+            lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True)],
+            inputs=[],
+            outputs=[snapshot_btn, sr_btn, tech_btn]
+        )
+        
+        sr_event = sr_btn.click(
             handle_sr_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
@@ -717,7 +778,14 @@ def create_enhanced_chat_interface():
             ]
         )
         
-        tech_btn.click(
+        # Modern UX: Chain button state management for Support & Resistance
+        sr_event.then(
+            lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True)],
+            inputs=[],
+            outputs=[snapshot_btn, sr_btn, tech_btn]
+        )
+        
+        tech_event = tech_btn.click(
             handle_tech_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
@@ -727,6 +795,13 @@ def create_enhanced_chat_interface():
                 msg, chatbot, pyd_history_state, tracker_state, costs,
                 fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
             ]
+        )
+        
+        # Modern UX: Chain button state management for Technical Analysis
+        tech_event.then(
+            lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True)],
+            inputs=[],
+            outputs=[snapshot_btn, sr_btn, tech_btn]
         )
         
         # Enhanced clear with status reset

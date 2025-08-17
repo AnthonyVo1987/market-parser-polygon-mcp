@@ -219,6 +219,59 @@ class StateActions:
         self.logger.warning("Emergency reset triggered")
         context.clear_data(preserve_history=True)
         context.error_message = "Emergency reset"
+    
+    # === Enhanced Error Recovery Actions ===
+    
+    def on_error_button_recovery(self, context: StateContext, **kwargs) -> None:
+        """Action when user clicks button from ERROR state to recover"""
+        button_type = kwargs.get('button_type', context.button_type)
+        previous_error = context.error_message
+        
+        self.logger.info(f"Button recovery initiated: {button_type} (previous error: {previous_error})")
+        
+        # Clear error state but preserve attempt count
+        context.error_message = None
+        context.button_type = button_type
+        
+        # Set ticker from kwargs or use default
+        ticker = kwargs.get('ticker')
+        if ticker:
+            context.ticker = ticker.strip().upper()
+        elif not context.ticker:
+            context.ticker = 'LAST_MENTIONED'
+        
+        self.logger.info(f"Error recovery via button click: {button_type} for {context.ticker}")
+    
+    def on_auto_recover_from_error(self, context: StateContext, **kwargs) -> None:
+        """Action for automatic error recovery after timeout"""
+        previous_error = context.error_message
+        recovery_reason = kwargs.get('reason', 'timeout')
+        
+        self.logger.info(f"Auto-recovery triggered: {recovery_reason} (previous error: {previous_error})")
+        
+        # Clear error data and reset to clean state
+        context.clear_data(preserve_history=True)
+        context.error_message = f"Auto-recovered from: {previous_error}"
+        
+        # Reset error attempts to allow fresh start
+        context.reset_error_attempts()
+    
+    def on_user_recover_from_error(self, context: StateContext, **kwargs) -> None:
+        """Action for manual user-initiated recovery"""
+        previous_error = context.error_message
+        recovery_method = kwargs.get('method', 'manual')
+        
+        self.logger.info(f"User recovery initiated: {recovery_method} (previous error: {previous_error})")
+        
+        # Clear error state but keep some context for user feedback
+        context.error_message = None
+        context.reset_error_attempts()
+        
+        # Preserve any valid ticker or button_type that might be useful
+        if not context.ticker and kwargs.get('ticker'):
+            context.ticker = kwargs['ticker'].strip().upper()
+        
+        self.logger.info(f"User recovery completed: {recovery_method}")
 
 
 class StateManager:
@@ -309,6 +362,9 @@ class StateManager:
             'on_abort_to_idle': self.actions.on_abort_to_idle,
             'on_reset_context': self.actions.on_reset_context,
             'on_emergency_reset': self.actions.on_emergency_reset,
+            'on_error_button_recovery': self.actions.on_error_button_recovery,
+            'on_auto_recover_from_error': self.actions.on_auto_recover_from_error,
+            'on_user_recover_from_error': self.actions.on_user_recover_from_error,
         }
     
     # === Core FSM Operations ===
@@ -345,9 +401,12 @@ class StateManager:
                 if event == 'button_click' and 'button_type' in kwargs:
                     # Temporarily set button_type for guard check
                     original_button_type = self.context.button_type
-                    self.context.button_type = kwargs['button_type']
-                    guard_passed = guard_func(self.context)
-                    self.context.button_type = original_button_type
+                    try:
+                        self.context.button_type = kwargs['button_type']
+                        guard_passed = guard_func(self.context)
+                    finally:
+                        # Always restore original button_type, even if guard function throws
+                        self.context.button_type = original_button_type
                 else:
                     guard_passed = guard_func(self.context)
                     
@@ -358,6 +417,7 @@ class StateManager:
             except Exception as e:
                 self.logger.error(f"Guard function error: {e}")
                 self._emergency_transition_to_error(f"Guard error: {e}")
+                self._stats['failed_transitions'] += 1
                 return False
         
         # Record the transition attempt
@@ -457,41 +517,139 @@ class StateManager:
     
     def get_available_events(self) -> List[str]:
         """Get all events available from current state"""
-        return self.transitions.get_available_events(self.context.current_state)
+        events = self.transitions.get_available_events(self.context.current_state)
+        
+        # If in ERROR state, check if auto-recovery is available
+        if self.is_in_state(AppState.ERROR):
+            from .transitions import TransitionGuards
+            if TransitionGuards.can_auto_recover(self.context):
+                if 'auto_recover' not in events:
+                    events.append('auto_recover')
+        
+        return events
     
     # === Error Recovery ===
     
-    def recover_from_error(self, strategy: str = 'retry') -> bool:
+    def recover_from_error(self, strategy: str = 'retry', return_details: bool = False, **kwargs):
         """
         Attempt to recover from error state.
         
         Args:
-            strategy: Recovery strategy ('retry', 'abort', 'reset')
+            strategy: Recovery strategy ('retry', 'abort', 'reset', 'auto', 'user')
+            return_details: If True, returns dict with details; if False, returns bool (backward compatibility)
+            **kwargs: Additional parameters for recovery actions
             
         Returns:
-            True if recovery succeeded
+            bool or Dict[str, Any]: Success status (bool) or detailed feedback (dict)
         """
         if not self.is_in_state(AppState.ERROR):
             self.logger.warning("Not in error state, cannot recover")
+            if return_details:
+                return {
+                    'success': False,
+                    'message': 'System is not in error state',
+                    'status': 'not_in_error'
+                }
             return False
         
         self._stats['error_recoveries'] += 1
+        previous_error = self.context.error_message
         
         recovery_events = {
             'retry': 'retry',
             'abort': 'abort', 
-            'reset': 'reset'
+            'reset': 'reset',
+            'auto': 'auto_recover',
+            'user': 'user_recover'
         }
         
         event = recovery_events.get(strategy, 'abort')
-        success = self.transition(event)
+        success = self.transition(event, **kwargs)
         
         if success:
             self.logger.info(f"Error recovery successful using strategy: {strategy}")
+            if return_details:
+                return {
+                    'success': True,
+                    'message': f'System recovered from error. Previous issue: {previous_error}',
+                    'status': 'recovered',
+                    'strategy_used': strategy,
+                    'previous_error': previous_error
+                }
+            return True
         else:
             self.logger.error(f"Error recovery failed using strategy: {strategy}")
+            if return_details:
+                return {
+                    'success': False,
+                    'message': f'Failed to recover using {strategy}. Please try manual reset.',
+                    'status': 'recovery_failed',
+                    'strategy_attempted': strategy,
+                    'current_error': self.context.error_message
+                }
+            return False
+    
+    def check_auto_recovery(self) -> bool:
+        """
+        Check if auto-recovery should be triggered and execute if needed.
         
-        return success
+        Returns:
+            True if auto-recovery was triggered and succeeded
+        """
+        if not self.is_in_state(AppState.ERROR):
+            return False
+        
+        # Check if auto-recovery conditions are met
+        from .transitions import TransitionGuards
+        if TransitionGuards.can_auto_recover(self.context):
+            self.logger.info("Auto-recovery conditions met, attempting recovery")
+            return self.recover_from_error('auto', reason='timeout')
+        
+        return False
+    
+    def force_recovery(self, message: str = "System reset by user") -> Dict[str, Any]:
+        """
+        Force recovery from any state - emergency function.
+        
+        Args:
+            message: Reason for forced recovery
+            
+        Returns:
+            Recovery status information
+        """
+        current_state = self.context.current_state
+        
+        self.logger.warning(f"Force recovery initiated from {current_state.name}: {message}")
+        
+        # Force transition to IDLE regardless of current state
+        self._emergency_transition_to_idle(message)
+        
+        return {
+            'success': True,
+            'message': f'System forcibly recovered from {current_state.name}',
+            'status': 'force_recovered',
+            'previous_state': current_state.name,
+            'reason': message
+        }
+    
+    def _emergency_transition_to_idle(self, reason: str) -> None:
+        """Emergency transition to IDLE state bypassing normal rules"""
+        previous_state = self.context.current_state
+        self.context.previous_state = previous_state
+        self.context.current_state = AppState.IDLE
+        self.context.clear_data(preserve_history=True)
+        self.context.error_message = None
+        self.context.reset_error_attempts()
+        
+        self.context.add_transition_record(
+            from_state=previous_state,
+            to_state=AppState.IDLE,
+            event="emergency_idle",
+            success=True,
+            error_message=reason
+        )
+        
+        self.logger.info(f"Emergency transition to IDLE completed: {reason}")
     
     # === Statistics and Monitoring ===
     

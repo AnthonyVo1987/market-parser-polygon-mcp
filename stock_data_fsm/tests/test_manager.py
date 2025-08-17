@@ -305,15 +305,19 @@ class TestStateManager(unittest.TestCase):
     
     def test_guard_function_error(self):
         """Test handling of guard function errors"""
-        # Mock a guard that raises an exception
+        # Mock a guard that raises an exception - MUST be applied before StateManager creation
         with patch('stock_data_fsm.transitions.TransitionGuards.has_valid_button_type',
                   side_effect=Exception("Mock guard error")):
             
-            success = self.manager.transition('button_click', button_type='snapshot')
+            # Create new manager within the mock context
+            test_manager = StateManager(session_id='test-guard-error')
+            
+            success = test_manager.transition('button_click', button_type='snapshot')
             
             # Should transition to error state
             self.assertFalse(success)
-            self.assertEqual(self.manager.get_current_state(), AppState.ERROR)
+            self.assertEqual(test_manager.get_current_state(), AppState.ERROR)
+            self.assertIn("Guard error: Mock guard error", test_manager.context.error_message)
     
     def test_statistics_tracking(self):
         """Test statistics tracking"""

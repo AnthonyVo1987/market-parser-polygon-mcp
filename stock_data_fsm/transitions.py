@@ -10,6 +10,7 @@ This module contains:
 from typing import Dict, Tuple, Optional, Callable, Any
 from .states import AppState, StateContext
 import logging
+import time
 
 
 # Type aliases for better readability
@@ -69,6 +70,33 @@ class TransitionGuards:
         """Check if retry is allowed from error state"""
         return (context.current_state == AppState.ERROR and 
                 context.error_recovery_attempts < 5)
+    
+    @staticmethod
+    def can_auto_recover(context: StateContext) -> bool:
+        """Check if auto-recovery is allowed based on error age"""
+        if context.current_state != AppState.ERROR:
+            return False
+        
+        # Auto-recover if error is older than 30 seconds
+        error_age = time.time() - context.last_updated
+        return error_age > 30.0
+    
+    @staticmethod
+    def has_recoverable_error(context: StateContext) -> bool:
+        """Check if the error is recoverable (not a critical system error)"""
+        if not context.error_message:
+            return True
+        
+        # List of non-recoverable error patterns
+        critical_errors = [
+            'Invalid API key',
+            'Network unreachable',
+            'System shutdown',
+            'Memory allocation failed'
+        ]
+        
+        error_msg = context.error_message.lower()
+        return not any(critical in error_msg for critical in critical_errors)
     
     @staticmethod
     def is_valid_data_type(context: StateContext) -> bool:
@@ -216,6 +244,24 @@ class StateTransitions:
                 AppState.IDLE,
                 None,
                 'on_reset_from_error'
+            ),
+            # CRITICAL FIX: Allow button clicks from ERROR state to recover
+            (AppState.ERROR, 'button_click'): (
+                AppState.BUTTON_TRIGGERED,
+                TransitionGuards.has_valid_button_type,
+                'on_error_button_recovery'
+            ),
+            # Auto-recovery after timeout
+            (AppState.ERROR, 'auto_recover'): (
+                AppState.IDLE,
+                None,
+                'on_auto_recover_from_error'
+            ),
+            # Emergency user recovery
+            (AppState.ERROR, 'user_recover'): (
+                AppState.IDLE,
+                None,
+                'on_user_recover_from_error'
             ),
             
             # === EMERGENCY TRANSITIONS (available from any state) ===

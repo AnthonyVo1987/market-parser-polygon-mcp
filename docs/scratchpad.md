@@ -281,8 +281,9 @@ ValueError: A  function didn't return enough output values (needed: 10, returned
 
 
 ## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
-- Start an automous Code\Doc Review and Fix Loop until we get a passing code review
-- If PASSING code review, perform an autonomous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes
+- SPECIALIST to Start an automous Code\Doc Review and Fix Loop until we get a passing code review
+- If PASSING code review, SPECIALIST to perform git status and then an autonomous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes
+- User will then start testing out the new changes
 ##
 
 

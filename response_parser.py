@@ -180,7 +180,9 @@ class ResponseParser:
         import time
         start_time = time.time()
         
+        # Secure logging: Record parsing attempt without exposing sensitive data
         self.logger.info(f"Parsing stock snapshot from {len(text)} character response")
+        self.logger.debug(f"Response contains key indicators: price={bool('price' in text.lower())}, percent={'%' in text}, dollar={'$' in text}")
         
         result = ParseResult(
             data_type=DataType.SNAPSHOT,
@@ -199,20 +201,25 @@ class ResponseParser:
             failed_patterns = []
             
             for field_name, patterns in self._snapshot_patterns.items():
+                self.logger.debug(f"Extracting {field_name}")
                 value, pattern_used = self._extract_with_multiple_patterns(
                     text, patterns, field_name
                 )
                 
                 if value is not None:
+                    self.logger.debug(f"Found {field_name} using pattern: {pattern_used}")
                     # Validate and clean the extracted value
                     try:
                         cleaned_value = self._validate_and_clean(field_name, value, 'snapshot')
                         extracted_data[field_name] = cleaned_value
                         matched_patterns.append(f"{field_name}:{pattern_used}")
+                        self.logger.debug(f"Validated {field_name}: success")
                     except ValidationError as e:
+                        self.logger.warning(f"Validation failed for {field_name}: {e}")
                         result.warnings.append(f"Validation failed for {field_name}: {e}")
                         failed_patterns.append(f"{field_name}:validation_failed")
                 else:
+                    self.logger.debug(f"No match for {field_name} (tried {len(patterns)} patterns)")
                     failed_patterns.append(f"{field_name}:no_match")
             
             result.parsed_data = extracted_data
@@ -231,7 +238,8 @@ class ResponseParser:
                 'extraction_rate': len(extracted_data) / len(self._snapshot_patterns)
             })
             
-            self.logger.info(f"Snapshot parsing completed: {len(extracted_data)}/{len(self._snapshot_patterns)} fields")
+            self.logger.info(f"Snapshot parsing completed: {len(extracted_data)}/{len(self._snapshot_patterns)} fields ({(len(extracted_data)/len(self._snapshot_patterns)*100):.1f}% success rate)")
+            self.logger.debug(f"Matched patterns count: {len(matched_patterns)}, Failed patterns count: {len(failed_patterns)}")
             
         except Exception as e:
             self.logger.error(f"Snapshot parsing failed: {e}")
@@ -414,124 +422,184 @@ class ResponseParser:
     # ====== Pattern Building Methods ======
     
     def _build_snapshot_patterns(self) -> Dict[str, List[Dict[str, Any]]]:
-        """Build comprehensive patterns for stock snapshot data"""
+        """Build comprehensive patterns for stock snapshot data with enhanced AI response matching"""
         return {
             'current_price': [
                 {
-                    'pattern': r'(?:current\s+)?price[:\s]+\$?([\d,]+\.?\d*)',
+                    'pattern': r'(?:current\s+)?price[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'price_standard'
                 },
                 {
-                    'pattern': r'trading\s+at[:\s]+\$?([\d,]+\.?\d*)',
+                    'pattern': r'trading\s+at[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'trading_at'
                 },
                 {
-                    'pattern': r'stock\s+is[:\s]+\$?([\d,]+\.?\d*)',
+                    'pattern': r'\$([\d,]+\.\d+)\s*(?:per\s+share|each)',
+                    'flags': re.IGNORECASE,
+                    'name': 'dollar_per_share'
+                },
+                {
+                    'pattern': r'(?:stock|share)\s+is[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'stock_is'
                 },
                 {
-                    'pattern': r'\$?([\d,]+\.?\d*)\s+per\s+share',
+                    'pattern': r'(?:currently|now)\s+trading[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
-                    'name': 'per_share'
+                    'name': 'currently_trading'
+                },
+                {
+                    'pattern': r'\b([\d,]+\.\d+)\s*(?:USD|dollars?)\b',
+                    'flags': re.IGNORECASE,
+                    'name': 'price_with_currency'
                 }
             ],
             'percentage_change': [
                 {
-                    'pattern': r'(?:up|down|changed?)[:\s]*([\d\.\-\+]+)%',
+                    'pattern': r'([\+\-]?[\d\.]+)%\s*(?:change|today|daily|session)',
                     'flags': re.IGNORECASE,
-                    'name': 'change_standard'
+                    'name': 'percent_change_standard'
                 },
                 {
-                    'pattern': r'([\d\.\-\+]+)%\s+(?:change|movement)',
+                    'pattern': r'(?:up|down|gained|lost)[:\s]*([\+\-]?[\d\.]+)%',
                     'flags': re.IGNORECASE,
-                    'name': 'percent_movement'
+                    'name': 'up_down_percent'
                 },
                 {
-                    'pattern': r'percentage[:\s]+([\d\.\-\+]+)%',
+                    'pattern': r'percentage[:\s]*([\+\-]?[\d\.]+)%',
                     'flags': re.IGNORECASE,
                     'name': 'percentage_explicit'
+                },
+                {
+                    'pattern': r'\(([\+\-]?[\d\.]+)%\)',
+                    'flags': re.IGNORECASE,
+                    'name': 'parentheses_percent'
                 }
             ],
             'dollar_change': [
                 {
-                    'pattern': r'[\$\+\-]([\d\.\-\+]+)(?:\s+change|\s+today|\s+session)',
+                    'pattern': r'([\+\-]?\$?[\d\.]+)\s*(?:change|today|daily|session)',
                     'flags': re.IGNORECASE,
                     'name': 'dollar_change_standard'
                 },
                 {
-                    'pattern': r'(?:gained|lost)[:\s]+\$?([\d\.\-\+]+)',
+                    'pattern': r'(?:gained|lost|gaining|losing)[:\s]*\$?([\+\-]?[\d\.]+)',
                     'flags': re.IGNORECASE,
                     'name': 'gained_lost'
+                },
+                {
+                    'pattern': r'\(([\+\-]?\$?[\d\.]+)\)',
+                    'flags': re.IGNORECASE,
+                    'name': 'parentheses_dollar'
                 }
             ],
             'volume': [
                 {
-                    'pattern': r'volume[:\s]+([\d,]+(?:\.\d+)?[KMB]?)',
+                    'pattern': r'volume[:\s]*([\d,]+(?:\.\d+)?[KMB]?)',
                     'flags': re.IGNORECASE,
                     'name': 'volume_standard'
                 },
                 {
-                    'pattern': r'traded[:\s]+([\d,]+(?:\.\d+)?[KMB]?)\s+shares',
+                    'pattern': r'traded[:\s]*([\d,]+(?:\.\d+)?[KMB]?)\s*shares',
                     'flags': re.IGNORECASE,
                     'name': 'traded_shares'
+                },
+                {
+                    'pattern': r'([\d,]+(?:\.\d+)?[KMB]?)\s*shares\s*traded',
+                    'flags': re.IGNORECASE,
+                    'name': 'shares_traded_reverse'
+                },
+                {
+                    'pattern': r'volume:\s*([\d,]+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'volume_colon'
                 }
             ],
             'vwap': [
                 {
-                    'pattern': r'(?:vwap|volume\s+weighted)[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'(?:vwap|volume\s+weighted)[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'vwap_standard'
+                },
+                {
+                    'pattern': r'VWAP[:\s]*\$?([\d,]+\.\d+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'vwap_caps'
                 }
             ],
             'open': [
                 {
-                    'pattern': r'open[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'open[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'open_standard'
                 },
                 {
-                    'pattern': r'opened\s+at[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'opened\s+at[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'opened_at'
+                },
+                {
+                    'pattern': r'opening[:\s]*\$?([\d,]+\.\d+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'opening_price'
                 }
             ],
             'high': [
                 {
-                    'pattern': r'high[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'high[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'high_standard'
                 },
                 {
-                    'pattern': r'day\s+high[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'day\s+high[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'day_high'
+                },
+                {
+                    'pattern': r'(?:52[\s-]?week|daily)\s+high[:\s]*\$?([\d,]+\.\d+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'period_high'
                 }
             ],
             'low': [
                 {
-                    'pattern': r'low[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'low[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'low_standard'
                 },
                 {
-                    'pattern': r'day\s+low[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'day\s+low[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'day_low'
+                },
+                {
+                    'pattern': r'(?:52[\s-]?week|daily)\s+low[:\s]*\$?([\d,]+\.\d+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'period_low'
                 }
             ],
             'close': [
                 {
-                    'pattern': r'close[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'close[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'close_standard'
                 },
                 {
-                    'pattern': r'closed\s+at[:\s]*\$?([\d,]+\.?\d*)',
+                    'pattern': r'closed\s+at[:\s]*\$?([\d,]+\.\d+)',
                     'flags': re.IGNORECASE,
                     'name': 'closed_at'
+                },
+                {
+                    'pattern': r'previous\s+close[:\s]*\$?([\d,]+\.\d+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'previous_close'
+                },
+                {
+                    'pattern': r'closing[:\s]*\$?([\d,]+\.\d+)',
+                    'flags': re.IGNORECASE,
+                    'name': 'closing_price'
                 }
             ]
         }
