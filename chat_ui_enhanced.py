@@ -22,9 +22,10 @@ from dotenv import find_dotenv, load_dotenv
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIResponsesModel
 
-# Import our FSM components and parser
+# Import our FSM components, parser, and prompt templates
 from stock_data_fsm import StateManager, AppState
 from response_parser import ResponseParser, DataType
+from prompt_templates import PromptTemplateManager, PromptType
 
 # Reuse server factory and token tracking from CLI
 from market_parser_demo import create_polygon_mcp_server, TokenCostTracker
@@ -40,15 +41,24 @@ MODEL_NAME = os.getenv("OPENAI_MODEL", "gpt-5-nano")
 
 server = create_polygon_mcp_server()
 model = OpenAIResponsesModel(MODEL_NAME)
+
+# Initialize prompt template manager
+prompt_manager = PromptTemplateManager()
+
+# Enhanced system prompt for structured output
+base_system_prompt = (
+    "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. "
+    "Use the latest data available. Always double check your math. "
+    "For any questions about the current date, use the 'get_today_date' tool. "
+    "For long or complex queries, break the query into logical subtasks and process each subtask in order."
+)
+
+enhanced_system_prompt = prompt_manager.get_enhanced_system_prompt(base_system_prompt)
+
 agent = Agent(
     model=model,
     mcp_servers=[server],
-    system_prompt=(
-        "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. "
-        "Use the latest data available. Always double check your math. "
-        "For any questions about the current date, use the 'get_today_date' tool. "
-        "For long or complex queries, break the query into logical subtasks and process each subtask in order."
-    ),
+    system_prompt=enhanced_system_prompt,
 )
 
 
