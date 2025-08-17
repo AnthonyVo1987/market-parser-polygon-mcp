@@ -2,13 +2,37 @@
 
 ## 🎯 TECH LEAD ORCHESTRATOR DIRECTIVES
 
+**⚠️ CRITICAL CORRECTIVE ACTIONS BASED ON PREVIOUS VIOLATIONS:**
+
+**MANDATORY AGENT VERIFICATION:**
+- ❌ **DO NOT fabricate specialist agent names** - You previously created fake agents like "web-research-specialist" and "gradio-ui-specialist"
+- ✅ **MUST READ CLAUDE.md Agent Task Assignments** - Only use real agents listed in the table
+- ✅ **MUST verify agent exists before assignment** - Check CLAUDE.md lines 161-177 for valid agents
+- ✅ **MUST understand agent specialties** - Use agents according to their defined roles in CLAUDE.md
+
+**DELEGATION EXECUTION ENFORCEMENT:**
+- ❌ **DO NOT stop after creating delegation plan** - You previously created plans but never triggered execution
+- ✅ **MUST initiate first specialist delegation** - Actually start the delegation sequence you create
+- ✅ **MUST provide execution commands** - Include specific commands for starting the delegation chain
+- ✅ **MUST ensure handoff occurs** - Don't leave user to manually trigger delegations
+
+**CONTEXT7 CLARIFICATION:**
+- ❌ **CONTEXT7 ≠ WebSearch/WebFetch** - You previously confused these concepts
+- ✅ **CONTEXT7 = Existing documentation patterns** - Reference patterns already provided in task documents
+- ✅ **NO web research required** - All needed patterns are in the task documentation
+- ✅ **Reference specific line numbers** - Point to existing Context7 patterns in documentation
+
 **ROLE RESTRICTIONS FOR @tech-lead-orchestrator:**
 - ❌ **DO NOT implement any code yourself**
 - ❌ **DO NOT make direct file changes**
 - ❌ **DO NOT write or modify code**
+- ❌ **DO NOT fabricate agent names that don't exist**
+- ❌ **DO NOT confuse Context7 with web research tools**
+- ❌ **DO NOT stop after planning - MUST trigger execution**
 - ✅ **ONLY perform strategic analysis and create delegation plans**
-- ✅ **ONLY identify which specialist agents are needed**
+- ✅ **ONLY identify which specialist agents are needed FROM CLAUDE.md**
 - ✅ **ONLY provide specific handoff instructions for each delegation**
+- ✅ **MUST initiate the delegation sequence you create**
 
 **REQUIRED DELIVERABLES:**
 1. **Strategic Analysis**: Brief assessment of the technical issues and fix complexity
@@ -22,18 +46,32 @@
 ## Strategic Analysis
 [Brief technical assessment]
 
-## Required Specialist Agents
-- @agent-name: [specific reason and scope]
+## Verified Specialist Agents (FROM CLAUDE.md ONLY)
+- @agent-name: [specific reason and scope - VERIFIED EXISTS IN CLAUDE.md]
 
 ## Delegation Plan
 ### Task Group 1: [Priority Level]
-- **Agent**: @agent-name
+- **Agent**: @agent-name (VERIFIED IN CLAUDE.md)
 - **Scope**: [specific tasks]
-- **Handoff**: [exact instructions for the agent]
+- **Handoff**: [exact instructions referencing Context7 patterns in lines X-Y]
 - **Dependencies**: [prerequisites or blockers]
 
 ## Coordination Strategy
 [How to execute the delegations in sequence]
+
+## Execution Trigger
+[MANDATORY: Provide the exact command to start the first delegation]
+```
+
+**CORRECTED EXAMPLE COMMAND:**
+Instead of fabricating agents, use this format:
+```
+@frontend-developer: [task instructions with Context7 line references]
+```
+
+NOT this fabricated format:
+```
+@web-research-specialist: [instructions] ❌ DOES NOT EXIST
 ```
 
 **BOUNDARIES:**
@@ -65,20 +103,20 @@
 </thinking>
 ```
 
-### 2. CONTEXT7 TOOL USAGE MANDATE
-**EVERY specialist agent MUST use appropriate research tools:**
+### 2. CONTEXT7 REFERENCE MANDATE
+**EVERY specialist agent MUST use Context7 patterns PROVIDED IN DOCUMENTATION:**
 
-- 🌐 **WebSearch**: Research latest best practices, documentation, patterns
-- 📄 **WebFetch**: Retrieve specific documentation pages, guides, examples
-- 🔍 **Research First**: Understand modern patterns before implementing
-- 📚 **Document Sources**: Cite specific documentation used
+- 📚 **Context7 = Existing Patterns**: Reference patterns already provided in new_task.md lines 182-205
+- 📄 **NO WebSearch/WebFetch**: All needed patterns are already documented in task files
+- 🔍 **Reference Line Numbers**: Point to specific Context7 patterns in documentation
+- 📋 **Document Line References**: Cite specific line numbers from task documentation
 
-**Required Research Topics:**
-- Latest Gradio 4.0+ patterns and best practices
-- Modern async handling in Gradio applications
-- Current chatbot message formats and conventions
-- Error handling patterns for web UI frameworks
-- Performance optimization techniques
+**Required Context7 Reference Topics (NO WEB RESEARCH):**
+- Gradio 4.0+ patterns already provided in new_task.md lines 182-205
+- Modern async handling patterns documented in new_task.md lines 224-365
+- Chatbot message format examples in new_task.md lines 190-193
+- Error handling patterns specified in new_task.md lines 200-204
+- Implementation examples provided throughout new_task.md documentation
 
 ### 3. IMPLEMENTATION PROTOCOLS
 **ALL implementations MUST:**
@@ -486,9 +524,60 @@ uv run python validate_fixes.py
 - [Chatbot Messages Format](https://www.gradio.app/docs/gradio/chatbot)
 - [Event Chaining with .then()](https://www.gradio.app/guides/blocks-and-event-listeners)
 
+## 🎯 CORRECTED EXAMPLE PROMPT FOR TECH-LEAD-ORCHESTRATOR
+
+```
+@tech-lead-orchestrator: Please read and analyze the comprehensive fix plan in new_task.md for our Market Parser Polygon MCP application.
+
+**CRITICAL CORRECTIVE REQUIREMENTS:**
+
+1. **MANDATORY AGENT VERIFICATION**: 
+   - READ CLAUDE.md Agent Task Assignments (lines 161-177) FIRST
+   - ONLY use real agents: @code-reviewer, @performance-optimizer, @backend-developer, @api-architect, @frontend-developer, @code-archaeologist, @documentation-specialist
+   - DO NOT fabricate agent names like "web-research-specialist" or "gradio-ui-specialist"
+
+2. **CONTEXT7 CLARIFICATION**:
+   - Context7 = patterns already provided in new_task.md lines 182-205
+   - DO NOT use WebSearch/WebFetch tools
+   - Reference specific line numbers from existing documentation
+
+3. **DELEGATION EXECUTION MANDATE**:
+   - MUST provide the exact command to start first delegation
+   - DO NOT stop after creating plan - MUST trigger execution
+   - Include execution trigger in your response
+
+**Your Assignment:**
+- Analyze the critical UI issues outlined in new_task.md
+- Create delegation plan using ONLY verified agents from CLAUDE.md
+- Reference Context7 patterns from new_task.md (NOT web research)
+- PROVIDE EXECUTION TRIGGER to start delegation sequence
+
+**Required Output Format:**
+- Strategic analysis
+- Verified specialist agents (from CLAUDE.md only)
+- Delegation plan with Context7 line references
+- Execution trigger command to start first delegation
+
+**Verification Checklist:**
+- [ ] Read CLAUDE.md Agent Task Assignments first
+- [ ] Only use real agents from the verified list
+- [ ] Reference Context7 patterns by line number
+- [ ] Include execution trigger command
+- [ ] DO NOT stop after planning
+
+Please analyze new_task.md and provide corrected delegation strategy that follows all verification requirements.
+```
+
+**WHAT NOT TO DO:**
+❌ Create fake agents like "web-research-specialist"  
+❌ Confuse Context7 with WebSearch/WebFetch tools  
+❌ Stop after creating plan without triggering execution  
+❌ Use agents not listed in CLAUDE.md Agent Task Assignments
+
 ---
 
-**Document Version**: 1.0  
-**Created**: 2025-01-16  
+**Document Version**: 2.0  
+**Updated**: 2025-08-17  
 **Priority**: CRITICAL - Application completely non-functional  
-**Estimated Fix Time**: 2-3 hours for complete implementation
+**Estimated Fix Time**: 2-3 hours for complete implementation  
+**Corrective Actions**: Added tech-lead-orchestrator enforcement protocols

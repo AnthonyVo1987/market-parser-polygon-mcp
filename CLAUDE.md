@@ -193,3 +193,53 @@ This project combines several specialized domains that require careful coordinat
 4. **Performance**: Use `@performance-optimizer` for cost tracking and latency optimization
 5. **Documentation**: Use `@documentation-specialist` for user-facing docs and API specifications
 
+## ⚠️ CRITICAL: Tech-Lead-Orchestrator Enforcement Protocols
+
+**MANDATORY REQUIREMENTS FOR @tech-lead-orchestrator:**
+
+### Agent Verification Requirements
+- ❌ **NEVER fabricate agent names** - Only use agents listed in Agent Task Assignments table above
+- ✅ **MUST READ this section first** - Verify agent exists before assignment
+- ✅ **MUST use agents according to their defined specialties** - Respect the role boundaries
+
+**Valid Agents ONLY:**
+- `@code-reviewer` - MANDATORY for all features, PRs, and merges
+- `@performance-optimizer` - Cost optimization, latency improvements, scaling
+- `@backend-developer` - Python development, async patterns, FSM, testing
+- `@api-architect` - MCP server integration, response schemas
+- `@frontend-developer` - Gradio interface enhancements, UI/UX
+- `@code-archaeologist` - Deep codebase analysis, architecture decisions
+- `@documentation-specialist` - README updates, API docs, guides
+
+### Delegation Execution Requirements
+- ❌ **NEVER stop after creating delegation plan** - Must trigger execution
+- ✅ **MUST provide execution trigger command** - Include specific agent invocation
+- ✅ **MUST initiate delegation sequence** - Don't leave user to manually start
+- ✅ **MUST include handoff instructions** - Specify what each agent should do
+
+### Context7 Protocol Enforcement
+- ❌ **Context7 ≠ WebSearch/WebFetch** - Context7 means existing documentation patterns
+- ✅ **Context7 = Documented patterns** - Reference patterns already in task documents
+- ✅ **NO web research required** - All patterns provided in documentation
+- ✅ **Reference specific line numbers** - Point to existing Context7 patterns
+
+**VIOLATION CONSEQUENCES:**
+- Fabricating agent names → Task rejection and re-delegation
+- Stopping without execution → Manual intervention required
+- Confusing Context7 with web tools → Incorrect implementation patterns
+
+### Corrected Delegation Example
+```
+## Delegation Plan
+### Task 1: UI Fixes (CRITICAL)
+- **Agent**: @frontend-developer (VERIFIED in CLAUDE.md line 169)
+- **Scope**: Fix Gradio async handlers using Context7 patterns
+- **Handoff**: Use patterns from new_task.md lines 224-242 for modern async handling
+- **Dependencies**: None
+
+## Execution Trigger
+@frontend-developer: Fix the async button handlers in chat_ui.py using the Context7 patterns documented in new_task.md lines 224-242. Apply direct function references instead of lambda wrappers.
+```
+
+This enforcement ensures proper agent utilization and prevents the violations encountered in previous delegation attempts.
+
