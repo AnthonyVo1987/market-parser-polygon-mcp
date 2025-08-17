@@ -11,7 +11,7 @@ This document outlines the feasibility, complexity, and implementation plan for 
 
 ### Core Requirements
 1. **New GUI Elements** for displaying:
-   - Stock Snapshot (price, volume, change %, market cap, etc.)
+   - Stock Snapshot (current price, % change, $ change, volume, VWAP, OHLC)
    - Support & Resistance Levels (3 levels each)
    - Technical Analysis (RSI, MACD, EMA 5/10/20/50/200, SMA 5/10/20/50/200)
 
@@ -80,11 +80,14 @@ The feature can be implemented entirely with existing packages.
 ```
 "Provide a comprehensive stock snapshot for [TICKER]. Include:
 - Current price
-- Daily volume
 - Percentage change
-- Market capitalization
-- 52-week high/low
-- P/E ratio if available
+- $ Change
+- Volume
+- VWAP (Volume Weighted Average Price)
+- Open
+- High
+- Low
+- Close
 Format numbers clearly with appropriate units."
 ```
 
@@ -159,7 +162,8 @@ with gr.Row():
 
 # Button click handlers
 def trigger_snapshot(ticker_state):
-    prompt = f"Provide current stock snapshot for {ticker_state or 'the last mentioned stock'}"
+    ticker = ticker_state or 'the last mentioned stock'
+    prompt = f"Provide a comprehensive stock snapshot for {ticker}. Include: Current price, Percentage change, $ Change, Volume, VWAP (Volume Weighted Average Price), Open, High, Low, Close. Format numbers clearly with appropriate units."
     return prompt, True  # Return prompt and set button_triggered flag
 
 snapshot_btn.click(
@@ -184,10 +188,15 @@ class ResponseParser:
     def parse_stock_snapshot(text: str) -> pd.DataFrame:
         """Extract stock snapshot data from AI response."""
         patterns = {
-            'price': r'(?:price|trading at)[:\s]*\$?([\d,]+\.?\d*)',
+            'current_price': r'(?:price|trading at|current)[:\s]*\$?([\d,]+\.?\d*)',
+            'percentage_change': r'(?:up|down|changed?)[:\s]*([\d\.\-\+]+)%',
+            'dollar_change': r'(?:\$|\+|\-)([\d\.\-\+]+)(?:\s|$)',
             'volume': r'volume[:\s]*([\d,]+)',
-            'change': r'(?:up|down|changed?)[:\s]*([\d\.]+)%',
-            'market_cap': r'market cap[:\s]*\$?([\d\.]+[BMK]?)'
+            'vwap': r'(?:vwap|volume weighted)[:\s]*\$?([\d,]+\.?\d*)',
+            'open': r'open[:\s]*\$?([\d,]+\.?\d*)',
+            'high': r'high[:\s]*\$?([\d,]+\.?\d*)',
+            'low': r'low[:\s]*\$?([\d,]+\.?\d*)',
+            'close': r'close[:\s]*\$?([\d,]+\.?\d*)'
         }
         
         data = {}
