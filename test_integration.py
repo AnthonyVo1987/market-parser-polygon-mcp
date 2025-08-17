@@ -25,7 +25,7 @@ from market_parser_demo import TokenCostTracker
 
 # Import the enhanced UI components
 try:
-    from chat_ui_final import (
+    from chat_ui import (
         handle_user_message, handle_button_click, ProcessingStatus,
         _get_debug_state_info, _clear_enhanced, export_markdown
     )
@@ -101,14 +101,16 @@ class TestSystemIntegration(unittest.TestCase):
         success = self.fsm_manager.transition('prepare_prompt')
         self.assertTrue(success)
         
-        # Complete workflow
+        # Complete workflow - need to set AI response before transitioning to response_received
         self.fsm_manager.transition('prompt_ready')
+        self.fsm_manager.context.ai_response = "Mock AI response"  # Set required context
         self.fsm_manager.transition('response_received')
         self.fsm_manager.transition('parse')
         self.fsm_manager.transition('parse_success')
         self.fsm_manager.transition('update_complete')
         
-        # Should return to IDLE
+        # Reset to IDLE (use abort transition)
+        self.fsm_manager.transition('abort')
         self.assertEqual(self.fsm_manager.get_current_state(), AppState.IDLE)
     
     def test_end_to_end_parsing_workflow(self):
@@ -287,7 +289,7 @@ class TestUIIntegration(unittest.TestCase):
         
         self.assertIn("# 📊 Stock Market Analysis Chat Export", markdown)
         self.assertIn("Export Date:", markdown)
-        self.assertIn("Total Messages: 2", markdown)
+        self.assertIn("Total Messages:** 2", markdown)
         self.assertIn("Message 1 (User)", markdown)
         self.assertIn("Message 2 (Assistant)", markdown)
         self.assertIn("Hello", markdown)

@@ -147,7 +147,7 @@ async def handle_user_message(
     sr_df: pd.DataFrame,
     tech_df: pd.DataFrame,
     debug_state: str,
-) -> Tuple:
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
     """
     Enhanced message handler with loading states and improved error handling.
     """
@@ -226,7 +226,7 @@ async def handle_button_click(
     sr_df: pd.DataFrame,
     tech_df: pd.DataFrame,
     debug_state: str,
-) -> Tuple:
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
     """
     Enhanced button click handler with comprehensive loading states and error handling.
     """
@@ -552,7 +552,8 @@ def create_enhanced_chat_interface():
                     label="💬 Chat History",
                     height=400,
                     show_label=True,
-                    container=True
+                    container=True,
+                    type="messages"
                 )
                 
                 with gr.Row():
@@ -656,6 +657,16 @@ def create_enhanced_chat_interface():
         
         # -------- Event Handlers with Enhanced Features --------
         
+        # Define async wrapper functions for button handlers
+        async def handle_snapshot_click(ticker, *args):
+            return await handle_button_click('snapshot', ticker, *args)
+        
+        async def handle_sr_click(ticker, *args):
+            return await handle_button_click('support_resistance', ticker, *args)
+        
+        async def handle_tech_click(ticker, *args):
+            return await handle_button_click('technical', ticker, *args)
+        
         # Enhanced message handling with loading states
         msg.submit(
             handle_user_message,
@@ -683,7 +694,7 @@ def create_enhanced_chat_interface():
         
         # Enhanced stock analysis buttons with comprehensive error handling
         snapshot_btn.click(
-            lambda ticker, *args: handle_button_click('snapshot', ticker, *args),
+            handle_snapshot_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
                 fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
@@ -695,7 +706,7 @@ def create_enhanced_chat_interface():
         )
         
         sr_btn.click(
-            lambda ticker, *args: handle_button_click('support_resistance', ticker, *args),
+            handle_sr_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
                 fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
@@ -707,7 +718,7 @@ def create_enhanced_chat_interface():
         )
         
         tech_btn.click(
-            lambda ticker, *args: handle_button_click('technical', ticker, *args),
+            handle_tech_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
                 fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display

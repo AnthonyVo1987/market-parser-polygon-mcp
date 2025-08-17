@@ -298,6 +298,7 @@ Scope out and update the scope doc to enforce a "single source of truth FSM (Fin
 ## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
 - Start an automous Code\Doc Review and Fix Loop until we get a passing code review
 - If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
+- User will then start testing the code
 
 
 
@@ -334,6 +335,7 @@ USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE 
 ## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
 - Start an automous Code\Doc Review and Fix Loop until we get a passing code review
 - If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
+- User will then start testing the changes
 
 
 
