@@ -4,14 +4,228 @@
 
 USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
 
-## High Level Goal: Comprehensive Code Review of entire feature
+## High Level Goal: Fix ALL issues in completly broken app after integrating new UI feature
 
 ## Details
-- Perform Comprehensive Code Review of entire feature vs. the scope docs and to verify the merge conflict was resolved accurately
+- App is completely broken.  Review the logs and fix the issues.
+- No Button prompts work or even user input chat
+
+## Logs
+
+anthony@Anthony:/mnt/d/Github/market-parser-polygon-mcp$ uv run chat_ui.py
+Loaded .env from: /mnt/d/Github/market-parser-polygon-mcp/.env
+🚀 Starting Enhanced Stock Market Analysis Chat (Phase 5)
+🎯 Features: FSM + Enhanced Parsing + Prompt Templates + Loading States + Error Handling
+/mnt/d/Github/market-parser-polygon-mcp/chat_ui.py:551: UserWarning: You have not specified a value for the `type` parameter. Defaulting to the 'tuples' format for chatbot messages, but this is deprecated and will be removed in a future version of Gradio. Please set type='messages' instead, which uses openai-style dictionaries with 'role' and 'content' keys.
+  chatbot = gr.Chatbot(
+2025-08-16 20:30:15,412 - stock_data_fsm.transitions - INFO - Validated 26 state transitions
+2025-08-16 20:30:15,412 - stock_fsm.b13b85fe - INFO - StateManager initialized with session b13b85fe
+2025-08-16 20:30:15,412 - stock_fsm.b13b85fe - INFO - StateManager initialized with session b13b85fe
+2025-08-16 20:30:15,412 - stock_data_fsm.transitions - INFO - Validated 26 state transitions
+2025-08-16 20:30:15,507 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+* Running on local URL:  http://127.0.0.1:7860
+2025-08-16 20:30:15,759 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-16 20:30:15,798 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+* To create a public link, set `share=True` in `launch()`.
+2025-08-16 20:31:10,221 - stock_data_fsm.transitions - INFO - Validated 26 state transitions
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1983, in postprocess_data
+    self.validate_outputs(block_fn, predictions)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1938, in validate_outputs
+    raise ValueError(
+ValueError: A  function didn't return enough output values (needed: 10, returned: 1).
+    Output components:
+        [textbox, chatbot, state, state, markdown, state, dataframe, dataframe, dataframe, markdown]
+    Output values returned:
+        [<coroutine object handle_button_click at 0x72535ea472e0>]
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1983, in postprocess_data
+    self.validate_outputs(block_fn, predictions)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1938, in validate_outputs
+    raise ValueError(
+ValueError: A  function didn't return enough output values (needed: 10, returned: 1).
+    Output components:
+        [textbox, chatbot, state, state, markdown, state, dataframe, dataframe, dataframe, markdown]
+    Output values returned:
+        [<coroutine object handle_button_click at 0x72535ea47e20>]
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1983, in postprocess_data
+    self.validate_outputs(block_fn, predictions)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1938, in validate_outputs
+    raise ValueError(
+ValueError: A  function didn't return enough output values (needed: 10, returned: 1).
+    Output components:
+        [textbox, chatbot, state, state, markdown, state, dataframe, dataframe, dataframe, markdown]
+    Output values returned:
+        [<coroutine object handle_button_click at 0x72535d12c220>]
+2025-08-16 20:31:48,250 - stock_data_fsm.transitions - INFO - Validated 26 state transitions
+2025-08-16 20:31:48,250 - stock_fsm.0af44270 - INFO - StateManager initialized with session 0af44270
+2025-08-16 20:31:48,250 - stock_fsm.0af44270 - INFO - StateManager initialized with session 0af44270
+[GUI] Regular Chat - User: NVDA Snapshot
+/usr/lib/python3.12/typing.py:406: RuntimeWarning: coroutine 'handle_button_click' was never awaited
+  def _eval_type(t, globalns, localns, recursive_guard=frozenset()):
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+[08/16/25 20:32:03] INFO     Processing request of type ListToolsRequest        server.py:624
+2025-08-16 20:32:10,850 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/16/25 20:32:10] INFO     Processing request of type CallToolRequest         server.py:624
+[08/16/25 20:32:11] INFO     Processing request of type ListToolsRequest        server.py:624
+2025-08-16 20:32:18,284 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[GUI] Regular Chat Response: **Ticker**: NVDA
+**Today's Change (%):** -1.3%
+**Today's Change:** -$2.28
+**Open Price:** $181...
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2038, in postprocess_data
+    prediction_value = block.postprocess(prediction_value)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/components/chatbot.py", line 633, in postprocess
+    self._check_format(value, "tuples")
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/components/chatbot.py", line 430, in _check_format
+    raise Error(
+gradio.exceptions.Error: 'Data incompatible with tuples format. Each message should be a list of length 2.'
+2025-08-16 20:32:26,875 - stock_data_fsm.transitions - INFO - Validated 26 state transitions
+2025-08-16 20:32:26,875 - stock_fsm.eea6f0b9 - INFO - StateManager initialized with session eea6f0b9
+2025-08-16 20:32:26,875 - stock_fsm.eea6f0b9 - INFO - StateManager initialized with session eea6f0b9
+[GUI] Regular Chat - User: NVDA Technical Analysis for next week
+[08/16/25 20:32:43] INFO     Processing request of type ListToolsRequest        server.py:624
+2025-08-16 20:32:50,126 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/16/25 20:32:50] INFO     Processing request of type ListToolsRequest        server.py:624
+2025-08-16 20:32:55,987 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/16/25 20:32:56] INFO     Processing request of type CallToolRequest         server.py:624
+                    INFO     Processing request of type CallToolRequest         server.py:624
+                    INFO     Processing request of type CallToolRequest         server.py:624
+                    INFO     Processing request of type CallToolRequest         server.py:624
+                    INFO     Processing request of type ListToolsRequest        server.py:624
+2025-08-16 20:33:09,532 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[GUI] Regular Chat Response: ### NVDA Technical Analysis
+
+**Current Price Data:**
+- Open: $181.88
+- High: $181.90
+- Low: $178.04
+...
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2038, in postprocess_data
+    prediction_value = block.postprocess(prediction_value)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/components/chatbot.py", line 633, in postprocess
+    self._check_format(value, "tuples")
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/components/chatbot.py", line 430, in _check_format
+    raise Error(
+gradio.exceptions.Error: 'Data incompatible with tuples format. Each message should be a list of length 2.'
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1983, in postprocess_data
+    self.validate_outputs(block_fn, predictions)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1938, in validate_outputs
+    raise ValueError(
+ValueError: A  function didn't return enough output values (needed: 10, returned: 1).
+    Output components:
+        [textbox, chatbot, state, state, markdown, state, dataframe, dataframe, dataframe, markdown]
+    Output values returned:
+        [<coroutine object handle_button_click at 0x72535d12e7a0>]
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1983, in postprocess_data
+    self.validate_outputs(block_fn, predictions)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1938, in validate_outputs
+    raise ValueError(
+ValueError: A  function didn't return enough output values (needed: 10, returned: 1).
+    Output components:
+        [textbox, chatbot, state, state, markdown, state, dataframe, dataframe, dataframe, markdown]
+    Output values returned:
+        [<coroutine object handle_button_click at 0x72535d12eb60>]
+Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/queueing.py", line 626, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/route_utils.py", line 350, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 2260, in process_api
+    data = await self.postprocess_data(block_fn, result["prediction"], state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1983, in postprocess_data
+    self.validate_outputs(block_fn, predictions)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/gradio/blocks.py", line 1938, in validate_outputs
+    raise ValueError(
+ValueError: A  function didn't return enough output values (needed: 10, returned: 1).
+    Output components:
+        [textbox, chatbot, state, state, markdown, state, dataframe, dataframe, dataframe, markdown]
+    Output values returned:
+        [<coroutine object handle_button_click at 0x72535d12ef20>]
+
 
 ## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
 - Start an automous Code\Doc Review and Fix Loop until we get a passing code review
-- If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
+- If PASSING code review, perform an autonomous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes
 ##
 
 
