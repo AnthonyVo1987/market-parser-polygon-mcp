@@ -230,8 +230,8 @@ class TestStateManager(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.RESPONSE_RECEIVED)
         
-        # Step 5: Parse response
-        success = self.manager.transition('parse')
+        # Step 5: Parse response using text parsing
+        success = self.manager.transition('parse_text')
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.PARSING_RESPONSE)
         

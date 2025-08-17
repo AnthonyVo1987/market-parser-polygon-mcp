@@ -1,0 +1,79 @@
+2025-08-17 13:46:23,535 - response_parser - ERROR - 🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation
+2025-08-17 13:46:23,536 - response_parser - ERROR - Input type: <class 'str'>
+2025-08-17 13:46:23,536 - response_parser - ERROR - Input length: 184 characters
+2025-08-17 13:46:23,536 - response_parser - ERROR - Input repr (first 500 chars): 'Current price: $180.45  \nPercentage change: -1.3%  \nDollar change: -$2.28  \nVolume: 156,591,397 shares  \nVWAP: $179.92  \nOpen: $181.88  \nHigh: $181.90  \nLow: $178.04  \nClose: $180.45  '
+2025-08-17 13:46:23,536 - response_parser - ERROR - Input content (first 500 chars):
+Current price: $180.45  
+Percentage change: -1.3%  
+Dollar change: -$2.28  
+Volume: 156,591,397 shares  
+VWAP: $179.92  
+Open: $181.88  
+High: $181.90  
+Low: $178.04  
+Close: $180.45  
+2025-08-17 13:46:23,537 - response_parser - ERROR - Financial indicators: price=1, $=7, %=1, volume=1
+2025-08-17 13:46:23,537 - response_parser - ERROR - Pattern 'current_price': 1 matches - ['180.45']
+2025-08-17 13:46:23,538 - response_parser - ERROR - Pattern 'percentage': 1 matches - ['-1.3']
+2025-08-17 13:46:23,538 - response_parser - ERROR - Pattern 'dollar_value': 7 matches - ['180.45', '2.28', '179.92']
+2025-08-17 13:46:23,539 - response_parser - ERROR - Pattern 'volume': 1 matches - ['156,591,397']
+2025-08-17 13:46:23,539 - response_parser - ERROR - $ context 1 at pos 15: ...'Current price: $180.45  \nPercentage change: -'...
+2025-08-17 13:46:23,539 - response_parser - ERROR - $ context 2 at pos 68: ...'ange: -1.3%  \nDollar change: -$2.28  \nVolume: 156,591,397 sh'...
+2025-08-17 13:46:23,540 - response_parser - ERROR - $ context 3 at pos 111: ...'e: 156,591,397 shares  \nVWAP: $179.92  \nOpen: $181.88  \nHigh'...
+2025-08-17 13:46:23,540 - response_parser - ERROR - $ context 4 at pos 127: ...'hares  \nVWAP: $179.92  \nOpen: $181.88  \nHigh: $181.90  \nLow:'...
+2025-08-17 13:46:23,540 - response_parser - ERROR - $ context 5 at pos 143: ...'79.92  \nOpen: $181.88  \nHigh: $181.90  \nLow: $178.04  \nClose'...
+2025-08-17 13:46:23,542 - response_parser - ERROR - 🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation
+2025-08-17 13:46:23,542 - response_parser - ERROR - Input type: <class 'str'>
+2025-08-17 13:46:23,542 - response_parser - ERROR - Input length: 0 characters
+2025-08-17 13:46:23,543 - response_parser - ERROR - Input repr (first 500 chars): ''
+2025-08-17 13:46:23,543 - response_parser - ERROR - Input content (first 500 chars):
+
+2025-08-17 13:46:23,543 - response_parser - ERROR - Financial indicators: price=0, $=0, %=0, volume=0
+2025-08-17 13:46:23,543 - response_parser - ERROR - Pattern 'current_price': 0 matches - []
+2025-08-17 13:46:23,543 - response_parser - ERROR - Pattern 'percentage': 0 matches - []
+2025-08-17 13:46:23,544 - response_parser - ERROR - Pattern 'dollar_value': 0 matches - []
+2025-08-17 13:46:23,544 - response_parser - ERROR - Pattern 'volume': 0 matches - []
+2025-08-17 13:46:23,546 - response_parser - ERROR - 🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation
+2025-08-17 13:46:23,546 - response_parser - ERROR - Input type: <class 'str'>
+2025-08-17 13:46:23,546 - response_parser - ERROR - Input length: 4 characters
+2025-08-17 13:46:23,547 - response_parser - ERROR - Input repr (first 500 chars): 'null'
+2025-08-17 13:46:23,547 - response_parser - ERROR - Input content (first 500 chars):
+null
+2025-08-17 13:46:23,547 - response_parser - ERROR - Financial indicators: price=0, $=0, %=0, volume=0
+2025-08-17 13:46:23,547 - response_parser - ERROR - Pattern 'current_price': 0 matches - []
+2025-08-17 13:46:23,547 - response_parser - ERROR - Pattern 'percentage': 0 matches - []
+2025-08-17 13:46:23,548 - response_parser - ERROR - Pattern 'dollar_value': 0 matches - []
+2025-08-17 13:46:23,548 - response_parser - ERROR - Pattern 'volume': 0 matches - []
+2025-08-17 13:46:23,548 - response_parser - ERROR - 🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation
+2025-08-17 13:46:23,548 - response_parser - ERROR - Input type: <class 'str'>
+2025-08-17 13:46:23,548 - response_parser - ERROR - Input length: 36 characters
+2025-08-17 13:46:23,549 - response_parser - ERROR - Input repr (first 500 chars): 'Error: Unable to fetch data for NVDA'
+2025-08-17 13:46:23,549 - response_parser - ERROR - Input content (first 500 chars):
+Error: Unable to fetch data for NVDA
+2025-08-17 13:46:23,549 - response_parser - ERROR - Financial indicators: price=0, $=0, %=0, volume=0
+2025-08-17 13:46:23,549 - response_parser - ERROR - Pattern 'current_price': 0 matches - []
+2025-08-17 13:46:23,550 - response_parser - ERROR - Pattern 'percentage': 0 matches - []
+2025-08-17 13:46:23,550 - response_parser - ERROR - Pattern 'dollar_value': 0 matches - []
+2025-08-17 13:46:23,550 - response_parser - ERROR - Pattern 'volume': 0 matches - []
+2025-08-17 13:46:23,550 - response_parser - ERROR - 🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation
+2025-08-17 13:46:23,550 - response_parser - ERROR - Input type: <class 'str'>
+2025-08-17 13:46:23,551 - response_parser - ERROR - Input length: 60 characters
+2025-08-17 13:46:23,551 - response_parser - ERROR - Input repr (first 500 chars): 'I apologize, but I cannot retrieve the current stock data...'
+2025-08-17 13:46:23,551 - response_parser - ERROR - Input content (first 500 chars):
+I apologize, but I cannot retrieve the current stock data...
+2025-08-17 13:46:23,551 - response_parser - ERROR - Financial indicators: price=0, $=0, %=0, volume=0
+2025-08-17 13:46:23,552 - response_parser - ERROR - Pattern 'current_price': 0 matches - []
+2025-08-17 13:46:23,552 - response_parser - ERROR - Pattern 'percentage': 0 matches - []
+2025-08-17 13:46:23,552 - response_parser - ERROR - Pattern 'dollar_value': 0 matches - []
+2025-08-17 13:46:23,552 - response_parser - ERROR - Pattern 'volume': 0 matches - []
+2025-08-17 13:46:23,552 - response_parser - ERROR - 🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation
+2025-08-17 13:46:23,553 - response_parser - ERROR - Input type: <class 'str'>
+2025-08-17 13:46:23,553 - response_parser - ERROR - Input length: 52 characters
+2025-08-17 13:46:23,553 - response_parser - ERROR - Input repr (first 500 chars): '{"current_price": 180.45, "percentage_change": -1.3}'
+2025-08-17 13:46:23,553 - response_parser - ERROR - Input content (first 500 chars):
+{"current_price": 180.45, "percentage_change": -1.3}
+2025-08-17 13:46:23,554 - response_parser - ERROR - Financial indicators: price=1, $=0, %=0, volume=0
+2025-08-17 13:46:23,554 - response_parser - ERROR - Pattern 'current_price': 0 matches - []
+2025-08-17 13:46:23,554 - response_parser - ERROR - Pattern 'percentage': 0 matches - []
+2025-08-17 13:46:23,554 - response_parser - ERROR - Pattern 'dollar_value': 0 matches - []
+2025-08-17 13:46:23,554 - response_parser - ERROR - Pattern 'volume': 0 matches - []

@@ -21,7 +21,9 @@ from pydantic_ai.models.openai import OpenAIResponsesModel
 # Import our comprehensive systems
 from stock_data_fsm import StateManager, AppState
 from response_parser import ResponseParser, DataType
+# response_validator removed - band-aid fix eliminated for JSON re-architecture
 from prompt_templates import PromptTemplateManager, PromptType
+from json_debug_logger import json_debug_logger, create_workflow_id
 
 # Reuse server factory and token tracking from CLI
 from market_parser_demo import create_polygon_mcp_server, TokenCostTracker
@@ -42,6 +44,7 @@ model = OpenAIResponsesModel(MODEL_NAME)
 # Initialize enhanced systems
 prompt_manager = PromptTemplateManager()
 response_parser = ResponseParser(log_level=logging.INFO)
+# response_validator initialization removed - band-aid fix eliminated
 
 # Enhanced system prompt for structured output
 base_system_prompt = (
@@ -166,8 +169,11 @@ async def handle_user_message(
     snapshot_df: pd.DataFrame,
     sr_df: pd.DataFrame,
     tech_df: pd.DataFrame,
+    snapshot_json: str,
+    sr_json: str,
+    tech_json: str,
     debug_state: str,
-) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, pd.DataFrame, pd.DataFrame, pd.DataFrame, str, str, str, str]:
     """
     Enhanced message handler with loading states and improved error handling.
     """
@@ -206,7 +212,8 @@ async def handle_user_message(
             
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, snapshot_df, sr_df, tech_df, processing_status.status_message
+                fsm_manager, snapshot_df, sr_df, tech_df, 
+                snapshot_json, sr_json, tech_json, processing_status.status_message
             )
         
         else:
@@ -250,12 +257,19 @@ async def handle_button_click(
     snapshot_df: pd.DataFrame,
     sr_df: pd.DataFrame,
     tech_df: pd.DataFrame,
+    snapshot_json: str,
+    sr_json: str,
+    tech_json: str,
     debug_state: str,
-) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, pd.DataFrame, pd.DataFrame, pd.DataFrame, str]:
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, pd.DataFrame, pd.DataFrame, pd.DataFrame, str, str, str, str]:
     """
     Enhanced button click handler with comprehensive loading states and error handling.
     """
     print(f"[GUI] Button clicked: {button_type} for {ticker}")
+    
+    # Create unique workflow ID for comprehensive JSON debug tracking
+    workflow_id = create_workflow_id(button_type, ticker or "unknown")
+    print(f"[WORKFLOW DEBUG] 🆔 Created workflow ID: {workflow_id}")
     
     # Start processing with detailed steps
     processing_status.start_processing(f"Processing {button_type} analysis", total_steps=7)
@@ -300,7 +314,8 @@ async def handle_button_click(
             gr.Error(f"Unknown analysis type: {button_type}")
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, snapshot_df, sr_df, tech_df, processing_status.status_message
+                fsm_manager, snapshot_df, sr_df, tech_df, 
+                snapshot_json, sr_json, tech_json, processing_status.status_message
             )
         
         # Step 3: Prepare prompt and transition FSM
@@ -319,11 +334,32 @@ async def handle_button_click(
         fsm_manager.context.ai_response = response.output
         fsm_manager.transition('response_received')
         
-        # Step 5: Parse AI response
+        # Start comprehensive JSON workflow tracking
+        workflow_metrics = json_debug_logger.start_json_workflow(
+            workflow_id, button_type, fsm_manager.context.ticker, response.output
+        )
+        
+        # Step 5: Parse AI response with comprehensive JSON debug logging
         processing_status.update_step("Parsing structured data...", 5)
         fsm_manager.transition('parse')
         
-        # Enhanced parsing with detailed feedback
+        # 🔍 COMPREHENSIVE JSON WORKFLOW LOGGING
+        print(f"[JSON DEBUG] 🚀 Starting JSON parsing workflow for {button_type}")
+        print(f"[JSON DEBUG] 🎯 Ticker: {fsm_manager.context.ticker}")
+        print(f"[JSON DEBUG] 📄 AI Response size: {len(fsm_manager.context.ai_response)} characters")
+        print(f"[JSON DEBUG] 📄 AI Response preview: {repr(fsm_manager.context.ai_response[:200])}...")
+        
+        # Analyze response for JSON indicators
+        json_indicators = {
+            'contains_json_block': '```json' in fsm_manager.context.ai_response.lower(),
+            'contains_braces': '{' in fsm_manager.context.ai_response and '}' in fsm_manager.context.ai_response,
+            'starts_with_brace': fsm_manager.context.ai_response.strip().startswith('{'),
+            'brace_count': fsm_manager.context.ai_response.count('{'),
+            'quote_count': fsm_manager.context.ai_response.count('"')
+        }
+        print(f"[JSON DEBUG] 📊 Response analysis: {json_indicators}")
+        
+        # Enhanced parsing with detailed feedback and JSON workflow
         data_type_map = {
             'snapshot': DataType.SNAPSHOT,
             'support_resistance': DataType.SUPPORT_RESISTANCE,
@@ -331,25 +367,110 @@ async def handle_button_click(
         }
         
         data_type = data_type_map[button_type]
+        print(f"[JSON DEBUG] 🔍 Parsing as data type: {data_type}")
+        
+        parse_start_time = time.time()
         parse_result = response_parser.parse_any(
             fsm_manager.context.ai_response, 
             data_type, 
             fsm_manager.context.ticker
         )
+        parse_time = (time.time() - parse_start_time) * 1000
         
-        # Update appropriate DataFrame
+        print(f"[JSON DEBUG] ⏱️ Parsing completed in {parse_time:.1f}ms")
+        print(f"[JSON DEBUG] 📊 Parse result confidence: {parse_result.confidence.value}")
+        print(f"[JSON DEBUG] 📦 Extracted fields: {len(parse_result.parsed_data)}")
+        print(f"[JSON DEBUG] ⚠️ Parse warnings: {len(parse_result.warnings)}")
+        
+        if parse_result.warnings:
+            print(f"[JSON DEBUG] ⚠️ Warnings details: {parse_result.warnings}")
+            
+        if hasattr(parse_result, 'matched_patterns'):
+            print(f"[JSON DEBUG] ✅ Matched patterns: {len(parse_result.matched_patterns)}")
+            print(f"[JSON DEBUG] ❌ Failed patterns: {len(parse_result.failed_patterns)}")
+        
+        # Update appropriate DataFrame and JSON output with comprehensive logging
+        import json
+        
+        df_conversion_start = time.time()
+        
         if button_type == 'snapshot':
             snapshot_df = parse_result.to_dataframe()
+            # Format raw AI response as JSON for display
+            try:
+                # Try to parse and prettify the JSON from AI response
+                parsed_json = json.loads(fsm_manager.context.ai_response)
+                raw_json = json.dumps(parsed_json, indent=2)
+                snapshot_json = raw_json
+                json_valid = True
+                json_keys = list(parsed_json.keys()) if isinstance(parsed_json, dict) else []
+            except (json.JSONDecodeError, TypeError):
+                # If not valid JSON, display raw response
+                snapshot_json = fsm_manager.context.ai_response
+                json_valid = False
+                json_keys = []
+                
+            # Log raw JSON output for debugging
+            json_debug_logger.log_raw_json_output(workflow_id, button_type, snapshot_json, json_valid)
+            
         elif button_type == 'support_resistance':
             sr_df = parse_result.to_dataframe()
+            try:
+                parsed_json = json.loads(fsm_manager.context.ai_response)
+                raw_json = json.dumps(parsed_json, indent=2)
+                sr_json = raw_json
+                json_valid = True
+                json_keys = list(parsed_json.keys()) if isinstance(parsed_json, dict) else []
+            except (json.JSONDecodeError, TypeError):
+                sr_json = fsm_manager.context.ai_response
+                json_valid = False
+                json_keys = []
+                
+            # Log raw JSON output for debugging
+            json_debug_logger.log_raw_json_output(workflow_id, button_type, sr_json, json_valid)
+            
         elif button_type == 'technical':
             tech_df = parse_result.to_dataframe()
+            try:
+                parsed_json = json.loads(fsm_manager.context.ai_response)
+                raw_json = json.dumps(parsed_json, indent=2)
+                tech_json = raw_json
+                json_valid = True
+                json_keys = list(parsed_json.keys()) if isinstance(parsed_json, dict) else []
+            except (json.JSONDecodeError, TypeError):
+                tech_json = fsm_manager.context.ai_response
+                json_valid = False
+                json_keys = []
+                
+            # Log raw JSON output for debugging
+            json_debug_logger.log_raw_json_output(workflow_id, button_type, tech_json, json_valid)
+        
+        df_conversion_time = (time.time() - df_conversion_start) * 1000
+        
+        # Log DataFrame conversion metrics
+        final_df = snapshot_df if button_type == 'snapshot' else sr_df if button_type == 'support_resistance' else tech_df
+        json_debug_logger.log_dataframe_conversion(
+            workflow_id, df_conversion_time, final_df.shape, json_valid, 
+            len(locals().get('raw_json', fsm_manager.context.ai_response)), json_keys
+        )
         
         fsm_manager.transition('parse_success')
+        
+        # Log FSM state transition with JSON context
+        json_debug_logger.log_fsm_state_transition(
+            workflow_id, 'parse', 'parse_success', 'parsing_complete',
+            {'confidence': parse_result.confidence.value, 'field_count': len(parse_result.parsed_data), 'json_valid': json_valid}
+        )
         
         # Step 6: Update UI and chat history
         processing_status.update_step("Updating display...", 6)
         fsm_manager.transition('update_complete')
+        
+        # Log final FSM state transition
+        json_debug_logger.log_fsm_state_transition(
+            workflow_id, 'parse_success', 'update_complete', 'ui_update',
+            {'dataframe_shape': final_df.shape, 'ui_conversion_time_ms': df_conversion_time}
+        )
         
         # Add to chat history with enhanced formatting
         confidence_emoji = "🎯" if parse_result.confidence.value == "high" else "⚡" if parse_result.confidence.value == "medium" else "⚠️"
@@ -387,6 +508,12 @@ async def handle_button_click(
         
         processing_status.complete(f"✅ {button_type.replace('_', ' ').title()} analysis complete")
         
+        # Complete comprehensive JSON workflow tracking
+        final_metrics = json_debug_logger.complete_workflow(
+            workflow_id, parse_result.confidence.value, len(parse_result.parsed_data), True
+        )
+        print(f"[WORKFLOW DEBUG] 📈 Final workflow metrics: {final_metrics}")
+        
         # Modern Gradio success notification
         gr.Info(f"✅ {button_type.replace('_', ' ').title()} analysis completed for {fsm_manager.context.ticker}")
         
@@ -394,16 +521,48 @@ async def handle_button_click(
         
         return (
             "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, snapshot_df, sr_df, tech_df, f"{processing_status.status_message}\n{debug_state}"
+            fsm_manager, snapshot_df, sr_df, tech_df, 
+            snapshot_json, sr_json, tech_json, f"{processing_status.status_message}\n{debug_state}"
         )
         
     except Exception as e:
         processing_status.error(f"Button processing error: {str(e)}")
+        
+        # Log error in comprehensive JSON workflow if workflow was started
+        if 'workflow_id' in locals():
+            error_context = {
+                'button_type': button_type,
+                'ticker': ticker,
+                'fsm_state': fsm_manager.get_current_state().name if fsm_manager else 'unknown',
+                'processing_step': processing_status.current_step,
+                'response_size': len(fsm_manager.context.ai_response) if fsm_manager and hasattr(fsm_manager.context, 'ai_response') else 0
+            }
+            json_debug_logger.log_error_condition(workflow_id, e, error_context)
+        
         print(f"[GUI] Error in button processing: {e}")
         traceback.print_exc()
         
-        # Modern Gradio error handling with user-friendly message
-        gr.Error(f"Failed to process {button_type.replace('_', ' ').title()} analysis: {str(e)}")
+        # Enhanced error categorization for better user experience
+        error_str = str(e).lower()
+        if 'connection' in error_str or 'timeout' in error_str:
+            gr.Warning("Connection timeout. Please check your internet connection and try again.")
+        elif 'authentication' in error_str or 'unauthorized' in error_str:
+            gr.Error("Authentication failed. Please check your API keys.")
+        elif 'rate limit' in error_str or 'quota' in error_str:
+            gr.Warning("Rate limit exceeded. Please wait a moment and try again.")
+        else:
+            gr.Error(f"Failed to process {button_type.replace('_', ' ').title()} analysis: {str(e)}")
+        
+        # CRITICAL FIX: Clear DataFrames on general error to prevent stale data display
+        empty_df = pd.DataFrame()
+        
+        # Clear the specific DataFrame that failed, keep others intact
+        if button_type == 'snapshot':
+            snapshot_df = empty_df
+        elif button_type == 'support_resistance':
+            sr_df = empty_df
+        elif button_type == 'technical':
+            tech_df = empty_df
         
         # Force FSM to error state and provide recovery
         fsm_manager._emergency_transition_to_error(str(e))
@@ -419,7 +578,8 @@ async def handle_button_click(
         
         return (
             "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, snapshot_df, sr_df, tech_df, f"{processing_status.status_message}\n{debug_state}"
+            fsm_manager, snapshot_df, sr_df, tech_df, 
+            snapshot_json, sr_json, tech_json, f"{processing_status.status_message}\n{debug_state}"
         )
 
 
@@ -496,6 +656,9 @@ def _clear_enhanced():
         empty_df,  # snapshot_df_display
         empty_df,  # sr_df_display
         empty_df,  # tech_df_display
+        "",  # snapshot_json_output
+        "",  # sr_json_output
+        "",  # tech_json_output
         "**FSM Reset** - Ready for new analysis"  # debug_display
     )
 
@@ -675,6 +838,41 @@ def create_enhanced_chat_interface():
                     wrap=True
                 )
         
+        # -------- JSON Output Display Area --------
+        gr.Markdown("### 🔧 Raw JSON Outputs")
+        gr.Markdown("View the raw JSON responses from each analysis button:")
+        
+        with gr.Row():
+            with gr.Column():
+                gr.Markdown("**📈 Snapshot JSON**")
+                snapshot_json_output = gr.Code(
+                    label="Stock Snapshot Raw JSON",
+                    language="json",
+                    interactive=False,
+                    lines=10,
+                    value=""
+                )
+            
+            with gr.Column():
+                gr.Markdown("**🎯 Support & Resistance JSON**")
+                sr_json_output = gr.Code(
+                    label="Support & Resistance Raw JSON", 
+                    language="json",
+                    interactive=False,
+                    lines=10,
+                    value=""
+                )
+            
+            with gr.Column():
+                gr.Markdown("**🔧 Technical Analysis JSON**")
+                tech_json_output = gr.Code(
+                    label="Technical Analysis Raw JSON",
+                    language="json", 
+                    interactive=False,
+                    lines=10,
+                    value=""
+                )
+        
         # -------- Enhanced Debug and Monitoring --------
         with gr.Accordion("🔍 System Monitoring & Debug", open=False):
             debug_display = gr.Markdown("FSM Debug info will appear here")
@@ -698,6 +896,11 @@ def create_enhanced_chat_interface():
         sr_df_state = gr.State(pd.DataFrame())
         tech_df_state = gr.State(pd.DataFrame())
         
+        # JSON output states
+        snapshot_json_state = gr.State("")
+        sr_json_state = gr.State("")
+        tech_json_state = gr.State("")
+        
         # -------- Event Handlers with Enhanced Features --------
         
         # Modern async handlers with direct function references
@@ -713,11 +916,13 @@ def create_enhanced_chat_interface():
             handle_user_message,
             inputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
+                fsm_state, snapshot_df_state, sr_df_state, tech_df_state,
+                snapshot_json_state, sr_json_state, tech_json_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
+                fsm_state, snapshot_df_display, sr_df_display, tech_df_display,
+                snapshot_json_output, sr_json_output, tech_json_output, status_display
             ]
         )
         
@@ -732,11 +937,13 @@ def create_enhanced_chat_interface():
             handle_user_message,
             inputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
+                fsm_state, snapshot_df_state, sr_df_state, tech_df_state,
+                snapshot_json_state, sr_json_state, tech_json_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
+                fsm_state, snapshot_df_display, sr_df_display, tech_df_display,
+                snapshot_json_output, sr_json_output, tech_json_output, status_display
             ]
         )
         
@@ -752,11 +959,13 @@ def create_enhanced_chat_interface():
             handle_snapshot_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
+                fsm_state, snapshot_df_state, sr_df_state, tech_df_state,
+                snapshot_json_state, sr_json_state, tech_json_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
+                fsm_state, snapshot_df_display, sr_df_display, tech_df_display,
+                snapshot_json_output, sr_json_output, tech_json_output, status_display
             ]
         )
         
@@ -771,11 +980,13 @@ def create_enhanced_chat_interface():
             handle_sr_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
+                fsm_state, snapshot_df_state, sr_df_state, tech_df_state,
+                snapshot_json_state, sr_json_state, tech_json_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
+                fsm_state, snapshot_df_display, sr_df_display, tech_df_display,
+                snapshot_json_output, sr_json_output, tech_json_output, status_display
             ]
         )
         
@@ -790,11 +1001,13 @@ def create_enhanced_chat_interface():
             handle_tech_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_df_state, sr_df_state, tech_df_state, status_display
+                fsm_state, snapshot_df_state, sr_df_state, tech_df_state,
+                snapshot_json_state, sr_json_state, tech_json_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
+                fsm_state, snapshot_df_display, sr_df_display, tech_df_display,
+                snapshot_json_output, sr_json_output, tech_json_output, status_display
             ]
         )
         
@@ -811,7 +1024,8 @@ def create_enhanced_chat_interface():
             inputs=[],
             outputs=[
                 chatbot, pyd_history_state, tracker_state, costs, export_md,
-                fsm_state, snapshot_df_display, sr_df_display, tech_df_display, status_display
+                fsm_state, snapshot_df_display, sr_df_display, tech_df_display,
+                snapshot_json_output, sr_json_output, tech_json_output, status_display
             ]
         )
         
@@ -831,14 +1045,29 @@ def create_enhanced_chat_interface():
 # -------- Application Entry Point --------
 
 if __name__ == "__main__":
-    # Initialize enhanced logging
+    # Initialize comprehensive debug logging for JSON workflows
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        level=logging.DEBUG,  # Enhanced to DEBUG level for comprehensive JSON logging
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(),  # Console output
+            logging.FileHandler('comprehensive_json_debug.log', mode='a')  # File output for JSON debugging
+        ]
     )
     
-    print("🚀 Starting Enhanced Stock Market Analysis Chat (Phase 5)")
+    # Configure JSON parser logging specifically
+    json_logger = logging.getLogger('json_parser')
+    json_logger.setLevel(logging.DEBUG)
+    
+    # Configure response parser logging for comprehensive debugging
+    response_logger = logging.getLogger('response_parser')
+    response_logger.setLevel(logging.DEBUG)
+    
+    print("🚀 Starting Enhanced Stock Market Analysis Chat (Phase 5 + Comprehensive JSON Debug)")
     print("🎯 Features: FSM + Enhanced Parsing + Prompt Templates + Loading States + Error Handling")
+    print("🔍 Enhanced Features: Comprehensive JSON Debug Logging + Raw JSON Output + Performance Metrics")
+    print(f"[LOGGING] 📄 Debug logs written to: comprehensive_json_debug.log + json_workflow_debug.log")
+    print(f"[LOGGING] 📊 Log level: DEBUG (comprehensive JSON tracing enabled)")
     
     # Create and launch the enhanced interface
     demo = create_enhanced_chat_interface()

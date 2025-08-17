@@ -184,6 +184,41 @@ class ResponseParser:
         self.logger.info(f"Parsing stock snapshot from {len(text)} character response")
         self.logger.debug(f"Response contains key indicators: price={bool('price' in text.lower())}, percent={'%' in text}, dollar={'$' in text}")
         
+        # CRITICAL DEBUG: Production bug investigation
+        self.logger.error("🚨 CRITICAL DEBUG: Parser input analysis for production bug investigation")
+        self.logger.error(f"Input type: {type(text)}")
+        self.logger.error(f"Input length: {len(text)} characters")
+        self.logger.error(f"Input repr (first 500 chars): {repr(text[:500])}")
+        self.logger.error(f"Input content (first 500 chars):\n{text[:500]}")
+        
+        # Check for key financial indicators
+        price_count = len(re.findall(r'price', text, re.IGNORECASE))
+        dollar_count = text.count('$')
+        percent_count = text.count('%')
+        volume_count = len(re.findall(r'volume', text, re.IGNORECASE))
+        
+        self.logger.error(f"Financial indicators: price={price_count}, $={dollar_count}, %={percent_count}, volume={volume_count}")
+        
+        # Test critical patterns manually for detailed debugging
+        test_patterns = {
+            'current_price': r'(?:current\s+)?price[:\s]*\$?\s*([\d,]+\.\d+)',
+            'percentage': r'([\+\-]?[\d\.]+)%',
+            'dollar_value': r'\$\s*([\d,]+\.\d+)',
+            'volume': r'volume[:\s]*([\d,]+(?:\.\d+)?[KMB]?)'
+        }
+        
+        for name, pattern in test_patterns.items():
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            self.logger.error(f"Pattern '{name}': {len(matches)} matches - {matches[:3]}")
+        
+        # Show context around each $ sign for debugging
+        dollar_positions = [m.start() for m in re.finditer(r'\$', text)]
+        for i, pos in enumerate(dollar_positions[:5]):  # Show first 5
+            start = max(0, pos - 30)
+            end = min(len(text), pos + 30)
+            context = text[start:end]
+            self.logger.error(f"$ context {i+1} at pos {pos}: ...{repr(context)}...")
+        
         result = ParseResult(
             data_type=DataType.SNAPSHOT,
             raw_response=text,

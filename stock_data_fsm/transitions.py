@@ -104,6 +104,49 @@ class TransitionGuards:
         if not context.button_type:
             return False
         return context.button_type in ['snapshot', 'support_resistance', 'technical']
+    
+    # === JSON Workflow Guards ===
+    
+    @staticmethod
+    def has_raw_json_response(context: StateContext) -> bool:
+        """Check if raw JSON response is available"""
+        return context.raw_json_response is not None and len(context.raw_json_response.strip()) > 0
+    
+    @staticmethod
+    def has_valid_json_format(context: StateContext) -> bool:
+        """Check if the response contains valid JSON format"""
+        if not context.raw_json_response:
+            return False
+        try:
+            import json
+            json.loads(context.raw_json_response)
+            return True
+        except (json.JSONDecodeError, ValueError):
+            return False
+    
+    @staticmethod
+    def has_validated_json_data(context: StateContext) -> bool:
+        """Check if JSON validation has completed successfully"""
+        return (context.validated_json_data is not None and 
+                context.json_validation_result is not None and
+                context.json_validation_result.get('valid', False))
+    
+    @staticmethod
+    def has_json_schema_type(context: StateContext) -> bool:
+        """Check if JSON schema type is determined"""
+        return context.json_schema_type in ['snapshot', 'support_resistance', 'technical']
+    
+    @staticmethod
+    def can_retry_json_validation(context: StateContext) -> bool:
+        """Check if JSON validation can be retried"""
+        return (context.raw_json_response is not None and
+                context.error_recovery_attempts < 3)
+    
+    @staticmethod
+    def can_fallback_to_text_parsing(context: StateContext) -> bool:
+        """Check if we can fallback to text parsing when JSON fails"""
+        return (context.ai_response is not None and
+                len(context.ai_response.strip()) > 0)
 
 
 class StateTransitions:
@@ -194,10 +237,68 @@ class StateTransitions:
             ),
             
             # === FROM RESPONSE_RECEIVED STATE ===
-            (AppState.RESPONSE_RECEIVED, 'parse'): (
+            (AppState.RESPONSE_RECEIVED, 'extract_json'): (
+                AppState.JSON_RECEIVED,
+                TransitionGuards.has_ai_response,
+                'on_extract_json'
+            ),
+            (AppState.RESPONSE_RECEIVED, 'parse_text'): (
                 AppState.PARSING_RESPONSE,
                 TransitionGuards.has_ai_response,
-                'on_start_parsing'
+                'on_start_text_parsing'
+            ),
+            
+            # === FROM JSON_RECEIVED STATE ===
+            (AppState.JSON_RECEIVED, 'validate_json'): (
+                AppState.JSON_VALIDATING,
+                TransitionGuards.has_raw_json_response,
+                'on_start_json_validation'
+            ),
+            (AppState.JSON_RECEIVED, 'fallback_to_text'): (
+                AppState.PARSING_RESPONSE,
+                TransitionGuards.can_fallback_to_text_parsing,
+                'on_json_fallback_to_text'
+            ),
+            
+            # === FROM JSON_VALIDATING STATE ===
+            (AppState.JSON_VALIDATING, 'validation_success'): (
+                AppState.JSON_VALIDATED,
+                TransitionGuards.has_validated_json_data,
+                'on_json_validation_success'
+            ),
+            (AppState.JSON_VALIDATING, 'validation_failed'): (
+                AppState.JSON_VALIDATION_FAILED,
+                None,
+                'on_json_validation_failed'
+            ),
+            (AppState.JSON_VALIDATING, 'validation_error'): (
+                AppState.ERROR,
+                None,
+                'on_json_validation_error'
+            ),
+            
+            # === FROM JSON_VALIDATED STATE ===
+            (AppState.JSON_VALIDATED, 'parse_validated_json'): (
+                AppState.PARSING_RESPONSE,
+                TransitionGuards.has_validated_json_data,
+                'on_parse_validated_json'
+            ),
+            
+            # === FROM JSON_VALIDATION_FAILED STATE ===
+            (AppState.JSON_VALIDATION_FAILED, 'retry_validation'): (
+                AppState.JSON_VALIDATING,
+                TransitionGuards.can_retry_json_validation,
+                'on_retry_json_validation'
+            ),
+            (AppState.JSON_VALIDATION_FAILED, 'fallback_to_text'): (
+                AppState.PARSING_RESPONSE,
+                TransitionGuards.can_fallback_to_text_parsing,
+                'on_validation_fallback_to_text'
+            ),
+            (AppState.JSON_VALIDATION_FAILED, 'validation_abort'): (
+                AppState.ERROR,
+                None,
+                'on_json_validation_abort'
             ),
             
             # === FROM PARSING_RESPONSE STATE ===
@@ -285,6 +386,26 @@ class StateTransitions:
                 None,
                 'on_emergency_reset'
             ),
+            (AppState.JSON_RECEIVED, 'emergency_reset'): (
+                AppState.IDLE,
+                None,
+                'on_emergency_reset'
+            ),
+            (AppState.JSON_VALIDATING, 'emergency_reset'): (
+                AppState.IDLE,
+                None,
+                'on_emergency_reset'
+            ),
+            (AppState.JSON_VALIDATED, 'emergency_reset'): (
+                AppState.IDLE,
+                None,
+                'on_emergency_reset'
+            ),
+            (AppState.JSON_VALIDATION_FAILED, 'emergency_reset'): (
+                AppState.IDLE,
+                None,
+                'on_emergency_reset'
+            ),
             (AppState.PARSING_RESPONSE, 'emergency_reset'): (
                 AppState.IDLE,
                 None,
@@ -309,7 +430,7 @@ class StateTransitions:
         # Validate that all states have at least one outgoing transition
         states_with_outgoing = {key[0] for key in self._transitions.keys()}
         for state in AppState:
-            if state not in states_with_outgoing and state != AppState.ERROR:
+            if state not in states_with_outgoing and state not in [AppState.ERROR]:
                 self.logger.warning(f"State {state.name} has no outgoing transitions")
         
         self.logger.info(f"Validated {len(self._transitions)} state transitions")

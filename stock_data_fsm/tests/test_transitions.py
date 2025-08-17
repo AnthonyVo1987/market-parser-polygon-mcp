@@ -283,7 +283,13 @@ class TestStateTransitions(unittest.TestCase):
             (AppState.BUTTON_TRIGGERED, 'prepare_prompt'),
             (AppState.PROMPT_PREPARING, 'prompt_ready'),
             (AppState.AI_PROCESSING, 'response_received'),
-            (AppState.RESPONSE_RECEIVED, 'parse'),
+            # JSON workflow paths
+            (AppState.RESPONSE_RECEIVED, 'extract_json'),
+            (AppState.RESPONSE_RECEIVED, 'parse_text'),
+            (AppState.JSON_RECEIVED, 'validate_json'),
+            (AppState.JSON_VALIDATING, 'validation_success'),
+            (AppState.JSON_VALIDATED, 'parse_validated_json'),
+            # Text parsing fallback
             (AppState.PARSING_RESPONSE, 'parse_success'),
             (AppState.UPDATING_UI, 'update_complete'),
             

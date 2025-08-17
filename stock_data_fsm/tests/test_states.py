@@ -13,9 +13,10 @@ class TestAppState(unittest.TestCase):
     def test_all_states_defined(self):
         """Test that all required states are defined"""
         expected_states = {
-            'IDLE', 'BUTTON_TRIGGERED', 'PROMPT_PREPARING', 
-            'AI_PROCESSING', 'RESPONSE_RECEIVED', 'PARSING_RESPONSE',
-            'UPDATING_UI', 'ERROR'
+            'IDLE', 'BUTTON_TRIGGERED', 'PROMPT_PREPARING',
+            'AI_PROCESSING', 'RESPONSE_RECEIVED', 'JSON_RECEIVED', 
+            'JSON_VALIDATING', 'JSON_VALIDATED', 'JSON_VALIDATION_FAILED',
+            'PARSING_RESPONSE', 'UPDATING_UI', 'ERROR'
         }
         
         actual_states = {state.name for state in AppState}

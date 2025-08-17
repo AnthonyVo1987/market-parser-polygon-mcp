@@ -21,7 +21,11 @@ class AppState(Enum):
         BUTTON_TRIGGERED: User clicked a data request button
         PROMPT_PREPARING: Building AI prompt with ticker information
         AI_PROCESSING: Waiting for AI agent response
-        RESPONSE_RECEIVED: AI response received, ready for parsing
+        RESPONSE_RECEIVED: AI response received, ready for processing
+        JSON_RECEIVED: Raw JSON response stored, ready for validation
+        JSON_VALIDATING: Actively validating JSON against schemas
+        JSON_VALIDATED: JSON validation successful, ready for parsing
+        JSON_VALIDATION_FAILED: JSON validation failed, recovery needed
         PARSING_RESPONSE: Extracting structured data from response
         UPDATING_UI: Updating GUI components with parsed data
         ERROR: Error state with recovery options
@@ -31,6 +35,10 @@ class AppState(Enum):
     PROMPT_PREPARING = auto()
     AI_PROCESSING = auto()
     RESPONSE_RECEIVED = auto()
+    JSON_RECEIVED = auto()
+    JSON_VALIDATING = auto()
+    JSON_VALIDATED = auto()
+    JSON_VALIDATION_FAILED = auto()
     PARSING_RESPONSE = auto()
     UPDATING_UI = auto()
     ERROR = auto()
@@ -91,6 +99,12 @@ class StateContext:
     prompt: Optional[str] = None
     ai_response: Optional[str] = None
     
+    # JSON workflow data
+    raw_json_response: Optional[str] = None
+    json_validation_result: Optional[Dict[str, Any]] = None
+    validated_json_data: Optional[Dict[str, Any]] = None
+    json_schema_type: Optional[str] = None  # 'snapshot', 'support_resistance', 'technical'
+    
     # Parsed data storage
     parsed_data: Dict[str, Any] = field(default_factory=dict)
     
@@ -140,6 +154,10 @@ class StateContext:
         self.ticker = None
         self.prompt = None
         self.ai_response = None
+        self.raw_json_response = None
+        self.json_validation_result = None
+        self.validated_json_data = None
+        self.json_schema_type = None
         self.parsed_data.clear()
         self.error_message = None
         self.error_recovery_attempts = 0
@@ -189,6 +207,10 @@ class StateContext:
             'ticker': self.ticker,
             'prompt': self.prompt,
             'ai_response': self.ai_response,
+            'raw_json_response': self.raw_json_response,
+            'json_validation_result': self.json_validation_result,
+            'validated_json_data': self.validated_json_data,
+            'json_schema_type': self.json_schema_type,
             'parsed_data': self.parsed_data.copy(),
             'error_message': self.error_message,
             'error_recovery_attempts': self.error_recovery_attempts,

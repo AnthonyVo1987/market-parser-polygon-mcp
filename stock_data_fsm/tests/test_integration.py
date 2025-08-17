@@ -58,8 +58,8 @@ class TestFSMIntegration(unittest.TestCase):
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.RESPONSE_RECEIVED)
         
-        # Simulate parsing
-        success = self.manager.transition('parse')
+        # Simulate text parsing (bypassing JSON workflow for this text response)
+        success = self.manager.transition('parse_text')
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.PARSING_RESPONSE)
         
@@ -101,7 +101,7 @@ class TestFSMIntegration(unittest.TestCase):
         mock_response = "The stock has some support and resistance, maybe around various levels."
         
         self.manager.transition('response_received', ai_response=mock_response)
-        self.manager.transition('parse')
+        self.manager.transition('parse_text')
         
         # Simulate parse failure (fallback to raw display)
         success = self.manager.transition('parse_failed')
@@ -209,7 +209,7 @@ class TestFSMIntegration(unittest.TestCase):
         self.manager.transition('prepare_prompt')
         self.manager.transition('prompt_ready')
         self.manager.transition('response_received', ai_response='Mock response')
-        self.manager.transition('parse')
+        self.manager.transition('parse_text')
         self.manager.transition('parse_success', parsed_data={'price': 100})
         self.manager.transition('update_complete')
         

@@ -2,14 +2,15 @@
 Stock Market Analysis Prompt Templates
 
 This module provides sophisticated prompt templates for structured stock market analysis,
-optimized for FSM-driven interactions with enhanced parsing compatibility.
+optimized for FSM-driven interactions with JSON schema-based responses.
 
 Features:
-- Template-based prompt generation with consistent formatting
+- Template-based prompt generation with JSON schema compliance
 - Ticker symbol extraction and context awareness
-- System prompt enhancements for structured output
+- System prompt enhancements for structured JSON output
 - Multi-stock analysis consistency
-- Response formatting instructions optimized for ResponseParser
+- Response formatting instructions optimized for JSON schemas
+- Integration with json_schemas.py for API architect schemas
 """
 
 import re
@@ -18,6 +19,27 @@ from typing import Dict, Any, List, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from enum import Enum
 import json
+from datetime import datetime
+
+# Import JSON schemas from the API architect
+try:
+    from json_schemas import (
+        SNAPSHOT_SCHEMA, 
+        SUPPORT_RESISTANCE_SCHEMA, 
+        TECHNICAL_SCHEMA,
+        AnalysisType,
+        schema_registry,
+        export_schemas_for_ai_prompts
+    )
+except ImportError:
+    # Fallback for testing
+    print("Warning: json_schemas module not available. Using fallback schemas.")
+    SNAPSHOT_SCHEMA = None
+    SUPPORT_RESISTANCE_SCHEMA = None
+    TECHNICAL_SCHEMA = None
+    AnalysisType = None
+    schema_registry = None
+    export_schemas_for_ai_prompts = None
 
 
 class PromptType(Enum):
@@ -61,10 +83,10 @@ class PromptTemplate:
                 company=ticker_context.company_name or ticker_context.symbol,
             ),
             "",
-            "### FORMATTING REQUIREMENTS ###",
+            "### JSON SCHEMA REQUIREMENTS ###",
             self.formatting_instructions,
             "",
-            "### EXAMPLE RESPONSE FORMAT ###",
+            "### EXAMPLE JSON RESPONSE ###",
             self.example_response,
             ""
         ]
@@ -77,8 +99,15 @@ class PromptTemplate:
             ])
         
         prompt_parts.extend([
-            "### RESPONSE ###",
-            f"Provide the {self.template_type.value} analysis for {ticker_context.symbol} following the exact format above:"
+            "### CRITICAL RESPONSE REQUIREMENTS ###",
+            "1. Respond with VALID JSON ONLY - no explanations, no markdown, no additional text",
+            "2. Must exactly match the JSON schema structure provided above",
+            "3. All required fields must be present with appropriate data types",
+            "4. Include current timestamp in ISO 8601 format",
+            "5. Ensure all numeric values are properly formatted (no strings for numbers)",
+            "",
+            "### JSON RESPONSE ###",
+            f"Generate {self.template_type.value} analysis for {ticker_context.symbol} as valid JSON:"
         ])
         
         return "\n".join(prompt_parts)
@@ -352,15 +381,66 @@ class PromptTemplateManager:
     
     def get_enhanced_system_prompt(self, base_system_prompt: str) -> str:
         """
-        Enhance the base system prompt with structured output instructions
+        Enhance the base system prompt with structured JSON output instructions
         
         Args:
             base_system_prompt: Original system prompt
             
         Returns:
-            Enhanced system prompt with structured output guidance
+            Enhanced system prompt with JSON structured output guidance
         """
         return base_system_prompt + "\n\n" + self.system_prompt_enhancements
+    
+    def get_json_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
+                       chat_history: Optional[List[Dict]] = None,
+                       custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
+        """
+        Generate a JSON-focused prompt for the AI agent (alias for generate_prompt)
+        
+        Args:
+            prompt_type: Type of analysis prompt
+            ticker: Optional explicit ticker symbol
+            chat_history: Conversation history for context
+            custom_instructions: Additional instructions
+            
+        Returns:
+            Tuple of (generated_prompt, ticker_context)
+        """
+        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions)
+    
+    def get_available_schemas(self) -> Dict[str, Any]:
+        """
+        Get information about available JSON schemas
+        
+        Returns:
+            Dictionary with schema availability and metadata
+        """
+        schemas_info = {
+            "available": schema_registry is not None,
+            "schemas": {}
+        }
+        
+        for prompt_type in PromptType:
+            schema_available = False
+            schema_id = None
+            
+            if prompt_type == PromptType.SNAPSHOT and SNAPSHOT_SCHEMA:
+                schema_available = True
+                schema_id = SNAPSHOT_SCHEMA.get("$id", "snapshot")
+            elif prompt_type == PromptType.SUPPORT_RESISTANCE and SUPPORT_RESISTANCE_SCHEMA:
+                schema_available = True
+                schema_id = SUPPORT_RESISTANCE_SCHEMA.get("$id", "support_resistance")
+            elif prompt_type == PromptType.TECHNICAL and TECHNICAL_SCHEMA:
+                schema_available = True
+                schema_id = TECHNICAL_SCHEMA.get("$id", "technical")
+            
+            schemas_info["schemas"][prompt_type.value] = {
+                "available": schema_available,
+                "schema_id": schema_id,
+                "fallback_used": not schema_available
+            }
+        
+        return schemas_info
     
     def _build_templates(self) -> Dict[PromptType, PromptTemplate]:
         """Build all prompt templates"""
@@ -371,150 +451,290 @@ class PromptTemplateManager:
         }
     
     def _build_snapshot_template(self) -> PromptTemplate:
-        """Build stock snapshot prompt template"""
+        """Build stock snapshot prompt template with JSON schema"""
         base_template = """Provide a comprehensive stock snapshot analysis for {ticker} ({company}).
 
-Focus on current market data and recent performance metrics."""
+Focus on current market data and recent performance metrics. Return data as valid JSON only."""
 
-        formatting_instructions = """CRITICAL: Format your response with clear labels and specific numeric values:
+        # Get JSON schema if available, otherwise use simplified schema
+        if SNAPSHOT_SCHEMA:
+            schema_str = json.dumps(SNAPSHOT_SCHEMA, indent=2)
+            formatting_instructions = f"""REQUIRED JSON SCHEMA:
+The response must conform to this exact JSON schema:
 
-Required Format:
-- Current price: $XXX.XX
-- Percentage change: +X.X% or -X.X%
-- Dollar change: +$X.XX or -$X.XX  
-- Volume: X,XXX,XXX shares
-- VWAP: $XXX.XX (Volume Weighted Average Price)
-- Open: $XXX.XX
-- High: $XXX.XX  
-- Low: $XXX.XX
-- Close: $XXX.XX
+{schema_str}
 
-Use exact labels as shown above. Include dollar signs for prices, percentage signs for changes, and format numbers clearly."""
+CRITICAL REQUIREMENTS:
+- Must be valid JSON matching the schema above
+- Include current timestamp in metadata.timestamp (ISO 8601 format)
+- All numeric fields must be numbers, not strings
+- Ticker symbol must be uppercase in metadata.ticker_symbol
+- Current price, volume, and OHLC data are required"""
+        else:
+            formatting_instructions = """REQUIRED JSON FORMAT:
+{
+  "metadata": {
+    "timestamp": "2024-12-17T10:30:00Z",
+    "ticker_symbol": "TICKER",
+    "company_name": "Company Name",
+    "data_source": "polygon",
+    "confidence_score": 0.95,
+    "schema_version": "1.0"
+  },
+  "snapshot_data": {
+    "current_price": 150.25,
+    "percentage_change": 2.5,
+    "dollar_change": 3.75,
+    "volume": 45000000,
+    "vwap": 149.80,
+    "open": 148.50,
+    "high": 151.00,
+    "low": 147.25,
+    "close": 146.50
+  }
+}"""
 
-        example_response = """Current price: $150.25
-Percentage change: +2.5%
-Dollar change: +$3.75
-Volume: 45,000,000 shares
-VWAP: $149.80
-Open: $148.50
-High: $151.00
-Low: $147.25
-Close: $150.25"""
+        # Generate example response using the schema
+        current_time = datetime.utcnow().isoformat() + "Z"
+        example_response = json.dumps({
+            "metadata": {
+                "timestamp": current_time,
+                "ticker_symbol": "AAPL",
+                "company_name": "Apple Inc.",
+                "data_source": "polygon",
+                "confidence_score": 0.95,
+                "schema_version": "1.0"
+            },
+            "snapshot_data": {
+                "current_price": 150.25,
+                "percentage_change": 2.5,
+                "dollar_change": 3.75,
+                "volume": 45000000,
+                "vwap": 149.80,
+                "open": 148.50,
+                "high": 151.00,
+                "low": 147.25,
+                "close": 146.50
+            }
+        }, indent=2)
 
         return PromptTemplate(
             template_type=PromptType.SNAPSHOT,
             base_template=base_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
-            required_fields=["current_price", "percentage_change", "dollar_change", 
-                           "volume", "vwap", "open", "high", "low", "close"]
+            required_fields=["metadata", "snapshot_data"]
         )
     
     def _build_sr_template(self) -> PromptTemplate:
-        """Build support & resistance prompt template"""  
+        """Build support & resistance prompt template with JSON schema"""  
         base_template = """Analyze support and resistance levels for {ticker} ({company}).
 
-Provide 3 support levels and 3 resistance levels based on recent price action and technical analysis."""
+Provide 3 support levels and 3 resistance levels based on recent price action and technical analysis. Return data as valid JSON only."""
 
-        formatting_instructions = """CRITICAL: Format your response with exact labels for all 6 levels:
+        # Get JSON schema if available, otherwise use simplified schema
+        if SUPPORT_RESISTANCE_SCHEMA:
+            schema_str = json.dumps(SUPPORT_RESISTANCE_SCHEMA, indent=2)
+            formatting_instructions = f"""REQUIRED JSON SCHEMA:
+The response must conform to this exact JSON schema:
 
-Required Format:
-- S1: $XXX.XX (First support level)
-- S2: $XXX.XX (Second support level) 
-- S3: $XXX.XX (Third support level)
-- R1: $XXX.XX (First resistance level)
-- R2: $XXX.XX (Second resistance level)
-- R3: $XXX.XX (Third resistance level)
+{schema_str}
 
-Use exact labels S1, S2, S3, R1, R2, R3 followed by colon and price with dollar sign.
-Support levels should be below current price, resistance levels above.
-Order: S3 < S2 < S1 < Current Price < R1 < R2 < R3"""
+CRITICAL REQUIREMENTS:
+- Must be valid JSON matching the schema above
+- Include current timestamp in metadata.timestamp (ISO 8601 format)
+- All price values must be numbers, not strings
+- Support levels (S1, S2, S3) and resistance levels (R1, R2, R3) are required
+- Include strength indicators (strong, moderate, weak) for each level"""
+        else:
+            formatting_instructions = """REQUIRED JSON FORMAT:
+{
+  "metadata": {
+    "timestamp": "2024-12-17T10:30:00Z",
+    "ticker_symbol": "TICKER",
+    "company_name": "Company Name",
+    "analysis_timeframe": "1M",
+    "confidence_score": 0.85,
+    "schema_version": "1.0"
+  },
+  "support_levels": {
+    "S1": {"price": 145.50, "strength": "strong", "confidence": 0.9},
+    "S2": {"price": 142.00, "strength": "moderate", "confidence": 0.8},
+    "S3": {"price": 138.75, "strength": "weak", "confidence": 0.7}
+  },
+  "resistance_levels": {
+    "R1": {"price": 155.25, "strength": "moderate", "confidence": 0.85},
+    "R2": {"price": 158.50, "strength": "strong", "confidence": 0.9},
+    "R3": {"price": 162.00, "strength": "weak", "confidence": 0.75}
+  }
+}"""
 
-        example_response = """S1: $145.50
-S2: $142.00  
-S3: $138.75
-R1: $155.25
-R2: $158.50
-R3: $162.00"""
+        # Generate example response using the schema
+        current_time = datetime.utcnow().isoformat() + "Z"
+        example_response = json.dumps({
+            "metadata": {
+                "timestamp": current_time,
+                "ticker_symbol": "AAPL",
+                "company_name": "Apple Inc.",
+                "analysis_timeframe": "1M",
+                "confidence_score": 0.85,
+                "schema_version": "1.0"
+            },
+            "support_levels": {
+                "S1": {"price": 145.50, "strength": "strong", "confidence": 0.9},
+                "S2": {"price": 142.00, "strength": "moderate", "confidence": 0.8},
+                "S3": {"price": 138.75, "strength": "weak", "confidence": 0.7}
+            },
+            "resistance_levels": {
+                "R1": {"price": 155.25, "strength": "moderate", "confidence": 0.85},
+                "R2": {"price": 158.50, "strength": "strong", "confidence": 0.9},
+                "R3": {"price": 162.00, "strength": "weak", "confidence": 0.75}
+            },
+            "analysis_context": {
+                "current_price": 150.25,
+                "methodology": "combined"
+            }
+        }, indent=2)
 
         return PromptTemplate(
             template_type=PromptType.SUPPORT_RESISTANCE,
             base_template=base_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
-            required_fields=["S1", "S2", "S3", "R1", "R2", "R3"]
+            required_fields=["metadata", "support_levels", "resistance_levels"]
         )
     
     def _build_technical_template(self) -> PromptTemplate:
-        """Build technical analysis prompt template"""
+        """Build technical analysis prompt template with JSON schema"""
         base_template = """Provide technical indicator analysis for {ticker} ({company}).
 
-Calculate current values for key oscillators and moving averages."""
+Calculate current values for key oscillators and moving averages. Return data as valid JSON only."""
 
-        formatting_instructions = """CRITICAL: Format your response with exact labels and numeric values:
+        # Get JSON schema if available, otherwise use simplified schema
+        if TECHNICAL_SCHEMA:
+            schema_str = json.dumps(TECHNICAL_SCHEMA, indent=2)
+            formatting_instructions = f"""REQUIRED JSON SCHEMA:
+The response must conform to this exact JSON schema:
 
-Required Format:
-- RSI: XX.X (0-100 range)
-- MACD: X.XXX (can be positive or negative)
-- EMA 5: $XXX.XX  
-- EMA 10: $XXX.XX
-- EMA 20: $XXX.XX
-- EMA 50: $XXX.XX
-- EMA 200: $XXX.XX
-- SMA 5: $XXX.XX
-- SMA 10: $XXX.XX  
-- SMA 20: $XXX.XX
-- SMA 50: $XXX.XX
-- SMA 200: $XXX.XX
+{schema_str}
 
-Use exact labels as shown. Include dollar signs for moving averages, no dollar signs for RSI/MACD.
-RSI must be between 0-100. MACD can be positive or negative."""
+CRITICAL REQUIREMENTS:
+- Must be valid JSON matching the schema above
+- Include current timestamp in metadata.timestamp (ISO 8601 format)
+- All numeric values must be numbers, not strings
+- RSI value must be between 0-100
+- MACD values can be positive or negative
+- All moving averages (EMA and SMA) must be positive numbers"""
+        else:
+            formatting_instructions = """REQUIRED JSON FORMAT:
+{
+  "metadata": {
+    "timestamp": "2024-12-17T10:30:00Z",
+    "ticker_symbol": "TICKER",
+    "company_name": "Company Name",
+    "analysis_period": "1M",
+    "confidence_score": 0.88,
+    "schema_version": "1.0"
+  },
+  "oscillators": {
+    "RSI": {"value": 68.5, "interpretation": "neutral", "period": 14},
+    "MACD": {"value": 0.25, "signal": 0.18, "histogram": 0.07, "interpretation": "bullish"}
+  },
+  "moving_averages": {
+    "exponential": {
+      "EMA_5": 151.20,
+      "EMA_10": 149.85,
+      "EMA_20": 147.50,
+      "EMA_50": 144.75,
+      "EMA_200": 140.25
+    },
+    "simple": {
+      "SMA_5": 150.95,
+      "SMA_10": 148.75,
+      "SMA_20": 146.80,
+      "SMA_50": 143.90,
+      "SMA_200": 139.50
+    }
+  }
+}"""
 
-        example_response = """RSI: 68.5
-MACD: 0.25
-EMA 5: $151.20
-EMA 10: $149.85  
-EMA 20: $147.50
-EMA 50: $144.75
-EMA 200: $140.25
-SMA 5: $150.95
-SMA 10: $148.75
-SMA 20: $146.80
-SMA 50: $143.90
-SMA 200: $139.50"""
+        # Generate example response using the schema
+        current_time = datetime.utcnow().isoformat() + "Z"
+        example_response = json.dumps({
+            "metadata": {
+                "timestamp": current_time,
+                "ticker_symbol": "AAPL",
+                "company_name": "Apple Inc.",
+                "analysis_period": "1M",
+                "confidence_score": 0.88,
+                "schema_version": "1.0"
+            },
+            "oscillators": {
+                "RSI": {"value": 68.5, "interpretation": "neutral", "period": 14},
+                "MACD": {"value": 0.25, "signal": 0.18, "histogram": 0.07, "interpretation": "bullish"}
+            },
+            "moving_averages": {
+                "exponential": {
+                    "EMA_5": 151.20,
+                    "EMA_10": 149.85,
+                    "EMA_20": 147.50,
+                    "EMA_50": 144.75,
+                    "EMA_200": 140.25
+                },
+                "simple": {
+                    "SMA_5": 150.95,
+                    "SMA_10": 148.75,
+                    "SMA_20": 146.80,
+                    "SMA_50": 143.90,
+                    "SMA_200": 139.50
+                }
+            },
+            "analysis_summary": {
+                "trend_direction": "bullish",
+                "signal_strength": "moderate",
+                "recommendations": ["hold", "watch"]
+            }
+        }, indent=2)
 
         return PromptTemplate(
             template_type=PromptType.TECHNICAL,
             base_template=base_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
-            required_fields=["RSI", "MACD", "EMA_5", "EMA_10", "EMA_20", "EMA_50", "EMA_200",
-                           "SMA_5", "SMA_10", "SMA_20", "SMA_50", "SMA_200"]
+            required_fields=["metadata", "oscillators", "moving_averages"]
         )
     
     def _build_system_prompt_enhancements(self) -> str:
-        """Build system prompt enhancements for structured output"""
-        return """STRUCTURED OUTPUT REQUIREMENTS:
+        """Build system prompt enhancements for JSON structured output"""
+        return """JSON STRUCTURED OUTPUT REQUIREMENTS:
 
-1. **Format Consistency**: Always use the exact labels and formats shown in examples
-2. **Numeric Precision**: Provide specific numeric values, not ranges or approximations  
-3. **Label Matching**: Use labels exactly as specified (case-sensitive)
-4. **Currency Formatting**: Include $ symbols for prices, % for percentages
-5. **Data Validation**: Ensure RSI is 0-100, prices are positive, volume is formatted with commas
+1. **JSON COMPLIANCE**: Respond with VALID JSON ONLY - no explanations, no markdown, no additional text
+2. **Schema Adherence**: Must exactly match the JSON schema structure provided in prompts
+3. **Data Types**: All numeric fields must be numbers, not strings (e.g., 150.25 not "150.25")
+4. **Required Fields**: All required fields in the schema must be present
+5. **Timestamp Format**: Include current timestamp in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 
-PARSING OPTIMIZATION:
-- Start each data line with the exact label followed by colon and space
-- Use consistent decimal places (2 for prices, 1 for RSI, 3 for MACD)
-- Format large numbers with commas (e.g., 1,000,000 not 1000000)
-- Avoid additional commentary between data lines
+JSON FORMATTING RULES:
+- Use proper JSON syntax with correct quotes and commas
+- Numeric values: integers for counts/volume, floats for prices/percentages
+- String values: ticker symbols in uppercase, proper company names
+- Boolean values: true/false (lowercase)
+- Arrays: for lists like recommendations or warnings
 
-QUALITY REQUIREMENTS:
-- Provide real, current data when possible
-- If data unavailable, clearly state "Data not available" rather than estimated values
-- Maintain professional, concise analysis tone
-- Focus on factual data over interpretive analysis
+DATA QUALITY REQUIREMENTS:
+- Provide real, current market data when possible
+- If data unavailable, use null values rather than estimates
+- Ensure RSI values are between 0-100
+- Ensure price values are positive numbers
+- Include confidence scores between 0.0-1.0 where specified
 
-This structured approach ensures optimal parsing and consistent user experience."""
+RESPONSE VALIDATION:
+- The entire response must be parseable as valid JSON
+- No comments or explanations outside the JSON structure
+- Follow the exact schema structure for metadata, analysis data, and optional fields
+- Include proper error handling in the JSON structure if data cannot be retrieved
+
+This JSON-first approach ensures seamless integration with automated systems and eliminates parsing errors."""
 
     def test_prompt_consistency(self, prompt_type: PromptType, 
                               test_tickers: List[str]) -> Dict[str, Any]:

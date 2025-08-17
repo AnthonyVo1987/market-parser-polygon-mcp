@@ -1,0 +1,72 @@
+2025-08-17 16:21:48,831 - json_debug - INFO - 🧪 Test log entry from test script
+2025-08-17 16:21:48,832 - json_debug - INFO - 🚀 WORKFLOW START [snapshot_AAPL_1755472908832] - SNAPSHOT for AAPL
+2025-08-17 16:21:48,833 - json_debug - INFO - 📄 Response size: 418 characters
+2025-08-17 16:21:48,833 - json_debug - INFO - 📊 Response analysis: {'total_length': 418, 'contains_json_block': False, 'contains_code_block': False, 'contains_braces': True, 'starts_with_brace': True, 'ends_with_brace': True, 'brace_count': 3, 'quote_count': 32, 'newline_count': 17, 'estimated_json_size': 418, 'potential_json_blocks': 0, 'has_error_indicators': False}
+2025-08-17 16:21:48,834 - json_debug - DEBUG - 📄 Raw response preview [snapshot_AAPL_1755472908832]: '{\n    "snapshot_data": {\n        "current_price": 175.43,\n        "percentage_change": 2.1,\n        "dollar_change": 3.61,\n        "volume": 45623890,\n        "vwap": 174.82,\n        "open": 173.20,\n        "high": 176.15,\n        "low": 172.85,\n        "close": 171.82\n    },\n    "metadata": {\n        "confidence_score": 0.95,\n        "data_timestamp": "2025-08-17T15:30:00Z",\n        "source": "polygon_api"\n    }\n}'
+2025-08-17 16:21:48,850 - json_debug - INFO - ✅ JSON EXTRACTION [snapshot_AAPL_1755472908832] - Success in 15.2ms
+2025-08-17 16:21:48,852 - json_debug - INFO - 📦 Extracted JSON: 299 chars, keys: ['snapshot_data', 'metadata'], method: direct_parse
+2025-08-17 16:21:48,853 - json_debug - DEBUG - 🔧 Complete extracted JSON [snapshot_AAPL_1755472908832]: {
+  "snapshot_data": {
+    "current_price": 175.43,
+    "percentage_change": 2.1,
+    "dollar_change": 3.61,
+    "volume": 45623890,
+    "vwap": 174.82,
+    "open": 173.2,
+    "high": 176.15,
+    "low": 172.85,
+    "close": 171.82
+  },
+  "metadata": {
+    "confidence_score": 0.95,
+    "data_timestamp": "2025-08-17T15:30:00Z",
+    "source": "polygon_api"
+  }
+}
+2025-08-17 16:21:48,862 - json_debug - INFO - ✅ SCHEMA VALIDATION [snapshot_AAPL_1755472908832] - Success in 8.1ms
+2025-08-17 16:21:48,863 - json_debug - INFO - 📋 Schema type: snapshot, version: 1.0.0
+2025-08-17 16:21:48,864 - json_debug - DEBUG - 📋 Complete validation result [snapshot_AAPL_1755472908832]: {'valid': True, 'schema_version': '1.0.0', 'validation_timestamp': '2025-08-17T15:30:00Z', 'error_message': None}
+2025-08-17 16:21:48,891 - json_debug - INFO - 🎯 PARSING RESULTS [snapshot_AAPL_1755472908832] - HIGH confidence in 24.8ms
+2025-08-17 16:21:48,893 - json_debug - INFO - 📊 Extracted 9 fields with 1 warnings
+2025-08-17 16:21:48,894 - json_debug - WARNING - ⚠️ Parse warnings [snapshot_AAPL_1755472908832]: ['Minor precision loss in VWAP calculation']
+2025-08-17 16:21:48,896 - json_debug - INFO - 🎯 Pattern success rate [snapshot_AAPL_1755472908832]: 75.0% (3/4)
+2025-08-17 16:21:48,909 - json_debug - INFO - 📊 DATAFRAME CONVERSION [snapshot_AAPL_1755472908832] - 9 rows, 2 cols in 11.5ms
+2025-08-17 16:21:48,912 - json_debug - INFO - ✅ JSON formatting [snapshot_AAPL_1755472908832] - 487 chars with keys: ['snapshot_data', 'metadata']
+2025-08-17 16:21:48,913 - json_debug - INFO - 🔄 FSM TRANSITION [snapshot_AAPL_1755472908832] - parse → parse_success (event: parsing_complete)
+2025-08-17 16:21:48,915 - json_debug - DEBUG - 📋 JSON context [snapshot_AAPL_1755472908832]: {'confidence': 'high', 'field_count': 9, 'json_valid': True}
+2025-08-17 16:21:48,917 - json_debug - INFO - 📄 RAW JSON OUTPUT [snapshot_AAPL_1755472908832] - SNAPSHOT (VALID)
+2025-08-17 16:21:48,919 - json_debug - INFO - 📄 JSON size: 361 characters
+2025-08-17 16:21:48,920 - json_debug - DEBUG - 📄 Complete JSON [snapshot_AAPL_1755472908832]:
+{
+  "snapshot_data": {
+    "current_price": 175.43,
+    "percentage_change": 2.1,
+    "dollar_change": 3.61,
+    "volume": 45623890,
+    "vwap": 174.82,
+    "open": 173.2,
+    "high": 176.15,
+    "low": 172.85,
+    "close": 171.82
+  },
+  "metadata": {
+    "confidence_score": 0.95,
+    "data_timestamp": "2025-08-17T15:30:00Z",
+    "source": "polygon_api"
+  }
+}
+2025-08-17 16:21:48,921 - json_debug - INFO - 🏁 WORKFLOW COMPLETE [snapshot_AAPL_1755472908832] - 89.3ms total
+2025-08-17 16:21:48,923 - json_debug - INFO - 🎯 Final result: high confidence, 9 fields
+2025-08-17 16:21:48,924 - json_debug - INFO - ✅ UI update: successful
+2025-08-17 16:21:48,924 - json_debug - INFO - 📈 Performance breakdown [snapshot_AAPL_1755472908832]: {'json_extraction_time_ms': 15.2, 'validation_time_ms': 8.1, 'parsing_time_ms': 24.8, 'dataframe_conversion_time_ms': 11.5, 'total_workflow_time_ms': 89.27249908447266}
+2025-08-17 16:21:48,925 - json_debug - INFO - 🚀 WORKFLOW START [technical_INVALID_1755472908925] - TECHNICAL for INVALID
+2025-08-17 16:21:48,926 - json_debug - INFO - 📄 Response size: 25 characters
+2025-08-17 16:21:48,926 - json_debug - INFO - 📊 Response analysis: {'total_length': 25, 'contains_json_block': False, 'contains_code_block': False, 'contains_braces': False, 'starts_with_brace': False, 'ends_with_brace': False, 'brace_count': 0, 'quote_count': 0, 'newline_count': 0, 'estimated_json_size': 0, 'potential_json_blocks': 0, 'has_error_indicators': True}
+2025-08-17 16:21:48,927 - json_debug - DEBUG - 📄 Raw response preview [technical_INVALID_1755472908925]: 'Invalid response from API'
+2025-08-17 16:21:48,927 - json_debug - ERROR - 💥 ERROR [technical_INVALID_1755472908925] - ValueError: Test error for logging
+2025-08-17 16:21:48,927 - json_debug - ERROR - 📄 Error context [technical_INVALID_1755472908925]: {'button_type': 'technical', 'ticker': 'INVALID', 'response_size': 25, 'error_step': 'json_extraction'}
+2025-08-17 16:21:48,930 - json_debug - DEBUG - 📚 Stack trace [technical_INVALID_1755472908925]: Traceback (most recent call last):
+  File "/mnt/d/Github/market-parser-polygon-mcp/test_json_debug_logging.py", line 145, in test_json_workflow_logging
+    raise ValueError("Test error for logging")
+ValueError: Test error for logging
+
