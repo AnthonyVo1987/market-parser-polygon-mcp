@@ -133,119 +133,105 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 - ✅ **MUST initiate delegation sequence** - Don't leave user to manually start
 - ✅ **MUST include handoff instructions** - Specify what each agent should do
 
-### Context7 Protocol Enforcement
-- ❌ **Context7 ≠ WebSearch/WebFetch** - These are different tools with different purposes
-- ✅ **Context7 = MCP Server Tool** - Use mcp__context7__ tools to fetch library documentation
-- ✅ **Dynamic Documentation Retrieval** - Gets up-to-date patterns from external library sources
-- ✅ **Focused Topic Queries** - Request specific documentation topics for targeted information
+### Research Protocol Enforcement
+- ❌ **No fictitious MCP tools** - Don't reference non-existent tools
+- ✅ **Use Available Research Methods** - Use built-in analysis and reasoning capabilities
+- ✅ **Document Analysis** - Read existing documentation and best practices
+- ✅ **Code Pattern Research** - Analyze existing codebase patterns
 
-### Sequential Thinking Tool Requirements
-- ✅ **Use MCP Sequential Thinking Tool** - Use `mcp__sequential-thinking__sequentialthinking` for complex analysis
-- ✅ **Structured Problem Solving** - Break down complex tasks into step-by-step reasoning
-- ✅ **Thought Progression** - Use sequential thoughts with proper numbering and continuation
-- ✅ **Adaptive Analysis** - Adjust total thoughts as understanding deepens, revise previous thinking if needed
+### Structured Analysis Requirements
+- ✅ **Apply Systematic Thinking** - Break down complex problems methodically
+- ✅ **Structured Problem Solving** - Use logical step-by-step analysis
+- ✅ **Thought Progression** - Document reasoning process clearly
+- ✅ **Adaptive Analysis** - Adjust approach as understanding deepens
 
 **VIOLATION CONSEQUENCES:**
 - Fabricating agent names → Task rejection and re-delegation
 - Stopping without execution → Manual intervention required
-- Confusing Context7 with web tools → Incorrect implementation patterns
+- Using non-existent tools → Incorrect implementation patterns
 
 ### Corrected Delegation Example
 ```
 ## Delegation Plan
 ### Task 1: UI Fixes (CRITICAL)
 - **Agent**: @frontend-developer (VERIFIED in CLAUDE.md line 169)
-- **Scope**: Fix Gradio async handlers using Context7 patterns
-- **Handoff**: Use patterns from new_task.md lines 224-242 for modern async handling
+- **Scope**: Fix Gradio async handlers using documented patterns
+- **Handoff**: Use patterns from existing code and documentation for modern async handling
 - **Dependencies**: None
 
 ## Execution Trigger
-@frontend-developer: Fix the async button handlers in chat_ui.py using the Context7 patterns documented in new_task.md lines 224-242. Apply direct function references instead of lambda wrappers.
+@frontend-developer: Fix the async button handlers in chat_ui.py using best practices from Gradio documentation. Apply direct function references instead of lambda wrappers.
 ```
 
 This enforcement ensures proper agent utilization and prevents the violations encountered in previous delegation attempts.
 
-## 🧠 MANDATORY TOOL USAGE FOR ALL SPECIALIST AGENTS
+## 🧠 MANDATORY ANALYSIS PROTOCOLS FOR ALL SPECIALIST AGENTS
 
 **CRITICAL: ALL SPECIALIST AGENTS MUST FOLLOW THESE PROTOCOLS**
 
-### 1. SEQUENTIAL THINKING MCP TOOL ENFORCEMENT
+### 1. STRUCTURED THINKING ENFORCEMENT
 
-**EVERY specialist agent MUST use the `mcp__sequential-thinking__sequentialthinking` tool for:**
+**EVERY specialist agent MUST use structured analysis for:**
 
-- 🧠 **Complex Problem Analysis**: Use tool to break down multi-step problems
+- 🧠 **Complex Problem Analysis**: Break down multi-step problems systematically
 - 📝 **Planning Before Implementation**: Outline approach, identify risks, consider alternatives
 - 🔍 **Validation and Understanding**: Confirm task requirements and expected outcomes
 - ⚡ **Dependency Analysis**: Identify what needs to be done first/last
 - 🎯 **Solution Verification**: Validate approach before implementation
 
-**Required Usage Pattern for ALL Agents:**
-```python
-# MANDATORY: Start any complex task with sequential thinking
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Understanding the task: [analysis of what needs to be done]",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 1,
-  "totalThoughts": 5
-})
+**Required Analysis Pattern for ALL Agents:**
+```markdown
+## Task Analysis
+### 1. Understanding the Problem
+- [Clear definition of what needs to be done]
+- [Current state assessment]
+- [Root cause identification]
 
-# Continue with structured analysis
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Current state analysis: [what exists now and what's broken]",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 2,
-  "totalThoughts": 5
-})
+### 2. Solution Planning
+- [Step-by-step implementation approach]
+- [Required resources and dependencies]
+- [Risk assessment and mitigation]
 
-# Plan implementation approach
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Implementation strategy: [step-by-step approach]",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 3,
-  "totalThoughts": 5
-})
+### 3. Implementation Strategy
+- [Specific technical approaches]
+- [Testing and validation plan]
+- [Rollback considerations]
 
-# Identify risks and dependencies
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Risk assessment: [potential issues and mitigation]",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 4,
-  "totalThoughts": 5
-})
-
-# Final validation
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Solution validation: [confirm approach will solve the problem]",
-  "nextThoughtNeeded": false,
-  "thoughtNumber": 5,
-  "totalThoughts": 5
-})
+### 4. Success Validation
+- [Measurable success criteria]
+- [Testing procedures]
+- [Quality verification steps]
 ```
 
-### 2. CONTEXT7 MCP SERVER TOOL MANDATE
+### 2. RESEARCH AND DOCUMENTATION MANDATE
 
-**EVERY specialist agent MUST use Context7 MCP server tools for:**
+**EVERY specialist agent MUST research best practices using:**
 
-- 🔧 **Library Documentation**: Use `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs`
-- 📚 **Best Practices Research**: Retrieve current best practices from external sources
-- 🔍 **Implementation Patterns**: Get focused documentation for specific implementation topics
-- 📋 **Technology Standards**: Request documentation for framework-specific patterns
+- 🔧 **Documentation Analysis**: Review existing project documentation and guidelines
+- 📚 **Best Practices Research**: Study current standards for the technology stack
+- 🔍 **Implementation Patterns**: Analyze existing codebase patterns and conventions
+- 📋 **Technology Standards**: Follow established framework-specific patterns
 
-**Required Context7 Usage Pattern:**
-```python
-# Step 1: MANDATORY - Resolve library ID
-mcp__context7__resolve-library-id({"libraryName": "gradio"})
-# Returns: context7CompatibleLibraryID for use in subsequent calls
+**Required Research Approach:**
+```markdown
+## Research Phase
+### 1. Current State Analysis
+- [Review existing implementation]
+- [Identify patterns and conventions]
+- [Document current architecture]
 
-# Step 2: MANDATORY - Get focused documentation  
-mcp__context7__get-library-docs({
-  "context7CompatibleLibraryID": "/gradio-app/gradio",
-  "topic": "async handling",
-  "tokens": 2000
-})
+### 2. Best Practices Investigation
+- [Technology-specific standards]
+- [Industry best practices]
+- [Security considerations]
+
+### 3. Implementation Planning
+- [Chosen approach with justification]
+- [Integration with existing systems]
+- [Testing strategy]
 ```
 
-**Required Topics for Market Parser Project:**
+**Research Topics for Market Parser Project:**
 - **@frontend-developer**: "async handling", "event listeners", "chatbot components", "interface configuration"
 - **@backend-developer**: "async patterns", "error handling", "state management", "testing frameworks"
 - **@api-architect**: "API design", "response schemas", "authentication patterns", "rate limiting"
@@ -258,9 +244,9 @@ mcp__context7__get-library-docs({
 
 **ALL specialist agents MUST:**
 
-- ✅ **Use Sequential Thinking First**: Never start implementation without sequential thinking analysis
-- ✅ **Research Before Implementing**: Use Context7 to get current best practices
-- ✅ **Follow Modern Standards**: Only use patterns researched through Context7
+- ✅ **Use Structured Analysis First**: Never start implementation without systematic analysis
+- ✅ **Research Before Implementing**: Study best practices and existing patterns
+- ✅ **Follow Modern Standards**: Use only current best practices from research
 - 🛡️ **Include Comprehensive Error Handling**: Robust error management and user feedback
 - 🧪 **Plan Testing Strategy**: Include validation and testing approaches
 - 📋 **Document All Changes**: Clear explanations of what was changed and why
@@ -269,7 +255,7 @@ mcp__context7__get-library-docs({
 
 **Before completing any task, ALL specialist agents MUST:**
 
-- ✅ **Verify Tool Usage**: Confirm both Sequential Thinking and Context7 tools were used
+- ✅ **Verify Analysis Completeness**: Confirm structured analysis was performed
 - ✅ **Validate Research**: Ensure implementation follows researched best practices
 - ✅ **Test Error Scenarios**: Confirm error handling works as designed
 - ✅ **Check Function Signatures**: Validate all function signatures match requirements
@@ -286,9 +272,9 @@ mcp__context7__get-library-docs({
 - ❌ **Production Risk**: Changes may cause production issues
 
 **VERIFICATION CHECKLIST FOR ALL AGENTS:**
-- [ ] Used `mcp__sequential-thinking__sequentialthinking` for task analysis
-- [ ] Used `mcp__context7__resolve-library-id` to get library ID
-- [ ] Used `mcp__context7__get-library-docs` to research best practices
+- [ ] Performed structured analysis of the task
+- [ ] Researched best practices for the implementation
+- [ ] Documented reasoning and approach
 - [ ] Implemented solution using researched patterns
 - [ ] Added comprehensive error handling
 - [ ] Planned and documented testing approach

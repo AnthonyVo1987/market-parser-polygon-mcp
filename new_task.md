@@ -101,16 +101,12 @@
 - ✅ **MUST ensure handoff occurs** - Don't leave user to manually trigger
   delegations
 
-**CONTEXT7 CLARIFICATION:**
+**RESEARCH CLARIFICATION:**
 
-- ❌ **CONTEXT7 ≠ WebSearch/WebFetch** - These are different tools with
-  different purposes
-- ✅ **CONTEXT7 = MCP Server Tool** - Use mcp__context7__ tools to fetch
-  library documentation
-- ✅ **Dynamic Documentation Retrieval** - Gets up-to-date patterns from
-  external library sources
-- ✅ **Focused Topic Queries** - Request specific documentation topics for
-  targeted information
+- ❌ **No fictitious tools** - Don't reference non-existent MCP tools
+- ✅ **Use Available Research Methods** - Use built-in analysis and reasoning capabilities
+- ✅ **Document Analysis** - Read existing documentation and best practices
+- ✅ **Code Pattern Research** - Analyze existing codebase patterns
 
 **ROLE RESTRICTIONS FOR @tech-lead-orchestrator:**
 
@@ -118,7 +114,7 @@
 - ❌ **DO NOT make direct file changes**
 - ❌ **DO NOT write or modify code**
 - ❌ **DO NOT fabricate agent names that don't exist**
-- ❌ **DO NOT confuse Context7 with web research tools**
+- ❌ **DO NOT reference non-existent tools**
 - ❌ **DO NOT stop after planning - MUST trigger execution**
 - ✅ **ONLY perform strategic analysis and create delegation plans**
 - ✅ **ONLY identify which specialist agents are needed FROM CLAUDE.md**
@@ -150,7 +146,7 @@
 ### Task Group 1: [Priority Level]
 - **Agent**: @agent-name (VERIFIED IN CLAUDE.md)
 - **Scope**: [specific tasks]
-- **Handoff**: [exact instructions referencing Context7 patterns in lines X-Y]
+- **Handoff**: [exact instructions referencing documented patterns]
 - **Dependencies**: [prerequisites or blockers]
 
 ## Coordination Strategy
@@ -164,7 +160,7 @@
 Instead of fabricating agents, use this format:
 
 ```bash
-@frontend-developer: [task instructions with Context7 line references]
+@frontend-developer: [task instructions with documented references]
 ```
 
 NOT this fabricated format:
@@ -183,70 +179,70 @@ NOT this fabricated format:
 
 **ALL SPECIALIST AGENTS MUST FOLLOW THESE PROTOCOLS:**
 
-### 1. SEQUENTIAL THINKING MCP TOOL ENFORCEMENT
+### 1. STRUCTURED ANALYSIS ENFORCEMENT
 
-**EVERY specialist agent MUST use the mcp__sequential-thinking__sequentialthinking tool:**
+**EVERY specialist agent MUST use systematic analysis for:**
 
-- 🧠 **Use MCP Sequential Thinking Tool**: Call
-  `mcp__sequential-thinking__sequentialthinking` for complex problem analysis
-- 📝 **Plan Before Action**: Use tool to outline approach, identify risks,
-  consider alternatives
-- 🔍 **Validate Understanding**: Confirm task requirements and expected
-  outcomes through structured thinking
-- ⚡ **Think Through Dependencies**: Use tool to identify what needs to be done
-  first/last
+- 🧠 **Structured Problem Solving**: Break down complex problems step-by-step
+- 📝 **Plan Before Action**: Outline approach, identify risks, consider alternatives
+- 🔍 **Validate Understanding**: Confirm task requirements and expected outcomes
+- ⚡ **Think Through Dependencies**: Identify what needs to be done first/last
 
-**Tool Usage Pattern:**
+**Required Analysis Pattern:**
 
-```python
-# Start complex analysis with sequential thinking tool
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Understanding the task: [what needs to be done]",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 1,
-  "totalThoughts": 5
-})
+```markdown
+## Task Analysis
+### 1. Understanding the Problem
+- [Clear definition of what needs to be done]
+- [Current state assessment]
+- [Root cause identification]
 
-# Continue with subsequent thoughts
-mcp__sequential-thinking__sequentialthinking({
-  "thought": "Current state analysis: [what exists now]",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 2,
-  "totalThoughts": 5
-})
-# ... continue until nextThoughtNeeded: false
+### 2. Solution Planning
+- [Step-by-step implementation approach]
+- [Required resources and dependencies]
+- [Risk assessment and mitigation]
+
+### 3. Implementation Strategy
+- [Specific technical approaches]
+- [Testing and validation plan]
+- [Rollback considerations]
+
+### 4. Success Validation
+- [Measurable success criteria]
+- [Testing procedures]
+- [Quality verification steps]
 ```
 
-### 2. CONTEXT7 MCP SERVER TOOL MANDATE
+### 2. RESEARCH AND DOCUMENTATION MANDATE
 
-**EVERY specialist agent MUST use Context7 MCP server tool for up-to-date
-library documentation:**
+**EVERY specialist agent MUST research best practices using:**
 
-- 🔧 **Context7 = MCP Server Tool**: Use `mcp__context7__resolve-library-id`
-  and `mcp__context7__get-library-docs` tools
-- 📚 **Purpose**: Retrieves current library documentation and code examples
-  from external sources
-- 🔍 **Usage Pattern**: First resolve library ID, then fetch focused
-  documentation for specific topics
-- 📋 **Topics**: Request documentation for "async handling", "event
-  listeners", "chatbot components", etc.
+- 🔧 **Documentation Analysis**: Review existing project documentation and guidelines
+- 📚 **Best Practices Research**: Study current standards for the technology stack
+- 🔍 **Implementation Patterns**: Analyze existing codebase patterns and conventions
+- 📋 **Technology Standards**: Follow established framework-specific patterns
 
-**Required Context7 Tool Usage:**
+**Required Research Approach:**
 
-```python
-# Step 1: Resolve library ID
-mcp__context7__resolve-library-id({"libraryName": "gradio"})
-# Returns: /gradio-app/gradio
+```markdown
+## Research Phase
+### 1. Current State Analysis
+- [Review existing implementation]
+- [Identify patterns and conventions]
+- [Document current architecture]
 
-# Step 2: Get focused documentation
-mcp__context7__get-library-docs({
-  "context7CompatibleLibraryID": "/gradio-app/gradio",
-  "topic": "async handling",
-  "tokens": 2000
-})
+### 2. Best Practices Investigation
+- [Technology-specific standards]
+- [Industry best practices]
+- [Security considerations]
+
+### 3. Implementation Planning
+- [Chosen approach with justification]
+- [Integration with existing systems]
+- [Testing strategy]
 ```
 
-**Common Topics for Market Parser Project:**
+**Common Research Topics for Market Parser Project:**
 
 - "async handling" - For button click handlers
 - "event listeners" - For modern event chaining
@@ -393,7 +389,7 @@ if __name__ == "__main__":
 **WHAT NOT TO DO:**
 
 ❌ Create fake agents that don't exist in CLAUDE.md Enhanced Configuration  
-❌ Confuse Context7 with WebSearch/WebFetch tools  
+❌ Reference non-existent tools  
 ❌ Stop after creating plan without triggering execution  
 ❌ Allow bug fixes without corresponding test scripts
 ❌ Modify JSON schemas without proper validation and testing
@@ -404,7 +400,7 @@ if __name__ == "__main__":
 ## 📋 START OF NEW TASK REQUEST Executive Summary Details
 
 - The project file and folder structure has gotten completley massive, confusing, and unweildy
-- Re-orgranize the entire project structure folder Hierachy using mandatory Sequential Thinking + Context7 to research best practices for re-organization according to our app's stack and architecture
+- Re-orgranize the entire project structure folder Hierachy using mandatory structured analysis to research best practices for re-organization according to our app's stack and architecture
 - There are also multiple chat_ui_enhanced, xxx_final, xx_old etc so we need to clean up all these redundant files and dupe files for the entire project. remove all back up files
 - This is a non exhaustive list, but I can see that we need folders for:
 - Test scripts, which are currently incorrectly un organized in top level folder, confusing the user which files are actual source code vs test files
@@ -412,7 +408,7 @@ if __name__ == "__main__":
 - Etc - re-organize anything else not mentioned
 
 - Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
-- Code review after wards with using Sequential Thinking + Context7
+- Code review after wards with using structured analysis
 
 ## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
 - SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW

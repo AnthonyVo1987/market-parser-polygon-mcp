@@ -174,42 +174,24 @@ Be speficific in your prompt. The better the prompt - the better the response.
 
 ---
 
-## MCP Server Tools Available
+## Analysis Tools Available
 
-This project includes access to several MCP (Model Context Protocol) server tools:
+This project includes structured analysis and research capabilities for development:
 
-### Context7 Documentation Tool
-- **Purpose**: Retrieves up-to-date library documentation and code examples
-- **Tools**: `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs`
-- **Usage**: 
-  ```python
-  # Resolve library ID first
-  mcp__context7__resolve-library-id({"libraryName": "gradio"})
-  # Then fetch focused documentation
-  mcp__context7__get-library-docs({
-    "context7CompatibleLibraryID": "/gradio-app/gradio",
-    "topic": "async handling",
-    "tokens": 2000
-  })
-  ```
+### Systematic Analysis
+- **Purpose**: Break down complex problems into manageable steps
+- **Approach**: Methodical problem analysis using structured thinking patterns
+- **Usage**: Required for all specialist agents before implementation
 
-### Sequential Thinking Tool
-- **Purpose**: Structured problem-solving and analysis through step-by-step reasoning
-- **Tool**: `mcp__sequential-thinking__sequentialthinking`
-- **Usage**:
-  ```python
-  mcp__sequential-thinking__sequentialthinking({
-    "thought": "Understanding the problem: [analysis]",
-    "nextThoughtNeeded": true,
-    "thoughtNumber": 1,
-    "totalThoughts": 5
-  })
-  ```
+### Documentation Research
+- **Purpose**: Research current best practices and implementation patterns
+- **Sources**: Existing project documentation, industry standards, framework documentation
+- **Focus**: Technology-specific patterns, security considerations, performance optimization
 
-### Polygon.io Financial Data
-- **Purpose**: Real-time stock market data and financial information
-- **Integration**: Built-in via Polygon MCP server
-- **Features**: Stock prices, volume data, historical information, technical indicators
+### Code Pattern Analysis
+- **Purpose**: Analyze existing codebase patterns and architectural decisions
+- **Benefits**: Maintain consistency, preserve architectural integrity, identify improvement opportunities
+- **Application**: Used for refactoring, feature additions, and technical debt assessment
 
 ---
 
@@ -217,7 +199,7 @@ This project includes access to several MCP (Model Context Protocol) server tool
 
 - Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
-- Connects to Context7 and Sequential Thinking MCP servers for enhanced functionality
+- Provides structured analysis and research capabilities for development tasks
 - Sends your natural language query to OpenAI `gpt-5-nano` via PydanticAI (OpenAI Responses API)
 - Prints the answer in a readable format (CLI) or in a chat (GUI)
 
