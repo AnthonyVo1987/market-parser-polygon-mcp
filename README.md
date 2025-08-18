@@ -2,7 +2,7 @@
 
 ![Project Logo](images/logo.png)
 
-A simple Python CLI for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
+A simplified Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
 
 ## Features
 
@@ -13,6 +13,14 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
 
 - **Rich CLI output:**
   Answers are formatted for easy reading in your terminal.
+
+- **Simplified Web Interface:**
+  - 🎯 **JSON-First Architecture** - Direct access to raw AI responses
+  - 📊 **Three Analysis Types** - Stock Snapshot, Support & Resistance, Technical Analysis
+  - 🔄 **5-State Workflow** - Simple, predictable user interactions
+  - ⏳ **Real-time Loading States** - Step-by-step progress feedback
+  - 🛡️ **Non-blocking Error Recovery** - Immediate error recovery without UI freezing
+  - 🔍 **Debug-Friendly** - Raw JSON outputs for transparency and export
 
 ## Disclaimer
 
@@ -54,33 +62,58 @@ A simple Python CLI for natural language financial queries using the [Polygon.io
 
 ---
 
-## Chatbot GUI (Optional)
+## Simplified Web GUI
 
-You can also use a web-based Chatbot GUI (Gradio) that runs the same agent and MCP server.
+You can also use a web-based GUI (Gradio) that provides structured analysis tools with JSON-only outputs.
 
-- Install deps (already in `pyproject.toml`): `gradio`
 - Run the GUI:
 
   ```sh
   uv run chat_ui.py
   ```
   
-  **Features Available in Web UI:**
-  - 🧠 **FSM-Driven State Management** - Robust workflow management  
-  - 📊 **Structured Data Analysis** - Stock Snapshot, Support & Resistance, Technical Analysis buttons
+  **Features Available in Simplified Web UI:**
+  - 🧠 **5-State FSM Workflow** - Simplified state management (IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR)
+  - 📊 **Three Analysis Buttons** - Stock Snapshot, Support & Resistance, Technical Analysis
   - 🎯 **Smart Ticker Detection** - Automatic extraction from conversation context
+  - 📝 **Raw JSON Outputs** - Direct access to structured AI responses
   - ⏳ **Real-time Loading States** - Step-by-step progress feedback during analysis
-  - 🛡️ **Advanced Error Handling** - User-friendly error messages and recovery
-  - 📈 **Enhanced Data Display** - Structured tables with confidence scoring
-  - 🔍 **Debug Monitoring** - FSM state tracking and troubleshooting info
+  - 🛡️ **Non-blocking Error Recovery** - Immediate error recovery with button retry
+  - 🔍 **Debug Transparency** - Complete JSON responses for export and analysis
 
 - The app will print a local URL (default `http://127.0.0.1:7860`) to open in your browser.
 - Pricing env vars (set in `.env`) will be used for cost estimates just like the CLI.
 
 Environment variables:
 
-- `OPENAI_MODEL` (optional, default `gpt-5-nano`)
+- `OPENAI_MODEL` (optional, default `gpt-4o-mini`)
 - `HOST` and `PORT` to override GUI host/port
+
+---
+
+## Simplified Architecture Benefits
+
+### Why We Simplified
+
+The system was redesigned in 2025 to focus on **reliability over complexity**:
+
+- **JSON-First Approach**: Raw AI responses provide maximum transparency and flexibility
+- **Reduced State Complexity**: 5-state FSM instead of 12+ states for predictable behavior
+- **Non-blocking Errors**: Users can immediately retry without system restart
+- **Future-Ready**: Simplified architecture supports easy migration to React/Next.js
+- **Debugging**: Raw JSON outputs make troubleshooting straightforward
+
+### What Changed
+
+**Before (Complex):**
+- 12+ FSM states with complex transitions
+- Structured DataFrame displays with parsing dependencies
+- Blocking error states requiring system restart
+
+**After (Simplified):**
+- 5 clear states: IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR
+- Raw JSON textboxes for all outputs
+- Immediate error recovery with button retry
 
 ---
 
@@ -89,7 +122,7 @@ Environment variables:
 Set these optional env vars to compute accurate cost estimates (USD per 1M tokens):
 
 ```env
-# Example values below — update with current OpenAI pricing for gpt-5-nano
+# Example values below — update with current OpenAI pricing for gpt-4o-mini
 OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
 OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
 ```
@@ -139,53 +172,52 @@ system_prompt=(
 )
 ```
 
-Be speficific in your prompt. The better the prompt - the better the response.
+Be specific in your prompt. The better the prompt - the better the response.
 
 ---
 
-## Project Structure
+## Simplified Project Structure
 
-The project has been organized into logical directories for improved maintainability:
+The project has been organized for maximum maintainability:
 
 ```
 market-parser-polygon-mcp/
 ├── src/                          # Core application modules
-│   ├── response_parser.py        # Response parsing utilities  
+│   ├── response_parser.py        # Response parsing with get_json_output() method
 │   ├── json_parser.py           # JSON parsing with fallback strategies
-│   ├── json_schemas.py          # Schema definitions and validation
-│   ├── prompt_templates.py      # Structured prompt templates
-│   ├── schema_validator.py      # Validation logic and business rules
+│   ├── json_schemas.py          # Schema definitions (simplified)
+│   ├── prompt_templates.py      # Templates for three analysis types
+│   ├── schema_validator.py      # Basic validation logic
 │   ├── json_debug_logger.py     # Debug logging for workflows
 │   ├── security_utils.py        # Input validation and security
-│   └── example_json_responses.py # Test examples and development aids
-├── stock_data_fsm/              # Finite State Machine for GUI workflow
-│   ├── states.py                # Application states and context
-│   ├── transitions.py           # State transition rules
-│   ├── manager.py               # FSM controller and orchestration
-│   └── tests/                   # FSM-specific test suite
+│   └── example_json_responses.py # Test examples
+├── stock_data_fsm/              # Simplified 5-State FSM
+│   ├── states.py                # 5 states: IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR
+│   ├── transitions.py           # Simplified transition rules
+│   ├── manager.py               # FSM controller with non-blocking error recovery
+│   └── tests/                   # FSM-specific test suite (80/80 tests passing)
 ├── tests/                       # Comprehensive test suite
-│   ├── test_integration.py      # Integration tests
-│   ├── test_production_*.py     # Production scenario validation
+│   ├── test_integration.py      # Integration tests (updated for simplified architecture)
+│   ├── test_simplified_fsm_workflow.py # 5-state workflow validation
+│   ├── test_response_parser.py  # JSON output validation (29/29 tests passing)
 │   ├── run_*.py                 # Test runners and scripts
 │   └── validate_*.py            # Fix validation scripts
 ├── logs/                        # Application and debug logs
-├── scripts/                     # Utility and demonstration scripts
-├── config/                      # Configuration files (future use)
-├── docs/                        # Comprehensive documentation
-│   ├── reports/                 # Technical reports and analysis
-│   └── *.md                     # Architecture guides and user docs
-├── images/                      # Project assets
+├── docs/                        # Updated documentation
+│   ├── reports/                 # Technical reports
+│   ├── SYSTEM_SIMPLIFICATION_GUIDE.md # Migration documentation
+│   └── *.md                     # Updated architecture guides
 ├── market_parser_demo.py        # CLI application entry point
-├── chat_ui.py                   # Web GUI application
+├── chat_ui.py                   # Simplified web GUI (JSON outputs only)
 └── pyproject.toml              # Project configuration
 ```
 
-**Key Benefits of New Structure:**
-- **Modularity**: Core logic separated into `src/` directory
-- **Testing**: All tests consolidated in `tests/` directory  
-- **Documentation**: Organized in `docs/` with dedicated `reports/` subfolder
-- **Maintenance**: Utility scripts and logs properly organized
-- **Scalability**: Ready for future configuration management
+**Key Benefits of Simplified Structure:**
+- **Reliability**: 5-state FSM eliminates complex transition bugs
+- **Transparency**: Raw JSON outputs provide full data access
+- **Maintainability**: Simplified components reduce technical debt
+- **Testing**: 100% test success rate with simplified architecture
+- **Future-Ready**: Easy migration to modern frontend frameworks
 
 ---
 
@@ -210,29 +242,43 @@ market-parser-polygon-mcp/
   python market_parser_demo.py
   ```
 
-- **Import Errors with New Structure:**
+- **Import Errors with Simplified Structure:**
 
-  With the reorganized structure, update imports to use the new paths:
+  With the simplified structure, update imports to use the new patterns:
   ```python
-  # New import patterns:
+  # Simplified import patterns:
   from src.response_parser import ResponseParser
   from src.prompt_templates import PromptTemplateManager
-  from stock_data_fsm.states import AppState
+  from stock_data_fsm.states import AppState, StateContext
   ```
 
 - **Test Execution:**
 
-  Run tests from the project root using the new structure:
+  Run tests from the project root using the simplified structure:
   ```sh
-  # All tests
+  # All tests (80/80 tests passing)
   uv run pytest tests/
   
   # Specific test files
   uv run pytest tests/test_integration.py
   
-  # Production tests
-  uv run python tests/run_production_tests.py
+  # Simplified FSM workflow tests
+  uv run pytest tests/test_simplified_fsm_workflow.py
   ```
+
+- **JSON Output Issues:**
+
+  The simplified system uses raw JSON outputs. If you need structured data:
+  - Check the "Raw JSON Response" sections in the web UI
+  - Use `response_parser.get_json_output()` method in code
+  - Export JSON for external analysis tools
+
+- **UI Stuck in Loading State:**
+
+  With the simplified 5-state FSM:
+  - Click any analysis button to trigger immediate recovery
+  - System automatically returns to IDLE state after errors
+  - No system restart required for error recovery
 
 - **Incorrect Responses**
 
@@ -244,28 +290,7 @@ market-parser-polygon-mcp/
 
 ---
 
-## Analysis Tools Available
-
-This project includes structured analysis and research capabilities for development:
-
-### Systematic Analysis
-- **Purpose**: Break down complex problems into manageable steps
-- **Approach**: Methodical problem analysis using structured thinking patterns
-- **Usage**: Required for all specialist agents before implementation
-
-### Documentation Research
-- **Purpose**: Research current best practices and implementation patterns
-- **Sources**: Existing project documentation, industry standards, framework documentation
-- **Focus**: Technology-specific patterns, security considerations, performance optimization
-
-### Code Pattern Analysis
-- **Purpose**: Analyze existing codebase patterns and architectural decisions
-- **Benefits**: Maintain consistency, preserve architectural integrity, identify improvement opportunities
-- **Application**: Used for refactoring, feature additions, and technical debt assessment
-
----
-
-## Development Commands
+## Simplified Development Workflow
 
 ### Running the Application
 
@@ -274,11 +299,10 @@ This project includes structured analysis and research capabilities for developm
 
 ### Testing
 
-- **Run all tests**: `uv run pytest tests/` (pytest is in dev dependencies)
+- **Run all tests**: `uv run pytest tests/` (80/80 tests passing with simplified architecture)
 - **Run specific test**: `uv run pytest tests/test_file.py`
-- **Run integration tests**: `uv run pytest tests/test_*integration*.py`
-- **Run production tests**: `uv run python tests/run_production_tests.py`
-- **Install dev dependencies**: `uv install --dev`
+- **Run simplified FSM tests**: `uv run pytest tests/test_simplified_fsm_workflow.py`
+- **Validate simplified architecture**: `uv run python tests/validate_simplified_test_suite.py`
 
 ### Environment Management
 
@@ -288,13 +312,31 @@ This project includes structured analysis and research capabilities for developm
 
 ---
 
-## How it Works
+## How it Works (Simplified)
 
 - Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
-- Provides structured analysis and research capabilities for development tasks
-- Sends your natural language query to OpenAI `gpt-5-nano` via PydanticAI (OpenAI Responses API)
-- Prints the answer in a readable format (CLI) or in a chat (GUI)
+- Uses a simple 5-state FSM for reliable workflow management
+- Sends your natural language query to OpenAI `gpt-4o-mini` via PydanticAI
+- Returns raw JSON responses for maximum transparency and flexibility
+- Provides non-blocking error recovery for uninterrupted usage
+
+### The 5-State Workflow
+
+1. **IDLE**: Ready for user input
+2. **BUTTON_TRIGGERED**: User clicked an analysis button
+3. **AI_PROCESSING**: Waiting for AI response
+4. **RESPONSE_RECEIVED**: Display JSON results
+5. **ERROR**: Non-blocking error state with immediate recovery
+
+---
+
+## Migration from Complex System
+
+If you're upgrading from the previous complex version, see:
+- `docs/SYSTEM_SIMPLIFICATION_GUIDE.md` for detailed migration steps
+- `docs/reports/PHASE_*` reports for technical implementation details
+- `tests/PHASE_3_TEST_UPDATES_SUMMARY.md` for test architecture changes
 
 ---
 

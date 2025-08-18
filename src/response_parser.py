@@ -70,65 +70,23 @@ class ParseResult:
             'parse_time_ms': self.parse_time_ms
         }
     
-    def to_dataframe(self) -> pd.DataFrame:
-        """Convert parsed data to DataFrame for display"""
-        if not self.parsed_data:
-            return pd.DataFrame({'Item': ['No Data'], 'Value': ['N/A']})
-        
-        if self.data_type == DataType.SNAPSHOT:
-            return self._to_snapshot_dataframe()
-        elif self.data_type == DataType.SUPPORT_RESISTANCE:
-            return self._to_sr_dataframe()
-        elif self.data_type == DataType.TECHNICAL:
-            return self._to_technical_dataframe()
-        else:
-            # Generic dataframe
-            items = []
-            for key, value in self.parsed_data.items():
-                items.append({'Item': key, 'Value': str(value)})
-            return pd.DataFrame(items)
+    def get_json_output(self) -> str:
+        """Get formatted JSON output for display"""
+        import json
+        output_data = {
+            'data_type': self.data_type.value,
+            'confidence': self.confidence.value,
+            'parsed_data': self.parsed_data,
+            'metadata': {
+                'matched_patterns': len(self.matched_patterns),
+                'failed_patterns': len(self.failed_patterns),
+                'parse_time_ms': self.parse_time_ms
+            }
+        }
+        return json.dumps(output_data, indent=2)
     
-    def _to_snapshot_dataframe(self) -> pd.DataFrame:
-        """Convert snapshot data to DataFrame"""
-        snapshot_order = [
-            'current_price', 'percentage_change', 'dollar_change',
-            'volume', 'vwap', 'open', 'high', 'low', 'close'
-        ]
-        items = []
-        
-        for key in snapshot_order:
-            if key in self.parsed_data:
-                display_key = key.replace('_', ' ').title()
-                items.append({'Metric': display_key, 'Value': self.parsed_data[key]})
-        
-        return pd.DataFrame(items) if items else pd.DataFrame({'Metric': ['No Data'], 'Value': ['N/A']})
-    
-    def _to_sr_dataframe(self) -> pd.DataFrame:
-        """Convert support/resistance data to DataFrame"""
-        sr_order = ['S1', 'S2', 'S3', 'R1', 'R2', 'R3']
-        items = []
-        
-        for level in sr_order:
-            if level in self.parsed_data:
-                level_name = f"{level} ({'Support' if level.startswith('S') else 'Resistance'} {level[1]})"
-                items.append({'Level': level_name, 'Price': self.parsed_data[level]})
-        
-        return pd.DataFrame(items) if items else pd.DataFrame({'Level': ['No Data'], 'Price': ['N/A']})
-    
-    def _to_technical_dataframe(self) -> pd.DataFrame:
-        """Convert technical indicators to DataFrame"""
-        tech_order = [
-            'RSI', 'MACD', 'EMA_5', 'EMA_10', 'EMA_20', 'EMA_50', 'EMA_200',
-            'SMA_5', 'SMA_10', 'SMA_20', 'SMA_50', 'SMA_200'
-        ]
-        items = []
-        
-        for indicator in tech_order:
-            if indicator in self.parsed_data:
-                display_name = indicator.replace('_', ' ')
-                items.append({'Indicator': display_name, 'Value': self.parsed_data[indicator]})
-        
-        return pd.DataFrame(items) if items else pd.DataFrame({'Indicator': ['No Data'], 'Value': ['N/A']})
+    # DataFrame conversion methods removed for backend simplification
+    # JSON output is now handled by get_json_output() method
 
 
 class ValidationError(Exception):
@@ -269,11 +227,11 @@ class ResponseParser:
                 len(matched_patterns), len(self._snapshot_patterns), 'snapshot'
             )
             
-            # Add additional attributes
+            # Add metadata for JSON output  
             result.attributes.update({
                 'total_fields': len(self._snapshot_patterns),
                 'extracted_fields': len(extracted_data),
-                'extraction_rate': len(extracted_data) / len(self._snapshot_patterns)
+                'extraction_success_rate': f"{(len(extracted_data)/len(self._snapshot_patterns)*100):.1f}%"
             })
             
             self.logger.info(f"Snapshot parsing completed: {len(extracted_data)}/{len(self._snapshot_patterns)} fields ({(len(extracted_data)/len(self._snapshot_patterns)*100):.1f}% success rate)")

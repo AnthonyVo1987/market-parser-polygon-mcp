@@ -53,20 +53,16 @@ class StateActions:
         self.logger.info(f"Regular chat message: {message[:50]}...")
         # For regular chat, we don't change context data
     
-    # === Prompt Preparation Actions ===
+    # === Simplified AI Processing Actions ===
     
-    def on_prepare_prompt(self, context: StateContext, **kwargs) -> None:
-        """Action to prepare AI prompt based on button type"""
-        if not context.button_type:
-            raise ValueError("Cannot prepare prompt without button_type")
-        
+    def on_start_ai_processing(self, context: StateContext, **kwargs) -> None:
+        """Action when starting AI processing (simplified workflow)"""
+        # Build prompt based on button type
         ticker = context.ticker or 'the last mentioned stock'
         
         prompts = {
             'snapshot': f"Provide a comprehensive stock snapshot for {ticker}. Include: Current price, Percentage change, $ Change, Volume, VWAP (Volume Weighted Average Price), Open, High, Low, Close. Format numbers clearly with appropriate units.",
-            
             'support_resistance': f"Analyze support and resistance levels for {ticker}. Provide: 3 support levels (S1, S2, S3) with prices, 3 resistance levels (R1, R2, R3) with prices, Brief explanation of each level's significance. Use recent price action and technical analysis.",
-            
             'technical': f"Provide technical analysis indicators for {ticker}: RSI (14-day), MACD (12,26,9) with signal line status, Moving Averages: EMA and SMA for 5, 10, 20, 50, 200 days, Current trend assessment based on these indicators. Include specific values and interpretations."
         }
         
@@ -74,29 +70,43 @@ class StateActions:
         if not context.prompt:
             raise ValueError(f"Unknown button type: {context.button_type}")
         
-        self.logger.info(f"Prompt prepared for {context.button_type}: {len(context.prompt)} characters")
-        self.logger.debug(f"Prompt content: {context.prompt[:100]}...")
-    
-    def on_prompt_ready(self, context: StateContext, **kwargs) -> None:
-        """Action when prompt is ready for AI processing"""
-        self.logger.info(f"Prompt ready for AI processing: {context.button_type}")
-        # Mark the time when AI processing begins
+        self.logger.info(f"Starting AI processing for {context.button_type}: {len(context.prompt)} characters")
         context.parsed_data['ai_start_time'] = time.time()
-    
-    def on_prompt_failed(self, context: StateContext, **kwargs) -> None:
-        """Action when prompt preparation fails"""
-        error_msg = kwargs.get('error', 'Unknown prompt preparation error')
-        context.error_message = error_msg
-        context.increment_error_attempts()
-        self.logger.error(f"Prompt preparation failed: {error_msg}")
     
     # === AI Processing Actions ===
     
     def on_response_received(self, context: StateContext, **kwargs) -> None:
-        """Action when AI response is received"""
+        """Action when AI response is received (simplified)"""
         response = kwargs.get('ai_response', context.ai_response)
         if response:
             context.ai_response = response
+        
+        # Extract JSON for display (no complex validation)
+        try:
+            import json
+            import re
+            
+            # Simple JSON extraction for display
+            json_match = re.search(r'```json\s*({[\s\S]*?})\s*```', response, re.IGNORECASE)
+            if json_match:
+                json_str = json_match.group(1)
+                # Test if it's valid JSON
+                json.loads(json_str)
+                context.raw_json_response = json_str
+            else:
+                # Try to find any JSON-like structure
+                json_match = re.search(r'({[\s\S]*})', response)
+                if json_match:
+                    json_str = json_match.group(1)
+                    try:
+                        json.loads(json_str)
+                        context.raw_json_response = json_str
+                    except:
+                        context.raw_json_response = '{"message": "No valid JSON found in response"}'
+                else:
+                    context.raw_json_response = '{"message": "No JSON structure found in response"}'
+        except Exception as e:
+            context.raw_json_response = f'{{"error": "JSON extraction failed: {str(e)}"}}'
         
         # Calculate AI processing time
         start_time = context.parsed_data.get('ai_start_time')
@@ -176,6 +186,26 @@ class StateActions:
         context.error_message = error_msg
         context.increment_error_attempts()
         self.logger.error(f"UI update error: {error_msg}")
+    
+    # === Simplified Display Actions ===
+    
+    def on_display_complete(self, context: StateContext, **kwargs) -> None:
+        """Action when display is complete (simplified workflow)"""
+        total_time = time.time() - context.created_at
+        self.logger.info(f"Display complete. Total cycle: {total_time:.2f}s")
+        
+        # Clear processing data but keep results for JSON display
+        context.prompt = None
+        context.reset_error_attempts()
+        
+        # Keep ai_response and raw_json_response for display
+    
+    def on_display_error(self, context: StateContext, **kwargs) -> None:
+        """Action when display encounters an error"""
+        error_msg = kwargs.get('error', 'Unknown display error')
+        context.error_message = error_msg
+        context.increment_error_attempts()
+        self.logger.error(f"Display error: {error_msg}")
     
     # === Error Recovery Actions ===
     
@@ -492,22 +522,16 @@ class StateManager:
         return logger
     
     def _build_action_registry(self) -> Dict[str, Callable]:
-        """Build registry of action functions"""
+        """Build simplified registry of action functions"""
         return {
             'on_button_clicked': self.actions.on_button_clicked,
             'on_regular_chat': self.actions.on_regular_chat,
-            'on_prepare_prompt': self.actions.on_prepare_prompt,
-            'on_prompt_ready': self.actions.on_prompt_ready,
-            'on_prompt_failed': self.actions.on_prompt_failed,
+            'on_start_ai_processing': self.actions.on_start_ai_processing,
             'on_response_received': self.actions.on_response_received,
             'on_ai_timeout': self.actions.on_ai_timeout,
             'on_ai_error': self.actions.on_ai_error,
-            'on_start_parsing': self.actions.on_start_parsing,
-            'on_parse_success': self.actions.on_parse_success,
-            'on_parse_failed_fallback': self.actions.on_parse_failed_fallback,
-            'on_parse_error': self.actions.on_parse_error,
-            'on_update_complete': self.actions.on_update_complete,
-            'on_update_error': self.actions.on_update_error,
+            'on_display_complete': self.actions.on_display_complete,
+            'on_display_error': self.actions.on_display_error,
             'on_error_occurred': self.actions.on_error_occurred,
             'on_retry_from_error': self.actions.on_retry_from_error,
             'on_abort_from_error': self.actions.on_abort_from_error,
@@ -518,18 +542,6 @@ class StateManager:
             'on_error_button_recovery': self.actions.on_error_button_recovery,
             'on_auto_recover_from_error': self.actions.on_auto_recover_from_error,
             'on_user_recover_from_error': self.actions.on_user_recover_from_error,
-            # JSON workflow actions
-            'on_extract_json': self.actions.on_extract_json,
-            'on_start_json_validation': self.actions.on_start_json_validation,
-            'on_json_validation_success': self.actions.on_json_validation_success,
-            'on_json_validation_failed': self.actions.on_json_validation_failed,
-            'on_json_validation_error': self.actions.on_json_validation_error,
-            'on_parse_validated_json': self.actions.on_parse_validated_json,
-            'on_retry_json_validation': self.actions.on_retry_json_validation,
-            'on_json_fallback_to_text': self.actions.on_json_fallback_to_text,
-            'on_validation_fallback_to_text': self.actions.on_validation_fallback_to_text,
-            'on_json_validation_abort': self.actions.on_json_validation_abort,
-            'on_start_text_parsing': self.actions.on_start_text_parsing,
         }
     
     # === Core FSM Operations ===
@@ -890,8 +902,7 @@ class StateManager:
         
         # Restore other context fields
         for field in ['button_type', 'ticker', 'prompt', 'ai_response', 
-                     'raw_json_response', 'json_validation_result', 'validated_json_data', 'json_schema_type',
-                     'parsed_data', 'error_message', 'error_recovery_attempts']:
+                     'raw_json_response', 'parsed_data', 'error_message', 'error_recovery_attempts']:
             if field in context_dict:
                 setattr(self.context, field, context_dict[field])
     

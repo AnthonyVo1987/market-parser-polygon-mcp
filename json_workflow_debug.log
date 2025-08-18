@@ -1,1 +1,38 @@
 2025-08-17 20:52:07 - JSON_DEBUG - INFO - 🔍 JsonDebugLogger initialized with comprehensive JSON tracing
+2025-08-18 12:32:44 - JSON_DEBUG - INFO - 🔍 JsonDebugLogger initialized with comprehensive JSON tracing
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 🚀 WORKFLOW START [snapshot_NVDA_1755545581628] - SNAPSHOT for NVDA
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 📄 Response size: 410 characters
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 📊 Response analysis: {'total_length': 410, 'contains_json_block': False, 'contains_code_block': False, 'contains_braces': True, 'starts_with_brace': True, 'ends_with_brace': True, 'brace_count': 3, 'quote_count': 38, 'newline_count': 18, 'estimated_json_size': 410, 'potential_json_blocks': 0, 'has_error_indicators': False}
+2025-08-18 12:33:37 - JSON_DEBUG - DEBUG - 📄 Raw response preview [snapshot_NVDA_1755545581628]: '{\n  "timestamp": "2025-08-18T00:00:00Z",\n  "metadata": {\n    "status": "success",\n    "requested_ticker": "NVDA",\n    "request_id": "1e78cad507b901c75cd5d9035f05a006"\n  },\n  "data": {\n    "current_price": 182.2919,\n    "percentage_change": 1.036,\n    "dollar_change": 1.8699,\n    "volume": 104334039,\n    "vwap": 181.7749,\n    "open": 180.6,\n    "high": 182.9375,\n    "low": 180.59,\n    "close": 182.2919\n  }\n}'
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 📄 RAW JSON OUTPUT [snapshot_NVDA_1755545581628] - SNAPSHOT (VALID)
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 📄 JSON size: 410 characters
+2025-08-18 12:33:37 - JSON_DEBUG - DEBUG - 📄 Complete JSON [snapshot_NVDA_1755545581628]:
+{
+  "timestamp": "2025-08-18T00:00:00Z",
+  "metadata": {
+    "status": "success",
+    "requested_ticker": "NVDA",
+    "request_id": "1e78cad507b901c75cd5d9035f05a006"
+  },
+  "data": {
+    "current_price": 182.2919,
+    "percentage_change": 1.036,
+    "dollar_change": 1.8699,
+    "volume": 104334039,
+    "vwap": 181.7749,
+    "open": 180.6,
+    "high": 182.9375,
+    "low": 180.59,
+    "close": 182.2919
+  }
+}
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 📊 DATAFRAME CONVERSION [snapshot_NVDA_1755545581628] - 1 rows, 2 cols in 8.5ms
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - ✅ JSON formatting [snapshot_NVDA_1755545581628] - 410 chars with keys: ['timestamp', 'metadata', 'data']
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 🔄 FSM TRANSITION [snapshot_NVDA_1755545581628] - parse → parse_success (event: parsing_complete)
+2025-08-18 12:33:37 - JSON_DEBUG - DEBUG - 📋 JSON context [snapshot_NVDA_1755545581628]: {'confidence': 'failed', 'field_count': 0, 'json_valid': True}
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 🔄 FSM TRANSITION [snapshot_NVDA_1755545581628] - parse_success → update_complete (event: ui_update)
+2025-08-18 12:33:37 - JSON_DEBUG - DEBUG - 📋 JSON context [snapshot_NVDA_1755545581628]: {'dataframe_shape': (1, 2), 'ui_conversion_time_ms': 8.507013320922852}
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 🏁 WORKFLOW COMPLETE [snapshot_NVDA_1755545581628] - 41.3ms total
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - ⚠️ Final result: failed confidence, 0 fields
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - ✅ UI update: successful
+2025-08-18 12:33:37 - JSON_DEBUG - INFO - 📈 Performance breakdown [snapshot_NVDA_1755545581628]: {'json_extraction_time_ms': None, 'validation_time_ms': None, 'parsing_time_ms': None, 'dataframe_conversion_time_ms': 8.507013320922852, 'total_workflow_time_ms': 41.31770133972168}

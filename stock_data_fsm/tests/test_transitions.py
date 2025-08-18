@@ -181,8 +181,8 @@ class TestStateTransitions(unittest.TestCase):
         rule = self.transitions.get_transition_rule(AppState.IDLE, 'invalid_event')
         self.assertIsNone(rule)
         
-        # Test valid event from invalid state
-        rule = self.transitions.get_transition_rule(AppState.UPDATING_UI, 'button_click')
+        # Test valid event from invalid state combination
+        rule = self.transitions.get_transition_rule(AppState.AI_PROCESSING, 'button_click')
         self.assertIsNone(rule)
     
     def test_is_valid_transition_with_guard(self):
@@ -278,27 +278,20 @@ class TestStateTransitions(unittest.TestCase):
     def test_critical_transitions_exist(self):
         """Test that critical transitions exist"""
         critical_transitions = [
-            # Button workflow
+            # Simplified 5-state workflow
             (AppState.IDLE, 'button_click'),
-            (AppState.BUTTON_TRIGGERED, 'prepare_prompt'),
-            (AppState.PROMPT_PREPARING, 'prompt_ready'),
+            (AppState.BUTTON_TRIGGERED, 'start_ai_processing'),
             (AppState.AI_PROCESSING, 'response_received'),
-            # JSON workflow paths
-            (AppState.RESPONSE_RECEIVED, 'extract_json'),
-            (AppState.RESPONSE_RECEIVED, 'parse_text'),
-            (AppState.JSON_RECEIVED, 'validate_json'),
-            (AppState.JSON_VALIDATING, 'validation_success'),
-            (AppState.JSON_VALIDATED, 'parse_validated_json'),
-            # Text parsing fallback
-            (AppState.PARSING_RESPONSE, 'parse_success'),
-            (AppState.UPDATING_UI, 'update_complete'),
+            (AppState.RESPONSE_RECEIVED, 'display_complete'),
             
             # Error recovery
             (AppState.ERROR, 'retry'),
             (AppState.ERROR, 'abort'),
+            (AppState.ERROR, 'button_click'),  # Direct recovery from error
             
-            # Regular chat
+            # Regular chat and reset
             (AppState.IDLE, 'user_chat'),
+            (AppState.IDLE, 'reset'),
         ]
         
         for state, event in critical_transitions:
@@ -309,16 +302,14 @@ class TestStateTransitions(unittest.TestCase):
         """Test that error transitions exist from processing states"""
         processing_states = [
             AppState.BUTTON_TRIGGERED,
-            AppState.PROMPT_PREPARING,
             AppState.AI_PROCESSING,
-            AppState.PARSING_RESPONSE,
-            AppState.UPDATING_UI
+            AppState.RESPONSE_RECEIVED
         ]
         
         for state in processing_states:
             # Should have either 'error' transition or 'emergency_reset'
             events = self.transitions.get_available_events(state)
-            has_error_handling = any(event in ['error', 'emergency_reset'] for event in events)
+            has_error_handling = any(event in ['error', 'emergency_reset', 'ai_error', 'ai_timeout', 'display_error'] for event in events)
             self.assertTrue(has_error_handling, f"No error handling from state: {state.name}")
     
     def test_no_duplicate_transitions(self):

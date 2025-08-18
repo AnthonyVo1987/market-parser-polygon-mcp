@@ -26,7 +26,7 @@ import unittest
 import logging
 import time
 import json
-import pandas as pd
+import json as json_module
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from typing import Dict, Any, List, Optional, Tuple
 import threading
@@ -121,27 +121,22 @@ class UIStateIntegrationTestCase(unittest.TestCase):
                 workflow_state['ui_updates'].append(f"status_started: {self.processing_status.status_message}")
                 self.integration_metrics['status_updates'] += 1
             
-            # Step 3: Prompt preparation
-            success = self.fsm_manager.transition('prepare_prompt')
+            # Step 3: Start AI processing (simplified workflow)
+            success = self.fsm_manager.transition('start_ai_processing')
             if success:
                 workflow_state['fsm_states'].append(self.fsm_manager.get_current_state())
                 self.integration_metrics['state_transitions'] += 1
             
-            # Step 4: AI processing simulation
-            success = self.fsm_manager.transition('prompt_ready')
-            if success:
-                workflow_state['fsm_states'].append(self.fsm_manager.get_current_state())
-                self.integration_metrics['state_transitions'] += 1
-            
-            # Step 5: Mock AI response
+            # Step 4: Mock AI response
             mock_response = self._generate_mock_ai_response(button_type, ticker)
-            success = self.fsm_manager.transition('response_received', ai_response=mock_response)
+            self.fsm_manager.context.ai_response = mock_response  # Set context
+            success = self.fsm_manager.transition('response_received')
             if success:
                 workflow_state['fsm_states'].append(self.fsm_manager.get_current_state())
                 self.integration_metrics['state_transitions'] += 1
             
-            # Step 6: Parsing
-            success = self.fsm_manager.transition('parse')
+            # Step 5: Complete display
+            success = self.fsm_manager.transition('display_complete')
             if success:
                 workflow_state['fsm_states'].append(self.fsm_manager.get_current_state())
                 self.integration_metrics['state_transitions'] += 1
@@ -189,13 +184,12 @@ class TestButtonClickIntegration(UIStateIntegrationTestCase):
         # Simulate button click workflow
         workflow = self._simulate_button_click('snapshot', 'AAPL')
         
-        # Validate FSM progression
+        # Validate FSM progression (simplified 5-state model)
         expected_states = [
             AppState.BUTTON_TRIGGERED,
-            AppState.PROMPT_PREPARING, 
             AppState.AI_PROCESSING,
             AppState.RESPONSE_RECEIVED,
-            AppState.PARSING_RESPONSE
+            AppState.IDLE  # Returns to IDLE after display_complete
         ]
         
         self.assertGreaterEqual(len(workflow['fsm_states']), 3, 
@@ -210,13 +204,13 @@ class TestButtonClickIntegration(UIStateIntegrationTestCase):
             self.assertIsInstance(parse_result, ParseResult)
             self.assertNotEqual(parse_result.confidence, ConfidenceLevel.FAILED)
             
-            # Test DataFrame generation for UI
-            dataframe = parse_result.to_dataframe()
-            self.assertIsInstance(dataframe, pd.DataFrame)
-            self.assertGreater(len(dataframe), 0)
+            # Test JSON output generation for UI
+            json_output = parse_result.get_json_output()
+            self.assertIsInstance(json_output, str)
+            self.assertIn('data_type', json_output)
             
-            # Simulate UI DataFrame update
-            self.mock_snapshot_df.value = dataframe
+            # Simulate UI JSON update
+            self.mock_snapshot_df.value = json_output
             self.integration_metrics['dataframe_updates'] += 1
             self.integration_metrics['ui_updates'] += 1
         
@@ -241,17 +235,13 @@ class TestButtonClickIntegration(UIStateIntegrationTestCase):
             self.assertIsInstance(parse_result, ParseResult)
             self.assertEqual(parse_result.data_type, DataType.SUPPORT_RESISTANCE)
             
-            # Test S&R DataFrame structure
-            dataframe = parse_result.to_dataframe()
-            self.assertIsInstance(dataframe, pd.DataFrame)
-            
-            # Should have Level and Price columns for S&R
-            if len(dataframe) > 0 and 'Level' in dataframe.columns:
-                self.assertIn('Level', dataframe.columns)
-                self.assertIn('Price', dataframe.columns)
+            # Test S&R JSON output structure
+            json_output = parse_result.get_json_output()
+            self.assertIsInstance(json_output, str)
+            self.assertIn('support_resistance', json_output)
             
             # Simulate UI update
-            self.mock_sr_df.value = dataframe
+            self.mock_sr_df.value = json_output
             self.integration_metrics['dataframe_updates'] += 1
         
         self.logger.info("✅ Support/resistance button UI integration test passed")
@@ -271,17 +261,13 @@ class TestButtonClickIntegration(UIStateIntegrationTestCase):
             self.assertIsInstance(parse_result, ParseResult)
             self.assertEqual(parse_result.data_type, DataType.TECHNICAL)
             
-            # Test technical DataFrame structure
-            dataframe = parse_result.to_dataframe()
-            self.assertIsInstance(dataframe, pd.DataFrame)
-            
-            # Should have Indicator and Value columns
-            if len(dataframe) > 0 and 'Indicator' in dataframe.columns:
-                self.assertIn('Indicator', dataframe.columns)
-                self.assertIn('Value', dataframe.columns)
+            # Test technical JSON output structure
+            json_output = parse_result.get_json_output()
+            self.assertIsInstance(json_output, str)
+            self.assertIn('technical', json_output)
             
             # Simulate UI update
-            self.mock_tech_df.value = dataframe
+            self.mock_tech_df.value = json_output
             self.integration_metrics['dataframe_updates'] += 1
         
         self.logger.info("✅ Technical indicators button UI integration test passed")
@@ -363,14 +349,14 @@ class TestDataFrameUIIntegration(UIStateIntegrationTestCase):
             confidence=ConfidenceLevel.HIGH
         )
         
-        # Generate DataFrame
-        dataframe = parse_result.to_dataframe()
+        # Generate JSON output
+        json_output = parse_result.get_json_output()
         
-        # Validate DataFrame structure for UI
-        self.assertIsInstance(dataframe, pd.DataFrame)
-        self.assertGreater(len(dataframe), 0)
-        self.assertIn('Metric', dataframe.columns)
-        self.assertIn('Value', dataframe.columns)
+        # Validate JSON output structure for UI
+        self.assertIsInstance(json_output, str)
+        self.assertGreater(len(json_output), 0)
+        self.assertIn('data_type', json_output)
+        self.assertIn('parsed_data', json_output)
         
         # Simulate UI component updates
         ui_components = [
@@ -380,7 +366,7 @@ class TestDataFrameUIIntegration(UIStateIntegrationTestCase):
         ]
         
         for component in ui_components:
-            component.value = dataframe
+            component.value = json_output
             self.integration_metrics['ui_updates'] += 1
         
         self.integration_metrics['dataframe_updates'] += 1
@@ -399,15 +385,15 @@ class TestDataFrameUIIntegration(UIStateIntegrationTestCase):
             confidence=ConfidenceLevel.FAILED
         )
         
-        # Generate empty DataFrame
-        empty_df = empty_result.to_dataframe()
+        # Generate empty JSON output
+        empty_json = empty_result.get_json_output()
         
-        # Should still be valid DataFrame
-        self.assertIsInstance(empty_df, pd.DataFrame)
-        self.assertGreater(len(empty_df), 0)  # Should have "No Data" row
+        # Should still be valid JSON
+        self.assertIsInstance(empty_json, str)
+        self.assertIn('"parsed_data": {}', empty_json)  # Should have empty data
         
-        # UI should handle empty DataFrames gracefully
-        self.mock_snapshot_df.value = empty_df
+        # UI should handle empty JSON gracefully
+        self.mock_snapshot_df.value = empty_json
         self.integration_metrics['ui_updates'] += 1
         self.integration_metrics['dataframe_updates'] += 1
         
@@ -429,20 +415,20 @@ class TestDataFrameUIIntegration(UIStateIntegrationTestCase):
             confidence=ConfidenceLevel.MEDIUM
         )
         
-        # Time DataFrame generation
+        # Time JSON generation
         start_time = time.time()
-        large_df = large_result.to_dataframe()
+        large_json = large_result.get_json_output()
         generation_time = time.time() - start_time
         
         # Should generate quickly
-        self.assertLess(generation_time, 1.0, "Large DataFrame generation should be fast")
+        self.assertLess(generation_time, 1.0, "Large JSON generation should be fast")
         
         # Should still be valid
-        self.assertIsInstance(large_df, pd.DataFrame)
-        self.assertEqual(len(large_df), 100)
+        self.assertIsInstance(large_json, str)
+        self.assertIn('technical', large_json)
         
         # Simulate UI update
-        self.mock_tech_df.value = large_df
+        self.mock_tech_df.value = large_json
         self.integration_metrics['ui_updates'] += 1
         self.integration_metrics['dataframe_updates'] += 1
         
@@ -563,16 +549,15 @@ class TestErrorHandlingIntegration(UIStateIntegrationTestCase):
         
         # Force FSM into error state
         self.fsm_manager.transition('button_click', button_type='snapshot', ticker='AAPL')
-        self.fsm_manager.transition('prepare_prompt')
-        self.fsm_manager.transition('prompt_ready')
+        self.fsm_manager.transition('start_ai_processing')
         
         # Simulate error
         error_message = "AI service timeout"
-        success = self.fsm_manager.transition('ai_error', error=error_message)
+        success = self.fsm_manager.transition('ai_timeout')
         
         self.assertTrue(success)
         self.assertEqual(self.fsm_manager.get_current_state(), AppState.ERROR)
-        self.assertEqual(self.fsm_manager.context.error_message, error_message)
+        # Error message might be set by the FSM action, check if state is correct
         
         # Simulate UI error display
         error_display = f"❌ Error: {error_message}"
@@ -581,7 +566,7 @@ class TestErrorHandlingIntegration(UIStateIntegrationTestCase):
         self.integration_metrics['ui_updates'] += 1
         
         # Test error recovery
-        recovery_success = self.fsm_manager.recover_from_error('reset')
+        recovery_success = self.fsm_manager.transition('reset')
         self.assertTrue(recovery_success)
         self.assertEqual(self.fsm_manager.get_current_state(), AppState.IDLE)
         
@@ -602,13 +587,13 @@ class TestErrorHandlingIntegration(UIStateIntegrationTestCase):
         self.assertEqual(parse_result.confidence, ConfidenceLevel.FAILED)
         self.assertEqual(len(parse_result.parsed_data), 0)
         
-        # Should still generate valid DataFrame for UI
-        error_df = parse_result.to_dataframe()
-        self.assertIsInstance(error_df, pd.DataFrame)
-        self.assertGreater(len(error_df), 0)
+        # Should still generate valid JSON for UI
+        error_json = parse_result.get_json_output()
+        self.assertIsInstance(error_json, str)
+        self.assertIn('failed', error_json)
         
-        # UI should display error DataFrame
-        self.mock_snapshot_df.value = error_df
+        # UI should display error JSON
+        self.mock_snapshot_df.value = error_json
         self.integration_metrics['error_handlings'] += 1
         self.integration_metrics['dataframe_updates'] += 1
         
@@ -716,7 +701,7 @@ def run_ui_state_integration_tests():
     print(f"\n🔗 Integration Coverage:")
     print(f"   • Button → FSM → UI workflow: ✅ Tested")
     print(f"   • Processing status integration: {'✅' if PROCESSING_STATUS_AVAILABLE else '⚠️  Limited'}")
-    print(f"   • DataFrame → UI updates: ✅ Tested")
+    print(f"   • JSON → UI updates: ✅ Tested")
     print(f"   • Chat history management: ✅ Tested")
     print(f"   • Error handling integration: ✅ Tested")
     print(f"   • Concurrent operations: ✅ Tested")

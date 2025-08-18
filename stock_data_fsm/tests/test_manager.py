@@ -42,16 +42,16 @@ class TestStateActions(unittest.TestCase):
         self.assertEqual(self.context.button_type, 'technical')
         self.assertEqual(self.context.ticker, 'AAPL')  # Should be normalized
     
-    def test_on_prepare_prompt_snapshot(self):
-        """Test prompt preparation for snapshot"""
+    def test_on_start_ai_processing(self):
+        """Test AI processing start action"""
         self.context.button_type = 'snapshot'
         self.context.ticker = 'AAPL'
         
-        self.actions.on_prepare_prompt(self.context)
+        self.actions.on_start_ai_processing(self.context)
         
-        self.assertIsNotNone(self.context.prompt)
-        self.assertIn('AAPL', self.context.prompt)
-        self.assertIn('stock snapshot', self.context.prompt.lower())
+        # Should maintain state information
+        self.assertEqual(self.context.button_type, 'snapshot')
+        self.assertEqual(self.context.ticker, 'AAPL')
     
     def test_on_prepare_prompt_support_resistance(self):
         """Test prompt preparation for support/resistance"""
@@ -208,46 +208,30 @@ class TestStateManager(unittest.TestCase):
         self.assertEqual(self.manager.get_current_state(), AppState.IDLE)
     
     def test_complete_successful_workflow(self):
-        """Test complete successful button workflow"""
+        """Test complete successful button workflow (simplified 5-state)"""
         # Step 1: Button click
         success = self.manager.transition('button_click', button_type='snapshot', ticker='AAPL')
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.BUTTON_TRIGGERED)
         
-        # Step 2: Prepare prompt
-        success = self.manager.transition('prepare_prompt')
-        self.assertTrue(success)
-        self.assertEqual(self.manager.get_current_state(), AppState.PROMPT_PREPARING)
-        
-        # Step 3: Prompt ready
-        success = self.manager.transition('prompt_ready')
+        # Step 2: Start AI processing (simplified workflow)
+        success = self.manager.transition('start_ai_processing')
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.AI_PROCESSING)
         
-        # Step 4: Response received
-        success = self.manager.transition('response_received', 
-                                        ai_response='Mock AI response')
+        # Step 3: Response received
+        self.manager.context.ai_response = 'Mock AI response'  # Set context first
+        success = self.manager.transition('response_received')
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.RESPONSE_RECEIVED)
         
-        # Step 5: Parse response using text parsing
-        success = self.manager.transition('parse_text')
-        self.assertTrue(success)
-        self.assertEqual(self.manager.get_current_state(), AppState.PARSING_RESPONSE)
-        
-        # Step 6: Parse success
-        success = self.manager.transition('parse_success', 
-                                        parsed_data={'price': 150.0})
-        self.assertTrue(success)
-        self.assertEqual(self.manager.get_current_state(), AppState.UPDATING_UI)
-        
-        # Step 7: Update complete
-        success = self.manager.transition('update_complete')
+        # Step 4: Display complete (simplified workflow)
+        success = self.manager.transition('display_complete')
         self.assertTrue(success)
         self.assertEqual(self.manager.get_current_state(), AppState.IDLE)
         
-        # Check that we have full history
-        self.assertEqual(len(self.manager.context.transition_history), 7)
+        # Check that we have simplified workflow history
+        self.assertEqual(len(self.manager.context.transition_history), 4)
     
     def test_error_recovery_workflow(self):
         """Test error recovery workflow"""

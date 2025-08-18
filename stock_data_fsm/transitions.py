@@ -165,7 +165,10 @@ class StateTransitions:
     
     def _build_transition_table(self) -> Dict[TransitionKey, TransitionRule]:
         """
-        Build the complete state transition table.
+        Build the simplified state transition table.
+        
+        Simplified workflow: IDLE -> BUTTON_TRIGGERED -> AI_PROCESSING -> RESPONSE_RECEIVED -> IDLE
+        Error recovery: ERROR -> IDLE (always allow recovery)
         
         Format: (current_state, event) -> (next_state, guard_function, action_name)
         
@@ -191,32 +194,15 @@ class StateTransitions:
             ),
             
             # === FROM BUTTON_TRIGGERED STATE ===
-            (AppState.BUTTON_TRIGGERED, 'prepare_prompt'): (
-                AppState.PROMPT_PREPARING,
-                TransitionGuards.has_ticker_or_default,
-                'on_prepare_prompt'
+            (AppState.BUTTON_TRIGGERED, 'start_ai_processing'): (
+                AppState.AI_PROCESSING,
+                None,  # No guards for simplified workflow
+                'on_start_ai_processing'
             ),
             (AppState.BUTTON_TRIGGERED, 'error'): (
                 AppState.ERROR,
                 None,
                 'on_error_occurred'
-            ),
-            
-            # === FROM PROMPT_PREPARING STATE ===
-            (AppState.PROMPT_PREPARING, 'prompt_ready'): (
-                AppState.AI_PROCESSING,
-                TransitionGuards.has_prompt,
-                'on_prompt_ready'
-            ),
-            (AppState.PROMPT_PREPARING, 'prompt_failed'): (
-                AppState.ERROR,
-                None,
-                'on_prompt_failed'
-            ),
-            (AppState.PROMPT_PREPARING, 'abort'): (
-                AppState.IDLE,
-                None,
-                'on_abort_to_idle'
             ),
             
             # === FROM AI_PROCESSING STATE ===
@@ -237,103 +223,21 @@ class StateTransitions:
             ),
             
             # === FROM RESPONSE_RECEIVED STATE ===
-            (AppState.RESPONSE_RECEIVED, 'extract_json'): (
-                AppState.JSON_RECEIVED,
-                TransitionGuards.has_ai_response,
-                'on_extract_json'
-            ),
-            (AppState.RESPONSE_RECEIVED, 'parse_text'): (
-                AppState.PARSING_RESPONSE,
-                TransitionGuards.has_ai_response,
-                'on_start_text_parsing'
-            ),
-            
-            # === FROM JSON_RECEIVED STATE ===
-            (AppState.JSON_RECEIVED, 'validate_json'): (
-                AppState.JSON_VALIDATING,
-                TransitionGuards.has_raw_json_response,
-                'on_start_json_validation'
-            ),
-            (AppState.JSON_RECEIVED, 'fallback_to_text'): (
-                AppState.PARSING_RESPONSE,
-                TransitionGuards.can_fallback_to_text_parsing,
-                'on_json_fallback_to_text'
-            ),
-            
-            # === FROM JSON_VALIDATING STATE ===
-            (AppState.JSON_VALIDATING, 'validation_success'): (
-                AppState.JSON_VALIDATED,
-                TransitionGuards.has_validated_json_data,
-                'on_json_validation_success'
-            ),
-            (AppState.JSON_VALIDATING, 'validation_failed'): (
-                AppState.JSON_VALIDATION_FAILED,
-                None,
-                'on_json_validation_failed'
-            ),
-            (AppState.JSON_VALIDATING, 'validation_error'): (
-                AppState.ERROR,
-                None,
-                'on_json_validation_error'
-            ),
-            
-            # === FROM JSON_VALIDATED STATE ===
-            (AppState.JSON_VALIDATED, 'parse_validated_json'): (
-                AppState.PARSING_RESPONSE,
-                TransitionGuards.has_validated_json_data,
-                'on_parse_validated_json'
-            ),
-            
-            # === FROM JSON_VALIDATION_FAILED STATE ===
-            (AppState.JSON_VALIDATION_FAILED, 'retry_validation'): (
-                AppState.JSON_VALIDATING,
-                TransitionGuards.can_retry_json_validation,
-                'on_retry_json_validation'
-            ),
-            (AppState.JSON_VALIDATION_FAILED, 'fallback_to_text'): (
-                AppState.PARSING_RESPONSE,
-                TransitionGuards.can_fallback_to_text_parsing,
-                'on_validation_fallback_to_text'
-            ),
-            (AppState.JSON_VALIDATION_FAILED, 'validation_abort'): (
-                AppState.ERROR,
-                None,
-                'on_json_validation_abort'
-            ),
-            
-            # === FROM PARSING_RESPONSE STATE ===
-            (AppState.PARSING_RESPONSE, 'parse_success'): (
-                AppState.UPDATING_UI,
-                TransitionGuards.has_parsed_data,
-                'on_parse_success'
-            ),
-            (AppState.PARSING_RESPONSE, 'parse_failed'): (
-                AppState.UPDATING_UI,  # Still update UI with raw text
-                None,
-                'on_parse_failed_fallback'
-            ),
-            (AppState.PARSING_RESPONSE, 'parse_error'): (
-                AppState.ERROR,
-                None,
-                'on_parse_error'
-            ),
-            
-            # === FROM UPDATING_UI STATE ===
-            (AppState.UPDATING_UI, 'update_complete'): (
+            (AppState.RESPONSE_RECEIVED, 'display_complete'): (
                 AppState.IDLE,
                 None,
-                'on_update_complete'
+                'on_display_complete'
             ),
-            (AppState.UPDATING_UI, 'update_error'): (
+            (AppState.RESPONSE_RECEIVED, 'display_error'): (
                 AppState.ERROR,
                 None,
-                'on_update_error'
+                'on_display_error'
             ),
             
-            # === FROM ERROR STATE - Recovery Transitions ===
+            # === FROM ERROR STATE - Enhanced Recovery Transitions ===
             (AppState.ERROR, 'retry'): (
                 AppState.IDLE,
-                TransitionGuards.can_retry_from_error,
+                None,  # Always allow retry
                 'on_retry_from_error'
             ),
             (AppState.ERROR, 'abort'): (
@@ -346,7 +250,7 @@ class StateTransitions:
                 None,
                 'on_reset_from_error'
             ),
-            # CRITICAL FIX: Allow button clicks from ERROR state to recover
+            # CRITICAL: Allow button clicks from ERROR state to recover immediately
             (AppState.ERROR, 'button_click'): (
                 AppState.BUTTON_TRIGGERED,
                 TransitionGuards.has_valid_button_type,
@@ -371,47 +275,12 @@ class StateTransitions:
                 None,
                 'on_emergency_reset'
             ),
-            (AppState.PROMPT_PREPARING, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
             (AppState.AI_PROCESSING, 'emergency_reset'): (
                 AppState.IDLE,
                 None,
                 'on_emergency_reset'
             ),
             (AppState.RESPONSE_RECEIVED, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
-            (AppState.JSON_RECEIVED, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
-            (AppState.JSON_VALIDATING, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
-            (AppState.JSON_VALIDATED, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
-            (AppState.JSON_VALIDATION_FAILED, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
-            (AppState.PARSING_RESPONSE, 'emergency_reset'): (
-                AppState.IDLE,
-                None,
-                'on_emergency_reset'
-            ),
-            (AppState.UPDATING_UI, 'emergency_reset'): (
                 AppState.IDLE,
                 None,
                 'on_emergency_reset'

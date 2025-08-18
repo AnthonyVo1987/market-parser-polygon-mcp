@@ -1,14 +1,40 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
-##
-- You will perform ALL corrective actions to ensure ALL DELEGATED SPECIALIST EVEN IN THEIR OWN INSTANCE MANDATES MCP Tool Use from CLAUDE.md &  MCP_TOOL_USAGE_GUIDE.md
-- You will CLAUDE.md, MCP_TOOL_USAGE_GUIDE.md and any other docs needed to enforce MCP Tool calls
-##
-- After applying corrective actions, you will ask @Tech-Lead-Orchestrator to provide a delegation and coordination plan for Specialist to perform a complet comprehensive review AGAIN of the project re-structuring
+
+Have @Tech-Lead-Orchestrator follow CLAUDE.md & use SEQUENTIAL THINKING TOOL & CONTEXT7 to research and generate a comprehensive plan for delegation & coordination of implementing the code changes for the following task(s) details:
+
+## High Level Task Goal: Consolidate & Re-Factor Dedicated Structured UI Display Code
+
+## Task Context & Background:
+- MANDATORY MCP TOOL USE
+- We need to simplify, Consolidate, & refactor the complex Dedicated Structured UI Display because the UI changes may be too complex to implement in Gradio as a true "front end"
+- We will temp shelve some of the new UI display code and put notes that a future task TBD will be assigned to re-visit the UI updates, such as even migrating to a true front end like REACT
+
+## Task Details:
+- Remove\Retire all code, docs, test cases, FSM code related to the "Structured Stock Analysis -  Structured Data Display for  Stock Snapshot, Support & Resistance, & Technical Analysis"
+- We will instead just keep the Raw JSON Outputs for the Snapshot JSON, Support & Resistance JSON, & Technical Analysis JSON
+
+- So here is how the new app flow should be after the removal:
+1. Button Prompts will still have a STRUCTURED JSON OUTPUT format that will output into BOTH the Chatbox & THE Raw JSON boxes
+2. There will no longer be ANY UI code parsing\conversion needed to display since we will JUST have the raw JSON boxes now
+3. The RAW JSON outputs will serve as the "UI display", both in the AI chat AND user can review the raw payload as well
+4. The Button prompts should be able to be presses and sent in ANY ORDER with no data dependencies needed
+5. An error\failure in ANY operation of the app should NOT block the user from issuing more commands to test out the rest of app. Currently the app\FSM flow incorrectly prevents further user action if a previous action failed and also incorrectly wipes app data for new request. This makes it tough to fully test the app in production if we are stuck on a failure, and can't even test out other commands etc
+6. FSM States\Flags\Variables may have to be updated
+7. Test scripts also need to be updated
+8. Output Console debug logs\messages also need to be updated
+9. All docs also need to be updated
+
+## ACTIONS TO BE PERFORM ONLY AFTER INITIAL CODING\TESTING:
+- Speciliast to perform Review\Fix Loop until PASSING code review
+- ONLY AFTER A PASSING CODE REVIEW, SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes 
+- User will then start testing out the new changes
+
+
+
 
 ## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
-- SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
-- Provide Summary (NO DOCS needs) of MCP Tool Calls (NOT standard Claude Code tools) used by EACH Specialist involved so user can verify the proper tool calls used for the task(s)
+- ONLY AFTER A PASSING CODE REVIEW, SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes 
 - User will then start testing out the new changes
 
 

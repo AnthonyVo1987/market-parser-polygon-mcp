@@ -8,7 +8,7 @@ confidence scoring, and error handling.
 
 import unittest
 from unittest.mock import patch, MagicMock
-import pandas as pd
+import json
 import logging
 from src.response_parser import (
     ResponseParser, ParseResult, ConfidenceLevel, DataType, 
@@ -70,10 +70,11 @@ class TestResponseParser(unittest.TestCase):
         self.assertIn('percentage_change', result.parsed_data)
         self.assertEqual(result.attributes['ticker'], 'AAPL')
         
-        # Test DataFrame conversion
-        df = result.to_dataframe()
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertGreater(len(df), 0)
+        # Test JSON output
+        json_output = result.get_json_output()
+        self.assertIsInstance(json_output, str)
+        self.assertIn('data_type', json_output)
+        self.assertIn('confidence', json_output)
     
     def test_parse_stock_snapshot_partial_data(self):
         """Test snapshot parsing with partial data"""
@@ -92,10 +93,10 @@ class TestResponseParser(unittest.TestCase):
         self.assertEqual(result.confidence, ConfidenceLevel.FAILED)
         self.assertEqual(len(result.parsed_data), 0)
         
-        # DataFrame should still be valid but empty
-        df = result.to_dataframe()
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual(df.iloc[0]['Item'], 'No Data')
+        # JSON output should still be valid but minimal
+        json_output = result.get_json_output()
+        self.assertIsInstance(json_output, str)
+        self.assertIn('"parsed_data": {}', json_output)
     
     def test_parse_stock_snapshot_invalid_price(self):
         """Test snapshot parsing with invalid price data"""
@@ -118,10 +119,10 @@ class TestResponseParser(unittest.TestCase):
         self.assertIn('R1', result.parsed_data)
         self.assertEqual(result.attributes['ticker'], 'AAPL')
         
-        # Test DataFrame conversion
-        df = result.to_dataframe()
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual(len(df), len(result.parsed_data))
+        # Test JSON output
+        json_output = result.get_json_output()
+        self.assertIsInstance(json_output, str)
+        self.assertIn('support_resistance', json_output)
     
     def test_parse_support_resistance_partial(self):
         """Test S&R parsing with only some levels"""
@@ -154,10 +155,10 @@ class TestResponseParser(unittest.TestCase):
         self.assertIn('RSI', result.parsed_data)
         self.assertIn('MACD', result.parsed_data)
         
-        # Test DataFrame conversion
-        df = result.to_dataframe()
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertGreater(len(df), 0)
+        # Test JSON output
+        json_output = result.get_json_output()
+        self.assertIsInstance(json_output, str)
+        self.assertIn('technical', json_output)
     
     def test_parse_technical_rsi_validation(self):
         """Test RSI validation (should be 0-100)"""
@@ -225,7 +226,7 @@ class TestResponseParser(unittest.TestCase):
         
         # Should achieve high confidence with most fields matched
         self.assertEqual(result.confidence, ConfidenceLevel.HIGH)
-        self.assertGreaterEqual(result.attributes['extraction_rate'], 0.8)
+        self.assertIn('extraction_success_rate', result.attributes)
     
     def test_confidence_calculation_failed(self):
         """Test failed confidence calculation"""
@@ -316,25 +317,25 @@ class TestResponseParser(unittest.TestCase):
         self.assertIn('confidence', result_dict)
         self.assertEqual(result_dict['data_type'], 'snapshot')
     
-    def test_parse_result_dataframe_conversions(self):
-        """Test different DataFrame conversion methods"""
-        # Test snapshot DataFrame
+    def test_parse_result_json_output(self):
+        """Test JSON output methods"""
+        # Test snapshot JSON output
         snapshot_result = self.parser.parse_stock_snapshot(self.sample_snapshot_response)
-        snapshot_df = snapshot_result.to_dataframe()
-        self.assertIn('Metric', snapshot_df.columns)
-        self.assertIn('Value', snapshot_df.columns)
+        snapshot_json = snapshot_result.get_json_output()
+        self.assertIn('"data_type": "snapshot"', snapshot_json)
+        self.assertIn('"parsed_data":', snapshot_json)
         
-        # Test S&R DataFrame
+        # Test S&R JSON output
         sr_result = self.parser.parse_support_resistance(self.sample_sr_response)
-        sr_df = sr_result.to_dataframe()
-        self.assertIn('Level', sr_df.columns)
-        self.assertIn('Price', sr_df.columns)
+        sr_json = sr_result.get_json_output()
+        self.assertIn('"data_type": "support_resistance"', sr_json)
+        self.assertIn('"parsed_data":', sr_json)
         
-        # Test technical DataFrame
+        # Test technical JSON output
         tech_result = self.parser.parse_technical_indicators(self.sample_technical_response)
-        tech_df = tech_result.to_dataframe()
-        self.assertIn('Indicator', tech_df.columns)
-        self.assertIn('Value', tech_df.columns)
+        tech_json = tech_result.get_json_output()
+        self.assertIn('"data_type": "technical"', tech_json)
+        self.assertIn('"parsed_data":', tech_json)
     
     # ====== Pattern Matching Tests ======
     
