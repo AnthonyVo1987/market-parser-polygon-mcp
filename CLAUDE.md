@@ -133,6 +133,52 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 - ✅ **MUST initiate delegation sequence** - Don't leave user to manually start
 - ✅ **MUST include handoff instructions** - Specify what each agent should do
 
+### Tech-Lead-Orchestrator Role Restrictions
+
+**CRITICAL BOUNDARIES FOR @tech-lead-orchestrator:**
+
+- ❌ **DO NOT implement any code yourself**
+- ❌ **DO NOT make direct file changes**
+- ❌ **DO NOT write or modify code**
+- ❌ **DO NOT fabricate agent names that don't exist**
+- ❌ **DO NOT reference non-existent tools**
+- ❌ **DO NOT stop after planning - MUST trigger execution**
+- ✅ **ONLY perform strategic analysis and create delegation plans**
+- ✅ **ONLY identify which specialist agents are needed FROM CLAUDE.md**
+- ✅ **ONLY provide specific handoff instructions for each delegation**
+- ✅ **MUST initiate the delegation sequence you create**
+
+**REQUIRED DELIVERABLES:**
+
+1. **Strategic Analysis**: Brief assessment of the technical issues and fix complexity
+2. **Specialist Agent Selection**: List of required agents with specific reasons
+3. **Delegation Plan**: Structured task breakdown with specific agent assignments
+4. **Handoff Instructions**: Exact instructions for each specialist agent
+5. **Coordination Strategy**: How tasks should be sequenced and dependencies managed
+
+**EXPECTED OUTPUT FORMAT:**
+
+```markdown
+## Strategic Analysis
+[Brief technical assessment]
+
+## Verified Specialist Agents (FROM CLAUDE.md ONLY)
+- @agent-name: [specific reason and scope - VERIFIED EXISTS IN CLAUDE.md]
+
+## Delegation Plan
+### Task Group 1: [Priority Level]
+- **Agent**: @agent-name (VERIFIED IN CLAUDE.md)
+- **Scope**: [specific tasks]
+- **Handoff**: [exact instructions referencing documented patterns]
+- **Dependencies**: [prerequisites or blockers]
+
+## Coordination Strategy
+[How to execute the delegations in sequence]
+
+## Execution Trigger
+[MANDATORY: Provide the exact command to start the first delegation]
+```
+
 ### Research Protocol Enforcement
 - ❌ **No fictitious MCP tools** - Don't reference non-existent tools
 - ✅ **Use Available Research Methods** - Use built-in analysis and reasoning capabilities
@@ -199,92 +245,73 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - [Rollback considerations]
 
 ### 4. Success Validation
-
-## 🛠️ MANDATORY MCP TOOL USAGE PROTOCOLS
-
-**📚 REFERENCE**: See `MCP_TOOL_USAGE_GUIDE.md` for complete syntax and best practices documentation.
-
-### CRITICAL: Role-Specific Tool Requirements
-
-**@code-reviewer - MUST USE:**
-
-- ✅ `sequential-thinking` - For systematic code analysis and review planning
-- ✅ `context7` - For researching latest framework best practices and security patterns
-- ❌ **VIOLATION**: Code reviews without these tools are INCOMPLETE
-
-**@frontend-developer - MUST USE:**
-
-- ✅ `sequential-thinking` - For UI/UX planning and component architecture
-- ✅ `context7` - For researching latest frontend framework patterns (React, Gradio, etc.)
-- ✅ `filesystem` - For efficient file operations during implementation
-- ❌ **VIOLATION**: Frontend implementations without current framework research are OUTDATED
-
-**@backend-developer - MUST USE:**
-
-- ✅ `sequential-thinking` - For architecture planning and system design
-- ✅ `context7` - For researching latest backend patterns, security practices, async handling
-- ✅ `filesystem` - For efficient file operations during implementation
-- ❌ **VIOLATION**: Backend implementations without current pattern research may use deprecated practices
-
-**@documentation-specialist - MUST USE:**
-
-- ✅ `sequential-thinking` - For structuring comprehensive documentation
-- ✅ `filesystem` - For efficient documentation file operations
-
-### Tool Usage Enforcement Protocol
-
-**BEFORE starting ANY specialist task:**
-
-1. **Check role requirements** - Verify which tools are mandatory for your role
-2. **Plan tool usage** - Use `sequential-thinking` to break down the approach
-3. **Research current practices** - Use `context7` for framework/library research
-4. **Execute efficiently** - Use `filesystem` for file operations
-
-**QUALITY GATES:**
-
-- ❌ **Code reviews** without `sequential-thinking` + `context7` = INCOMPLETE
-- ❌ **Frontend/Backend development** without `context7` research = POTENTIALLY OUTDATED
-- ❌ **Complex tasks** without `sequential-thinking` = UNSTRUCTURED
-
-**VALIDATION CHECKLIST:**
-
-- [ ] Have I used `sequential-thinking` to plan my approach?
-- [ ] Have I used `context7` to research current best practices?
-- [ ] Am I using `filesystem` tools efficiently for file operations?
-- [ ] Does my tool usage match my specialist role requirements?
-
-### Integration Pattern Requirements
-
-**Standard Workflow for ALL Specialist Agents:**
-
-```markdown
-1. PLANNING PHASE
-   - Use sequential-thinking for task breakdown
-   - Identify research needs and dependencies
-
-2. RESEARCH PHASE  
-   - Use context7 for framework/library best practices
-   - Document findings and patterns discovered
-
-3. IMPLEMENTATION PHASE
-   - Use filesystem tools for efficient file operations
-   - Apply discovered patterns and practices
-
-4. VALIDATION PHASE
-   - Use sequential-thinking for quality verification
-   - Ensure tool usage meets role requirements
-```
-
-**CRITICAL REMINDERS:**
-
-- Tools must be used in PARALLEL when possible for efficiency
-- Always resolve Context7 library IDs before fetching documentation
-- Use absolute paths for filesystem operations
-- Document research findings for team knowledge sharing
 - [Measurable success criteria]
 - [Testing procedures]
 - [Quality verification steps]
 ```
+
+## 🛠️ DEVELOPMENT WORKFLOW PROTOCOLS
+
+**STRUCTURED APPROACH FOR ALL SPECIALIST AGENTS:**
+
+### Standard Development Workflow
+
+**PHASE 1: PLANNING AND ANALYSIS**
+- Break down complex tasks systematically using structured analysis
+- Identify dependencies and prerequisites
+- Research best practices using available documentation and codebase analysis
+- Plan implementation approach with risk assessment
+
+**PHASE 2: RESEARCH AND PREPARATION**
+- Review existing project documentation and patterns
+- Analyze current codebase implementation conventions
+- Study framework-specific best practices from official documentation
+- Document findings and chosen approaches
+
+**PHASE 3: IMPLEMENTATION**
+- Apply researched patterns and best practices
+- Use efficient file operations for code changes
+- Implement comprehensive error handling and validation
+- Follow established architectural patterns
+
+**PHASE 4: VALIDATION AND TESTING**
+- Verify implementation meets all requirements
+- Test error scenarios and edge cases
+- Validate integration with existing systems
+- Document changes and test results
+
+### Role-Specific Development Requirements
+
+**@code-reviewer - MUST:**
+- Perform systematic code analysis and security review
+- Research latest framework best practices for validation
+- Use comprehensive testing approaches for quality assurance
+
+**@frontend-developer - MUST:**
+- Research current frontend framework patterns and best practices
+- Plan UI/UX implementations with user experience considerations
+- Implement modern event handling and component architecture
+
+**@backend-developer - MUST:**
+- Research current backend patterns, security practices, and async handling
+- Plan architecture changes with system design considerations
+- Implement robust data validation and error handling
+
+**@documentation-specialist - MUST:**
+- Structure comprehensive documentation with logical organization
+- Research documentation standards and best practices
+- Implement clear, actionable guides with examples
+
+### Best Practices Research Topics
+
+**Common Research Areas for Market Parser Project:**
+- **@frontend-developer**: "async handling", "event listeners", "chatbot components", "interface configuration"
+- **@backend-developer**: "async patterns", "error handling", "state management", "testing frameworks"
+- **@api-architect**: "API design", "response schemas", "authentication patterns", "rate limiting"
+- **@code-reviewer**: "security best practices", "code quality standards", "performance patterns"
+- **@performance-optimizer**: "optimization techniques", "caching strategies", "monitoring patterns"
+- **@code-archaeologist**: "architecture analysis", "refactoring patterns", "technical debt assessment"
+- **@documentation-specialist**: "documentation standards", "API documentation", "user guide patterns"
 
 ### 2. RESEARCH AND DOCUMENTATION MANDATE
 
@@ -314,16 +341,103 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - [Testing strategy]
 ```
 
-**Research Topics for Market Parser Project:**
-- **@frontend-developer**: "async handling", "event listeners", "chatbot components", "interface configuration"
-- **@backend-developer**: "async patterns", "error handling", "state management", "testing frameworks"
-- **@api-architect**: "API design", "response schemas", "authentication patterns", "rate limiting"
-- **@code-reviewer**: "security best practices", "code quality standards", "performance patterns"
-- **@performance-optimizer**: "optimization techniques", "caching strategies", "monitoring patterns"
-- **@code-archaeologist**: "architecture analysis", "refactoring patterns", "technical debt assessment"
-- **@documentation-specialist**: "documentation standards", "API documentation", "user guide patterns"
+### 3. MANDATORY TESTING PROTOCOL REQUIREMENTS
 
-### 3. IMPLEMENTATION QUALITY REQUIREMENTS
+#### 🧪 CRITICAL: ALL BUG FIXES MUST INCLUDE TEST SCRIPT CREATION
+
+**TESTING MANDATE FOR ALL SPECIALIST AGENTS:**
+
+- ✅ **MUST create test script for every bug fix** - No exceptions
+- ✅ **MUST include validation criteria** - Define what constitutes a successful fix
+- ✅ **MUST test error scenarios** - Verify error handling works correctly
+- ✅ **MUST validate production scenarios** - Test with real-world data and inputs
+- ✅ **MUST document test procedures** - Clear instructions for running tests
+
+**Required Test Script Structure:**
+
+```python
+#!/usr/bin/env python3
+"""
+Test Script for [Bug Fix Description]
+Created: [Date]
+Purpose: Validate fix for [specific bug]
+Success Criteria: [clear criteria for pass/fail]
+"""
+
+import pytest
+import asyncio
+from typing import List, Dict, Any
+
+class Test[BugFixName]:
+    """Test suite for [specific bug fix]"""
+    
+    def setup_method(self):
+        """Setup test environment before each test"""
+        # Initialize test data and mock objects
+        pass
+    
+    def test_bug_reproduction(self):
+        """Reproduce the original bug to confirm it existed"""
+        # This test should FAIL before the fix
+        # This test should PASS after the fix
+        pass
+    
+    def test_fix_validation(self):
+        """Validate the fix works correctly"""
+        # Test the specific fix implementation
+        pass
+    
+    def test_edge_cases(self):
+        """Test edge cases that could break the fix"""
+        # Test boundary conditions and error scenarios
+        pass
+    
+    def test_regression_prevention(self):
+        """Ensure fix doesn't break existing functionality"""
+        # Test that other features still work
+        pass
+    
+    def test_production_scenarios(self):
+        """Test with production-like data and conditions"""
+        # Use real API responses, actual user inputs
+        pass
+
+def validate_fix_success() -> bool:
+    """
+    Run comprehensive validation of the bug fix
+    Returns: True if all criteria met, False otherwise
+    """
+    success_criteria = [
+        # Define specific measurable criteria
+        "Criterion 1: [specific test]",
+        "Criterion 2: [specific test]", 
+        "Criterion 3: [specific test]"
+    ]
+    
+    # Implementation of validation logic
+    return all_criteria_met
+
+if __name__ == "__main__":
+    # Run the test suite
+    pytest.main([__file__, "-v"])
+    
+    # Validate overall fix success
+    if validate_fix_success():
+        print("✅ BUG FIX VALIDATION: SUCCESS")
+    else:
+        print("❌ BUG FIX VALIDATION: FAILED")
+```
+
+**Testing Success Criteria Standards:**
+
+- **Response Parser Fixes**: Must extract >90% of expected fields from real AI responses
+- **Message History Fixes**: Zero None content entries allowed in production scenarios
+- **FSM Error Recovery**: Must recover from ERROR state in <2 seconds with user feedback
+- **UI Integration**: All button operations must work sequentially without errors
+- **Performance**: No regression in response times or memory usage
+- **JSON Schema Validation**: 100% schema compliance with fallback handling
+
+### 4. IMPLEMENTATION QUALITY REQUIREMENTS
 
 **ALL specialist agents MUST:**
 
@@ -333,8 +447,12 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - 🛡️ **Include Comprehensive Error Handling**: Robust error management and user feedback
 - 🧪 **Plan Testing Strategy**: Include validation and testing approaches
 - 📋 **Document All Changes**: Clear explanations of what was changed and why
+- 🧪 **Create Test Scripts**: MANDATORY test script for every bug fix
+- 🔬 **Validate Success**: Demonstrate fix meets defined success criteria
+- 🎯 **JSON Architecture Compliance**: Maintain dual parser compatibility
+- 📊 **Performance Monitoring**: Include metrics for JSON processing efficiency
 
-### 4. QUALITY GATES AND VERIFICATION
+### 5. QUALITY GATES AND VERIFICATION
 
 **Before completing any task, ALL specialist agents MUST:**
 
@@ -344,8 +462,12 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - ✅ **Check Function Signatures**: Validate all function signatures match requirements
 - ✅ **Preserve Architecture**: Ensure changes maintain existing architectural patterns
 - ✅ **Address Root Causes**: Confirm fixes address identified root causes
+- ✅ **NEW: Create and run test script validating the fix**
+- ✅ **NEW: Document test results and success criteria met**
+- ✅ **JSON SPECIFIC: Validate schema compatibility and fallback behavior**
+- ✅ **JSON SPECIFIC: Verify performance metrics within acceptable thresholds**
 
-### 5. CONSEQUENCES FOR NON-COMPLIANCE
+### 6. CONSEQUENCES FOR NON-COMPLIANCE
 
 **FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN:**
 
@@ -361,6 +483,7 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - [ ] Implemented solution using researched patterns
 - [ ] Added comprehensive error handling
 - [ ] Planned and documented testing approach
+- [ ] Created mandatory test script for bug fixes
 - [ ] Verified all requirements are met
 
 ## Development Environment

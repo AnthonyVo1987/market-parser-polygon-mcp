@@ -2,10 +2,10 @@
 
 
 
-claude "[DOCS] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s) in new_task.md"
+claude "[DOCS] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s)"
 
 - The project file and folder structure has gotten completley massive, confusing, and unweildy
-- Re-orgranize the entire project structure folder Hierachy using mandatory Sequential Thinking + Context7 to research best practices for re-organization according to our app's stack and architecture
+- Re-orgranize the entire project structure folder Hierachy using mandatory structured analysis to research best practices for re-organization according to our app's stack and architecture
 - There are also multiple chat_ui_enhanced, xxx_final, xx_old etc so we need to clean up all these redundant files and dupe files for the entire project. remove all back up files
 - This is a non exhaustive list, but I can see that we need folders for:
 - Test scripts, which are currently incorrectly un organized in top level folder, confusing the user which files are actual source code vs test files
@@ -13,7 +13,7 @@ claude "[DOCS] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a pl
 - Etc - re-organize anything else not mentioned
 
 - Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
-- Code review after wards with using Sequential Thinking + Context7
+- Code review after wards with using structured analysis
 
 ## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
 - SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
@@ -57,7 +57,7 @@ Scope out and update the scope doc to enforce a "single source of truth FSM (Fin
 
  the feasibility, complexity, and initial implementation plan and task breakdown for new potential feature with the following details:
 
-USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
+USE STRUCTURED ANALYSIS AND ANY OTHER AVAILABLE RESEARCH METHODS AS NEEDED TO ENSURE MOST UP TO DATE AND ROBUST BEST PRACTICES
 
 ## High Level Goal: Scope new feat: Add GUI elements to be update\populated with data from certain new AI prompts actions
 
@@ -85,5 +85,23 @@ USE SEQUENTIAL THINKING, CONTEXT7, AND ANY OTHER TOOL CALLS AS NEEDED TO ENSURE 
 - If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
 - User will then start testing the changes
 
+
+Have @Tech-Lead-Orchestrator come up with a delegation and coordination plan for the following task(s):
+
+## Task Goal: Documentation consolidation and cleanup operations (COMPLETED)
+
+## MANDATORY APPROACH:
+- Refer to CLAUDE.md documentation for structured analysis and best practices
+- Use built-in analysis and reasoning capabilities for research
+
+## Details
+- Consolidated generic task rules from old files into CLAUDE.md
+- CLAUDE.md is now the single source of truth on AI Agent operating procedures for the entire project
+- Updated workflow: user assigns tasks to tech lead Orchestrator with details, then CLAUDE.md must be followed for planning, delegation, coordination, and starting tasks by appropriate SPECIALIST
+
+## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
+- Start an automous Code\Doc Review and Fix Loop until we get a passing code review
+- If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
+- User will then start testing the changes
 
 
