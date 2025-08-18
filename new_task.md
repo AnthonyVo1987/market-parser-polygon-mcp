@@ -1,101 +1,94 @@
-# 🚨 CRITICAL: Market Parser Polygon MCP - URGENT Button Processing & Data Display Bug Fixes
-
-## 🎯 TECH LEAD ORCHESTRATOR DIRECTIVES
-
-**⚠️ CRITICAL BUG REPORT - PRODUCTION SYSTEM FAILING:**
+# 🎯 TECH LEAD ORCHESTRATOR DIRECTIVES
 
 **MANDATORY AGENT VERIFICATION:**
 
 - ❌ **DO NOT fabricate specialist agent names** - You previously created fake
   agents like "web-research-specialist" and "gradio-ui-specialist"
 - ✅ **MUST READ CLAUDE.md Agent Task Assignments** - Only use real agents
-  listed in the updated table (lines 27-37)
+  listed in the updated table (lines 31-45)
 - ✅ **MUST verify agent exists before assignment** - Check CLAUDE.md Enhanced
   AI Team Configuration
 - ✅ **MUST understand agent specialties** - Use agents according to their
   defined roles and specialized domains
 
-**ENHANCED AGENT TASK ASSIGNMENTS (FROM CLAUDE.md LINES 27-37):**
+**ENHANCED AGENT TASK ASSIGNMENTS (FROM CLAUDE.md JSON-OPTIMIZED):**
 
-| Task Category | Agent | Specific Responsibilities | Critical Notes |
-|---------------|-------|---------------------------|-----------------|
-| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. Security-aware review with severity tagging | Always use before merging. Security-focused reviews |
-| **Performance & Optimization** | `@performance-optimizer` | Cost optimization, latency improvements, token usage optimization, scaling analysis | Focus on AI costs and real-time data processing |
-| **Python Backend Development** | `@backend-developer` | Core Python development, async patterns, Pydantic AI integration, FSM implementation | Primary agent for Python-specific work |
-| **API Design & Integration** | `@api-architect` | MCP server contracts, Polygon.io integration, prompt template architecture, response schemas | Handles external API contracts and data flow |
-| **Frontend & UI Development** | `@frontend-developer` | Gradio interface enhancements, UI/UX improvements, async event handling, accessibility | Gradio-specific implementations |
-| **Codebase Analysis** | `@code-archaeologist` | Deep exploration, architecture decisions, technical debt analysis, refactoring planning | Use for major architectural changes |
-| **Documentation & Guides** | `@documentation-specialist` | README updates, API documentation, user guides, architectural documentation | User-facing and technical documentation |
+| Task Category | Agent | JSON Architecture Responsibilities | Critical Notes |
+|---------------|-------|----------------------------------|-----------------|
+| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. JSON schema validation, security review of parsers | Always validate JSON handling security and schema integrity |
+| **Performance & Optimization** | `@performance-optimizer` | JSON parsing optimization, schema validation performance, debug logging efficiency | Focus on JSON processing speed and memory usage |
+| **JSON Schema Architecture** | `@backend-developer` | JSON schema design, validation rules, parser implementation, fallback strategies | Primary agent for all JSON system components |
+| **Data Validation & Parsing** | `@backend-developer` | Schema validation logic, business rules, confidence scoring, error correction | Handles JSON parsing accuracy and data integrity |
+| **API Design & Integration** | `@api-architect` | JSON response schemas, MCP integration patterns, structured prompt design | Ensures JSON contracts with external services |
+| **Frontend & UI Development** | `@frontend-developer` | JSON display components, real-time UI updates, enhanced data visualization | Gradio JSON textboxes and structured data displays |
+| **State Management & FSM** | `@backend-developer` | JSON-aware FSM states, workflow orchestration, debug state tracking | Enhanced FSM with JSON validation integration |
+| **Monitoring & Debug Systems** | `@backend-developer` | JSON debug logger, workflow tracking, performance metrics, error analysis | Comprehensive JSON workflow monitoring |
+| **Documentation & Training** | `@documentation-specialist` | JSON architecture guides, schema documentation, migration procedures | JSON system usage and troubleshooting guides |
+| **Testing & Validation** | `@backend-developer` | JSON schema testing, validation testing, production bug testing | Comprehensive JSON system validation |
 
-**NEW: SPECIALIZED DOMAIN ASSIGNMENTS (CLAUDE.md LINES 39-51):**
+**SPECIALIZED JSON DOMAIN ASSIGNMENTS (CLAUDE.md LINES 47-58):**
 
-| Specialized Domain | Primary Agent | Secondary Agent | Task Focus |
-|--------------------|---------------|-----------------|------------|
-| **FSM State Management** | `@backend-developer` | `@code-archaeologist` | State transitions, workflow optimization, deterministic behavior |
-| **Financial Data Processing** | `@backend-developer` | `@api-architect` | Prompt engineering, response parsing, financial calculation accuracy |
-| **AI Agent Configuration** | `@backend-developer` | `@performance-optimizer` | Pydantic AI setup, system prompts, cost tracking, model optimization |
-| **MCP Server Integration** | `@api-architect` | `@backend-developer` | Server contracts, data flow, error handling, connection management |
-| **Gradio UI State Coordination** | `@frontend-developer` | `@backend-developer` | Event handling, FSM integration, user feedback, loading states |
-| **Testing & Validation** | `@backend-developer` | `@code-reviewer` | Unit tests, integration tests, FSM testing, prompt validation |
-| **CLI Development** | `@backend-developer` | `@frontend-developer` | Rich console features, CLI UX, terminal interfaces |
-| **Security & Compliance** | `@code-reviewer` | `@backend-developer` | API key protection, input validation, secure logging |
+| JSON Domain | Primary Agent | Secondary Agent | Specific Focus |
+|-------------|---------------|-----------------|----------------|
+| **JSON Schema Evolution** | `@backend-developer` | `@api-architect` | Schema versioning, compatibility, migration strategies |
+| **Parser Architecture** | `@backend-developer` | `@performance-optimizer` | Dual parser system, fallback strategies, performance optimization |
+| **Validation Workflows** | `@backend-developer` | `@code-reviewer` | Schema validation, business rules, error handling, auto-correction |
+| **Debug & Monitoring** | `@backend-developer` | `@performance-optimizer` | Workflow tracking, performance metrics, error analysis |
+| **UI JSON Integration** | `@frontend-developer` | `@backend-developer` | JSON textboxes, real-time displays, confidence indicators |
+| **Schema Documentation** | `@documentation-specialist` | `@backend-developer` | API references, migration guides, troubleshooting docs |
+| **Production Testing** | `@backend-developer` | `@code-reviewer` | JSON validation testing, integration testing, bug verification |
+| **Cost Optimization** | `@performance-optimizer` | `@backend-developer` | JSON processing efficiency, validation caching, resource usage |
 
-**CRITICAL PROJECT COORDINATION RULES (CLAUDE.md LINES 52-73):**
+**ENHANCED ARCHITECTURE COORDINATION RULES (CLAUDE.md LINES 60-79):**
 
-**1. Financial Data Accuracy:**
+**1. JSON Schema Integrity:**
 
-- Always use `@backend-developer` for financial calculations and data parsing
-- Require `@code-reviewer` validation for any mathematical logic changes
-- Use `@api-architect` for data contract changes that affect accuracy
+- NEVER modify schemas without `@backend-developer` involvement and `@code-reviewer` validation
+- Use `@api-architect` for external contract changes affecting JSON structure
+- Require comprehensive testing before schema version updates
 
-**2. FSM Architecture Preservation:**
+**2. Parser System Reliability:**
 
-- NEVER modify FSM logic without `@backend-developer` involvement
-- Use `@code-archaeologist` for major state management refactoring
-- Coordinate UI changes through both `@frontend-developer` and
-  `@backend-developer`
+- Maintain dual parser architecture (JSON + regex fallback) for maximum compatibility
+- Use `@backend-developer` for primary JSON parser enhancements
+- Coordinate fallback strategy changes with `@performance-optimizer`
 
-**3. Real-time Data Integration:**
+**3. Debug & Monitoring Excellence:**
 
-- `@api-architect` handles contract design and error scenarios
-- `@backend-developer` implements async patterns and connection management
-- `@performance-optimizer` ensures optimal latency and cost efficiency
+- Implement comprehensive JSON workflow logging for production troubleshooting
+- Use `@backend-developer` for debug system enhancements
+- Monitor performance metrics through `@performance-optimizer`
 
-**4. AI Agent Cost Management:**
+**4. UI/Backend JSON Coordination:**
 
-- `@performance-optimizer` monitors token usage and cost optimization
-- `@backend-developer` implements efficient prompt templates and response
-  parsing
-- `@code-reviewer` validates cost-effective patterns before deployment
+- Synchronize JSON display components between `@frontend-developer` and `@backend-developer`
+- Ensure real-time UI updates reflect JSON validation states
+- Maintain consistent confidence scoring across UI components
 
-**ENHANCED DEVELOPMENT WORKFLOW PROTOCOL (CLAUDE.md LINES 74-95):**
+**ENHANCED DEVELOPMENT WORKFLOW PROTOCOL (CLAUDE.md LINES 81-89):**
 
-1. **Planning Phase**: Use `@code-archaeologist` for impact analysis on complex
-   features touching multiple domains
-2. **Design Phase**: Use `@api-architect` for external integrations,
-   `@frontend-developer` for UI/UX design
-3. **Implementation Phase**: Primary specialist based on domain, with secondary
-   for cross-cutting concerns
-4. **Quality Gate**: MANDATORY `@code-reviewer` for all changes before merging
-5. **Optimization**: Use `@performance-optimizer` for cost and latency concerns
-6. **Documentation**: Use `@documentation-specialist` for user-facing docs and
-   architectural updates
+1. **Schema Design Phase**: Use `@backend-developer` with `@api-architect` for external contract alignment
+2. **Validation Implementation**: Primary `@backend-developer` with `@code-reviewer` for security validation
+3. **UI Integration**: Coordinate `@frontend-developer` and `@backend-developer` for JSON display components
+4. **Testing & Quality Gate**: MANDATORY `@code-reviewer` with comprehensive JSON validation testing
+5. **Performance Optimization**: Use `@performance-optimizer` for JSON processing efficiency
+6. **Documentation Updates**: Use `@documentation-specialist` for JSON architecture guides
 
-**AGENT COLLABORATION PATTERNS (CLAUDE.md LINES 83-95):**
+**JSON ARCHITECTURE COORDINATION PATTERNS:**
 
 **High-Risk Coordination (Multiple Agents Required):**
 
-- FSM + Gradio integration: `@frontend-developer` + `@backend-developer`
-- Financial data accuracy: `@backend-developer` + `@api-architect` +
-  `@code-reviewer`
-- Performance optimization: `@performance-optimizer` + `@backend-developer`
+- JSON Schema Evolution: `@backend-developer` + `@api-architect` + `@code-reviewer`
+- Parser Architecture: `@backend-developer` + `@performance-optimizer` + `@code-reviewer`
+- UI JSON Integration: `@frontend-developer` + `@backend-developer` + validation testing
+- Production Testing: `@backend-developer` + `@code-reviewer` + comprehensive validation
 
 **Single Agent Sufficient:**
 
-- Pure Python logic: `@backend-developer`
-- UI-only changes: `@frontend-developer`
+- JSON schema design: `@backend-developer`
+- UI-only JSON displays: `@frontend-developer`
+- Performance optimization: `@performance-optimizer`
 - Documentation updates: `@documentation-specialist`
-- Architecture analysis: `@code-archaeologist`
 
 **DELEGATION EXECUTION ENFORCEMENT:**
 
@@ -259,6 +252,9 @@ mcp__context7__get-library-docs({
 - "event listeners" - For modern event chaining
 - "chatbot components" - For message formatting
 - "interface components" - For component configuration
+- "JSON schema validation" - For data validation patterns
+- "parser architecture" - For dual parser implementation
+- "performance optimization" - For JSON processing efficiency
 
 ### 3. MANDATORY TESTING PROTOCOL REQUIREMENTS
 
@@ -360,6 +356,7 @@ if __name__ == "__main__":
 - **UI Integration**: All button operations must work sequentially without
   errors
 - **Performance**: No regression in response times or memory usage
+- **JSON Schema Validation**: 100% schema compliance with fallback handling
 
 ### 4. IMPLEMENTATION PROTOCOLS
 
@@ -370,6 +367,8 @@ if __name__ == "__main__":
 - 🧪 **Create Test Scripts**: MANDATORY test script for every bug fix
 - 📋 **Document Changes**: Clear explanations of what was changed and why
 - 🔬 **Validate Success**: Demonstrate fix meets defined success criteria
+- 🎯 **JSON Architecture Compliance**: Maintain dual parser compatibility
+- 📊 **Performance Monitoring**: Include metrics for JSON processing efficiency
 
 ### 5. QUALITY GATES
 
@@ -382,134 +381,8 @@ if __name__ == "__main__":
 - ✅ Test that fixes address the root causes identified
 - ✅ **NEW: Create and run test script validating the fix**
 - ✅ **NEW: Document test results and success criteria met**
-
-#### FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN TASK REJECTION
-
-## 📋 Executive Summary
-
-The Market Parser Polygon MCP application has **1 CURRENT ACTIVE BUGS**
-affecting  UI structured data display functionality. While
-basic operation works, there are configuration issues and data parsing failures
-that impact user experience and core feature availability.
-
-## 🔴 Current Critical Status
-
-### Application State
-
-- **Status**: PARTIAL FUNCTIONALITY - 1X Active Bugs Requiring Resolution
-- **Working Features**:
-  - ✅ Basic chat interface (shows responses in chat)
-  - ✅ FSM state transitions working correctly
-  - ✅ AI agent communication (240 character response received)
-  - ✅ Prompt generation and AI processing
-- **Active Issues**:
-  - ❌ **CRITICAL**: Structured data display parsing failing (0/9 fields extracted)
-
-### Error Evidence from Testing Session (2025-08-17)
-
-**FROM PRODUCTION LOG ANALYSIS:**
-- I interrupted this bug fix because after reviewing the critical bug analysis report, its not a bug but more of an architectural issue
-- Let's re-architect the button prompts and structured UI display with new behavior as follows:
-
-- Button Prompt should now NEVER OUTPUT into the chat box area.  Chatbox is now ONLY reserved for user input queries to decouple it from button prompts
-- Button Prompts should now ONLY Output response in structured JSON output
-- Button prompts should now have explicit raw JSON output textboxes for EACH button prompt. So for example, we have 3x button prompts now, so each of those needs it's own deterministic JSN raw output response for viewing
-- Once a button prompt has a successfuly raw JSON ouput, now the App's UI code can parse the raw JSON output as an intermediate step, and THEN the structured UI data can be displayed
-- This sill streamline the process by inserting an intermediate raw JSON response parsing step first, and THEN the UI can be updated with the proper parsed\extracted content
-- FSM States, Flags, and variables may have to be updated to handle all the new behavior
-- Add new debug logs to help debug the new feature and to also output the raw JSON reponses too in the logs for easier debugging
-- update and refine test scripts and focus on production behavior since all past test script literally missed this issue 3x straight times, so current test scripts seem utterly useless
-- With the new raw JSON output payload boxes, now we have visiblity on what the real response is, and to always have a unified output format for easier UI Parsing and Extraction
-- This will prevent the current convoluted, complex, and sensitive code to convert\parse raw text response into a UI structured ready response
-- Since we were previously in the middle of making some fixes without the re-archtecture, we need to also undo fix that was in progress since that is only a band-aid solution, and the real solution is the Structured JSON Ouput re-architecture
-
-## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
-- SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
-- User will then start testing out the new changes
-
-
-
-Logs:
-
-
-⚠️ Snapshot Analysis for NVDA
-
-Current price: $180.45
-Percentage change: -1.3%
-$ Change: -$2.28
-Volume: 156,591,397
-VWAP: $179.92
-Open: $181.88
-High: $181.90
-Low: $178.04
-Close: $180.45
-
-
-✅ Snapshot analysis complete - 16.4s FSM State: IDLE Button Type: snapshot Ticker: NVDA Error Attempts: 0 Total Transitions: 7 Recent Transitions: • RESPONSE_RECEIVED → PARSING_RESPONSE (parse) • PARSING_RESPONSE → UPDATING_UI (parse_success) • UPDATING_UI → IDLE (update_complete)
-
-Parse Results:
-
-Confidence: Failed (0/9 fields)
-Parse Time: 2.9ms
-Warnings: 0
-
-
-anthony@Anthony:/mnt/d/Github/market-parser-polygon-mcp$ uv run chat_ui.py
-Loaded .env from: /mnt/d/Github/market-parser-polygon-mcp/.env
-🚀 Starting Enhanced Stock Market Analysis Chat (Phase 5)
-🎯 Features: FSM + Enhanced Parsing + Prompt Templates + Loading States + Error Handling
-2025-08-17 13:27:50,310 - stock_data_fsm.transitions - INFO - Validated 29 state transitions
-2025-08-17 13:27:50,310 - stock_fsm.0aa02031 - INFO - StateManager initialized with session 0aa02031
-2025-08-17 13:27:50,310 - stock_fsm.0aa02031 - INFO - StateManager initialized with session 0aa02031
-2025-08-17 13:27:50,310 - stock_data_fsm.transitions - INFO - Validated 29 state transitions
-2025-08-17 13:27:50,393 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
-* Running on local URL:  http://127.0.0.1:7860
-2025-08-17 13:27:50,714 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
-2025-08-17 13:27:50,754 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
-* To create a public link, set `share=True` in `launch()`.
-2025-08-17 13:28:13,957 - stock_data_fsm.transitions - INFO - Validated 29 state transitions
-[GUI] Button clicked: snapshot for NVDA
-2025-08-17 13:28:13,957 - stock_fsm.0aa02031 - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
-2025-08-17 13:28:13,957 - stock_fsm.0aa02031 - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
-2025-08-17 13:28:13,957 - stock_fsm.0aa02031 - INFO - Button clicked: snapshot
-2025-08-17 13:28:13,957 - stock_fsm.0aa02031 - INFO - Button clicked: snapshot
-2025-08-17 13:28:13,957 - prompt_templates - INFO - Generated snapshot prompt for NVDA
-[GUI] Enhanced prompt generated for NVDA (confidence: 1.0)
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Transitioning: BUTTON_TRIGGERED -prepare_prompt-> PROMPT_PREPARING
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Transitioning: BUTTON_TRIGGERED -prepare_prompt-> PROMPT_PREPARING
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Prompt prepared for snapshot: 218 characters
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Prompt prepared for snapshot: 218 characters
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Transitioning: PROMPT_PREPARING -prompt_ready-> AI_PROCESSING
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Transitioning: PROMPT_PREPARING -prompt_ready-> AI_PROCESSING
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Prompt ready for AI processing: snapshot
-2025-08-17 13:28:13,958 - stock_fsm.0aa02031 - INFO - Prompt ready for AI processing: snapshot
-[GUI] Sending prompt to AI: Provide a comprehensive stock snapshot for NVDA. Include: Current price, Percentage change, $ Change...
-[08/17/25 13:28:15] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                               server.py:624
-2025-08-17 13:28:25,091 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
-[08/17/25 13:28:25] INFO     Processing request of type CallToolRequest                                                                                                                                                                  server.py:624
-                    INFO     Processing request of type ListToolsRequest                                                                                                                                                                 server.py:624
-2025-08-17 13:28:30,129 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - Transitioning: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - Transitioning: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - AI response received in 16.36s: 208 characters
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - AI response received in 16.36s: 208 characters
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - Transitioning: RESPONSE_RECEIVED -parse-> PARSING_RESPONSE
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - Transitioning: RESPONSE_RECEIVED -parse-> PARSING_RESPONSE
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - Starting to parse response for snapshot
-2025-08-17 13:28:30,317 - stock_fsm.0aa02031 - INFO - Starting to parse response for snapshot
-2025-08-17 13:28:30,317 - response_parser - INFO - Parsing stock snapshot from 208 character response
-2025-08-17 13:28:30,320 - response_parser - INFO - Snapshot parsing completed: 0/9 fields (0.0% success rate)
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - Transitioning: PARSING_RESPONSE -parse_success-> UPDATING_UI
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - Transitioning: PARSING_RESPONSE -parse_success-> UPDATING_UI
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - Parsing successful in 0.01s: 0 data points
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - Parsing successful in 0.01s: 0 data points
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - Transitioning: UPDATING_UI -update_complete-> IDLE
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - Transitioning: UPDATING_UI -update_complete-> IDLE
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - UI update complete in 0.00s. Total cycle: 16.37s
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - INFO - UI update complete in 0.00s. Total cycle: 16.37s
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - WARNING - Invalid transition: IDLE + 'abort'
-2025-08-17 13:28:30,323 - stock_fsm.0aa02031 - WARNING - Invalid transition: IDLE + 'abort'
-[GUI] Button processing completed successfully for NVDA
+- ✅ **JSON SPECIFIC: Validate schema compatibility and fallback behavior**
+- ✅ **JSON SPECIFIC: Verify performance metrics within acceptable thresholds**
 
 ## 📚 Reference Documentation
 
@@ -517,25 +390,30 @@ Loaded .env from: /mnt/d/Github/market-parser-polygon-mcp/.env
 - [Regex Pattern Testing](https://regex101.com/) for parser pattern validation
 - [Python Response Parsing](https://docs.python.org/3/library/re.html)
 
-
 **WHAT NOT TO DO:**
 
 ❌ Create fake agents that don't exist in CLAUDE.md Enhanced Configuration  
 ❌ Confuse Context7 with WebSearch/WebFetch tools  
 ❌ Stop after creating plan without triggering execution  
 ❌ Allow bug fixes without corresponding test scripts
+❌ Modify JSON schemas without proper validation and testing
+❌ Implement UI changes without coordinating JSON display components
 
----
+#### FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN TASK REJECTION
 
-**Document Version**: 5.0  
-**Updated**: 2025-08-17  
-**Priority**: MEDIUM - 2 Active bugs requiring resolution  
-**Estimated Fix Time**: 1-2 hours for complete implementation + testing validation  
-**Major Update**: Cleaned up resolved bugs, focused on 2 current active issues only
+## 📋 START OF NEW TASK REQUEST Executive Summary Details
 
-## 🔬 COMPREHENSIVE TESTING GAP ANALYSIS
+- The project file and folder structure has gotten completley massive, confusing, and unweildy
+- Re-orgranize the entire project structure folder Hierachy using mandatory Sequential Thinking + Context7 to research best practices for re-organization according to our app's stack and architecture
+- There are also multiple chat_ui_enhanced, xxx_final, xx_old etc so we need to clean up all these redundant files and dupe files for the entire project. remove all back up files
+- This is a non exhaustive list, but I can see that we need folders for:
+- Test scripts, which are currently incorrectly un organized in top level folder, confusing the user which files are actual source code vs test files
+- Log files - similiar to above where they are currently incorrectly un organized in top level folder
+- Etc - re-organize anything else not mentioned
 
-**Analysis Date**: 2025-08-17  
-**Analysis Method**: Systematic Sequential Thinking + Production Bug Investigation  
-**Tools Used**: Code Archaeologist Analysis + Context7 Pattern Research
-#
+- Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
+- Code review after wards with using Sequential Thinking + Context7
+
+## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
+- SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
+- User will then start testing out the new changes

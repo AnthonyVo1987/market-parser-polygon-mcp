@@ -2,14 +2,14 @@
 
 
 
-claude "[feat] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s) in new_task.md"
+claude "[DOCS] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s) in new_task.md"
 
 - The project file and folder structure has gotten completley massive, confusing, and unweildy
 - Re-orgranize the entire project structure folder Hierachy using mandatory Sequential Thinking + Context7 to research best practices for re-organization according to our app's stack and architecture
+- There are also multiple chat_ui_enhanced, xxx_final, xx_old etc so we need to clean up all these redundant files and dupe files for the entire project. remove all back up files
 - This is a non exhaustive list, but I can see that we need folders for:
 - Test scripts, which are currently incorrectly un organized in top level folder, confusing the user which files are actual source code vs test files
 - Log files - similiar to above where they are currently incorrectly un organized in top level folder
-- Backup Files
 - Etc - re-organize anything else not mentioned
 
 - Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
