@@ -302,10 +302,9 @@ async def handle_button_click(
                 fsm_manager, snapshot_json, sr_json, tech_json, processing_status.status_message
             )
         
-        # Step 3: Prepare prompt and transition FSM
-        processing_status.update_step("Preparing FSM prompt...", 3)
-        fsm_manager.transition('prepare_prompt')
-        fsm_manager.transition('prompt_ready')
+        # Step 3: Prepare prompt and transition FSM to AI processing
+        processing_status.update_step("Starting AI processing...", 3)
+        fsm_manager.transition('start_ai_processing')
         
         # Step 4: Execute AI processing
         processing_status.update_step(f"Getting AI analysis for {fsm_manager.context.ticker}...", 4)
@@ -364,8 +363,8 @@ async def handle_button_click(
         processing_status.update_step("Finalizing...", 4)
         cost_markdown = await _update_costs(response, tracker)
         
-        # Reset FSM for next interaction
-        fsm_manager.transition('abort')  # Return to IDLE
+        # Complete display and return FSM to IDLE for next interaction
+        fsm_manager.transition('display_complete')  # Proper RESPONSE_RECEIVED -> IDLE transition
         
         # Simple debug info
         debug_state = _get_debug_state_info(fsm_manager)
