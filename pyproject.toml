@@ -24,3 +24,24 @@ build-backend = "setuptools.build_meta"
 # Package configuration for new directory structure
 py-modules = ["market_parser_demo", "chat_ui"]
 packages = ["src", "stock_data_fsm"] 
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "--import-mode=importlib",
+    "-ra",
+    "-q"
+]
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    ".",
+    "src", 
+    "stock_data_fsm"
+]

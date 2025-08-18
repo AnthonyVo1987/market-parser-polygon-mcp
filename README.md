@@ -325,8 +325,34 @@ market-parser-polygon-mcp/
 - **CLI interface**: `uv run market_parser_demo.py`
 - **Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
 
-### Testing
+### Testing with PyTest
 
+The project includes comprehensive PyTest infrastructure for reliable testing:
+
+#### Running Tests
+```bash
+# Install dev dependencies (includes pytest)
+uv install --dev
+
+# Run all tests
+uv run pytest tests/
+
+# Run specific test file
+uv run pytest tests/test_file.py -v
+
+# Run validation tests
+uv run pytest tests/validate_pytest_setup.py -v
+
+# Test discovery
+uv run pytest --collect-only tests/
+```
+
+#### Test Infrastructure
+- **Configuration**: `[tool.pytest.ini_options]` in pyproject.toml
+- **Module Support**: All project modules (src/, stock_data_fsm/) accessible
+- **Validation**: Use `tests/validate_pytest_setup.py` to verify setup
+
+#### Enhanced Test Coverage
 - **Run all tests**: `uv run pytest tests/` (comprehensive coverage with enhanced architecture)
 - **Run specific test**: `uv run pytest tests/test_file.py`
 - **Run enhanced FSM tests**: `uv run pytest tests/test_simplified_fsm_workflow.py`
