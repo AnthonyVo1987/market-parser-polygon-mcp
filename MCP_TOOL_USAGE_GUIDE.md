@@ -2,54 +2,95 @@
 
 > **Target Audience**: AI Coding Agents  
 > **Purpose**: Definitive guide for proper MCP tool usage, syntax, and best practices  
-> **Last Updated**: Current Session
+> **Last Updated**: 2025-08-18 (Policy Update)
 
 ## 📋 Executive Summary
 
-This guide provides comprehensive documentation for the three primary MCP (Model Context Protocol) tools available in our development environment. Proper usage of these tools is **MANDATORY** for specific AI specialist roles and development scenarios.
+This guide provides comprehensive documentation for the three primary MCP (Model Context Protocol) tools available in our development environment. **IMPORTANT: Current enforcement policy has been updated - see Critical Usage Requirements section.**
 
-## 🚨 Critical Usage Requirements by Role
+## 🚨 UPDATED ENFORCEMENT POLICY (2025-08-18)
 
-### **@code-reviewer** - MUST use:
-- ✅ `sequential-thinking` - For systematic code analysis
-- ✅ `context7` - For latest framework/library best practices
+### **TEMPORARY WAIVER FOR SPECIALIST AGENTS**
 
-### **@frontend-developer** - MUST use:
-- ✅ `sequential-thinking` - For planning UI/UX implementations
-- ✅ `context7` - For researching latest frontend framework patterns
-- ✅ `filesystem` - For efficient file operations
+**SPECIALIST AGENTS (MCP ENFORCEMENT WAIVED):**
 
-### **@backend-developer** - MUST use:
-- ✅ `sequential-thinking` - For architecture planning
-- ✅ `context7` - For latest backend framework patterns  
-- ✅ `filesystem` - For efficient file operations
+- ✅ **NOT REQUIRED to use MCP tools** - Temporary waiver active
+- ✅ **Standard Claude tools sufficient** - Read, Write, Edit, LS, Grep, Bash are acceptable
+- ✅ **Quality standards maintained** - All other protocols remain fully enforced
+- ✅ **Focus on deliverables** - Emphasis on high-quality implementation
 
-### **@documentation-specialist** - MUST use:
-- ✅ `sequential-thinking` - For structuring documentation
-- ✅ `filesystem` - For file operations
+**TECH LEAD ORCHESTRATOR (FULL MCP ENFORCEMENT CONTINUES):**
+
+- ❌ **NO WAIVER GRANTED** - @tech-lead-orchestrator must still use ALL MCP tools
+- ❌ **MCP tools mandatory** - All existing enforcement protocols remain active
+- ❌ **No standard tools** - Cannot use Read, Write, Edit, LS, Grep, Bash
+
+## 🔄 Critical Usage Requirements by Role (UPDATED)
+
+### **@code-reviewer** - WAIVER ACTIVE
+
+- ~~NOT REQUIRED: sequential-thinking~~ - Waived under current policy
+- ~~NOT REQUIRED: context7 research~~ - Waived under current policy
+- ✅ **ACCEPTABLE**: Standard systematic analysis using Claude tools
+
+### **@frontend-developer** - WAIVER ACTIVE
+
+- ~~NOT REQUIRED: sequential-thinking~~ - Waived under current policy
+- ~~NOT REQUIRED: context7 research~~ - Waived under current policy
+- ~~NOT REQUIRED: filesystem tools~~ - Waived under current policy
+- ✅ **ACCEPTABLE**: Standard Claude tools for all operations
+
+### **@backend-developer** - WAIVER ACTIVE
+
+- ~~NOT REQUIRED: sequential-thinking~~ - Waived under current policy
+- ~~NOT REQUIRED: context7 research~~ - Waived under current policy
+- ~~NOT REQUIRED: filesystem tools~~ - Waived under current policy
+- ✅ **ACCEPTABLE**: Standard Claude tools for all operations
+
+### **@documentation-specialist** - WAIVER ACTIVE
+
+- ~~NOT REQUIRED: sequential-thinking~~ - Waived under current policy
+- ~~NOT REQUIRED: filesystem tools~~ - Waived under current policy
+- ✅ **ACCEPTABLE**: Standard Claude tools for documentation work
+
+### **@tech-lead-orchestrator** - FULL MCP ENFORCEMENT (NO WAIVER)
+
+- ✅ **STILL REQUIRED: sequential-thinking** - For systematic orchestration analysis
+- ✅ **STILL REQUIRED: context7** - For research of orchestration patterns
+- ✅ **STILL REQUIRED: filesystem** - For orchestration file operations
 
 ---
 
 ## 🔧 Tool 1: Context7 - Latest Documentation Research
 
+### **Current Enforcement Status**
+
+- **SPECIALIST AGENTS**: ~~NOT REQUIRED~~ (Waived under current policy)
+- **TECH LEAD ORCHESTRATOR**: **REQUIRED** (Full enforcement continues)
+
 ### **Purpose**
+
 Context7 provides access to the most up-to-date documentation, best practices, and code examples for any library or framework. It's your primary tool for researching current development patterns.
 
-### **When to Use**
+### **When to Use (Orchestrator Only)**
+
 - ✅ Researching latest framework versions (React 18+, Vue 3+, Gradio 4+, etc.)
 - ✅ Finding current API syntax and best practices
 - ✅ Getting code examples for modern patterns
 - ✅ Understanding breaking changes between versions
-- ✅ Before implementing any frontend/backend features
+- ✅ Before orchestrating any complex development delegation
 
 ### **When NOT to Use**
+
 - ❌ For general programming concepts (use standard knowledge)
 - ❌ For project-specific code (use filesystem tools)
 - ❌ For debugging existing code (use other analysis tools)
+- ❌ **SPECIALIST AGENTS: Not required under current waiver policy**
 
-### **Proper Tool Call Syntax**
+### **Proper Tool Call Syntax (Orchestrator Only)**
 
 #### Step 1: Resolve Library ID
+
 ```javascript
 mcp_context7_resolve-library-id
 Parameters:
@@ -59,6 +100,7 @@ Parameters:
 ```
 
 #### Step 2: Get Documentation
+
 ```javascript
 mcp_context7_get-library-docs
 Parameters:
@@ -69,22 +111,24 @@ Parameters:
 }
 ```
 
-### **Best Practices**
+### **Best Practices (Orchestrator Only)**
 
 1. **Always resolve library ID first** - Don't guess the Context7 ID format
 2. **Be specific with topics** - "async handling in gradio 4.0" vs just "gradio"
 3. **Use appropriate token limits** - 5000-10000 for detailed research
 4. **Document findings** - Save key patterns found for team reference
 
-### **Common Mistakes to Avoid**
+### **Common Mistakes to Avoid (Orchestrator Only)**
 
 ❌ **Wrong**: Guessing library IDs
+
 ```javascript
 // DON'T DO THIS
 "context7CompatibleLibraryID": "/gradio/gradio"  // Wrong format
 ```
 
 ✅ **Correct**: Always resolve first
+
 ```javascript
 // Step 1: Resolve
 mcp_context7_resolve-library-id({"libraryName": "gradio"})
@@ -94,50 +138,43 @@ mcp_context7_resolve-library-id({"libraryName": "gradio"})
 mcp_context7_get-library-docs({"context7CompatibleLibraryID": "/gradio-app/gradio"})
 ```
 
-### **Example Usage Scenarios**
+### **Alternative Research Methods for Specialists (Under Waiver)**
 
-**Scenario 1: Frontend Framework Research**
-```javascript
-// Research modern React patterns
-resolve-library-id: {"libraryName": "react"}
-get-library-docs: {
-  "context7CompatibleLibraryID": "/facebook/react", 
-  "topic": "hooks and concurrent features",
-  "tokens": 8000
-}
-```
+**ACCEPTABLE for specialist agents:**
 
-**Scenario 2: Backend Framework Research** 
-```javascript
-// Research FastAPI async patterns
-resolve-library-id: {"libraryName": "fastapi"}
-get-library-docs: {
-  "context7CompatibleLibraryID": "/tiangolo/fastapi",
-  "topic": "async dependency injection",
-  "tokens": 6000
-}
-```
+- Review existing project documentation and patterns
+- Analyze current codebase implementation conventions
+- Study framework usage examples in existing code
+- Research through standard documentation analysis methods
 
 ---
 
 ## 🧠 Tool 2: Sequential Thinking - Problem Decomposition
 
-### **Purpose**
+### **Current Enforcement Status for Sequential Thinking**
+
+- **SPECIALIST AGENTS**: ~~NOT REQUIRED~~ (Waived under current policy)
+- **TECH LEAD ORCHESTRATOR**: **REQUIRED** (Full enforcement continues)
+
+### **Sequential Thinking Purpose**
+
 Breaks down complex problems into manageable, step-by-step thought processes. Essential for planning, architecture decisions, and systematic problem-solving.
 
-### **When to Use**
-- ✅ Planning complex feature implementations
-- ✅ Debugging multi-component issues
-- ✅ Architecture and design decisions
-- ✅ Code review analysis
-- ✅ Before starting any non-trivial development task
+### **When to Use (Orchestrator Only)**
+
+- ✅ Planning complex delegation strategies
+- ✅ Orchestrating multi-component development tasks
+- ✅ Strategic architecture and design decisions
+- ✅ Complex team coordination analysis
+- ✅ Before delegating any non-trivial development work
 
 ### **When NOT to Use**
-- ❌ Simple, single-step tasks
-- ❌ Routine operations (file editing, simple fixes)
-- ❌ When immediate action is more appropriate
 
-### **Proper Tool Call Syntax**
+- ❌ Simple, single-step orchestration tasks
+- ❌ Routine delegation operations
+- ❌ **SPECIALIST AGENTS: Not required under current waiver policy**
+
+### **Proper Tool Call Syntax (Orchestrator Only)**
 
 ```javascript
 mcp_sequential-thinking_sequentialthinking
@@ -155,81 +192,72 @@ Parameters:
 }
 ```
 
-### **Best Practices**
+### **Alternative Analysis Methods for Specialists (Under Waiver)**
 
-1. **Start with clear problem statement** - Define what you're trying to solve
-2. **Estimate total thoughts** - Can be adjusted as you progress
-3. **Use revisions when needed** - Mark thoughts that change previous analysis
-4. **Branch for alternatives** - Explore different approaches
-5. **Be specific in each thought** - Each step should add clear value
+**ACCEPTABLE for specialist agents:**
 
-### **Common Mistakes to Avoid**
+- Use structured analytical thinking approach
+- Break down problems systematically using standard methods
+- Document step-by-step reasoning process
+- Apply logical problem-solving methodology
 
-❌ **Wrong**: Vague, non-actionable thoughts
-```javascript
-"thought": "I need to fix this somehow"  // Too vague
-```
+**Required Analysis Pattern for Specialists:**
 
-✅ **Correct**: Specific, actionable thoughts
-```javascript
-"thought": "I need to identify the root cause of the async handler failure by examining the lambda wrapper pattern in lines 685-700 of chat_ui.py and comparing it to modern Gradio 4.0+ async patterns"
-```
+```markdown
+## Task Analysis
+### 1. Understanding the Problem
+- [Clear definition of what needs to be done]
+- [Current state assessment]
+- [Root cause identification]
 
-### **Example Usage Scenarios**
+### 2. Solution Planning
+- [Step-by-step implementation approach]
+- [Required resources and dependencies]
+- [Risk assessment and mitigation]
 
-**Scenario 1: Feature Planning**
-```javascript
-// Thought 1: Problem analysis
-{
-  "thought": "Planning implementation of real-time stock data feature. Need to identify: 1) data source integration, 2) WebSocket handling, 3) UI update patterns, 4) error handling strategies",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 1,
-  "totalThoughts": 4
-}
+### 3. Implementation Strategy
+- [Specific technical approaches]
+- [Testing and validation plan]
+- [Rollback considerations]
 
-// Thought 2: Technical approach
-{
-  "thought": "For data source integration, I'll use Polygon.io WebSocket API. Need to research latest WebSocket patterns in Python and determine if we need asyncio or threading approach",
-  "nextThoughtNeeded": true, 
-  "thoughtNumber": 2,
-  "totalThoughts": 4
-}
-```
-
-**Scenario 2: Bug Analysis**
-```javascript
-// Thought 1: Symptom identification
-{
-  "thought": "Button click handlers are failing silently. Symptoms: no errors in console, no function execution, UI remains responsive. This suggests event binding issues rather than function logic problems",
-  "nextThoughtNeeded": true,
-  "thoughtNumber": 1, 
-  "totalThoughts": 3
-}
+### 4. Success Validation
+- [Measurable success criteria]
+- [Testing procedures]
+- [Quality verification steps]
 ```
 
 ---
 
 ## 📁 Tool 3: Filesystem - Efficient File Operations
 
-### **Purpose**
+### **Current Enforcement Status for Filesystem Tools**
+
+- **SPECIALIST AGENTS**: ~~NOT REQUIRED~~ (Waived under current policy)
+- **TECH LEAD ORCHESTRATOR**: **REQUIRED** (Full enforcement continues)
+
+### **Filesystem Tool Purpose**
+
 Provides comprehensive file system operations that are more efficient and reliable than terminal-based commands. Handles reading, writing, searching, and managing files and directories.
 
-### **When to Use**
-- ✅ Reading file contents (single or multiple files)
-- ✅ Writing or editing files
-- ✅ Searching for files or patterns within files
-- ✅ Getting file/directory information
-- ✅ Directory traversal and listing
-- ✅ Any file system operation
+### **When to Use Filesystem Tools (Orchestrator Only)**
 
-### **When NOT to Use**
+- ✅ Reading multiple files for orchestration analysis
+- ✅ Searching for architectural patterns across codebase
+- ✅ Getting comprehensive file/directory information
+- ✅ Directory traversal for delegation planning
+- ✅ Any orchestration-related file system operation
+
+### **When NOT to Use Filesystem Tools**
+
 - ❌ When you need git operations (use terminal/git tools)
 - ❌ When you need to run executables
 - ❌ For operations outside allowed directories
+- ❌ **SPECIALIST AGENTS: Not required under current waiver policy**
 
-### **Available Operations & Syntax**
+### **Filesystem Operations & Syntax (Orchestrator Only)**
 
 #### File Reading Operations
+
 ```javascript
 // Read single file
 mcp_filesystem_read_text_file
@@ -252,343 +280,240 @@ mcp_filesystem_get_file_info
 }
 ```
 
-#### File Writing/Editing Operations
-```javascript
-// Write new file or overwrite existing
-mcp_filesystem_write_file
-{
-  "path": "/path/to/new/file.py",
-  "content": "file contents here"
-}
+### **Alternative File Operations for Specialists (Under Waiver)**
 
-// Edit existing file with line-based replacements
-mcp_filesystem_edit_file
-{
-  "path": "/path/to/file.py", 
-  "edits": [
-    {
-      "oldText": "exact text to replace",
-      "newText": "replacement text"
-    }
-  ],
-  "dryRun": false  // Optional: preview changes
-}
-```
+**ACCEPTABLE for specialist agents:**
 
-#### Directory Operations
-```javascript
-// List directory contents
-mcp_filesystem_list_directory
-{
-  "path": "/path/to/directory"
-}
-
-// Get directory structure as JSON tree
-mcp_filesystem_directory_tree
-{
-  "path": "/path/to/directory"
-}
-
-// Create directory
-mcp_filesystem_create_directory
-{
-  "path": "/path/to/new/directory"
-}
-```
-
-#### Search Operations
-```javascript
-// Search for files by name pattern
-mcp_filesystem_search_files
-{
-  "path": "/search/root/directory",
-  "pattern": "*.py",
-  "excludePatterns": ["__pycache__", "*.pyc"]
-}
-```
-
-### **Best Practices**
-
-1. **Use absolute paths** - More reliable than relative paths
-2. **Read multiple files in parallel** - Use read_multiple_files for efficiency
-3. **Use directory_tree for structure overview** - Better than list_directory for nested exploration
-4. **Preview edits with dryRun** - Validate changes before applying
-5. **Batch edit operations** - Group related file changes together
-
-### **Common Mistakes to Avoid**
-
-❌ **Wrong**: Using relative paths inconsistently
-```javascript
-"path": "./src/components/Button.tsx"  // May fail
-```
-
-✅ **Correct**: Use absolute paths from workspace root
-```javascript
-"path": "/mnt/d/Github/project/src/components/Button.tsx"
-```
-
-❌ **Wrong**: Reading files sequentially when could be parallel
-```javascript
-// Don't do this
-read_text_file({"path": "/path/file1.py"})
-// Wait for result
-read_text_file({"path": "/path/file2.py"})
-// Wait for result  
-```
-
-✅ **Correct**: Read multiple files in parallel
-```javascript
-read_multiple_files({
-  "paths": ["/path/file1.py", "/path/file2.py", "/path/file3.py"]
-})
-```
-
-### **Example Usage Scenarios**
-
-**Scenario 1: Code Analysis**
-```javascript
-// Get project structure overview
-directory_tree({"path": "/mnt/d/Github/project"})
-
-// Read key files for analysis
-read_multiple_files({
-  "paths": [
-    "/mnt/d/Github/project/src/main.py",
-    "/mnt/d/Github/project/config/settings.py", 
-    "/mnt/d/Github/project/requirements.txt"
-  ]
-})
-```
-
-**Scenario 2: Bug Fix Implementation**
-```javascript
-// Read current problematic file
-read_text_file({"path": "/mnt/d/Github/project/chat_ui.py"})
-
-// Edit with specific fixes
-edit_file({
-  "path": "/mnt/d/Github/project/chat_ui.py",
-  "edits": [
-    {
-      "oldText": "lambda: async_function_call()",
-      "newText": "async_function_call"
-    }
-  ]
-})
-```
+- Use standard Claude Read tool for file operations
+- Use standard Claude LS tool for directory listing
+- Use standard Claude Write tool for file creation/updates
+- Use standard Claude Edit tool for file modifications
+- Use standard Claude Grep tool for searching within files
 
 ---
 
-## 🔄 Tool Integration Patterns
+## 🔄 Updated Tool Integration Patterns
 
-### **Pattern 1: Research → Plan → Implement**
+### **Pattern 1: Orchestrator Research → Delegate → Monitor**
+
 ```javascript
-// 1. Research latest patterns
+// 1. Research latest patterns (ORCHESTRATOR ONLY)
 context7_resolve_library_id({"libraryName": "framework"})
 context7_get_library_docs({...})
 
-// 2. Plan implementation  
+// 2. Plan delegation strategy (ORCHESTRATOR ONLY)
 sequential_thinking({
-  "thought": "Based on research, I need to implement X using pattern Y..."
+  "thought": "Based on research, I need to delegate X to specialist Y using pattern Z..."
 })
 
-// 3. Implement changes
-filesystem_edit_file({...})
+// 3. Delegate to specialists (SPECIALISTS USE STANDARD TOOLS)
+// Specialists implement using Read, Write, Edit, LS, Grep, Bash
 ```
 
-### **Pattern 2: Problem Analysis → Solution Planning**
+### **Pattern 2: Orchestrator Analysis → Multi-Agent Coordination**
+
 ```javascript
-// 1. Break down the problem
+// 1. Break down the problem (ORCHESTRATOR ONLY)
 sequential_thinking({
-  "thought": "Complex bug has multiple symptoms: A, B, C. Need to identify root cause..."
+  "thought": "Complex task has multiple components: A, B, C. Need to coordinate specialists..."
 })
 
-// 2. Research current best practices
+// 2. Research current best practices (ORCHESTRATOR ONLY)
 context7_get_library_docs({...})
 
-// 3. Examine current code
+// 3. Examine current codebase (ORCHESTRATOR ONLY)
 filesystem_read_multiple_files({...})
 
-// 4. Continue planning with new information
-sequential_thinking({
-  "thought": "After research and code review, root cause appears to be..."
-})
+// 4. Delegate coordinated tasks (SPECIALISTS USE STANDARD TOOLS)
+// Each specialist uses their preferred standard Claude tools
 ```
 
 ---
 
-## ✅ Validation and Testing
+## ✅ Updated Validation and Testing
 
 ### **Tool Call Validation Checklist**
 
-Before using any MCP tool, verify:
+**FOR ORCHESTRATOR (MCP tools still required):**
 
 - [ ] **Context7**: Have you resolved the library ID first?
-- [ ] **Sequential Thinking**: Is the problem complex enough to warrant step-by-step analysis?
+- [ ] **Sequential Thinking**: Is the orchestration complex enough to warrant step-by-step analysis?
 - [ ] **Filesystem**: Are you using absolute paths from workspace root?
-- [ ] **Role Requirements**: Does your specialist role mandate specific tool usage?
+- [ ] **Evidence**: Can you provide specific evidence of MCP tool usage?
+
+**FOR SPECIALISTS (Standard tools acceptable):**
+
+- [ ] **Analysis**: Have you used systematic thinking approach?
+- [ ] **Research**: Have you investigated project patterns and best practices?
+- [ ] **Implementation**: Are you using the most efficient available tools?
+- [ ] **Documentation**: Have you documented your approach and decisions?
 
 ### **Quality Indicators**
 
-**Good tool usage:**
-- Specific, actionable parameters
-- Appropriate tool selection for the task
-- Parallel execution when possible
-- Clear integration between tools
+**Good orchestrator tool usage (MCP tools):**
 
-**Poor tool usage:**
-- Vague or missing parameters
-- Wrong tool for the task
-- Sequential execution when parallel would work
-- Isolated tool usage without integration
+- Specific, actionable MCP tool parameters
+- Appropriate MCP tool selection for orchestration tasks
+- Parallel MCP execution when possible
+- Clear integration between MCP tools
+
+**Good specialist implementation (Standard tools):**
+
+- Systematic analysis using structured thinking
+- Research through documentation and codebase review
+- Efficient use of standard Claude tools
+- Clear documentation of implementation decisions
 
 ---
 
-## 📚 Quick Reference
+## 📚 Updated Quick Reference
 
-### **Context7 Quick Commands**
+### **Context7 Quick Commands (Orchestrator Only)**
+
 ```bash
-# Research React patterns
+# Research React patterns (ORCHESTRATOR ONLY)
 resolve-library-id("react") → get-library-docs("/facebook/react", "hooks")
 
-# Research Python async patterns  
+# Research Python async patterns (ORCHESTRATOR ONLY)
 resolve-library-id("asyncio") → get-library-docs("/python/asyncio", "coroutines")
+
+# SPECIALISTS: Use documentation analysis and codebase review instead
 ```
 
-### **Sequential Thinking Quick Commands**
-```bash
-# Start planning session
-sequential-thinking("Planning X feature implementation...")
+### **Sequential Thinking Quick Commands (Orchestrator Only)**
 
-# Continue with analysis
-sequential-thinking("Based on research, technical approach should be...")
+```bash
+# Start orchestration planning session (ORCHESTRATOR ONLY)
+sequential-thinking("Planning delegation strategy for X feature...")
+
+# Continue with delegation analysis (ORCHESTRATOR ONLY)
+sequential-thinking("Based on research, technical approach should involve...")
+
+# SPECIALISTS: Use structured analysis templates instead
 ```
 
-### **Filesystem Quick Commands**
+### **Filesystem Quick Commands (Orchestrator Only)**
+
 ```bash
-# Project overview
+# Project overview for orchestration (ORCHESTRATOR ONLY)
 directory_tree("/project/root")
 
-# Multi-file read
+# Multi-file read for delegation planning (ORCHESTRATOR ONLY)
 read_multiple_files(["/path/file1", "/path/file2"])
 
-# Safe edit with preview
-edit_file("/path/file", edits=[...], dryRun=true)
+# SPECIALISTS: Use standard Claude Read, LS, Write, Edit tools instead
 ```
 
 ---
 
-## 🚨 CRITICAL: Delegation-Specific MCP Requirements
+## 🚨 UPDATED: Delegation-Specific Requirements
 
-### **MANDATORY MCP Tool Usage for ALL Delegated Specialists**
+### **MCP Tool Requirements ONLY for @tech-lead-orchestrator**
 
-When AI agents are delegated via the Task tool, they **MUST** use MCP tools according to their role requirements. **Standard Claude tools alone are insufficient and will result in work rejection.**
+**TECH LEAD ORCHESTRATOR MUST provide explicit evidence of MCP tool usage:**
 
-#### **Evidence Requirements for Delegated Agents**
-
-**EVERY delegated specialist MUST provide explicit evidence of MCP tool usage:**
-
-1. **Sequential Thinking Evidence**: 
+1. **Sequential Thinking Evidence**:
    - Must show numbered thought progression from `mcp__sequential-thinking__sequentialthinking`
-   - Include systematic problem breakdown and analysis steps
-   - Document decision-making process clearly
+   - Include systematic problem breakdown and delegation analysis steps
+   - Document orchestration decision-making process clearly
 
-2. **Context7 Research Evidence** (if applicable):
+2. **Context7 Research Evidence** (when applicable):
    - Must show library ID resolution: `mcp__context7__resolve-library-id`
-   - Must show documentation retrieval: `mcp__context7__get-library-docs` 
-   - Include specific research findings and best practices discovered
+   - Must show documentation retrieval: `mcp__context7__get-library-docs`
+   - Include specific research findings and delegation patterns discovered
 
-3. **Filesystem Operations Evidence** (if applicable):
-   - Must use `mcp__filesystem__*` tools for file operations
+3. **Filesystem Operations Evidence** (when applicable):
+   - Must use `mcp__filesystem__*` tools for orchestration file operations
    - Include specific filesystem tool calls made
-   - Document file operations performed
+   - Document file operations performed for delegation planning
 
-#### **Role-Specific MCP Tool Requirements**
+### **NO MCP Requirements for Specialist Agents (Under Waiver)**
 
-**@code-reviewer MUST provide evidence of:**
-```
-✅ mcp__sequential-thinking__sequentialthinking - Systematic code analysis steps
-✅ mcp__context7__resolve-library-id + get-library-docs - Best practices research
-```
+**SPECIALIST AGENTS are NOT required to provide:**
 
-**@backend-developer MUST provide evidence of:**
-```
-✅ mcp__sequential-thinking__sequentialthinking - Architecture planning steps  
-✅ mcp__context7__resolve-library-id + get-library-docs - Backend patterns research
-✅ mcp__filesystem__* - File operations evidence
-```
+- ~~MCP sequential thinking evidence~~
+- ~~MCP context7 research evidence~~
+- ~~MCP filesystem operations evidence~~
 
-**@frontend-developer MUST provide evidence of:**
-```
-✅ mcp__sequential-thinking__sequentialthinking - UI/UX planning steps
-✅ mcp__context7__resolve-library-id + get-library-docs - Frontend patterns research  
-✅ mcp__filesystem__* - File operations evidence
-```
+**SPECIALIST AGENTS MUST still provide:**
 
-**@documentation-specialist MUST provide evidence of:**
-```
-✅ mcp__sequential-thinking__sequentialthinking - Documentation structuring steps
-✅ mcp__filesystem__* - File operations evidence
+- ✅ Evidence of systematic analysis using structured thinking
+- ✅ Evidence of research through documentation and codebase review
+- ✅ Clear documentation of implementation approach and decisions
+- ✅ Test scripts for bug fixes and validation procedures
+
+### **Updated Role-Specific Requirements**
+
+**@tech-lead-orchestrator MUST provide evidence of (UNCHANGED):**
+
+```text
+✅ mcp__sequential-thinking__sequentialthinking - Orchestration planning steps
+✅ mcp__context7__resolve-library-id + get-library-docs - Delegation research  
+✅ mcp__filesystem__* - Orchestration file operations evidence
 ```
 
-#### **Unacceptable Responses (Will Result in Rejection)**
+**Specialist agents (@code-reviewer, @backend-developer, @frontend-developer, @documentation-specialist) MUST provide evidence of (UPDATED):**
 
-❌ **Only standard Claude tools mentioned**: Read, Write, Edit, LS, Grep, Bash
-❌ **No systematic thinking evidence**: Vague analysis without structured steps
-❌ **No research performed**: Implementation without best practices research
-❌ **Missing MCP tool evidence**: Claims of analysis without MCP tool proof
-
-#### **Acceptable Evidence Examples**
-
-✅ **Good Sequential Thinking Evidence**:
-```
-I used mcp__sequential-thinking__sequentialthinking to break down this problem:
-Thought 1: Analyzed the current architecture patterns...
-Thought 2: Identified dependencies and risk factors...
-Thought 3: Planned implementation approach based on analysis...
+```text
+✅ Structured analysis using systematic thinking approach
+✅ Research through documentation review and codebase analysis
+✅ Implementation decisions documented with clear reasoning
+✅ Test scripts and validation procedures for bug fixes
 ```
 
-✅ **Good Context7 Evidence**:
-```
-I used mcp__context7__resolve-library-id to research "react" patterns:
-- Resolved to library ID: /facebook/react
-- Used mcp__context7__get-library-docs with topic "hooks and state management"
-- Discovered current best practices: [specific findings]
-```
+### **Updated Evidence Examples**
 
-✅ **Good Filesystem Evidence**:
-```
-Used mcp__filesystem__read_multiple_files to examine:
-- /path/file1.py, /path/file2.py
-Used mcp__filesystem__edit_file to update imports...
+**✅ Good Orchestrator Evidence (MCP Required)**:
+
+```text
+I used mcp__sequential-thinking__sequentialthinking to break down this orchestration:
+Thought 1: Analyzed the delegation requirements and team coordination needs...
+Thought 2: Identified specialists needed and task dependencies...
+Thought 3: Planned delegation sequence with risk mitigation...
+
+I used mcp__context7__resolve-library-id to research delegation patterns...
 ```
 
-## 🚨 Enforcement Protocol
+**✅ Good Specialist Evidence (Standard Tools Acceptable)**:
 
-### **Mandatory Tool Usage Violations**
+```text
+I performed systematic analysis of this implementation task:
+Step 1: Analyzed current code structure using Read and LS tools...
+Step 2: Researched best practices through documentation review...
+Step 3: Planned implementation approach with comprehensive testing...
+Step 4: Implemented using Write and Edit tools following project patterns...
+```
 
-If a specialist agent fails to use required tools:
+## 🚨 Updated Enforcement Protocol
 
-1. **@code-reviewer** not using sequential-thinking or context7 → Review is incomplete
-2. **@frontend-developer** not researching latest patterns → Implementation may use outdated practices  
-3. **@backend-developer** not using systematic planning → Architecture may be flawed
+### **Tool Usage Violations**
 
-### **Tool Misuse Corrections**
+**For @tech-lead-orchestrator (Full MCP Enforcement):**
 
-Common corrections needed:
-- Wrong Context7 library ID format → Always resolve first
-- Vague sequential thinking → Be specific and actionable
-- Relative filesystem paths → Use absolute paths
-- Sequential tool calls → Use parallel when possible
+1. **Not using MCP sequential-thinking** → Orchestration lacks systematic analysis
+2. **Not using MCP context7 research** → Delegation may use outdated patterns
+3. **Not using MCP filesystem tools** → Orchestration file operations inefficient
 
-### **Quality Standards**
+**For Specialist Agents (Under Waiver - No MCP Violations):**
+
+1. **Not using systematic analysis** → Implementation lacks structure
+2. **Not researching project patterns** → May use inconsistent approaches
+3. **Poor documentation** → Implementation decisions not explained
+4. **Missing test scripts** → Bug fixes not properly validated
+
+### **Quality Standards (All Agents)**
 
 All tool usage must meet these standards:
-- **Purposeful**: Clear reason for tool selection
-- **Efficient**: Parallel execution when appropriate
-- **Complete**: All required parameters provided
+
+- **Purposeful**: Clear reason for approach selection
+- **Efficient**: Use most appropriate tools available
+- **Complete**: All required analysis and documentation provided
 - **Integrated**: Tools work together toward the goal
 
 ---
 
-*This guide is the definitive reference for MCP tool usage. All AI coding agents must follow these patterns and requirements.*
+**FINAL REMINDER**:
+
+- **SPECIALIST AGENTS**: Currently operate under temporary MCP tool waiver - use standard Claude tools with high quality standards
+- **TECH LEAD ORCHESTRATOR**: Remains fully subject to MCP tool enforcement with no waiver granted
+- All quality standards and development protocols remain fully enforced for all agents

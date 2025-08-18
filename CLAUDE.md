@@ -132,103 +132,62 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 - ✅ **MUST provide execution trigger command** - Include specific agent invocation
 - ✅ **MUST initiate delegation sequence** - Don't leave user to manually start
 - ✅ **MUST include handoff instructions** - Specify what each agent should do
-- ✅ **MUST include mandatory MCP tool requirements** - Every delegation MUST specify required MCP tools
-- ✅ **MUST verify MCP tool usage** - REJECT work that doesn't use required MCP tools
 
-### 🚨 CRITICAL: MCP Tool Enforcement for Delegated Specialists
+## 🚨 TEMPORARY WAIVER: MCP Tool Enforcement for Specialist Agents
 
-**MANDATORY REQUIREMENTS FOR ALL DELEGATED SPECIALIST AGENTS:**
+### **CURRENT ENFORCEMENT POLICY (Effective Immediately)**
 
-All specialist agents delegated via Task tool **MUST** use MCP tools according to their role requirements. **FAILURE TO USE MCP TOOLS = IMMEDIATE WORK REJECTION**.
+**SPECIALIST AGENTS (TEMPORARY WAIVER ACTIVE):**
+- ✅ **MCP Tool Waiver Granted**: Sub-agent specialists are currently **NOT REQUIRED** to use MCP tools
+- ✅ **Standard Claude Tools Acceptable**: Read, Write, Edit, LS, Grep, Bash are sufficient for specialist work
+- ✅ **Quality Standards Maintained**: All other development protocols and quality gates remain fully enforced
+- ✅ **Focus on Deliverables**: Emphasis on high-quality implementation using available Claude tools
 
-#### **MCP Tool Verification Protocol**
+**TECH LEAD ORCHESTRATOR (FULL ENFORCEMENT CONTINUES):**
+- ❌ **NO WAIVER GRANTED**: @tech-lead-orchestrator remains fully subject to ALL MCP tool requirements
+- ❌ **Must Use MCP Tools**: All existing MCP enforcement protocols remain active for orchestrator role
+- ❌ **No Standard Tools**: Cannot use Read, Write, Edit, LS, Grep, Bash for orchestrator responsibilities
 
-**BEFORE accepting ANY specialist work, @tech-lead-orchestrator MUST verify:**
+### **Rationale for Temporary Waiver**
 
-- ✅ **Sequential Thinking Used**: Evidence of `mcp__sequential-thinking__sequentialthinking` usage
-- ✅ **Context7 Research Performed**: Evidence of `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs` if required
-- ✅ **Filesystem Tools Used**: Evidence of `mcp__filesystem__*` tools for file operations if applicable
-- ✅ **Actual MCP Tools Listed**: Response includes specific MCP tool usage, not standard Claude tools
+**Technical Limitations Identified:**
+- Sub-agent specialists currently cannot properly implement MCP tool calls due to architectural constraints
+- Enforcement was creating artificial barriers to productive work completion
+- Standard Claude tools provide sufficient capability for specialist implementation tasks
 
-#### **Mandatory Delegation Template**
+**Scope of Waiver:**
+- **APPLIES TO**: All specialist agents (`@code-reviewer`, `@backend-developer`, `@frontend-developer`, `@documentation-specialist`, `@performance-optimizer`, `@api-architect`, `@code-archaeologist`)
+- **DOES NOT APPLY TO**: `@tech-lead-orchestrator` (remains fully subject to MCP enforcement)
 
-**ALL delegations MUST include this exact text:**
+### **Modified Delegation Template (Effective Immediately)**
+
+**ALL delegations to specialist agents should use this template:**
 
 ```markdown
-## 🚨 MANDATORY MCP TOOL REQUIREMENTS:
-You MUST use these MCP tools (VIOLATION = IMMEDIATE REJECTION):
-- [Specify required MCP tools based on role]
-- Example: mcp__sequential-thinking__sequentialthinking - For systematic analysis
-- Example: mcp__context7__resolve-library-id + get-library-docs - For research
-- Example: mcp__filesystem__* - For file operations
+## 📋 TASK DELEGATION TO SPECIALIST AGENT
 
-## VERIFICATION EVIDENCE REQUIRED:
-You MUST provide in your response:
-1. List of MCP tools used with specific call details
-2. Sequential thinking steps showing systematic approach
-3. Context7 research findings if applicable
-4. Evidence of filesystem MCP tool usage
+**CURRENT POLICY**: MCP tool enforcement is temporarily waived for specialist agents.
 
-⚠️ CRITICAL: Using only standard Claude tools (Read, Write, Edit, LS, Grep, Bash) 
-without MCP tools will result in IMMEDIATE WORK REJECTION and re-delegation.
+## ✅ ACCEPTABLE TOOLS:
+- Standard Claude tools: Read, Write, Edit, LS, Grep, Bash
+- Use the most efficient tools available for the task
+- Focus on high-quality implementation and documentation
+
+## 🎯 QUALITY STANDARDS (STILL REQUIRED):
+- Follow all structured analysis protocols
+- Research best practices using available methods
+- Create comprehensive test scripts for bug fixes
+- Maintain all architectural patterns and standards
+- Document all changes and implementation decisions
+
+## 📋 TASK DESCRIPTION:
+[Insert specific task details here]
+
+## 🎯 EXPECTED DELIVERABLES:
+[Insert expected outcomes here]
 ```
 
-#### **Role-Specific MCP Requirements for Delegations**
-
-**@code-reviewer delegations MUST include:**
-```
-MANDATORY MCP TOOLS:
-- mcp__sequential-thinking__sequentialthinking - For systematic code analysis
-- mcp__context7__resolve-library-id + get-library-docs - For latest best practices research
-```
-
-**@backend-developer delegations MUST include:**
-```
-MANDATORY MCP TOOLS:
-- mcp__sequential-thinking__sequentialthinking - For architecture planning
-- mcp__context7__resolve-library-id + get-library-docs - For latest backend patterns
-- mcp__filesystem__* - For efficient file operations
-```
-
-**@frontend-developer delegations MUST include:**
-```
-MANDATORY MCP TOOLS:
-- mcp__sequential-thinking__sequentialthinking - For UI/UX planning
-- mcp__context7__resolve-library-id + get-library-docs - For latest frontend patterns
-- mcp__filesystem__* - For efficient file operations
-```
-
-**@documentation-specialist delegations MUST include:**
-```
-MANDATORY MCP TOOLS:
-- mcp__sequential-thinking__sequentialthinking - For documentation structuring
-- mcp__filesystem__* - For efficient file operations
-```
-
-#### **Work Rejection Protocol**
-
-**If specialist work is received WITHOUT proper MCP tool usage:**
-
-1. **IMMEDIATELY REJECT** the work with reason: "VIOLATION: Required MCP tools not used"
-2. **RE-DELEGATE** with strengthened MCP tool requirements
-3. **DOCUMENT** the violation in the response
-4. **DO NOT ACCEPT** work using only standard Claude tools
-
-#### **MCP Tool Usage Evidence Requirements**
-
-**Acceptable evidence of MCP tool usage:**
-- Explicit mention of MCP tool function calls made
-- Sequential thinking steps numbered and structured
-- Context7 research findings with library IDs resolved
-- Filesystem operations using mcp__filesystem__ tools
-
-**UNACCEPTABLE (will result in rejection):**
-- Only standard Claude tools mentioned (Read, Write, Edit, LS, Grep, Bash)
-- No evidence of systematic thinking process
-- No research performed for implementation tasks
-- Vague references to "analysis" without MCP tool evidence
-
-### Tech-Lead-Orchestrator Role Restrictions
+### **Tech-Lead-Orchestrator Restrictions (UNCHANGED)**
 
 **CRITICAL BOUNDARIES FOR @tech-lead-orchestrator:**
 
