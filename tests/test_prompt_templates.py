@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import json
 import logging
-from prompt_templates import (
+from src.prompt_templates import (
     PromptTemplateManager, PromptType, TickerExtractor, TickerContext,
     PromptTemplate, run_prompt_consistency_tests, validate_template_parsing_compatibility
 )

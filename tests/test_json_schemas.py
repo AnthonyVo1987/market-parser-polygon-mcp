@@ -20,16 +20,16 @@ import unittest
 from typing import Dict, Any, List
 from unittest.mock import patch, MagicMock
 
-from json_schemas import (
+from src.json_schemas import (
     SchemaRegistry, AnalysisType, SchemaVersion,
     SNAPSHOT_SCHEMA, SUPPORT_RESISTANCE_SCHEMA, TECHNICAL_SCHEMA, ERROR_RESPONSE_SCHEMA,
     generate_example_responses
 )
-from schema_validator import (
+from src.schema_validator import (
     SchemaValidator, ValidationResult, FieldError, ValidationReport,
     validate_json_response, enhance_and_validate
 )
-from example_json_responses import (
+from src.example_json_responses import (
     SNAPSHOT_EXAMPLES, SUPPORT_RESISTANCE_EXAMPLES, TECHNICAL_EXAMPLES, ERROR_EXAMPLES,
     get_examples_by_type, validate_all_examples
 )

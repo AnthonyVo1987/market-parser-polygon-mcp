@@ -29,9 +29,9 @@ from typing import Dict, Any, List, Optional
 from unittest.mock import Mock, patch
 
 # Import the actual parsing components
-from response_parser import ResponseParser, DataType, ParseResult, ConfidenceLevel
+from src.response_parser import ResponseParser, DataType, ParseResult, ConfidenceLevel
 try:
-    from json_parser import JsonParser, JsonParseResult, JsonDataType
+    from src.json_parser import JsonParser, JsonParseResult, JsonDataType
     JSON_PARSER_AVAILABLE = True
 except ImportError:
     JSON_PARSER_AVAILABLE = False

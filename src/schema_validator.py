@@ -29,7 +29,7 @@ except ImportError:
     JSONSCHEMA_AVAILABLE = False
     logging.warning("jsonschema not available - validation will be disabled")
 
-from json_schemas import (
+from .json_schemas import (
     SchemaRegistry, AnalysisType, SchemaVersion,
     SNAPSHOT_SCHEMA, SUPPORT_RESISTANCE_SCHEMA, TECHNICAL_SCHEMA, ERROR_RESPONSE_SCHEMA
 )

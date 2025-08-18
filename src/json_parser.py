@@ -31,7 +31,7 @@ import re
 import time
 
 # Import schema components
-from json_schemas import (
+from .json_schemas import (
     SchemaRegistry, AnalysisType, SchemaVersion,
     SNAPSHOT_SCHEMA, SUPPORT_RESISTANCE_SCHEMA, TECHNICAL_SCHEMA
 )

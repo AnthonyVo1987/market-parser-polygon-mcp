@@ -32,8 +32,8 @@ import sys
 
 # Import the actual production components
 from stock_data_fsm import StateManager, AppState, StateContext
-from response_parser import ResponseParser, DataType, ParseResult, ConfidenceLevel
-from prompt_templates import PromptTemplateManager, PromptType
+from src.response_parser import ResponseParser, DataType, ParseResult, ConfidenceLevel
+from src.prompt_templates import PromptTemplateManager, PromptType
 
 # Import actual UI processing functions that production uses
 try:

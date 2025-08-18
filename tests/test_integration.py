@@ -19,8 +19,8 @@ import time
 
 # Import all system components
 from stock_data_fsm import StateManager, AppState
-from response_parser import ResponseParser, DataType, ConfidenceLevel
-from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+from src.response_parser import ResponseParser, DataType, ConfidenceLevel
+from src.prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
 from market_parser_demo import TokenCostTracker
 
 # Import the enhanced UI components

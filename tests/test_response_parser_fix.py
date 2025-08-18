@@ -24,7 +24,7 @@ from typing import Dict, List, Any
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from response_parser import ResponseParser, DataType, ConfidenceLevel
+from src.response_parser import ResponseParser, DataType, ConfidenceLevel
 
 # Configure logging for detailed parser output
 logging.basicConfig(level=logging.INFO)

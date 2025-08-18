@@ -12,7 +12,7 @@ Usage:
 import json
 import time
 import logging
-from json_debug_logger import json_debug_logger, create_workflow_id
+from src.json_debug_logger import json_debug_logger, create_workflow_id
 
 def test_json_workflow_logging():
     """Test the complete JSON workflow logging system"""

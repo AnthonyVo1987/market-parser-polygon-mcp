@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
 import logging
-from response_parser import (
+from src.response_parser import (
     ResponseParser, ParseResult, ConfidenceLevel, DataType, 
     ValidationError
 )

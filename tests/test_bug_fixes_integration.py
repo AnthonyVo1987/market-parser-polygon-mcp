@@ -28,8 +28,8 @@ from unittest.mock import patch, MagicMock
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import project modules
-from response_parser import ResponseParser, DataType, ConfidenceLevel
-from prompt_templates import PromptTemplateManager, PromptType
+from src.response_parser import ResponseParser, DataType, ConfidenceLevel
+from src.prompt_templates import PromptTemplateManager, PromptType
 from stock_data_fsm import StateManager, AppState
 from stock_data_fsm.states import StateContext
 

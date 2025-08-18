@@ -12,12 +12,12 @@ import traceback
 from datetime import datetime
 from typing import Dict, Any
 
-from prompt_templates import (
+from src.prompt_templates import (
     PromptTemplateManager, 
     PromptType, 
     TickerContext
 )
-from json_schemas import (
+from src.json_schemas import (
     schema_registry,
     AnalysisType,
     generate_example_responses

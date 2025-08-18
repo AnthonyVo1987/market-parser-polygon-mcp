@@ -7,7 +7,7 @@ the exact data being processed in production scenarios.
 
 import logging
 import asyncio
-from response_parser import ResponseParser, DataType
+from src.response_parser import ResponseParser, DataType
 
 # Configure logging to capture ERROR level debug messages
 logging.basicConfig(

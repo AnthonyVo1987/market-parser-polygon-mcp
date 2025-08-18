@@ -21,6 +21,6 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-# Explicitly specify modules in this flat layout to avoid auto-discovery errors  
+# Package configuration for new directory structure
 py-modules = ["market_parser_demo", "chat_ui"]
-packages = ["stock_data_fsm"] 
+packages = ["src", "stock_data_fsm"] 

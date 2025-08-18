@@ -14,7 +14,7 @@ These examples serve as:
 import json
 import datetime
 from typing import Dict, Any
-from json_schemas import AnalysisType
+from .json_schemas import AnalysisType
 
 
 def get_current_timestamp() -> str:

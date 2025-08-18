@@ -22,7 +22,7 @@ from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from typing import Dict, Any, List, Optional
 
 # Core system imports
-from response_parser import ResponseParser, ParseResult, ConfidenceLevel, DataType, ValidationError
+from src.response_parser import ResponseParser, ParseResult, ConfidenceLevel, DataType, ValidationError
 from stock_data_fsm import StateManager, AppState, StateContext
 from stock_data_fsm.manager import StateActions
 from stock_data_fsm.transitions import TransitionGuards

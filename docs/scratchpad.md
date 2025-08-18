@@ -2,7 +2,7 @@
 
 
 
-claude "[DOCS] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a plan for the delegation and coordination for Specialists perform the task(s)"
+[DOCS] Ask @Tech-Lead-Orchestrator to follow CLAUDE.md to provide a delegation and coordination plan for Specialist to perform the following task(s)
 
 - The project file and folder structure has gotten completley massive, confusing, and unweildy
 - Re-orgranize the entire project structure folder Hierachy using mandatory structured analysis to research best practices for re-organization according to our app's stack and architecture
@@ -13,44 +13,13 @@ claude "[DOCS] Use @Tech-Lead-Orchestrator to follow CLAUDE.md to scope out a pl
 - Etc - re-organize anything else not mentioned
 
 - Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
-- Code review after wards with using structured analysis
+- Code review afterwards with using structured analysis
 
 ## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
 - SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
+- Provide Summary (NO DOCS needs) of MCP Tool Calls used by EACH Specialist involved so user can verify the proper tool calls used for the task(s)
 - User will then start testing out the new changes
 
-
-
-## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
-- SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
-- User will then start testing out the new changes
-
-
-
-## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
-- SPECIALIST to Start an Code\Doc Review and Fix Loop until we get a passing code review
-- If PASSING code review, SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes
-- User will then start testing out the new changes
-##
-
-
-
-
-Scope out and update the scope doc to enforce a "single source of truth FSM (Finite State Machine)"
-- Current scope already has some state management, but let's make it a full on deterministic FSM
-- So research the best practices to implement a FSM according to our app's architecture, app stack, and the scope doc details
-
-
-- Update the entire implementation plan with the updated details
-
-## ACTIONS TO BE PERFORM ONLY AFTER CHANGES
-- Start an automous Code\Doc Review and Fix Loop until we get a passing code review
-- If PASSING code review, perform an autonomous ATOMIC git commit and push to the repo for ALL Doc\Code\File changes
-- User will then start testing the code
-
-
-
-###
 
 
 

@@ -7,7 +7,7 @@ Validates that both critical production issues have been resolved:
 """
 
 import sys
-from response_parser import ResponseParser, DataType
+from src.response_parser import ResponseParser, DataType
 from chat_ui import sanitize_message_history
 
 def test_response_parser_fixes():

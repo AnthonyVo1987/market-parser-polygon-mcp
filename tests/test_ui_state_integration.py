@@ -34,7 +34,7 @@ import queue
 
 # Import FSM and UI components
 from stock_data_fsm import StateManager, AppState, StateContext
-from response_parser import ResponseParser, DataType, ParseResult, ConfidenceLevel
+from src.response_parser import ResponseParser, DataType, ParseResult, ConfidenceLevel
 
 # Try to import UI components
 try:

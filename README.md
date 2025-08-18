@@ -143,6 +143,52 @@ Be speficific in your prompt. The better the prompt - the better the response.
 
 ---
 
+## Project Structure
+
+The project has been organized into logical directories for improved maintainability:
+
+```
+market-parser-polygon-mcp/
+├── src/                          # Core application modules
+│   ├── response_parser.py        # Response parsing utilities  
+│   ├── json_parser.py           # JSON parsing with fallback strategies
+│   ├── json_schemas.py          # Schema definitions and validation
+│   ├── prompt_templates.py      # Structured prompt templates
+│   ├── schema_validator.py      # Validation logic and business rules
+│   ├── json_debug_logger.py     # Debug logging for workflows
+│   ├── security_utils.py        # Input validation and security
+│   └── example_json_responses.py # Test examples and development aids
+├── stock_data_fsm/              # Finite State Machine for GUI workflow
+│   ├── states.py                # Application states and context
+│   ├── transitions.py           # State transition rules
+│   ├── manager.py               # FSM controller and orchestration
+│   └── tests/                   # FSM-specific test suite
+├── tests/                       # Comprehensive test suite
+│   ├── test_integration.py      # Integration tests
+│   ├── test_production_*.py     # Production scenario validation
+│   ├── run_*.py                 # Test runners and scripts
+│   └── validate_*.py            # Fix validation scripts
+├── logs/                        # Application and debug logs
+├── scripts/                     # Utility and demonstration scripts
+├── config/                      # Configuration files (future use)
+├── docs/                        # Comprehensive documentation
+│   ├── reports/                 # Technical reports and analysis
+│   └── *.md                     # Architecture guides and user docs
+├── images/                      # Project assets
+├── market_parser_demo.py        # CLI application entry point
+├── chat_ui.py                   # Web GUI application
+└── pyproject.toml              # Project configuration
+```
+
+**Key Benefits of New Structure:**
+- **Modularity**: Core logic separated into `src/` directory
+- **Testing**: All tests consolidated in `tests/` directory  
+- **Documentation**: Organized in `docs/` with dedicated `reports/` subfolder
+- **Maintenance**: Utility scripts and logs properly organized
+- **Scalability**: Ready for future configuration management
+
+---
+
 ## Troubleshooting
 
 - **Missing API Key:**
@@ -162,6 +208,30 @@ Be speficific in your prompt. The better the prompt - the better the response.
   ```sh
   pip install python-dotenv rich "pydantic-ai-slim[openai]" gradio
   python market_parser_demo.py
+  ```
+
+- **Import Errors with New Structure:**
+
+  With the reorganized structure, update imports to use the new paths:
+  ```python
+  # New import patterns:
+  from src.response_parser import ResponseParser
+  from src.prompt_templates import PromptTemplateManager
+  from stock_data_fsm.states import AppState
+  ```
+
+- **Test Execution:**
+
+  Run tests from the project root using the new structure:
+  ```sh
+  # All tests
+  uv run pytest tests/
+  
+  # Specific test files
+  uv run pytest tests/test_integration.py
+  
+  # Production tests
+  uv run python tests/run_production_tests.py
   ```
 
 - **Incorrect Responses**
@@ -192,6 +262,29 @@ This project includes structured analysis and research capabilities for developm
 - **Purpose**: Analyze existing codebase patterns and architectural decisions
 - **Benefits**: Maintain consistency, preserve architectural integrity, identify improvement opportunities
 - **Application**: Used for refactoring, feature additions, and technical debt assessment
+
+---
+
+## Development Commands
+
+### Running the Application
+
+- **CLI interface**: `uv run market_parser_demo.py`
+- **Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
+
+### Testing
+
+- **Run all tests**: `uv run pytest tests/` (pytest is in dev dependencies)
+- **Run specific test**: `uv run pytest tests/test_file.py`
+- **Run integration tests**: `uv run pytest tests/test_*integration*.py`
+- **Run production tests**: `uv run python tests/run_production_tests.py`
+- **Install dev dependencies**: `uv install --dev`
+
+### Environment Management
+
+- **Install dependencies**: `uv install`
+- **Update dependencies**: `uv lock --upgrade`
+- **Check environment**: `uv --version` and verify `.env` file exists
 
 ---
 

@@ -515,7 +515,7 @@ This project uses `uv` for dependency management and Python package execution. A
    ```
 
 **Security Features:**
-- Input validation and sanitization via `security_utils.py`
+- Input validation and sanitization via `src/security_utils.py`
 - Secure logging that redacts sensitive data automatically
 - Environment variable validation on startup
 - See `SECURITY.md` for complete security guidelines
@@ -529,9 +529,10 @@ This project uses `uv` for dependency management and Python package execution. A
 
 ### Testing
 
-- **Run tests**: `uv run pytest` (pytest is in dev dependencies)
-- **Run specific test**: `uv run pytest path/to/test_file.py`
-- **Run integration tests**: `uv run pytest test_*integration*.py`
+- **Run all tests**: `uv run pytest tests/` (pytest is in dev dependencies)
+- **Run specific test**: `uv run pytest tests/test_file.py`
+- **Run integration tests**: `uv run pytest tests/test_*integration*.py`
+- **Run production tests**: `uv run python tests/run_production_tests.py`
 - **Install dev dependencies**: `uv install --dev`
 
 ### Environment Management
@@ -585,22 +586,70 @@ The agent uses a consistent system prompt across both interfaces:
 
 ## File Structure
 
-- `market_parser_demo.py` - CLI application
-- `chat_ui.py` - Web GUI application (primary enhanced version)
-- `chat_ui_enhanced.py`, `chat_ui_final.py` - Archived GUI versions
-- `stock_data_fsm/` - Finite State Machine module for GUI state management
-  - `states.py` - Application states enum and context data classes
-  - `transitions.py` - State transition rules and validation logic
-  - `manager.py` - Main FSM controller with transition orchestration
-  - `tests/` - Comprehensive test suite for FSM components
-- `prompt_templates.py` - Structured prompt templates for analysis types
-- `response_parser.py` - Response parsing utilities for structured data extraction
-- `pyproject.toml` - Project configuration and dependencies
-- `uv.lock` - Lock file for reproducible builds
-- `docs/` - Documentation including feature specifications and deployment guides
-  - `reports/` - Centralized location for all project reports and analysis
-- `test_*.py` - Test files including integration and unit tests
-- `images/` - Project assets
+```
+market-parser-polygon-mcp/
+├── src/                          # Core application modules
+│   ├── __init__.py
+│   ├── response_parser.py        # Response parsing utilities for structured data extraction
+│   ├── json_parser.py           # JSON parsing with fallback strategies
+│   ├── json_schemas.py          # JSON schema definitions and validation
+│   ├── prompt_templates.py      # Structured prompt templates for analysis types
+│   ├── schema_validator.py      # Schema validation logic and business rules
+│   ├── json_debug_logger.py     # Debug logging for JSON workflows
+│   ├── security_utils.py        # Input validation and security utilities
+│   └── example_json_responses.py # Example responses for testing and development
+├── stock_data_fsm/              # Finite State Machine module for GUI state management
+│   ├── __init__.py
+│   ├── states.py                # Application states enum and context data classes
+│   ├── transitions.py           # State transition rules and validation logic
+│   ├── manager.py               # Main FSM controller with transition orchestration
+│   └── tests/                   # FSM-specific test suite
+│       ├── __init__.py
+│       ├── test_states.py
+│       ├── test_transitions.py
+│       ├── test_manager.py
+│       └── test_integration.py
+├── tests/                       # Comprehensive test suite
+│   ├── __init__.py
+│   ├── test_integration.py      # Main integration tests
+│   ├── test_actual_integration.py
+│   ├── test_prompt_templates.py
+│   ├── test_response_parser.py
+│   ├── test_json_schemas.py
+│   ├── test_production_*.py     # Production scenario tests
+│   ├── run_*.py                 # Test runners and validation scripts
+│   └── validate_*.py            # Fix validation scripts
+├── logs/                        # Application and debug logs
+│   ├── json_workflow_debug.log
+│   ├── production_*.log
+│   └── debug_*.log
+├── scripts/                     # Utility and demonstration scripts
+│   ├── debug_parser_data_sources.py
+│   ├── demo_json_prompts.py
+│   └── simple_test.py
+├── config/                      # Configuration files (ready for future use)
+├── docs/                        # Comprehensive documentation
+│   ├── JSON_ARCHITECTURE_GUIDE.md
+│   ├── USER_GUIDE_JSON_FEATURES.md
+│   ├── TROUBLESHOOTING_JSON.md
+│   ├── FEATURE_SCOPE_STOCK_DATA_GUI.md
+│   ├── DEPLOYMENT_GUIDE_AWS.md
+│   ├── reports/                 # Project reports and analysis
+│   │   ├── README.md
+│   │   ├── COMPREHENSIVE_BUG_FIX_REPORT.md
+│   │   ├── JSON_RESPONSE_IMPLEMENTATION_REPORT.md
+│   │   └── *.md                # Various technical reports
+│   └── scratchpad.md           # Development notes
+├── images/                      # Project assets and logos
+│   └── logo.png
+├── market_parser_demo.py        # CLI application entry point
+├── chat_ui.py                   # Web GUI application (primary enhanced version)
+├── pyproject.toml              # Project configuration and dependencies
+├── uv.lock                     # Lock file for reproducible builds
+├── README.md                   # Main project documentation
+├── CLAUDE.md                   # AI agent guidance and protocols
+└── SECURITY.md                 # Security guidelines and best practices
+```
 
 ## Development Patterns
 
@@ -613,6 +662,14 @@ The `stock_data_fsm` module implements a deterministic finite state machine for 
 - Transitions managed by `StateManager` class in `stock_data_fsm/manager.py:25`
 - Context data flows through `StateContext` objects for stateful operations
 
+### JSON Architecture (Enhanced)
+The `src/` directory contains the enhanced JSON architecture components:
+- **Schema Management**: `src/json_schemas.py` defines structured data schemas
+- **Parsing Logic**: `src/json_parser.py` implements dual parser architecture (JSON + regex fallback)
+- **Response Processing**: `src/response_parser.py` handles AI response extraction and validation
+- **Debug Logging**: `src/json_debug_logger.py` provides comprehensive workflow tracking
+- **Security**: `src/security_utils.py` ensures input validation and data sanitization
+
 ### Agent Configuration
 Both CLI and GUI share identical agent setup with:
 - Model: `gpt-5-nano` via OpenAI Responses API
@@ -620,9 +677,31 @@ Both CLI and GUI share identical agent setup with:
 - Token cost tracking via `TokenCostTracker` class
 
 ### Testing Strategy
-- Unit tests for FSM components in `stock_data_fsm/tests/`
-- Integration tests: `test_integration.py` and `test_actual_integration.py`
-- Module-specific tests: `test_prompt_templates.py`, `test_response_parser.py`
+- **Comprehensive Test Suite**: All tests organized in `tests/` directory
+- **FSM Tests**: Module-specific tests in `stock_data_fsm/tests/`
+- **Integration Testing**: `tests/test_integration.py` and `tests/test_actual_integration.py`
+- **Production Testing**: `tests/test_production_*.py` for real-world scenario validation
+- **JSON Validation**: `tests/test_json_*.py` for schema and parsing validation
+
+### Import Patterns
+With the new structure, use these import patterns:
+
+```python
+# Core modules from src/
+from src.response_parser import ResponseParser
+from src.prompt_templates import PromptTemplateManager
+from src.json_schemas import StockDataSchema
+from src.schema_validator import SchemaValidator
+from src.json_debug_logger import JSONDebugLogger
+
+# FSM components
+from stock_data_fsm.states import AppState, StateContext
+from stock_data_fsm.manager import StateManager
+from stock_data_fsm.transitions import StateTransitions
+
+# Security utilities
+from src.security_utils import validate_input, sanitize_data
+```
 
 ## Future Development
 
@@ -639,6 +718,8 @@ When implementing new features, refer to existing patterns in the shared agent c
 
 - **Environment Setup**: Create `.env` file with required API keys before running applications (see template in Required Environment Variables section)
 - **External Dependencies**: The Polygon.io MCP server requires `uvx` to be available in the system PATH
-- **Architecture Preservation**: All file modifications during development should preserve the FSM state management patterns
+- **Architecture Preservation**: All file modifications during development should preserve the FSM state management patterns and JSON architecture integrity
 - **Cost Tracking**: Token cost tracking is enabled by default - check `TokenCostTracker` usage when adding new agent interactions
 - **Model Configuration**: Default model is `gpt-5-nano` but can be overridden via `OPENAI_MODEL` environment variable
+- **Testing Requirements**: Run tests from project root using `uv run pytest tests/` for the main test suite
+- **JSON Architecture**: Follow dual parser patterns in `src/json_parser.py` for reliability and fallback handling
