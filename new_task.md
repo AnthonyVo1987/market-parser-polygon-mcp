@@ -49,6 +49,113 @@
 
 **2. Parser System Reliability:**
 
+## 🛠️ CRITICAL: MCP TOOL USAGE REQUIREMENTS FOR IMPLEMENTATION
+
+**📚 MANDATORY REFERENCE**: `MCP_TOOL_USAGE_GUIDE.md` - Complete syntax and best practices documentation
+
+### ENFORCED TOOL USAGE FOR THIS TASK
+
+**The implementing AI agent MUST use these MCP tools according to specialist role:**
+
+#### @frontend-developer (Primary for this UI fix task)
+
+**MANDATORY TOOLS:**
+
+- ✅ `sequential-thinking` - REQUIRED for systematic UI fix planning and problem decomposition
+- ✅ `context7` - REQUIRED for researching latest Gradio 4.0+ patterns and best practices  
+- ✅ `filesystem` - REQUIRED for efficient file operations during implementation
+
+**VIOLATION CONSEQUENCES:**
+
+- ❌ Frontend implementations without `context7` research = POTENTIALLY OUTDATED patterns
+- ❌ Complex fixes without `sequential-thinking` = UNSTRUCTURED approach
+- ❌ Inefficient file operations without `filesystem` tools = SLOW execution
+
+#### @code-reviewer (MANDATORY for validation)
+
+**MANDATORY TOOLS:**
+
+- ✅ `sequential-thinking` - REQUIRED for systematic code analysis and review planning
+- ✅ `context7` - REQUIRED for validating modern framework patterns and security
+
+### REQUIRED WORKFLOW INTEGRATION
+
+#### PHASE 1: PLANNING (Use sequential-thinking)
+
+```markdown
+1. Problem Analysis
+   - Break down async handler failures systematically
+   - Identify root causes in lambda wrapper patterns
+   - Plan fix approach step-by-step
+
+2. Research Planning
+   - Identify what Gradio patterns need research
+   - Plan Context7 library research strategy
+```
+
+#### PHASE 2: RESEARCH (Use context7)
+
+```markdown
+1. Gradio Framework Research
+   - resolve-library-id("gradio")
+   - get-library-docs("/gradio-app/gradio", "async handling in gradio 4.0")
+   - get-library-docs("/gradio-app/gradio", "event listeners and button handlers")
+
+2. Document Modern Patterns
+   - Direct function references vs lambda wrappers
+   - .then() chaining for event sequences
+   - gr.on() for multiple triggers
+   - type="messages" for chatbot components
+```
+
+#### PHASE 3: IMPLEMENTATION (Use filesystem + patterns)
+
+```markdown
+1. File Operations
+   - Use filesystem tools for reading/editing chat_ui.py
+   - Apply discovered modern Gradio patterns
+   - Implement direct async function references
+
+2. Validation
+   - Test button functionality
+   - Validate chatbot message format
+   - Ensure error handling works properly
+```
+
+### QUALITY GATES FOR THIS TASK
+
+**BEFORE STARTING:**
+
+- [ ] Have I used `sequential-thinking` to plan the fix approach?
+- [ ] Have I used `context7` to research current Gradio 4.0+ patterns?
+- [ ] Do I understand the difference between old lambda patterns and modern direct references?
+
+**DURING IMPLEMENTATION:**
+
+- [ ] Am I using `filesystem` tools efficiently for file operations?
+- [ ] Am I applying the modern patterns discovered through Context7 research?
+- [ ] Am I following the systematic plan from sequential-thinking?
+
+**AFTER IMPLEMENTATION:**
+
+- [ ] Have I validated that button handlers work correctly?
+- [ ] Have I ensured chatbot uses proper message format?
+- [ ] Have I tested error handling and edge cases?
+
+### CRITICAL REMINDERS FOR THIS TASK
+
+1. **Context7 Usage**: Always resolve "gradio" library ID first, then get docs for specific topics
+2. **Sequential Thinking**: Break down the complex async fix into manageable steps
+3. **Filesystem Efficiency**: Use parallel file operations when reading multiple files
+4. **Pattern Application**: Replace ALL lambda wrappers with direct function references
+5. **Validation**: Test each button individually after fixes are applied
+
+**REFERENCE EXAMPLES FROM MCP_TOOL_USAGE_GUIDE.md:**
+
+- Context7 syntax for Gradio research
+- Sequential thinking patterns for complex debugging
+- Filesystem operations for efficient code editing
+
 - Maintain dual parser architecture (JSON + regex fallback) for maximum compatibility
 - Use `@backend-developer` for primary JSON parser enhancements
 - Coordinate fallback strategy changes with `@performance-optimizer`
@@ -395,7 +502,7 @@ if __name__ == "__main__":
 ❌ Modify JSON schemas without proper validation and testing
 ❌ Implement UI changes without coordinating JSON display components
 
-#### FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN TASK REJECTION
+### FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN TASK REJECTION
 
 ## 📋 START OF NEW TASK REQUEST Executive Summary Details
 
@@ -410,6 +517,7 @@ if __name__ == "__main__":
 - Once the re-organization is complete, update all project docs like CLAUDE.md, README.md etc with the new file and folder structure
 - Code review after wards with using structured analysis
 
-## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
+## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES
+
 - SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
 - User will then start testing out the new changes

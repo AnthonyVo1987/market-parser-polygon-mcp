@@ -180,6 +180,7 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - 🎯 **Solution Verification**: Validate approach before implementation
 
 **Required Analysis Pattern for ALL Agents:**
+
 ```markdown
 ## Task Analysis
 ### 1. Understanding the Problem
@@ -198,6 +199,88 @@ This enforcement ensures proper agent utilization and prevents the violations en
 - [Rollback considerations]
 
 ### 4. Success Validation
+
+## 🛠️ MANDATORY MCP TOOL USAGE PROTOCOLS
+
+**📚 REFERENCE**: See `MCP_TOOL_USAGE_GUIDE.md` for complete syntax and best practices documentation.
+
+### CRITICAL: Role-Specific Tool Requirements
+
+**@code-reviewer - MUST USE:**
+
+- ✅ `sequential-thinking` - For systematic code analysis and review planning
+- ✅ `context7` - For researching latest framework best practices and security patterns
+- ❌ **VIOLATION**: Code reviews without these tools are INCOMPLETE
+
+**@frontend-developer - MUST USE:**
+
+- ✅ `sequential-thinking` - For UI/UX planning and component architecture
+- ✅ `context7` - For researching latest frontend framework patterns (React, Gradio, etc.)
+- ✅ `filesystem` - For efficient file operations during implementation
+- ❌ **VIOLATION**: Frontend implementations without current framework research are OUTDATED
+
+**@backend-developer - MUST USE:**
+
+- ✅ `sequential-thinking` - For architecture planning and system design
+- ✅ `context7` - For researching latest backend patterns, security practices, async handling
+- ✅ `filesystem` - For efficient file operations during implementation
+- ❌ **VIOLATION**: Backend implementations without current pattern research may use deprecated practices
+
+**@documentation-specialist - MUST USE:**
+
+- ✅ `sequential-thinking` - For structuring comprehensive documentation
+- ✅ `filesystem` - For efficient documentation file operations
+
+### Tool Usage Enforcement Protocol
+
+**BEFORE starting ANY specialist task:**
+
+1. **Check role requirements** - Verify which tools are mandatory for your role
+2. **Plan tool usage** - Use `sequential-thinking` to break down the approach
+3. **Research current practices** - Use `context7` for framework/library research
+4. **Execute efficiently** - Use `filesystem` for file operations
+
+**QUALITY GATES:**
+
+- ❌ **Code reviews** without `sequential-thinking` + `context7` = INCOMPLETE
+- ❌ **Frontend/Backend development** without `context7` research = POTENTIALLY OUTDATED
+- ❌ **Complex tasks** without `sequential-thinking` = UNSTRUCTURED
+
+**VALIDATION CHECKLIST:**
+
+- [ ] Have I used `sequential-thinking` to plan my approach?
+- [ ] Have I used `context7` to research current best practices?
+- [ ] Am I using `filesystem` tools efficiently for file operations?
+- [ ] Does my tool usage match my specialist role requirements?
+
+### Integration Pattern Requirements
+
+**Standard Workflow for ALL Specialist Agents:**
+
+```markdown
+1. PLANNING PHASE
+   - Use sequential-thinking for task breakdown
+   - Identify research needs and dependencies
+
+2. RESEARCH PHASE  
+   - Use context7 for framework/library best practices
+   - Document findings and patterns discovered
+
+3. IMPLEMENTATION PHASE
+   - Use filesystem tools for efficient file operations
+   - Apply discovered patterns and practices
+
+4. VALIDATION PHASE
+   - Use sequential-thinking for quality verification
+   - Ensure tool usage meets role requirements
+```
+
+**CRITICAL REMINDERS:**
+
+- Tools must be used in PARALLEL when possible for efficiency
+- Always resolve Context7 library IDs before fetching documentation
+- Use absolute paths for filesystem operations
+- Document research findings for team knowledge sharing
 - [Measurable success criteria]
 - [Testing procedures]
 - [Quality verification steps]
