@@ -149,8 +149,8 @@ class TestPromptTemplate(unittest.TestCase):
         self.assertIn("AAPL", prompt)
         self.assertIn("Apple Inc.", prompt)
         self.assertIn("### STOCK ANALYSIS REQUEST ###", prompt)
-        self.assertIn("### FORMATTING REQUIREMENTS ###", prompt)
-        self.assertIn("### EXAMPLE RESPONSE FORMAT ###", prompt)
+        self.assertIn("### JSON SCHEMA REQUIREMENTS ###", prompt)
+        self.assertIn("### EXAMPLE JSON RESPONSE ###", prompt)
         self.assertIn("Price: $150.25", prompt)
     
     def test_generate_prompt_with_custom_instructions(self):

@@ -191,31 +191,7 @@ SNAPSHOT_SCHEMA = {
         }
     },
     "required": ["metadata", "snapshot_data"],
-    "additionalProperties": False,
-    # Custom validation rules
-    "allOf": [
-        {
-            "if": {
-                "properties": {
-                    "snapshot_data": {
-                        "properties": {
-                            "high": {"type": "number"},
-                            "low": {"type": "number"}
-                        }
-                    }
-                }
-            },
-            "then": {
-                "properties": {
-                    "snapshot_data": {
-                        "properties": {
-                            "high": {"minimum": {"$data": "1/low"}}
-                        }
-                    }
-                }
-            }
-        }
-    ]
+    "additionalProperties": False
 }
 
 
@@ -593,35 +569,30 @@ TECHNICAL_SCHEMA = {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "5-period Exponential Moving Average"
                         },
                         "EMA_10": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "10-period Exponential Moving Average"
                         },
                         "EMA_20": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "20-period Exponential Moving Average"
                         },
                         "EMA_50": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "50-period Exponential Moving Average"
                         },
                         "EMA_200": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "200-period Exponential Moving Average"
                         }
                     },
@@ -636,35 +607,30 @@ TECHNICAL_SCHEMA = {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "5-period Simple Moving Average"
                         },
                         "SMA_10": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "10-period Simple Moving Average"
                         },
                         "SMA_20": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "20-period Simple Moving Average"
                         },
                         "SMA_50": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "50-period Simple Moving Average"
                         },
                         "SMA_200": {
                             "type": "number",
                             "minimum": 0.01,
                             "maximum": 1000000,
-                            "multipleOf": 0.01,
                             "description": "200-period Simple Moving Average"
                         }
                     },

@@ -204,7 +204,7 @@ TECHNICAL_EXAMPLE_AAPL = {
     },
     "moving_averages": {
         "exponential": {
-            "EMA_5": 151.20,
+            "EMA_5": 151.00,
             "EMA_10": 149.85,
             "EMA_20": 147.50,
             "EMA_50": 144.75,

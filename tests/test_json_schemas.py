@@ -500,12 +500,16 @@ def run_comprehensive_tests():
     if result.failures:
         print(f"\n❌ Failures:")
         for test, traceback in result.failures:
-            print(f"   • {test}: {traceback.split('AssertionError: ')[-1].split('\\n')[0]}")
+            # Extract backslash operation outside f-string
+            error_msg = traceback.split('AssertionError: ')[-1].split('\n')[0]
+            print(f"   • {test}: {error_msg}")
     
     if result.errors:
         print(f"\n💥 Errors:")
         for test, traceback in result.errors:
-            print(f"   • {test}: {traceback.split('Exception: ')[-1].split('\\n')[0]}")
+            # Extract backslash operation outside f-string
+            error_msg = traceback.split('Exception: ')[-1].split('\n')[0]
+            print(f"   • {test}: {error_msg}")
     
     if result.wasSuccessful():
         print(f"\n✅ All tests passed! JSON Schema system ready for production.")

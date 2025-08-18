@@ -755,13 +755,17 @@ def run_comprehensive_production_tests():
         print(f"\n❌ FAILURES ({len(result.failures)}):")
         for test, traceback_str in result.failures:
             print(f"   • {test}")
-            print(f"     └─ {traceback_str.split('AssertionError:')[-1].split('\\n')[0].strip()}")
+            # Extract backslash operation outside f-string
+            error_msg = traceback_str.split('AssertionError:')[-1].split('\n')[0].strip()
+            print(f"     └─ {error_msg}")
     
     if result.errors:
         print(f"\n💥 ERRORS ({len(result.errors)}):")
         for test, traceback_str in result.errors:
             print(f"   • {test}")
-            print(f"     └─ {traceback_str.split('Exception:')[-1].split('\\n')[0].strip()}")
+            # Extract backslash operation outside f-string  
+            error_msg = traceback_str.split('Exception:')[-1].split('\n')[0].strip()
+            print(f"     └─ {error_msg}")
     
     print(f"\n🎯 VALIDATION VERDICT:")
     if result.wasSuccessful():

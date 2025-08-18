@@ -553,12 +553,22 @@ def run_comprehensive_tests():
         if result.failures:
             print(f"\n💥 FAILURES ({len(result.failures)}):")
             for test, traceback in result.failures[:3]:  # Show first 3
-                print(f"  • {test}: {traceback.split('AssertionError: ')[-1].split('\n')[0] if 'AssertionError: ' in traceback else 'See details above'}")
+                # Extract backslash operation outside f-string
+                if 'AssertionError: ' in traceback:
+                    error_msg = traceback.split('AssertionError: ')[-1].split('\n')[0]
+                else:
+                    error_msg = 'See details above'
+                print(f"  • {test}: {error_msg}")
         
         if result.errors:
             print(f"\n🔥 ERRORS ({len(result.errors)}):")
             for test, traceback in result.errors[:3]:  # Show first 3
-                print(f"  • {test}: {traceback.split('Exception: ')[-1].split('\n')[0] if 'Exception: ' in traceback else 'See details above'}")
+                # Extract backslash operation outside f-string
+                if 'Exception: ' in traceback:
+                    error_msg = traceback.split('Exception: ')[-1].split('\n')[0]
+                else:
+                    error_msg = 'See details above'
+                print(f"  • {test}: {error_msg}")
         
         return False
     
