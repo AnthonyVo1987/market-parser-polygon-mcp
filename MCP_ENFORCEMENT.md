@@ -64,7 +64,7 @@ When delegating to ANY specialist agent, use this updated template:
 ## 📚 REFERENCE MATERIALS:
 - Review existing project documentation and patterns
 - Follow established coding conventions in codebase
-- Maintain compatibility with JSON architecture standards
+- Maintain compatibility with enhanced JSON architecture standards
 ```
 
 ## 🔧 UPDATED ROLE-SPECIFIC CHECKLISTS
@@ -77,6 +77,8 @@ When delegating to ANY specialist agent, use this updated template:
 - [ ] Applied framework knowledge from project patterns
 - [ ] Provided specific evidence of analysis methodology
 - [ ] Documented review findings with actionable recommendations
+- [ ] **ENHANCED**: Focus on JSON schema validation and FSM integrity
+- [ ] **ENHANCED**: Validate enhanced architecture patterns and security
 
 **NO LONGER REQUIRED:**
 - ~~MCP sequential thinking tool usage~~
@@ -91,6 +93,9 @@ When delegating to ANY specialist agent, use this updated template:
 - [ ] Applied current best practices from documentation
 - [ ] Used efficient file operations for development
 - [ ] Documented architectural decisions and implementation approach
+- [ ] **ENHANCED**: Primary architect for 5-state FSM and JSON systems
+- [ ] **ENHANCED**: Maintain dual parser architecture (JSON + regex fallback)
+- [ ] **ENHANCED**: Ensure schema validation and performance optimization
 
 **NO LONGER REQUIRED:**
 - ~~MCP sequential thinking evidence~~
@@ -105,10 +110,30 @@ When delegating to ANY specialist agent, use this updated template:
 - [ ] Applied modern UI patterns from documentation
 - [ ] Implemented efficient file operations
 - [ ] Documented frontend architecture decisions
+- [ ] **ENHANCED**: Gradio-specific JSON textbox optimization
+- [ ] **ENHANCED**: Real-time UI updates and enhanced data visualization
+- [ ] **ENHANCED**: Coordinate with backend-developer for JSON integration
 
 **NO LONGER REQUIRED:**
 - ~~MCP sequential thinking for UI planning~~
 - ~~MCP context7 frontend research~~
+- ~~MCP filesystem tool requirements~~
+
+### **@performance-optimizer Enforcement Checklist (WAIVED)**
+
+**CURRENT REQUIREMENTS (Standard Tools Acceptable):**
+- [ ] Used systematic performance analysis approach
+- [ ] Researched optimization patterns through documentation
+- [ ] Applied performance best practices from project analysis
+- [ ] Implemented efficient optimization strategies
+- [ ] Documented performance improvements and metrics
+- [ ] **ENHANCED**: JSON parsing optimization and schema validation performance
+- [ ] **ENHANCED**: Cost optimization and resource usage monitoring
+- [ ] **ENHANCED**: Debug logging efficiency and monitoring
+
+**NO LONGER REQUIRED:**
+- ~~MCP sequential thinking for optimization planning~~
+- ~~MCP context7 performance research~~
 - ~~MCP filesystem tool requirements~~
 
 ### **@documentation-specialist Enforcement Checklist (WAIVED)**
@@ -118,9 +143,28 @@ When delegating to ANY specialist agent, use this updated template:
 - [ ] Applied efficient file operations for documentation updates
 - [ ] Researched documentation standards through existing patterns
 - [ ] Maintained consistency with project documentation style
+- [ ] **ENHANCED**: JSON architecture guides and schema documentation
+- [ ] **ENHANCED**: Migration procedures and system simplification guides
+- [ ] **ENHANCED**: Comprehensive system documentation alignment
 
 **NO LONGER REQUIRED:**
 - ~~MCP sequential thinking for structure planning~~
+- ~~MCP filesystem tool requirements~~
+
+### **@code-archaeologist Enforcement Checklist (WAIVED)**
+
+**CURRENT REQUIREMENTS (Standard Tools Acceptable):**
+- [ ] Used systematic deep analysis approach for complex architecture decisions
+- [ ] Researched architecture patterns through comprehensive codebase analysis
+- [ ] Applied advanced architectural assessment techniques
+- [ ] Documented complex technical debt and system analysis findings
+- [ ] **ENHANCED**: Deep insight for major architectural changes when needed
+- [ ] **ENHANCED**: Complex system analysis and technical debt assessment
+- [ ] **ENHANCED**: Support for backend-developer on major architecture decisions
+
+**NO LONGER REQUIRED:**
+- ~~MCP sequential thinking for architecture planning~~
+- ~~MCP context7 architecture research~~
 - ~~MCP filesystem tool requirements~~
 
 ## 🎯 UPDATED EVIDENCE VALIDATION
@@ -153,6 +197,15 @@ Used standard Claude tools for efficient development:
 - Analyzed project structure and conventions
 - Implemented changes following established patterns
 - Tested implementation against project standards
+```
+
+**Enhanced Architecture Evidence:**
+```
+I validated enhanced JSON architecture compliance:
+- Reviewed dual parser architecture (JSON + regex fallback)
+- Verified schema validation and performance standards
+- Ensured 5-state FSM integrity and coordination
+- Applied enhanced monitoring and debug practices
 ```
 
 ### **❌ STILL UNACCEPTABLE (Even Under Waiver)**
@@ -214,6 +267,8 @@ will result in IMMEDIATE WORK REJECTION and re-delegation.
 - No research of project patterns and standards
 - Poor quality implementation without documentation
 - Failure to follow established architectural patterns
+- **ENHANCED**: Ignoring enhanced JSON architecture requirements
+- **ENHANCED**: Not coordinating with primary architects (backend-developer)
 
 ### **For Tech Lead Orchestrator (Full Enforcement):**
 
@@ -250,7 +305,7 @@ Refer to the full MCP enforcement requirements for orchestrator.
 ### **Example 1: Code Review with Updated Policy**
 
 ```markdown
-@code-reviewer: Perform comprehensive code review of project restructuring changes.
+@code-reviewer: Perform comprehensive code review of enhanced JSON architecture changes.
 
 ## 📋 TASK DELEGATION TO SPECIALIST AGENT
 
@@ -263,27 +318,29 @@ Refer to the full MCP enforcement requirements for orchestrator.
 ## 🎯 QUALITY STANDARDS (STILL REQUIRED):
 - Perform systematic code analysis with structured approach
 - Research best practices through documentation and codebase analysis
-- Validate new src/ and tests/ structure follows Python best practices
-- Check import updates and path references thoroughly
+- Validate enhanced JSON architecture patterns and schema integrity
+- Check dual parser implementation and fallback strategies
+- Review 5-state FSM integrity and coordination rules
 - Ensure documentation accuracy and completeness
-- Verify no functionality was broken in restructuring
+- Verify no functionality was broken in enhancements
 
-## 📋 TASK: Review all code and documentation changes from project restructuring
-- Analyze project structure against established Python conventions
-- Validate architectural patterns and import dependencies
-- Check for security implications and code quality issues
+## 📋 TASK: Review all code and documentation changes from enhanced architecture optimization
+- Analyze enhanced JSON schema validation and parser architecture
+- Validate coordination between primary agents (backend-developer focus)
+- Check for security implications and performance optimization
+- Review enhanced monitoring and debug system implementations
 - Provide specific recommendations for any improvements needed
 
 ## 🎯 DELIVERABLES:
 - Systematic analysis following structured review process
-- Validation of chosen architectural patterns
+- Validation of enhanced architectural patterns and agent coordination
 - Comprehensive review report with specific actionable recommendations
 ```
 
 ### **Example 2: Backend Development with Updated Policy**
 
 ```markdown
-@backend-developer: Implement async handler fixes for GUI components.
+@backend-developer: Implement enhanced JSON schema validation as primary architect.
 
 ## 📋 TASK DELEGATION TO SPECIALIST AGENT
 
@@ -294,24 +351,27 @@ Refer to the full MCP enforcement requirements for orchestrator.
 - Focus on efficient implementation using available tools
 
 ## 🎯 QUALITY STANDARDS (STILL REQUIRED):
-- Use systematic planning for async implementation architecture
-- Research current Python async/await patterns through documentation
+- Use systematic planning for enhanced JSON architecture implementation
+- Research current JSON schema and validation patterns through documentation
 - Apply established project patterns and coding conventions
 - Create comprehensive test script for validation
 - Document implementation decisions and architectural choices
+- **PRIMARY ARCHITECT**: Lead enhanced JSON system design and FSM coordination
+- **COORDINATION**: Work with performance-optimizer for cost optimization
 
-## 📋 TASK: Fix async button handlers in chat_ui.py
-- Analyze current async handling issues and root causes
-- Research best practices for Gradio async event handling
-- Implement modern async patterns compatible with project architecture
-- Ensure proper error handling and user feedback
+## 📋 TASK: Implement enhanced JSON schema validation as primary architect
+- Design comprehensive schema-driven system with validation
+- Implement dual parser architecture (JSON + regex fallback) 
+- Create confidence scoring and auto-correction capabilities
+- Ensure 5-state FSM integrity with non-blocking error recovery
+- Coordinate with frontend-developer for UI JSON integration
 - Test implementation thoroughly with production scenarios
 
 ## 🎯 DELIVERABLES:
-- Systematic implementation plan with risk assessment
-- Fixed async handlers using researched best practices
-- Comprehensive test script validating the fixes
-- Documentation of changes and implementation approach
+- Systematic implementation plan with enhanced architecture focus
+- Enhanced JSON schema validation system using researched best practices
+- Comprehensive test script validating the enhanced architecture
+- Documentation of changes and primary architect decisions
 ```
 
 ## 🎯 SUCCESS METRICS UNDER CURRENT POLICY
@@ -323,6 +383,9 @@ Refer to the full MCP enforcement requirements for orchestrator.
 - Provides clear documentation of implementation decisions
 - Creates test scripts for bug fixes when applicable
 - Maintains architectural consistency with existing codebase
+- **ENHANCED**: Follows enhanced JSON architecture patterns
+- **ENHANCED**: Coordinates appropriately with primary agents
+- **ENHANCED**: Maintains 5-state FSM integrity and quality standards
 
 ### **❌ NON-COMPLIANT Specialist Response (Still Rejected):**
 - No systematic analysis or planning evident
@@ -331,6 +394,8 @@ Refer to the full MCP enforcement requirements for orchestrator.
 - Breaks established architectural patterns or conventions
 - Missing test scripts for bug fixes
 - No explanation of implementation decisions or approach
+- **ENHANCED**: Ignores enhanced architecture coordination rules
+- **ENHANCED**: Fails to maintain JSON schema integrity
 
 ### **✅ COMPLIANT Orchestrator Response (Full MCP Enforcement):**
 - Uses all mandatory MCP tools for the orchestrator role
@@ -351,7 +416,7 @@ Refer to the full MCP enforcement requirements for orchestrator.
 ### **Monitoring Current Policy:**
 
 1. **Track Specialist Quality**: Monitor work quality under the waiver system
-2. **Evaluate Effectiveness**: Assess whether quality standards are maintained
+2. **Evaluate Effectiveness**: Assess whether enhanced architecture standards are maintained
 3. **Technical Progress**: Watch for improvements in MCP tool accessibility
 4. **Policy Adjustment**: Modify enforcement as technical constraints change
 
@@ -359,13 +424,13 @@ Refer to the full MCP enforcement requirements for orchestrator.
 
 This waiver policy should be reviewed when:
 - MCP tool accessibility improves for specialist agents
-- Quality standards require adjustment under the waiver system  
+- Enhanced architecture quality standards require adjustment under the waiver system  
 - Technical limitations are resolved
 - Better enforcement strategies are developed
 
 ---
 
 **CRITICAL REMINDER**: 
-- **SPECIALIST AGENTS**: Currently operate under temporary MCP tool waiver - use standard Claude tools
+- **SPECIALIST AGENTS**: Currently operate under temporary MCP tool waiver - use standard Claude tools with enhanced architecture focus
 - **TECH LEAD ORCHESTRATOR**: Remains fully subject to MCP tool enforcement with no waiver granted
-- All quality standards and development protocols remain fully enforced for all agents
+- All enhanced architecture quality standards and development protocols remain fully enforced for all agents

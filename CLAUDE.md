@@ -4,107 +4,139 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Market Parser is a simplified Python CLI and web GUI application for natural language financial queries using the Polygon.io MCP server and OpenAI's gpt-4o-mini via the Pydantic AI Agent Framework. The application has been redesigned with a simplified 5-state FSM architecture and JSON-only output system for maximum reliability and transparency.
+Market Parser is a Python CLI and web GUI application for natural language financial queries using the Polygon.io MCP server and OpenAI's gpt-5-nano via the Pydantic AI Agent Framework. The application allows users to ask questions about stock market data in natural language and receive formatted responses.
 
-## AI Team Configuration (Updated for Simplified Architecture, 2025-08-18)
+## AI Team Configuration (Enhanced JSON Architecture, 2025-08-18)
 
 **Important: YOU MUST USE subagents when available for the task.**
 
-### Detected Tech Stack (Simplified JSON Architecture)
+### Detected Tech Stack (Enhanced JSON Architecture)
 
-- **Backend Framework**: Python with Pydantic AI Agent Framework + simplified JSON output
-- **Frontend Framework**: Gradio v4+ with JSON textboxes (gr.Code components)
-- **AI Integration**: OpenAI gpt-4o-mini via Pydantic AI with raw JSON output
+- **Backend Framework**: Python with Pydantic AI Agent Framework + JSON schema validation
+- **Frontend Framework**: Gradio v4+ with enhanced JSON display components and real-time feedback
+- **AI Integration**: OpenAI gpt-5-nano via Pydantic AI with structured JSON output optimization
 - **Data Source**: Polygon.io MCP server for real-time financial market data
-- **JSON Architecture**: Simplified JSON-only output system with get_json_output() method
-- **Data Processing**: Raw JSON responses with basic parsing for transparency
-- **State Management**: Simplified 5-state FSM (IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR)
+- **JSON Architecture**: Comprehensive schema-driven system with validation and fallback strategies
+- **Data Processing**: Dual parser architecture (JSON primary, regex fallback) with confidence scoring
+- **State Management**: Enhanced FSM with JSON validation states and workflow orchestration
 - **Build Tools**: uv for dependency management and package execution
 - **CLI Framework**: Rich console for enhanced terminal formatting and interaction
-- **Test Framework**: pytest with 80/80 tests passing for simplified architecture
+- **Test Framework**: pytest with comprehensive JSON validation and production testing suites
 - **Configuration**: python-dotenv for secure environment variable management
-- **Monitoring**: Basic debug logging for simplified workflows
-- **Error Handling**: Non-blocking error recovery with immediate button retry
+- **Monitoring**: Advanced debug logging with JSON workflow tracking and performance metrics
+- **Schema Management**: JSON Schema Draft 2020-12 compliant with versioning support
+- **Data Validation**: Multi-layer validation with business rules and auto-correction capabilities
+- **Debug System**: Comprehensive JSON workflow logging with error tracking and performance analysis
 
-### Agent Task Assignments (Simplified Architecture)
+### Agent Task Assignments (Optimized for Enhanced Architecture)
 
-| Task Category | Agent | Simplified Architecture Responsibilities | Critical Notes |
+| Task Category | Agent | Enhanced Architecture Responsibilities | Critical Notes |
 |---------------|-------|----------------------------------------|-----------------|
-| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. JSON output validation, security review | Focus on JSON-only output security and 5-state FSM integrity |
-| **Performance & Optimization** | `@performance-optimizer` | JSON processing optimization, simplified workflow performance | Focus on 5-state FSM efficiency and JSON output speed |
-| **Backend Development** | `@backend-developer` | 5-state FSM implementation, JSON output methods, non-blocking error recovery | Primary agent for simplified FSM and JSON output systems |
-| **Data Validation & Parsing** | `@backend-developer` | JSON output methods, basic validation, get_json_output() implementation | Handles simplified JSON parsing and raw output |
-| **API Design & Integration** | `@api-architect` | MCP integration patterns, prompt templates for three analysis types | Ensures MCP contracts work with simplified JSON output |
-| **Frontend & UI Development** | `@frontend-developer` | JSON textboxes (gr.Code), button integration, 5-state UI management | Gradio JSON displays and simplified button workflows |
-| **State Management & FSM** | `@backend-developer` | 5-state FSM transitions, non-blocking error recovery, state context management | Simplified FSM with IDLE→BUTTON_TRIGGERED→AI_PROCESSING→RESPONSE_RECEIVED→ERROR |
-| **Monitoring & Debug Systems** | `@backend-developer` | Simplified debug logging, basic workflow tracking | Lightweight monitoring for simplified architecture |
-| **Documentation & Training** | `@documentation-specialist` | Simplified architecture guides, JSON-only system documentation | Documentation focused on 5-state FSM and JSON-only approach |
-| **Testing & Validation** | `@backend-developer` | Simplified test suite, JSON output validation, 5-state FSM testing | 80/80 tests passing with simplified architecture validation |
+| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. JSON schema validation, security review of parsers, FSM integrity focus | Always validate JSON handling security and schema integrity |
+| **Performance & Optimization** | `@performance-optimizer` | JSON parsing optimization, schema validation performance, debug logging efficiency, cost optimization | Focus on JSON processing speed, memory usage, and resource optimization |
+| **JSON Schema Architecture** | `@backend-developer` | JSON schema design, validation rules, parser implementation, fallback strategies, primary architect for FSM and JSON systems | Primary agent for all JSON system components and 5-state FSM architecture |
+| **Data Validation & Parsing** | `@backend-developer` | Schema validation logic, business rules, confidence scoring, error correction, JSON parsing accuracy | Handles JSON parsing accuracy and data integrity with dual parser architecture |
+| **API Design & Integration** | `@api-architect` | JSON response schemas, MCP integration patterns, structured prompt design | Ensures JSON contracts with external services and API design consistency |
+| **Frontend & UI Development** | `@frontend-developer` | JSON display components, real-time UI updates, enhanced data visualization, Gradio-specific JSON textbox optimization | Gradio JSON textboxes and structured data displays with real-time feedback |
+| **State Management & FSM** | `@backend-developer` | JSON-aware FSM states, workflow orchestration, debug state tracking, 5-state FSM integrity | Enhanced FSM with JSON validation integration and non-blocking error recovery |
+| **Monitoring & Debug Systems** | `@backend-developer` | JSON debug logger, workflow tracking, performance metrics, error analysis | Comprehensive JSON workflow monitoring and debugging systems |
+| **Documentation & Training** | `@documentation-specialist` | JSON architecture guides, schema documentation, migration procedures, system simplification guides | JSON system usage, troubleshooting guides, and architecture documentation |
+| **Testing & Validation** | `@backend-developer` | JSON schema testing, validation testing, production bug testing, comprehensive test suite management | Comprehensive JSON system validation with 80/80 test success rate |
+| **Deep Architecture Analysis** | `@code-archaeologist` | Complex architecture decisions, deep codebase analysis, technical debt assessment when needed | Deep insight for major architectural changes and system analysis |
 
-### Simplified Architecture Domain Assignments
+### Enhanced Architecture Domain Assignments
 
-| Domain | Primary Agent | Secondary Agent | Specific Focus |
-|--------|---------------|-----------------|----------------|
-| **5-State FSM Management** | `@backend-developer` | `@frontend-developer` | IDLE→BUTTON_TRIGGERED→AI_PROCESSING→RESPONSE_RECEIVED→ERROR workflow |
-| **JSON Output System** | `@backend-developer` | `@performance-optimizer` | get_json_output() method, raw JSON textboxes, export functionality |
-| **Non-blocking Error Recovery** | `@backend-developer` | `@frontend-developer` | Immediate error recovery, button retry, no UI freezing |
-| **Three Analysis Types** | `@backend-developer` | `@api-architect` | Stock Snapshot, Support & Resistance, Technical Analysis buttons |
-| **UI Simplification** | `@frontend-developer` | `@backend-developer` | JSON textboxes, button workflows, loading states |
-| **Test Suite Compatibility** | `@backend-developer` | `@code-reviewer` | 80/80 tests passing, simplified workflow validation |
-| **Documentation Updates** | `@documentation-specialist` | `@backend-developer` | Migration guides, simplified architecture documentation |
+| JSON Domain | Primary Agent | Secondary Agent | Specific Focus |
+|-------------|---------------|-----------------|----------------|
+| **JSON Schema Evolution** | `@backend-developer` | `@api-architect` | Schema versioning, compatibility, migration strategies, primary JSON architecture responsibility |
+| **Parser Architecture** | `@backend-developer` | `@performance-optimizer` | Dual parser system (JSON + regex fallback), performance optimization, reliability |
+| **Validation Workflows** | `@backend-developer` | `@code-reviewer` | Schema validation, business rules, error handling, auto-correction with mandatory quality review |
+| **Debug & Monitoring** | `@backend-developer` | `@performance-optimizer` | Workflow tracking, performance metrics, error analysis, cost optimization |
+| **UI JSON Integration** | `@frontend-developer` | `@backend-developer` | JSON textboxes, real-time displays, confidence indicators, Gradio-specific optimizations |
+| **Schema Documentation** | `@documentation-specialist` | `@backend-developer` | API references, migration guides, troubleshooting docs, comprehensive system documentation |
+| **Production Testing** | `@backend-developer` | `@code-reviewer` | JSON validation testing, integration testing, bug verification with mandatory review |
+| **Cost Optimization** | `@performance-optimizer` | `@backend-developer` | JSON processing efficiency, validation caching, resource usage optimization |
+| **5-State FSM Management** | `@backend-developer` | `@frontend-developer` | IDLE→BUTTON_TRIGGERED→AI_PROCESSING→RESPONSE_RECEIVED→ERROR workflow integrity |
+| **Architecture Assessment** | `@code-archaeologist` | `@backend-developer` | Deep system analysis, architecture decisions, complex technical debt when needed |
 
 ### Enhanced Architecture Coordination Rules
 
-**1. 5-State FSM Integrity:**
-- NEVER add states beyond the 5 simplified states (IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR)
-- Use `@backend-developer` for FSM modifications with `@code-reviewer` validation
-- Maintain non-blocking error recovery as core feature
+**1. JSON Schema Integrity:**
+- NEVER modify schemas without `@backend-developer` involvement and `@code-reviewer` validation
+- Use `@api-architect` for external contract changes affecting JSON structure
+- Require comprehensive testing before schema version updates
+- NEVER add states beyond the 5 simplified ones (IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR)
 
-**2. JSON-Only Output System:**
-- Maintain JSON textboxes (gr.Code components) as only structured output
-- Use `@backend-developer` for get_json_output() method enhancements
-- Coordinate raw JSON display with `@frontend-developer`
+**2. Parser System Reliability:**
+- Maintain dual parser architecture (JSON + regex fallback) for maximum compatibility
+- Use `@backend-developer` for primary JSON parser enhancements
+- Coordinate fallback strategy changes with `@performance-optimizer`
+- Preserve non-blocking error recovery as core principle
 
-**3. Simplified Debug & Monitoring:**
-- Implement lightweight logging for simplified workflow troubleshooting
+**3. Debug & Monitoring Excellence:**
+- Implement comprehensive JSON workflow logging for production troubleshooting
 - Use `@backend-developer` for debug system enhancements
-- Monitor 5-state FSM performance through `@performance-optimizer`
+- Monitor performance metrics through `@performance-optimizer`
+- Maintain JSON-only outputs with no complex displays
 
-**4. UI/Backend Coordination:**
-- Synchronize JSON textbox updates between `@frontend-developer` and `@backend-developer`
-- Ensure real-time UI updates reflect 5-state FSM transitions
-- Maintain consistent button retry functionality across UI components
+**4. UI/Backend JSON Coordination:**
+- Synchronize JSON display components between `@frontend-developer` and `@backend-developer`
+- Ensure real-time UI updates reflect JSON validation states
+- Maintain consistent confidence scoring across UI components
+- Focus on Gradio JSON textbox optimization for transparency
 
-### Simplified Development Workflow
+**5. Quality Gate Enforcement:**
+- MANDATORY `@code-reviewer` for all FSM/JSON changes
+- Maintain 80/80 test passing as quality baseline
+- Preserve architectural simplicity over feature complexity
+- Use `@code-archaeologist` only for complex architecture decisions
 
-1. **FSM State Design**: Use `@backend-developer` for 5-state workflow modifications
-2. **JSON Output Implementation**: Primary `@backend-developer` with `@code-reviewer` for output validation
-3. **UI Integration**: Coordinate `@frontend-developer` and `@backend-developer` for JSON textbox integration
-4. **Testing & Quality Gate**: MANDATORY `@code-reviewer` with simplified workflow validation
-5. **Performance Optimization**: Use `@performance-optimizer` for JSON processing efficiency
-6. **Documentation Updates**: Use `@documentation-specialist` for simplified architecture guides
+### Enhanced Development Workflow (Optimized)
 
-### Simplified Architecture Best Practices
+1. **Schema Design Phase**: Use `@backend-developer` as primary architect with `@api-architect` for external contract alignment
+2. **Validation Implementation**: Primary `@backend-developer` with mandatory `@code-reviewer` for security validation
+3. **UI Integration**: Coordinate `@frontend-developer` and `@backend-developer` for JSON display components with Gradio optimization
+4. **Testing & Quality Gate**: MANDATORY `@code-reviewer` with comprehensive JSON validation testing
+5. **Performance Optimization**: Use `@performance-optimizer` for JSON processing efficiency and cost optimization
+6. **Documentation Updates**: Use `@documentation-specialist` for JSON architecture guides and migration documentation
 
-**5-State FSM Management:**
-- Maintain exactly 5 states with clear transitions
-- Implement non-blocking error recovery for production reliability
-- Provide immediate button retry for error situations
+### Technology-Specific Best Practices (Enhanced Architecture)
 
-**JSON Output System:**
-- Use get_json_output() method for all structured data extraction
-- Display raw JSON in gr.Code textboxes for transparency
-- Enable JSON export for external analysis tools
+**Schema Management:**
+- Version all schemas with backward compatibility considerations
+- Implement comprehensive validation with graceful error handling
+- Maintain fallback strategies for production reliability
+- Use `@backend-developer` as primary schema architect
+
+**Parser Implementation:**
+- Primary JSON parser with regex fallback for maximum compatibility
+- Confidence scoring for data quality assessment
+- Comprehensive error handling with detailed logging
+- Performance optimization through `@performance-optimizer`
 
 **UI Integration:**
-- Use JSON textboxes (gr.Code) for all structured displays
-- Implement real-time loading states with progress tracking
-- Maintain button retry functionality for error recovery
+- Real-time JSON textboxes for debugging and transparency
+- Structured data displays with confidence indicators
+- Enhanced loading states with progress tracking
+- Gradio-specific optimizations through `@frontend-developer`
 
 **Monitoring & Debug:**
-- Implement lightweight workflow tracking for troubleshooting
-- Monitor 5-state FSM performance metrics
-- Provide clear error messages with recovery guidance
+- Comprehensive workflow tracking with unique identifiers
+- Performance metrics for optimization insights
+- Error analysis with context preservation
+- Advanced JSON workflow logging
+
+**FSM Architecture:**
+- Maintain exactly 5 states: IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR
+- Non-blocking error recovery with immediate button retry
+- JSON-aware state transitions with validation integration
+- Primary `@backend-developer` responsibility with `@frontend-developer` coordination
+
+**Critical Success Factors:**
+- Preserve architectural simplicity over feature complexity
+- Maintain 80/80 test passing as quality baseline
+- Use mandatory code review for all FSM/JSON changes
+- Focus on reliability and transparency in all implementations
 
 ## ⚠️ CRITICAL: Tech-Lead-Orchestrator Enforcement Protocols
 
@@ -118,10 +150,10 @@ Market Parser is a simplified Python CLI and web GUI application for natural lan
 **Valid Agents ONLY:**
 - `@code-reviewer` - MANDATORY for all features, PRs, and merges
 - `@performance-optimizer` - Cost optimization, latency improvements, scaling
-- `@backend-developer` - Python development, 5-state FSM, JSON output testing
-- `@api-architect` - MCP server integration, prompt templates
-- `@frontend-developer` - Gradio interface enhancements, JSON textbox UI
-- `@code-archaeologist` - Deep codebase analysis, architecture decisions
+- `@backend-developer` - Python development, async patterns, FSM, testing, PRIMARY JSON ARCHITECT
+- `@api-architect` - MCP server integration, response schemas
+- `@frontend-developer` - Gradio interface enhancements, UI/UX, JSON textbox optimization
+- `@code-archaeologist` - Deep codebase analysis, architecture decisions (when needed)
 - `@documentation-specialist` - README updates, API docs, guides
 
 ### Delegation Execution Requirements
@@ -129,49 +161,101 @@ Market Parser is a simplified Python CLI and web GUI application for natural lan
 - ✅ **MUST provide execution trigger command** - Include specific agent invocation
 - ✅ **MUST initiate delegation sequence** - Don't leave user to manually start
 - ✅ **MUST include handoff instructions** - Specify what each agent should do
+- ✅ **MUST include mandatory MCP tool requirements** - Every delegation MUST specify required MCP tools
+- ✅ **MUST verify MCP tool usage** - REJECT work that doesn't use required MCP tools
 
-## 🚨 TEMPORARY WAIVER: MCP Tool Enforcement for Specialist Agents
+### 🚨 CRITICAL: MCP Tool Enforcement for Delegated Specialists
 
-### **CURRENT ENFORCEMENT POLICY (Effective Immediately)**
+**MANDATORY REQUIREMENTS FOR ALL DELEGATED SPECIALIST AGENTS:**
 
-**SPECIALIST AGENTS (TEMPORARY WAIVER ACTIVE):**
-- ✅ **MCP Tool Waiver Granted**: Sub-agent specialists are currently **NOT REQUIRED** to use MCP tools
-- ✅ **Standard Claude Tools Acceptable**: Read, Write, Edit, LS, Grep, Bash are sufficient for specialist work
-- ✅ **Quality Standards Maintained**: All other development protocols and quality gates remain fully enforced
-- ✅ **Focus on Deliverables**: Emphasis on high-quality implementation using available Claude tools
+All specialist agents delegated via Task tool **MUST** use MCP tools according to their role requirements. **FAILURE TO USE MCP TOOLS = IMMEDIATE WORK REJECTION**.
 
-**TECH LEAD ORCHESTRATOR (FULL ENFORCEMENT CONTINUES):**
-- ❌ **NO WAIVER GRANTED**: @tech-lead-orchestrator remains fully subject to ALL MCP tool requirements
-- ❌ **Must Use MCP Tools**: All existing MCP enforcement protocols remain active for orchestrator role
-- ❌ **No Standard Tools**: Cannot use Read, Write, Edit, LS, Grep, Bash for orchestrator responsibilities
+#### **MCP Tool Verification Protocol**
 
-### **Modified Delegation Template (Effective Immediately)**
+**BEFORE accepting ANY specialist work, @tech-lead-orchestrator MUST verify:**
 
-**ALL delegations to specialist agents should use this template:**
+- ✅ **Sequential Thinking Used**: Evidence of `mcp__sequential-thinking__sequentialthinking` usage
+- ✅ **Context7 Research Performed**: Evidence of `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs` if required
+- ✅ **Filesystem Tools Used**: Evidence of `mcp__filesystem__*` tools for file operations if applicable
+- ✅ **Actual MCP Tools Listed**: Response includes specific MCP tool usage, not standard Claude tools
+
+#### **Mandatory Delegation Template**
+
+**ALL delegations MUST include this exact text:**
 
 ```markdown
-## 📋 TASK DELEGATION TO SPECIALIST AGENT
+## 🚨 MANDATORY MCP TOOL REQUIREMENTS:
+You MUST use these MCP tools (VIOLATION = IMMEDIATE REJECTION):
+- [Specify required MCP tools based on role]
+- Example: mcp__sequential-thinking__sequentialthinking - For systematic analysis
+- Example: mcp__context7__resolve-library-id + get-library-docs - For research
+- Example: mcp__filesystem__* - For file operations
 
-**CURRENT POLICY**: MCP tool enforcement is temporarily waived for specialist agents.
+## VERIFICATION EVIDENCE REQUIRED:
+You MUST provide in your response:
+1. List of MCP tools used with specific call details
+2. Sequential thinking steps showing systematic approach
+3. Context7 research findings if applicable
+4. Evidence of filesystem MCP tool usage
 
-## ✅ ACCEPTABLE TOOLS:
-- Standard Claude tools: Read, Write, Edit, LS, Grep, Bash
-- Use the most efficient tools available for the task
-- Focus on high-quality implementation and documentation
-
-## 🎯 QUALITY STANDARDS (STILL REQUIRED):
-- Follow all structured analysis protocols
-- Research best practices using available methods
-- Create comprehensive test scripts for bug fixes
-- Maintain all architectural patterns and standards
-- Document all changes and implementation decisions
-
-## 📋 TASK DESCRIPTION:
-[Insert specific task details here]
-
-## 🎯 EXPECTED DELIVERABLES:
-[Insert expected outcomes here]
+⚠️ CRITICAL: Using only standard Claude tools (Read, Write, Edit, LS, Grep, Bash) 
+without MCP tools will result in IMMEDIATE WORK REJECTION and re-delegation.
 ```
+
+#### **Role-Specific MCP Requirements for Delegations**
+
+**@code-reviewer delegations MUST include:**
+```
+MANDATORY MCP TOOLS:
+- mcp__sequential-thinking__sequentialthinking - For systematic code analysis
+- mcp__context7__resolve-library-id + get-library-docs - For latest best practices research
+```
+
+**@backend-developer delegations MUST include:**
+```
+MANDATORY MCP TOOLS:
+- mcp__sequential-thinking__sequentialthinking - For architecture planning
+- mcp__context7__resolve-library-id + get-library-docs - For latest backend patterns
+- mcp__filesystem__* - For efficient file operations
+```
+
+**@frontend-developer delegations MUST include:**
+```
+MANDATORY MCP TOOLS:
+- mcp__sequential-thinking__sequentialthinking - For UI/UX planning
+- mcp__context7__resolve-library-id + get-library-docs - For latest frontend patterns
+- mcp__filesystem__* - For efficient file operations
+```
+
+**@documentation-specialist delegations MUST include:**
+```
+MANDATORY MCP TOOLS:
+- mcp__sequential-thinking__sequentialthinking - For documentation structuring
+- mcp__filesystem__* - For efficient file operations
+```
+
+#### **Work Rejection Protocol**
+
+**If specialist work is received WITHOUT proper MCP tool usage:**
+
+1. **IMMEDIATELY REJECT** the work with reason: "VIOLATION: Required MCP tools not used"
+2. **RE-DELEGATE** with strengthened MCP tool requirements
+3. **DOCUMENT** the violation in the response
+4. **DO NOT ACCEPT** work using only standard Claude tools
+
+#### **MCP Tool Usage Evidence Requirements**
+
+**Acceptable evidence of MCP tool usage:**
+- Explicit mention of MCP tool function calls made
+- Sequential thinking steps numbered and structured
+- Context7 research findings with library IDs resolved
+- Filesystem operations using mcp__filesystem__ tools
+
+**UNACCEPTABLE (will result in rejection):**
+- Only standard Claude tools mentioned (Read, Write, Edit, LS, Grep, Bash)
+- No evidence of systematic thinking process
+- No research performed for implementation tasks
+- Vague references to "analysis" without MCP tool evidence
 
 ### Tech-Lead-Orchestrator Role Restrictions
 
@@ -187,6 +271,69 @@ Market Parser is a simplified Python CLI and web GUI application for natural lan
 - ✅ **ONLY identify which specialist agents are needed FROM CLAUDE.md**
 - ✅ **ONLY provide specific handoff instructions for each delegation**
 - ✅ **MUST initiate the delegation sequence you create**
+
+**REQUIRED DELIVERABLES:**
+
+1. **Strategic Analysis**: Brief assessment of the technical issues and fix complexity
+2. **Specialist Agent Selection**: List of required agents with specific reasons
+3. **Delegation Plan**: Structured task breakdown with specific agent assignments
+4. **Handoff Instructions**: Exact instructions for each specialist agent
+5. **Coordination Strategy**: How tasks should be sequenced and dependencies managed
+
+**EXPECTED OUTPUT FORMAT:**
+
+```markdown
+## Strategic Analysis
+[Brief technical assessment]
+
+## Verified Specialist Agents (FROM CLAUDE.md ONLY)
+- @agent-name: [specific reason and scope - VERIFIED EXISTS IN CLAUDE.md]
+
+## Delegation Plan
+### Task Group 1: [Priority Level]
+- **Agent**: @agent-name (VERIFIED IN CLAUDE.md)
+- **Scope**: [specific tasks]
+- **Handoff**: [exact instructions referencing documented patterns]
+- **Dependencies**: [prerequisites or blockers]
+
+## Coordination Strategy
+[How to execute the delegations in sequence]
+
+## Execution Trigger
+[MANDATORY: Provide the exact command to start the first delegation]
+```
+
+### Research Protocol Enforcement
+- ❌ **No fictitious MCP tools** - Don't reference non-existent tools
+- ✅ **Use Available Research Methods** - Use built-in analysis and reasoning capabilities
+- ✅ **Document Analysis** - Read existing documentation and best practices
+- ✅ **Code Pattern Research** - Analyze existing codebase patterns
+
+### Structured Analysis Requirements
+- ✅ **Apply Systematic Thinking** - Break down complex problems methodically
+- ✅ **Structured Problem Solving** - Use logical step-by-step analysis
+- ✅ **Thought Progression** - Document reasoning process clearly
+- ✅ **Adaptive Analysis** - Adjust approach as understanding deepens
+
+**VIOLATION CONSEQUENCES:**
+- Fabricating agent names → Task rejection and re-delegation
+- Stopping without execution → Manual intervention required
+- Using non-existent tools → Incorrect implementation patterns
+
+### Corrected Delegation Example
+```
+## Delegation Plan
+### Task 1: UI Fixes (CRITICAL)
+- **Agent**: @frontend-developer (VERIFIED in CLAUDE.md line 169)
+- **Scope**: Fix Gradio async handlers using documented patterns
+- **Handoff**: Use patterns from existing code and documentation for modern async handling
+- **Dependencies**: None
+
+## Execution Trigger
+@frontend-developer: Fix the async button handlers in chat_ui.py using best practices from Gradio documentation. Apply direct function references instead of lambda wrappers.
+```
+
+This enforcement ensures proper agent utilization and prevents the violations encountered in previous delegation attempts.
 
 ## 🧠 MANDATORY ANALYSIS PROTOCOLS FOR ALL SPECIALIST AGENTS
 
@@ -265,32 +412,60 @@ Market Parser is a simplified Python CLI and web GUI application for natural lan
 - Use comprehensive testing approaches for quality assurance
 
 **@frontend-developer - MUST:**
-- Research current Gradio patterns and JSON textbox best practices
-- Plan UI implementations with 5-state FSM considerations
-- Implement modern button workflows and loading state management
+- Research current frontend framework patterns and best practices
+- Plan UI/UX implementations with user experience considerations
+- Implement modern event handling and component architecture
 
 **@backend-developer - MUST:**
-- Research current backend patterns, 5-state FSM, and JSON output handling
-- Plan architecture changes with simplified system design considerations
-- Implement robust JSON output and non-blocking error handling
+- Research current backend patterns, security practices, and async handling
+- Plan architecture changes with system design considerations
+- Implement robust data validation and error handling
 
 **@documentation-specialist - MUST:**
 - Structure comprehensive documentation with logical organization
 - Research documentation standards and best practices
-- Implement clear, actionable guides with simplified architecture examples
+- Implement clear, actionable guides with examples
 
 ### Best Practices Research Topics
 
-**Common Research Areas for Simplified Market Parser Project:**
-- **@frontend-developer**: "Gradio JSON textboxes", "button event handling", "loading states", "5-state UI workflow"
-- **@backend-developer**: "5-state FSM patterns", "JSON output methods", "non-blocking error recovery", "simplified testing"
-- **@api-architect**: "MCP integration", "prompt templates", "three analysis types", "JSON response schemas"
-- **@code-reviewer**: "simplified architecture security", "JSON output validation", "5-state FSM quality"
-- **@performance-optimizer**: "JSON processing efficiency", "5-state FSM performance", "simplified monitoring"
-- **@code-archaeologist**: "simplified architecture analysis", "5-state FSM assessment", "technical debt reduction"
-- **@documentation-specialist**: "simplified system documentation", "5-state FSM guides", "JSON-only user guides"
+**Common Research Areas for Market Parser Project:**
+- **@frontend-developer**: "async handling", "event listeners", "chatbot components", "interface configuration"
+- **@backend-developer**: "async patterns", "error handling", "state management", "testing frameworks"
+- **@api-architect**: "API design", "response schemas", "authentication patterns", "rate limiting"
+- **@code-reviewer**: "security best practices", "code quality standards", "performance patterns"
+- **@performance-optimizer**: "optimization techniques", "caching strategies", "monitoring patterns"
+- **@code-archaeologist**: "architecture analysis", "refactoring patterns", "technical debt assessment"
+- **@documentation-specialist**: "documentation standards", "API documentation", "user guide patterns"
 
-### 2. MANDATORY TESTING PROTOCOL REQUIREMENTS
+### 2. RESEARCH AND DOCUMENTATION MANDATE
+
+**EVERY specialist agent MUST research best practices using:**
+
+- 🔧 **Documentation Analysis**: Review existing project documentation and guidelines
+- 📚 **Best Practices Research**: Study current standards for the technology stack
+- 🔍 **Implementation Patterns**: Analyze existing codebase patterns and conventions
+- 📋 **Technology Standards**: Follow established framework-specific patterns
+
+**Required Research Approach:**
+```markdown
+## Research Phase
+### 1. Current State Analysis
+- [Review existing implementation]
+- [Identify patterns and conventions]
+- [Document current architecture]
+
+### 2. Best Practices Investigation
+- [Technology-specific standards]
+- [Industry best practices]
+- [Security considerations]
+
+### 3. Implementation Planning
+- [Chosen approach with justification]
+- [Integration with existing systems]
+- [Testing strategy]
+```
+
+### 3. MANDATORY TESTING PROTOCOL REQUIREMENTS
 
 #### 🧪 CRITICAL: ALL BUG FIXES MUST INCLUDE TEST SCRIPT CREATION
 
@@ -299,17 +474,17 @@ Market Parser is a simplified Python CLI and web GUI application for natural lan
 - ✅ **MUST create test script for every bug fix** - No exceptions
 - ✅ **MUST include validation criteria** - Define what constitutes a successful fix
 - ✅ **MUST test error scenarios** - Verify error handling works correctly
-- ✅ **MUST validate simplified workflow scenarios** - Test with 5-state FSM
+- ✅ **MUST validate production scenarios** - Test with real-world data and inputs
 - ✅ **MUST document test procedures** - Clear instructions for running tests
 
-**Required Test Script Structure for Simplified Architecture:**
+**Required Test Script Structure:**
 
 ```python
 #!/usr/bin/env python3
 """
-Test Script for [Bug Fix Description] - Simplified Architecture
+Test Script for [Bug Fix Description]
 Created: [Date]
-Purpose: Validate fix for [specific bug] in 5-state FSM system
+Purpose: Validate fix for [specific bug]
 Success Criteria: [clear criteria for pass/fail]
 """
 
@@ -317,74 +492,123 @@ import pytest
 import asyncio
 from typing import List, Dict, Any
 
-class Test[BugFixName]Simplified:
-    """Test suite for [specific bug fix] in simplified architecture"""
+class Test[BugFixName]:
+    """Test suite for [specific bug fix]"""
     
     def setup_method(self):
-        """Setup test environment for simplified 5-state FSM"""
-        # Initialize test data for JSON-only output system
+        """Setup test environment before each test"""
+        # Initialize test data and mock objects
         pass
     
-    def test_5_state_fsm_workflow(self):
-        """Test the bug fix works with 5-state FSM"""
-        # Test: IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → IDLE
+    def test_bug_reproduction(self):
+        """Reproduce the original bug to confirm it existed"""
+        # This test should FAIL before the fix
+        # This test should PASS after the fix
         pass
     
-    def test_json_output_validation(self):
-        """Validate JSON output methods work correctly"""
-        # Test get_json_output() method functionality
+    def test_fix_validation(self):
+        """Validate the fix works correctly"""
+        # Test the specific fix implementation
         pass
     
-    def test_non_blocking_error_recovery(self):
-        """Test error recovery doesn't block UI"""
-        # Test ERROR state → IDLE state recovery
+    def test_edge_cases(self):
+        """Test edge cases that could break the fix"""
+        # Test boundary conditions and error scenarios
         pass
     
-    def test_simplified_ui_integration(self):
-        """Test integration with JSON textboxes"""
-        # Test gr.Code component integration
+    def test_regression_prevention(self):
+        """Ensure fix doesn't break existing functionality"""
+        # Test that other features still work
         pass
     
-    def test_three_analysis_types(self):
-        """Test all three analysis button types"""
-        # Test snapshot, support_resistance, technical analysis
+    def test_production_scenarios(self):
+        """Test with production-like data and conditions"""
+        # Use real API responses, actual user inputs
         pass
 
-def validate_simplified_fix_success() -> bool:
+def validate_fix_success() -> bool:
     """
-    Run comprehensive validation of the bug fix for simplified architecture
+    Run comprehensive validation of the bug fix
     Returns: True if all criteria met, False otherwise
     """
     success_criteria = [
-        "5-state FSM workflow functions correctly",
-        "JSON output methods produce valid output", 
-        "Non-blocking error recovery works",
-        "UI integration with JSON textboxes functional",
-        "All three analysis types operational"
+        # Define specific measurable criteria
+        "Criterion 1: [specific test]",
+        "Criterion 2: [specific test]", 
+        "Criterion 3: [specific test]"
     ]
     
-    # Implementation of validation logic for simplified system
+    # Implementation of validation logic
     return all_criteria_met
 
 if __name__ == "__main__":
-    # Run the test suite for simplified architecture
+    # Run the test suite
     pytest.main([__file__, "-v"])
     
     # Validate overall fix success
-    if validate_simplified_fix_success():
-        print("✅ BUG FIX VALIDATION (SIMPLIFIED): SUCCESS")
+    if validate_fix_success():
+        print("✅ BUG FIX VALIDATION: SUCCESS")
     else:
-        print("❌ BUG FIX VALIDATION (SIMPLIFIED): FAILED")
+        print("❌ BUG FIX VALIDATION: FAILED")
 ```
 
-**Testing Success Criteria Standards for Simplified Architecture:**
+**Testing Success Criteria Standards:**
 
-- **JSON Output Methods**: get_json_output() must return valid JSON for all three analysis types
-- **5-State FSM**: Must transition correctly through IDLE→BUTTON_TRIGGERED→AI_PROCESSING→RESPONSE_RECEIVED→IDLE
-- **Error Recovery**: Must recover from ERROR state in <2 seconds with button retry
-- **UI Integration**: JSON textboxes must display raw AI responses correctly
-- **Performance**: No regression in response times with simplified architecture
-- **Test Suite**: 80/80 tests must continue to pass with any changes
+- **Response Parser Fixes**: Must extract >90% of expected fields from real AI responses
+- **Message History Fixes**: Zero None content entries allowed in production scenarios
+- **FSM Error Recovery**: Must recover from ERROR state in <2 seconds with user feedback
+- **UI Integration**: All button operations must work sequentially without errors
+- **Performance**: No regression in response times or memory usage
+- **JSON Schema Validation**: 100% schema compliance with fallback handling
+
+### 4. IMPLEMENTATION QUALITY REQUIREMENTS
+
+**ALL specialist agents MUST:**
+
+- ✅ **Use Structured Analysis First**: Never start implementation without systematic analysis
+- ✅ **Research Before Implementing**: Study best practices and existing patterns
+- ✅ **Follow Modern Standards**: Use only current best practices from research
+- 🛡️ **Include Comprehensive Error Handling**: Robust error management and user feedback
+- 🧪 **Plan Testing Strategy**: Include validation and testing approaches
+- 📋 **Document All Changes**: Clear explanations of what was changed and why
+- 🧪 **Create Test Scripts**: MANDATORY test script for every bug fix
+- 🔬 **Validate Success**: Demonstrate fix meets defined success criteria
+- 🎯 **JSON Architecture Compliance**: Maintain dual parser compatibility
+- 📊 **Performance Monitoring**: Include metrics for JSON processing efficiency
+
+### 5. QUALITY GATES AND VERIFICATION
+
+**Before completing any task, ALL specialist agents MUST:**
+
+- ✅ **Verify Analysis Completeness**: Confirm structured analysis was performed
+- ✅ **Validate Research**: Ensure implementation follows researched best practices
+- ✅ **Test Error Scenarios**: Confirm error handling works as designed
+- ✅ **Check Function Signatures**: Validate all function signatures match requirements
+- ✅ **Preserve Architecture**: Ensure changes maintain existing architectural patterns
+- ✅ **Address Root Causes**: Confirm fixes address identified root causes
+- ✅ **NEW: Create and run test script validating the fix**
+- ✅ **NEW: Document test results and success criteria met**
+- ✅ **JSON SPECIFIC: Validate schema compatibility and fallback behavior**
+- ✅ **JSON SPECIFIC: Verify performance metrics within acceptable thresholds**
+
+### 6. CONSEQUENCES FOR NON-COMPLIANCE
+
+**FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN:**
+
+- ❌ **Task Rejection**: Work will be rejected and must be redone
+- ❌ **Re-delegation**: Task will be reassigned to different agent
+- ❌ **Quality Gate Failure**: Code will not pass review process
+- ❌ **Production Risk**: Changes may cause production issues
+
+**VERIFICATION CHECKLIST FOR ALL AGENTS:**
+- [ ] Performed structured analysis of the task
+- [ ] Researched best practices for the implementation
+- [ ] Documented reasoning and approach
+- [ ] Implemented solution using researched patterns
+- [ ] Added comprehensive error handling
+- [ ] Planned and documented testing approach
+- [ ] Created mandatory test script for bug fixes
+- [ ] Verified all requirements are met
 
 ## Development Environment
 
@@ -429,11 +653,10 @@ This project uses `uv` for dependency management and Python package execution. A
 
 ### Testing
 
-- **Run all tests**: `uv run pytest tests/` (80/80 tests passing with simplified architecture)
+- **Run all tests**: `uv run pytest tests/` (pytest is in dev dependencies)
 - **Run specific test**: `uv run pytest tests/test_file.py`
-- **Run simplified FSM tests**: `uv run pytest tests/test_simplified_fsm_workflow.py`
 - **Run integration tests**: `uv run pytest tests/test_*integration*.py`
-- **Validate simplified test suite**: `uv run python tests/validate_simplified_test_suite.py`
+- **Run production tests**: `uv run python tests/run_production_tests.py`
 - **Install dev dependencies**: `uv install --dev`
 
 ### Environment Management
@@ -442,7 +665,7 @@ This project uses `uv` for dependency management and Python package execution. A
 - **Update dependencies**: `uv lock --upgrade`
 - **Check environment**: `uv --version` and verify `.env` file exists
 
-## Code Architecture (Simplified)
+## Code Architecture
 
 ### Core Components
 
@@ -451,30 +674,31 @@ This project uses `uv` for dependency management and Python package execution. A
    - Implements `create_polygon_mcp_server()` factory function
    - Main async CLI loop with Rich console formatting
 
-2. **chat_ui.py**: Simplified Gradio web interface with JSON-only outputs
-   - 🧠 **5-State FSM Workflow** - IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR
-   - 📊 **Three Analysis Buttons** - Stock Snapshot, Support & Resistance, Technical Analysis  
-   - 📝 **JSON Textboxes (gr.Code)** - Raw AI responses for transparency and export
+2. **chat_ui.py**: Enhanced Gradio web interface with comprehensive features
+   - 🧠 **FSM-Driven State Management** - Robust workflow with state transitions
+   - 📊 **Structured Stock Analysis** - Dedicated buttons for Snapshot, S&R, Technical Analysis  
+   - 🎯 **Context-Aware Prompts** - Intelligent ticker extraction and structured prompts
    - ⏳ **Real-time Processing Status** - Loading states with step-by-step progress
-   - 🛡️ **Non-blocking Error Recovery** - Immediate button retry without UI freezing
-   - 🔍 **Debug Transparency** - Complete JSON responses for troubleshooting
+   - 🛡️ **Advanced Error Handling** - User-friendly messages and graceful recovery
+   - 📈 **Enhanced Data Display** - DataFrames with confidence scoring and warnings
+   - 🔍 **Debug Monitoring** - FSM state tracking and system diagnostics
+   - 💾 **Export Functionality** - Enhanced markdown export with detailed formatting
+   - Provides chat export functionality
 
 ### Key Architectural Patterns
 
 - **MCP Server Integration**: Uses Pydantic AI's MCP server integration to connect with Polygon.io
-- **Simplified Agent Framework**: Built on Pydantic AI with OpenAI gpt-4o-mini model
+- **Async Agent Framework**: Built on Pydantic AI with OpenAI Responses API model
 - **Cost Tracking**: Comprehensive token usage and cost tracking across sessions
 - **Shared Components**: CLI and GUI share the same agent configuration and MCP server setup
-- **5-State FSM**: Simplified state management for predictable user interactions
-- **JSON-Only Output**: Raw AI responses displayed in JSON textboxes for maximum transparency
 
 ### Dependencies & Technologies
 
 - **Core Framework**: `pydantic-ai-slim[openai,mcp]` for AI agent orchestration
-- **Web Interface**: `gradio>=4.0.0` for the GUI with JSON textboxes
+- **Web Interface**: `gradio>=4.0.0` for the GUI
 - **CLI Formatting**: `rich` for terminal output formatting
 - **Environment**: `python-dotenv` for configuration management
-- **External APIs**: Polygon.io MCP server via uvx, OpenAI gpt-4o-mini model
+- **External APIs**: Polygon.io MCP server via uvx, OpenAI gpt-5-nano model
 
 ### System Prompt Configuration
 
@@ -484,109 +708,117 @@ The agent uses a consistent system prompt across both interfaces:
 "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. Use the latest data available. Always double check your math. For any questions about the current date, use the 'get_today_date' tool. For long or complex queries, break the query into logical subtasks and process each subtask in order."
 ```
 
-## Simplified File Structure
+## File Structure
 
 ```
 market-parser-polygon-mcp/
-├── src/                          # Core application modules (simplified)
+├── src/                          # Core application modules
 │   ├── __init__.py
-│   ├── response_parser.py        # JSON output with get_json_output() method
-│   ├── json_parser.py           # Basic JSON parsing with fallback strategies
-│   ├── json_schemas.py          # Simplified schema definitions
-│   ├── prompt_templates.py      # Templates for three analysis types
-│   ├── schema_validator.py      # Basic validation logic
-│   ├── json_debug_logger.py     # Simplified debug logging
+│   ├── response_parser.py        # Response parsing utilities for structured data extraction
+│   ├── json_parser.py           # JSON parsing with fallback strategies
+│   ├── json_schemas.py          # JSON schema definitions and validation
+│   ├── prompt_templates.py      # Structured prompt templates for analysis types
+│   ├── schema_validator.py      # Schema validation logic and business rules
+│   ├── json_debug_logger.py     # Debug logging for JSON workflows
 │   ├── security_utils.py        # Input validation and security utilities
-│   └── example_json_responses.py # Example responses for testing
-├── stock_data_fsm/              # Simplified 5-State FSM
+│   └── example_json_responses.py # Example responses for testing and development
+├── stock_data_fsm/              # Finite State Machine module for GUI state management
 │   ├── __init__.py
-│   ├── states.py                # 5 states: IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR
-│   ├── transitions.py           # Simplified transition rules for 5-state model
-│   ├── manager.py               # FSM controller with non-blocking error recovery
-│   └── tests/                   # FSM-specific test suite (all tests passing)
+│   ├── states.py                # Application states enum and context data classes
+│   ├── transitions.py           # State transition rules and validation logic
+│   ├── manager.py               # Main FSM controller with transition orchestration
+│   └── tests/                   # FSM-specific test suite
 │       ├── __init__.py
-│       ├── test_states.py       # 5-state validation
-│       ├── test_transitions.py  # Simplified transition testing
-│       ├── test_manager.py      # FSM manager testing
-│       └── test_integration.py  # FSM integration testing
-├── tests/                       # Comprehensive test suite (80/80 tests passing)
+│       ├── test_states.py
+│       ├── test_transitions.py
+│       ├── test_manager.py
+│       └── test_integration.py
+├── tests/                       # Comprehensive test suite
 │   ├── __init__.py
-│   ├── test_integration.py      # Integration tests for simplified architecture
-│   ├── test_simplified_fsm_workflow.py # 5-state workflow validation
-│   ├── test_response_parser.py  # JSON output validation (29/29 tests passing)
+│   ├── test_integration.py      # Main integration tests
 │   ├── test_actual_integration.py
 │   ├── test_prompt_templates.py
+│   ├── test_response_parser.py
 │   ├── test_json_schemas.py
+│   ├── test_production_*.py     # Production scenario tests
 │   ├── run_*.py                 # Test runners and validation scripts
-│   ├── validate_*.py            # Fix validation scripts
-│   └── PHASE_3_TEST_UPDATES_SUMMARY.md # Test suite documentation
+│   └── validate_*.py            # Fix validation scripts
 ├── logs/                        # Application and debug logs
 │   ├── json_workflow_debug.log
+│   ├── production_*.log
 │   └── debug_*.log
-├── docs/                        # Updated documentation for simplified architecture
-│   ├── JSON_ARCHITECTURE_GUIDE.md # Updated for simplified JSON-only system
-│   ├── USER_GUIDE_JSON_FEATURES.md # Updated for JSON textboxes
-│   ├── SYSTEM_SIMPLIFICATION_GUIDE.md # Migration documentation
+├── scripts/                     # Utility and demonstration scripts
+│   ├── debug_parser_data_sources.py
+│   ├── demo_json_prompts.py
+│   └── simple_test.py
+├── config/                      # Configuration files (ready for future use)
+├── docs/                        # Comprehensive documentation
+│   ├── JSON_ARCHITECTURE_GUIDE.md
+│   ├── USER_GUIDE_JSON_FEATURES.md
 │   ├── TROUBLESHOOTING_JSON.md
-│   ├── FEATURE_SCOPE_STOCK_DATA_GUI.md # Updated for simplified scope
+│   ├── FEATURE_SCOPE_STOCK_DATA_GUI.md
+│   ├── DEPLOYMENT_GUIDE_AWS.md
 │   ├── reports/                 # Project reports and analysis
 │   │   ├── README.md
 │   │   ├── COMPREHENSIVE_BUG_FIX_REPORT.md
 │   │   ├── JSON_RESPONSE_IMPLEMENTATION_REPORT.md
 │   │   └── *.md                # Various technical reports
 │   └── scratchpad.md           # Development notes
+├── images/                      # Project assets and logos
+│   └── logo.png
 ├── market_parser_demo.py        # CLI application entry point
-├── chat_ui.py                   # Simplified web GUI (JSON outputs only)
+├── chat_ui.py                   # Web GUI application (primary enhanced version)
 ├── pyproject.toml              # Project configuration and dependencies
 ├── uv.lock                     # Lock file for reproducible builds
-├── README.md                   # Updated main project documentation
-├── CLAUDE.md                   # Updated AI agent guidance (this file)
+├── README.md                   # Main project documentation
+├── CLAUDE.md                   # AI agent guidance and protocols
 └── SECURITY.md                 # Security guidelines and best practices
 ```
 
-## Development Patterns (Simplified)
+## Development Patterns
 
 ### MCP Server Integration
 The project uses the Polygon.io MCP server via `uvx` for real-time financial data access. The `create_polygon_mcp_server()` function in `market_parser_demo.py:16` handles server initialization and connection management.
 
-### Simplified State Management (GUI)
-The `stock_data_fsm` module implements a simplified 5-state FSM for reliable GUI workflow management:
-- States are defined in `stock_data_fsm/states.py:15` with `AppState` enum (5 states total)
+### State Management (GUI)
+The `stock_data_fsm` module implements a deterministic finite state machine for robust GUI workflow management:
+- States are defined in `stock_data_fsm/states.py:12` with `AppState` enum
 - Transitions managed by `StateManager` class in `stock_data_fsm/manager.py:25`
 - Context data flows through `StateContext` objects for stateful operations
-- Non-blocking error recovery ensures immediate button retry functionality
 
-### JSON-Only Architecture
-The `src/` directory contains the simplified JSON architecture components:
-- **JSON Output**: `src/response_parser.py` provides `get_json_output()` method for raw AI responses
-- **Basic Parsing**: `src/json_parser.py` implements simple JSON extraction with regex fallback
-- **Three Analysis Types**: `src/prompt_templates.py` handles snapshot, support_resistance, technical analysis
-- **Simplified Validation**: `src/schema_validator.py` provides basic validation logic
-- **Debug Logging**: `src/json_debug_logger.py` provides lightweight workflow tracking
+### JSON Architecture (Enhanced)
+The `src/` directory contains the enhanced JSON architecture components:
+- **Schema Management**: `src/json_schemas.py` defines structured data schemas
+- **Parsing Logic**: `src/json_parser.py` implements dual parser architecture (JSON + regex fallback)
+- **Response Processing**: `src/response_parser.py` handles AI response extraction and validation
+- **Debug Logging**: `src/json_debug_logger.py` provides comprehensive workflow tracking
+- **Security**: `src/security_utils.py` ensures input validation and data sanitization
 
 ### Agent Configuration
 Both CLI and GUI share identical agent setup with:
-- Model: `gpt-4o-mini` via OpenAI Responses API
+- Model: `gpt-5-nano` via OpenAI Responses API
 - System prompt focused on financial analysis accuracy
 - Token cost tracking via `TokenCostTracker` class
 
-### Simplified Testing Strategy
-- **Comprehensive Test Suite**: 80/80 tests passing in `tests/` directory
-- **5-State FSM Tests**: Module-specific tests in `stock_data_fsm/tests/`
-- **Integration Testing**: `tests/test_integration.py` and `tests/test_simplified_fsm_workflow.py`
-- **JSON Output Testing**: `tests/test_response_parser.py` with 29/29 tests passing
-- **Architecture Validation**: All tests updated for simplified 5-state FSM and JSON-only output
+### Testing Strategy
+- **Comprehensive Test Suite**: All tests organized in `tests/` directory
+- **FSM Tests**: Module-specific tests in `stock_data_fsm/tests/`
+- **Integration Testing**: `tests/test_integration.py` and `tests/test_actual_integration.py`
+- **Production Testing**: `tests/test_production_*.py` for real-world scenario validation
+- **JSON Validation**: `tests/test_json_*.py` for schema and parsing validation
 
 ### Import Patterns
-With the simplified structure, use these import patterns:
+With the new structure, use these import patterns:
 
 ```python
-# Core modules from src/ (simplified)
+# Core modules from src/
 from src.response_parser import ResponseParser
 from src.prompt_templates import PromptTemplateManager
 from src.json_schemas import StockDataSchema
+from src.schema_validator import SchemaValidator
+from src.json_debug_logger import JSONDebugLogger
 
-# 5-State FSM components
+# FSM components
 from stock_data_fsm.states import AppState, StateContext
 from stock_data_fsm.manager import StateManager
 from stock_data_fsm.transitions import StateTransitions
@@ -597,22 +829,21 @@ from src.security_utils import validate_input, sanitize_data
 
 ## Future Development
 
-The simplified architecture is designed for:
+The `docs/FEATURE_SCOPE_STOCK_DATA_GUI.md` contains detailed specifications for planned GUI enhancements including:
 
-- **Reliability**: 5-state FSM eliminates complex transition bugs
-- **Transparency**: JSON-only outputs provide complete data access
-- **Maintainability**: Simplified components reduce technical debt
-- **Migration Readiness**: Easy migration to React/Next.js frontend frameworks
+- Structured data display components
+- Finite State Machine architecture for button-triggered actions
+- Technical indicator displays
+- Support/resistance level visualization
 
-When implementing new features, refer to existing patterns in the simplified agent configuration and 5-state FSM systems.
+When implementing new features, refer to existing patterns in the shared agent configuration and cost tracking systems.
 
 ## Important Development Notes
 
 - **Environment Setup**: Create `.env` file with required API keys before running applications (see template in Required Environment Variables section)
 - **External Dependencies**: The Polygon.io MCP server requires `uvx` to be available in the system PATH
-- **Architecture Preservation**: All file modifications during development should preserve the 5-state FSM patterns and JSON-only output architecture
+- **Architecture Preservation**: All file modifications during development should preserve the FSM state management patterns and JSON architecture integrity
 - **Cost Tracking**: Token cost tracking is enabled by default - check `TokenCostTracker` usage when adding new agent interactions
-- **Model Configuration**: Default model is `gpt-4o-mini` but can be overridden via `OPENAI_MODEL` environment variable
-- **Testing Requirements**: Run tests from project root using `uv run pytest tests/` for the main test suite (80/80 tests passing)
-- **JSON-Only Architecture**: Follow get_json_output() patterns in `src/response_parser.py` for all structured data extraction
-- **5-State FSM**: Maintain exactly 5 states with non-blocking error recovery for production reliability
+- **Model Configuration**: Default model is `gpt-5-nano` but can be overridden via `OPENAI_MODEL` environment variable
+- **Testing Requirements**: Run tests from project root using `uv run pytest tests/` for the main test suite
+- **JSON Architecture**: Follow dual parser patterns in `src/json_parser.py` for reliability and fallback handling

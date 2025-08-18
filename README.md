@@ -2,7 +2,7 @@
 
 ![Project Logo](images/logo.png)
 
-A simplified Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
+A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-nano` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
 
 ## Features
 
@@ -14,13 +14,14 @@ A simplified Python CLI and web GUI application for natural language financial q
 - **Rich CLI output:**
   Answers are formatted for easy reading in your terminal.
 
-- **Simplified Web Interface:**
-  - 🎯 **JSON-First Architecture** - Direct access to raw AI responses
+- **Enhanced Web Interface:**
+  - 🎯 **Enhanced JSON Architecture** - Comprehensive schema-driven system with validation
   - 📊 **Three Analysis Types** - Stock Snapshot, Support & Resistance, Technical Analysis
-  - 🔄 **5-State Workflow** - Simple, predictable user interactions
+  - 🔄 **5-State Workflow** - Reliable, predictable user interactions
   - ⏳ **Real-time Loading States** - Step-by-step progress feedback
-  - 🛡️ **Non-blocking Error Recovery** - Immediate error recovery without UI freezing
-  - 🔍 **Debug-Friendly** - Raw JSON outputs for transparency and export
+  - 🛡️ **Advanced Error Recovery** - Non-blocking error recovery with immediate retry
+  - 🔍 **Comprehensive Monitoring** - Enhanced debug logging and performance tracking
+  - 🎨 **Enhanced Data Display** - Real-time JSON textboxes with confidence indicators
 
 ## Disclaimer
 
@@ -62,9 +63,9 @@ A simplified Python CLI and web GUI application for natural language financial q
 
 ---
 
-## Simplified Web GUI
+## Enhanced Web GUI
 
-You can also use a web-based GUI (Gradio) that provides structured analysis tools with JSON-only outputs.
+You can also use a web-based GUI (Gradio) that provides structured analysis tools with enhanced JSON architecture.
 
 - Run the GUI:
 
@@ -72,48 +73,56 @@ You can also use a web-based GUI (Gradio) that provides structured analysis tool
   uv run chat_ui.py
   ```
   
-  **Features Available in Simplified Web UI:**
-  - 🧠 **5-State FSM Workflow** - Simplified state management (IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR)
+  **Features Available in Enhanced Web UI:**
+  - 🧠 **5-State FSM Workflow** - Enhanced state management (IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR)
   - 📊 **Three Analysis Buttons** - Stock Snapshot, Support & Resistance, Technical Analysis
   - 🎯 **Smart Ticker Detection** - Automatic extraction from conversation context
-  - 📝 **Raw JSON Outputs** - Direct access to structured AI responses
+  - 📝 **Enhanced JSON Outputs** - Comprehensive schema-driven system with validation
   - ⏳ **Real-time Loading States** - Step-by-step progress feedback during analysis
-  - 🛡️ **Non-blocking Error Recovery** - Immediate error recovery with button retry
-  - 🔍 **Debug Transparency** - Complete JSON responses for export and analysis
+  - 🛡️ **Advanced Error Recovery** - Non-blocking error recovery with immediate button retry
+  - 🔍 **Comprehensive Monitoring** - Debug logging and performance tracking
+  - 🎨 **Enhanced Data Display** - Real-time JSON textboxes with confidence indicators
 
 - The app will print a local URL (default `http://127.0.0.1:7860`) to open in your browser.
 - Pricing env vars (set in `.env`) will be used for cost estimates just like the CLI.
 
 Environment variables:
 
-- `OPENAI_MODEL` (optional, default `gpt-4o-mini`)
+- `OPENAI_MODEL` (optional, default `gpt-5-nano`)
 - `HOST` and `PORT` to override GUI host/port
 
 ---
 
-## Simplified Architecture Benefits
+## Enhanced Architecture Benefits
 
-### Why We Simplified
+### Why We Enhanced
 
-The system was redesigned in 2025 to focus on **reliability over complexity**:
+The system was optimized in 2025 to focus on **reliability with enhanced capabilities**:
 
-- **JSON-First Approach**: Raw AI responses provide maximum transparency and flexibility
-- **Reduced State Complexity**: 5-state FSM instead of 12+ states for predictable behavior
-- **Non-blocking Errors**: Users can immediately retry without system restart
-- **Future-Ready**: Simplified architecture supports easy migration to React/Next.js
-- **Debugging**: Raw JSON outputs make troubleshooting straightforward
+- **Enhanced JSON Architecture**: Comprehensive schema-driven system with validation and fallback strategies
+- **Dual Parser System**: JSON primary with regex fallback for maximum compatibility
+- **Advanced Monitoring**: Comprehensive debug logging with performance tracking
+- **Cost Optimization**: Enhanced resource usage monitoring and optimization
+- **Team Coordination**: Optimized AI team with primary architects and secondary support
 
-### What Changed
+### Enhanced Architecture Features
 
-**Before (Complex):**
-- 12+ FSM states with complex transitions
-- Structured DataFrame displays with parsing dependencies
-- Blocking error states requiring system restart
+**Enhanced JSON System:**
+- Comprehensive schema validation with JSON Schema Draft 2020-12 compliance
+- Dual parser architecture (JSON + regex fallback) for reliability
+- Confidence scoring and auto-correction capabilities
+- Multi-layer validation with business rules
 
-**After (Simplified):**
-- 5 clear states: IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR
-- Raw JSON textboxes for all outputs
-- Immediate error recovery with button retry
+**5-State FSM with JSON Integration:**
+- IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR
+- JSON-aware state transitions with validation integration
+- Non-blocking error recovery with immediate button retry
+
+**Advanced Monitoring & Debug:**
+- Comprehensive JSON workflow logging with unique identifiers
+- Performance metrics for optimization insights
+- Error analysis with context preservation
+- Advanced debug logging for production troubleshooting
 
 ---
 
@@ -122,7 +131,7 @@ The system was redesigned in 2025 to focus on **reliability over complexity**:
 Set these optional env vars to compute accurate cost estimates (USD per 1M tokens):
 
 ```env
-# Example values below — update with current OpenAI pricing for gpt-4o-mini
+# Example values below — update with current OpenAI pricing for gpt-5-nano
 OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
 OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
 ```
@@ -176,48 +185,52 @@ Be specific in your prompt. The better the prompt - the better the response.
 
 ---
 
-## Simplified Project Structure
+## Enhanced Project Structure
 
-The project has been organized for maximum maintainability:
+The project has been organized for maximum maintainability with enhanced JSON architecture:
 
 ```
 market-parser-polygon-mcp/
 ├── src/                          # Core application modules
 │   ├── response_parser.py        # Response parsing with get_json_output() method
-│   ├── json_parser.py           # JSON parsing with fallback strategies
-│   ├── json_schemas.py          # Schema definitions (simplified)
+│   ├── json_parser.py           # Dual parser architecture (JSON + regex fallback)
+│   ├── json_schemas.py          # JSON Schema Draft 2020-12 compliant definitions
 │   ├── prompt_templates.py      # Templates for three analysis types
-│   ├── schema_validator.py      # Basic validation logic
-│   ├── json_debug_logger.py     # Debug logging for workflows
+│   ├── schema_validator.py      # Multi-layer validation with business rules
+│   ├── json_debug_logger.py     # Comprehensive JSON workflow logging
 │   ├── security_utils.py        # Input validation and security
 │   └── example_json_responses.py # Test examples
-├── stock_data_fsm/              # Simplified 5-State FSM
+├── stock_data_fsm/              # Enhanced 5-State FSM
 │   ├── states.py                # 5 states: IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR
-│   ├── transitions.py           # Simplified transition rules
-│   ├── manager.py               # FSM controller with non-blocking error recovery
-│   └── tests/                   # FSM-specific test suite (80/80 tests passing)
+│   ├── transitions.py           # JSON-aware transition rules
+│   ├── manager.py               # FSM controller with JSON validation integration
+│   └── tests/                   # FSM-specific test suite (comprehensive coverage)
 ├── tests/                       # Comprehensive test suite
-│   ├── test_integration.py      # Integration tests (updated for simplified architecture)
+│   ├── test_integration.py      # Integration tests (updated for enhanced architecture)
 │   ├── test_simplified_fsm_workflow.py # 5-state workflow validation
-│   ├── test_response_parser.py  # JSON output validation (29/29 tests passing)
+│   ├── test_response_parser.py  # JSON output validation with dual parser testing
+│   ├── test_json_schemas.py     # Schema validation testing
 │   ├── run_*.py                 # Test runners and scripts
 │   └── validate_*.py            # Fix validation scripts
 ├── logs/                        # Application and debug logs
-├── docs/                        # Updated documentation
+├── docs/                        # Enhanced documentation
+│   ├── JSON_ARCHITECTURE_GUIDE.md # Comprehensive JSON system guide
+│   ├── USER_GUIDE_JSON_FEATURES.md # Enhanced feature documentation
 │   ├── reports/                 # Technical reports
 │   ├── SYSTEM_SIMPLIFICATION_GUIDE.md # Migration documentation
-│   └── *.md                     # Updated architecture guides
+│   └── *.md                     # Enhanced architecture guides
 ├── market_parser_demo.py        # CLI application entry point
-├── chat_ui.py                   # Simplified web GUI (JSON outputs only)
+├── chat_ui.py                   # Enhanced web GUI with JSON architecture
 └── pyproject.toml              # Project configuration
 ```
 
-**Key Benefits of Simplified Structure:**
-- **Reliability**: 5-state FSM eliminates complex transition bugs
-- **Transparency**: Raw JSON outputs provide full data access
-- **Maintainability**: Simplified components reduce technical debt
-- **Testing**: 100% test success rate with simplified architecture
-- **Future-Ready**: Easy migration to modern frontend frameworks
+**Key Benefits of Enhanced Structure:**
+- **Reliability**: Enhanced JSON architecture with comprehensive validation
+- **Performance**: Dual parser system with fallback strategies for maximum compatibility
+- **Monitoring**: Advanced debug logging and performance tracking
+- **Maintainability**: Enhanced components with clear separation of concerns
+- **Testing**: Comprehensive test coverage with enhanced architecture validation
+- **Team Coordination**: Optimized AI team structure with primary architects
 
 ---
 
@@ -242,43 +255,58 @@ market-parser-polygon-mcp/
   python market_parser_demo.py
   ```
 
-- **Import Errors with Simplified Structure:**
+- **Import Errors with Enhanced Structure:**
 
-  With the simplified structure, update imports to use the new patterns:
+  With the enhanced structure, update imports to use the new patterns:
   ```python
-  # Simplified import patterns:
+  # Enhanced import patterns:
   from src.response_parser import ResponseParser
   from src.prompt_templates import PromptTemplateManager
+  from src.json_schemas import StockDataSchema
+  from src.schema_validator import SchemaValidator
   from stock_data_fsm.states import AppState, StateContext
   ```
 
 - **Test Execution:**
 
-  Run tests from the project root using the simplified structure:
+  Run tests from the project root using the enhanced structure:
   ```sh
-  # All tests (80/80 tests passing)
+  # All tests (comprehensive coverage)
   uv run pytest tests/
   
   # Specific test files
   uv run pytest tests/test_integration.py
   
-  # Simplified FSM workflow tests
+  # Enhanced FSM workflow tests
   uv run pytest tests/test_simplified_fsm_workflow.py
+  
+  # JSON architecture validation
+  uv run pytest tests/test_json_schemas.py
   ```
 
 - **JSON Output Issues:**
 
-  The simplified system uses raw JSON outputs. If you need structured data:
+  The enhanced system uses comprehensive JSON validation:
   - Check the "Raw JSON Response" sections in the web UI
   - Use `response_parser.get_json_output()` method in code
   - Export JSON for external analysis tools
+  - Review confidence scoring and validation results
 
 - **UI Stuck in Loading State:**
 
-  With the simplified 5-state FSM:
+  With the enhanced 5-state FSM:
   - Click any analysis button to trigger immediate recovery
   - System automatically returns to IDLE state after errors
   - No system restart required for error recovery
+  - Check debug logs for comprehensive error analysis
+
+- **Performance Issues:**
+
+  Enhanced architecture includes performance optimization:
+  - Monitor JSON processing efficiency metrics
+  - Review validation caching effectiveness
+  - Check resource usage optimization
+  - Analyze comprehensive debug logs for bottlenecks
 
 - **Incorrect Responses**
 
@@ -290,7 +318,7 @@ market-parser-polygon-mcp/
 
 ---
 
-## Simplified Development Workflow
+## Enhanced Development Workflow
 
 ### Running the Application
 
@@ -299,10 +327,11 @@ market-parser-polygon-mcp/
 
 ### Testing
 
-- **Run all tests**: `uv run pytest tests/` (80/80 tests passing with simplified architecture)
+- **Run all tests**: `uv run pytest tests/` (comprehensive coverage with enhanced architecture)
 - **Run specific test**: `uv run pytest tests/test_file.py`
-- **Run simplified FSM tests**: `uv run pytest tests/test_simplified_fsm_workflow.py`
-- **Validate simplified architecture**: `uv run python tests/validate_simplified_test_suite.py`
+- **Run enhanced FSM tests**: `uv run pytest tests/test_simplified_fsm_workflow.py`
+- **Validate enhanced architecture**: `uv run python tests/validate_simplified_test_suite.py`
+- **JSON schema validation**: `uv run pytest tests/test_json_schemas.py`
 
 ### Environment Management
 
@@ -312,31 +341,54 @@ market-parser-polygon-mcp/
 
 ---
 
-## How it Works (Simplified)
+## How it Works (Enhanced Architecture)
 
 - Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
-- Uses a simple 5-state FSM for reliable workflow management
-- Sends your natural language query to OpenAI `gpt-4o-mini` via PydanticAI
-- Returns raw JSON responses for maximum transparency and flexibility
+- Uses enhanced 5-state FSM for reliable workflow management
+- Sends your natural language query to OpenAI `gpt-5-nano` via PydanticAI
+- Returns structured JSON responses with comprehensive validation
 - Provides non-blocking error recovery for uninterrupted usage
+- Monitors performance with advanced debug logging
 
-### The 5-State Workflow
+### The Enhanced 5-State Workflow
 
 1. **IDLE**: Ready for user input
 2. **BUTTON_TRIGGERED**: User clicked an analysis button
-3. **AI_PROCESSING**: Waiting for AI response
-4. **RESPONSE_RECEIVED**: Display JSON results
-5. **ERROR**: Non-blocking error state with immediate recovery
+3. **AI_PROCESSING**: Waiting for AI response with JSON validation
+4. **RESPONSE_RECEIVED**: Display validated JSON results with confidence scoring
+5. **ERROR**: Non-blocking error state with immediate recovery and detailed logging
+
+### Enhanced JSON Architecture
+
+- **Schema-Driven System**: JSON Schema Draft 2020-12 compliant with versioning
+- **Dual Parser Architecture**: Primary JSON parser with regex fallback
+- **Comprehensive Validation**: Multi-layer validation with business rules
+- **Performance Optimization**: Validation caching and resource monitoring
+- **Advanced Monitoring**: Comprehensive debug logging with workflow tracking
 
 ---
 
-## Migration from Complex System
+## Migration from Previous Version
 
-If you're upgrading from the previous complex version, see:
+If you're upgrading from the previous version, see:
 - `docs/SYSTEM_SIMPLIFICATION_GUIDE.md` for detailed migration steps
+- `docs/JSON_ARCHITECTURE_GUIDE.md` for enhanced JSON system documentation
 - `docs/reports/PHASE_*` reports for technical implementation details
 - `tests/PHASE_3_TEST_UPDATES_SUMMARY.md` for test architecture changes
+
+---
+
+## AI Team Structure
+
+This project uses an optimized AI team configuration with:
+
+- **Primary Architects**: `@backend-developer` leads JSON schema and FSM architecture
+- **Quality Assurance**: `@code-reviewer` mandatory for all changes with FSM integrity focus
+- **Performance Optimization**: `@performance-optimizer` for cost and resource optimization
+- **UI Enhancement**: `@frontend-developer` for Gradio-specific JSON textbox optimization
+- **Documentation**: `@documentation-specialist` for comprehensive system guides
+- **Deep Analysis**: `@code-archaeologist` for complex architecture decisions when needed
 
 ---
 
