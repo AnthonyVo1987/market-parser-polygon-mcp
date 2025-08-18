@@ -478,6 +478,91 @@ edit_file("/path/file", edits=[...], dryRun=true)
 
 ---
 
+## 🚨 CRITICAL: Delegation-Specific MCP Requirements
+
+### **MANDATORY MCP Tool Usage for ALL Delegated Specialists**
+
+When AI agents are delegated via the Task tool, they **MUST** use MCP tools according to their role requirements. **Standard Claude tools alone are insufficient and will result in work rejection.**
+
+#### **Evidence Requirements for Delegated Agents**
+
+**EVERY delegated specialist MUST provide explicit evidence of MCP tool usage:**
+
+1. **Sequential Thinking Evidence**: 
+   - Must show numbered thought progression from `mcp__sequential-thinking__sequentialthinking`
+   - Include systematic problem breakdown and analysis steps
+   - Document decision-making process clearly
+
+2. **Context7 Research Evidence** (if applicable):
+   - Must show library ID resolution: `mcp__context7__resolve-library-id`
+   - Must show documentation retrieval: `mcp__context7__get-library-docs` 
+   - Include specific research findings and best practices discovered
+
+3. **Filesystem Operations Evidence** (if applicable):
+   - Must use `mcp__filesystem__*` tools for file operations
+   - Include specific filesystem tool calls made
+   - Document file operations performed
+
+#### **Role-Specific MCP Tool Requirements**
+
+**@code-reviewer MUST provide evidence of:**
+```
+✅ mcp__sequential-thinking__sequentialthinking - Systematic code analysis steps
+✅ mcp__context7__resolve-library-id + get-library-docs - Best practices research
+```
+
+**@backend-developer MUST provide evidence of:**
+```
+✅ mcp__sequential-thinking__sequentialthinking - Architecture planning steps  
+✅ mcp__context7__resolve-library-id + get-library-docs - Backend patterns research
+✅ mcp__filesystem__* - File operations evidence
+```
+
+**@frontend-developer MUST provide evidence of:**
+```
+✅ mcp__sequential-thinking__sequentialthinking - UI/UX planning steps
+✅ mcp__context7__resolve-library-id + get-library-docs - Frontend patterns research  
+✅ mcp__filesystem__* - File operations evidence
+```
+
+**@documentation-specialist MUST provide evidence of:**
+```
+✅ mcp__sequential-thinking__sequentialthinking - Documentation structuring steps
+✅ mcp__filesystem__* - File operations evidence
+```
+
+#### **Unacceptable Responses (Will Result in Rejection)**
+
+❌ **Only standard Claude tools mentioned**: Read, Write, Edit, LS, Grep, Bash
+❌ **No systematic thinking evidence**: Vague analysis without structured steps
+❌ **No research performed**: Implementation without best practices research
+❌ **Missing MCP tool evidence**: Claims of analysis without MCP tool proof
+
+#### **Acceptable Evidence Examples**
+
+✅ **Good Sequential Thinking Evidence**:
+```
+I used mcp__sequential-thinking__sequentialthinking to break down this problem:
+Thought 1: Analyzed the current architecture patterns...
+Thought 2: Identified dependencies and risk factors...
+Thought 3: Planned implementation approach based on analysis...
+```
+
+✅ **Good Context7 Evidence**:
+```
+I used mcp__context7__resolve-library-id to research "react" patterns:
+- Resolved to library ID: /facebook/react
+- Used mcp__context7__get-library-docs with topic "hooks and state management"
+- Discovered current best practices: [specific findings]
+```
+
+✅ **Good Filesystem Evidence**:
+```
+Used mcp__filesystem__read_multiple_files to examine:
+- /path/file1.py, /path/file2.py
+Used mcp__filesystem__edit_file to update imports...
+```
+
 ## 🚨 Enforcement Protocol
 
 ### **Mandatory Tool Usage Violations**

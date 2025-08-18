@@ -1,8 +1,19 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
+##
+- You will perform ALL corrective actions to ensure ALL DELEGATED SPECIALIST EVEN IN THEIR OWN INSTANCE MANDATES MCP Tool Use from CLAUDE.md &  MCP_TOOL_USAGE_GUIDE.md
+- You will CLAUDE.md, MCP_TOOL_USAGE_GUIDE.md and any other docs needed to enforce MCP Tool calls
+##
+- After applying corrective actions, you will ask @Tech-Lead-Orchestrator to provide a delegation and coordination plan for Specialist to perform a complet comprehensive review AGAIN of the project re-structuring
+
+## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
+- SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
+- Provide Summary (NO DOCS needs) of MCP Tool Calls (NOT standard Claude Code tools) used by EACH Specialist involved so user can verify the proper tool calls used for the task(s)
+- User will then start testing out the new changes
 
 
-[DOCS] Ask @Tech-Lead-Orchestrator to follow CLAUDE.md to provide a delegation and coordination plan for Specialist to perform the following task(s)
+
+ Ask @Tech-Lead-Orchestrator to follow CLAUDE.md to provide a delegation and coordination plan for Specialist to perform the following task(s)
 
 - The project file and folder structure has gotten completley massive, confusing, and unweildy
 - Re-orgranize the entire project structure folder Hierachy using mandatory structured analysis to research best practices for re-organization according to our app's stack and architecture
@@ -17,7 +28,7 @@
 
 ## ACTIONS TO BE PERFORM ONLY AFTER PASSING CODE REVIEW OF ALL CODE\DOC CHANGES:
 - SPECIALIST to perform git status and then an automous ATOMIC commit and push to the github repo for ALL Doc\Code\File changes ONLY AFTER A PASSING CODE REVIEW
-- Provide Summary (NO DOCS needs) of MCP Tool Calls used by EACH Specialist involved so user can verify the proper tool calls used for the task(s)
+- Provide Summary (NO DOCS needs) of MCP Tool Calls (NOT standard Claude Code tools) used by EACH Specialist involved so user can verify the proper tool calls used for the task(s)
 - User will then start testing out the new changes
 
 
