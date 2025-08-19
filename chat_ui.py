@@ -12,6 +12,8 @@ from typing import List, Dict, Tuple, Any, Optional
 import time
 import traceback
 import json
+import tempfile
+import html
 
 import gradio as gr
 from dotenv import find_dotenv, load_dotenv
@@ -26,11 +28,17 @@ from src.prompt_templates import PromptTemplateManager, PromptType
 # Import unified conversational response processing
 from src.response_manager import ResponseManager, ProcessingMode
 
+# Import security utilities for content sanitization
+from src.security_utils import InputValidator, SecureLogger
+
 # Reuse server factory and token tracking from CLI
 from market_parser_demo import create_polygon_mcp_server, TokenCostTracker
 
 # Load environment variables
 load_dotenv(find_dotenv())
+
+# Configure logger for security monitoring
+logger = logging.getLogger(__name__)
 
 # -------- Global state for MCP server management --------
 _mcp_ctx = None
@@ -454,25 +462,35 @@ async def handle_button_click(
 async def _update_costs(response, tracker: TokenCostTracker) -> str:
     """Update cost tracking with enhanced formatting"""
     try:
-        if hasattr(response, "usage") and hasattr(tracker, "add_response"):
-            await tracker.add_response(response)
-        elif hasattr(response, "usage") and hasattr(tracker, "track_response"):
-            # Alternative method name
-            await tracker.track_response(response)
+        # Use the correct method from TokenCostTracker class
+        tracker.record_and_print(response)
+        
+        # Generate enhanced cost display using correct TokenCostTracker attributes
+        total_cost = tracker.total_input_cost_usd + tracker.total_output_cost_usd
+        total_tokens = tracker.total_input_tokens + tracker.total_output_tokens
         
         cost_markdown = f"""## 💰 Cost Tracking
-**Total Requests:** {getattr(tracker, 'total_requests', 0)}
-**Total Tokens:** {getattr(tracker, 'total_tokens', 0):,}
-**Estimated Cost:** ${getattr(tracker, 'total_cost', getattr(tracker, 'total_costs', 0.0)):.4f}
+**Total Tokens:** {total_tokens:,}
+**Estimated Cost:** ${total_cost:.6f}
 
-**Last Request:**
-- Input: {getattr(tracker, 'last_input_tokens', 0):,} tokens
-- Output: {getattr(tracker, 'last_output_tokens', 0):,} tokens
-- Cost: ${getattr(tracker, 'last_cost', 0.0):.4f}
+**Session Details:**
+- Input Tokens: {tracker.total_input_tokens:,} (${tracker.total_input_cost_usd:.6f})
+- Output Tokens: {tracker.total_output_tokens:,} (${tracker.total_output_cost_usd:.6f})
+
+**Debug Info:**
+- Usage Available: {hasattr(response, 'usage')}
+- Response Type: {type(response).__name__}
 """
         return cost_markdown
-    except Exception:
-        return "Cost tracking unavailable"
+    except Exception as e:
+        # Provide more detailed error information for debugging
+        error_info = f"""## 💰 Cost Tracking - Error
+**Error:** {str(e)}
+**Response Type:** {type(response).__name__}
+**Response Attributes:** {', '.join(dir(response))}
+**Tracker Attributes:** {', '.join(dir(tracker))}
+"""
+        return error_info
 
 
 def _get_debug_state_info(fsm_manager: StateManager) -> str:
@@ -514,14 +532,13 @@ def _clear_enhanced():
         [],  # pyd_history_state
         TokenCostTracker(),  # tracker_state
         "Cost tracking cleared",  # costs
-        "",  # export_md
         fsm_manager,  # fsm_state
         "**FSM Reset** - Ready for new analysis"  # debug_display
     )
 
 
 def export_markdown(chat_history: List[Dict], tracker: TokenCostTracker) -> str:
-    """Export chat session to markdown with enhanced formatting and user feedback"""
+    """Export chat session to markdown with enhanced formatting"""
     lines: List[str] = [
         "# 📊 Stock Market Analysis Chat Export\n",
         f"**Export Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}",
@@ -550,10 +567,172 @@ def export_markdown(chat_history: List[Dict], tracker: TokenCostTracker) -> str:
         f"- **Cost:** ${getattr(tracker, 'total_cost', getattr(tracker, 'total_costs', 0.0)):.4f}",
     ])
     
-    # Modern Gradio success notification
-    gr.Info(f"Chat exported successfully! {len(chat_history)} messages exported.")
-    
     return "\n".join(lines)
+
+
+def export_json(chat_history: List[Dict], tracker: TokenCostTracker) -> str:
+    """Export chat session to JSON format"""
+    export_data = {
+        "export_info": {
+            "export_date": time.strftime('%Y-%m-%d %H:%M:%S'),
+            "total_messages": len(chat_history),
+            "total_cost": getattr(tracker, 'total_cost', getattr(tracker, 'total_costs', 0.0)),
+            "total_tokens": getattr(tracker, 'total_tokens', 0)
+        },
+        "chat_history": chat_history,
+        "cost_summary": {
+            "requests": getattr(tracker, 'total_requests', 0),
+            "tokens": getattr(tracker, 'total_tokens', 0),
+            "cost": getattr(tracker, 'total_cost', getattr(tracker, 'total_costs', 0.0))
+        }
+    }
+    
+    return json.dumps(export_data, indent=2, ensure_ascii=False)
+
+
+def copy_to_clipboard_markdown(chat_history: List[Dict], tracker: TokenCostTracker):
+    """Copy markdown export to clipboard - return content for display"""
+    # Sanitize content before export to prevent XSS
+    sanitized_history = _sanitize_chat_history_for_export(chat_history)
+    markdown_content = export_markdown(sanitized_history, tracker)
+    gr.Info(f"📋 Copy this markdown content to your clipboard ({len(sanitized_history)} messages)")
+    return markdown_content
+
+
+def copy_to_clipboard_json(chat_history: List[Dict], tracker: TokenCostTracker):
+    """Copy JSON export to clipboard - return content for display"""
+    # Sanitize content before export to prevent XSS
+    sanitized_history = _sanitize_chat_history_for_export(chat_history)
+    json_content = export_json(sanitized_history, tracker)
+    gr.Info(f"📋 Copy this JSON content to your clipboard ({len(sanitized_history)} messages)")
+    return json_content
+
+
+def _sanitize_chat_history_for_export(chat_history: List[Dict]) -> List[Dict]:
+    """
+    Sanitize chat history before export to prevent XSS and content injection.
+    
+    Args:
+        chat_history: Raw chat history from the interface
+        
+    Returns:
+        Sanitized chat history safe for export
+    """
+    sanitized_history = []
+    
+    try:
+        for message in chat_history:
+            if not isinstance(message, dict):
+                continue
+                
+            sanitized_message = {}
+            
+            # Sanitize role field
+            role = message.get('role', 'unknown')
+            if role in ['user', 'assistant', 'system']:
+                sanitized_message['role'] = role
+            else:
+                sanitized_message['role'] = 'unknown'
+            
+            # Sanitize content field - remove potential XSS content
+            content = message.get('content', '')
+            if content:
+                try:
+                    # Use InputValidator to remove dangerous patterns
+                    # Remove HTML tags and escape potential XSS content
+                    sanitized_content = html.escape(str(content))
+                    
+                    # Additional sanitization for export safety
+                    sanitized_content = sanitized_content.replace('<script', '&lt;script')
+                    sanitized_content = sanitized_content.replace('javascript:', 'javascript-blocked:')
+                    sanitized_content = sanitized_content.replace('vbscript:', 'vbscript-blocked:')
+                    sanitized_content = sanitized_content.replace('onerror=', 'onerror-blocked=')
+                    sanitized_content = sanitized_content.replace('onload=', 'onload-blocked=')
+                    sanitized_content = sanitized_content.replace('onclick=', 'onclick-blocked=')
+                    
+                    sanitized_message['content'] = sanitized_content
+                except Exception as e:
+                    # Log sanitization error securely
+                    sanitized_message['content'] = f"[Content sanitization error: {SecureLogger.sanitize_log_message(str(e))}]"
+            else:
+                sanitized_message['content'] = ''
+            
+            # Include timestamp if present
+            if 'timestamp' in message:
+                sanitized_message['timestamp'] = message['timestamp']
+                
+            sanitized_history.append(sanitized_message)
+            
+    except Exception as e:
+        # Log error securely and return safe fallback
+        logger.error(f"Error sanitizing chat history: {SecureLogger.sanitize_log_message(str(e))}")
+        return [{"role": "system", "content": "[Chat history sanitization failed - export not available]"}]
+    
+    return sanitized_history
+
+
+def save_markdown_file(chat_history: List[Dict], tracker: TokenCostTracker):
+    """Generate markdown file for download with secure temp file handling"""
+    try:
+        # Sanitize content before export
+        sanitized_history = _sanitize_chat_history_for_export(chat_history)
+        markdown_content = export_markdown(sanitized_history, tracker)
+        timestamp = time.strftime('%Y%m%d_%H%M%S')
+        
+        # Use secure temporary file with automatic cleanup
+        with tempfile.NamedTemporaryFile(
+            mode='w',
+            suffix='.md',
+            prefix=f'stock_analysis_{timestamp}_',
+            delete=False,
+            encoding='utf-8'
+        ) as temp_file:
+            temp_file.write(markdown_content)
+            temp_file.flush()
+            secure_path = temp_file.name
+        
+        # Set secure permissions (readable only by owner)
+        os.chmod(secure_path, 0o600)
+        
+        gr.Info(f"💾 Secure markdown file ready for download! ({len(sanitized_history)} messages)")
+        return secure_path
+        
+    except Exception as e:
+        logger.error(f"Error creating secure markdown file: {SecureLogger.sanitize_log_message(str(e))}")
+        gr.Error("Failed to create markdown file. Please try again.")
+        return None
+
+
+def save_json_file(chat_history: List[Dict], tracker: TokenCostTracker):
+    """Generate JSON file for download with secure temp file handling"""
+    try:
+        # Sanitize content before export
+        sanitized_history = _sanitize_chat_history_for_export(chat_history)
+        json_content = export_json(sanitized_history, tracker)
+        timestamp = time.strftime('%Y%m%d_%H%M%S')
+        
+        # Use secure temporary file with automatic cleanup
+        with tempfile.NamedTemporaryFile(
+            mode='w',
+            suffix='.json',
+            prefix=f'stock_analysis_{timestamp}_',
+            delete=False,
+            encoding='utf-8'
+        ) as temp_file:
+            temp_file.write(json_content)
+            temp_file.flush()
+            secure_path = temp_file.name
+        
+        # Set secure permissions (readable only by owner)
+        os.chmod(secure_path, 0o600)
+        
+        gr.Info(f"💾 Secure JSON file ready for download! ({len(sanitized_history)} messages)")
+        return secure_path
+        
+    except Exception as e:
+        logger.error(f"Error creating secure JSON file: {SecureLogger.sanitize_log_message(str(e))}")
+        gr.Error("Failed to create JSON file. Please try again.")
+        return None
 
 
 # -------- Enhanced Gradio Interface --------
@@ -573,10 +752,44 @@ def create_enhanced_chat_interface():
         }
         .button-enhanced {
             transition: all 0.3s ease;
+            margin: 4px 2px;
         }
         .button-enhanced:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Improved spacing for sections */
+        .gradio-container {
+            gap: 16px;
+        }
+        
+        /* Analysis buttons visual grouping */
+        .analysis-buttons {
+            background: rgba(0, 122, 204, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        /* Export buttons styling */
+        .export-section {
+            background: rgba(46, 204, 113, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+        
+        /* Better visual hierarchy */
+        .main-chat {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Status display improvements */
+        .status-display {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
         }
         """
     ) as demo:
@@ -606,7 +819,8 @@ def create_enhanced_chat_interface():
                     height=400,
                     show_label=True,
                     container=True,
-                    type="messages"
+                    type="messages",
+                    elem_classes=["main-chat"]
                 )
                 
                 with gr.Row():
@@ -614,9 +828,40 @@ def create_enhanced_chat_interface():
                         placeholder="Ask about stocks or use the buttons below for structured analysis...",
                         label="Your Message",
                         container=False,
-                        scale=4
+                        scale=4,
+                        lines=3
                     )
                     send = gr.Button("Send", variant="primary", scale=1, elem_classes=["button-enhanced"])
+                
+                # Ticker input directly below message input
+                ticker_input = gr.Textbox(
+                    placeholder="Ticker (e.g., AAPL)", 
+                    label="Stock Ticker",
+                    value="NVDA"
+                )
+                
+                # Analysis buttons directly below ticker input
+                with gr.Group(elem_classes=["analysis-buttons"]):
+                    gr.Markdown("**📊 Stock Analysis:**")
+                    with gr.Row():
+                        snapshot_btn = gr.Button(
+                            "📈 Snapshot", 
+                            variant="secondary", 
+                            scale=1,
+                            elem_classes=["button-enhanced"]
+                        )
+                        sr_btn = gr.Button(
+                            "🎯 Support & Resistance", 
+                            variant="secondary", 
+                            scale=1,
+                            elem_classes=["button-enhanced"]
+                        )
+                        tech_btn = gr.Button(
+                            "🔧 Technical Analysis", 
+                            variant="secondary", 
+                            scale=1,
+                            elem_classes=["button-enhanced"]
+                        )
                 
                 # Processing Status Display
                 status_display = gr.Markdown(
@@ -625,38 +870,8 @@ def create_enhanced_chat_interface():
                     elem_classes=["processing-status"]
                 )
                 
-                with gr.Row():
-                    clear = gr.Button("Clear Chat", variant="secondary", elem_classes=["button-enhanced"])
-                    ticker_input = gr.Textbox(
-                        placeholder="Ticker (e.g., AAPL)", 
-                        label="Stock Ticker",
-                        value="NVDA",
-                        scale=2
-                    )
-        
-        # -------- Enhanced Stock Analysis Buttons --------
-        gr.Markdown("## 📊 Structured Stock Analysis")
-        gr.Markdown("Click these buttons to send enhanced analysis requests to the chat. You'll see the full prompt followed by conversational responses with better formatting:")
-        
-        with gr.Row():
-            snapshot_btn = gr.Button(
-                "📈 Stock Snapshot", 
-                variant="secondary", 
-                scale=1,
-                elem_classes=["button-enhanced"]
-            )
-            sr_btn = gr.Button(
-                "🎯 Support & Resistance", 
-                variant="secondary", 
-                scale=1,
-                elem_classes=["button-enhanced"]
-            )
-            tech_btn = gr.Button(
-                "🔧 Technical Analysis", 
-                variant="secondary", 
-                scale=1,
-                elem_classes=["button-enhanced"]
-            )
+                # Clear button moved to separate row
+                clear = gr.Button("Clear Chat", variant="secondary", elem_classes=["button-enhanced"])
         
         # JSON outputs have been consolidated to chat interface for simplified user experience
         # -------- Enhanced Debug and Monitoring --------
@@ -665,8 +880,33 @@ def create_enhanced_chat_interface():
         
         with gr.Accordion("💰 Cost Tracking & Export", open=False):
             costs = gr.Markdown()
-            export_md = gr.Textbox(label="Markdown export", lines=8)
-            export_btn = gr.Button("Export Chat to Markdown", elem_classes=["button-enhanced"])
+            
+            # New export buttons section
+            with gr.Group(elem_classes=["export-section"]):
+                gr.Markdown("**📤 Export Options:**")
+                with gr.Row():
+                    copy_md_btn = gr.Button("📋 Copy Chat (Markdown)", elem_classes=["button-enhanced"])
+                    save_md_btn = gr.Button("💾 Save Chat (.md)", elem_classes=["button-enhanced"])
+                with gr.Row():
+                    copy_json_btn = gr.Button("📋 Copy Chat (JSON)", elem_classes=["button-enhanced"])
+                    save_json_btn = gr.Button("💾 Save Chat (.json)", elem_classes=["button-enhanced"])
+            
+            # Output areas for clipboard content
+            clipboard_md_output = gr.Textbox(
+                label="Markdown Content (Select All + Copy)",
+                lines=6,
+                visible=False,
+                interactive=True
+            )
+            clipboard_json_output = gr.Textbox(
+                label="JSON Content (Select All + Copy)", 
+                lines=6,
+                visible=False,
+                interactive=True
+            )
+            
+            # File download output
+            file_download = gr.File(label="Download File", visible=False)
         
         # -------- State Management --------
         # Traditional state
@@ -791,13 +1031,51 @@ def create_enhanced_chat_interface():
             _clear_enhanced,
             inputs=[],
             outputs=[
-                chatbot, pyd_history_state, tracker_state, costs, export_md,
+                chatbot, pyd_history_state, tracker_state, costs,
                 fsm_state, status_display
             ]
         )
         
-        # Enhanced export functionality
-        export_btn.click(export_markdown, [chatbot, tracker_state], [export_md])
+        # Enhanced export functionality with new buttons
+        copy_md_btn.click(
+            copy_to_clipboard_markdown,
+            inputs=[chatbot, tracker_state],
+            outputs=[clipboard_md_output]
+        ).then(
+            lambda: gr.update(visible=True),
+            inputs=[],
+            outputs=[clipboard_md_output]
+        )
+        
+        copy_json_btn.click(
+            copy_to_clipboard_json,
+            inputs=[chatbot, tracker_state],
+            outputs=[clipboard_json_output]
+        ).then(
+            lambda: gr.update(visible=True),
+            inputs=[],
+            outputs=[clipboard_json_output]
+        )
+        
+        save_md_btn.click(
+            save_markdown_file,
+            inputs=[chatbot, tracker_state],
+            outputs=[file_download]
+        ).then(
+            lambda: gr.update(visible=True),
+            inputs=[],
+            outputs=[file_download]
+        )
+        
+        save_json_btn.click(
+            save_json_file,
+            inputs=[chatbot, tracker_state],
+            outputs=[file_download]
+        ).then(
+            lambda: gr.update(visible=True),
+            inputs=[],
+            outputs=[file_download]
+        )
         
         # Update debug display on FSM state changes
         fsm_state.change(

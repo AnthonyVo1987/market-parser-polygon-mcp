@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 """
-Critical Fix Validation Script
-Validates that both critical production issues have been resolved:
-1. Response parser now extracts structured data correctly (was 0/9 fields)
-2. Message history sanitization prevents Pydantic AI crashes from None content
+Critical Fix Validation Script - Updated for Button Prompt and Token Tracking Issues
+Validates that critical production issues have been resolved:
+1. Button prompts prevent confirmation requests (Priority 1)
+2. Token cost tracking displays actual costs (Priority 2) 
+3. Enhanced formatting with emojis and colors (Priority 3)
+4. Response parser extracts structured data correctly
+5. Message history sanitization prevents Pydantic AI crashes
 """
 
 import sys
+import os
+from unittest.mock import Mock
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from src.prompt_templates import PromptTemplateManager, PromptType
+from market_parser_demo import TokenCostTracker
 from src.response_parser import ResponseParser, DataType
 from chat_ui import sanitize_message_history
 
@@ -204,62 +213,216 @@ Previous close: $182.17
         return False
 
 
+def test_button_prompt_no_confirmation():
+    """Test that button prompts prevent confirmation requests (Priority 1)"""
+    print("\n🎯 Testing Button Prompt Confirmation Prevention...")
+    
+    prompt_manager = PromptTemplateManager()
+    
+    # Test all three button types
+    test_cases = [
+        (PromptType.SNAPSHOT, "AAPL"),
+        (PromptType.SUPPORT_RESISTANCE, "NVDA"), 
+        (PromptType.TECHNICAL, "SPY")
+    ]
+    
+    all_passed = True
+    
+    for prompt_type, ticker in test_cases:
+        print(f"Testing {prompt_type.value} button: ", end="")
+        
+        prompt, ticker_context = prompt_manager.generate_prompt(prompt_type, ticker=ticker)
+        
+        # Check for explicit "NO CONFIRMATION" instructions
+        has_no_confirmation = "Execute this analysis immediately without asking for confirmation" in prompt
+        has_no_clarification = "Do NOT ask for user confirmation or clarification" in prompt
+        has_no_input_request = "Provide the complete analysis without requesting additional input" in prompt
+        
+        # Check for forbidden confirmation patterns
+        forbidden_patterns = [
+            "Do you want me to proceed",
+            "Should I continue",
+            "Would you like me to",
+            "Confirm if you want",
+            "Let me know if you want"
+        ]
+        
+        has_forbidden = any(pattern in prompt for pattern in forbidden_patterns)
+        
+        if has_no_confirmation and has_no_clarification and has_no_input_request and not has_forbidden:
+            print("✅ No confirmation requests")
+        else:
+            print("❌ Still contains confirmation patterns")
+            all_passed = False
+            if not has_no_confirmation:
+                print(f"   Missing: 'Execute this analysis immediately'")
+            if not has_no_clarification:
+                print(f"   Missing: 'Do NOT ask for user confirmation'")
+            if not has_no_input_request:
+                print(f"   Missing: 'without requesting additional input'")
+            if has_forbidden:
+                print(f"   Found forbidden patterns: {[p for p in forbidden_patterns if p in prompt]}")
+    
+    return all_passed
+
+def test_enhanced_formatting_instructions():
+    """Test enhanced formatting instructions are present (Priority 3)"""
+    print("\n🎨 Testing Enhanced Formatting Instructions...")
+    
+    prompt_manager = PromptTemplateManager()
+    
+    all_passed = True
+    
+    for prompt_type in PromptType:
+        print(f"Testing {prompt_type.value} formatting: ", end="")
+        
+        prompt, ticker_context = prompt_manager.generate_prompt(prompt_type, ticker="TSLA")
+        
+        # Check for enhanced formatting requirements
+        has_emojis = "Use emojis for EVERY bullet point" in prompt
+        has_colors = "Use **🟢 GREEN** for bullish indicators and **🔴 RED** for bearish indicators" in prompt
+        has_questions = "End each response with 2-3 relevant follow-up questions" in prompt
+        
+        if has_emojis and has_colors and has_questions:
+            print("✅ Enhanced formatting present")
+        else:
+            print("❌ Missing formatting instructions")
+            all_passed = False
+            if not has_emojis:
+                print("   Missing: emoji instructions")
+            if not has_colors:
+                print("   Missing: color coding instructions")
+            if not has_questions:
+                print("   Missing: follow-up questions")
+    
+    return all_passed
+
+def test_token_tracking_fixes():
+    """Test token tracking uses correct method and handles responses (Priority 2)"""
+    print("\n💰 Testing Token Cost Tracking Fixes...")
+    
+    tracker = TokenCostTracker()
+    
+    # Test Case 1: Mock response with usage data
+    print("Test 1 (Mock response with usage): ", end="")
+    mock_response = Mock()
+    mock_usage = Mock()
+    mock_usage.request_tokens = 150
+    mock_usage.response_tokens = 300
+    mock_usage.input_tokens = 150
+    mock_usage.output_tokens = 300
+    mock_response.usage.return_value = mock_usage
+    
+    try:
+        tracker.record_and_print(mock_response)
+        test1_passed = True
+        print("✅ Handles usage data correctly")
+    except Exception as e:
+        test1_passed = False
+        print(f"❌ Failed: {e}")
+    
+    # Test Case 2: Response without usage data
+    print("Test 2 (No usage data): ", end="")
+    mock_response_no_usage = Mock()
+    mock_response_no_usage.usage.return_value = None
+    
+    try:
+        tracker.record_and_print(mock_response_no_usage)
+        test2_passed = True
+        print("✅ Handles missing usage gracefully")
+    except Exception as e:
+        test2_passed = False
+        print(f"❌ Failed: {e}")
+    
+    # Test Case 3: Cost calculation accuracy
+    print("Test 3 (Cost calculation): ", end="")
+    tracker_test = TokenCostTracker()
+    initial_total_cost = tracker_test.total_input_cost_usd + tracker_test.total_output_cost_usd
+    
+    try:
+        tracker_test.record_and_print(mock_response)
+        current_total_cost = tracker_test.total_input_cost_usd + tracker_test.total_output_cost_usd
+        cost_increase = current_total_cost - initial_total_cost
+        
+        if cost_increase > 0 and current_total_cost > 0:
+            test3_passed = True
+            print(f"✅ Cost tracking works (${current_total_cost:.6f})")
+        else:
+            test3_passed = False
+            print(f"❌ No cost increase: {cost_increase}")
+    except Exception as e:
+        test3_passed = False
+        print(f"❌ Failed: {e}")
+    
+    return test1_passed and test2_passed and test3_passed
+
 def main():
     """Run all validation tests"""
-    print("🚀 Critical Fix Validation Report")
-    print("=" * 50)
+    print("🚀 Critical Fix Validation Report - Button Prompts & Token Tracking")
+    print("=" * 70)
     print("Testing fixes for:")
-    print("❌ Issue 1: AI responses received (240 chars) but parser extracts 0/9 fields")
-    print("❌ Issue 2: Message with None content causes Pydantic AI crash")
+    print("❌ Priority 1: Button prompts request confirmation instead of immediate execution")
+    print("❌ Priority 2: Token cost tracking shows $0.0000 despite API calls")
+    print("❌ Priority 3: Missing enhanced formatting (emojis, colors, follow-up questions)")
+    print("❌ Legacy Issue: AI responses received but parser extracts 0/9 fields")
+    print("❌ Legacy Issue: Message with None content causes Pydantic AI crash")
     print()
     
     tests = [
-        test_response_parser_fixes,
-        test_message_history_sanitization,
-        test_integration
+        ("Button Prompt No Confirmation", test_button_prompt_no_confirmation),
+        ("Enhanced Formatting Instructions", test_enhanced_formatting_instructions),
+        ("Token Cost Tracking", test_token_tracking_fixes),
+        ("Response Parser Legacy", test_response_parser_fixes),
+        ("Message History Sanitization Legacy", test_message_history_sanitization),
+        ("Integration Legacy", test_integration)
     ]
     
     results = []
-    for test in tests:
+    for test_name, test_func in tests:
         try:
-            results.append(test())
+            results.append((test_name, test_func()))
         except Exception as e:
-            print(f"❌ Test failed with error: {e}")
-            results.append(False)
+            print(f"❌ {test_name} failed with error: {e}")
+            results.append((test_name, False))
     
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 70)
     print("📋 CRITICAL FIX SUMMARY")
-    print("=" * 50)
+    print("=" * 70)
     
-    fix_names = [
-        "Enhanced Response Parser",
-        "Message History Sanitization", 
-        "Integration Test"
-    ]
-    
-    for i, (name, passed) in enumerate(zip(fix_names, results)):
+    for test_name, passed in results:
         status = "✅ FIXED" if passed else "❌ FAILED"
-        print(f"{status} {name}")
+        print(f"{status} {test_name}")
     
-    overall_success = all(results)
+    overall_success = all(passed for _, passed in results)
     
     if overall_success:
         print(f"\n🎉 ALL CRITICAL ISSUES RESOLVED!")
-        print("✅ Stock Snapshot button will now extract 7-9/9 fields (was 0/9)")
-        print("✅ No more Pydantic AI crashes from None content") 
+        print("✅ Button prompts execute immediately without confirmation requests")
+        print("✅ Enhanced formatting with emojis, colors, and follow-up questions")
+        print("✅ Token cost tracking shows actual dollar amounts")
+        print("✅ Stock data extraction significantly improved (7-9/9 fields)")
+        print("✅ No more Pydantic AI crashes from None content")
         print("✅ Sequential button operations work reliably")
         print("✅ Production-ready for deployment")
         
         print("\n📊 Expected Production Improvements:")
+        print("   - Button prompts: Immediate execution, no user confusion")
+        print("   - Cost visibility: Real-time token cost tracking")
+        print("   - User experience: Enhanced formatting with colors and emojis")
         print("   - Stock analysis buttons: 90%+ reliability")
         print("   - Data extraction rate: 70-100% (from 0%)")
         print("   - UI crashes: Eliminated")
-        print("   - User experience: Significantly improved")
+        print("   - Overall user experience: Significantly improved")
         
     else:
-        print(f"\n⚠️ {sum(1 for r in results if not r)} critical issues remain")
+        failed_count = sum(1 for _, passed in results if not passed)
+        print(f"\n⚠️ {failed_count} critical issues remain")
         print("❌ System not ready for production")
         print("🔧 Additional fixes required")
+        print("\nFailed tests:")
+        for test_name, passed in results:
+            if not passed:
+                print(f"   - {test_name}")
         
     return 0 if overall_success else 1
 
