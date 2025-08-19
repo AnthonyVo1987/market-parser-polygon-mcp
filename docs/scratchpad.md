@@ -2,24 +2,6 @@
 
 
 
-claude "ask @Tech-Lead-Orchestrator follow CLAUDE.md & use SEQUENTIAL THINKING TOOL & CONTEXT7 to generate a comprehensive plan for delegation & coordination of for the requested task(s):"
-
-## High Level Task Goal: [PYTEST] Comprehensive Test Script Testing
-## Task Context & Background:
-- MANDATORY MCP TOOL USE FOR SEQUENTIAL THINKING & CONTEXT7 to properly research and breakdown all the task(s)
-- The plan MUST come from @Tech-Lead-Orchestrator after some initial investigation
-- Use any other MCP Tools on an as needed basis to match the task(s)
-
-## Task Details \ Issue Symptoms:
-- Perform comprehensive testing of ALL our test scripts using the newly setup pytest ecosystem to check out all of our scripts for any issues that need fixing, along with any code issues found from test scripts
-
-## ACTIONS TO BE PERFORM AFTER CHANGES ARE COMPLETE:
-- SPECIALIST to perform Review\Fix Loop until PASSING code review
-- ONLY AFTER A PASSING CODE REVIEW, SPECIALIST to perform automous doc updates, git status,  and then an automous ATOMIC GIT commit and GIT push to the github repo for ALL Doc\Code\File changes 
-- User will then start testing out the new changes
-
-
-
 Have @Tech-Lead-Orchestrator follow CLAUDE.md & use SEQUENTIAL THINKING TOOL& & CONTEXT7 to generate a comprehensive plan for delegation & coordination of for the requested task(s):
 
 ## High Level Task Goal: [BUG] 3x Attempts to Fix Incorrect FSM State Transitions Preventing Subsequent Button Prompt Actions
@@ -40,105 +22,123 @@ Have @Tech-Lead-Orchestrator follow CLAUDE.md & use SEQUENTIAL THINKING TOOL& & 
 - This issues was supposed to be previously fixed to remove dependencies between actions, but seems like there could be a fundamental misunderstanding\premise for this issues for the previous non-working fixes
 - All app actions, such as button prompts and even user input prompts MUST be independent from each other, because each action is not dependenent on another action, so there could be fundamental FSM issue
 - Add more debug message outputs so when User tries to test the new fixes, we can see if the code is doing what is expected with the new fixes or not to verify what's going on under the hood
+- Basically, we need to find out why after just 1x button prompt press, why is the entire app\FSM now screwed up where I cannot perform any other actions? WHy is the first action alwasy successful and why additional actions screwed up???
 
-## Logs:
+## App Logs:
 
 1. Stock Snapshot Button Prompt successful action:
 
-✅ Snapshot analysis complete - 19.0s FSM State: IDLE Button Type: snapshot Ticker: NVDA Error Attempts: 0 Total Transitions: 4 Recent Transitions: • BUTTON_TRIGGERED → AI_PROCESSING (start_ai_processing) • AI_PROCESSING → RESPONSE_RECEIVED (response_received) • RESPONSE_RECEIVED → IDLE (display_complete)
+? Snapshot analysis complete - 52.8s FSM State: IDLE Button Type: snapshot Ticker: NVDA Error Attempts: 0 Total Transitions: 4 Recent Transitions: • BUTTON_TRIGGERED ? AI_PROCESSING (start_ai_processing) • AI_PROCESSING ? RESPONSE_RECEIVED (response_received) • RESPONSE_RECEIVED ? IDLE (display_complete)
 
-Here is the comprehensive stock snapshot for NVIDIA Corporation (NVDA):
+Due to restrictions accessing certain data, I can only provide the most recent stock information for NVIDIA (NVDA) based on available resources. Here's a comprehensive snapshot based on the latest data:
 
-### NVDA Stock Snapshot
+NVDA Stock Snapshot
+Current Price: $43.74
+Change ($): +0.25
+Percentage Change: +0.57%
+Volume: 361,820,860 shares
+VWAP (Volume Weighted Average Price): $179.92
+Open: $181.88
+High: $181.90
+Low: $178.04
+Close (Previous): $180.45
+Insights:
+The data includes the last available trading day's performance and significant values such as open, high, low, and close prices.
+Please note that specifics like "VWAP" might vary; the reported number (179.92) is from previous aggregations. For up-to-the-minute data or if you'd like detailed real-time information, you may need access to a financial data service.
 
-- **Current Price:** $182.01
-- **Percentage Change:** +0.90%
-- **$ Change:** +$1.63
-- **Volume:** 131,862,720 shares
-- **VWAP (Volume Weighted Average Price):** $181.84
-- **Open:** $180.60
-- **High:** $182.94
-- **Low:** $180.59
-- **Close:** $182.01
-
-If you have any further questions or need more information, feel free to ask!
+If you require anything else, feel free to ask!
 
 2. Support & Resistance failing immediately after previous successful Stock Snapshot Button Prompt:
 
-❌ Button processing error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... - 1.8s FSM State: ERROR Button Type: support_resistance Ticker: NVDA Error Attempts: 1 Total Transitions: 7 Error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... Recent Transitions: • IDLE → BUTTON_TRIGGERED (button_click) • BUTTON_TRIGGERED → AI_PROCESSING (start_ai_processing) • AI_PROCESSING → ERROR (emergency_error)
 
-❌ Error processing support_resistance analysis: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
+? Error processing support_resistance analysis: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
 
 Please try again or check your ticker symbol.
+
+
+? Button processing error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... - 1.8s FSM State: ERROR Button Type: support_resistance Ticker: NVDA Error Attempts: 1 Total Transitions: 7 Error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... Recent Transitions: • IDLE ? BUTTON_TRIGGERED (button_click) • BUTTON_TRIGGERED ? AI_PROCESSING (start_ai_processing) • AI_PROCESSING ? ERROR (emergency_error)
+
 
 3. Technical Analysis also failing immediately
 
-❌ Error processing technical analysis: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
+? Error processing technical analysis: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
 
 Please try again or check your ticker symbol.
 
-❌ Button processing error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... - 1.7s FSM State: ERROR Button Type: technical Ticker: NVDA Error Attempts: 2 Total Transitions: 10 Error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... Recent Transitions: • ERROR → BUTTON_TRIGGERED (button_click) • BUTTON_TRIGGERED → AI_PROCESSING (start_ai_processing) • AI_PROCESSING → ERROR (emergency_error)
 
 
+? Button processing error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... - 1.7s FSM State: ERROR Button Type: technical Ticker: NVDA Error Attempts: 2 Total Transitions: 10 Error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price... Recent Transitions: • ERROR ? BUTTON_TRIGGERED (button_click) • BUTTON_TRIGGERED ? AI_PROCESSING (start_ai_processing) • AI_PROCESSING ? ERROR (emergency_error)
 
-1000211866@UIML-504F9T2:/mnt/d/Github/market-parser-polygon-mcp (master) 5 dirty$ uv run chat_ui.py
+
+## Console output logs:
+
+
+1000211866@UIML-504F9T2:/mnt/d/Github/market-parser-polygon-mcp (master)$ uv run chat_ui.py
 Warning: json_schemas module not available. Using fallback schemas.
 Loaded .env from: /mnt/d/Github/market-parser-polygon-mcp/.env
 🚀 Starting Simplified Stock Market Analysis Chat (Phase 2)
 🎯 Features: FSM + Raw JSON Output + Simple Error Handling
 📊 Simplified: Removed structured data displays and complex parsing
 [LOGGING] 📄 Basic logging enabled
-2025-08-18 16:30:50,307 - stock_data_fsm.transitions - INFO - Validated 19 state transitions
-2025-08-18 16:30:50,307 - stock_fsm.f41c6a60 - INFO - StateManager initialized with session f41c6a60
-2025-08-18 16:30:50,307 - stock_fsm.f41c6a60 - INFO - StateManager initialized with session f41c6a60
-2025-08-18 16:30:50,307 - stock_data_fsm.transitions - INFO - Validated 19 state transitions
-2025-08-18 16:30:50,847 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-08-18 16:53:09,544 - stock_data_fsm.transitions - INFO - Validated 19 state transitions
+2025-08-18 16:53:09,544 - stock_fsm.2c7ca8cc - INFO - StateManager initialized with session 2c7ca8cc
+2025-08-18 16:53:09,544 - stock_fsm.2c7ca8cc - INFO - StateManager initialized with session 2c7ca8cc
+2025-08-18 16:53:09,544 - stock_data_fsm.transitions - INFO - Validated 19 state transitions
+2025-08-18 16:53:10,024 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 * Running on local URL:  http://127.0.0.1:7860
-2025-08-18 16:30:51,147 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
-2025-08-18 16:30:51,216 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2025-08-18 16:53:10,327 - httpx - INFO - HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-08-18 16:53:10,384 - httpx - INFO - HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
 * To create a public link, set `share=True` in `launch()`.
-2025-08-18 16:31:35,344 - stock_data_fsm.transitions - INFO - Validated 19 state transitions
+2025-08-18 16:53:17,323 - stock_data_fsm.transitions - INFO - Validated 19 state transitions
 [GUI] Button clicked: snapshot for NVDA
-2025-08-18 16:31:35,345 - stock_fsm.f41c6a60 - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
-2025-08-18 16:31:35,345 - stock_fsm.f41c6a60 - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
-2025-08-18 16:31:35,345 - stock_fsm.f41c6a60 - INFO - Button clicked: snapshot
-2025-08-18 16:31:35,345 - stock_fsm.f41c6a60 - INFO - Button clicked: snapshot
-2025-08-18 16:31:35,346 - src.prompt_templates - INFO - Generated snapshot prompt for NVDA
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Button clicked: snapshot
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Button clicked: snapshot
+2025-08-18 16:53:17,324 - src.prompt_templates - INFO - Generated snapshot prompt for NVDA
 [GUI] Enhanced prompt generated for NVDA (confidence: 1.0)
-2025-08-18 16:31:35,346 - stock_fsm.f41c6a60 - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
-2025-08-18 16:31:35,346 - stock_fsm.f41c6a60 - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
-2025-08-18 16:31:35,346 - stock_fsm.f41c6a60 - INFO - Starting AI processing for snapshot: 218 characters
-2025-08-18 16:31:35,346 - stock_fsm.f41c6a60 - INFO - Starting AI processing for snapshot: 218 characters
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Starting AI processing for snapshot: 218 characters
+2025-08-18 16:53:17,324 - stock_fsm.2c7ca8cc - INFO - Starting AI processing for snapshot: 218 characters
 [GUI] Sending prompt to AI: Provide a comprehensive stock snapshot for NVDA. Include: Current price, Percentage change, $ Change...
-[08/18/25 16:31:37] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
-2025-08-18 16:31:45,796 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
-[08/18/25 16:31:46] INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
+[08/18/25 16:53:19] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
+2025-08-18 16:53:29,458 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/18/25 16:53:29] INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
                     INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
-[08/18/25 16:31:47] INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
+[08/18/25 16:53:30] INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
                     INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
-2025-08-18 16:31:54,091 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - Transitioning: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - Transitioning: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - AI response received in 19.04s: 425 characters
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - AI response received in 19.04s: 425 characters
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - Transitioning: RESPONSE_RECEIVED -display_complete-> IDLE
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - Transitioning: RESPONSE_RECEIVED -display_complete-> IDLE
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - Display complete. Total cycle: 19.04s
-2025-08-18 16:31:54,388 - stock_fsm.f41c6a60 - INFO - Display complete. Total cycle: 19.04s
+2025-08-18 16:53:38,203 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/18/25 16:53:38] INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
+                    INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
+2025-08-18 16:53:44,254 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/18/25 16:53:44] INFO     Processing request of type CallToolRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                           server.py:624
+                    INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
+2025-08-18 16:53:54,596 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+[08/18/25 16:53:54] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
+2025-08-18 16:54:09,875 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-18 16:54:10,170 - stock_fsm.2c7ca8cc - INFO - Transitioning: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
+2025-08-18 16:54:10,170 - stock_fsm.2c7ca8cc - INFO - Transitioning: AI_PROCESSING -response_received-> RESPONSE_RECEIVED
+2025-08-18 16:54:10,171 - stock_fsm.2c7ca8cc - INFO - AI response received in 52.85s: 954 characters
+2025-08-18 16:54:10,171 - stock_fsm.2c7ca8cc - INFO - AI response received in 52.85s: 954 characters
+2025-08-18 16:54:10,171 - stock_fsm.2c7ca8cc - INFO - Transitioning: RESPONSE_RECEIVED -display_complete-> IDLE
+2025-08-18 16:54:10,171 - stock_fsm.2c7ca8cc - INFO - Transitioning: RESPONSE_RECEIVED -display_complete-> IDLE
+2025-08-18 16:54:10,171 - stock_fsm.2c7ca8cc - INFO - Display complete. Total cycle: 52.85s
+2025-08-18 16:54:10,171 - stock_fsm.2c7ca8cc - INFO - Display complete. Total cycle: 52.85s
 [GUI] Button processing completed successfully for NVDA
 [GUI] Button clicked: support_resistance for NVDA
-2025-08-18 16:33:24,341 - stock_fsm.f41c6a60 - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
-2025-08-18 16:33:24,341 - stock_fsm.f41c6a60 - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
-2025-08-18 16:33:24,341 - stock_fsm.f41c6a60 - INFO - Button clicked: support_resistance
-2025-08-18 16:33:24,341 - stock_fsm.f41c6a60 - INFO - Button clicked: support_resistance
-2025-08-18 16:33:24,341 - src.prompt_templates - INFO - Generated support_resistance prompt for NVDA
+2025-08-18 16:56:22,906 - stock_fsm.2c7ca8cc - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-18 16:56:22,906 - stock_fsm.2c7ca8cc - INFO - Transitioning: IDLE -button_click-> BUTTON_TRIGGERED
+2025-08-18 16:56:22,907 - stock_fsm.2c7ca8cc - INFO - Button clicked: support_resistance
+2025-08-18 16:56:22,907 - stock_fsm.2c7ca8cc - INFO - Button clicked: support_resistance
+2025-08-18 16:56:22,907 - src.prompt_templates - INFO - Generated support_resistance prompt for NVDA
 [GUI] Enhanced prompt generated for NVDA (confidence: 1.0)
-2025-08-18 16:33:24,341 - stock_fsm.f41c6a60 - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
-2025-08-18 16:33:24,341 - stock_fsm.f41c6a60 - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
-2025-08-18 16:33:24,342 - stock_fsm.f41c6a60 - INFO - Starting AI processing for support_resistance: 241 characters
-2025-08-18 16:33:24,342 - stock_fsm.f41c6a60 - INFO - Starting AI processing for support_resistance: 241 characters
+2025-08-18 16:56:22,907 - stock_fsm.2c7ca8cc - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
+2025-08-18 16:56:22,907 - stock_fsm.2c7ca8cc - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
+2025-08-18 16:56:22,907 - stock_fsm.2c7ca8cc - INFO - Starting AI processing for support_resistance: 241 characters
+2025-08-18 16:56:22,907 - stock_fsm.2c7ca8cc - INFO - Starting AI processing for support_resistance: 241 characters
 [GUI] Sending prompt to AI: Analyze support and resistance levels for NVDA. Provide: 3 support levels (S1, S2, S3) with prices, ...
-[08/18/25 16:33:25] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
+[08/18/25 16:56:24] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
 [GUI] Error in button processing: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
 Traceback (most recent call last):
   File "/mnt/d/Github/market-parser-polygon-mcp/chat_ui.py", line 316, in handle_button_click
@@ -164,23 +164,23 @@ Traceback (most recent call last):
   File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.10/site-packages/typing_extensions.py", line 2695, in assert_never
     raise AssertionError(f"Expected code to be unreachable, but got: {value}")
 AssertionError: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
-2025-08-18 16:33:26,194 - stock_fsm.f41c6a60 - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
-2025-08-18 16:33:26,194 - stock_fsm.f41c6a60 - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
+2025-08-18 16:56:24,729 - stock_fsm.2c7ca8cc - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
+2025-08-18 16:56:24,729 - stock_fsm.2c7ca8cc - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
 [GUI] Button clicked: technical for NVDA
-2025-08-18 16:34:17,780 - stock_fsm.f41c6a60 - INFO - Transitioning: ERROR -button_click-> BUTTON_TRIGGERED
-2025-08-18 16:34:17,780 - stock_fsm.f41c6a60 - INFO - Transitioning: ERROR -button_click-> BUTTON_TRIGGERED
-2025-08-18 16:34:17,780 - stock_fsm.f41c6a60 - INFO - Button recovery initiated: technical (previous error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...)
-2025-08-18 16:34:17,780 - stock_fsm.f41c6a60 - INFO - Button recovery initiated: technical (previous error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...)
-2025-08-18 16:34:17,781 - stock_fsm.f41c6a60 - INFO - Error recovery via button click: technical for NVDA
-2025-08-18 16:34:17,781 - stock_fsm.f41c6a60 - INFO - Error recovery via button click: technical for NVDA
-2025-08-18 16:34:17,781 - src.prompt_templates - INFO - Generated technical prompt for NVDA
+2025-08-18 16:56:52,268 - stock_fsm.2c7ca8cc - INFO - Transitioning: ERROR -button_click-> BUTTON_TRIGGERED
+2025-08-18 16:56:52,268 - stock_fsm.2c7ca8cc - INFO - Transitioning: ERROR -button_click-> BUTTON_TRIGGERED
+2025-08-18 16:56:52,268 - stock_fsm.2c7ca8cc - INFO - Button recovery initiated: technical (previous error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...)
+2025-08-18 16:56:52,268 - stock_fsm.2c7ca8cc - INFO - Button recovery initiated: technical (previous error: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...)
+2025-08-18 16:56:52,268 - stock_fsm.2c7ca8cc - INFO - Error recovery via button click: technical for NVDA
+2025-08-18 16:56:52,268 - stock_fsm.2c7ca8cc - INFO - Error recovery via button click: technical for NVDA
+2025-08-18 16:56:52,268 - src.prompt_templates - INFO - Generated technical prompt for NVDA
 [GUI] Enhanced prompt generated for NVDA (confidence: 1.0)
-2025-08-18 16:34:17,781 - stock_fsm.f41c6a60 - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
-2025-08-18 16:34:17,781 - stock_fsm.f41c6a60 - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
-2025-08-18 16:34:17,781 - stock_fsm.f41c6a60 - INFO - Starting AI processing for technical: 256 characters
-2025-08-18 16:34:17,781 - stock_fsm.f41c6a60 - INFO - Starting AI processing for technical: 256 characters
+2025-08-18 16:56:52,269 - stock_fsm.2c7ca8cc - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
+2025-08-18 16:56:52,269 - stock_fsm.2c7ca8cc - INFO - Transitioning: BUTTON_TRIGGERED -start_ai_processing-> AI_PROCESSING
+2025-08-18 16:56:52,269 - stock_fsm.2c7ca8cc - INFO - Starting AI processing for technical: 256 characters
+2025-08-18 16:56:52,269 - stock_fsm.2c7ca8cc - INFO - Starting AI processing for technical: 256 characters
 [GUI] Sending prompt to AI: Provide technical analysis indicators for NVDA: RSI (14-day), MACD (12,26,9) with signal line status...
-[08/18/25 16:34:19] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
+[08/18/25 16:56:53] INFO     Processing request of type ListToolsRequest                                                                                                                                                                                                                                                                                                                                                                                                                                                                          server.py:624
 [GUI] Error in button processing: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
 Traceback (most recent call last):
   File "/mnt/d/Github/market-parser-polygon-mcp/chat_ui.py", line 316, in handle_button_click
@@ -206,9 +206,8 @@ Traceback (most recent call last):
   File "/mnt/d/Github/market-parser-polygon-mcp/.venv/lib/python3.10/site-packages/typing_extensions.py", line 2695, in assert_never
     raise AssertionError(f"Expected code to be unreachable, but got: {value}")
 AssertionError: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
-2025-08-18 16:34:19,496 - stock_fsm.f41c6a60 - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
-2025-08-18 16:34:19,496 - stock_fsm.f41c6a60 - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
-
+2025-08-18 16:56:54,004 - stock_fsm.2c7ca8cc - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
+2025-08-18 16:56:54,004 - stock_fsm.2c7ca8cc - ERROR - Emergency transition to ERROR: Expected code to be unreachable, but got: {'role': 'user', 'content': 'Provide a comprehensive stock snapshot for NVDA. Include: Current price...
 
 
 ## ACTIONS TO BE PERFORM AFTER CHANGES ARE COMPLETE:
@@ -219,6 +218,16 @@ AssertionError: Expected code to be unreachable, but got: {'role': 'user', 'cont
 
 - ONLY AFTER A PASSING CODE REVIEW, SPECIALIST to perform automous doc updates, git status,  and then an automous ATOMIC GIT commit and GIT push to the github repo for ALL Doc\Code\File changes 
 - User will then start testing out the new changes
+
+
+
+
+## ACTIONS TO BE PERFORM AFTER CHANGES ARE COMPLETE:
+- User has verified initial fixes for Button Prompt Actions Sequence is FIXED, with some caveats
+- There are still some linger issues to be investigated in a later follow on task, but for now, let's perform the review process for a checkpoint commit. we are not fully out of the woods yet, but at least we can commit current progress for now on this issue
+- SPECIALIST MUST USE SEQUENTIAL THINKING TOOL & CONTEXT7 TOOL to perform Review\Fix Loop until PASSING code review
+- ONLY AFTER A PASSING CODE REVIEW, SPECIALIST to perform automous doc updates, git status,  and then an automous ATOMIC GIT commit and GIT push to the github repo for ALL Doc\Code\File changes 
+
 
 
 

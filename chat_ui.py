@@ -310,12 +310,24 @@ async def handle_button_click(
         processing_status.update_step(f"Getting AI analysis for {fsm_manager.context.ticker}...", 4)
         await _startup()  # Ensure MCP servers are running
         
+        # Enhanced debug logging for message history contamination tracking
+        print(f"[DEBUG] Button: {button_type}, Ticker: {ticker}")
+        print(f"[DEBUG] Current prompt: {fsm_manager.context.prompt[:50]}...")
+        print(f"[DEBUG] Message history length: {len(pyd_message_history) if pyd_message_history else 0}")
+        if pyd_message_history:
+            print(f"[DEBUG] Message history preview: {str(pyd_message_history)[:100]}...")
+        
         print(f"[GUI] Sending prompt to AI: {fsm_manager.context.prompt[:100]}...")
-        # Sanitize message history to prevent Pydantic AI crashes from None content
-        clean_history = sanitize_message_history(pyd_message_history)
-        response = await agent.run(fsm_manager.context.prompt, message_history=clean_history)
+        
+        # CRITICAL FIX: Use empty message history for button actions to prevent contamination
+        # Button actions are INDEPENDENT analyses, not conversational continuations
+        # Each button should start fresh with the AI agent to avoid prompt contamination
+        response = await agent.run(fsm_manager.context.prompt, message_history=[])
         fsm_manager.context.ai_response = response.output
         fsm_manager.transition('response_received')
+        
+        # Success confirmation logging
+        print(f"[DEBUG] ✅ {button_type} completed successfully - no message history contamination")
         
         # Step 3: Process AI response and extract JSON
         processing_status.update_step("Processing response...", 3)
