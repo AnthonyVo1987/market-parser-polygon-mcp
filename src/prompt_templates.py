@@ -1,47 +1,25 @@
 """
-Stock Market Analysis Prompt Templates - Enhanced Dual-Mode Architecture
+Stock Market Analysis Prompt Templates - Unified Conversational Architecture
 
-This module provides sophisticated prompt templates for dual-mode financial analysis:
-- Button Mode: Structured JSON outputs with full prompt display
-- User Mode: Conversational text responses
+This module provides sophisticated prompt templates for unified conversational financial analysis.
+Removes JSON extraction attempts and focuses on enhanced conversational responses.
 
 Features:
-- Dual-mode prompt generation with source detection
-- Template-based prompt generation with JSON schema compliance
+- Unified conversational prompt generation for all interactions
+- Template-based prompt generation optimized for readability
 - Ticker symbol extraction and context awareness
-- System prompt enhancements for dual response modes
+- Enhanced conversational formatting instructions
 - Multi-stock analysis consistency
-- Response formatting instructions optimized for both JSON and conversational modes
-- Integration with json_schemas.py for API architect schemas
+- Response formatting instructions optimized for natural language
+- Removal of JSON schema dependencies for simplified architecture
 """
 
 import re
 import logging
-from typing import Dict, Any, List, Optional, Tuple, Union
+from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
-import json
 from datetime import datetime
-
-# Import JSON schemas from the API architect
-try:
-    from json_schemas import (
-        SNAPSHOT_SCHEMA, 
-        SUPPORT_RESISTANCE_SCHEMA, 
-        TECHNICAL_SCHEMA,
-        AnalysisType,
-        schema_registry,
-        export_schemas_for_ai_prompts
-    )
-except ImportError:
-    # Fallback for testing
-    print("Warning: json_schemas module not available. Using fallback schemas.")
-    SNAPSHOT_SCHEMA = None
-    SUPPORT_RESISTANCE_SCHEMA = None
-    TECHNICAL_SCHEMA = None
-    AnalysisType = None
-    schema_registry = None
-    export_schemas_for_ai_prompts = None
 
 
 class PromptType(Enum):
@@ -52,9 +30,8 @@ class PromptType(Enum):
 
 
 class PromptMode(Enum):
-    """Response modes for prompts"""
-    BUTTON_JSON = "button_json"    # Button-triggered: JSON response
-    USER_TEXT = "user_text"        # User-typed: Conversational text response
+    """Response modes for prompts - unified conversational"""
+    CONVERSATIONAL = "conversational"    # Unified conversational response for all interactions
 
 
 @dataclass
@@ -70,78 +47,50 @@ class TickerContext:
 
 @dataclass
 class PromptTemplate:
-    """Template for generating dual-mode prompts"""
+    """Template for generating unified conversational prompts"""
     template_type: PromptType
-    base_template: str
-    conversational_template: str  # NEW: Template for user conversations
+    conversational_template: str
     formatting_instructions: str
     example_response: str
-    required_fields: List[str]
-    optional_fields: List[str] = field(default_factory=list)
-    system_prompt_additions: str = ""
+    context_guidance: str = ""
     
     def generate_prompt(self, ticker_context: TickerContext, 
                        custom_instructions: Optional[str] = None,
-                       mode: PromptMode = PromptMode.BUTTON_JSON) -> str:
-        """Generate a complete prompt using the template in specified mode"""
+                       mode: PromptMode = PromptMode.CONVERSATIONAL) -> str:
+        """Generate a complete conversational prompt using the template"""
         
-        if mode == PromptMode.USER_TEXT:
-            # User conversational mode - simple text response
-            prompt_parts = [
-                self.conversational_template.format(
-                    ticker=ticker_context.symbol,
-                    company=ticker_context.company_name or ticker_context.symbol,
-                ),
-            ]
-            
-            if custom_instructions:
-                prompt_parts.append(f"\nAdditional context: {custom_instructions}")
-                
-            prompt_parts.extend([
-                "\nProvide a helpful, conversational analysis in natural language.",
-                "Do not return JSON - respond with clear, informative text."
-            ])
-            
-            return "\n".join(prompt_parts)
+        # Unified conversational mode for all interactions
+        prompt_parts = [
+            self.conversational_template.format(
+                ticker=ticker_context.symbol,
+                company=ticker_context.company_name or ticker_context.symbol,
+            ),
+        ]
         
-        else:  # PromptMode.BUTTON_JSON
-            # Button mode - structured JSON response with full prompt display
-            prompt_parts = [
-                "### STOCK ANALYSIS REQUEST ###",
-                "",
-                self.base_template.format(
-                    ticker=ticker_context.symbol,
-                    company=ticker_context.company_name or ticker_context.symbol,
-                ),
-                "",
-                "### JSON SCHEMA REQUIREMENTS ###",
-                self.formatting_instructions,
-                "",
-                "### EXAMPLE JSON RESPONSE ###",
-                self.example_response,
-                ""
-            ]
-            
-            if custom_instructions:
-                prompt_parts.extend([
-                    "### ADDITIONAL INSTRUCTIONS ###",
-                    custom_instructions,
-                    ""
-                ])
-            
+        if custom_instructions:
+            prompt_parts.append(f"\nAdditional context: {custom_instructions}")
+        
+        # Add conversational formatting instructions
+        prompt_parts.extend([
+            "",
+            self.formatting_instructions,
+        ])
+        
+        if self.context_guidance:
             prompt_parts.extend([
-                "### CRITICAL RESPONSE REQUIREMENTS ###",
-                "1. Respond with VALID JSON ONLY - no explanations, no markdown, no additional text",
-                "2. Must exactly match the JSON schema structure provided above",
-                "3. All required fields must be present with appropriate data types",
-                "4. Include current timestamp in ISO 8601 format",
-                "5. Ensure all numeric values are properly formatted (no strings for numbers)",
                 "",
-                "### JSON RESPONSE ###",
-                f"Generate {self.template_type.value} analysis for {ticker_context.symbol} as valid JSON:"
+                self.context_guidance
             ])
-            
-            return "\n".join(prompt_parts)
+        
+        # Add example for context
+        if self.example_response:
+            prompt_parts.extend([
+                "",
+                "Example response style:",
+                self.example_response
+            ])
+        
+        return "\n".join(prompt_parts)
 
 
 class TickerExtractor:
@@ -362,27 +311,26 @@ class TickerExtractor:
 
 
 class PromptTemplateManager:
-    """Manages and generates dual-mode stock analysis prompt templates"""
+    """Manages and generates unified conversational stock analysis prompt templates"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.ticker_extractor = TickerExtractor()
         self.templates = self._build_templates()
-        self.system_prompt_enhancements = self._build_system_prompt_enhancements()
     
     def generate_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
                        chat_history: Optional[List[Dict]] = None,
                        custom_instructions: Optional[str] = None,
-                       mode: PromptMode = PromptMode.BUTTON_JSON) -> Tuple[str, TickerContext]:
+                       mode: PromptMode = PromptMode.CONVERSATIONAL) -> Tuple[str, TickerContext]:
         """
-        Generate a dual-mode prompt for stock analysis
+        Generate a unified conversational prompt for stock analysis
         
         Args:
             prompt_type: Type of analysis prompt
             ticker: Optional explicit ticker symbol
             chat_history: Conversation history for context
             custom_instructions: Additional instructions
-            mode: PromptMode (BUTTON_JSON or USER_TEXT)
+            mode: PromptMode (always conversational)
             
         Returns:
             Tuple of (generated_prompt, ticker_context)
@@ -409,14 +357,14 @@ class PromptTemplateManager:
         # Generate the prompt in specified mode
         prompt = template.generate_prompt(ticker_context, custom_instructions, mode)
         
-        self.logger.info(f"Generated {prompt_type.value} prompt for {ticker_context.symbol} in {mode.value} mode")
+        self.logger.info(f"Generated {prompt_type.value} conversational prompt for {ticker_context.symbol}")
         return prompt, ticker_context
     
-    def generate_button_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
-                              chat_history: Optional[List[Dict]] = None,
-                              custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
+    def generate_conversational_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
+                                      chat_history: Optional[List[Dict]] = None,
+                                      custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
         """
-        Generate a button-triggered prompt (JSON mode with full prompt display)
+        Generate a conversational prompt for any type of analysis request.
         
         Args:
             prompt_type: Type of analysis prompt
@@ -427,132 +375,80 @@ class PromptTemplateManager:
         Returns:
             Tuple of (generated_prompt, ticker_context)
         """
-        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions, PromptMode.BUTTON_JSON)
+        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions, PromptMode.CONVERSATIONAL)
     
-    def generate_user_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
-                            chat_history: Optional[List[Dict]] = None,
-                            custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
+    def get_enhanced_system_prompt(self, base_system_prompt: str) -> str:
         """
-        Generate a user-typed prompt (conversational text mode)
-        
-        Args:
-            prompt_type: Type of analysis prompt
-            ticker: Optional explicit ticker symbol
-            chat_history: Conversation history for context
-            custom_instructions: Additional instructions
-            
-        Returns:
-            Tuple of (generated_prompt, ticker_context)
-        """
-        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions, PromptMode.USER_TEXT)
-    
-    def get_enhanced_system_prompt(self, base_system_prompt: str, mode: PromptMode = PromptMode.BUTTON_JSON) -> str:
-        """
-        Enhance the base system prompt with mode-specific instructions
+        Enhance the base system prompt with conversational instructions
         
         Args:
             base_system_prompt: Original system prompt
-            mode: PromptMode for response formatting
             
         Returns:
-            Enhanced system prompt with mode-specific guidance
+            Enhanced system prompt with conversational guidance
         """
-        if mode == PromptMode.USER_TEXT:
-            conversational_enhancement = """
+        conversational_enhancement = """
 
 CONVERSATIONAL RESPONSE MODE:
 - Provide helpful, informative responses in natural language
 - Use clear, professional tone suitable for financial analysis
-- Include relevant data and insights without JSON formatting
+- Include relevant data and insights with enhanced formatting
 - Make responses educational and actionable for investors
-- Do NOT return JSON - respond with conversational text only
+- Use emojis and structured formatting for better readability
+- Do NOT return JSON - respond with well-formatted conversational text
+- Focus on clarity, accuracy, and user-friendly explanations
 """
-            return base_system_prompt + conversational_enhancement
-        else:
-            return base_system_prompt + "\n\n" + self.system_prompt_enhancements
+        return base_system_prompt + conversational_enhancement
     
-    def detect_prompt_source(self, user_input: str, button_context: Optional[str] = None) -> PromptMode:
+    def detect_analysis_type(self, user_input: str) -> Optional[PromptType]:
         """
-        Detect whether prompt comes from button click or user input
+        Detect what type of analysis is being requested from user input
         
         Args:
             user_input: The input text
-            button_context: Optional button context indicator
             
         Returns:
-            PromptMode indicating the detected source
+            PromptType if detected, None otherwise
         """
-        # If button context is explicitly provided, it's a button prompt
-        if button_context:
-            return PromptMode.BUTTON_JSON
-        
-        # Check for button-like indicators in user input
-        button_indicators = [
-            "snapshot analysis", "technical analysis", "support resistance",
-            "generate snapshot", "generate technical", "generate support",
-            "json analysis", "structured analysis"
-        ]
-        
         user_lower = user_input.lower()
-        if any(indicator in user_lower for indicator in button_indicators):
-            return PromptMode.BUTTON_JSON
         
-        # Default to conversational mode for user input
-        return PromptMode.USER_TEXT
-    
-    def get_json_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
-                       chat_history: Optional[List[Dict]] = None,
-                       custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
-        """
-        Generate a JSON-focused prompt for the AI agent (legacy compatibility)
+        # Check for different analysis type indicators
+        if any(indicator in user_lower for indicator in 
+               ["snapshot", "current price", "market data", "overview"]):
+            return PromptType.SNAPSHOT
+        elif any(indicator in user_lower for indicator in 
+                 ["support", "resistance", "levels", "s&r"]):
+            return PromptType.SUPPORT_RESISTANCE
+        elif any(indicator in user_lower for indicator in 
+                 ["technical", "rsi", "macd", "indicators", "ta"]):
+            return PromptType.TECHNICAL
         
-        Args:
-            prompt_type: Type of analysis prompt
-            ticker: Optional explicit ticker symbol
-            chat_history: Conversation history for context
-            custom_instructions: Additional instructions
-            
-        Returns:
-            Tuple of (generated_prompt, ticker_context)
-        """
-        return self.generate_button_prompt(prompt_type, ticker, chat_history, custom_instructions)
+        return None
     
-    def get_available_schemas(self) -> Dict[str, Any]:
+    
+    def get_available_templates(self) -> Dict[str, Any]:
         """
-        Get information about available JSON schemas
+        Get information about available conversational templates
         
         Returns:
-            Dictionary with schema availability and metadata
+            Dictionary with template availability and metadata
         """
-        schemas_info = {
-            "available": schema_registry is not None,
-            "schemas": {}
+        templates_info = {
+            "mode": "conversational_only",
+            "templates": {}
         }
         
         for prompt_type in PromptType:
-            schema_available = False
-            schema_id = None
-            
-            if prompt_type == PromptType.SNAPSHOT and SNAPSHOT_SCHEMA:
-                schema_available = True
-                schema_id = SNAPSHOT_SCHEMA.get("$id", "snapshot")
-            elif prompt_type == PromptType.SUPPORT_RESISTANCE and SUPPORT_RESISTANCE_SCHEMA:
-                schema_available = True
-                schema_id = SUPPORT_RESISTANCE_SCHEMA.get("$id", "support_resistance")
-            elif prompt_type == PromptType.TECHNICAL and TECHNICAL_SCHEMA:
-                schema_available = True
-                schema_id = TECHNICAL_SCHEMA.get("$id", "technical")
-            
-            schemas_info["schemas"][prompt_type.value] = {
-                "available": schema_available,
-                "schema_id": schema_id,
-                "fallback_used": not schema_available
+            templates_info["templates"][prompt_type.value] = {
+                "available": True,
+                "type": "conversational",
+                "enhanced_formatting": True
             }
         
-        return schemas_info
+        return templates_info
     
     def _build_templates(self) -> Dict[PromptType, PromptTemplate]:
-        """Build all dual-mode prompt templates"""
+        """Build all conversational prompt templates"""
         return {
             PromptType.SNAPSHOT: self._build_snapshot_template(),
             PromptType.SUPPORT_RESISTANCE: self._build_sr_template(),
@@ -560,308 +456,120 @@ CONVERSATIONAL RESPONSE MODE:
         }
     
     def _build_snapshot_template(self) -> PromptTemplate:
-        """Build stock snapshot prompt template with dual-mode support"""
-        base_template = """Provide a comprehensive stock snapshot analysis for {ticker} ({company}).
+        """Build stock snapshot conversational prompt template"""
+        conversational_template = """Provide a comprehensive stock snapshot analysis for {ticker} ({company}).
 
-Focus on current market data and recent performance metrics. Return data as valid JSON only."""
+Please include current market data and recent performance metrics. Focus on providing clear, actionable insights for investors."""
+        
+        formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
+- Start with current price and percentage change
+- Include trading volume and volume analysis
+- Provide OHLC data (Open, High, Low, Close) with context
+- Explain what the data means for potential investors
+- Use clear, professional language with proper formatting
+- Include relevant market context and trends
+- Make the analysis educational and actionable"""
+        
+        example_response = """📊 **Apple Inc. (AAPL) Market Snapshot**
 
-        # NEW: Conversational template for user input
-        conversational_template = """Provide a current snapshot analysis for {ticker} ({company}).
+💰 **Current Price:** $150.25 (+2.5% / +$3.75)
+📈 **Trading Volume:** 45,000,000 shares (above average)
+📊 **Daily Range:** $147.25 - $151.00
+🏁 **Previous Close:** $146.50
+⚖️ **VWAP:** $149.80
 
-Please include current price, recent performance, volume data, and key metrics. Explain what these numbers mean for potential investors."""
-
-        # Get JSON schema if available, otherwise use simplified schema
-        if SNAPSHOT_SCHEMA:
-            schema_str = json.dumps(SNAPSHOT_SCHEMA, indent=2)
-            formatting_instructions = f"""REQUIRED JSON SCHEMA:
-The response must conform to this exact JSON schema:
-
-{schema_str}
-
-CRITICAL REQUIREMENTS:
-- Must be valid JSON matching the schema above
-- Include current timestamp in metadata.timestamp (ISO 8601 format)
-- All numeric fields must be numbers, not strings
-- Ticker symbol must be uppercase in metadata.ticker_symbol
-- Current price, volume, and OHLC data are required"""
-        else:
-            formatting_instructions = """REQUIRED JSON FORMAT:
-{
-  "metadata": {
-    "timestamp": "2024-12-17T10:30:00Z",
-    "ticker_symbol": "TICKER",
-    "company_name": "Company Name",
-    "data_source": "polygon",
-    "confidence_score": 0.95,
-    "schema_version": "1.0"
-  },
-  "snapshot_data": {
-    "current_price": 150.25,
-    "percentage_change": 2.5,
-    "dollar_change": 3.75,
-    "volume": 45000000,
-    "vwap": 149.80,
-    "open": 148.50,
-    "high": 151.00,
-    "low": 147.25,
-    "close": 146.50
-  }
-}"""
-
-        # Generate example response using the schema
-        current_time = datetime.utcnow().isoformat() + "Z"
-        example_response = json.dumps({
-            "metadata": {
-                "timestamp": current_time,
-                "ticker_symbol": "AAPL",
-                "company_name": "Apple Inc.",
-                "data_source": "polygon",
-                "confidence_score": 0.95,
-                "schema_version": "1.0"
-            },
-            "snapshot_data": {
-                "current_price": 150.25,
-                "percentage_change": 2.5,
-                "dollar_change": 3.75,
-                "volume": 45000000,
-                "vwap": 149.80,
-                "open": 148.50,
-                "high": 151.00,
-                "low": 147.25,
-                "close": 146.50
-            }
-        }, indent=2)
-
+**Analysis:** Apple is showing strong bullish momentum with above-average volume support. The stock has broken above key resistance levels and is trading near daily highs, suggesting continued investor confidence."""
+        
+        context_guidance = """Focus on making the data accessible and meaningful for both novice and experienced investors. Explain the significance of price movements and volume patterns."""
+        
         return PromptTemplate(
             template_type=PromptType.SNAPSHOT,
-            base_template=base_template,
             conversational_template=conversational_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
-            required_fields=["metadata", "snapshot_data"]
+            context_guidance=context_guidance
         )
     
     def _build_sr_template(self) -> PromptTemplate:
-        """Build support & resistance prompt template with dual-mode support"""  
-        base_template = """Analyze support and resistance levels for {ticker} ({company}).
-
-Provide 3 support levels and 3 resistance levels based on recent price action and technical analysis. Return data as valid JSON only."""
-
-        # NEW: Conversational template for user input
+        """Build support & resistance conversational prompt template"""
         conversational_template = """Analyze the key support and resistance levels for {ticker} ({company}).
 
-Please identify the most important price levels where the stock tends to find support (price floors) and resistance (price ceilings). Explain the significance of these levels for trading decisions."""
+Identify the most important price levels where the stock tends to find support (price floors) and resistance (price ceilings). Explain the significance of these levels for trading decisions."""
+        
+        formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
+- Identify 3 key support levels and 3 key resistance levels
+- Explain the strength of each level (strong, moderate, weak)
+- Provide price targets with reasoning
+- Explain the methodology used (technical analysis, historical data, etc.)
+- Include current price context and trend analysis
+- Make recommendations clear and actionable for traders"""
+        
+        example_response = """🎯 **Apple Inc. (AAPL) Support & Resistance Analysis**
 
-        # Get JSON schema if available, otherwise use simplified schema
-        if SUPPORT_RESISTANCE_SCHEMA:
-            schema_str = json.dumps(SUPPORT_RESISTANCE_SCHEMA, indent=2)
-            formatting_instructions = f"""REQUIRED JSON SCHEMA:
-The response must conform to this exact JSON schema:
+🔻 **Support Levels:**
+• **S1: $145.50** (Strong) - 50-day moving average confluence
+• **S2: $142.00** (Moderate) - Previous breakout level
+• **S3: $138.75** (Weak) - Psychological support zone
 
-{schema_str}
+🔺 **Resistance Levels:**
+• **R1: $155.25** (Moderate) - Recent high rejection point
+• **R2: $158.50** (Strong) - Key technical resistance
+• **R3: $162.00** (Weak) - Long-term trend line
 
-CRITICAL REQUIREMENTS:
-- Must be valid JSON matching the schema above
-- Include current timestamp in metadata.timestamp (ISO 8601 format)
-- All price values must be numbers, not strings
-- Support levels (S1, S2, S3) and resistance levels (R1, R2, R3) are required
-- Include strength indicators (strong, moderate, weak) for each level"""
-        else:
-            formatting_instructions = """REQUIRED JSON FORMAT:
-{
-  "metadata": {
-    "timestamp": "2024-12-17T10:30:00Z",
-    "ticker_symbol": "TICKER",
-    "company_name": "Company Name",
-    "analysis_timeframe": "1M",
-    "confidence_score": 0.85,
-    "schema_version": "1.0"
-  },
-  "support_levels": {
-    "S1": {"price": 145.50, "strength": "strong", "confidence": 0.9},
-    "S2": {"price": 142.00, "strength": "moderate", "confidence": 0.8},
-    "S3": {"price": 138.75, "strength": "weak", "confidence": 0.7}
-  },
-  "resistance_levels": {
-    "R1": {"price": 155.25, "strength": "moderate", "confidence": 0.85},
-    "R2": {"price": 158.50, "strength": "strong", "confidence": 0.9},
-    "R3": {"price": 162.00, "strength": "weak", "confidence": 0.75}
-  }
-}"""
+📈 **Current Price:** $150.25 (between S1 and R1)
 
-        # Generate example response using the schema
-        current_time = datetime.utcnow().isoformat() + "Z"
-        example_response = json.dumps({
-            "metadata": {
-                "timestamp": current_time,
-                "ticker_symbol": "AAPL",
-                "company_name": "Apple Inc.",
-                "analysis_timeframe": "1M",
-                "confidence_score": 0.85,
-                "schema_version": "1.0"
-            },
-            "support_levels": {
-                "S1": {"price": 145.50, "strength": "strong", "confidence": 0.9},
-                "S2": {"price": 142.00, "strength": "moderate", "confidence": 0.8},
-                "S3": {"price": 138.75, "strength": "weak", "confidence": 0.7}
-            },
-            "resistance_levels": {
-                "R1": {"price": 155.25, "strength": "moderate", "confidence": 0.85},
-                "R2": {"price": 158.50, "strength": "strong", "confidence": 0.9},
-                "R3": {"price": 162.00, "strength": "weak", "confidence": 0.75}
-            },
-            "analysis_context": {
-                "current_price": 150.25,
-                "methodology": "combined"
-            }
-        }, indent=2)
-
+**Trading Strategy:** Watch for bounces at support levels for long entries, and resistance levels for profit-taking opportunities."""
+        
+        context_guidance = """Focus on actionable trading insights and explain why these levels are significant based on technical analysis and market structure."""
+        
         return PromptTemplate(
             template_type=PromptType.SUPPORT_RESISTANCE,
-            base_template=base_template,
             conversational_template=conversational_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
-            required_fields=["metadata", "support_levels", "resistance_levels"]
+            context_guidance=context_guidance
         )
     
     def _build_technical_template(self) -> PromptTemplate:
-        """Build technical analysis prompt template with dual-mode support"""
-        base_template = """Provide technical indicator analysis for {ticker} ({company}).
+        """Build technical analysis conversational prompt template"""
+        conversational_template = """Provide a comprehensive technical analysis for {ticker} ({company}) using key indicators.
 
-Calculate current values for key oscillators and moving averages. Return data as valid JSON only."""
+Analyze current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction."""
+        
+        formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
+- Include key oscillators (RSI, MACD) with current values and interpretations
+- Provide moving average analysis (short-term and long-term trends)
+- Explain momentum and trend direction based on indicators
+- Include bullish/bearish signals and their strength
+- Provide trading recommendations based on technical setup
+- Make technical concepts accessible to both novice and experienced traders"""
+        
+        example_response = """🔍 **Apple Inc. (AAPL) Technical Analysis**
 
-        # NEW: Conversational template for user input
-        conversational_template = """Provide a technical analysis for {ticker} ({company}) using key indicators.
+📈 **Momentum Indicators:**
+• **RSI (14):** 68.5 - Approaching overbought territory, but still neutral
+• **MACD:** 0.25 above signal line (0.18) - Bullish momentum confirmed
 
-Please analyze the current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction."""
+📊 **Moving Averages:**
+• **Short-term:** Price above EMA-5 ($151.20) and EMA-10 ($149.85)
+• **Medium-term:** Strong support at EMA-50 ($144.75)
+• **Long-term:** Well above EMA-200 ($140.25) - Bullish trend intact
 
-        # Get JSON schema if available, otherwise use simplified schema
-        if TECHNICAL_SCHEMA:
-            schema_str = json.dumps(TECHNICAL_SCHEMA, indent=2)
-            formatting_instructions = f"""REQUIRED JSON SCHEMA:
-The response must conform to this exact JSON schema:
-
-{schema_str}
-
-CRITICAL REQUIREMENTS:
-- Must be valid JSON matching the schema above
-- Include current timestamp in metadata.timestamp (ISO 8601 format)
-- All numeric values must be numbers, not strings
-- RSI value must be between 0-100
-- MACD values can be positive or negative
-- All moving averages (EMA and SMA) must be positive numbers"""
-        else:
-            formatting_instructions = """REQUIRED JSON FORMAT:
-{
-  "metadata": {
-    "timestamp": "2024-12-17T10:30:00Z",
-    "ticker_symbol": "TICKER",
-    "company_name": "Company Name",
-    "analysis_period": "1M",
-    "confidence_score": 0.88,
-    "schema_version": "1.0"
-  },
-  "oscillators": {
-    "RSI": {"value": 68.5, "interpretation": "neutral", "period": 14},
-    "MACD": {"value": 0.25, "signal": 0.18, "histogram": 0.07, "interpretation": "bullish"}
-  },
-  "moving_averages": {
-    "exponential": {
-      "EMA_5": 151.20,
-      "EMA_10": 149.85,
-      "EMA_20": 147.50,
-      "EMA_50": 144.75,
-      "EMA_200": 140.25
-    },
-    "simple": {
-      "SMA_5": 150.95,
-      "SMA_10": 148.75,
-      "SMA_20": 146.80,
-      "SMA_50": 143.90,
-      "SMA_200": 139.50
-    }
-  }
-}"""
-
-        # Generate example response using the schema
-        current_time = datetime.utcnow().isoformat() + "Z"
-        example_response = json.dumps({
-            "metadata": {
-                "timestamp": current_time,
-                "ticker_symbol": "AAPL",
-                "company_name": "Apple Inc.",
-                "analysis_period": "1M",
-                "confidence_score": 0.88,
-                "schema_version": "1.0"
-            },
-            "oscillators": {
-                "RSI": {"value": 68.5, "interpretation": "neutral", "period": 14},
-                "MACD": {"value": 0.25, "signal": 0.18, "histogram": 0.07, "interpretation": "bullish"}
-            },
-            "moving_averages": {
-                "exponential": {
-                    "EMA_5": 151.20,
-                    "EMA_10": 149.85,
-                    "EMA_20": 147.50,
-                    "EMA_50": 144.75,
-                    "EMA_200": 140.25
-                },
-                "simple": {
-                    "SMA_5": 150.95,
-                    "SMA_10": 148.75,
-                    "SMA_20": 146.80,
-                    "SMA_50": 143.90,
-                    "SMA_200": 139.50
-                }
-            },
-            "analysis_summary": {
-                "trend_direction": "bullish",
-                "signal_strength": "moderate",
-                "recommendations": ["hold", "watch"]
-            }
-        }, indent=2)
-
+✨ **Analysis Summary:**
+🔹 **Trend Direction:** Bullish with moderate momentum
+🔹 **Signal Strength:** Moderate - watch for RSI divergence
+🔹 **Recommendation:** Hold current positions, watch for pullback opportunities"""
+        
+        context_guidance = """Make technical analysis accessible and actionable. Explain what each indicator means and how it affects trading decisions."""
+        
         return PromptTemplate(
             template_type=PromptType.TECHNICAL,
-            base_template=base_template,
             conversational_template=conversational_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
-            required_fields=["metadata", "oscillators", "moving_averages"]
+            context_guidance=context_guidance
         )
     
-    def _build_system_prompt_enhancements(self) -> str:
-        """Build system prompt enhancements for JSON structured output"""
-        return """JSON STRUCTURED OUTPUT REQUIREMENTS:
-
-1. **JSON COMPLIANCE**: Respond with VALID JSON ONLY - no explanations, no markdown, no additional text
-2. **Schema Adherence**: Must exactly match the JSON schema structure provided in prompts
-3. **Data Types**: All numeric fields must be numbers, not strings (e.g., 150.25 not "150.25")
-4. **Required Fields**: All required fields in the schema must be present
-5. **Timestamp Format**: Include current timestamp in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
-
-JSON FORMATTING RULES:
-- Use proper JSON syntax with correct quotes and commas
-- Numeric values: integers for counts/volume, floats for prices/percentages
-- String values: ticker symbols in uppercase, proper company names
-- Boolean values: true/false (lowercase)
-- Arrays: for lists like recommendations or warnings
-
-DATA QUALITY REQUIREMENTS:
-- Provide real, current market data when possible
-- If data unavailable, use null values rather than estimates
-- Ensure RSI values are between 0-100
-- Ensure price values are positive numbers
-- Include confidence scores between 0.0-1.0 where specified
-
-RESPONSE VALIDATION:
-- The entire response must be parseable as valid JSON
-- No comments or explanations outside the JSON structure
-- Follow the exact schema structure for metadata, analysis data, and optional fields
-- Include proper error handling in the JSON structure if data cannot be retrieved
-
-This JSON-first approach ensures seamless integration with automated systems and eliminates parsing errors."""
 
     def test_prompt_consistency(self, prompt_type: PromptType, 
                               test_tickers: List[str]) -> Dict[str, Any]:

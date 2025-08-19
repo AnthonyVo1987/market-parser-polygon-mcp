@@ -23,7 +23,7 @@ from pydantic_ai.models.openai import OpenAIResponsesModel
 from stock_data_fsm import StateManager, AppState
 from src.prompt_templates import PromptTemplateManager, PromptType
 
-# Import dual-mode response processing
+# Import unified conversational response processing
 from src.response_manager import ResponseManager, ProcessingMode
 
 # Reuse server factory and token tracking from CLI
@@ -44,9 +44,9 @@ model = OpenAIResponsesModel(MODEL_NAME)
 
 # Initialize simplified systems
 prompt_manager = PromptTemplateManager()
-response_manager = ResponseManager(ProcessingMode.CHAT_OPTIMIZED)
+response_manager = ResponseManager(ProcessingMode.ENHANCED)
 
-# Simplified system prompt for raw JSON output
+# Unified system prompt for conversational responses
 base_system_prompt = (
     "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. "
     "Use the latest data available. Always double check your math. "
@@ -195,7 +195,7 @@ async def handle_user_message(
             # pyd_message_history is ONLY for UI display, NEVER for agent.run()
             response = await agent.run(user_message, message_history=[])
             
-            # Process user response with dual-mode processing
+            # Process user response with unified conversational formatting
             processing_status.update_step("Processing response for chat...", 3)
             processed_response = response_manager.process_response(
                 response.output, 
@@ -226,7 +226,7 @@ async def handle_user_message(
             debug_state = _get_debug_state_info(fsm_manager)
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, snapshot_json, sr_json, tech_json, f"{processing_status.status_message}\n{debug_state}"
+                fsm_manager, f"{processing_status.status_message}\n{debug_state}"
             )
             
     except Exception as e:
@@ -246,7 +246,7 @@ async def handle_user_message(
         
         return (
             "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, snapshot_json, sr_json, tech_json, processing_status.status_message
+            fsm_manager, processing_status.status_message
         )
 
 
@@ -281,7 +281,7 @@ async def handle_button_click(
             gr.Warning("FSM state transition failed. Please try again.")
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, snapshot_json, sr_json, tech_json, f"{processing_status.status_message}\n{debug_state}"
+                fsm_manager, f"{processing_status.status_message}\n{debug_state}"
             )
         
         # Step 2: Generate enhanced prompt
@@ -339,11 +339,11 @@ async def handle_button_click(
         # Success confirmation logging
         print(f"[DEBUG] ✅ {button_type} completed successfully - no message history contamination")
         
-        # Step 3: Process AI response with dual-mode processing
+        # Step 3: Process AI response with unified conversational formatting
         processing_status.update_step("Processing button response...", 3)
         fsm_manager.context.raw_json_response = response.output
         
-        # Process button response with structured data extraction
+        # Process button response with unified conversational formatting
         processed_response = response_manager.process_response(
             response.output,
             source_type='button',
@@ -351,12 +351,11 @@ async def handle_button_click(
             ticker=fsm_manager.context.ticker
         )
         
-        # Add to chat history with dual-mode formatting
-        # First show the full prompt that was sent to AI
+        # Add to chat history with unified conversational formatting
+        # First show the analysis request that was sent to AI
         prompt_display = f"**📋 Analysis Request:**\n{fsm_manager.context.prompt[:200]}..." if len(fsm_manager.context.prompt) > 200 else f"**📋 Analysis Request:**\n{fsm_manager.context.prompt}"
         
-        # Use processed content which includes both response and extracted data
-        analysis_title = f"📊 **{button_type.replace('_', ' ').title()} Analysis for {fsm_manager.context.ticker}**"
+        # Use processed content which includes enhanced conversational formatting (now includes title)
         response_content = processed_response.get('content', response.output)
         
         # Add processing info if available
@@ -364,7 +363,7 @@ async def handle_button_click(
         if processed_response.get('processing_time_ms'):
             processing_info = f"\n\n*Processing time: {processed_response['processing_time_ms']:.1f}ms*"
         
-        enhanced_response = f"{analysis_title}\n\n{response_content}{processing_info}"
+        enhanced_response = f"{response_content}{processing_info}"
         
         chat_history = chat_history + [
             {"role": "user", "content": prompt_display},
@@ -592,7 +591,7 @@ def create_enhanced_chat_interface():
             
             ### Features:
             - 💬 **Single Chat Interface** - All interactions in one conversation
-            - 📊 **Analysis Buttons** - Three types of structured analysis display prompts and JSON responses in chat
+            - 📊 **Analysis Buttons** - Three types of enhanced conversational analysis with better formatting
             - 🔄 **Real-time Processing** - Live status updates
             - 🧠 **FSM State Management** - Simple workflow management
             - 📋 **Full Prompt Display** - See exactly what was sent to AI before responses
@@ -637,7 +636,7 @@ def create_enhanced_chat_interface():
         
         # -------- Enhanced Stock Analysis Buttons --------
         gr.Markdown("## 📊 Structured Stock Analysis")
-        gr.Markdown("Click these buttons to send structured analysis requests to the chat. You'll see the full prompt followed by the JSON response:")
+        gr.Markdown("Click these buttons to send enhanced analysis requests to the chat. You'll see the full prompt followed by conversational responses with better formatting:")
         
         with gr.Row():
             snapshot_btn = gr.Button(
@@ -821,7 +820,7 @@ if __name__ == "__main__":
     )
     
     print("🚀 Starting Stock Market Analysis Chat (Phase 3 - Unified Interface)")
-    print("🎯 Features: Single Chat Interface + Full Prompt Display + JSON in Chat")
+    print("🎯 Features: Single Chat Interface + Enhanced Conversational Formatting")
     print("📊 Simplified: All interactions consolidated to main chat conversation")
     print(f"[LOGGING] 📄 Basic logging enabled")
     
