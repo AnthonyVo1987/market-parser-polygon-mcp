@@ -188,9 +188,10 @@ async def handle_user_message(
             chat_history = chat_history + [{"role": "user", "content": user_message}]
             
             print(f"[GUI] Regular Chat - User: {user_message}")
-            # Sanitize message history to prevent Pydantic AI crashes from None content
-            clean_history = sanitize_message_history(pyd_message_history)
-            response = await agent.run(user_message, message_history=clean_history)
+            print(f"[DEBUG] Regular chat using empty history (pyd_message_history for UI only)")
+            # CRITICAL FIX: Regular chat MUST use empty history - pyd_message_history causes crashes
+            # pyd_message_history is ONLY for UI display, NEVER for agent.run()
+            response = await agent.run(user_message, message_history=[])
             
             chat_history = chat_history + [{"role": "assistant", "content": response.output}]
             pyd_message_history.append({"role": "user", "content": user_message})
@@ -313,7 +314,8 @@ async def handle_button_click(
         # Enhanced debug logging for message history contamination tracking
         print(f"[DEBUG] Button: {button_type}, Ticker: {ticker}")
         print(f"[DEBUG] Current prompt: {fsm_manager.context.prompt[:50]}...")
-        print(f"[DEBUG] Message history length: {len(pyd_message_history) if pyd_message_history else 0}")
+        print(f"[DEBUG] UI message history length (for display only): {len(pyd_message_history) if pyd_message_history else 0}")
+        print(f"[DEBUG] Agent message history: [] (empty for ALL actions)")
         if pyd_message_history:
             print(f"[DEBUG] Message history preview: {str(pyd_message_history)[:100]}...")
         
@@ -333,29 +335,42 @@ async def handle_button_click(
         processing_status.update_step("Processing response...", 3)
         fsm_manager.context.raw_json_response = response.output
         
-        # Simple JSON formatting for display
+        # CRITICAL FIX: ACTUALLY preserve input values - Python doesn't do this automatically!
+        # Variables assigned inside if blocks create LOCAL variables that SHADOW parameters
+        # Must explicitly preserve input values BEFORE any if statements
+        
+        # Initialize with input values to preserve them
+        new_snapshot_json = snapshot_json  # Preserve input
+        new_sr_json = sr_json             # Preserve input  
+        new_tech_json = tech_json         # Preserve input
+        
+        # Then only update the relevant one
         if button_type == 'snapshot':
             try:
-                # Try to parse and prettify the JSON from AI response
                 parsed_json = json.loads(response.output)
-                snapshot_json = json.dumps(parsed_json, indent=2)
+                new_snapshot_json = json.dumps(parsed_json, indent=2)
             except (json.JSONDecodeError, TypeError):
-                # If not valid JSON, display raw response
-                snapshot_json = response.output
-                
+                new_snapshot_json = response.output
         elif button_type == 'support_resistance':
             try:
                 parsed_json = json.loads(response.output)
-                sr_json = json.dumps(parsed_json, indent=2)
+                new_sr_json = json.dumps(parsed_json, indent=2)  
             except (json.JSONDecodeError, TypeError):
-                sr_json = response.output
-                
+                new_sr_json = response.output
         elif button_type == 'technical':
             try:
                 parsed_json = json.loads(response.output)
-                tech_json = json.dumps(parsed_json, indent=2)
+                new_tech_json = json.dumps(parsed_json, indent=2)
             except (json.JSONDecodeError, TypeError):
-                tech_json = response.output
+                new_tech_json = response.output
+        
+        # Finally assign back to original variables
+        snapshot_json = new_snapshot_json
+        sr_json = new_sr_json  
+        tech_json = new_tech_json
+        
+        # JSON Data Status Debug - Show which JSON outputs have data
+        print(f"[DEBUG] JSON Data Status - Snapshot: {'✓' if snapshot_json else '✗'}, S&R: {'✓' if sr_json else '✗'}, Technical: {'✓' if tech_json else '✗'}")
         
         # Add to chat history with simple formatting
         enhanced_response = f"📊 **{button_type.replace('_', ' ').title()} Analysis for {fsm_manager.context.ticker}**\n\n{response.output}"
@@ -377,6 +392,9 @@ async def handle_button_click(
         
         # Complete display and return FSM to IDLE for next interaction
         fsm_manager.transition('display_complete')  # Proper RESPONSE_RECEIVED -> IDLE transition
+        
+        # Clear button type to allow regular chat after button completion
+        fsm_manager.context.button_type = None  # Clear for regular chat
         
         # Simple debug info
         debug_state = _get_debug_state_info(fsm_manager)
