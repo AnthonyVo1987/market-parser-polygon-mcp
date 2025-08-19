@@ -10,28 +10,27 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 
 **Important: YOU MUST USE subagents when available for the task.**
 
-### Detected Tech Stack (Simplified Architecture)
+### Detected Tech Stack (Performance-Optimized Simplified Architecture)
 
-- **Backend Framework**: Python with Pydantic AI Agent Framework + dual-mode response processing
-- **Frontend Framework**: Gradio v4+ with single chat interface and real-time feedback
-- **AI Integration**: OpenAI gpt-5-mini via Pydantic AI with optimized cost management
-- **Data Source**: Polygon.io MCP server for real-time financial market data
-- **Response Processing**: Dual-mode system (JSON for buttons, conversational for user messages)
-- **State Management**: Simplified 5-state FSM with performance optimization
-- **Build Tools**: uv for dependency management and package execution
+- **Backend Framework**: Python with Pydantic AI + ResponseManager for dual-mode processing
+- **Frontend Framework**: Gradio v4+ with single chat interface and performance optimization
+- **AI Integration**: OpenAI gpt-5-mini via Pydantic AI with 35% cost reduction achieved
+- **Data Source**: Polygon.io MCP server with optimized data retrieval patterns
+- **Response Architecture**: Unified ResponseManager with mode detection and routing
+- **State Management**: Simplified 5-state FSM optimized for performance and cost efficiency
+- **Performance Monitoring**: Real-time cost tracking and speed optimization metrics
+- **Build Tools**: uv for dependency management and optimized package execution
 - **CLI Framework**: Rich console for enhanced terminal formatting and interaction
-- **Test Framework**: pytest with comprehensive validation and performance testing suites
-- **Configuration**: python-dotenv for secure environment variable management
-- **Monitoring**: Performance tracking with cost optimization and resource monitoring
-- **Performance Enhancement**: 35% cost reduction with 40% processing speed improvement
-- **Debug System**: Streamlined logging with comprehensive error tracking
+- **Test Framework**: pytest with performance validation and cost optimization testing
+- **Configuration**: python-dotenv with secure environment variable management
+- **Debug System**: Streamlined logging with performance metrics integration
 
 ### Agent Task Assignments (Optimized for Simplified Architecture)
 
 | Task Category | Agent | Simplified Architecture Responsibilities | Critical Notes |
 |---------------|-------|----------------------------------------|-----------------|
 | **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. Architecture integrity focus, security review, simplified FSM validation | Always validate simplified architecture consistency and security |
-| **Performance & Optimization** | `@performance-optimizer` | Cost optimization (35% reduction), processing efficiency (40% improvement), resource monitoring | Focus on cost management, response speed, and resource optimization |
+| **Performance & Cost Leadership** | `@performance-optimizer` | PRIMARY for all cost optimization (35% reduction target), processing efficiency (40% improvement), gpt-5-mini optimization, resource monitoring | ELEVATED ROLE: Lead all efficiency decisions and cost management |
 | **Simplified Architecture** | `@backend-developer` | Dual-mode response processing, simplified FSM design, single chat interface backend, primary architect for simplified systems | Primary agent for all simplified architecture components and 5-state FSM |
 | **Response Processing** | `@backend-developer` | Dual-mode system (JSON/conversational), response routing logic, performance optimization | Handles response processing accuracy and mode switching logic |
 | **API Design & Integration** | `@api-architect` | MCP integration patterns, response schema optimization, cost-efficient API calls | Ensures efficient API contracts and integration patterns |
@@ -46,10 +45,11 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 
 | Architecture Domain | Primary Agent | Secondary Agent | Specific Focus |
 |-------------|---------------|-----------------|----------------|
+| **Cost Optimization Leadership** | `@performance-optimizer` | `@backend-developer` | PRIMARY responsibility for 35% cost reduction, gpt-5-mini efficiency, resource monitoring |
+| **Response Manager Architecture** | `@backend-developer` | `@performance-optimizer` | ResponseManager optimization, dual-mode processing, cost-efficient routing |
+| **Performance Monitoring** | `@performance-optimizer` | `@backend-developer` | Real-time metrics, cost tracking, optimization validation |
 | **Dual-Mode Response System** | `@backend-developer` | `@api-architect` | Response routing (JSON/conversational), mode switching logic, primary response architecture responsibility |
-| **Performance Optimization** | `@backend-developer` | `@performance-optimizer` | Cost reduction (35%), processing speed (40% improvement), resource efficiency |
 | **Single Chat Interface** | `@frontend-developer` | `@backend-developer` | Consolidated UI, unified user experience, simplified interaction patterns |
-| **Cost Management** | `@performance-optimizer` | `@backend-developer` | Token usage optimization, API call efficiency, resource monitoring |
 | **Simplified FSM** | `@backend-developer` | `@frontend-developer` | 5-state workflow integrity, performance-optimized transitions, cost-efficient state management |
 | **Architecture Documentation** | `@documentation-specialist` | `@backend-developer` | Simplified system guides, performance optimization docs, migration documentation |
 | **Performance Testing** | `@backend-developer` | `@performance-optimizer` | Cost optimization validation, speed improvement testing, resource usage validation |
@@ -649,37 +649,67 @@ This project uses `uv` for dependency management and Python package execution. A
 
 ### Testing
 
-- **Run all tests**: `uv run pytest tests/` (pytest is in dev dependencies)
-- **Run specific test**: `uv run pytest tests/test_file.py`
+- **Run all tests**: `uv run pytest tests/`
+- **Run specific test**: `uv run pytest tests/test_file.py -v`
 - **Run integration tests**: `uv run pytest tests/test_*integration*.py`
-- **Run performance tests**: `uv run python tests/validate_performance_optimization.py`
-- **Install dev dependencies**: `uv install --dev`
+- **Run simplified architecture tests**: `uv run pytest tests/test_simplified_*.py`
+- **Run performance validation**: `uv run python tests/validate_performance_optimization.py`
+- **Run single test method**: `uv run pytest tests/test_file.py::TestClass::test_method`
+
+### Linting and Type Checking
+
+- **No formal linter configured** - Follow existing code style patterns
+- **Type hints**: Use consistently, especially in new modules like `src/response_manager.py`
 
 ### Environment Management
 
 - **Install dependencies**: `uv install`
+- **Install dev dependencies**: `uv install --dev`
 - **Update dependencies**: `uv lock --upgrade`
-- **Check environment**: `uv --version` and verify `.env` file exists
+- **Verify setup**: `uv --version` and check `.env` file exists
 
 ## Code Architecture
+
+### Critical Architecture Decisions (Re-architected 2025-08-19)
+
+**Single Chat Interface Pattern:**
+- All user interactions flow through one chat interface in `chat_ui.py`
+- Button clicks show full prompt text, then JSON response in chat
+- User messages return conversational text responses
+- NO separate JSON output areas - everything is consolidated
+
+**Dual-Mode Response System:**
+- `src/response_manager.py` handles conditional processing
+- Button responses: JSON extraction with structured display
+- User responses: Natural language formatting
+- Processing mode detection via `ResponseType.BUTTON` vs `ResponseType.USER`
+
+**Simplified 5-State FSM:**
+- States: IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR
+- Managed by `stock_data_fsm/manager.py` with `StateManager` class
+- Non-blocking error recovery with immediate retry capability
 
 ### Core Components
 
 1. **market_parser_demo.py**: CLI application entry point
-   - Contains `TokenCostTracker` class for usage/cost tracking with gpt-5-mini pricing
+   - Contains `TokenCostTracker` class for gpt-5-mini cost tracking
    - Implements `create_polygon_mcp_server()` factory function
    - Main async CLI loop with Rich console formatting
 
-2. **chat_ui.py**: Simplified Gradio web interface with single chat focus
-   - 🧠 **FSM-Driven State Management** - Simplified workflow with performance optimization
-   - 📊 **Structured Stock Analysis** - Dedicated buttons for Snapshot, S&R, Technical Analysis  
-   - 🎯 **Context-Aware Prompts** - Intelligent ticker extraction and cost-optimized prompts
-   - ⏳ **Real-time Processing Status** - Loading states with performance monitoring
-   - 🛡️ **Advanced Error Handling** - User-friendly messages with cost-efficient recovery
-   - 💬 **Single Chat Interface** - All interactions in one consolidated conversation view
-   - 🔍 **Performance Monitoring** - Cost tracking and efficiency diagnostics
-   - 💾 **Export Functionality** - Enhanced export with performance metrics
-   - Provides unified chat experience with dual-mode responses
+2. **chat_ui.py**: Simplified Gradio web interface with unified chat
+   - 💬 **Single Chat Interface** - All interactions in one conversation view
+   - 🔄 **Dual Response Modes** - JSON for buttons, conversational for users
+   - 🧠 **FSM-Driven State Management** - Simplified 5-state workflow
+   - 📊 **Three Analysis Buttons** - Snapshot, Support & Resistance, Technical Analysis
+   - ⏳ **Real-time Processing Status** - Loading states with cost monitoring
+   - 🛡️ **Error Recovery** - Non-blocking with immediate button retry
+   - 🔍 **Performance Tracking** - gpt-5-mini cost optimization (35% reduction achieved)
+
+3. **src/response_manager.py**: Dual-mode response processing hub
+   - `ResponseManager` class handles conditional processing
+   - `ProcessingMode.CHAT_OPTIMIZED` for UI integration
+   - Automatic detection of button vs user response types
+   - Chat-optimized formatting for both JSON and text outputs
 
 ### Key Architectural Patterns
 
@@ -796,13 +826,23 @@ Both CLI and GUI share identical agent setup with gpt-5-mini optimization:
 - Token cost tracking via `TokenCostTracker` class with updated pricing
 
 ### Testing Strategy
-- **Comprehensive Test Suite**: All tests organized in `tests/` directory with performance focus
-- **FSM Tests**: Module-specific tests in `stock_data_fsm/tests/`
-- **Integration Testing**: `tests/test_integration.py` and `tests/test_actual_integration.py`
-- **Performance Testing**: `tests/validate_performance_optimization.py` for efficiency validation
-- **Simplified Architecture**: `tests/test_simplified_*.py` for simplified system validation
+
+**Test Organization:**
+
+- `tests/test_simplified_architecture_integration.py` - Core architecture validation (19 tests, 100% pass rate)
+- `tests/test_dual_mode_processing.py` - Dual-mode response system testing (10 tests)
+- `stock_data_fsm/tests/` - FSM-specific tests for state management
+- `tests/validate_*.py` - Performance and migration validation scripts
+
+**Critical Testing Patterns:**
+
+- All new components MUST have corresponding test coverage
+- Performance tests validate 35% cost reduction and 40% speed improvement targets  
+- Integration tests confirm end-to-end workflow from button click to chat display
+- FSM tests ensure state transition integrity and error recovery
 
 ### Import Patterns
+
 With the simplified structure, use these import patterns:
 
 ```python
