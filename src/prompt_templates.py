@@ -1,15 +1,17 @@
 """
-Stock Market Analysis Prompt Templates
+Stock Market Analysis Prompt Templates - Enhanced Dual-Mode Architecture
 
-This module provides sophisticated prompt templates for structured stock market analysis,
-optimized for FSM-driven interactions with JSON schema-based responses.
+This module provides sophisticated prompt templates for dual-mode financial analysis:
+- Button Mode: Structured JSON outputs with full prompt display
+- User Mode: Conversational text responses
 
 Features:
+- Dual-mode prompt generation with source detection
 - Template-based prompt generation with JSON schema compliance
 - Ticker symbol extraction and context awareness
-- System prompt enhancements for structured JSON output
+- System prompt enhancements for dual response modes
 - Multi-stock analysis consistency
-- Response formatting instructions optimized for JSON schemas
+- Response formatting instructions optimized for both JSON and conversational modes
 - Integration with json_schemas.py for API architect schemas
 """
 
@@ -49,6 +51,12 @@ class PromptType(Enum):
     TECHNICAL = "technical"
 
 
+class PromptMode(Enum):
+    """Response modes for prompts"""
+    BUTTON_JSON = "button_json"    # Button-triggered: JSON response
+    USER_TEXT = "user_text"        # User-typed: Conversational text response
+
+
 @dataclass
 class TickerContext:
     """Context information for ticker symbol processing"""
@@ -62,9 +70,10 @@ class TickerContext:
 
 @dataclass
 class PromptTemplate:
-    """Template for generating structured prompts"""
+    """Template for generating dual-mode prompts"""
     template_type: PromptType
     base_template: str
+    conversational_template: str  # NEW: Template for user conversations
     formatting_instructions: str
     example_response: str
     required_fields: List[str]
@@ -72,45 +81,67 @@ class PromptTemplate:
     system_prompt_additions: str = ""
     
     def generate_prompt(self, ticker_context: TickerContext, 
-                       custom_instructions: Optional[str] = None) -> str:
-        """Generate a complete prompt using the template"""
-        # Format the base template with ticker information
-        prompt_parts = [
-            "### STOCK ANALYSIS REQUEST ###",
-            "",
-            self.base_template.format(
-                ticker=ticker_context.symbol,
-                company=ticker_context.company_name or ticker_context.symbol,
-            ),
-            "",
-            "### JSON SCHEMA REQUIREMENTS ###",
-            self.formatting_instructions,
-            "",
-            "### EXAMPLE JSON RESPONSE ###",
-            self.example_response,
-            ""
-        ]
+                       custom_instructions: Optional[str] = None,
+                       mode: PromptMode = PromptMode.BUTTON_JSON) -> str:
+        """Generate a complete prompt using the template in specified mode"""
         
-        if custom_instructions:
+        if mode == PromptMode.USER_TEXT:
+            # User conversational mode - simple text response
+            prompt_parts = [
+                self.conversational_template.format(
+                    ticker=ticker_context.symbol,
+                    company=ticker_context.company_name or ticker_context.symbol,
+                ),
+            ]
+            
+            if custom_instructions:
+                prompt_parts.append(f"\nAdditional context: {custom_instructions}")
+                
             prompt_parts.extend([
-                "### ADDITIONAL INSTRUCTIONS ###",
-                custom_instructions,
-                ""
+                "\nProvide a helpful, conversational analysis in natural language.",
+                "Do not return JSON - respond with clear, informative text."
             ])
+            
+            return "\n".join(prompt_parts)
         
-        prompt_parts.extend([
-            "### CRITICAL RESPONSE REQUIREMENTS ###",
-            "1. Respond with VALID JSON ONLY - no explanations, no markdown, no additional text",
-            "2. Must exactly match the JSON schema structure provided above",
-            "3. All required fields must be present with appropriate data types",
-            "4. Include current timestamp in ISO 8601 format",
-            "5. Ensure all numeric values are properly formatted (no strings for numbers)",
-            "",
-            "### JSON RESPONSE ###",
-            f"Generate {self.template_type.value} analysis for {ticker_context.symbol} as valid JSON:"
-        ])
-        
-        return "\n".join(prompt_parts)
+        else:  # PromptMode.BUTTON_JSON
+            # Button mode - structured JSON response with full prompt display
+            prompt_parts = [
+                "### STOCK ANALYSIS REQUEST ###",
+                "",
+                self.base_template.format(
+                    ticker=ticker_context.symbol,
+                    company=ticker_context.company_name or ticker_context.symbol,
+                ),
+                "",
+                "### JSON SCHEMA REQUIREMENTS ###",
+                self.formatting_instructions,
+                "",
+                "### EXAMPLE JSON RESPONSE ###",
+                self.example_response,
+                ""
+            ]
+            
+            if custom_instructions:
+                prompt_parts.extend([
+                    "### ADDITIONAL INSTRUCTIONS ###",
+                    custom_instructions,
+                    ""
+                ])
+            
+            prompt_parts.extend([
+                "### CRITICAL RESPONSE REQUIREMENTS ###",
+                "1. Respond with VALID JSON ONLY - no explanations, no markdown, no additional text",
+                "2. Must exactly match the JSON schema structure provided above",
+                "3. All required fields must be present with appropriate data types",
+                "4. Include current timestamp in ISO 8601 format",
+                "5. Ensure all numeric values are properly formatted (no strings for numbers)",
+                "",
+                "### JSON RESPONSE ###",
+                f"Generate {self.template_type.value} analysis for {ticker_context.symbol} as valid JSON:"
+            ])
+            
+            return "\n".join(prompt_parts)
 
 
 class TickerExtractor:
@@ -331,7 +362,7 @@ class TickerExtractor:
 
 
 class PromptTemplateManager:
-    """Manages and generates stock analysis prompt templates"""
+    """Manages and generates dual-mode stock analysis prompt templates"""
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -341,15 +372,17 @@ class PromptTemplateManager:
     
     def generate_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
                        chat_history: Optional[List[Dict]] = None,
-                       custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
+                       custom_instructions: Optional[str] = None,
+                       mode: PromptMode = PromptMode.BUTTON_JSON) -> Tuple[str, TickerContext]:
         """
-        Generate a structured prompt for stock analysis
+        Generate a dual-mode prompt for stock analysis
         
         Args:
             prompt_type: Type of analysis prompt
             ticker: Optional explicit ticker symbol
             chat_history: Conversation history for context
             custom_instructions: Additional instructions
+            mode: PromptMode (BUTTON_JSON or USER_TEXT)
             
         Returns:
             Tuple of (generated_prompt, ticker_context)
@@ -373,29 +406,17 @@ class PromptTemplateManager:
         # Get the appropriate template
         template = self.templates[prompt_type]
         
-        # Generate the prompt
-        prompt = template.generate_prompt(ticker_context, custom_instructions)
+        # Generate the prompt in specified mode
+        prompt = template.generate_prompt(ticker_context, custom_instructions, mode)
         
-        self.logger.info(f"Generated {prompt_type.value} prompt for {ticker_context.symbol}")
+        self.logger.info(f"Generated {prompt_type.value} prompt for {ticker_context.symbol} in {mode.value} mode")
         return prompt, ticker_context
     
-    def get_enhanced_system_prompt(self, base_system_prompt: str) -> str:
+    def generate_button_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
+                              chat_history: Optional[List[Dict]] = None,
+                              custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
         """
-        Enhance the base system prompt with structured JSON output instructions
-        
-        Args:
-            base_system_prompt: Original system prompt
-            
-        Returns:
-            Enhanced system prompt with JSON structured output guidance
-        """
-        return base_system_prompt + "\n\n" + self.system_prompt_enhancements
-    
-    def get_json_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
-                       chat_history: Optional[List[Dict]] = None,
-                       custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
-        """
-        Generate a JSON-focused prompt for the AI agent (alias for generate_prompt)
+        Generate a button-triggered prompt (JSON mode with full prompt display)
         
         Args:
             prompt_type: Type of analysis prompt
@@ -406,7 +427,95 @@ class PromptTemplateManager:
         Returns:
             Tuple of (generated_prompt, ticker_context)
         """
-        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions)
+        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions, PromptMode.BUTTON_JSON)
+    
+    def generate_user_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
+                            chat_history: Optional[List[Dict]] = None,
+                            custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
+        """
+        Generate a user-typed prompt (conversational text mode)
+        
+        Args:
+            prompt_type: Type of analysis prompt
+            ticker: Optional explicit ticker symbol
+            chat_history: Conversation history for context
+            custom_instructions: Additional instructions
+            
+        Returns:
+            Tuple of (generated_prompt, ticker_context)
+        """
+        return self.generate_prompt(prompt_type, ticker, chat_history, custom_instructions, PromptMode.USER_TEXT)
+    
+    def get_enhanced_system_prompt(self, base_system_prompt: str, mode: PromptMode = PromptMode.BUTTON_JSON) -> str:
+        """
+        Enhance the base system prompt with mode-specific instructions
+        
+        Args:
+            base_system_prompt: Original system prompt
+            mode: PromptMode for response formatting
+            
+        Returns:
+            Enhanced system prompt with mode-specific guidance
+        """
+        if mode == PromptMode.USER_TEXT:
+            conversational_enhancement = """
+
+CONVERSATIONAL RESPONSE MODE:
+- Provide helpful, informative responses in natural language
+- Use clear, professional tone suitable for financial analysis
+- Include relevant data and insights without JSON formatting
+- Make responses educational and actionable for investors
+- Do NOT return JSON - respond with conversational text only
+"""
+            return base_system_prompt + conversational_enhancement
+        else:
+            return base_system_prompt + "\n\n" + self.system_prompt_enhancements
+    
+    def detect_prompt_source(self, user_input: str, button_context: Optional[str] = None) -> PromptMode:
+        """
+        Detect whether prompt comes from button click or user input
+        
+        Args:
+            user_input: The input text
+            button_context: Optional button context indicator
+            
+        Returns:
+            PromptMode indicating the detected source
+        """
+        # If button context is explicitly provided, it's a button prompt
+        if button_context:
+            return PromptMode.BUTTON_JSON
+        
+        # Check for button-like indicators in user input
+        button_indicators = [
+            "snapshot analysis", "technical analysis", "support resistance",
+            "generate snapshot", "generate technical", "generate support",
+            "json analysis", "structured analysis"
+        ]
+        
+        user_lower = user_input.lower()
+        if any(indicator in user_lower for indicator in button_indicators):
+            return PromptMode.BUTTON_JSON
+        
+        # Default to conversational mode for user input
+        return PromptMode.USER_TEXT
+    
+    def get_json_prompt(self, prompt_type: PromptType, ticker: Optional[str] = None,
+                       chat_history: Optional[List[Dict]] = None,
+                       custom_instructions: Optional[str] = None) -> Tuple[str, TickerContext]:
+        """
+        Generate a JSON-focused prompt for the AI agent (legacy compatibility)
+        
+        Args:
+            prompt_type: Type of analysis prompt
+            ticker: Optional explicit ticker symbol
+            chat_history: Conversation history for context
+            custom_instructions: Additional instructions
+            
+        Returns:
+            Tuple of (generated_prompt, ticker_context)
+        """
+        return self.generate_button_prompt(prompt_type, ticker, chat_history, custom_instructions)
     
     def get_available_schemas(self) -> Dict[str, Any]:
         """
@@ -443,7 +552,7 @@ class PromptTemplateManager:
         return schemas_info
     
     def _build_templates(self) -> Dict[PromptType, PromptTemplate]:
-        """Build all prompt templates"""
+        """Build all dual-mode prompt templates"""
         return {
             PromptType.SNAPSHOT: self._build_snapshot_template(),
             PromptType.SUPPORT_RESISTANCE: self._build_sr_template(),
@@ -451,10 +560,15 @@ class PromptTemplateManager:
         }
     
     def _build_snapshot_template(self) -> PromptTemplate:
-        """Build stock snapshot prompt template with JSON schema"""
+        """Build stock snapshot prompt template with dual-mode support"""
         base_template = """Provide a comprehensive stock snapshot analysis for {ticker} ({company}).
 
 Focus on current market data and recent performance metrics. Return data as valid JSON only."""
+
+        # NEW: Conversational template for user input
+        conversational_template = """Provide a current snapshot analysis for {ticker} ({company}).
+
+Please include current price, recent performance, volume data, and key metrics. Explain what these numbers mean for potential investors."""
 
         # Get JSON schema if available, otherwise use simplified schema
         if SNAPSHOT_SCHEMA:
@@ -521,16 +635,22 @@ CRITICAL REQUIREMENTS:
         return PromptTemplate(
             template_type=PromptType.SNAPSHOT,
             base_template=base_template,
+            conversational_template=conversational_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
             required_fields=["metadata", "snapshot_data"]
         )
     
     def _build_sr_template(self) -> PromptTemplate:
-        """Build support & resistance prompt template with JSON schema"""  
+        """Build support & resistance prompt template with dual-mode support"""  
         base_template = """Analyze support and resistance levels for {ticker} ({company}).
 
 Provide 3 support levels and 3 resistance levels based on recent price action and technical analysis. Return data as valid JSON only."""
+
+        # NEW: Conversational template for user input
+        conversational_template = """Analyze the key support and resistance levels for {ticker} ({company}).
+
+Please identify the most important price levels where the stock tends to find support (price floors) and resistance (price ceilings). Explain the significance of these levels for trading decisions."""
 
         # Get JSON schema if available, otherwise use simplified schema
         if SUPPORT_RESISTANCE_SCHEMA:
@@ -599,16 +719,22 @@ CRITICAL REQUIREMENTS:
         return PromptTemplate(
             template_type=PromptType.SUPPORT_RESISTANCE,
             base_template=base_template,
+            conversational_template=conversational_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
             required_fields=["metadata", "support_levels", "resistance_levels"]
         )
     
     def _build_technical_template(self) -> PromptTemplate:
-        """Build technical analysis prompt template with JSON schema"""
+        """Build technical analysis prompt template with dual-mode support"""
         base_template = """Provide technical indicator analysis for {ticker} ({company}).
 
 Calculate current values for key oscillators and moving averages. Return data as valid JSON only."""
+
+        # NEW: Conversational template for user input
+        conversational_template = """Provide a technical analysis for {ticker} ({company}) using key indicators.
+
+Please analyze the current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction."""
 
         # Get JSON schema if available, otherwise use simplified schema
         if TECHNICAL_SCHEMA:
@@ -699,6 +825,7 @@ CRITICAL REQUIREMENTS:
         return PromptTemplate(
             template_type=PromptType.TECHNICAL,
             base_template=base_template,
+            conversational_template=conversational_template,
             formatting_instructions=formatting_instructions,
             example_response=example_response,
             required_fields=["metadata", "oscillators", "moving_averages"]
@@ -906,13 +1033,88 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
     return validation_results
 
 
+def test_dual_mode_behavior() -> Dict[str, Any]:
+    """Test dual-mode prompt generation behavior"""
+    manager = PromptTemplateManager()
+    
+    test_results = {
+        "dual_mode_tests": {},
+        "mode_detection_tests": {},
+        "system_prompt_tests": {},
+        "overall_success": True
+    }
+    
+    # Test dual mode generation for each prompt type
+    for prompt_type in PromptType:
+        try:
+            # Test button mode
+            button_prompt, button_context = manager.generate_prompt(
+                prompt_type, ticker="AAPL", mode=PromptMode.BUTTON_JSON
+            )
+            
+            # Test user mode
+            user_prompt, user_context = manager.generate_prompt(
+                prompt_type, ticker="AAPL", mode=PromptMode.USER_TEXT
+            )
+            
+            test_results["dual_mode_tests"][prompt_type.value] = {
+                "button_mode": {
+                    "length": len(button_prompt),
+                    "has_json_instructions": "JSON" in button_prompt,
+                    "has_schema": "SCHEMA" in button_prompt
+                },
+                "user_mode": {
+                    "length": len(user_prompt),
+                    "has_json_instructions": "JSON" in user_prompt,
+                    "is_conversational": "conversational" in user_prompt.lower()
+                },
+                "different_outputs": button_prompt != user_prompt
+            }
+            
+        except Exception as e:
+            test_results["dual_mode_tests"][prompt_type.value] = {"error": str(e)}
+            test_results["overall_success"] = False
+    
+    # Test mode detection
+    test_inputs = [
+        ("Tell me about AAPL", None, PromptMode.USER_TEXT),
+        ("Generate snapshot analysis", None, PromptMode.BUTTON_JSON),
+        ("What's the price of Tesla?", None, PromptMode.USER_TEXT),
+        ("Any question", "snapshot", PromptMode.BUTTON_JSON),
+    ]
+    
+    for input_text, button_context, expected_mode in test_inputs:
+        detected_mode = manager.detect_prompt_source(input_text, button_context)
+        test_results["mode_detection_tests"][input_text[:20]] = {
+            "expected": expected_mode.value,
+            "detected": detected_mode.value,
+            "correct": detected_mode == expected_mode
+        }
+    
+    # Test system prompt enhancement
+    base_prompt = "You are a financial analyst."
+    
+    json_enhanced = manager.get_enhanced_system_prompt(base_prompt, PromptMode.BUTTON_JSON)
+    text_enhanced = manager.get_enhanced_system_prompt(base_prompt, PromptMode.USER_TEXT)
+    
+    test_results["system_prompt_tests"] = {
+        "json_mode_different": json_enhanced != base_prompt,
+        "text_mode_different": text_enhanced != base_prompt,
+        "modes_different": json_enhanced != text_enhanced,
+        "json_has_json_instructions": "JSON" in json_enhanced,
+        "text_has_conversational": "conversational" in text_enhanced.lower()
+    }
+    
+    return test_results
+
+
 if __name__ == "__main__":
     # Configure logging
     logging.basicConfig(level=logging.INFO)
     
     # Run tests
-    print("🧪 Running Prompt Template Tests")
-    print("=" * 50)
+    print("🧪 Running Enhanced Dual-Mode Prompt Template Tests")
+    print("=" * 60)
     
     # Test consistency
     consistency_results = run_prompt_consistency_tests()
@@ -926,22 +1128,26 @@ if __name__ == "__main__":
     avg_success = parsing_results["parsing_success_rate"]["average"]
     print(f"✅ Parsing Success Rate: {avg_success:.1%}")
     
-    if avg_success >= 0.9:
-        print("🎉 Excellent parsing compatibility!")
-    elif avg_success >= 0.7:
-        print("✅ Good parsing compatibility")
-    else:
-        print("⚠️  Parsing compatibility needs improvement")
+    # NEW: Test dual-mode behavior
+    print("\n🔄 Testing Dual-Mode Behavior")
+    dual_mode_results = test_dual_mode_behavior()
+    print(f"✅ Dual-Mode Tests: {'PASSED' if dual_mode_results['overall_success'] else 'FAILED'}")
     
-    # Test example generation
-    print("\n📝 Testing Prompt Generation")
+    # Test example generation in both modes
+    print("\n📝 Testing Dual-Mode Prompt Generation")
     manager = PromptTemplateManager()
     
     for prompt_type in PromptType:
         try:
-            prompt, context = manager.generate_prompt(prompt_type, ticker="AAPL")
-            print(f"✅ {prompt_type.value}: Generated {len(prompt)} characters")
+            # Test button mode
+            button_prompt, context = manager.generate_button_prompt(prompt_type, ticker="AAPL")
+            user_prompt, context = manager.generate_user_prompt(prompt_type, ticker="AAPL")
+            
+            print(f"✅ {prompt_type.value}:")
+            print(f"   Button mode: {len(button_prompt)} chars (JSON focused)")
+            print(f"   User mode: {len(user_prompt)} chars (conversational)")
+            
         except Exception as e:
             print(f"❌ {prompt_type.value}: Failed - {e}")
     
-    print(f"\n🏁 All tests completed successfully!")
+    print(f"\n🏁 All enhanced dual-mode tests completed!")

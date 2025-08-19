@@ -1,7 +1,8 @@
 """
-Simplified Stock Market Analysis Chat UI - Phase 2 Implementation
-Simplified version with FSM integration and raw JSON outputs only.
-Removed all structured data displays and complex parsing for UI simplification.
+Stock Market Analysis Chat UI - Phase 3 Unified Interface
+Consolidated UI with all interactions flowing through a single chat interface.
+Button clicks display full prompts and JSON responses in the main chat conversation for transparency.
+Simplified user experience with no separate JSON output areas.
 """
 
 import os
@@ -22,6 +23,9 @@ from pydantic_ai.models.openai import OpenAIResponsesModel
 from stock_data_fsm import StateManager, AppState
 from src.prompt_templates import PromptTemplateManager, PromptType
 
+# Import dual-mode response processing
+from src.response_manager import ResponseManager, ProcessingMode
+
 # Reuse server factory and token tracking from CLI
 from market_parser_demo import create_polygon_mcp_server, TokenCostTracker
 
@@ -33,13 +37,14 @@ _mcp_ctx = None
 
 
 # -------- Agent & MCP server setup --------
-MODEL_NAME = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+MODEL_NAME = os.getenv("OPENAI_MODEL", "gpt-5-mini")
 
 server = create_polygon_mcp_server()
 model = OpenAIResponsesModel(MODEL_NAME)
 
 # Initialize simplified systems
 prompt_manager = PromptTemplateManager()
+response_manager = ResponseManager(ProcessingMode.CHAT_OPTIMIZED)
 
 # Simplified system prompt for raw JSON output
 base_system_prompt = (
@@ -162,11 +167,8 @@ async def handle_user_message(
     tracker: TokenCostTracker,
     cost_markdown: str,
     fsm_manager: StateManager,
-    snapshot_json: str,
-    sr_json: str,
-    tech_json: str,
     debug_state: str,
-) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, str, str, str, str]:
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, str]:
     """
     Enhanced message handler with loading states and improved error handling.
     """
@@ -193,9 +195,18 @@ async def handle_user_message(
             # pyd_message_history is ONLY for UI display, NEVER for agent.run()
             response = await agent.run(user_message, message_history=[])
             
-            chat_history = chat_history + [{"role": "assistant", "content": response.output}]
+            # Process user response with dual-mode processing
+            processing_status.update_step("Processing response for chat...", 3)
+            processed_response = response_manager.process_response(
+                response.output, 
+                source_type='user'
+            )
+            
+            # Use processed content for chat display
+            response_content = processed_response.get('content', response.output)
+            chat_history = chat_history + [{"role": "assistant", "content": response_content}]
             pyd_message_history.append({"role": "user", "content": user_message})
-            pyd_message_history.append({"role": "assistant", "content": response.output})
+            pyd_message_history.append({"role": "assistant", "content": response_content})
             
             # Update costs
             processing_status.update_step("Updating costs...", 3)
@@ -206,7 +217,7 @@ async def handle_user_message(
             
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, snapshot_json, sr_json, tech_json, processing_status.status_message
+                fsm_manager, processing_status.status_message
             )
         
         else:
@@ -247,11 +258,8 @@ async def handle_button_click(
     tracker: TokenCostTracker,
     cost_markdown: str,
     fsm_manager: StateManager,
-    snapshot_json: str,
-    sr_json: str,
-    tech_json: str,
     debug_state: str,
-) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, str, str, str, str]:
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, str]:
     """
     Enhanced button click handler with comprehensive loading states and error handling.
     """
@@ -300,7 +308,7 @@ async def handle_button_click(
             gr.Error(f"Unknown analysis type: {button_type}")
             return (
                 "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, snapshot_json, sr_json, tech_json, processing_status.status_message
+                fsm_manager, processing_status.status_message
             )
         
         # Step 3: Prepare prompt and transition FSM to AI processing
@@ -331,60 +339,43 @@ async def handle_button_click(
         # Success confirmation logging
         print(f"[DEBUG] ✅ {button_type} completed successfully - no message history contamination")
         
-        # Step 3: Process AI response and extract JSON
-        processing_status.update_step("Processing response...", 3)
+        # Step 3: Process AI response with dual-mode processing
+        processing_status.update_step("Processing button response...", 3)
         fsm_manager.context.raw_json_response = response.output
         
-        # CRITICAL FIX: ACTUALLY preserve input values - Python doesn't do this automatically!
-        # Variables assigned inside if blocks create LOCAL variables that SHADOW parameters
-        # Must explicitly preserve input values BEFORE any if statements
+        # Process button response with structured data extraction
+        processed_response = response_manager.process_response(
+            response.output,
+            source_type='button',
+            data_type=button_type,
+            ticker=fsm_manager.context.ticker
+        )
         
-        # Initialize with input values to preserve them
-        new_snapshot_json = snapshot_json  # Preserve input
-        new_sr_json = sr_json             # Preserve input  
-        new_tech_json = tech_json         # Preserve input
+        # Add to chat history with dual-mode formatting
+        # First show the full prompt that was sent to AI
+        prompt_display = f"**📋 Analysis Request:**\n{fsm_manager.context.prompt[:200]}..." if len(fsm_manager.context.prompt) > 200 else f"**📋 Analysis Request:**\n{fsm_manager.context.prompt}"
         
-        # Then only update the relevant one
-        if button_type == 'snapshot':
-            try:
-                parsed_json = json.loads(response.output)
-                new_snapshot_json = json.dumps(parsed_json, indent=2)
-            except (json.JSONDecodeError, TypeError):
-                new_snapshot_json = response.output
-        elif button_type == 'support_resistance':
-            try:
-                parsed_json = json.loads(response.output)
-                new_sr_json = json.dumps(parsed_json, indent=2)  
-            except (json.JSONDecodeError, TypeError):
-                new_sr_json = response.output
-        elif button_type == 'technical':
-            try:
-                parsed_json = json.loads(response.output)
-                new_tech_json = json.dumps(parsed_json, indent=2)
-            except (json.JSONDecodeError, TypeError):
-                new_tech_json = response.output
+        # Use processed content which includes both response and extracted data
+        analysis_title = f"📊 **{button_type.replace('_', ' ').title()} Analysis for {fsm_manager.context.ticker}**"
+        response_content = processed_response.get('content', response.output)
         
-        # Finally assign back to original variables
-        snapshot_json = new_snapshot_json
-        sr_json = new_sr_json  
-        tech_json = new_tech_json
+        # Add processing info if available
+        processing_info = ""
+        if processed_response.get('processing_time_ms'):
+            processing_info = f"\n\n*Processing time: {processed_response['processing_time_ms']:.1f}ms*"
         
-        # JSON Data Status Debug - Show which JSON outputs have data
-        print(f"[DEBUG] JSON Data Status - Snapshot: {'✓' if snapshot_json else '✗'}, S&R: {'✓' if sr_json else '✗'}, Technical: {'✓' if tech_json else '✗'}")
-        
-        # Add to chat history with simple formatting
-        enhanced_response = f"📊 **{button_type.replace('_', ' ').title()} Analysis for {fsm_manager.context.ticker}**\n\n{response.output}"
+        enhanced_response = f"{analysis_title}\n\n{response_content}{processing_info}"
         
         chat_history = chat_history + [
-            {"role": "user", "content": f"📊 {button_type.replace('_', ' ').title()} for {fsm_manager.context.ticker}"},
+            {"role": "user", "content": prompt_display},
             {"role": "assistant", "content": enhanced_response}
         ]
         
-        # Update message history
+        # Update message history (using processed content for display)
         if pyd_message_history is None:
             pyd_message_history = []
         pyd_message_history.append({"role": "user", "content": fsm_manager.context.prompt})
-        pyd_message_history.append({"role": "assistant", "content": response.output})
+        pyd_message_history.append({"role": "assistant", "content": enhanced_response})
         
         # Step 4: Update costs and finalize
         processing_status.update_step("Finalizing...", 4)
@@ -408,11 +399,21 @@ async def handle_button_click(
         
         return (
             "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, snapshot_json, sr_json, tech_json, f"{processing_status.status_message}\n{debug_state}"
+            fsm_manager, f"{processing_status.status_message}\n{debug_state}"
         )
         
     except Exception as e:
         processing_status.error(f"Button processing error: {str(e)}")
+        
+        # Try to process error response for better display
+        try:
+            error_response = response_manager.process_response(
+                f"Error processing {button_type} analysis: {str(e)}",
+                source_type='user'
+            )
+            error_message = error_response.get('content', f"❌ Error processing {button_type} analysis: {str(e)}")
+        except:
+            error_message = f"❌ Error processing {button_type} analysis: {str(e)}"
         
         # Log error for debugging
         print(f"[GUI] Error in button processing: {e}")
@@ -429,13 +430,7 @@ async def handle_button_click(
         else:
             gr.Error(f"Failed to process {button_type.replace('_', ' ').title()} analysis: {str(e)}")
         
-        # Clear JSON outputs on error
-        if button_type == 'snapshot':
-            snapshot_json = ""
-        elif button_type == 'support_resistance':
-            sr_json = ""
-        elif button_type == 'technical':
-            tech_json = ""
+        # JSON outputs no longer needed - using chat interface only
         
         # Force FSM to error state and provide recovery
         fsm_manager._emergency_transition_to_error(str(e))
@@ -451,7 +446,7 @@ async def handle_button_click(
         
         return (
             "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, snapshot_json, sr_json, tech_json, f"{processing_status.status_message}\n{debug_state}"
+            fsm_manager, f"{processing_status.status_message}\n{debug_state}"
         )
 
 
@@ -522,9 +517,6 @@ def _clear_enhanced():
         "Cost tracking cleared",  # costs
         "",  # export_md
         fsm_manager,  # fsm_state
-        "",  # snapshot_json_output
-        "",  # sr_json_output
-        "",  # tech_json_output
         "**FSM Reset** - Ready for new analysis"  # debug_display
     )
 
@@ -568,10 +560,10 @@ def export_markdown(chat_history: List[Dict], tracker: TokenCostTracker) -> str:
 # -------- Enhanced Gradio Interface --------
 
 def create_enhanced_chat_interface():
-    """Create simplified chat interface with JSON outputs only"""
+    """Create simplified chat interface with all output consolidated to single chat conversation"""
     
     with gr.Blocks(
-        title="📊 Simplified Stock Market Analysis Chat",
+        title="📊 Stock Market Analysis Chat - Unified Interface",
         css="""
         .processing-status {
             background: linear-gradient(45deg, #f0f8ff, #e6f3ff);
@@ -593,17 +585,17 @@ def create_enhanced_chat_interface():
         # -------- Header --------
         gr.Markdown(
             """
-            # 📊 Simplified Stock Market Analysis Chat
+            # 📊 Stock Market Analysis Chat - Phase 3 Simplified
             
-            **Phase 2 Implementation:** Simplified FSM-driven analysis with raw JSON outputs only.
-            Removed structured data displays for streamlined functionality.
+            **Phase 3 Implementation:** Unified chat interface with all interactions in one place.
+            All button requests and responses now flow through the main chat for simplified user experience.
             
             ### Features:
-            - 💬 **Chat Interface** - Natural language stock market queries
-            - 📊 **Analysis Buttons** - Three types of structured analysis
-            - 📄 **Raw JSON Output** - Pure JSON responses without parsing
+            - 💬 **Single Chat Interface** - All interactions in one conversation
+            - 📊 **Analysis Buttons** - Three types of structured analysis display prompts and JSON responses in chat
             - 🔄 **Real-time Processing** - Live status updates
             - 🧠 **FSM State Management** - Simple workflow management
+            - 📋 **Full Prompt Display** - See exactly what was sent to AI before responses
             """
         )
         
@@ -645,7 +637,7 @@ def create_enhanced_chat_interface():
         
         # -------- Enhanced Stock Analysis Buttons --------
         gr.Markdown("## 📊 Structured Stock Analysis")
-        gr.Markdown("Click these buttons to get structured stock data with enhanced parsing and error handling:")
+        gr.Markdown("Click these buttons to send structured analysis requests to the chat. You'll see the full prompt followed by the JSON response:")
         
         with gr.Row():
             snapshot_btn = gr.Button(
@@ -667,41 +659,7 @@ def create_enhanced_chat_interface():
                 elem_classes=["button-enhanced"]
             )
         
-        # -------- JSON Output Display Area --------
-        gr.Markdown("### 🔧 Raw JSON Outputs")
-        gr.Markdown("View the raw JSON responses from each analysis button:")
-        
-        with gr.Row():
-            with gr.Column():
-                gr.Markdown("**📈 Snapshot JSON**")
-                snapshot_json_output = gr.Code(
-                    label="Stock Snapshot Raw JSON",
-                    language="json",
-                    interactive=False,
-                    lines=10,
-                    value=""
-                )
-            
-            with gr.Column():
-                gr.Markdown("**🎯 Support & Resistance JSON**")
-                sr_json_output = gr.Code(
-                    label="Support & Resistance Raw JSON", 
-                    language="json",
-                    interactive=False,
-                    lines=10,
-                    value=""
-                )
-            
-            with gr.Column():
-                gr.Markdown("**🔧 Technical Analysis JSON**")
-                tech_json_output = gr.Code(
-                    label="Technical Analysis Raw JSON",
-                    language="json", 
-                    interactive=False,
-                    lines=10,
-                    value=""
-                )
-        
+        # JSON outputs have been consolidated to chat interface for simplified user experience
         # -------- Enhanced Debug and Monitoring --------
         with gr.Accordion("🔍 System Monitoring & Debug", open=False):
             debug_display = gr.Markdown("FSM Debug info will appear here")
@@ -720,10 +678,7 @@ def create_enhanced_chat_interface():
         # Enhanced FSM state
         fsm_state = gr.State(StateManager())
         
-        # JSON output states
-        snapshot_json_state = gr.State("")
-        sr_json_state = gr.State("")
-        tech_json_state = gr.State("")
+        # JSON output states removed - all output goes to chat interface
         
         # -------- Event Handlers with Enhanced Features --------
         
@@ -740,11 +695,11 @@ def create_enhanced_chat_interface():
             handle_user_message,
             inputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_json_state, sr_json_state, tech_json_state, status_display
+                fsm_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_json_output, sr_json_output, tech_json_output, status_display
+                fsm_state, status_display
             ]
         )
         
@@ -759,11 +714,11 @@ def create_enhanced_chat_interface():
             handle_user_message,
             inputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_json_state, sr_json_state, tech_json_state, status_display
+                fsm_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_json_output, sr_json_output, tech_json_output, status_display
+                fsm_state, status_display
             ]
         )
         
@@ -779,11 +734,11 @@ def create_enhanced_chat_interface():
             handle_snapshot_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_json_state, sr_json_state, tech_json_state, status_display
+                fsm_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_json_output, sr_json_output, tech_json_output, status_display
+                fsm_state, status_display
             ]
         )
         
@@ -798,11 +753,11 @@ def create_enhanced_chat_interface():
             handle_sr_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_json_state, sr_json_state, tech_json_state, status_display
+                fsm_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_json_output, sr_json_output, tech_json_output, status_display
+                fsm_state, status_display
             ]
         )
         
@@ -817,11 +772,11 @@ def create_enhanced_chat_interface():
             handle_tech_click,
             inputs=[
                 ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, snapshot_json_state, sr_json_state, tech_json_state, status_display
+                fsm_state, status_display
             ],
             outputs=[
                 msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, snapshot_json_output, sr_json_output, tech_json_output, status_display
+                fsm_state, status_display
             ]
         )
         
@@ -838,7 +793,7 @@ def create_enhanced_chat_interface():
             inputs=[],
             outputs=[
                 chatbot, pyd_history_state, tracker_state, costs, export_md,
-                fsm_state, snapshot_json_output, sr_json_output, tech_json_output, status_display
+                fsm_state, status_display
             ]
         )
         
@@ -865,9 +820,9 @@ if __name__ == "__main__":
         handlers=[logging.StreamHandler()]  # Console output only
     )
     
-    print("🚀 Starting Simplified Stock Market Analysis Chat (Phase 2)")
-    print("🎯 Features: FSM + Raw JSON Output + Simple Error Handling")
-    print("📊 Simplified: Removed structured data displays and complex parsing")
+    print("🚀 Starting Stock Market Analysis Chat (Phase 3 - Unified Interface)")
+    print("🎯 Features: Single Chat Interface + Full Prompt Display + JSON in Chat")
+    print("📊 Simplified: All interactions consolidated to main chat conversation")
     print(f"[LOGGING] 📄 Basic logging enabled")
     
     # Create and launch the enhanced interface

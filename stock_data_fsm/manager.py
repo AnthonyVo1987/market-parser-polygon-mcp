@@ -76,37 +76,13 @@ class StateActions:
     # === AI Processing Actions ===
     
     def on_response_received(self, context: StateContext, **kwargs) -> None:
-        """Action when AI response is received (simplified)"""
+        """Action when AI response is received (simplified for single chat output)"""
         response = kwargs.get('ai_response', context.ai_response)
         if response:
             context.ai_response = response
         
-        # Extract JSON for display (no complex validation)
-        try:
-            import json
-            import re
-            
-            # Simple JSON extraction for display
-            json_match = re.search(r'```json\s*({[\s\S]*?})\s*```', response, re.IGNORECASE)
-            if json_match:
-                json_str = json_match.group(1)
-                # Test if it's valid JSON
-                json.loads(json_str)
-                context.raw_json_response = json_str
-            else:
-                # Try to find any JSON-like structure
-                json_match = re.search(r'({[\s\S]*})', response)
-                if json_match:
-                    json_str = json_match.group(1)
-                    try:
-                        json.loads(json_str)
-                        context.raw_json_response = json_str
-                    except:
-                        context.raw_json_response = '{"message": "No valid JSON found in response"}'
-                else:
-                    context.raw_json_response = '{"message": "No JSON structure found in response"}'
-        except Exception as e:
-            context.raw_json_response = f'{{"error": "JSON extraction failed: {str(e)}"}}'
+        # Extract JSON for display using simplified method
+        self.on_extract_json_for_display(context, **kwargs)
         
         # Calculate AI processing time
         start_time = context.parsed_data.get('ai_start_time')
@@ -250,15 +226,16 @@ class StateActions:
         context.clear_data(preserve_history=True)
         context.error_message = "Emergency reset"
     
-    # === JSON Workflow Actions ===
+    # === Simplified JSON Display Actions ===
     
-    def on_extract_json(self, context: StateContext, **kwargs) -> None:
-        """Action to extract JSON from AI response"""
+    def on_extract_json_for_display(self, context: StateContext, **kwargs) -> None:
+        """Action to extract JSON from AI response for chat display (simplified)"""
         ai_response = context.ai_response
         if not ai_response:
-            raise ValueError("No AI response available for JSON extraction")
+            context.raw_json_response = '{"message": "No AI response available"}'
+            return
         
-        # Try to extract JSON from the response
+        # Try to extract JSON from the response for display purposes
         import json
         import re
         
@@ -272,136 +249,19 @@ class StateActions:
             if json_match:
                 json_str = json_match.group(1)
             else:
-                # Fallback: try to parse entire response as JSON
-                json_str = ai_response.strip()
+                # Fallback: store entire response with indication
+                context.raw_json_response = f'{{"message": "Response contains no JSON structure", "content": "{ai_response[:100]}..."}}'
+                return
         
-        # Validate it's parseable JSON
+        # Test if it's valid JSON for display
         try:
             json.loads(json_str)
             context.raw_json_response = json_str
-            
-            # Determine schema type based on button type
-            schema_type_map = {
-                'snapshot': 'snapshot',
-                'support_resistance': 'support_resistance', 
-                'technical': 'technical'
-            }
-            context.json_schema_type = schema_type_map.get(context.button_type)
-            
-            self.logger.info(f"JSON extracted successfully: {len(json_str)} characters, type: {context.json_schema_type}")
-            
+            self.logger.info(f"JSON extracted for display: {len(json_str)} characters")
         except (json.JSONDecodeError, ValueError) as e:
-            self.logger.warning(f"Failed to extract valid JSON: {e}")
-            # Store raw response anyway for fallback
-            context.raw_json_response = json_str
-            context.json_schema_type = None
-    
-    def on_start_json_validation(self, context: StateContext, **kwargs) -> None:
-        """Action to start JSON schema validation"""
-        if not context.raw_json_response:
-            raise ValueError("No raw JSON response available for validation")
-        
-        self.logger.info(f"Starting JSON validation for type: {context.json_schema_type}")
-        context.parsed_data['json_validation_start_time'] = time.time()
-    
-    def on_json_validation_success(self, context: StateContext, **kwargs) -> None:
-        """Action when JSON validation succeeds"""
-        validated_data = kwargs.get('validated_data')
-        validation_result = kwargs.get('validation_result')
-        
-        if validated_data:
-            context.validated_json_data = validated_data
-        if validation_result:
-            context.json_validation_result = validation_result
-        
-        validation_time = time.time() - context.parsed_data.get('json_validation_start_time', time.time())
-        context.parsed_data['json_validation_time'] = validation_time
-        
-        self.logger.info(f"JSON validation successful in {validation_time:.2f}s")
-        self.logger.debug(f"Validated data keys: {list(validated_data.keys()) if validated_data else 'None'}")
-    
-    def on_json_validation_failed(self, context: StateContext, **kwargs) -> None:
-        """Action when JSON validation fails"""
-        validation_result = kwargs.get('validation_result', {})
-        error_details = kwargs.get('error_details', 'Unknown validation error')
-        
-        context.json_validation_result = validation_result
-        context.error_message = f"JSON validation failed: {error_details}"
-        context.increment_error_attempts()
-        
-        self.logger.warning(f"JSON validation failed: {error_details}")
-        self.logger.debug(f"Validation result: {validation_result}")
-    
-    def on_json_validation_error(self, context: StateContext, **kwargs) -> None:
-        """Action when JSON validation encounters a critical error"""
-        error_msg = kwargs.get('error', 'Critical JSON validation error')
-        context.error_message = error_msg
-        context.increment_error_attempts()
-        self.logger.error(f"JSON validation error: {error_msg}")
-    
-    def on_parse_validated_json(self, context: StateContext, **kwargs) -> None:
-        """Action to parse already validated JSON data"""
-        if not context.validated_json_data:
-            raise ValueError("No validated JSON data available for parsing")
-        
-        self.logger.info(f"Parsing validated JSON data for {context.json_schema_type}")
-        context.parsed_data['json_parse_start_time'] = time.time()
-        
-        # Store validated JSON as parsed data
-        context.parsed_data.update(context.validated_json_data)
-        context.parsed_data['source'] = 'validated_json'
-        context.parsed_data['schema_type'] = context.json_schema_type
-    
-    def on_retry_json_validation(self, context: StateContext, **kwargs) -> None:
-        """Action to retry JSON validation"""
-        retry_reason = kwargs.get('reason', 'user_requested')
-        self.logger.info(f"Retrying JSON validation: {retry_reason}")
-        
-        # Clear previous validation results
-        context.json_validation_result = None
-        context.validated_json_data = None
-        
-        # Don't clear error attempts - let the guard handle limits
-    
-    def on_json_fallback_to_text(self, context: StateContext, **kwargs) -> None:
-        """Action when falling back to text parsing from JSON workflow"""
-        fallback_reason = kwargs.get('reason', 'json_extraction_failed')
-        self.logger.info(f"Falling back to text parsing: {fallback_reason}")
-        
-        # Mark the fallback in parsed data
-        context.parsed_data['json_fallback'] = True
-        context.parsed_data['fallback_reason'] = fallback_reason
-        context.parsed_data['source'] = 'text_fallback'
-    
-    def on_validation_fallback_to_text(self, context: StateContext, **kwargs) -> None:
-        """Action when falling back to text parsing from validation failure"""
-        validation_error = context.error_message or 'validation_failed'
-        self.logger.info(f"Falling back to text parsing after validation failure: {validation_error}")
-        
-        # Clear JSON-specific data but preserve AI response for text parsing
-        context.json_validation_result = None
-        context.validated_json_data = None
-        
-        # Mark the fallback in parsed data
-        context.parsed_data['json_validation_fallback'] = True
-        context.parsed_data['validation_error'] = validation_error
-        context.parsed_data['source'] = 'validation_fallback'
-        
-        # Clear error state since we're recovering
-        context.error_message = None
-    
-    def on_json_validation_abort(self, context: StateContext, **kwargs) -> None:
-        """Action when aborting JSON validation workflow"""
-        abort_reason = kwargs.get('reason', 'max_retries_exceeded')
-        context.error_message = f"JSON validation aborted: {abort_reason}"
-        context.increment_error_attempts()
-        self.logger.error(f"JSON validation workflow aborted: {abort_reason}")
-    
-    def on_start_text_parsing(self, context: StateContext, **kwargs) -> None:
-        """Action when starting text parsing (bypassing JSON workflow)"""
-        self.logger.info(f"Starting text parsing for {context.button_type} (bypassing JSON)")
-        context.parsed_data['parse_start_time'] = time.time()
-        context.parsed_data['source'] = 'direct_text'
+            self.logger.debug(f"JSON extraction for display failed: {e}")
+            # Store anyway for debug purposes
+            context.raw_json_response = f'{{"message": "Invalid JSON structure found", "raw_content": "{json_str[:100]}..."}}'
     
     # === Enhanced Error Recovery Actions ===
     
@@ -542,6 +402,7 @@ class StateManager:
             'on_error_button_recovery': self.actions.on_error_button_recovery,
             'on_auto_recover_from_error': self.actions.on_auto_recover_from_error,
             'on_user_recover_from_error': self.actions.on_user_recover_from_error,
+            'on_extract_json_for_display': self.actions.on_extract_json_for_display,
         }
     
     # === Core FSM Operations ===

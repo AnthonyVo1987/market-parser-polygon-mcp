@@ -105,48 +105,12 @@ class TransitionGuards:
             return False
         return context.button_type in ['snapshot', 'support_resistance', 'technical']
     
-    # === JSON Workflow Guards ===
+    # === Simplified JSON Display Guards ===
     
     @staticmethod
     def has_raw_json_response(context: StateContext) -> bool:
-        """Check if raw JSON response is available"""
+        """Check if raw JSON response is available for display"""
         return context.raw_json_response is not None and len(context.raw_json_response.strip()) > 0
-    
-    @staticmethod
-    def has_valid_json_format(context: StateContext) -> bool:
-        """Check if the response contains valid JSON format"""
-        if not context.raw_json_response:
-            return False
-        try:
-            import json
-            json.loads(context.raw_json_response)
-            return True
-        except (json.JSONDecodeError, ValueError):
-            return False
-    
-    @staticmethod
-    def has_validated_json_data(context: StateContext) -> bool:
-        """Check if JSON validation has completed successfully"""
-        return (context.validated_json_data is not None and 
-                context.json_validation_result is not None and
-                context.json_validation_result.get('valid', False))
-    
-    @staticmethod
-    def has_json_schema_type(context: StateContext) -> bool:
-        """Check if JSON schema type is determined"""
-        return context.json_schema_type in ['snapshot', 'support_resistance', 'technical']
-    
-    @staticmethod
-    def can_retry_json_validation(context: StateContext) -> bool:
-        """Check if JSON validation can be retried"""
-        return (context.raw_json_response is not None and
-                context.error_recovery_attempts < 3)
-    
-    @staticmethod
-    def can_fallback_to_text_parsing(context: StateContext) -> bool:
-        """Check if we can fallback to text parsing when JSON fails"""
-        return (context.ai_response is not None and
-                len(context.ai_response.strip()) > 0)
 
 
 class StateTransitions:

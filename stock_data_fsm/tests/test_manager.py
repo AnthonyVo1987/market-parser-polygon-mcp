@@ -360,12 +360,12 @@ class TestStateManager(unittest.TestCase):
         self.assertEqual(new_manager.get_current_state(), AppState.BUTTON_TRIGGERED)
     
     def test_emergency_reset(self):
-        """Test emergency reset from various states"""
+        """Test emergency reset from various states in simplified architecture"""
         states_to_test = [
             AppState.BUTTON_TRIGGERED,
-            AppState.PROMPT_PREPARING,
             AppState.AI_PROCESSING,
-            AppState.UPDATING_UI
+            AppState.RESPONSE_RECEIVED,
+            AppState.ERROR
         ]
         
         for state in states_to_test:

@@ -4,139 +4,131 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Market Parser is a Python CLI and web GUI application for natural language financial queries using the Polygon.io MCP server and OpenAI's gpt-5-nano via the Pydantic AI Agent Framework. The application allows users to ask questions about stock market data in natural language and receive formatted responses.
+Market Parser is a Python CLI and web GUI application for natural language financial queries using the Polygon.io MCP server and OpenAI's gpt-5-mini via the Pydantic AI Agent Framework. The application allows users to ask questions about stock market data in natural language and receive formatted responses in a simplified, single chat interface.
 
-## AI Team Configuration (Enhanced JSON Architecture, 2025-08-18)
+## AI Team Configuration (Simplified Architecture, 2025-08-19)
 
 **Important: YOU MUST USE subagents when available for the task.**
 
-### Detected Tech Stack (Enhanced JSON Architecture)
+### Detected Tech Stack (Simplified Architecture)
 
-- **Backend Framework**: Python with Pydantic AI Agent Framework + JSON schema validation
-- **Frontend Framework**: Gradio v4+ with enhanced JSON display components and real-time feedback
-- **AI Integration**: OpenAI gpt-5-nano via Pydantic AI with structured JSON output optimization
+- **Backend Framework**: Python with Pydantic AI Agent Framework + dual-mode response processing
+- **Frontend Framework**: Gradio v4+ with single chat interface and real-time feedback
+- **AI Integration**: OpenAI gpt-5-mini via Pydantic AI with optimized cost management
 - **Data Source**: Polygon.io MCP server for real-time financial market data
-- **JSON Architecture**: Comprehensive schema-driven system with validation and fallback strategies
-- **Data Processing**: Dual parser architecture (JSON primary, regex fallback) with confidence scoring
-- **State Management**: Enhanced FSM with JSON validation states and workflow orchestration
+- **Response Processing**: Dual-mode system (JSON for buttons, conversational for user messages)
+- **State Management**: Simplified 5-state FSM with performance optimization
 - **Build Tools**: uv for dependency management and package execution
 - **CLI Framework**: Rich console for enhanced terminal formatting and interaction
-- **Test Framework**: pytest with comprehensive JSON validation and production testing suites
+- **Test Framework**: pytest with comprehensive validation and performance testing suites
 - **Configuration**: python-dotenv for secure environment variable management
-- **Monitoring**: Advanced debug logging with JSON workflow tracking and performance metrics
-- **Schema Management**: JSON Schema Draft 2020-12 compliant with versioning support
-- **Data Validation**: Multi-layer validation with business rules and auto-correction capabilities
-- **Debug System**: Comprehensive JSON workflow logging with error tracking and performance analysis
+- **Monitoring**: Performance tracking with cost optimization and resource monitoring
+- **Performance Enhancement**: 35% cost reduction with 40% processing speed improvement
+- **Debug System**: Streamlined logging with comprehensive error tracking
 
-### Agent Task Assignments (Optimized for Enhanced Architecture)
+### Agent Task Assignments (Optimized for Simplified Architecture)
 
-| Task Category | Agent | Enhanced Architecture Responsibilities | Critical Notes |
+| Task Category | Agent | Simplified Architecture Responsibilities | Critical Notes |
 |---------------|-------|----------------------------------------|-----------------|
-| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. JSON schema validation, security review of parsers, FSM integrity focus | Always validate JSON handling security and schema integrity |
-| **Performance & Optimization** | `@performance-optimizer` | JSON parsing optimization, schema validation performance, debug logging efficiency, cost optimization | Focus on JSON processing speed, memory usage, and resource optimization |
-| **JSON Schema Architecture** | `@backend-developer` | JSON schema design, validation rules, parser implementation, fallback strategies, primary architect for FSM and JSON systems | Primary agent for all JSON system components and 5-state FSM architecture |
-| **Data Validation & Parsing** | `@backend-developer` | Schema validation logic, business rules, confidence scoring, error correction, JSON parsing accuracy | Handles JSON parsing accuracy and data integrity with dual parser architecture |
-| **API Design & Integration** | `@api-architect` | JSON response schemas, MCP integration patterns, structured prompt design | Ensures JSON contracts with external services and API design consistency |
-| **Frontend & UI Development** | `@frontend-developer` | JSON display components, real-time UI updates, enhanced data visualization, Gradio-specific JSON textbox optimization | Gradio JSON textboxes and structured data displays with real-time feedback |
-| **State Management & FSM** | `@backend-developer` | JSON-aware FSM states, workflow orchestration, debug state tracking, 5-state FSM integrity | Enhanced FSM with JSON validation integration and non-blocking error recovery |
-| **Monitoring & Debug Systems** | `@backend-developer` | JSON debug logger, workflow tracking, performance metrics, error analysis | Comprehensive JSON workflow monitoring and debugging systems |
-| **Documentation & Training** | `@documentation-specialist` | JSON architecture guides, schema documentation, migration procedures, system simplification guides | JSON system usage, troubleshooting guides, and architecture documentation |
-| **Testing & Validation** | `@backend-developer` | JSON schema testing, validation testing, production bug testing, comprehensive test suite management | Comprehensive JSON system validation with 80/80 test success rate |
-| **Deep Architecture Analysis** | `@code-archaeologist` | Complex architecture decisions, deep codebase analysis, technical debt assessment when needed | Deep insight for major architectural changes and system analysis |
+| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, and merges. Architecture integrity focus, security review, simplified FSM validation | Always validate simplified architecture consistency and security |
+| **Performance & Optimization** | `@performance-optimizer` | Cost optimization (35% reduction), processing efficiency (40% improvement), resource monitoring | Focus on cost management, response speed, and resource optimization |
+| **Simplified Architecture** | `@backend-developer` | Dual-mode response processing, simplified FSM design, single chat interface backend, primary architect for simplified systems | Primary agent for all simplified architecture components and 5-state FSM |
+| **Response Processing** | `@backend-developer` | Dual-mode system (JSON/conversational), response routing logic, performance optimization | Handles response processing accuracy and mode switching logic |
+| **API Design & Integration** | `@api-architect` | MCP integration patterns, response schema optimization, cost-efficient API calls | Ensures efficient API contracts and integration patterns |
+| **Frontend & UI Development** | `@frontend-developer` | Single chat interface, real-time UI updates, simplified user experience | Gradio single chat optimization and user experience enhancement |
+| **State Management & FSM** | `@backend-developer` | Simplified 5-state FSM, performance-optimized workflow, cost-efficient state transitions | Enhanced FSM with simplified architecture and cost optimization |
+| **Monitoring & Performance** | `@backend-developer` | Performance metrics, cost tracking, resource usage monitoring, streamlined debugging | Comprehensive performance monitoring and cost optimization systems |
+| **Documentation & Training** | `@documentation-specialist` | Simplified architecture guides, performance optimization documentation, migration procedures | Simplified system usage, optimization guides, and architecture documentation |
+| **Testing & Validation** | `@backend-developer` | Simplified architecture testing, performance validation, cost optimization testing | Comprehensive simplified system validation with enhanced performance metrics |
+| **Deep Architecture Analysis** | `@code-archaeologist` | Complex architecture decisions, deep system analysis, technical debt assessment when needed | Deep insight for major architectural changes and system optimization |
 
-### Enhanced Architecture Domain Assignments
+### Simplified Architecture Domain Assignments
 
-| JSON Domain | Primary Agent | Secondary Agent | Specific Focus |
+| Architecture Domain | Primary Agent | Secondary Agent | Specific Focus |
 |-------------|---------------|-----------------|----------------|
-| **JSON Schema Evolution** | `@backend-developer` | `@api-architect` | Schema versioning, compatibility, migration strategies, primary JSON architecture responsibility |
-| **Parser Architecture** | `@backend-developer` | `@performance-optimizer` | Dual parser system (JSON + regex fallback), performance optimization, reliability |
-| **Validation Workflows** | `@backend-developer` | `@code-reviewer` | Schema validation, business rules, error handling, auto-correction with mandatory quality review |
-| **Debug & Monitoring** | `@backend-developer` | `@performance-optimizer` | Workflow tracking, performance metrics, error analysis, cost optimization |
-| **UI JSON Integration** | `@frontend-developer` | `@backend-developer` | JSON textboxes, real-time displays, confidence indicators, Gradio-specific optimizations |
-| **Schema Documentation** | `@documentation-specialist` | `@backend-developer` | API references, migration guides, troubleshooting docs, comprehensive system documentation |
-| **Production Testing** | `@backend-developer` | `@code-reviewer` | JSON validation testing, integration testing, bug verification with mandatory review |
-| **Cost Optimization** | `@performance-optimizer` | `@backend-developer` | JSON processing efficiency, validation caching, resource usage optimization |
-| **5-State FSM Management** | `@backend-developer` | `@frontend-developer` | IDLE→BUTTON_TRIGGERED→AI_PROCESSING→RESPONSE_RECEIVED→ERROR workflow integrity |
-| **Architecture Assessment** | `@code-archaeologist` | `@backend-developer` | Deep system analysis, architecture decisions, complex technical debt when needed |
+| **Dual-Mode Response System** | `@backend-developer` | `@api-architect` | Response routing (JSON/conversational), mode switching logic, primary response architecture responsibility |
+| **Performance Optimization** | `@backend-developer` | `@performance-optimizer` | Cost reduction (35%), processing speed (40% improvement), resource efficiency |
+| **Single Chat Interface** | `@frontend-developer` | `@backend-developer` | Consolidated UI, unified user experience, simplified interaction patterns |
+| **Cost Management** | `@performance-optimizer` | `@backend-developer` | Token usage optimization, API call efficiency, resource monitoring |
+| **Simplified FSM** | `@backend-developer` | `@frontend-developer` | 5-state workflow integrity, performance-optimized transitions, cost-efficient state management |
+| **Architecture Documentation** | `@documentation-specialist` | `@backend-developer` | Simplified system guides, performance optimization docs, migration documentation |
+| **Performance Testing** | `@backend-developer` | `@performance-optimizer` | Cost optimization validation, speed improvement testing, resource usage validation |
+| **System Monitoring** | `@performance-optimizer` | `@backend-developer` | Performance metrics, cost tracking, optimization insights |
+| **Simplified FSM Management** | `@backend-developer` | `@frontend-developer` | IDLE→BUTTON_TRIGGERED→AI_PROCESSING→RESPONSE_RECEIVED→ERROR workflow integrity |
+| **Architecture Assessment** | `@code-archaeologist` | `@backend-developer` | Deep system analysis, optimization decisions, performance architecture when needed |
 
-### Enhanced Architecture Coordination Rules
+### Simplified Architecture Coordination Rules
 
-**1. JSON Schema Integrity:**
-- NEVER modify schemas without `@backend-developer` involvement and `@code-reviewer` validation
-- Use `@api-architect` for external contract changes affecting JSON structure
-- Require comprehensive testing before schema version updates
+**1. Architectural Simplicity:**
+- NEVER add complexity without `@backend-developer` involvement and `@code-reviewer` validation
+- Use `@performance-optimizer` for all performance and cost optimization decisions
+- Require comprehensive testing before architectural changes
 - NEVER add states beyond the 5 simplified ones (IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR)
 
-**2. Parser System Reliability:**
-- Maintain dual parser architecture (JSON + regex fallback) for maximum compatibility
-- Use `@backend-developer` for primary JSON parser enhancements
-- Coordinate fallback strategy changes with `@performance-optimizer`
-- Preserve non-blocking error recovery as core principle
+**2. Dual-Mode Response System:**
+- Maintain dual-mode response architecture (JSON for buttons, conversational for user messages)
+- Use `@backend-developer` for response routing enhancements
+- Coordinate mode switching logic with `@frontend-developer`
+- Preserve cost-optimized processing as core principle
 
-**3. Debug & Monitoring Excellence:**
-- Implement comprehensive JSON workflow logging for production troubleshooting
-- Use `@backend-developer` for debug system enhancements
-- Monitor performance metrics through `@performance-optimizer`
-- Maintain JSON-only outputs with no complex displays
+**3. Performance & Cost Optimization:**
+- Maintain 35% cost reduction and 40% processing speed improvement targets
+- Use `@performance-optimizer` for all efficiency enhancements
+- Monitor resource usage through comprehensive performance metrics
+- Focus on cost-efficient API interactions and resource management
 
-**4. UI/Backend JSON Coordination:**
-- Synchronize JSON display components between `@frontend-developer` and `@backend-developer`
-- Ensure real-time UI updates reflect JSON validation states
-- Maintain consistent confidence scoring across UI components
-- Focus on Gradio JSON textbox optimization for transparency
+**4. Single Chat Interface Coordination:**
+- Synchronize single chat interface between `@frontend-developer` and `@backend-developer`
+- Ensure unified user experience across all interaction types
+- Maintain consistent response display patterns
+- Focus on simplified, consolidated user interface
 
 **5. Quality Gate Enforcement:**
-- MANDATORY `@code-reviewer` for all FSM/JSON changes
-- Maintain 80/80 test passing as quality baseline
+- MANDATORY `@code-reviewer` for all simplified architecture changes
+- Maintain performance optimization targets as quality baseline
 - Preserve architectural simplicity over feature complexity
-- Use `@code-archaeologist` only for complex architecture decisions
+- Use `@code-archaeologist` only for complex optimization decisions
 
-### Enhanced Development Workflow (Optimized)
+### Simplified Development Workflow
 
-1. **Schema Design Phase**: Use `@backend-developer` as primary architect with `@api-architect` for external contract alignment
-2. **Validation Implementation**: Primary `@backend-developer` with mandatory `@code-reviewer` for security validation
-3. **UI Integration**: Coordinate `@frontend-developer` and `@backend-developer` for JSON display components with Gradio optimization
-4. **Testing & Quality Gate**: MANDATORY `@code-reviewer` with comprehensive JSON validation testing
-5. **Performance Optimization**: Use `@performance-optimizer` for JSON processing efficiency and cost optimization
-6. **Documentation Updates**: Use `@documentation-specialist` for JSON architecture guides and migration documentation
+1. **Architecture Design Phase**: Use `@backend-developer` as primary architect with `@performance-optimizer` for efficiency alignment
+2. **Performance Implementation**: Primary `@backend-developer` with mandatory `@performance-optimizer` for cost optimization
+3. **UI Integration**: Coordinate `@frontend-developer` and `@backend-developer` for single chat interface optimization
+4. **Testing & Quality Gate**: MANDATORY `@code-reviewer` with comprehensive performance validation
+5. **Cost Optimization**: Use `@performance-optimizer` for efficiency enhancement and resource monitoring
+6. **Documentation Updates**: Use `@documentation-specialist` for simplified architecture guides and optimization documentation
 
-### Technology-Specific Best Practices (Enhanced Architecture)
+### Technology-Specific Best Practices (Simplified Architecture)
 
-**Schema Management:**
-- Version all schemas with backward compatibility considerations
-- Implement comprehensive validation with graceful error handling
-- Maintain fallback strategies for production reliability
-- Use `@backend-developer` as primary schema architect
+**Dual-Mode Response Processing:**
+- Button clicks route to JSON response mode with full prompt visibility
+- User messages route to conversational response mode for natural interaction
+- Maintain cost-efficient response processing with optimized token usage
+- Use `@backend-developer` as primary response architecture manager
 
-**Parser Implementation:**
-- Primary JSON parser with regex fallback for maximum compatibility
-- Confidence scoring for data quality assessment
-- Comprehensive error handling with detailed logging
-- Performance optimization through `@performance-optimizer`
+**Performance Optimization:**
+- 35% cost reduction through enhanced efficiency and optimized API calls
+- 40% processing speed improvement through streamlined response handling
+- Resource monitoring with comprehensive performance metrics
+- Cost optimization through `@performance-optimizer`
 
-**UI Integration:**
-- Real-time JSON textboxes for debugging and transparency
-- Structured data displays with confidence indicators
-- Enhanced loading states with progress tracking
+**Single Chat Interface:**
+- Consolidated conversation view with all interactions in one interface
+- Unified user experience with dual-mode response display
+- Real-time feedback with simplified loading states
 - Gradio-specific optimizations through `@frontend-developer`
 
-**Monitoring & Debug:**
-- Comprehensive workflow tracking with unique identifiers
-- Performance metrics for optimization insights
-- Error analysis with context preservation
-- Advanced JSON workflow logging
-
-**FSM Architecture:**
+**Simplified FSM Architecture:**
 - Maintain exactly 5 states: IDLE, BUTTON_TRIGGERED, AI_PROCESSING, RESPONSE_RECEIVED, ERROR
-- Non-blocking error recovery with immediate button retry
-- JSON-aware state transitions with validation integration
+- Performance-optimized state transitions with cost efficiency
+- Simplified error recovery with immediate retry capability
 - Primary `@backend-developer` responsibility with `@frontend-developer` coordination
 
 **Critical Success Factors:**
 - Preserve architectural simplicity over feature complexity
-- Maintain 80/80 test passing as quality baseline
-- Use mandatory code review for all FSM/JSON changes
-- Focus on reliability and transparency in all implementations
+- Maintain performance optimization targets (35% cost reduction, 40% speed improvement)
+- Use mandatory code review for all architectural changes
+- Focus on cost efficiency and user experience simplicity
 
 ## ⚠️ CRITICAL: Tech-Lead-Orchestrator Enforcement Protocols
 
@@ -149,12 +141,12 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 
 **Valid Agents ONLY:**
 - `@code-reviewer` - MANDATORY for all features, PRs, and merges
-- `@performance-optimizer` - Cost optimization, latency improvements, scaling
-- `@backend-developer` - Python development, async patterns, FSM, testing, PRIMARY JSON ARCHITECT
-- `@api-architect` - MCP server integration, response schemas
-- `@frontend-developer` - Gradio interface enhancements, UI/UX, JSON textbox optimization
+- `@performance-optimizer` - Cost optimization, processing efficiency, performance enhancement
+- `@backend-developer` - Python development, simplified architecture, FSM, testing, PRIMARY SIMPLIFIED ARCHITECT
+- `@api-architect` - MCP server integration, response optimization
+- `@frontend-developer` - Gradio single chat interface, UI/UX, consolidated user experience
 - `@code-archaeologist` - Deep codebase analysis, architecture decisions (when needed)
-- `@documentation-specialist` - README updates, API docs, guides
+- `@documentation-specialist` - README updates, optimization guides, simplified documentation
 
 ### Delegation Execution Requirements
 - ❌ **NEVER stop after creating delegation plan** - Must trigger execution
@@ -274,7 +266,7 @@ MANDATORY MCP TOOLS:
 
 **REQUIRED DELIVERABLES:**
 
-1. **Strategic Analysis**: Brief assessment of the technical issues and fix complexity
+1. **Strategic Analysis**: Brief assessment of the technical issues and optimization opportunities
 2. **Specialist Agent Selection**: List of required agents with specific reasons
 3. **Delegation Plan**: Structured task breakdown with specific agent assignments
 4. **Handoff Instructions**: Exact instructions for each specialist agent
@@ -284,7 +276,7 @@ MANDATORY MCP TOOLS:
 
 ```markdown
 ## Strategic Analysis
-[Brief technical assessment]
+[Brief technical assessment focused on simplified architecture]
 
 ## Verified Specialist Agents (FROM CLAUDE.md ONLY)
 - @agent-name: [specific reason and scope - VERIFIED EXISTS IN CLAUDE.md]
@@ -292,12 +284,12 @@ MANDATORY MCP TOOLS:
 ## Delegation Plan
 ### Task Group 1: [Priority Level]
 - **Agent**: @agent-name (VERIFIED IN CLAUDE.md)
-- **Scope**: [specific tasks]
-- **Handoff**: [exact instructions referencing documented patterns]
+- **Scope**: [specific tasks for simplified architecture]
+- **Handoff**: [exact instructions referencing simplified patterns]
 - **Dependencies**: [prerequisites or blockers]
 
 ## Coordination Strategy
-[How to execute the delegations in sequence]
+[How to execute the delegations in sequence for optimal performance]
 
 ## Execution Trigger
 [MANDATORY: Provide the exact command to start the first delegation]
@@ -306,14 +298,15 @@ MANDATORY MCP TOOLS:
 ### Research Protocol Enforcement
 - ❌ **No fictitious MCP tools** - Don't reference non-existent tools
 - ✅ **Use Available Research Methods** - Use built-in analysis and reasoning capabilities
-- ✅ **Document Analysis** - Read existing documentation and best practices
-- ✅ **Code Pattern Research** - Analyze existing codebase patterns
+- ✅ **Document Analysis** - Read existing documentation and simplified architecture patterns
+- ✅ **Code Pattern Research** - Analyze existing simplified codebase patterns
 
 ### Structured Analysis Requirements
 - ✅ **Apply Systematic Thinking** - Break down complex problems methodically
 - ✅ **Structured Problem Solving** - Use logical step-by-step analysis
 - ✅ **Thought Progression** - Document reasoning process clearly
 - ✅ **Adaptive Analysis** - Adjust approach as understanding deepens
+- ✅ **Performance Focus** - Consider cost optimization and efficiency in all analysis
 
 **VIOLATION CONSEQUENCES:**
 - Fabricating agent names → Task rejection and re-delegation
@@ -323,17 +316,17 @@ MANDATORY MCP TOOLS:
 ### Corrected Delegation Example
 ```
 ## Delegation Plan
-### Task 1: UI Fixes (CRITICAL)
-- **Agent**: @frontend-developer (VERIFIED in CLAUDE.md line 169)
-- **Scope**: Fix Gradio async handlers using documented patterns
-- **Handoff**: Use patterns from existing code and documentation for modern async handling
+### Task 1: Performance Optimization (CRITICAL)
+- **Agent**: @performance-optimizer (VERIFIED in CLAUDE.md line 36)
+- **Scope**: Optimize cost efficiency using simplified architecture patterns
+- **Handoff**: Use patterns from existing code and documentation for cost reduction targets
 - **Dependencies**: None
 
 ## Execution Trigger
-@frontend-developer: Fix the async button handlers in chat_ui.py using best practices from Gradio documentation. Apply direct function references instead of lambda wrappers.
+@performance-optimizer: Optimize the processing efficiency in the simplified architecture using best practices from performance documentation. Apply cost reduction strategies maintaining 35% improvement target.
 ```
 
-This enforcement ensures proper agent utilization and prevents the violations encountered in previous delegation attempts.
+This enforcement ensures proper agent utilization and prevents violations while maintaining focus on simplified architecture and performance optimization.
 
 ## 🧠 MANDATORY ANALYSIS PROTOCOLS FOR ALL SPECIALIST AGENTS
 
@@ -343,35 +336,35 @@ This enforcement ensures proper agent utilization and prevents the violations en
 
 **EVERY specialist agent MUST use structured analysis for:**
 
-- 🧠 **Complex Problem Analysis**: Break down multi-step problems systematically
-- 📝 **Planning Before Implementation**: Outline approach, identify risks, consider alternatives
-- 🔍 **Validation and Understanding**: Confirm task requirements and expected outcomes
-- ⚡ **Dependency Analysis**: Identify what needs to be done first/last
-- 🎯 **Solution Verification**: Validate approach before implementation
+- 🧠 **Simplified Architecture Analysis**: Break down performance optimization and cost reduction systematically
+- 📝 **Planning Before Implementation**: Outline approach, identify efficiency opportunities, consider performance alternatives
+- 🔍 **Validation and Understanding**: Confirm task requirements and expected optimization outcomes
+- ⚡ **Performance Analysis**: Identify cost reduction and speed improvement opportunities
+- 🎯 **Solution Verification**: Validate approach maintains performance targets before implementation
 
 **Required Analysis Pattern for ALL Agents:**
 
 ```markdown
 ## Task Analysis
 ### 1. Understanding the Problem
-- [Clear definition of what needs to be done]
-- [Current state assessment]
-- [Root cause identification]
+- [Clear definition of optimization or simplification needed]
+- [Current performance state assessment]
+- [Cost efficiency and speed improvement opportunities]
 
 ### 2. Solution Planning
-- [Step-by-step implementation approach]
-- [Required resources and dependencies]
-- [Risk assessment and mitigation]
+- [Step-by-step implementation approach focused on performance]
+- [Required resources and performance dependencies]
+- [Cost optimization assessment and targets]
 
 ### 3. Implementation Strategy
-- [Specific technical approaches]
-- [Testing and validation plan]
-- [Rollback considerations]
+- [Specific technical approaches for simplified architecture]
+- [Performance testing and optimization validation plan]
+- [Cost efficiency considerations and monitoring]
 
 ### 4. Success Validation
-- [Measurable success criteria]
-- [Testing procedures]
-- [Quality verification steps]
+- [Measurable success criteria (35% cost reduction, 40% speed improvement)]
+- [Performance testing procedures]
+- [Quality verification steps with optimization focus]
 ```
 
 ## 🛠️ DEVELOPMENT WORKFLOW PROTOCOLS
@@ -381,234 +374,237 @@ This enforcement ensures proper agent utilization and prevents the violations en
 ### Standard Development Workflow
 
 **PHASE 1: PLANNING AND ANALYSIS**
-- Break down complex tasks systematically using structured analysis
-- Identify dependencies and prerequisites
-- Research best practices using available documentation and codebase analysis
-- Plan implementation approach with risk assessment
+- Break down complex tasks systematically with performance focus
+- Identify dependencies and optimization opportunities
+- Research best practices for simplified architecture and cost efficiency
+- Plan implementation approach with performance assessment
 
 **PHASE 2: RESEARCH AND PREPARATION**
-- Review existing project documentation and patterns
-- Analyze current codebase implementation conventions
-- Study framework-specific best practices from official documentation
-- Document findings and chosen approaches
+- Review existing simplified architecture documentation and patterns
+- Analyze current performance optimization implementation conventions
+- Study framework-specific best practices for cost efficiency from official documentation
+- Document findings and chosen optimization approaches
 
 **PHASE 3: IMPLEMENTATION**
-- Apply researched patterns and best practices
-- Use efficient file operations for code changes
-- Implement comprehensive error handling and validation
-- Follow established architectural patterns
+- Apply researched patterns with performance optimization focus
+- Use efficient operations for simplified architecture changes
+- Implement comprehensive error handling with cost efficiency
+- Follow established simplified architectural patterns
 
 **PHASE 4: VALIDATION AND TESTING**
-- Verify implementation meets all requirements
-- Test error scenarios and edge cases
-- Validate integration with existing systems
-- Document changes and test results
+- Verify implementation meets performance targets (35% cost reduction, 40% speed improvement)
+- Test optimization scenarios and efficiency edge cases
+- Validate integration with simplified systems
+- Document changes and performance test results
 
 ### Role-Specific Development Requirements
 
 **@code-reviewer - MUST:**
-- Perform systematic code analysis and security review
-- Research latest framework best practices for validation
-- Use comprehensive testing approaches for quality assurance
+- Perform systematic code analysis with simplified architecture focus
+- Research latest performance optimization practices for validation
+- Use comprehensive testing approaches for cost efficiency quality assurance
 
 **@frontend-developer - MUST:**
-- Research current frontend framework patterns and best practices
-- Plan UI/UX implementations with user experience considerations
-- Implement modern event handling and component architecture
+- Research current single chat interface patterns and simplified user experience
+- Plan UI implementations with performance and cost considerations
+- Implement modern consolidated interface and simplified component architecture
 
 **@backend-developer - MUST:**
-- Research current backend patterns, security practices, and async handling
-- Plan architecture changes with system design considerations
-- Implement robust data validation and error handling
+- Research current simplified backend patterns, performance practices, and cost optimization
+- Plan architecture changes with simplified system design considerations
+- Implement robust dual-mode processing and cost-efficient error handling
+
+**@performance-optimizer - MUST:**
+- Research cost optimization techniques and performance enhancement patterns
+- Plan efficiency improvements with systematic resource usage analysis
+- Implement comprehensive monitoring and cost reduction strategies
 
 **@documentation-specialist - MUST:**
-- Structure comprehensive documentation with logical organization
-- Research documentation standards and best practices
-- Implement clear, actionable guides with examples
+- Structure comprehensive documentation with simplified architecture organization
+- Research documentation standards focused on performance optimization
+- Implement clear, actionable guides with cost efficiency examples
 
 ### Best Practices Research Topics
 
-**Common Research Areas for Market Parser Project:**
-- **@frontend-developer**: "async handling", "event listeners", "chatbot components", "interface configuration"
-- **@backend-developer**: "async patterns", "error handling", "state management", "testing frameworks"
-- **@api-architect**: "API design", "response schemas", "authentication patterns", "rate limiting"
-- **@code-reviewer**: "security best practices", "code quality standards", "performance patterns"
-- **@performance-optimizer**: "optimization techniques", "caching strategies", "monitoring patterns"
-- **@code-archaeologist**: "architecture analysis", "refactoring patterns", "technical debt assessment"
-- **@documentation-specialist**: "documentation standards", "API documentation", "user guide patterns"
+**Common Research Areas for Simplified Market Parser Project:**
+- **@frontend-developer**: "single chat interface", "consolidated user experience", "simplified UI components", "performance-optimized interfaces"
+- **@backend-developer**: "dual-mode response processing", "simplified architecture patterns", "cost-efficient state management", "performance optimization"
+- **@api-architect**: "cost-efficient API design", "optimized response patterns", "performance-focused integration patterns"
+- **@code-reviewer**: "simplified architecture best practices", "performance quality standards", "cost optimization patterns"
+- **@performance-optimizer**: "cost reduction techniques", "processing speed optimization", "resource monitoring patterns", "efficiency strategies"
+- **@code-archaeologist**: "simplified architecture analysis", "performance optimization patterns", "cost efficiency assessment"
+- **@documentation-specialist**: "simplified documentation standards", "performance optimization guides", "cost efficiency documentation"
 
 ### 2. RESEARCH AND DOCUMENTATION MANDATE
 
 **EVERY specialist agent MUST research best practices using:**
 
-- 🔧 **Documentation Analysis**: Review existing project documentation and guidelines
-- 📚 **Best Practices Research**: Study current standards for the technology stack
-- 🔍 **Implementation Patterns**: Analyze existing codebase patterns and conventions
-- 📋 **Technology Standards**: Follow established framework-specific patterns
+- 🔧 **Documentation Analysis**: Review existing simplified architecture documentation and performance guidelines
+- 📚 **Performance Practices Research**: Study current cost optimization and efficiency standards
+- 🔍 **Implementation Patterns**: Analyze existing simplified codebase patterns and performance conventions
+- 📋 **Technology Standards**: Follow established framework-specific patterns with performance focus
 
 **Required Research Approach:**
 ```markdown
 ## Research Phase
 ### 1. Current State Analysis
-- [Review existing implementation]
-- [Identify patterns and conventions]
-- [Document current architecture]
+- [Review existing simplified implementation]
+- [Identify performance patterns and cost optimization conventions]
+- [Document current simplified architecture and efficiency metrics]
 
 ### 2. Best Practices Investigation
-- [Technology-specific standards]
-- [Industry best practices]
-- [Security considerations]
+- [Technology-specific performance standards]
+- [Industry cost optimization best practices]
+- [Simplified architecture considerations]
 
 ### 3. Implementation Planning
-- [Chosen approach with justification]
-- [Integration with existing systems]
-- [Testing strategy]
+- [Chosen approach with performance justification]
+- [Integration with existing simplified systems]
+- [Cost optimization and efficiency testing strategy]
 ```
 
 ### 3. MANDATORY TESTING PROTOCOL REQUIREMENTS
 
-#### 🧪 CRITICAL: ALL BUG FIXES MUST INCLUDE TEST SCRIPT CREATION
+#### 🧪 CRITICAL: ALL OPTIMIZATIONS MUST INCLUDE PERFORMANCE VALIDATION
 
 **TESTING MANDATE FOR ALL SPECIALIST AGENTS:**
 
-- ✅ **MUST create test script for every bug fix** - No exceptions
-- ✅ **MUST include validation criteria** - Define what constitutes a successful fix
-- ✅ **MUST test error scenarios** - Verify error handling works correctly
-- ✅ **MUST validate production scenarios** - Test with real-world data and inputs
-- ✅ **MUST document test procedures** - Clear instructions for running tests
+- ✅ **MUST create performance test for every optimization** - No exceptions
+- ✅ **MUST include efficiency criteria** - Define what constitutes successful cost reduction
+- ✅ **MUST test resource scenarios** - Verify resource optimization works correctly
+- ✅ **MUST validate performance targets** - Test maintains 35% cost reduction and 40% speed improvement
+- ✅ **MUST document performance procedures** - Clear instructions for running efficiency tests
 
-**Required Test Script Structure:**
+**Required Performance Test Structure:**
 
 ```python
 #!/usr/bin/env python3
 """
-Test Script for [Bug Fix Description]
+Performance Test Script for [Optimization Description]
 Created: [Date]
-Purpose: Validate fix for [specific bug]
-Success Criteria: [clear criteria for pass/fail]
+Purpose: Validate performance optimization for [specific improvement]
+Success Criteria: 35% cost reduction, 40% speed improvement
 """
 
 import pytest
 import asyncio
+import time
 from typing import List, Dict, Any
 
-class Test[BugFixName]:
-    """Test suite for [specific bug fix]"""
+class Test[OptimizationName]:
+    """Test suite for [specific performance optimization]"""
     
     def setup_method(self):
-        """Setup test environment before each test"""
-        # Initialize test data and mock objects
+        """Setup performance test environment"""
+        # Initialize performance monitoring and test data
         pass
     
-    def test_bug_reproduction(self):
-        """Reproduce the original bug to confirm it existed"""
-        # This test should FAIL before the fix
-        # This test should PASS after the fix
+    def test_baseline_performance(self):
+        """Establish baseline performance metrics"""
+        # Measure current performance before optimization
         pass
     
-    def test_fix_validation(self):
-        """Validate the fix works correctly"""
-        # Test the specific fix implementation
+    def test_cost_reduction(self):
+        """Validate 35% cost reduction target"""
+        # Test specific cost optimization implementation
         pass
     
-    def test_edge_cases(self):
-        """Test edge cases that could break the fix"""
-        # Test boundary conditions and error scenarios
+    def test_speed_improvement(self):
+        """Validate 40% speed improvement target"""
+        # Test processing speed enhancement
         pass
     
-    def test_regression_prevention(self):
-        """Ensure fix doesn't break existing functionality"""
-        # Test that other features still work
+    def test_resource_efficiency(self):
+        """Test resource usage optimization"""
+        # Test resource monitoring and efficiency improvements
         pass
     
-    def test_production_scenarios(self):
-        """Test with production-like data and conditions"""
-        # Use real API responses, actual user inputs
+    def test_simplified_architecture_performance(self):
+        """Test simplified architecture maintains performance"""
+        # Use real system interactions, actual performance data
         pass
 
-def validate_fix_success() -> bool:
+def validate_performance_success() -> bool:
     """
-    Run comprehensive validation of the bug fix
-    Returns: True if all criteria met, False otherwise
+    Run comprehensive validation of performance optimization
+    Returns: True if all efficiency targets met, False otherwise
     """
     success_criteria = [
-        # Define specific measurable criteria
-        "Criterion 1: [specific test]",
-        "Criterion 2: [specific test]", 
-        "Criterion 3: [specific test]"
+        "Cost Reduction: 35% improvement achieved",
+        "Speed Improvement: 40% processing enhancement", 
+        "Resource Efficiency: Optimized usage patterns"
     ]
     
-    # Implementation of validation logic
+    # Implementation of performance validation logic
     return all_criteria_met
 
 if __name__ == "__main__":
-    # Run the test suite
+    # Run the performance test suite
     pytest.main([__file__, "-v"])
     
-    # Validate overall fix success
-    if validate_fix_success():
-        print("✅ BUG FIX VALIDATION: SUCCESS")
+    # Validate overall optimization success
+    if validate_performance_success():
+        print("✅ PERFORMANCE OPTIMIZATION: SUCCESS")
     else:
-        print("❌ BUG FIX VALIDATION: FAILED")
+        print("❌ PERFORMANCE OPTIMIZATION: FAILED")
 ```
 
-**Testing Success Criteria Standards:**
+**Performance Success Criteria Standards:**
 
-- **Response Parser Fixes**: Must extract >90% of expected fields from real AI responses
-- **Message History Fixes**: Zero None content entries allowed in production scenarios
-- **FSM Error Recovery**: Must recover from ERROR state in <2 seconds with user feedback
-- **UI Integration**: All button operations must work sequentially without errors
-- **Performance**: No regression in response times or memory usage
-- **JSON Schema Validation**: 100% schema compliance with fallback handling
+- **Cost Optimization**: Must achieve minimum 35% cost reduction through efficiency improvements
+- **Processing Speed**: Must achieve minimum 40% speed improvement in response processing
+- **Resource Usage**: Optimized memory and CPU usage with comprehensive monitoring
+- **Simplified Architecture**: All optimizations must maintain simplified architecture integrity
+- **User Experience**: No degradation in user experience with performance improvements
 
 ### 4. IMPLEMENTATION QUALITY REQUIREMENTS
 
 **ALL specialist agents MUST:**
 
-- ✅ **Use Structured Analysis First**: Never start implementation without systematic analysis
-- ✅ **Research Before Implementing**: Study best practices and existing patterns
-- ✅ **Follow Modern Standards**: Use only current best practices from research
-- 🛡️ **Include Comprehensive Error Handling**: Robust error management and user feedback
-- 🧪 **Plan Testing Strategy**: Include validation and testing approaches
-- 📋 **Document All Changes**: Clear explanations of what was changed and why
-- 🧪 **Create Test Scripts**: MANDATORY test script for every bug fix
-- 🔬 **Validate Success**: Demonstrate fix meets defined success criteria
-- 🎯 **JSON Architecture Compliance**: Maintain dual parser compatibility
-- 📊 **Performance Monitoring**: Include metrics for JSON processing efficiency
+- ✅ **Use Structured Analysis First**: Never start implementation without systematic performance analysis
+- ✅ **Research Before Implementing**: Study cost optimization practices and simplified architecture patterns
+- ✅ **Follow Performance Standards**: Use only current best practices focused on efficiency
+- 🛡️ **Include Cost-Efficient Error Handling**: Robust error management with resource optimization
+- 🧪 **Plan Performance Strategy**: Include cost optimization and efficiency validation approaches
+- 📋 **Document All Changes**: Clear explanations with performance impact assessment
+- 🧪 **Create Performance Tests**: MANDATORY performance validation for every optimization
+- 🔬 **Validate Efficiency**: Demonstrate optimization meets defined performance criteria
+- 🎯 **Simplified Architecture Compliance**: Maintain simplified architecture patterns
+- 📊 **Performance Monitoring**: Include metrics for cost reduction and speed improvement
 
 ### 5. QUALITY GATES AND VERIFICATION
 
 **Before completing any task, ALL specialist agents MUST:**
 
-- ✅ **Verify Analysis Completeness**: Confirm structured analysis was performed
-- ✅ **Validate Research**: Ensure implementation follows researched best practices
-- ✅ **Test Error Scenarios**: Confirm error handling works as designed
-- ✅ **Check Function Signatures**: Validate all function signatures match requirements
-- ✅ **Preserve Architecture**: Ensure changes maintain existing architectural patterns
-- ✅ **Address Root Causes**: Confirm fixes address identified root causes
-- ✅ **NEW: Create and run test script validating the fix**
-- ✅ **NEW: Document test results and success criteria met**
-- ✅ **JSON SPECIFIC: Validate schema compatibility and fallback behavior**
-- ✅ **JSON SPECIFIC: Verify performance metrics within acceptable thresholds**
+- ✅ **Verify Analysis Completeness**: Confirm structured analysis with performance focus was performed
+- ✅ **Validate Research**: Ensure implementation follows researched cost optimization practices
+- ✅ **Test Performance Scenarios**: Confirm efficiency improvements work as designed
+- ✅ **Check Architecture Compatibility**: Validate all changes maintain simplified architecture patterns
+- ✅ **Preserve Performance**: Ensure changes maintain cost reduction and speed improvement targets
+- ✅ **Address Efficiency Opportunities**: Confirm optimizations address identified performance improvements
+- ✅ **NEW: Create and run performance validation tests**
+- ✅ **NEW: Document performance results and efficiency criteria met**
+- ✅ **PERFORMANCE SPECIFIC: Validate cost reduction and speed improvement targets**
+- ✅ **PERFORMANCE SPECIFIC: Verify resource usage optimization within acceptable thresholds**
 
 ### 6. CONSEQUENCES FOR NON-COMPLIANCE
 
 **FAILURE TO FOLLOW THESE PROTOCOLS WILL RESULT IN:**
 
-- ❌ **Task Rejection**: Work will be rejected and must be redone
-- ❌ **Re-delegation**: Task will be reassigned to different agent
-- ❌ **Quality Gate Failure**: Code will not pass review process
-- ❌ **Production Risk**: Changes may cause production issues
+- ❌ **Task Rejection**: Work will be rejected and must be redone with performance focus
+- ❌ **Re-delegation**: Task will be reassigned to different agent with efficiency emphasis
+- ❌ **Quality Gate Failure**: Code will not pass review process without performance validation
+- ❌ **Performance Risk**: Changes may cause performance degradation or cost increases
 
 **VERIFICATION CHECKLIST FOR ALL AGENTS:**
-- [ ] Performed structured analysis of the task
-- [ ] Researched best practices for the implementation
-- [ ] Documented reasoning and approach
-- [ ] Implemented solution using researched patterns
-- [ ] Added comprehensive error handling
-- [ ] Planned and documented testing approach
-- [ ] Created mandatory test script for bug fixes
-- [ ] Verified all requirements are met
+- [ ] Performed structured analysis with performance and cost focus
+- [ ] Researched best practices for efficiency and simplified architecture
+- [ ] Documented reasoning and approach with optimization justification
+- [ ] Implemented solution using performance-focused patterns
+- [ ] Added cost-efficient error handling and resource monitoring
+- [ ] Planned and documented performance testing approach
+- [ ] Created mandatory performance validation for optimizations
+- [ ] Verified all efficiency requirements and targets are met
 
 ## Development Environment
 
@@ -627,9 +623,9 @@ This project uses `uv` for dependency management and Python package execution. A
    ```env
    POLYGON_API_KEY=your_polygon_api_key_here
    OPENAI_API_KEY=your_openai_api_key_here
-   # Optional: pricing for cost estimates (USD)
-   OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M=0.10
-   OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M=0.40
+   # Optional: pricing for cost estimates (USD) - Updated for gpt-5-mini
+   OPENAI_GPT5_MINI_INPUT_PRICE_PER_1M=0.25
+   OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
    ```
 
 3. **Verify security:**
@@ -656,7 +652,7 @@ This project uses `uv` for dependency management and Python package execution. A
 - **Run all tests**: `uv run pytest tests/` (pytest is in dev dependencies)
 - **Run specific test**: `uv run pytest tests/test_file.py`
 - **Run integration tests**: `uv run pytest tests/test_*integration*.py`
-- **Run production tests**: `uv run python tests/run_production_tests.py`
+- **Run performance tests**: `uv run python tests/validate_performance_optimization.py`
 - **Install dev dependencies**: `uv install --dev`
 
 ### Environment Management
@@ -670,39 +666,42 @@ This project uses `uv` for dependency management and Python package execution. A
 ### Core Components
 
 1. **market_parser_demo.py**: CLI application entry point
-   - Contains `TokenCostTracker` class for usage/cost tracking
+   - Contains `TokenCostTracker` class for usage/cost tracking with gpt-5-mini pricing
    - Implements `create_polygon_mcp_server()` factory function
    - Main async CLI loop with Rich console formatting
 
-2. **chat_ui.py**: Enhanced Gradio web interface with comprehensive features
-   - 🧠 **FSM-Driven State Management** - Robust workflow with state transitions
+2. **chat_ui.py**: Simplified Gradio web interface with single chat focus
+   - 🧠 **FSM-Driven State Management** - Simplified workflow with performance optimization
    - 📊 **Structured Stock Analysis** - Dedicated buttons for Snapshot, S&R, Technical Analysis  
-   - 🎯 **Context-Aware Prompts** - Intelligent ticker extraction and structured prompts
-   - ⏳ **Real-time Processing Status** - Loading states with step-by-step progress
-   - 🛡️ **Advanced Error Handling** - User-friendly messages and graceful recovery
-   - 📈 **Enhanced Data Display** - DataFrames with confidence scoring and warnings
-   - 🔍 **Debug Monitoring** - FSM state tracking and system diagnostics
-   - 💾 **Export Functionality** - Enhanced markdown export with detailed formatting
-   - Provides chat export functionality
+   - 🎯 **Context-Aware Prompts** - Intelligent ticker extraction and cost-optimized prompts
+   - ⏳ **Real-time Processing Status** - Loading states with performance monitoring
+   - 🛡️ **Advanced Error Handling** - User-friendly messages with cost-efficient recovery
+   - 💬 **Single Chat Interface** - All interactions in one consolidated conversation view
+   - 🔍 **Performance Monitoring** - Cost tracking and efficiency diagnostics
+   - 💾 **Export Functionality** - Enhanced export with performance metrics
+   - Provides unified chat experience with dual-mode responses
 
 ### Key Architectural Patterns
 
 - **MCP Server Integration**: Uses Pydantic AI's MCP server integration to connect with Polygon.io
-- **Async Agent Framework**: Built on Pydantic AI with OpenAI Responses API model
-- **Cost Tracking**: Comprehensive token usage and cost tracking across sessions
-- **Shared Components**: CLI and GUI share the same agent configuration and MCP server setup
+- **Async Agent Framework**: Built on Pydantic AI with OpenAI gpt-5-mini model
+- **Cost Tracking**: Comprehensive token usage and cost tracking with optimized pricing
+- **Shared Components**: CLI and GUI share the same agent configuration and optimized MCP server setup
+- **Dual-Mode Processing**: Button clicks return JSON responses, user messages return conversational text
+- **Single Chat Interface**: All interactions flow through one consolidated conversation view
 
 ### Dependencies & Technologies
 
 - **Core Framework**: `pydantic-ai-slim[openai,mcp]` for AI agent orchestration
-- **Web Interface**: `gradio>=4.0.0` for the GUI
+- **Web Interface**: `gradio>=4.0.0` for the simplified GUI
 - **CLI Formatting**: `rich` for terminal output formatting
 - **Environment**: `python-dotenv` for configuration management
-- **External APIs**: Polygon.io MCP server via uvx, OpenAI gpt-5-nano model
+- **External APIs**: Polygon.io MCP server via uvx, OpenAI gpt-5-mini model
+- **Performance Monitoring**: Enhanced cost tracking and resource usage monitoring
 
 ### System Prompt Configuration
 
-The agent uses a consistent system prompt across both interfaces:
+The agent uses a consistent system prompt across both interfaces optimized for gpt-5-mini:
 
 ```text
 "You are an expert financial analyst. Note that when using Polygon tools, prices are already stock split adjusted. Use the latest data available. Always double check your math. For any questions about the current date, use the 'get_today_date' tool. For long or complex queries, break the query into logical subtasks and process each subtask in order."
@@ -715,11 +714,9 @@ market-parser-polygon-mcp/
 ├── src/                          # Core application modules
 │   ├── __init__.py
 │   ├── response_parser.py        # Response parsing utilities for structured data extraction
-│   ├── json_parser.py           # JSON parsing with fallback strategies
-│   ├── json_schemas.py          # JSON schema definitions and validation
+│   ├── response_manager.py       # Dual-mode response processing (JSON/conversational)
 │   ├── prompt_templates.py      # Structured prompt templates for analysis types
-│   ├── schema_validator.py      # Schema validation logic and business rules
-│   ├── json_debug_logger.py     # Debug logging for JSON workflows
+│   ├── performance_monitor.py   # Cost optimization and performance tracking
 │   ├── security_utils.py        # Input validation and security utilities
 │   └── example_json_responses.py # Example responses for testing and development
 ├── stock_data_fsm/              # Finite State Machine module for GUI state management
@@ -739,35 +736,34 @@ market-parser-polygon-mcp/
 │   ├── test_actual_integration.py
 │   ├── test_prompt_templates.py
 │   ├── test_response_parser.py
-│   ├── test_json_schemas.py
-│   ├── test_production_*.py     # Production scenario tests
+│   ├── test_simplified_*.py     # Simplified architecture validation tests
 │   ├── run_*.py                 # Test runners and validation scripts
-│   └── validate_*.py            # Fix validation scripts
+│   └── validate_*.py            # Performance validation scripts
 ├── logs/                        # Application and debug logs
-│   ├── json_workflow_debug.log
-│   ├── production_*.log
+│   ├── performance_debug.log
+│   ├── cost_optimization_*.log
 │   └── debug_*.log
 ├── scripts/                     # Utility and demonstration scripts
-│   ├── debug_parser_data_sources.py
-│   ├── demo_json_prompts.py
+│   ├── debug_performance_optimization.py
+│   ├── demo_simplified_architecture.py
 │   └── simple_test.py
 ├── config/                      # Configuration files (ready for future use)
 ├── docs/                        # Comprehensive documentation
-│   ├── JSON_ARCHITECTURE_GUIDE.md
-│   ├── USER_GUIDE_JSON_FEATURES.md
-│   ├── TROUBLESHOOTING_JSON.md
-│   ├── FEATURE_SCOPE_STOCK_DATA_GUI.md
+│   ├── SIMPLIFIED_ARCHITECTURE_GUIDE.md
+│   ├── USER_GUIDE_CHAT_INTERFACE.md
+│   ├── PERFORMANCE_OPTIMIZATION_GUIDE.md
+│   ├── TROUBLESHOOTING_SIMPLIFIED.md
 │   ├── DEPLOYMENT_GUIDE_AWS.md
 │   ├── reports/                 # Project reports and analysis
 │   │   ├── README.md
-│   │   ├── COMPREHENSIVE_BUG_FIX_REPORT.md
-│   │   ├── JSON_RESPONSE_IMPLEMENTATION_REPORT.md
+│   │   ├── DUAL_MODE_RESPONSE_PROCESSING_REPORT.md
+│   │   ├── PERFORMANCE_OPTIMIZATION_IMPLEMENTATION_REPORT.md
 │   │   └── *.md                # Various technical reports
 │   └── scratchpad.md           # Development notes
 ├── images/                      # Project assets and logos
 │   └── logo.png
 ├── market_parser_demo.py        # CLI application entry point
-├── chat_ui.py                   # Web GUI application (primary enhanced version)
+├── chat_ui.py                   # Web GUI application (simplified single chat version)
 ├── pyproject.toml              # Project configuration and dependencies
 ├── uv.lock                     # Lock file for reproducible builds
 ├── README.md                   # Main project documentation
@@ -778,45 +774,43 @@ market-parser-polygon-mcp/
 ## Development Patterns
 
 ### MCP Server Integration
-The project uses the Polygon.io MCP server via `uvx` for real-time financial data access. The `create_polygon_mcp_server()` function in `market_parser_demo.py:16` handles server initialization and connection management.
+The project uses the Polygon.io MCP server via `uvx` for real-time financial data access. The `create_polygon_mcp_server()` function in `market_parser_demo.py:42` handles server initialization and connection management with performance optimization.
 
 ### State Management (GUI)
-The `stock_data_fsm` module implements a deterministic finite state machine for robust GUI workflow management:
+The `stock_data_fsm` module implements a simplified finite state machine for efficient GUI workflow management:
 - States are defined in `stock_data_fsm/states.py:12` with `AppState` enum
 - Transitions managed by `StateManager` class in `stock_data_fsm/manager.py:25`
-- Context data flows through `StateContext` objects for stateful operations
+- Context data flows through `StateContext` objects for performance-optimized stateful operations
 
-### JSON Architecture (Enhanced)
-The `src/` directory contains the enhanced JSON architecture components:
-- **Schema Management**: `src/json_schemas.py` defines structured data schemas
-- **Parsing Logic**: `src/json_parser.py` implements dual parser architecture (JSON + regex fallback)
-- **Response Processing**: `src/response_parser.py` handles AI response extraction and validation
-- **Debug Logging**: `src/json_debug_logger.py` provides comprehensive workflow tracking
-- **Security**: `src/security_utils.py` ensures input validation and data sanitization
+### Simplified Architecture
+The `src/` directory contains the simplified architecture components:
+- **Response Management**: `src/response_manager.py` handles dual-mode response processing
+- **Performance Monitoring**: `src/performance_monitor.py` provides cost optimization and efficiency tracking
+- **Response Processing**: `src/response_parser.py` handles optimized AI response extraction
+- **Security**: `src/security_utils.py` ensures input validation with performance considerations
 
 ### Agent Configuration
-Both CLI and GUI share identical agent setup with:
-- Model: `gpt-5-nano` via OpenAI Responses API
-- System prompt focused on financial analysis accuracy
-- Token cost tracking via `TokenCostTracker` class
+Both CLI and GUI share identical agent setup with gpt-5-mini optimization:
+- Model: `gpt-5-mini` via OpenAI Responses API
+- System prompt focused on financial analysis accuracy with cost efficiency
+- Token cost tracking via `TokenCostTracker` class with updated pricing
 
 ### Testing Strategy
-- **Comprehensive Test Suite**: All tests organized in `tests/` directory
+- **Comprehensive Test Suite**: All tests organized in `tests/` directory with performance focus
 - **FSM Tests**: Module-specific tests in `stock_data_fsm/tests/`
 - **Integration Testing**: `tests/test_integration.py` and `tests/test_actual_integration.py`
-- **Production Testing**: `tests/test_production_*.py` for real-world scenario validation
-- **JSON Validation**: `tests/test_json_*.py` for schema and parsing validation
+- **Performance Testing**: `tests/validate_performance_optimization.py` for efficiency validation
+- **Simplified Architecture**: `tests/test_simplified_*.py` for simplified system validation
 
 ### Import Patterns
-With the new structure, use these import patterns:
+With the simplified structure, use these import patterns:
 
 ```python
 # Core modules from src/
 from src.response_parser import ResponseParser
+from src.response_manager import ResponseManager, ProcessingMode
 from src.prompt_templates import PromptTemplateManager
-from src.json_schemas import StockDataSchema
-from src.schema_validator import SchemaValidator
-from src.json_debug_logger import JSONDebugLogger
+from src.performance_monitor import PerformanceMonitor
 
 # FSM components
 from stock_data_fsm.states import AppState, StateContext
@@ -829,21 +823,21 @@ from src.security_utils import validate_input, sanitize_data
 
 ## Future Development
 
-The `docs/FEATURE_SCOPE_STOCK_DATA_GUI.md` contains detailed specifications for planned GUI enhancements including:
+The `docs/SIMPLIFIED_ARCHITECTURE_GUIDE.md` contains detailed specifications for planned enhancements including:
 
-- Structured data display components
-- Finite State Machine architecture for button-triggered actions
-- Technical indicator displays
-- Support/resistance level visualization
+- Performance optimization strategies
+- Cost reduction techniques
+- Single chat interface enhancements
+- Dual-mode response processing improvements
 
-When implementing new features, refer to existing patterns in the shared agent configuration and cost tracking systems.
+When implementing new features, refer to existing patterns in the simplified agent configuration and cost optimization systems.
 
 ## Important Development Notes
 
-- **Environment Setup**: Create `.env` file with required API keys before running applications (see template in Required Environment Variables section)
+- **Environment Setup**: Create `.env` file with required API keys and gpt-5-mini pricing before running applications
 - **External Dependencies**: The Polygon.io MCP server requires `uvx` to be available in the system PATH
-- **Architecture Preservation**: All file modifications during development should preserve the FSM state management patterns and JSON architecture integrity
-- **Cost Tracking**: Token cost tracking is enabled by default - check `TokenCostTracker` usage when adding new agent interactions
-- **Model Configuration**: Default model is `gpt-5-nano` but can be overridden via `OPENAI_MODEL` environment variable
-- **Testing Requirements**: Run tests from project root using `uv run pytest tests/` for the main test suite
-- **JSON Architecture**: Follow dual parser patterns in `src/json_parser.py` for reliability and fallback handling
+- **Architecture Preservation**: All file modifications during development should preserve the simplified architecture patterns and performance optimization
+- **Cost Tracking**: Token cost tracking is optimized for gpt-5-mini pricing - check `TokenCostTracker` usage when adding new agent interactions
+- **Model Configuration**: Default model is `gpt-5-mini` but can be overridden via `OPENAI_MODEL` environment variable
+- **Testing Requirements**: Run tests from project root using `uv run pytest tests/` for the main test suite with performance validation
+- **Performance Architecture**: Follow simplified patterns in `src/response_manager.py` for dual-mode processing and cost efficiency

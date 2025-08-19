@@ -85,7 +85,7 @@ class StateContext:
     prompt: Optional[str] = None
     ai_response: Optional[str] = None
     
-    # JSON output data (preserved for JSON textboxes)
+    # JSON output data (simplified for chat display)
     raw_json_response: Optional[str] = None
     
     # Simple data storage

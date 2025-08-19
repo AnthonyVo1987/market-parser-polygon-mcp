@@ -220,10 +220,10 @@ class JsonValidationError(Exception):
 
 class JsonParser:
     """
-    JSON-based parser for extracting structured stock data from AI responses.
+    Dual-mode JSON parser for extracting structured stock data from AI responses.
     
-    This class implements JSON schema validation, structured data extraction,
-    fallback parsing strategies, and comprehensive error handling.
+    This class implements conditional processing for button (JSON) and user (text)
+    responses with lightweight validation optimized for chat display.
     """
     
     def __init__(self, log_level: int = logging.INFO):
@@ -246,9 +246,173 @@ class JsonParser:
             JsonDataType.TECHNICAL: AnalysisType.TECHNICAL
         }
         
-        self.logger.info("JsonParser initialized with schema validation support")
+        self.logger.info("JsonParser initialized with dual-mode processing and chat optimization")
     
-    # ====== Public API Methods ======
+    # ====== Dual-Mode Processing API ======
+    
+    def process_for_chat(self, response_text: str, source_type: str = 'user', 
+                        data_type: Optional[JsonDataType] = None, ticker: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Process response for chat interface with conditional handling.
+        
+        Args:
+            response_text: Raw AI response text
+            source_type: 'button' for JSON parsing, 'user' for text pass-through
+            data_type: Type of JSON data expected (for button responses)
+            ticker: Stock ticker symbol for context
+            
+        Returns:
+            Dict with chat-optimized processing results
+        """
+        import time
+        start_time = time.time()
+        
+        self.logger.info(f"🔄 Processing {source_type} response for chat display")
+        
+        try:
+            if source_type == 'button' and data_type:
+                # Button response: Parse JSON with lightweight validation
+                return self._process_button_for_chat(response_text, data_type, ticker)
+            else:
+                # User response: Pass through with basic formatting
+                return self._process_user_for_chat(response_text)
+                
+        except Exception as e:
+            processing_time = (time.time() - start_time) * 1000
+            self.logger.error(f"💥 Chat processing failed after {processing_time:.1f}ms: {e}")
+            
+            return {
+                'success': False,
+                'content': f"⚠️ Processing error: {str(e)}",
+                'processing_time_ms': processing_time,
+                'source_type': source_type,
+                'error': str(e)
+            }
+    
+    def _process_button_for_chat(self, response_text: str, data_type: JsonDataType, ticker: Optional[str]) -> Dict[str, Any]:
+        """
+        Process button response with JSON extraction for chat display.
+        
+        Args:
+            response_text: AI response text
+            data_type: Type of JSON data expected
+            ticker: Stock ticker symbol
+            
+        Returns:
+            Dict with chat-optimized button response
+        """
+        import time
+        start_time = time.time()
+        
+        self.logger.info(f"🔘 Processing button response for {data_type.value}")
+        
+        # Parse JSON response
+        parse_result = self._parse_json_response(response_text, data_type, ticker)
+        processing_time = (time.time() - start_time) * 1000
+        
+        # Format for chat based on parsing success
+        if parse_result.confidence in [ConfidenceLevel.HIGH, ConfidenceLevel.MEDIUM]:
+            # Successful parsing - show response with JSON code block
+            json_display = self._create_chat_json_display(parse_result)
+            formatted_content = f"{response_text}\n\n**📊 Extracted Data:**\n```json\n{json_display}\n```"
+            
+            return {
+                'success': True,
+                'content': formatted_content,
+                'structured_data': parse_result.parsed_data,
+                'confidence': parse_result.confidence.value,
+                'processing_time_ms': processing_time,
+                'source_type': 'button',
+                'data_type': data_type.value
+            }
+        else:
+            # Parsing failed - show response with warning
+            warning_msg = "⚠️ *Could not extract structured data from response*"
+            formatted_content = f"{response_text}\n\n{warning_msg}"
+            
+            return {
+                'success': False,
+                'content': formatted_content,
+                'processing_time_ms': processing_time,
+                'source_type': 'button',
+                'data_type': data_type.value,
+                'warnings': parse_result.warnings
+            }
+    
+    def _process_user_for_chat(self, response_text: str) -> Dict[str, Any]:
+        """
+        Process user response with minimal formatting for chat display.
+        
+        Args:
+            response_text: AI response text
+            
+        Returns:
+            Dict with chat-optimized user response
+        """
+        import time
+        start_time = time.time()
+        
+        # Simple text cleanup for better chat display
+        cleaned_content = self._clean_for_chat_display(response_text)
+        processing_time = (time.time() - start_time) * 1000
+        
+        self.logger.info(f"✅ User response processed for chat in {processing_time:.1f}ms")
+        
+        return {
+            'success': True,
+            'content': cleaned_content,
+            'processing_time_ms': processing_time,
+            'source_type': 'user'
+        }
+    
+    def _create_chat_json_display(self, parse_result: JsonParseResult) -> str:
+        """
+        Create JSON display optimized for chat interface.
+        
+        Args:
+            parse_result: JSON parsing result
+            
+        Returns:
+            Formatted JSON string for chat display
+        """
+        import json
+        
+        # Create simplified display format
+        chat_data = {
+            'analysis_type': parse_result.data_type.value,
+            'confidence': parse_result.confidence.value,
+            'data': parse_result.parsed_data
+        }
+        
+        # Add processing metadata for transparency
+        if parse_result.extraction_metadata:
+            chat_data['processing_info'] = {
+                'extraction_method': parse_result.extraction_metadata.get('extraction_method', 'json'),
+                'processing_time_ms': parse_result.parse_time_ms
+            }
+        
+        return json.dumps(chat_data, indent=2)
+    
+    def _clean_for_chat_display(self, text: str) -> str:
+        """
+        Clean text response for optimal chat display.
+        
+        Args:
+            text: Raw response text
+            
+        Returns:
+            Cleaned text for chat display
+        """
+        import re
+        
+        # Normalize whitespace and line breaks for chat
+        cleaned = re.sub(r'\n\s*\n\s*\n+', '\n\n', text)  # Reduce excessive line breaks
+        cleaned = re.sub(r'[ \t]+', ' ', cleaned)  # Normalize spaces
+        cleaned = cleaned.strip()
+        
+        return cleaned
+    
+    # ====== Original JSON Processing API (Maintained for Compatibility) ======
     
     def parse_stock_snapshot(self, text: str, ticker: Optional[str] = None) -> JsonParseResult:
         """

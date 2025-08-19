@@ -47,11 +47,11 @@ class TokenCostTracker:
             self.input_price_per_token,
         ) = self._read_price_config(
             [
-                "OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M",
+                "OPENAI_GPT5_MINI_INPUT_PRICE_PER_1M",
                 "OPENAI_INPUT_PRICE_PER_1M",
             ],
             [
-                "OPENAI_GPT5_NANO_INPUT_PRICE_PER_TOKEN",
+                "OPENAI_GPT5_MINI_INPUT_PRICE_PER_TOKEN",
                 "OPENAI_INPUT_PRICE_PER_TOKEN",
             ],
         )
@@ -60,11 +60,11 @@ class TokenCostTracker:
             self.output_price_per_token,
         ) = self._read_price_config(
             [
-                "OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M",
+                "OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M",
                 "OPENAI_OUTPUT_PRICE_PER_1M",
             ],
             [
-                "OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_TOKEN",
+                "OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_TOKEN",
                 "OPENAI_OUTPUT_PRICE_PER_TOKEN",
             ],
         )
@@ -156,13 +156,13 @@ class TokenCostTracker:
                 "[yellow]Tip: set pricing in .env for accurate cost estimates. Supported envs:"
             )
             console.print(
-                "[yellow]  - OPENAI_GPT5_NANO_INPUT_PRICE_PER_1M or OPENAI_INPUT_PRICE_PER_1M[/yellow]"
+                "[yellow]  - OPENAI_GPT5_MINI_INPUT_PRICE_PER_1M or OPENAI_INPUT_PRICE_PER_1M[/yellow]"
             )
             console.print(
-                "[yellow]  - OPENAI_GPT5_NANO_OUTPUT_PRICE_PER_1M or OPENAI_OUTPUT_PRICE_PER_1M[/yellow]"
+                "[yellow]  - OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M or OPENAI_OUTPUT_PRICE_PER_1M[/yellow]"
             )
             console.print(
-                "[yellow]  - Alternatively per-token: OPENAI_GPT5_NANO_INPUT_PRICE_PER_TOKEN / OPENAI_INPUT_PRICE_PER_TOKEN and matching OUTPUT vars[/yellow]"
+                "[yellow]  - Alternatively per-token: OPENAI_GPT5_MINI_INPUT_PRICE_PER_TOKEN / OPENAI_INPUT_PRICE_PER_TOKEN and matching OUTPUT vars[/yellow]"
             )
             self._printed_pricing_hint = True
 
@@ -235,9 +235,9 @@ async def cli_async():
         server = create_polygon_mcp_server()
         from pydantic_ai.models.openai import OpenAIResponsesModel
 
-        # Configure OpenAI Responses API model with gpt-5-nano
+        # Configure OpenAI Responses API model with gpt-5-mini
         # Uses OPENAI_API_KEY from environment automatically
-        model = OpenAIResponsesModel('gpt-5-nano')
+        model = OpenAIResponsesModel('gpt-5-mini')
 
         agent = Agent(
             model=model,

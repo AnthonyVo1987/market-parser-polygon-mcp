@@ -142,7 +142,7 @@ class ValidationReport:
 
 class SchemaValidator:
     """
-    High-performance JSON schema validator with caching and detailed error reporting
+    Dual-mode JSON schema validator optimized for chat interface with lightweight validation
     """
     
     def __init__(self, enable_caching: bool = True, cache_ttl_seconds: int = 300):
@@ -176,7 +176,55 @@ class SchemaValidator:
         }
         
         if not JSONSCHEMA_AVAILABLE:
-            self.logger.warning("jsonschema library not available - validation disabled")
+            self.logger.warning("jsonschema library not available - validation disabled (chat mode will use basic validation)")
+    
+    def validate_for_chat(self, data: Dict[str, Any], analysis_type: AnalysisType,
+                         strict_mode: bool = False) -> Dict[str, Any]:
+        """
+        Lightweight validation optimized for chat interface display.
+        
+        Args:
+            data: Response data to validate
+            analysis_type: Type of analysis for schema selection
+            strict_mode: Whether to fail on warnings (defaults to False for chat)
+            
+        Returns:
+            Dict with chat-optimized validation results
+        """
+        start_time = time.time()
+        
+        if not JSONSCHEMA_AVAILABLE:
+            return {
+                'is_valid': True,  # Assume valid for chat display
+                'confidence_impact': 0.0,
+                'warnings': ['Schema validation unavailable - using basic validation'],
+                'validation_time_ms': 0.0
+            }
+        
+        try:
+            # Use existing validation but format for chat
+            report = self.validate_response(data, analysis_type, strict_mode)
+            validation_time = (time.time() - start_time) * 1000
+            
+            return {
+                'is_valid': report.is_valid,
+                'confidence_impact': report.confidence_impact or 0.0,
+                'warnings': report.warnings,
+                'error_count': len(report.field_errors),
+                'validation_time_ms': validation_time,
+                'schema_version': report.schema_version
+            }
+            
+        except Exception as e:
+            validation_time = (time.time() - start_time) * 1000
+            self.logger.error(f"Chat validation failed: {e}")
+            
+            return {
+                'is_valid': False,
+                'confidence_impact': 0.5,  # Moderate impact for chat
+                'warnings': [f"Validation error: {str(e)}"],
+                'validation_time_ms': validation_time
+            }
     
     def validate_response(self, data: Dict[str, Any], analysis_type: AnalysisType,
                          strict_mode: bool = True) -> ValidationReport:
