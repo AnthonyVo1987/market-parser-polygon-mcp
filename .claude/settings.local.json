@@ -209,7 +209,9 @@
       "WebFetch(domain:docs.anthropic.com)",
       "mcp__filesystem__list_directory",
       "WebFetch(domain:polygon.io)",
-      "mcp__filesystem__write_file"
+      "mcp__filesystem__write_file",
+      "WebFetch(domain:developer.etrade.com)",
+      "WebFetch(domain:apisb.etrade.com)"
     ],
     "deny": [],
     "ask": [],
