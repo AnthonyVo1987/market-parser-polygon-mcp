@@ -20,8 +20,8 @@
 2. ETRADE_POLYGON_API_COMPARISON_AI_TEAM.md was generated using AI Team Specialist with NO Context7 & Sequential-Thinking
 
 ## ACTIONS TO BE PERFORM AFTER CHANGES ARE COMPLETE:
-- SPECIALIST to perform Review\Fix Loop until PASSING code review
-- ONLY AFTER A PASSING CODE REVIEW, SPECIALIST to perform automous doc updates, git status, then an automous ATOMIC GIT commit and GIT push to the github repo for ALL Doc\Code\File changes, and then a final git status to verify successful commit 
+- Start Review\Fix Loop until PASSING code review
+- ONLY AFTER A PASSING CODE REVIEW, perform automous doc updates, git status, then an automous ATOMIC GIT commit and GIT push to the github repo for ALL Doc\Code\File changes, and then a final git status to verify successful commit 
 
 
 
