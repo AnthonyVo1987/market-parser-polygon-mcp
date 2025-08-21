@@ -213,7 +213,17 @@
       "WebFetch(domain:developer.etrade.com)",
       "WebFetch(domain:apisb.etrade.com)",
       "Bash(git ls-tree:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "WebFetch(domain:www.alphavantage.co)",
+      "WebFetch(domain:twelvedata.com)",
+      "WebFetch(domain:alpaca.markets)",
+      "WebFetch(domain:twelvedata.com)",
+      "WebFetch(domain:*)",
+      "WebFetch(*)",
+      "WebFetch *",
+      "WebFetch(domain:finnhub.io)",
+      "WebFetch(domain:developer.schwab.com)",
+      "WebFetch(domain:documentation.tradier.com)"
     ],
     "deny": [],
     "ask": [],
