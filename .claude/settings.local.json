@@ -212,7 +212,8 @@
       "mcp__filesystem__write_file",
       "WebFetch(domain:developer.etrade.com)",
       "WebFetch(domain:apisb.etrade.com)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": [],

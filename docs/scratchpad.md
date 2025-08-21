@@ -25,8 +25,6 @@
 - Anything else relevant to our app etc
 
 ##
-- And then a comparison section for Web API vs TWS API
-- And then finally, a recommendation to pick between Web API vs TWS API section
 - REMINDER THAT ALL THIS ANALYSIS IS TO BE PART OF A SINGLE DOCUMENT AND NOT SEPARATE DOCS
 
 ## ACTIONS TO BE PERFORM AFTER CHANGES ARE COMPLETE:
