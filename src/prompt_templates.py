@@ -459,12 +459,9 @@ CONVERSATIONAL RESPONSE MODE:
         """Build stock snapshot conversational prompt template"""
         conversational_template = """Provide a comprehensive stock snapshot analysis for {ticker} ({company}).
 
-IMPORTANT: Execute this analysis immediately without asking for confirmation. Provide the complete analysis directly.
-
 Please include current market data and recent performance metrics. Focus on providing clear, actionable insights for investors."""
         
         formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
-- Start immediately with the analysis. Do NOT ask for user confirmation or clarification.
 - Start with current price and percentage change
 - Include trading volume and volume analysis
 - Provide OHLC data (Open, High, Low, Close) with context
@@ -486,7 +483,7 @@ Please include current market data and recent performance metrics. Focus on prov
 
 **Analysis:** Apple is showing strong bullish momentum with above-average volume support. The stock has broken above key resistance levels and is trading near daily highs, suggesting continued investor confidence."""
         
-        context_guidance = """Provide the complete analysis without requesting additional input from the user. Focus on making the data accessible and meaningful for both novice and experienced investors. Explain the significance of price movements and volume patterns."""
+        context_guidance = """Focus on making the data accessible and meaningful for both novice and experienced investors. Explain the significance of price movements and volume patterns in a clear, educational manner."""
         
         return PromptTemplate(
             template_type=PromptType.SNAPSHOT,
@@ -498,20 +495,18 @@ Please include current market data and recent performance metrics. Focus on prov
     
     def _build_sr_template(self) -> PromptTemplate:
         """Build support & resistance conversational prompt template"""
-        conversational_template = """Analyze the key support and resistance levels for {ticker} ({company}).
+        conversational_template = """Please analyze the key support and resistance levels for {ticker} ({company}).
 
-IMPORTANT: Execute this analysis immediately without asking for confirmation. Provide the complete analysis directly.
-
-Identify the most important price levels where the stock tends to find support (price floors) and resistance (price ceilings). Explain the significance of these levels for trading decisions."""
+Identify the most important price levels where the stock tends to find support (price floors) and resistance (price ceilings). Explain the significance of these levels for trading decisions and provide actionable insights for traders."""
         
         formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
-- Start immediately with the analysis. Do NOT ask for user confirmation or clarification.
+- Provide comprehensive analysis with clear structure and insights
 - Identify 3 key support levels and 3 key resistance levels
 - Explain the strength of each level (strong, moderate, weak)
 - Provide price targets with reasoning
 - Explain the methodology used (technical analysis, historical data, etc.)
 - Include current price context and trend analysis
-- Use emojis for EVERY bullet point
+- Use emojis for EVERY bullet point to enhance readability
 - Use **🟢 GREEN** for bullish indicators and **🔴 RED** for bearish indicators
 - Make recommendations clear and actionable for traders
 - End each response with 2-3 relevant follow-up questions"""
@@ -532,7 +527,7 @@ Identify the most important price levels where the stock tends to find support (
 
 **Trading Strategy:** Watch for bounces at support levels for long entries, and resistance levels for profit-taking opportunities."""
         
-        context_guidance = """Provide the complete analysis without requesting additional input from the user. Focus on actionable trading insights and explain why these levels are significant based on technical analysis and market structure."""
+        context_guidance = """Focus on actionable trading insights and explain why these levels are significant based on technical analysis and market structure. Make the analysis educational and useful for both novice and experienced traders."""
         
         return PromptTemplate(
             template_type=PromptType.SUPPORT_RESISTANCE,
@@ -544,20 +539,18 @@ Identify the most important price levels where the stock tends to find support (
     
     def _build_technical_template(self) -> PromptTemplate:
         """Build technical analysis conversational prompt template"""
-        conversational_template = """Provide a comprehensive technical analysis for {ticker} ({company}) using key indicators.
+        conversational_template = """Please provide a comprehensive technical analysis for {ticker} ({company}) using key indicators.
 
-IMPORTANT: Execute this analysis immediately without asking for confirmation. Provide the complete analysis directly.
-
-Analyze current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction."""
+Analyze current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction, and provide actionable insights for trading decisions."""
         
         formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
-- Start immediately with the analysis. Do NOT ask for user confirmation or clarification.
+- Deliver thorough analysis with clear explanations and actionable insights
 - Include key oscillators (RSI, MACD) with current values and interpretations
 - Provide moving average analysis (short-term and long-term trends)
 - Explain momentum and trend direction based on indicators
 - Include bullish/bearish signals and their strength
 - Provide trading recommendations based on technical setup
-- Use emojis for EVERY bullet point
+- Use emojis for EVERY bullet point to enhance readability
 - Use **🟢 GREEN** for bullish indicators and **🔴 RED** for bearish indicators
 - Make technical concepts accessible to both novice and experienced traders
 - End each response with 2-3 relevant follow-up questions"""
@@ -578,7 +571,7 @@ Analyze current technical indicators including RSI, MACD, and moving averages. E
 🔹 **Signal Strength:** Moderate - watch for RSI divergence
 🔹 **Recommendation:** Hold current positions, watch for pullback opportunities"""
         
-        context_guidance = """Provide the complete analysis without requesting additional input from the user. Make technical analysis accessible and actionable. Explain what each indicator means and how it affects trading decisions."""
+        context_guidance = """Make technical analysis accessible and actionable for all skill levels. Explain what each indicator means and how it affects trading decisions. Focus on educational value while providing practical trading insights."""
         
         return PromptTemplate(
             template_type=PromptType.TECHNICAL,

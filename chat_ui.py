@@ -258,42 +258,21 @@ async def handle_user_message(
         )
 
 
-async def handle_button_click(
+def prefill_prompt(
     button_type: str,
     ticker: str,
     chat_history: List[Dict],
-    pyd_message_history: List | None,
-    tracker: TokenCostTracker,
-    cost_markdown: str,
-    fsm_manager: StateManager,
-    debug_state: str,
-) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, str]:
+) -> str:
     """
-    Enhanced button click handler with comprehensive loading states and error handling.
-    """
-    print(f"[GUI] Button clicked: {button_type} for {ticker}")
+    Generate and return prompt text for pre-filling the message input box.
     
-    # Start processing with simplified steps
-    processing_status.start_processing(f"Processing {button_type} analysis", total_steps=4)
+    This replaces the automatic AI execution with a 2-phase approach where
+    buttons pre-fill the input, allowing users to edit before sending.
+    """
+    print(f"[GUI] Button pre-fill: {button_type} for {ticker}")
     
     try:
-        # Step 1: Initialize FSM transition
-        processing_status.update_step("Initializing FSM transition...", 1)
-        success = fsm_manager.transition('button_click', 
-                                       button_type=button_type, 
-                                       ticker=ticker or 'the last mentioned stock')
-        
-        if not success:
-            processing_status.error("FSM transition failed")
-            debug_state = _get_debug_state_info(fsm_manager)
-            gr.Warning("FSM state transition failed. Please try again.")
-            return (
-                "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, f"{processing_status.status_message}\n{debug_state}"
-            )
-        
-        # Step 2: Generate enhanced prompt
-        processing_status.update_step("Generating structured prompt...", 2)
+        # Generate prompt using the prompt template manager
         prompt_type_map = {
             'snapshot': PromptType.SNAPSHOT,
             'support_resistance': PromptType.SUPPORT_RESISTANCE,
@@ -307,154 +286,42 @@ async def handle_button_click(
                 ticker=ticker,
                 chat_history=chat_history
             )
-            fsm_manager.context.prompt = prompt
-            fsm_manager.context.ticker = ticker_context.symbol
             
-            print(f"[GUI] Enhanced prompt generated for {ticker_context.symbol} (confidence: {ticker_context.confidence})")
+            print(f"[GUI] Pre-filled prompt generated for {ticker_context.symbol} (confidence: {ticker_context.confidence})")
+            return prompt
         else:
-            processing_status.error(f"Unknown button type: {button_type}")
-            gr.Error(f"Unknown analysis type: {button_type}")
-            return (
-                "", chat_history, pyd_message_history, tracker, cost_markdown,
-                fsm_manager, processing_status.status_message
-            )
-        
-        # Step 3: Prepare prompt and transition FSM to AI processing
-        processing_status.update_step("Starting AI processing...", 3)
-        fsm_manager.transition('start_ai_processing')
-        
-        # Step 4: Execute AI processing
-        processing_status.update_step(f"Getting AI analysis for {fsm_manager.context.ticker}...", 4)
-        await _startup()  # Ensure MCP servers are running
-        
-        # Enhanced debug logging for message history contamination tracking
-        print(f"[DEBUG] Button: {button_type}, Ticker: {ticker}")
-        print(f"[DEBUG] Current prompt: {fsm_manager.context.prompt[:50]}...")
-        print(f"[DEBUG] UI message history length (for display only): {len(pyd_message_history) if pyd_message_history else 0}")
-        print(f"[DEBUG] Agent message history: [] (empty for ALL actions)")
-        if pyd_message_history:
-            print(f"[DEBUG] Message history preview: {str(pyd_message_history)[:100]}...")
-        
-        print(f"[GUI] Sending prompt to AI: {fsm_manager.context.prompt[:100]}...")
-        
-        # CRITICAL FIX: Use empty message history for button actions to prevent contamination
-        # Button actions are INDEPENDENT analyses, not conversational continuations
-        # Each button should start fresh with the AI agent to avoid prompt contamination
-        response = await agent.run(fsm_manager.context.prompt, message_history=[])
-        fsm_manager.context.ai_response = response.output
-        fsm_manager.transition('response_received')
-        
-        # Success confirmation logging
-        print(f"[DEBUG] ✅ {button_type} completed successfully - no message history contamination")
-        
-        # Step 3: Process AI response with unified conversational formatting
-        processing_status.update_step("Processing button response...", 3)
-        fsm_manager.context.raw_json_response = response.output
-        
-        # Process button response with unified conversational formatting
-        processed_response = response_manager.process_response(
-            response.output,
-            source_type='button',
-            data_type=button_type,
-            ticker=fsm_manager.context.ticker
-        )
-        
-        # Add to chat history with unified conversational formatting
-        # First show the analysis request that was sent to AI
-        prompt_display = f"**📋 Analysis Request:**\n{fsm_manager.context.prompt[:200]}..." if len(fsm_manager.context.prompt) > 200 else f"**📋 Analysis Request:**\n{fsm_manager.context.prompt}"
-        
-        # Use processed content which includes enhanced conversational formatting (now includes title)
-        response_content = processed_response.get('content', response.output)
-        
-        # Add processing info if available
-        processing_info = ""
-        if processed_response.get('processing_time_ms'):
-            processing_info = f"\n\n*Processing time: {processed_response['processing_time_ms']:.1f}ms*"
-        
-        enhanced_response = f"{response_content}{processing_info}"
-        
-        chat_history = chat_history + [
-            {"role": "user", "content": prompt_display},
-            {"role": "assistant", "content": enhanced_response}
-        ]
-        
-        # Update message history (using processed content for display)
-        if pyd_message_history is None:
-            pyd_message_history = []
-        pyd_message_history.append({"role": "user", "content": fsm_manager.context.prompt})
-        pyd_message_history.append({"role": "assistant", "content": enhanced_response})
-        
-        # Step 4: Update costs and finalize
-        processing_status.update_step("Finalizing...", 4)
-        cost_markdown = await _update_costs(response, tracker)
-        
-        # Complete display and return FSM to IDLE for next interaction
-        fsm_manager.transition('display_complete')  # Proper RESPONSE_RECEIVED -> IDLE transition
-        
-        # Clear button type to allow regular chat after button completion
-        fsm_manager.context.button_type = None  # Clear for regular chat
-        
-        # Simple debug info
-        debug_state = _get_debug_state_info(fsm_manager)
-        
-        processing_status.complete(f"✅ {button_type.replace('_', ' ').title()} analysis complete")
-        
-        # Modern Gradio success notification
-        gr.Info(f"✅ {button_type.replace('_', ' ').title()} analysis completed for {fsm_manager.context.ticker}")
-        
-        print(f"[GUI] Button processing completed successfully for {fsm_manager.context.ticker}")
-        
-        return (
-            "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, f"{processing_status.status_message}\n{debug_state}"
-        )
-        
+            error_msg = f"Please provide a {button_type} analysis for {ticker or 'the stock'}"
+            print(f"[GUI] Unknown button type, using fallback: {button_type}")
+            return error_msg
+            
     except Exception as e:
-        processing_status.error(f"Button processing error: {str(e)}")
-        
-        # Try to process error response for better display
-        try:
-            error_response = response_manager.process_response(
-                f"Error processing {button_type} analysis: {str(e)}",
-                source_type='user'
-            )
-            error_message = error_response.get('content', f"❌ Error processing {button_type} analysis: {str(e)}")
-        except:
-            error_message = f"❌ Error processing {button_type} analysis: {str(e)}"
-        
-        # Log error for debugging
-        print(f"[GUI] Error in button processing: {e}")
-        traceback.print_exc()
-        
-        # Enhanced error categorization for better user experience
-        error_str = str(e).lower()
-        if 'connection' in error_str or 'timeout' in error_str:
-            gr.Warning("Connection timeout. Please check your internet connection and try again.")
-        elif 'authentication' in error_str or 'unauthorized' in error_str:
-            gr.Error("Authentication failed. Please check your API keys.")
-        elif 'rate limit' in error_str or 'quota' in error_str:
-            gr.Warning("Rate limit exceeded. Please wait a moment and try again.")
-        else:
-            gr.Error(f"Failed to process {button_type.replace('_', ' ').title()} analysis: {str(e)}")
-        
-        # JSON outputs no longer needed - using chat interface only
-        
-        # Force FSM to error state and provide recovery
-        fsm_manager._emergency_transition_to_error(str(e))
-        debug_state = _get_debug_state_info(fsm_manager)
-        
-        # Add error to chat history
-        error_message = f"❌ Error processing {button_type} analysis: {str(e)}\n\nPlease try again or check your ticker symbol."
-        
-        chat_history = chat_history + [
-            {"role": "user", "content": f"📊 {button_type.replace('_', ' ').title()} for {ticker or 'unknown ticker'}"},
-            {"role": "assistant", "content": error_message}
-        ]
-        
-        return (
-            "", chat_history, pyd_message_history, tracker, cost_markdown,
-            fsm_manager, f"{processing_status.status_message}\n{debug_state}"
-        )
+        error_msg = f"Please provide a {button_type} analysis for {ticker or 'the stock'}"
+        print(f"[GUI] Error generating prompt, using fallback: {e}")
+        return error_msg
+
+
+async def handle_button_click(
+    button_type: str,
+    ticker: str,
+    chat_history: List[Dict],
+    pyd_message_history: List | None,
+    tracker: TokenCostTracker,
+    cost_markdown: str,
+    fsm_manager: StateManager,
+    debug_state: str,
+) -> Tuple[str, List[Dict], List, TokenCostTracker, str, StateManager, str]:
+    """
+    DEPRECATED: This function is kept for compatibility but is no longer used.
+    Button clicks now use prefill_prompt() for 2-phase user interaction.
+    """
+    print(f"[GUI] Legacy button handler called: {button_type} for {ticker}")
+    print("[GUI] WARNING: This handler should not be called with new 2-phase button behavior")
+    
+    # Return current state unchanged
+    return (
+        "", chat_history, pyd_message_history, tracker, cost_markdown,
+        fsm_manager, "Button handler not executed - using pre-fill mode"
+    )
 
 
 # -------- Utility Functions --------
@@ -924,10 +791,21 @@ def create_enhanced_chat_interface():
         # Modern async handlers with direct function references
         from functools import partial
         
-        # Use partial application instead of lambda wrappers for better performance
-        handle_snapshot_click = partial(handle_button_click, 'snapshot')
-        handle_sr_click = partial(handle_button_click, 'support_resistance') 
-        handle_tech_click = partial(handle_button_click, 'technical')
+        # Create pre-fill handler functions for each button type
+        def prefill_snapshot(ticker, chat_history):
+            prompt = prefill_prompt('snapshot', ticker, chat_history)
+            gr.Info(f"📈 Snapshot analysis prompt pre-filled for {ticker or 'selected stock'}. Review and edit as needed!")
+            return prompt
+            
+        def prefill_support_resistance(ticker, chat_history):
+            prompt = prefill_prompt('support_resistance', ticker, chat_history)
+            gr.Info(f"🎯 Support & Resistance analysis prompt pre-filled for {ticker or 'selected stock'}. Review and edit as needed!")
+            return prompt
+            
+        def prefill_technical(ticker, chat_history):
+            prompt = prefill_prompt('technical', ticker, chat_history)
+            gr.Info(f"🔧 Technical analysis prompt pre-filled for {ticker or 'selected stock'}. Review and edit as needed!")
+            return prompt
         
         # Enhanced message handling with modern event chaining
         msg_event = msg.submit(
@@ -968,62 +846,23 @@ def create_enhanced_chat_interface():
             outputs=[msg]
         )
         
-        # Enhanced stock analysis buttons with comprehensive error handling and state management
+        # NEW 2-PHASE BUTTON BEHAVIOR: Pre-fill prompts instead of auto-execution
         snapshot_event = snapshot_btn.click(
-            handle_snapshot_click,
-            inputs=[
-                ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, status_display
-            ],
-            outputs=[
-                msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, status_display
-            ]
-        )
-        
-        # Modern UX: Chain button state management to prevent double-clicks
-        snapshot_event.then(
-            lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True)],
-            inputs=[],
-            outputs=[snapshot_btn, sr_btn, tech_btn]
+            prefill_snapshot,
+            inputs=[ticker_input, chatbot],
+            outputs=[msg]
         )
         
         sr_event = sr_btn.click(
-            handle_sr_click,
-            inputs=[
-                ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, status_display
-            ],
-            outputs=[
-                msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, status_display
-            ]
-        )
-        
-        # Modern UX: Chain button state management for Support & Resistance
-        sr_event.then(
-            lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True)],
-            inputs=[],
-            outputs=[snapshot_btn, sr_btn, tech_btn]
+            prefill_support_resistance,
+            inputs=[ticker_input, chatbot], 
+            outputs=[msg]
         )
         
         tech_event = tech_btn.click(
-            handle_tech_click,
-            inputs=[
-                ticker_input, chatbot, pyd_history_state, tracker_state, costs_state,
-                fsm_state, status_display
-            ],
-            outputs=[
-                msg, chatbot, pyd_history_state, tracker_state, costs,
-                fsm_state, status_display
-            ]
-        )
-        
-        # Modern UX: Chain button state management for Technical Analysis
-        tech_event.then(
-            lambda: [gr.update(interactive=True), gr.update(interactive=True), gr.update(interactive=True)],
-            inputs=[],
-            outputs=[snapshot_btn, sr_btn, tech_btn]
+            prefill_technical,
+            inputs=[ticker_input, chatbot],
+            outputs=[msg]
         )
         
         # Enhanced clear with status reset
