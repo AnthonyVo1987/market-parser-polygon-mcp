@@ -2,6 +2,16 @@
 
 
 
+- First, perform a git commit
+- After git commit is successful, we need to enable permissions to perform the push to github repo where we may need authentication
+
+
+- Based on MCP_TESTING_VALIDATION_REPORT.md, we have confirmed that ALL AI Specialist now have access to the 3x Mandatory MCP Tool
+- Now review & update MCP_TOOL_USAGE_GUIDE.md with the confirmed support, and now we can remove the MCP tool waiver and update the guide to now enforce MCP tool usage, since we previously had a waiver because we couldnt not get all Specialist to call MCP tools, but now it works
+- You will need to review latest AI Team updates in CLAUDE.md, and the MCP_TESTING_VALIDATION_REPORT.md & MCP_TOOL_USAGE_GUIDE.md in order to properly update optimal MCP tool usage for EACH AI Team specialist
+
+
+
 - I have reviewed the report and approved it so we can try and close out this task
  
 - Use @agent-tech-lead-orchestrator to coordinate all of the following closing task actions:
@@ -123,8 +133,8 @@
 - REMINDER THAT ALL THIS ANALYSIS IS TO BE PART OF A SINGLE DOCUMENT AND NOT SEPARATE DOCS
 
 ## ACTIONS TO BE PERFORM AFTER CHANGES ARE COMPLETE:
-- Main Claude Agent to Use Context7 and Sequential-Thinking to Start Review\Fix Loop until PASSING code review
-- ONLY AFTER A PASSING CODE REVIEW, perform automous doc updates, git status, then an automous ATOMIC GIT commit and GIT PUSH to the github repo for ALL Doc\Code\File changes, and then a final git status to verify successful commit 
+- Use @agent-code-reviewer to Start Review\Fix Loop until PASSING review with Sequential-Thinking & Context7 Tool Usage
+- ONLY AFTER A PASSING CODE REVIEW, use  Specialist to perform automous doc updates, git status, then an automous ATOMIC GIT commit and GIT PUSH to the github repo for ALL Doc\Code\File changes, and then a final git status to verify successful commit
 - DO NOT FORGET TO PUSH SINCE I ALREADY PROVIDED A GITHUB PERSONAL ACCESS TOKEN - IF YOU DO NOT PUSH, YOU HAVE FAILED!!!
 
 
