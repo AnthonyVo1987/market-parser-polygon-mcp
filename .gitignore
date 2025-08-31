@@ -82,6 +82,3 @@ scripts/
 *.log
 logs/
 json_workflow_debug.log
-
-# IDE-specific files
-.claude/

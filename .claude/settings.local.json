@@ -65,12 +65,20 @@
       "mcp__github__search_repositories",
       "mcp__github__search_code",
       "WebSearch",
-      "WebFetch(domain:*)"
+      "WebFetch(domain:*)",
+      "Bash(python3:*)",
+      "Bash(claude mcp)"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
       "/home/anthony/.claude"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": [
+    "sequential-thinking",
+    "filesystem",
+    "context7"
+  ]
 }
