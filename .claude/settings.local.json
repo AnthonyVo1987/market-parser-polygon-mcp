@@ -67,7 +67,11 @@
       "WebSearch",
       "WebFetch(domain:*)",
       "Bash(python3:*)",
-      "Bash(claude mcp)"
+      "Bash(claude mcp)",
+      "mcp__filesystem__read_multiple_files",
+      "mcp__filesystem__create_directory",
+      "mcp__filesystem__create_directory",
+      "mcp__filesystem__move_file"
     ],
     "deny": [],
     "ask": [],
