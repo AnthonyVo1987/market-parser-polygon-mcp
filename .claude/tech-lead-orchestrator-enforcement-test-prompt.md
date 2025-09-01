@@ -1,5 +1,18 @@
 # Tech-Lead-Orchestrator Enforcement Test Prompt
 
+**⚠️ IMPORTANT: This file is now for REFERENCE ONLY. For actual task execution, use the "/new_task" slash command instead.**
+
+**NEW WORKFLOW:**
+1. User edits task details in `new_task_details.md` at project root
+2. User invokes `/new_task` command
+3. This automatically triggers @agent-tech-lead-orchestrator to read `new_task_details.md` and execute the complete orchestration protocol
+4. All specialists execute tasks autonomously with MCP tool enforcement
+5. Plan completes with no freezes/pauses from tech-lead-orchestrator
+
+**DO NOT READ this file for new tasks - use "/new_task" command which reads from "new_task_details.md" only.**
+
+---
+
 **COPY AND PASTE THIS TEMPLATE FOR ANY TASK REQUIRING PROPER TECH-LEAD ORCHESTRATION**
 
 ---
