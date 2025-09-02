@@ -13,3 +13,4 @@
 
 ## Additional Context
 [Any additional information that might be helpful]
+- enhanced-openai-gpt5-migration-plan.md completely over-engineered the migration plan into a complex plan so we will shelve it

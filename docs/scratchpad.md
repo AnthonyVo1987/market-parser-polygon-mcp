@@ -1,5 +1,15 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
+
+
+/home/anthony/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/src/main.py
+
+claude "I am planning on adding a REACT based frontend end for the Chatbot UI, but still keeping the current backend using Python. Use @agent-team-configurator and optimize my project to best use the available subagents and to also add REACT front end, so we will also need the React Specialists even though the current code does not use React YET, but it will on future task"
+
+
+There are old outdated requirements such as "35% cost reduction, 40% speed improvement, full-stack resource monitoring".  It is TOO early to be worrying about performance improvements at the moment since we are still Prototyping & testing. Use @agent-team-configurator and optimize my project to best use the available subagents with the removal of the "35% cost reduction, 40% speed improvement, full-stack resource monitoring" goals, so we may have to remove specialist(s) and update AI team to remove that goal that is no longer relevant.
+
+
 Use @agent-tech-lead-orchestrator to review, analyze, and implement the following:
 
 ## New Task Goal: Add a new Claude Code new_task "custom slash command" to the project's .claude folder for user usage

@@ -23,13 +23,15 @@ When you invoke `/new_task`, I will:
 I'll read the task details from new_task_details.md and use @tech-lead-orchestrator to analyze the requirements and assign the appropriate specialists from the available AI Team:
 
 **Available Specialists (per CLAUDE.md):**
-- @code-reviewer - MANDATORY for all features, PRs, merges
-- @performance-optimizer - Cost reduction, speed improvement  
-- @backend-developer - Python/Pydantic AI development
-- @frontend-developer - Gradio interface development
-- @api-architect - MCP server optimization
-- @documentation-specialist - Architecture docs, user guides
-- @code-archaeologist - Complex architectural decisions
+
+| Task Category | Agent | Responsibilities | Notes |
+|---------------|-------|------------------|-------|
+| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, merges. Security-aware reviews, quality assurance for both Python and React code | Required for all development work |
+| **Python Backend Development** | `@backend-developer` | Python/Pydantic AI development, FSM management, dual-mode processing, MCP server integration, backend API design | Primary architect for Python application logic |
+| **React Frontend Architecture** | `@react-component-architect` | React component design, Next.js 14+ architecture, modern React patterns, component library integration | Leads React frontend development and component architecture |
+| **API Design & Integration** | `@api-architect` | Backend-Frontend API contracts, RESTful API design, response schema design, integration patterns | Ensures clean data flow between Python backend and React frontend |
+| **Documentation & Architecture** | `@documentation-specialist` | Architecture documentation, user guides, API documentation, component documentation, migration planning | Maintains comprehensive project documentation |
+| **Deep Analysis & Planning** | `@code-archaeologist` | Complex architectural decisions, system analysis, migration strategy, technical debt assessment | On-demand for major architectural changes and system analysis |
 
 **MCP Tool Requirements:**
 All specialists MUST use:
