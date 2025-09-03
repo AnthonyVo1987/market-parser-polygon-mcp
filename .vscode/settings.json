@@ -9,8 +9,8 @@
   "python.sortImports.args": ["--profile", "black"],
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true,
-    "source.fixAll.eslint": true
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit"
   },
   "eslint.workingDirectories": [
     "gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI"
