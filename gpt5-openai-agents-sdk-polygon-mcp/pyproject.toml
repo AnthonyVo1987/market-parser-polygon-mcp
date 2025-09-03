@@ -13,7 +13,9 @@ dependencies = [
   "pydantic",
   "rich",
   "python-dotenv", 
-  "openai"
+  "openai",
+  "fastapi",
+  "uvicorn[standard]"
 ]
 
 [build-system]

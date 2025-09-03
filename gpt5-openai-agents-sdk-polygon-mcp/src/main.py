@@ -20,6 +20,11 @@ from datetime import datetime
 from pathlib import Path
 import re
 
+# FastAPI imports
+from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
+
 load_dotenv()
 
 console = Console()
@@ -30,6 +35,17 @@ class FinanceOutput(BaseModel):
     """
     is_about_finance: bool
     reasoning: str
+
+# FastAPI Models
+class ChatRequest(BaseModel):
+    """Request model for chat endpoint."""
+    message: str
+
+class ChatResponse(BaseModel):
+    """Response model for chat endpoint."""
+    response: str
+    success: bool = True
+    error: Optional[str] = None
 
 @function_tool
 async def save_analysis_report(content: str, title: str = None, category: str = "general") -> str:
@@ -118,6 +134,130 @@ def print_guardrail_error(exception):
     console.print("[dim]Please ask about stock prices, market data, financial analysis, economic indicators, or company financials.[/dim]")
     console.print("------------------\n")
 
+async def process_financial_query(query: str, session: SQLiteSession, server) -> dict:
+    """Process a financial query using the agent system.
+    
+    Returns:
+        dict: {
+            'success': bool,
+            'response': str,
+            'error': str or None,
+            'error_type': str or None
+        }
+    """
+    try:
+        with trace("Polygon.io Demo"):
+            analysis_agent = Agent(
+                name="Financial Analysis Agent",
+                instructions=(
+                    "Financial analysis agent. Steps:\n"
+                    "1. Verify finance-related using guardrail\n"
+                    "2. Call Polygon tools precisely; pull the minimal required data.\n"
+                    "3. Include disclaimers.\n"
+                    "4. Offer to save reports if not asked by the user to save a report.\n\n"
+                    "RULES:\n"
+                    "Double-check math; limit news to ≤3 articles/ticker in date range.\n" 
+                    "If the user asks to save a report, save it to the reports folder using the save_analysis_report tool.\n"
+                    "When using any polygon.io data tools, be mindful of how much data you pull based \n"
+                    "on the users input to minimize context being exceeded.\n"
+                    "If data unavailable or tool fails, explain gracefully — never fabricate.\n"
+                    "TOOLS:\n" 
+                    "Polygon.io data, save_analysis_report\n"
+                    "Disclaimer: Not financial advice. For informational purposes only."
+                ),
+                mcp_servers=[server],
+                tools=[save_analysis_report],
+                input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
+                model=OpenAIResponsesModel(model="gpt-5-mini", openai_client=AsyncOpenAI()),
+                model_settings = ModelSettings(truncation="auto")
+            )
+            output = await Runner.run(analysis_agent, query, session=session)
+            final_output = getattr(output, "final_output", output)
+            return {
+                'success': True,
+                'response': str(final_output),
+                'error': None,
+                'error_type': None
+            }
+    except InputGuardrailTripwireTriggered as e:
+        reasoning = ""
+        if hasattr(e, 'output_info') and e.output_info:
+            reasoning = f" Reasoning: {e.output_info.reasoning}"
+        return {
+            'success': False,
+            'response': "",
+            'error': f"This query is not related to finance.{reasoning} Please ask about stock prices, market data, financial analysis, economic indicators, or company financials.",
+            'error_type': 'guardrail'
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'response': "",
+            'error': str(e),
+            'error_type': 'agent_error'
+        }
+
+# FastAPI App Setup
+app = FastAPI(title="Financial Analysis API", description="API for financial queries using Polygon.io data")
+
+# Add CORS middleware for React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",  # React dev server
+        "http://localhost:3001",  # Alternative React port
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat_endpoint(request: ChatRequest) -> ChatResponse:
+    """Process a financial query and return the response."""
+    if not request.message or len(request.message.strip()) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Query must be at least 2 characters long"
+        )
+    
+    try:
+        # Create session and server for this request
+        session = SQLiteSession("finance_conversation")
+        server = create_polygon_mcp_server()
+        
+        async with server:
+            result = await process_financial_query(request.message.strip(), session, server)
+            
+            if result['success']:
+                return ChatResponse(response=result['response'])
+            else:
+                if result['error_type'] == 'guardrail':
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=result['error']
+                    )
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=f"Agent error: {result['error']}"
+                    )
+                    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Server error: {str(e)}"
+        )
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy", "message": "Financial Analysis API is running"}
+
 # Main CLI
 async def cli_async():
     """Run the interactive CLI loop.
@@ -140,41 +280,33 @@ async def cli_async():
                         print("Please enter a valid query (at least 2 characters).")
                         continue
                     
-                    with trace("Polygon.io Demo"):
-                        try:
-                            analysis_agent = Agent(
-                                name="Financial Analysis Agent",
-                                instructions=(
-                                    "Financial analysis agent. Steps:\n"
-                                    "1. Verify finance-related using guardrail\n"
-                                    "2. Call Polygon tools precisely; pull the minimal required data.\n"
-                                    "3. Include disclaimers.\n"
-                                    "4. Offer to save reports if not asked by the user to save a report.\n\n"
-                                    "RULES:\n"
-                                    "Double-check math; limit news to ≤3 articles/ticker in date range.\n" 
-                                    "If the user asks to save a report, save it to the reports folder using the save_analysis_report tool.\n"
-                                    "When using any polygon.io data tools, be mindful of how much data you pull based \n"
-                                    "on the users input to minimize context being exceeded.\n"
-                                    "If data unavailable or tool fails, explain gracefully — never fabricate.\n"
-                                    "TOOLS:\n" 
-                                    "Polygon.io data, save_analysis_report\n"
-                                    "Disclaimer: Not financial advice. For informational purposes only."
-                                ),
-                                mcp_servers=[server],
-                                tools=[save_analysis_report],
-                                input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
-                                model=OpenAIResponsesModel(model="gpt-5-mini", openai_client=AsyncOpenAI()),
-                                model_settings = ModelSettings(truncation="auto")
-                            )
-                            output = await Runner.run(analysis_agent, user_input, session=session)
-                            print("\r", end="")
-                            print_response(output)
-                        except InputGuardrailTripwireTriggered as e:
-                            print("\r", end="")
-                            print_guardrail_error(e)
-                        except Exception as e:
-                            print("\r", end="")
-                            print_error(e, "Agent Error")
+                    # Use the shared processing function
+                    result = await process_financial_query(user_input, session, server)
+                    print("\r", end="")
+                    
+                    if result['success']:
+                        # Create a mock output object for print_response compatibility
+                        class MockOutput:
+                            def __init__(self, response):
+                                self.final_output = response
+                        print_response(MockOutput(result['response']))
+                    else:
+                        if result['error_type'] == 'guardrail':
+                            # Create a mock exception for print_guardrail_error compatibility
+                            class MockException:
+                                def __init__(self, error_msg):
+                                    # Extract reasoning if present
+                                    if " Reasoning: " in error_msg:
+                                        reasoning = error_msg.split(" Reasoning: ", 1)[1].split(" Please ask about", 1)[0]
+                                        class OutputInfo:
+                                            def __init__(self, reasoning):
+                                                self.reasoning = reasoning
+                                        self.output_info = OutputInfo(reasoning)
+                                    else:
+                                        self.output_info = None
+                            print_guardrail_error(MockException(result['error']))
+                        else:
+                            print_error(result['error'], "Agent Error")
                             
                 except (EOFError, KeyboardInterrupt):
                     print("\nGoodbye!")
