@@ -10,8 +10,9 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
-               'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', sans-serif;
   line-height: 1.5;
   color: var(--text-primary);
   background-color: #ffffff;
@@ -55,7 +56,7 @@ body {
   .message-bubble {
     transition: none;
   }
-  
+
   .message-bubble:hover {
     transform: none;
   }
@@ -76,17 +77,17 @@ body {
   .message-timestamp {
     display: none;
   }
-  
+
   .message-bubble {
     box-shadow: none;
     border: 1px solid var(--border-color);
   }
-  
+
   .bullish-text {
     color: #000 !important;
     text-decoration: underline;
   }
-  
+
   .bearish-text {
     color: #000 !important;
     text-decoration: line-through;

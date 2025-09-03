@@ -5,7 +5,10 @@ interface ChatInput_OpenAIProps {
   isLoading: boolean;
 }
 
-export default function ChatInput_OpenAI({ onSendMessage, isLoading }: ChatInput_OpenAIProps) {
+export default function ChatInput_OpenAI({
+  onSendMessage,
+  isLoading,
+}: ChatInput_OpenAIProps) {
   const [inputValue, setInputValue] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -17,20 +20,20 @@ export default function ChatInput_OpenAI({ onSendMessage, isLoading }: ChatInput
   };
 
   return (
-    <form onSubmit={handleSubmit} className="chat-input-form">
-      <div className="input-container">
+    <form onSubmit={handleSubmit} className='chat-input-form'>
+      <div className='input-container'>
         <input
-          type="text"
+          type='text'
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type your message..."
-          className="message-input"
+          onChange={e => setInputValue(e.target.value)}
+          placeholder='Type your message...'
+          className='message-input'
           disabled={isLoading}
         />
         <button
-          type="submit"
+          type='submit'
           disabled={!inputValue.trim() || isLoading}
-          className="send-button"
+          className='send-button'
         >
           {isLoading ? 'Sending...' : 'Send'}
         </button>

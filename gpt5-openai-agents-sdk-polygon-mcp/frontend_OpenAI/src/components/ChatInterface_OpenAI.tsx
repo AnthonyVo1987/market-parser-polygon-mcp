@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Message } from '../types/chat_OpenAI';
+
 import { sendChatMessage } from '../services/api_OpenAI';
-import ChatMessage_OpenAI from './ChatMessage_OpenAI';
+import { Message } from '../types/chat_OpenAI';
+
 import ChatInput_OpenAI from './ChatInput_OpenAI';
+import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 
 export default function ChatInterface_OpenAI() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -30,7 +32,8 @@ export default function ChatInterface_OpenAI() {
       const aiResponse = await sendChatMessage(messageContent);
       addMessage(aiResponse, 'ai');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
       addMessage(`Error: ${errorMessage}`, 'ai');
     } finally {
@@ -39,19 +42,15 @@ export default function ChatInterface_OpenAI() {
   };
 
   return (
-    <div className="chat-interface">
-      <div className="chat-header">
+    <div className='chat-interface'>
+      <div className='chat-header'>
         <h1>OpenAI Chat Interface</h1>
-        {error && (
-          <div className="error-banner">
-            {error}
-          </div>
-        )}
+        {error && <div className='error-banner'>{error}</div>}
       </div>
-      
-      <div className="messages-container">
+
+      <div className='messages-container'>
         {messages.length === 0 ? (
-          <div className="empty-state">
+          <div className='empty-state'>
             <p>Start a conversation by typing a message below.</p>
           </div>
         ) : (
@@ -60,8 +59,8 @@ export default function ChatInterface_OpenAI() {
           ))
         )}
         {isLoading && (
-          <div className="loading-indicator">
-            <div className="typing-dots">
+          <div className='loading-indicator'>
+            <div className='typing-dots'>
               <span></span>
               <span></span>
               <span></span>
@@ -70,9 +69,9 @@ export default function ChatInterface_OpenAI() {
         )}
       </div>
 
-      <ChatInput_OpenAI 
-        onSendMessage={handleSendMessage} 
-        isLoading={isLoading} 
+      <ChatInput_OpenAI
+        onSendMessage={handleSendMessage}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -1,6 +1,8 @@
-import ChatInterface_OpenAI, { interfaceStyles } from './components/ChatInterface_OpenAI';
-import { messageStyles } from './components/ChatMessage_OpenAI';
 import { inputStyles } from './components/ChatInput_OpenAI';
+import ChatInterface_OpenAI, {
+  interfaceStyles,
+} from './components/ChatInterface_OpenAI';
+import { messageStyles } from './components/ChatMessage_OpenAI';
 
 export default function App() {
   return (

@@ -1,6 +1,7 @@
-import { Message } from '../types/chat_OpenAI';
-import Markdown from 'react-markdown';
 import { ComponentPropsWithoutRef } from 'react';
+import Markdown from 'react-markdown';
+
+import { Message } from '../types/chat_OpenAI';
 
 interface ChatMessage_OpenAIProps {
   message: Message;
@@ -8,23 +9,75 @@ interface ChatMessage_OpenAIProps {
 
 // Sentiment analysis keywords - aligned with backend CLI keywords for consistency
 const BULLISH_KEYWORDS = [
-  'bullish', 'buy', 'growth', 'profit', 'gain', 'up', 'positive', 'strong', 'upward', 'rise', 'increase',
-  'rising', 'bullish signals', 'outperform', 'buy signal', 'momentum', 'rally',
-  '📈', 'BULLISH', 'BUY', 'GROWTH', 'PROFIT', 'GAIN', 'POSITIVE', 'UP', 'STRONG', 'RISING', 'RALLY'
+  'bullish',
+  'buy',
+  'growth',
+  'profit',
+  'gain',
+  'up',
+  'positive',
+  'strong',
+  'upward',
+  'rise',
+  'increase',
+  'rising',
+  'bullish signals',
+  'outperform',
+  'buy signal',
+  'momentum',
+  'rally',
+  '📈',
+  'BULLISH',
+  'BUY',
+  'GROWTH',
+  'PROFIT',
+  'GAIN',
+  'POSITIVE',
+  'UP',
+  'STRONG',
+  'RISING',
+  'RALLY',
 ];
 
 const BEARISH_KEYWORDS = [
-  'bearish', 'sell', 'decline', 'loss', 'down', 'negative', 'weak', 'downward', 'fall', 'decrease',
-  'falling', 'bearish signals', 'underperform', 'sell signal', 'correction', 'crash',
-  '📉', 'BEARISH', 'SELL', 'DECLINE', 'LOSS', 'NEGATIVE', 'DOWN', 'WEAK', 'FALLING', 'CRASH'
+  'bearish',
+  'sell',
+  'decline',
+  'loss',
+  'down',
+  'negative',
+  'weak',
+  'downward',
+  'fall',
+  'decrease',
+  'falling',
+  'bearish signals',
+  'underperform',
+  'sell signal',
+  'correction',
+  'crash',
+  '📉',
+  'BEARISH',
+  'SELL',
+  'DECLINE',
+  'LOSS',
+  'NEGATIVE',
+  'DOWN',
+  'WEAK',
+  'FALLING',
+  'CRASH',
 ];
 
 // Function to detect sentiment in text
 const detectSentiment = (text: string): 'bullish' | 'bearish' | 'neutral' => {
   const textLower = text.toLowerCase();
-  const hasBullish = BULLISH_KEYWORDS.some(keyword => textLower.includes(keyword.toLowerCase()));
-  const hasBearish = BEARISH_KEYWORDS.some(keyword => textLower.includes(keyword.toLowerCase()));
-  
+  const hasBullish = BULLISH_KEYWORDS.some(keyword =>
+    textLower.includes(keyword.toLowerCase())
+  );
+  const hasBearish = BEARISH_KEYWORDS.some(keyword =>
+    textLower.includes(keyword.toLowerCase())
+  );
+
   if (hasBullish && !hasBearish) return 'bullish';
   if (hasBearish && !hasBullish) return 'bearish';
   return 'neutral';
@@ -34,31 +87,64 @@ const detectSentiment = (text: string): 'bullish' | 'bearish' | 'neutral' => {
 const markdownComponents = {
   p: ({ children, ...props }: ComponentPropsWithoutRef<'p'>) => {
     // Apply sentiment styling to paragraph content
-    const textContent = typeof children === 'string' ? children : String(children);
+    const textContent =
+      typeof children === 'string' ? children : String(children);
     const sentiment = detectSentiment(textContent);
-    
+
     return (
-      <p {...props} style={{ 
-        marginBottom: '8px', 
-        lineHeight: '1.6',
-        color: sentiment === 'bullish' ? '#10b981' : sentiment === 'bearish' ? '#ef4444' : 'inherit'
-      }}>
+      <p
+        {...props}
+        style={{
+          marginBottom: '8px',
+          lineHeight: '1.6',
+          color:
+            sentiment === 'bullish'
+              ? '#10b981'
+              : sentiment === 'bearish'
+                ? '#ef4444'
+                : 'inherit',
+        }}
+      >
         {children}
       </p>
     );
   },
   h1: ({ children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
-    <h1 {...props} style={{ marginBottom: '12px', fontSize: '1.5em', fontWeight: '600', color: '#1a202c' }}>
+    <h1
+      {...props}
+      style={{
+        marginBottom: '12px',
+        fontSize: '1.5em',
+        fontWeight: '600',
+        color: '#1a202c',
+      }}
+    >
       {children}
     </h1>
   ),
   h2: ({ children, ...props }: ComponentPropsWithoutRef<'h2'>) => (
-    <h2 {...props} style={{ marginBottom: '10px', fontSize: '1.3em', fontWeight: '600', color: '#2d3748' }}>
+    <h2
+      {...props}
+      style={{
+        marginBottom: '10px',
+        fontSize: '1.3em',
+        fontWeight: '600',
+        color: '#2d3748',
+      }}
+    >
       {children}
     </h2>
   ),
   h3: ({ children, ...props }: ComponentPropsWithoutRef<'h3'>) => (
-    <h3 {...props} style={{ marginBottom: '8px', fontSize: '1.2em', fontWeight: '600', color: '#4a5568' }}>
+    <h3
+      {...props}
+      style={{
+        marginBottom: '8px',
+        fontSize: '1.2em',
+        fontWeight: '600',
+        color: '#4a5568',
+      }}
+    >
       {children}
     </h3>
   ),
@@ -74,29 +160,47 @@ const markdownComponents = {
   ),
   li: ({ children, ...props }: ComponentPropsWithoutRef<'li'>) => {
     // Apply sentiment styling to list items
-    const textContent = typeof children === 'string' ? children : String(children);
+    const textContent =
+      typeof children === 'string' ? children : String(children);
     const sentiment = detectSentiment(textContent);
-    
+
     return (
-      <li {...props} style={{ 
-        marginBottom: '4px',
-        color: sentiment === 'bullish' ? '#10b981' : sentiment === 'bearish' ? '#ef4444' : 'inherit',
-        fontWeight: sentiment !== 'neutral' ? '500' : 'normal'
-      }}>
+      <li
+        {...props}
+        style={{
+          marginBottom: '4px',
+          color:
+            sentiment === 'bullish'
+              ? '#10b981'
+              : sentiment === 'bearish'
+                ? '#ef4444'
+                : 'inherit',
+          fontWeight: sentiment !== 'neutral' ? '500' : 'normal',
+        }}
+      >
         {children}
       </li>
     );
   },
   strong: ({ children, ...props }: ComponentPropsWithoutRef<'strong'>) => {
     // Apply sentiment styling to bold text
-    const textContent = typeof children === 'string' ? children : String(children);
+    const textContent =
+      typeof children === 'string' ? children : String(children);
     const sentiment = detectSentiment(textContent);
-    
+
     return (
-      <strong {...props} style={{ 
-        fontWeight: '600',
-        color: sentiment === 'bullish' ? '#10b981' : sentiment === 'bearish' ? '#ef4444' : 'inherit'
-      }}>
+      <strong
+        {...props}
+        style={{
+          fontWeight: '600',
+          color:
+            sentiment === 'bullish'
+              ? '#10b981'
+              : sentiment === 'bearish'
+                ? '#ef4444'
+                : 'inherit',
+        }}
+      >
         {children}
       </strong>
     );
@@ -106,51 +210,68 @@ const markdownComponents = {
       {children}
     </em>
   ),
-  blockquote: ({ children, ...props }: ComponentPropsWithoutRef<'blockquote'>) => (
-    <blockquote {...props} style={{
-      background: '#f8fafc',
-      padding: '12px',
-      borderRadius: '8px',
-      margin: '8px 0',
-      borderLeft: '4px solid #e2e8f0',
-      fontStyle: 'italic'
-    }}>
+  blockquote: ({
+    children,
+    ...props
+  }: ComponentPropsWithoutRef<'blockquote'>) => (
+    <blockquote
+      {...props}
+      style={{
+        background: '#f8fafc',
+        padding: '12px',
+        borderRadius: '8px',
+        margin: '8px 0',
+        borderLeft: '4px solid #e2e8f0',
+        fontStyle: 'italic',
+      }}
+    >
       {children}
     </blockquote>
   ),
-  code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'> & { className?: string }) => {
+  code: ({
+    children,
+    className,
+    ...props
+  }: ComponentPropsWithoutRef<'code'> & { className?: string }) => {
     const isInline = !className;
     return isInline ? (
-      <code {...props} style={{ 
-        backgroundColor: '#f7fafc', 
-        padding: '2px 4px', 
-        borderRadius: '3px', 
-        fontSize: '0.9em',
-        fontFamily: 'monospace'
-      }}>
+      <code
+        {...props}
+        style={{
+          backgroundColor: '#f7fafc',
+          padding: '2px 4px',
+          borderRadius: '3px',
+          fontSize: '0.9em',
+          fontFamily: 'monospace',
+        }}
+      >
         {children}
       </code>
     ) : (
-      <pre style={{
-        backgroundColor: '#f7fafc',
-        padding: '12px',
-        borderRadius: '8px',
-        overflow: 'auto',
-        marginBottom: '8px'
-      }}>
+      <pre
+        style={{
+          backgroundColor: '#f7fafc',
+          padding: '12px',
+          borderRadius: '8px',
+          overflow: 'auto',
+          marginBottom: '8px',
+        }}
+      >
         <code {...props}>{children}</code>
       </pre>
     );
-  }
+  },
 };
 
-export default function ChatMessage_OpenAI({ message }: ChatMessage_OpenAIProps) {
+export default function ChatMessage_OpenAI({
+  message,
+}: ChatMessage_OpenAIProps) {
   const isUser = message.sender === 'user';
-  
+
   return (
     <div className={`message ${isUser ? 'user-message' : 'ai-message'}`}>
       <div className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`}>
-        <div className="message-content">
+        <div className='message-content'>
           {isUser ? (
             // For user messages, display as plain text
             message.content
@@ -161,7 +282,7 @@ export default function ChatMessage_OpenAI({ message }: ChatMessage_OpenAIProps)
             </Markdown>
           )}
         </div>
-        <div className="message-timestamp">
+        <div className='message-timestamp'>
           {message.timestamp.toLocaleTimeString()}
         </div>
       </div>
