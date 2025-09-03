@@ -1,0 +1,21 @@
+{
+  "name": "market-parser-polygon-mcp",
+  "version": "1.0.0",
+  "description": "Unified linting and formatting for Python + React/TypeScript project",
+  "scripts": {
+    "lint": "npm run lint:python && npm run lint:js",
+    "lint:python": "uv run python scripts/lint.py",
+    "lint:js": "cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI && npm run lint",
+    "format": "npm run format:python && npm run format:js",
+    "format:python": "uv run python scripts/format.py",
+    "format:js": "cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI && npm run format",
+    "fix": "npm run format && npm run lint:fix",
+    "lint:fix": "npm run format:python && cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI && npm run lint:fix",
+    "quality:check": "uv run python scripts/quality_check.py",
+    "quality:format": "npm run format"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "concurrently": "^8.2.0"
+  }
+}
