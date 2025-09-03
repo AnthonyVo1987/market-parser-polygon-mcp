@@ -2,7 +2,7 @@
 
 ![Project Logo](images/logo.png)
 
-A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-mini` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/).
+A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-mini` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/). Features an **Enhanced OpenAI GPT-5 Chatbot** with color-coded sentiment analysis, emoji integration, and dual-mode operation (CLI + React frontend).
 
 ## Features
 
@@ -13,6 +13,14 @@ A Python CLI and web GUI application for natural language financial queries usin
 
 - **Rich CLI output:**
   Answers are formatted for easy reading in your terminal.
+
+- **Enhanced OpenAI GPT-5 Chatbot:**
+  - 📈📉 **Color-coded Sentiment Analysis** - Bullish content in green, bearish in red
+  - 🎯 **Structured Response Format** - KEY TAKEAWAYS, detailed analysis, disclaimers
+  - 💰🏢📊 **Financial Emoji Integration** - Rich visual indicators throughout responses
+  - 🖥️📱 **Dual-Mode Operation** - Enhanced CLI and React frontend with consistent formatting
+  - 🎨 **Markdown Support** - Full markdown rendering in React frontend
+  - ⚡ **Real-time Processing** - FastAPI-powered backend with live chat interface
 
 - **Enhanced Web Interface:**
   - 🎯 **Single Chat Interface** - All interactions flow through one consolidated chat interface
@@ -51,15 +59,34 @@ A Python CLI and web GUI application for natural language financial queries usin
    OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
    ```
 
-4. **Run the CLI (dependencies will be auto-installed from `pyproject.toml`):**
+4. **Choose your interface:**
 
+   **Enhanced OpenAI GPT-5 CLI (Recommended):**
+   ```sh
+   uv run gpt5-openai-agents-sdk-polygon-mcp/src/main.py
+   ```
+
+   **Original CLI:**
    ```sh
    uv run market_parser_demo.py
    ```
 
+   **Enhanced React Web Interface:**
+   ```sh
+   # Terminal 1: Start FastAPI server
+   cd gpt5-openai-agents-sdk-polygon-mcp
+   uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+   
+   # Terminal 2: Start React frontend
+   cd frontend_OpenAI
+   npm install
+   npm run dev
+   ```
+   Open http://localhost:3000 in your browser
+
 5. **Type your question and press Enter!**
 
-   Type `exit` to quit.
+   Type `exit` to quit (CLI) or use the web interface.
 
 ---
 
@@ -161,6 +188,36 @@ Session Total (Cumulative):
 ---
 
 ## Example Usage
+
+### Enhanced OpenAI GPT-5 CLI
+
+```text
+> Tesla stock analysis
+✔ Query processed successfully!
+Agent Response:
+
+🎯 KEY TAKEAWAYS
+📈 TSLA showing bullish momentum with 15% gain this week
+💰 Strong quarterly earnings beat expectations
+🏢 Tesla's expansion into energy storage markets
+📊 Technical indicators suggest continued upward trend
+
+📊 DETAILED ANALYSIS
+Tesla (TSLA) is currently trading at $245.67, representing a significant 
+bullish rally from last week's lows. The stock has demonstrated strong 
+bullish signals with increased volume and positive momentum indicators...
+
+⚠️ DISCLAIMER
+This analysis is for informational purposes only and should not be 
+considered financial advice.
+
+──────────────────────────────────────────────────
+
+> exit
+Goodbye!
+```
+
+### Original CLI
 
 ```text
 > Tesla price now
@@ -322,12 +379,75 @@ market-parser-polygon-mcp/
 
 ---
 
+## Enhanced OpenAI GPT-5 Features
+
+### Visual Enhancements
+
+**Response Format Structure:**
+All enhanced responses follow a consistent, structured format:
+
+```
+🎯 KEY TAKEAWAYS
+📈 Bullish indicators (automatically styled in green)
+📉 Bearish indicators (automatically styled in red) 
+💰 Financial impact and profit analysis
+🏢 Company-specific insights
+
+📊 DETAILED ANALYSIS
+[Comprehensive analysis with automatic sentiment detection]
+[Color-coded content based on market sentiment]
+[Enhanced typography for improved readability]
+
+⚠️ DISCLAIMER  
+[Standard financial disclaimers and risk warnings]
+```
+
+**Color Coding System:**
+- **Bullish Content** (Green): buy signals, growth, profits, positive momentum, upward trends
+- **Bearish Content** (Red): sell signals, decline, losses, negative sentiment, downward trends
+- **Neutral Content**: general information, disclaimers, technical details
+
+**Financial Emoji Integration:**
+- 📈 Bullish/upward trends
+- 📉 Bearish/downward trends  
+- 💰 Money/profit analysis
+- 💸 Losses/expenses
+- 🏢 Company information
+- 📊 Charts/data analysis
+- 🎯 Key takeaways/important points
+- ⚠️ Warnings/disclaimers
+
+### Technical Implementation
+
+**CLI Features:**
+- Rich console formatting with RGB color support
+- Real-time sentiment analysis using keyword matching
+- Enhanced typography with proper spacing and markdown rendering
+- Automatic emoji rendering and financial context highlighting
+
+**React Frontend Features:**
+- Full markdown support with react-markdown
+- Custom styled components for enhanced readability
+- Sentiment-based CSS styling aligned with CLI colors
+- Real-time chat interface with loading states and error handling
+- TypeScript for type safety and better development experience
+
+**FastAPI Integration:**
+- RESTful API bridge between CLI processing and React frontend
+- CORS support for local development
+- Error handling and input validation
+- Health check endpoints for monitoring
+
+---
+
 ## Enhanced Development Workflow
 
 ### Running the Application
 
-- **CLI interface**: `uv run market_parser_demo.py`
-- **Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
+- **Enhanced OpenAI CLI**: `uv run gpt5-openai-agents-sdk-polygon-mcp/src/main.py`
+- **React Web Interface**: Start FastAPI server + React frontend (see setup section)
+- **Original CLI interface**: `uv run market_parser_demo.py`
+- **Original Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
 
 ### Testing with PyTest
 

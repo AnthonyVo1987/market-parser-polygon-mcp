@@ -1,0 +1,94 @@
+/* Enhanced global styles for financial chat interface */
+:root {
+  --bullish-color: #10b981;
+  --bearish-color: #ef4444;
+  --neutral-color: #6b7280;
+  --background-light: #f8fafc;
+  --border-color: #e2e8f0;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+               'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: #ffffff;
+}
+
+/* Enhanced emoji and special character support */
+* {
+  font-variant-emoji: unicode;
+}
+
+/* Scrollbar styling for better visual appearance */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-color);
+}
+
+/* Animation for smooth transitions */
+.message-bubble {
+  transition: all 0.2s ease-in-out;
+}
+
+.message-bubble:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .message-bubble {
+    transition: none;
+  }
+  
+  .message-bubble:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --bullish-color: #047857;
+    --bearish-color: #dc2626;
+    --text-primary: #000000;
+    --background-light: #f9fafb;
+  }
+}
+
+/* Print styles for export functionality */
+@media print {
+  .message-timestamp {
+    display: none;
+  }
+  
+  .message-bubble {
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+  }
+  
+  .bullish-text {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+  
+  .bearish-text {
+    color: #000 !important;
+    text-decoration: line-through;
+  }
+}

@@ -110,14 +110,84 @@ def create_polygon_mcp_server():
 
 # Output functions
 def print_response(result):
-    """Render only the agent's final output with basic Markdown support."""
+    """Enhanced response renderer with color coding and emoji support."""
     console.print("\n[bold green]✔ Query processed successfully![/bold green]")
-    console.print("[bold]Agent Response:[/bold]")
-    # Print only the final output from the run result (per OpenAI Agents SDK)
+    console.print("[bold]Agent Response:[/bold]\n")
+    
+    # Extract and analyze content
     final_output = getattr(result, "final_output", result)
     final_text = str(final_output)
-    console.print(Markdown(final_text) if any(tag in final_text for tag in ["#", "*", "`", "-", ">"]) else final_text.strip())
-    console.print("---------------------\n")
+    
+    # Define sentiment keywords for color coding
+    bullish_keywords = [
+        "bullish", "buy", "growth", "profit", "gain", "up", "positive", 
+        "strong", "📈", "increase", "rising", "upward", "bullish signals",
+        "outperform", "buy signal", "momentum", "rally"
+    ]
+    
+    bearish_keywords = [
+        "bearish", "sell", "decline", "loss", "down", "negative", 
+        "weak", "📉", "decrease", "falling", "downward", "bearish signals",
+        "underperform", "sell signal", "correction", "crash"
+    ]
+    
+    # Split content into lines for processing
+    lines = final_text.split('\n')
+    processed_lines = []
+    
+    for line in lines:
+        line_lower = line.lower()
+        
+        # Check for bullish sentiment in the line
+        bullish_found = any(keyword in line_lower for keyword in bullish_keywords)
+        bearish_found = any(keyword in line_lower for keyword in bearish_keywords)
+        
+        if bullish_found and not bearish_found:
+            # Apply green styling to bullish content
+            if "📈" in line or "bullish" in line_lower:
+                processed_lines.append(f"[bold green]{line}[/bold green]")
+            else:
+                processed_lines.append(f"[green]{line}[/green]")
+        elif bearish_found and not bullish_found:
+            # Apply red styling to bearish content
+            if "📉" in line or "bearish" in line_lower:
+                processed_lines.append(f"[bold red]{line}[/bold red]")
+            else:
+                processed_lines.append(f"[red]{line}[/red]")
+        elif "🎯 KEY TAKEAWAYS" in line:
+            # Special styling for key takeaways header
+            processed_lines.append(f"[bold cyan]{line}[/bold cyan]")
+        elif "📊" in line or "ANALYSIS" in line.upper():
+            # Special styling for analysis sections
+            processed_lines.append(f"[bold blue]{line}[/bold blue]")
+        elif "⚠" in line or "DISCLAIMER" in line.upper():
+            # Special styling for disclaimers
+            processed_lines.append(f"[bold yellow]{line}[/bold yellow]")
+        elif line.strip().startswith("📈") or line.strip().startswith("📉"):
+            # Style individual bullet points with emojis
+            if "📈" in line:
+                processed_lines.append(f"[green]{line}[/green]")
+            else:
+                processed_lines.append(f"[red]{line}[/red]")
+        else:
+            # Regular text - keep as is
+            processed_lines.append(line)
+    
+    # Join processed lines back together
+    enhanced_text = '\n'.join(processed_lines)
+    
+    # Check if content has markdown-like formatting
+    has_markdown = any(tag in final_text for tag in ["#", "*", "`", "-", ">"])
+    
+    if has_markdown:
+        # Use Markdown rendering for structured content
+        console.print(Markdown(enhanced_text))
+    else:
+        # Use direct printing with Rich markup for better emoji and color support
+        console.print(enhanced_text)
+    
+    # Enhanced separator with emoji
+    console.print("\n[dim]" + "─" * 50 + "[/dim]\n")
 
 def print_error(error, error_type="Error"):
     """Display errors in a consistent, readable format for the CLI."""
@@ -155,6 +225,14 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                     "2. Call Polygon tools precisely; pull the minimal required data.\n"
                     "3. Include disclaimers.\n"
                     "4. Offer to save reports if not asked by the user to save a report.\n\n"
+                    "FORMATTING REQUIREMENTS:\n"
+                    "- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using numbered bullet points\n"
+                    "- Use financial emojis throughout: 📈 (bullish), 📉 (bearish), 💰 (money/profit), 💸 (loss), 🏢 (company), 📊 (data/analysis)\n"
+                    "- Structure responses with proper sections and line spacing for readability\n"
+                    "- Use emoji bullet points in lists instead of regular bullets\n"
+                    "- Indicate market sentiment clearly with 📈 BULLISH or 📉 BEARISH labels where appropriate\n"
+                    "- Include color coding hints: mention 'BULLISH signals' for green coding, 'BEARISH signals' for red coding\n"
+                    "- End with standard disclaimers in a clearly formatted section\n\n"
                     "RULES:\n"
                     "Double-check math; limit news to ≤3 articles/ticker in date range.\n" 
                     "If the user asks to save a report, save it to the reports folder using the save_analysis_report tool.\n"

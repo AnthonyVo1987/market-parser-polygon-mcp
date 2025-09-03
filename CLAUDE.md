@@ -129,6 +129,21 @@ uv run market_parser_demo.py
 uv run chat_ui.py
 ```
 
+### OpenAI GPT-5 Enhanced Chatbot
+```bash
+# Enhanced CLI interface with color-coded sentiment analysis
+uv run gpt5-openai-agents-sdk-polygon-mcp/src/main.py
+
+# FastAPI server for React frontend
+cd gpt5-openai-agents-sdk-polygon-mcp
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# React frontend with markdown support and UI color coding
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm install
+npm run dev
+```
+
 ### Testing
 ```bash
 # Run all tests
@@ -179,6 +194,59 @@ OPENAI_GPT5_MINI_INPUT_PRICE_PER_1M=0.25
 OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
 ```
 
+## OpenAI GPT-5 Enhanced Chatbot
+
+The project includes a sophisticated OpenAI GPT-5 powered chatbot with enhanced visual formatting and dual-mode operation (CLI and React frontend).
+
+### Enhanced Features
+
+**Visual Enhancements:**
+- **Emoji Integration**: Comprehensive use of financial emojis (📈📉💰💸🏢📊) throughout responses
+- **Color Coding**: Automatic sentiment analysis with bullish content in green, bearish content in red
+- **Structured Output**: Responses follow a consistent format with 🎯 KEY TAKEAWAYS sections
+- **Enhanced Typography**: Improved readability with proper spacing and markdown rendering
+
+**Response Format Structure:**
+```
+🎯 KEY TAKEAWAYS
+📈 Bullish indicators (displayed in green)
+📉 Bearish indicators (displayed in red)
+💰 Financial impact analysis
+
+📊 DETAILED ANALYSIS
+[Comprehensive analysis with color-coded sentiment]
+
+⚠️ DISCLAIMER
+[Standard financial disclaimers]
+```
+
+**CLI Features:**
+- **Color-coded Sentiment Analysis**: Real-time sentiment detection with Rich console formatting
+- **Pretty Printing**: Enhanced terminal output with proper spacing and emoji support
+- **Markdown Rendering**: Rich markdown support for structured content display
+- **Financial Context**: Automatic detection and highlighting of financial terms
+
+**React Frontend Features:**
+- **Markdown Support**: Full markdown rendering with react-markdown
+- **UI Color Coding**: Sentiment-based styling aligned with CLI color scheme
+- **Enhanced Typography**: Custom styled markdown components for optimal readability
+- **Real-time Processing**: Live chat interface with loading states and error handling
+
+**Dual-Mode Operation:**
+- **Consistent Formatting**: Both CLI and web interfaces use identical sentiment analysis
+- **Unified Experience**: Same enhanced response format across all interaction modes
+- **FastAPI Integration**: RESTful API bridge enabling seamless frontend-backend communication
+
+### Technical Implementation
+
+**Sentiment Analysis Keywords:**
+- **Bullish**: bullish, buy, growth, profit, gain, up, positive, strong, rising, rally, momentum
+- **Bearish**: bearish, sell, decline, loss, down, negative, weak, falling, crash, correction
+
+**Visual Styling:**
+- **CLI**: Rich console with RGB color support and emoji rendering
+- **React**: CSS-in-JS with Tailwind-inspired color palette (green: #10b981, red: #ef4444)
+
 ## High-Level Architecture
 
 ### Core Components
@@ -186,11 +254,19 @@ OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
 **Entry Points:**
 - `market_parser_demo.py` - CLI application with Rich console formatting
 - `chat_ui.py` - Gradio web interface with single chat conversation view
+- `gpt5-openai-agents-sdk-polygon-mcp/src/main.py` - Enhanced OpenAI CLI with color-coded sentiment analysis and emoji integration
 
 **Response Processing:**
 - `src/response_manager.py` - Dual-mode response processing (JSON/conversational)
 - `src/response_parser.py` - Response parsing utilities for structured data extraction
 - `src/prompt_templates.py` - Button prompt templates for three analysis types
+
+**Enhanced OpenAI Features:**
+- `gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/` - React frontend with markdown support and sentiment-based color coding
+- Enhanced response formatting with structured output (🎯 KEY TAKEAWAYS format)
+- Financial emoji integration throughout responses (📈📉💰💸🏢📊)
+- Automatic sentiment analysis with bullish (green) and bearish (red) color coding
+- FastAPI server providing RESTful API bridge between CLI processing and React frontend
 
 **State Management (GUI):**
 - `stock_data_fsm/` - 5-state finite state machine (IDLE � BUTTON_TRIGGERED � AI_PROCESSING � RESPONSE_RECEIVED � ERROR)
