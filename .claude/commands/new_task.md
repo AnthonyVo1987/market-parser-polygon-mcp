@@ -44,3 +44,12 @@ All specialists MUST use:
 ## Execution Protocol
 
 I'll read the task from new_task_details.md, then use @tech-lead-orchestrator to get proper agent assignments and execute the plan with those exact specialists, ensuring all MCP tools are used and actual deliverables are created.
+
+## ACTIONS TO BE PERFORM AFTER ALL TASK(S) ARE COMPLETE:
+1. Specialist to start Review\Fix Loop until PASSING review with MANDATORY Sequential-Thinking & Filesystem Tool Usage, and OPTIONAL Context7 tool call(s) if review needs any specific changes that may need Context7 up to date documentation\best practices etc
+
+2. ONLY AFTER A PASSING CODE REVIEW, Specialist to perform automous git status, automous ATOMIC GIT commit and GIT PUSH to the github repo for ALL Doc\Code\File changes
+
+3. After commit, Specialist to perform final git status to verify successful commit
+
+4. DO NOT FORGET TO PUSH SINCE I ALREADY PROVIDED A GITHUB PERSONAL ACCESS TOKEN - IF YOU DO NOT PUSH, YOU HAVE NOT COMPLETED THE ATOMIC COMMIT & PUSH!!!
