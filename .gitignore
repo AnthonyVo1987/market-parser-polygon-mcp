@@ -82,3 +82,4 @@ scripts/
 *.log
 logs/
 json_workflow_debug.log
+node_modules
