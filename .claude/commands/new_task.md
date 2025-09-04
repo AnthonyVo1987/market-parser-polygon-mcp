@@ -1,6 +1,6 @@
 # New Task Slash Command
 
-Execute complex development tasks using AI Team orchestration with the tech-lead-orchestrator.
+Execute complex development tasks using AI Team orchestration with the @agent-tech-lead-orchestrator.
 
 ## How to Use
 

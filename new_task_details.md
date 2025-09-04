@@ -1,15 +1,22 @@
 # New Task Details
 
-[GPT-5] Run LINT \ PyLint \ ESLint & fix any Lint issues for gpt5-openai-agents-sdk-polygon-mcp
+[GPT-5] Pre-Migration Prep for new Github repo for gpt5-openai-agents-sdk-polygon-mcp
+
+- I would like to prep the code base for a full migration to use just the new gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI
 
 ## Task Description
 
-<Task 1> Specialist to Use relevant MCP Tools to run & fix all the Linting for the code in gpt5-openai-agents-sdk-polygon-mcp
+<Task 1> Specialist to Use Context7, Sequential-Thinking, & and any other relevant Tools Analyze, Research, & Understand the current implementation of gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI
 
-- Lint needs to be run for the entire tech stack of the OpenAI Code
-- If something needs additional Lint config to properly run lint, then auto download\setup what may be needed to run Lint properly
+<Task 2> Specialist to Use Context7, Sequential-Thinking, & and any other relevant Tools Analyze, Research, & Scope out changes needed to have a fully independent gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI to be later imported into a brand new Github repo WITH any legacy CLI + Gradio UI code
 
-<Task 2> 4x Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
+<Task 3> Ask @agent-tech-lead-orchestrator to use Sequential-Thinking to analyze results from research tasks 1 & 2 and generate a implemenation, delegation, & coordination plan for Specialist(s) to perform all task(s) for the Pre-Migration Prep code changes
+
+<Task 4> Based implementation, delegation, & coordination plan for Specialist(s), perform all the task(s)
+
+<Task 5> Specialist(s) to review and update ALL gpt5-openai-agents-sdk-polygon-mcp docs to reflect the new Pre-Migration Prep
+
+<Task 6> 4x Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
 
 ### Step 1: Review/Fix Loop
 
@@ -49,6 +56,14 @@
 
 ## Expected Outcome
 
-- All lint issues fixed for our OpenAI Tech Stack
+- Completeley working gpt5-openai-agents-sdk-polygon-mcp CLI + GUI with a brand new fresh repo, completely decoupled and removed from the legacy CLI + Gradio UI code
+- End Result is a fresh new project for JUST gpt5-openai-agents-sdk-polygon-mcp CLI + GUI ONLY
+
+1. User will create a brand new fresh Github repo for JUST the gpt5-openai-agents-sdk-polygon-mcp implementation
+2. User will then try and import\copy & paste \ cherry pick the entire gpt5-openai-agents-sdk-polygon-mcp folder with the Pre-Migration Prep changes
+3. User will then run the environment commands to setup, install dependencies\packages for gpt5-openai-agents-sdk-polygon-mcp
+4. User can then issue the command to run the gpt5-openai-agents-sdk-polygon-mcp CLI
+5. User can then issue the command to run the gpt5-openai-agents-sdk-polygon-mcp GUI
+6. Any tests, lint, and\or project configs will be properly setup to run if needed
 
 ## Additional Context
