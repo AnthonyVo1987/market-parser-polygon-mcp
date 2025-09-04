@@ -1,17 +1,12 @@
 # New Task Details
 
-[GPT-5] feat: Enhance Chatbot UI for cross platform dynamic sizing display
+[GPT-5] feat: Research, Review, & Fix\Update OpenAI GPT-5 Chat UI with Best Practices Research using CONTEXT7
 
 ## Task Description
 
-Task 1. Perform Research & generate a plan to implement the requested new OpenAI GPT-5 Chat UI feature(s) for multiple platforms: Mobile, Desktop, iPad, etc:
-A. Chatbot Responses: Dynamic vertical & horizontal scrollbars & word wrapping for displaying across multiple platforms
+Task 1. Perform Research using Context7 & Sequential-Thinking tools to review the entire OpenAI GPT-5 Chat UI code to come up with a Fix\Update Plan to ensure the UI is following the most up to date, robust best practices
 
-- The scrollbars should only appear if needed
-
-B. Chatbot User Request: Dynamic vertical & horizontal scrollbars, word wrapping, and increase default input to be at least 4x lines instead of a single line input textbox for displaying across multiple platforms
-
-- The scrollbars should only appear if needed
+- We have made MANY React \ OpenAI Chat UI enhancements, fixes, and updates, so we need to make sure we are following the best modern practices
 
 Task 2. Based on the research & plan from Task 1, implement the plan
 
