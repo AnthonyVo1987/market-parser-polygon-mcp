@@ -16,8 +16,7 @@ Features:
 
 import logging
 import re
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -74,7 +73,7 @@ class PromptTemplate:
         # Note: mode parameter kept for backward compatibility but not used
         del mode  # Mark as intentionally unused
 
-        
+
         # Unified conversational mode for all interactions
         prompt_parts = [
             self.conversational_template.format(

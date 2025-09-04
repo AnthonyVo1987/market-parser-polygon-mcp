@@ -36,24 +36,7 @@ from pydantic import BaseModel
 from rich.console import Console
 from rich.markdown import Markdown
 
-load_dotenv()
-
-console = Console()
-
-
-# Models
-class FinanceOutput(BaseModel):
-    """Structured result from the guardrail check."""
-
-    is_about_finance: bool
-    reasoning: str
-
-
-# Import API models and prompt templates system
-# Import the existing prompt templates system
-import sys
-
-from api_models import (  # Template Management; Chat Analysis; Button Analysis; System Status; Error Handling; Utility
+from api_models import (
     AnalysisType,
     ButtonAnalysisRequest,
     ButtonAnalysisResponse,
@@ -69,9 +52,19 @@ from api_models import (  # Template Management; Chat Analysis; Button Analysis;
     TemplateListResponse,
     TickerContextInfo,
 )
-
-sys.path.append("/home/1000211866/Github/market-parser-polygon-mcp/src")
 from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+
+load_dotenv()
+
+console = Console()
+
+
+# Models
+class FinanceOutput(BaseModel):
+    """Structured result from the guardrail check."""
+
+    is_about_finance: bool
+    reasoning: str
 
 
 # Legacy models for backward compatibility
@@ -122,15 +115,17 @@ async def save_analysis_report(
 guardrail_agent = Agent(
     name="Guardrail check",
     instructions="""Classify if the user query is finance-related.
-    Include: stocks, ETFs, crypto, forex, market news, fundamentals, economic indicators, ROI calcs, corporate actions.
+    Include: stocks, ETFs, crypto, forex, market news, fundamentals, economic
+    indicators, ROI calcs, corporate actions.
     Exclude: non-financial topics (cooking, general trivia, unrelated tech).
-    Disambiguate: if term (e.g., Apple, Tesla) could be both, check for finance context words (price, market, earnings, shares). If unclear, return non-finance.
+    Disambiguate: if term (e.g., Apple, Tesla) could be both, check for finance
+    context words (price, market, earnings, shares). If unclear, return non-finance.
     Output: is_about_finance: bool, reasoning: brief why/why not.""",
     output_type=FinanceOutput,
 )
 
 
-async def finance_guardrail(context, agent, input_data):
+async def finance_guardrail(context, agent, input_data):  # pylint: disable=unused-argument
     """Validate that the prompt is finance-related before running the agent."""
     result = await Runner.run(guardrail_agent, input_data, context=context)
     final_output = result.final_output_as(FinanceOutput)
@@ -144,7 +139,7 @@ def create_polygon_mcp_server():
     """Create a stdio MCP server instance configured with POLYGON_API_KEY."""
     api_key = os.getenv("POLYGON_API_KEY")
     if not api_key:
-        raise Exception("POLYGON_API_KEY not set in environment.")
+        raise ValueError("POLYGON_API_KEY not set in environment.")
     return MCPServerStdio(
         params={
             "command": "uvx",
@@ -196,7 +191,8 @@ def print_guardrail_error(exception):
     if hasattr(exception, "output_info") and exception.output_info:
         console.print(f"[dim]Reasoning: {exception.output_info.reasoning}[/dim]")
     console.print(
-        "[dim]Please ask about stock prices, market data, financial analysis, economic indicators, or company financials.[/dim]"
+        "[dim]Please ask about stock prices, market data, financial analysis, "
+        "economic indicators, or company financials.[/dim]"
     )
     console.print("------------------\n")
 
@@ -223,20 +219,29 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                     "3. Include disclaimers.\n"
                     "4. Offer to save reports if not asked by the user to save a report.\n\n"
                     "FORMATTING REQUIREMENTS:\n"
-                    "- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using numbered bullet points\n"
-                    "- Use financial emojis throughout: 📈 (bullish), 📉 (bearish), 💰 (money/profit), 💸 (loss), 🏢 (company), 📊 (data/analysis)\n"
+                    "- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using "
+                    "numbered bullet points\n"
+                    "- Use financial emojis throughout: 📈 (bullish), 📉 (bearish), "
+                    "💰 (money/profit), 💸 (loss), 🏢 (company), 📊 (data/analysis)\n"
                     "- Structure responses with proper sections and line spacing for readability\n"
                     "- Use emoji bullet points in lists instead of regular bullets\n"
-                    "- Indicate market sentiment clearly with 📈 BULLISH or 📉 BEARISH labels where appropriate\n"
-                    "- Use sentiment emojis directly in content: 📈 for bullish/positive indicators, 📉 for bearish/negative indicators\n"
-                    "- Place emojis at the beginning of relevant bullet points and statements for immediate visual sentiment\n"
-                    "- Example format: '📈 Strong growth momentum detected' or '📉 Declining revenue trend observed'\n"
-                    "- Use 📊 for neutral analysis, 💰 for profit/gains, 💸 for losses, 🏢 for company info\n"
+                    "- Indicate market sentiment clearly with 📈 BULLISH or 📉 BEARISH "
+                    "labels where appropriate\n"
+                    "- Use sentiment emojis directly in content: 📈 for bullish/positive "
+                    "indicators, 📉 for bearish/negative indicators\n"
+                    "- Place emojis at the beginning of relevant bullet points and "
+                    "statements for immediate visual sentiment\n"
+                    "- Example format: '📈 Strong growth momentum detected' or "
+                    "'📉 Declining revenue trend observed'\n"
+                    "- Use 📊 for neutral analysis, 💰 for profit/gains, 💸 for "
+                    "losses, 🏢 for company info\n"
                     "- End with standard disclaimers in a clearly formatted section\n\n"
                     "RULES:\n"
                     "Double-check math; limit news to ≤3 articles/ticker in date range.\n"
-                    "If the user asks to save a report, save it to the reports folder using the save_analysis_report tool.\n"
-                    "When using any polygon.io data tools, be mindful of how much data you pull based \n"
+                    "If the user asks to save a report, save it to the reports folder "
+                    "using the save_analysis_report tool.\n"
+                    "When using any polygon.io data tools, be mindful of how much "
+                    "data you pull based \n"
                     "on the users input to minimize context being exceeded.\n"
                     "If data unavailable or tool fails, explain gracefully — never fabricate.\n"
                     "TOOLS:\n"
@@ -259,15 +264,19 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
             }
     except InputGuardrailTripwireTriggered as e:
         reasoning = ""
-        if hasattr(e, "output_info") and e.output_info:
-            reasoning = f" Reasoning: {e.output_info.reasoning}"
+        if hasattr(e, "output_info") and e.output_info:  # pylint: disable=no-member
+            reasoning = f" Reasoning: {e.output_info.reasoning}"  # pylint: disable=no-member
         return {
             "success": False,
             "response": "",
-            "error": f"This query is not related to finance.{reasoning} Please ask about stock prices, market data, financial analysis, economic indicators, or company financials.",
+            "error": (
+                f"This query is not related to finance.{reasoning} "
+                "Please ask about stock prices, market data, financial analysis, "
+                "economic indicators, or company financials."
+            ),
             "error_type": "guardrail",
         }
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
         return {"success": False, "response": "", "error": str(e), "error_type": "agent_error"}
 
 
@@ -316,20 +325,20 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
             if result["success"]:
                 return ChatResponse(response=result["response"])
-            else:
-                if result["error_type"] == "guardrail":
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-                    )
-                
+
+            if result["error_type"] == "guardrail":
                 raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Agent error: {result['error']}",
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
                 )
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Agent error: {result['error']}",
+            )
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Server error: {str(e)}"
         ) from e
@@ -356,7 +365,7 @@ async def get_prompt_templates():
         return TemplateListResponse(
             mode="conversational_only", templates=templates, total_count=len(templates)
         )
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve templates: {str(e)}",
@@ -400,7 +409,7 @@ async def generate_prompt_endpoint(request: GeneratePromptRequest):
             mode=request.mode,
         )
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate prompt: {str(e)}",
@@ -418,7 +427,11 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
         session = SQLiteSession("finance_conversation")
         server = create_polygon_mcp_server()
 
-        query = f"Provide a comprehensive stock snapshot analysis for {request.ticker}. Include current price, volume, OHLC data, and recent performance metrics with clear explanations."
+        query = (
+            f"Provide a comprehensive stock snapshot analysis for {request.ticker}. "
+            "Include current price, volume, OHLC data, and recent performance metrics "
+            "with clear explanations."
+        )
 
         async with server:
             result = await process_financial_query(query, session, server)
@@ -430,7 +443,7 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
                     analysis_type=AnalysisType.SNAPSHOT,
                     success=True,
                 )
-            
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Snapshot analysis failed: {result['error']}",
@@ -438,7 +451,7 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Snapshot analysis error: {str(e)}",
@@ -453,7 +466,11 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
         session = SQLiteSession("finance_conversation")
         server = create_polygon_mcp_server()
 
-        query = f"Analyze key support and resistance levels for {request.ticker}. Identify 3 support levels and 3 resistance levels with explanations of their significance for trading decisions."
+        query = (
+            f"Analyze key support and resistance levels for {request.ticker}. "
+            "Identify 3 support levels and 3 resistance levels with explanations "
+            "of their significance for trading decisions."
+        )
 
         async with server:
             result = await process_financial_query(query, session, server)
@@ -465,7 +482,7 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
                     analysis_type=AnalysisType.SUPPORT_RESISTANCE,
                     success=True,
                 )
-            
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Support/Resistance analysis failed: {result['error']}",
@@ -473,7 +490,7 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Support/Resistance analysis error: {str(e)}",
@@ -488,7 +505,11 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
         session = SQLiteSession("finance_conversation")
         server = create_polygon_mcp_server()
 
-        query = f"Provide comprehensive technical analysis for {request.ticker} using key indicators including RSI, MACD, and moving averages. Explain momentum and trend direction with trading recommendations."
+        query = (
+            f"Provide comprehensive technical analysis for {request.ticker} using "
+            "key indicators including RSI, MACD, and moving averages. Explain momentum "
+            "and trend direction with trading recommendations."
+        )
 
         async with server:
             result = await process_financial_query(query, session, server)
@@ -500,7 +521,7 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
                     analysis_type=AnalysisType.TECHNICAL,
                     success=True,
                 )
-            
+
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Technical analysis failed: {result['error']}",
@@ -508,7 +529,7 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Technical analysis error: {str(e)}",
@@ -561,8 +582,10 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
                     confidence=ticker_context.confidence,
                     follow_up_questions=(
                         [
-                            f"Would you like a detailed technical analysis for {ticker_context.symbol}?",
-                            f"Should we examine support and resistance levels for {ticker_context.symbol}?",
+                            f"Would you like a detailed technical analysis for "
+                            f"{ticker_context.symbol}?",
+                            f"Should we examine support and resistance levels for "
+                            f"{ticker_context.symbol}?",
                             "Would you like to analyze a different stock?",
                         ]
                         if ticker_context.symbol != "[TICKER]"
@@ -573,20 +596,20 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
                     ),
                     success=True,
                 )
-            else:
-                if result["error_type"] == "guardrail":
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-                    )
-                
+
+            if result["error_type"] == "guardrail":
                 raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=f"Analysis failed: {result['error']}",
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
                 )
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Analysis failed: {result['error']}",
+            )
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Chat analysis failed: {str(e)}",
@@ -607,7 +630,7 @@ async def get_system_status():
         )
 
         return SystemStatusResponse(status="operational", metrics=metrics)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve system status: {str(e)}",
@@ -684,10 +707,10 @@ async def cli_async():
                 except (EOFError, KeyboardInterrupt):
                     print("\nGoodbye!")
                     break
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-exception-caught
                     print_error(e, "Unexpected Error")
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print_error(e, "Setup Error")
     finally:
         print("Market Analysis Agent shutdown complete")

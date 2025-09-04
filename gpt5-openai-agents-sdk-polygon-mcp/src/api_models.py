@@ -56,6 +56,7 @@ class GeneratePromptRequest(BaseModel):
     mode: PromptMode = PromptMode.CONVERSATIONAL
 
     @validator("ticker")
+    @classmethod
     def validate_ticker(cls, v):
         """Validate ticker symbol format and constraints."""
         if v is not None:
@@ -112,6 +113,7 @@ class ChatAnalysisRequest(BaseModel):
     )
 
     @validator("message")
+    @classmethod
     def validate_message(cls, v):
         """Validate message content length and format."""
         if len(v.strip()) < 2:
@@ -207,6 +209,7 @@ class ButtonAnalysisRequest(BaseModel):
     analysis_type: AnalysisType
 
     @validator("ticker")
+    @classmethod
     def validate_ticker(cls, v):
         """Validate ticker symbol format for button analysis requests."""
         v = v.strip().upper()

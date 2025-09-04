@@ -7,12 +7,17 @@ without requiring external services to be running.
 """
 
 import sys
-sys.path.append('src')
-sys.path.append('/home/1000211866/Github/market-parser-polygon-mcp/src')
-
+import os
 import asyncio
+from pathlib import Path
+
+# Add the project root to Python path
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / 'src'))
+
 from fastapi.testclient import TestClient
-from main import app
+from src.main import app
 
 def test_api_endpoints():
     """Test basic API endpoint functionality"""
@@ -88,7 +93,7 @@ def test_api_endpoints():
 
 def test_api_models():
     """Test API models functionality"""
-    from api_models import (
+    from src.api_models import (
         AnalysisType, PromptMode, GeneratePromptRequest, 
         ButtonAnalysisRequest, ChatAnalysisRequest
     )
@@ -139,7 +144,7 @@ def test_api_models():
 
 def test_integration_points():
     """Test integration with existing systems"""
-    from prompt_templates import PromptTemplateManager, PromptType
+    from src.prompt_templates import PromptTemplateManager, PromptType
     
     print("\n🔗 Testing Integration Points")
     print("=" * 35)

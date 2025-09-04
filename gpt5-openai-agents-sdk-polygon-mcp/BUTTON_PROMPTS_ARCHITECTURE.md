@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides comprehensive architecture documentation for the Button Prompts Integration system implemented for the Market Parser financial analysis application. The system provides a complete full-stack solution enabling users to quickly access financial analysis prompts through an intuitive React frontend interface backed by a robust FastAPI server.
+This document provides comprehensive architecture documentation for the Button Prompts Integration system implemented for the GPT-5 OpenAI Agents SDK financial analysis application. The system provides a complete full-stack solution enabling users to quickly access financial analysis prompts through an intuitive React frontend interface backed by a robust FastAPI server.
 
 ## System Architecture Overview
 
@@ -293,11 +293,21 @@ interface ErrorRecovery {
 ### Development Environment
 
 ```bash
-# Backend Development Server
+# Clone and setup the standalone project
+git clone <repository-url>/gpt5-openai-agents-sdk-polygon-mcp.git
 cd gpt5-openai-agents-sdk-polygon-mcp
+
+# Setup environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Install backend dependencies
+uv install
+
+# Terminal 1: Backend Development Server
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Frontend Development Server  
+# Terminal 2: Frontend Development Server  
 cd frontend_OpenAI
 npm install
 npm run dev          # Runs on http://localhost:3000
