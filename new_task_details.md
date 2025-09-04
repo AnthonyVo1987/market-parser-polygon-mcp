@@ -4,13 +4,29 @@
 
 ## Task Description
 
-Task 1. Perform Research using Context7 & Sequential-Thinking tools to review the entire OpenAI GPT-5 Chat UI code to come up with a Fix\Update Plan to ensure the UI is following the most up to date, robust best practices
+<Task 1> Remove premature Testing Infrastructure
 
-- We have made MANY React \ OpenAI Chat UI enhancements, fixes, and updates, so we need to make sure we are following the best modern practices
+- Temporarily shelve, retire and remove the recently added testing infrastructure, since we are still just in the prototyping stage and
+- We need to stress that at the moment the ENTIRE app, including the legacy code Gradio & newer OpenAI GPT5 chat and chat UI feature is still in the prototyping stage do NOT need enterprise grade, production ready, and performance optimized features & enhancements at this time
+- A testing environment & infrastructure adds too much complexity & bloat right now when the code base will be constantly changing, evolving, & prototyped
+- As part of your removal and retirement of the testing feature
 
-Task 2. Based on the research & plan from Task 1, implement the plan
+<Task 2> New doc for future Testing Infrastructure Implementation
 
-🚨 MANDATORY FINAL CLOSING TASK(S): Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification
+- Generate a brand new document .md in the OpenAI Docs folder that will serve as a future implementation guide whenever we decide to finally implement testing again, so at least we have all the notes down, lessons learned, and a working integration of testing to fall back on once we decide to re-implement later on
+
+<Task 3> New doc for a guide on the current plan & status of the Best Practices Improvments research and analysis
+
+- Generate a brand new document .md in the OpenAI docs folder that will serve as a future implementation guide, status, and research for all the phases
+- We will temporariily pause these tasks to re-visit them at a later point after some more prototyping task(s)
+- This document will also track the progress of the plan
+- Also need to re-organize & move /frontend_OpenAI/PHASE1_IMPROVEMENTS.md to the new OpenAI Docs folder to bring all the related docs together
+Phase 1: CRITICAL Foundation & Safety
+Phase 2: Performance optimization and advanced features
+Phase 3: Enhanced user experience improvements
+Phase 4: Advanced customization and integrations
+
+<Final Task(s)> Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification:
 
 ### Step 1: Review/Fix Loop
 
@@ -51,5 +67,3 @@ Task 2. Based on the research & plan from Task 1, implement the plan
 ## Expected Outcome
 
 ## Additional Context
-
-- Review the Gradio UI code that implemented a Gradio Based version of the dynamic sizing and scroll bars to get a better idea of what works and doesnt work
