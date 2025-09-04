@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { sendChatMessage } from '../services/api_OpenAI';
 import { Message } from '../types/chat_OpenAI';
@@ -12,6 +12,15 @@ export default function ChatInterface_OpenAI() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const statusRegionRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const addMessage = (content: string, sender: 'user' | 'ai') => {
     const newMessage: Message = {
@@ -44,45 +53,104 @@ export default function ChatInterface_OpenAI() {
   };
 
   return (
-    <div className='chat-interface'>
-      <div className='chat-header'>
-        <h1>OpenAI Chat Interface</h1>
-        {messages.length > 0 && <ExportButtons messages={messages} />}
-        <RecentMessageButtons messages={messages} />
-        {error && <div className='error-banner'>{error}</div>}
+    <div className='chat-interface' role='application' aria-label='OpenAI Chat Interface'>
+      {/* Skip link for keyboard navigation */}
+      <a href='#main-input' className='skip-link'>
+        Skip to message input
+      </a>
+      
+      {/* Live regions for screen reader announcements */}
+      <div 
+        ref={statusRegionRef}
+        role='status' 
+        aria-live='polite' 
+        aria-atomic='true'
+        className='sr-only'
+      >
+        {isLoading ? 'Sending message, please wait...' : ''}
+        {error ? `Error: ${error}` : ''}
       </div>
 
-      <div className='messages-container'>
+      <header className='chat-header' role='banner'>
+        <h1 id='chat-title'>OpenAI Chat Interface</h1>
+        {messages.length > 0 && <ExportButtons messages={messages} />}
+        <RecentMessageButtons messages={messages} />
+        {error && (
+          <div className='error-banner' role='alert' aria-describedby='chat-title'>
+            {error}
+          </div>
+        )}
+      </header>
+
+      <main className='messages-container' role='log' aria-live='polite' aria-label='Chat conversation'>
         {messages.length === 0 ? (
-          <div className='empty-state'>
+          <div className='empty-state' role='status'>
             <p>Start a conversation by typing a message below.</p>
           </div>
         ) : (
-          messages.map(message => (
-            <ChatMessage_OpenAI key={message.id} message={message} />
-          ))
+          <>
+            {messages.map(message => (
+              <ChatMessage_OpenAI key={message.id} message={message} />
+            ))}
+            {/* Scroll anchor */}
+            <div ref={messagesEndRef} aria-hidden='true' />
+          </>
         )}
         {isLoading && (
-          <div className='loading-indicator'>
-            <div className='typing-dots'>
+          <div className='loading-indicator' role='status' aria-label='AI is typing'>
+            <div className='typing-dots' aria-hidden='true'>
               <span></span>
               <span></span>
               <span></span>
             </div>
+            <span className='sr-only'>AI is responding to your message</span>
           </div>
         )}
-      </div>
+      </main>
 
-      <ChatInput_OpenAI
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-      />
+      <div role='complementary' className='chat-input-section'>
+        <ChatInput_OpenAI
+          onSendMessage={handleSendMessage}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }
 
-// Enhanced responsive styles for cross-platform UI optimization
+// Enhanced responsive styles for cross-platform UI optimization with accessibility
 export const interfaceStyles = `
+  /* Accessibility: Skip link for keyboard navigation */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    font-size: 14px;
+  }
+  
+  .skip-link:focus {
+    top: 6px;
+  }
+  
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
   .chat-interface {
     display: flex;
     flex-direction: column;
@@ -98,6 +166,10 @@ export const interfaceStyles = `
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
     }
+  }
+  
+  .chat-header {
+    position: relative;
   }
   
   .chat-header {
@@ -143,6 +215,13 @@ export const interfaceStyles = `
     width: 100%;
     max-width: 100%; /* Remove 800px limit for better mobile */
     margin: 0 auto;
+    /* Enhanced focus management */
+    scroll-behavior: smooth;
+  }
+  
+  .messages-container:focus {
+    outline: 2px solid #007bff;
+    outline-offset: -2px;
   }
   
   /* Mobile-specific adjustments */
@@ -180,7 +259,9 @@ export const interfaceStyles = `
   .loading-indicator {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     margin: 16px 0;
+    gap: 8px;
   }
   
   .typing-dots {
@@ -217,6 +298,11 @@ export const interfaceStyles = `
       transform: scale(1);
       opacity: 1;
     }
+  }
+  
+  /* Chat input section styling */
+  .chat-input-section {
+    flex-shrink: 0;
   }
   
   /* Enhanced compatibility with multi-line input */
@@ -256,6 +342,34 @@ export const interfaceStyles = `
     .recent-message-buttons {
       gap: 6px;
     }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .chat-interface {
+      border: 2px solid;
+    }
+    
+    .message-bubble {
+      border: 1px solid;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .messages-container {
+      scroll-behavior: auto;
+    }
+    
+    .typing-dots span {
+      animation: none;
+    }
+  }
+  
+  /* Focus visible improvements */
+  .chat-interface *:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
   }
   
   ${exportButtonStyles}

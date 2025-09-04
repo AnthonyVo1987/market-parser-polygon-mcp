@@ -41,9 +41,13 @@ export default function ChatInput_OpenAI({
   };
 
   return (
-    <form onSubmit={handleSubmit} className='chat-input-form'>
+    <form onSubmit={handleSubmit} className='chat-input-form' role='form' aria-label='Send message'>
       <div className='input-container'>
+        <label htmlFor='main-input' className='sr-only'>
+          Type your message here. Press Shift+Enter for new line, Enter to send.
+        </label>
         <textarea
+          id='main-input'
           ref={textareaRef}
           value={inputValue}
           onChange={handleInputChange}
@@ -53,21 +57,52 @@ export default function ChatInput_OpenAI({
           disabled={isLoading}
           rows={4}
           style={{ minHeight: '80px', maxHeight: '200px' }}
+          aria-describedby='input-help'
+          aria-label='Message input'
+          required
         />
+        <div id='input-help' className='sr-only'>
+          {isLoading 
+            ? 'Please wait while your message is being sent'
+            : 'Enter your message and press Enter to send, or Shift+Enter for a new line'
+          }
+        </div>
         <button
           type='submit'
           disabled={!inputValue.trim() || isLoading}
           className='send-button'
+          aria-describedby='send-help'
         >
           {isLoading ? 'Sending...' : 'Send'}
         </button>
+        <div id='send-help' className='sr-only'>
+          {!inputValue.trim() 
+            ? 'Enter a message to enable sending'
+            : isLoading 
+              ? 'Message is being sent'
+              : 'Send your message'
+          }
+        </div>
       </div>
     </form>
   );
 }
 
-// Simple inline styles - in production, use CSS modules or styled-components
+// Enhanced inline styles with accessibility improvements
 export const inputStyles = `
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .chat-input-form {
     padding: 16px;
     background: white;
@@ -94,10 +129,17 @@ export const inputStyles = `
     min-height: 80px;
     max-height: 200px;
     overflow-y: auto;
+    transition: border-color 0.2s ease;
   }
   
   .message-input:focus {
     border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+  
+  .message-input:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
   }
   
   .message-input:disabled {
@@ -114,6 +156,8 @@ export const inputStyles = `
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    min-width: 80px;
   }
   
   .send-button:disabled {
@@ -123,5 +167,38 @@ export const inputStyles = `
   
   .send-button:not(:disabled):hover {
     background-color: #0056b3;
+    transform: translateY(-1px);
+  }
+  
+  .send-button:not(:disabled):active {
+    transform: translateY(0);
+  }
+  
+  .send-button:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .message-input {
+      border: 2px solid;
+    }
+    
+    .send-button {
+      border: 2px solid;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .message-input,
+    .send-button {
+      transition: none;
+    }
+    
+    .send-button:not(:disabled):hover {
+      transform: none;
+    }
   }
 `;
