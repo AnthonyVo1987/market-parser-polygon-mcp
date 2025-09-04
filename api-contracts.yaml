@@ -1,0 +1,695 @@
+openapi: 3.1.0
+info:
+  title: Market Parser Prompt Delivery API
+  description: |
+    RESTful API contracts for prompt delivery between Python backend and React frontend.
+    Enables clean data flow for financial analysis button prompt integration.
+    
+    **Key Features:**
+    - Template-driven prompt generation
+    - Dynamic financial data integration
+    - Real-time analysis processing
+    - Enhanced response formatting with emojis
+    - Cross-platform compatibility
+  version: 1.0.0
+  contact:
+    name: Market Parser Team
+    url: https://github.com/market-parser-polygon-mcp
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: http://127.0.0.1:8000
+    description: Local development
+
+paths:
+  # ====== PROMPT TEMPLATE ENDPOINTS ======
+  
+  /api/v1/prompts/templates:
+    get:
+      summary: Get Available Prompt Templates
+      description: |
+        Retrieve metadata for all available prompt templates.
+        Used by React frontend to populate button options and understand available analysis types.
+      tags:
+        - Prompt Templates
+      responses:
+        '200':
+          description: Successfully retrieved prompt templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptTemplatesResponse'
+              example:
+                success: true
+                templates:
+                  - id: "snapshot"
+                    name: "Stock Snapshot"
+                    description: "Current market data and recent performance metrics"
+                    emoji: "📊"
+                    category: "market_data"
+                    requires_ticker: true
+                    estimated_response_time: "2-5 seconds"
+                  - id: "support_resistance"
+                    name: "Support & Resistance"
+                    description: "Key support and resistance levels analysis"
+                    emoji: "🎯"
+                    category: "technical_analysis"
+                    requires_ticker: true
+                    estimated_response_time: "3-7 seconds"
+                  - id: "technical"
+                    name: "Technical Analysis"
+                    description: "RSI, MACD, and moving average indicators"
+                    emoji: "🔍"
+                    category: "technical_analysis" 
+                    requires_ticker: true
+                    estimated_response_time: "4-8 seconds"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/prompts/generate:
+    post:
+      summary: Generate Dynamic Prompt
+      description: |
+        Generate a dynamic prompt with variable substitution for specific analysis type.
+        Used internally by React frontend to prepare prompts before sending to chat processing.
+      tags:
+        - Prompt Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromptGenerationRequest'
+            examples:
+              snapshot_request:
+                summary: Stock Snapshot Request
+                value:
+                  template_id: "snapshot"
+                  variables:
+                    ticker: "AAPL"
+                    company_name: "Apple Inc."
+                  custom_instructions: "Focus on recent earnings impact"
+              support_resistance_request:
+                summary: Support & Resistance Request  
+                value:
+                  template_id: "support_resistance"
+                  variables:
+                    ticker: "TSLA"
+                    company_name: "Tesla, Inc."
+      responses:
+        '200':
+          description: Successfully generated prompt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromptGenerationResponse'
+              example:
+                success: true
+                generated_prompt: "Provide a comprehensive stock snapshot analysis for AAPL (Apple Inc.). Please include current market data and recent performance metrics. Focus on recent earnings impact. RESPONSE FORMATTING GUIDELINES: - Start with current price and percentage change..."
+                template_info:
+                  id: "snapshot"
+                  name: "Stock Snapshot"
+                  estimated_tokens: 450
+                variables_used:
+                  ticker: "AAPL"
+                  company_name: "Apple Inc."
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_template:
+                  summary: Invalid Template ID
+                  value:
+                    success: false
+                    error: "Template 'invalid_type' not found"
+                    error_code: "TEMPLATE_NOT_FOUND"
+                missing_variables:
+                  summary: Missing Required Variables
+                  value:
+                    success: false
+                    error: "Missing required variable: ticker"
+                    error_code: "MISSING_VARIABLES"
+
+  # ====== FINANCIAL ANALYSIS ENDPOINTS ======
+  
+  /api/v1/analysis/chat:
+    post:
+      summary: Process Financial Chat Message
+      description: |
+        Main chat processing endpoint that handles both button-triggered prompts and user messages.
+        Integrates with Pydantic AI Agent Framework and Polygon.io data sources.
+      tags:
+        - Financial Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              button_analysis:
+                summary: Button-Triggered Analysis
+                value:
+                  message: "Provide a comprehensive stock snapshot analysis for AAPL (Apple Inc.)..."
+                  source: "button"
+                  analysis_type: "snapshot"
+                  ticker: "AAPL"
+                  session_id: "sess_123456"
+              user_message:
+                summary: User Conversational Message
+                value:
+                  message: "What's happening with Tesla stock today?"
+                  source: "user"
+                  session_id: "sess_123456"
+      responses:
+        '200':
+          description: Successfully processed chat message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                successful_analysis:
+                  summary: Successful Analysis Response
+                  value:
+                    success: true
+                    response: "🎯 **KEY TAKEAWAYS**\n\n📈 **Apple Inc. (AAPL) Market Snapshot**\n\n💰 **Current Price:** $150.25 (+2.5% / +$3.75)..."
+                    metadata:
+                      analysis_type: "snapshot"
+                      ticker: "AAPL"
+                      processing_time_ms: 3240
+                      tokens_used: 2150
+                      data_sources: ["polygon_io", "financial_indicators"]
+                    follow_up_questions:
+                      - "Would you like me to analyze AAPL's support and resistance levels?"
+                      - "How does AAPL compare to other tech stocks today?"
+                      - "What are the key upcoming events for Apple?"
+        '400':
+          description: Bad request - Invalid input or guardrail triggered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatErrorResponse'
+              examples:
+                guardrail_triggered:
+                  summary: Non-Financial Query Blocked
+                  value:
+                    success: false
+                    error: "This query is not related to finance. Please ask about stock prices, market data, financial analysis, economic indicators, or company financials."
+                    error_code: "GUARDRAIL_TRIGGERED"
+                    error_type: "validation"
+                invalid_ticker:
+                  summary: Invalid Ticker Symbol
+                  value:
+                    success: false
+                    error: "Invalid ticker symbol: XYZ123"
+                    error_code: "INVALID_TICKER"
+                    error_type: "validation"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatErrorResponse'
+              examples:
+                polygon_api_error:
+                  summary: External API Error
+                  value:
+                    success: false
+                    error: "Unable to fetch market data from Polygon.io API"
+                    error_code: "EXTERNAL_API_ERROR"
+                    error_type: "external_service"
+
+  /api/v1/analysis/follow-up:
+    post:
+      summary: Get Contextual Follow-up Questions
+      description: |
+        Generate contextual follow-up questions based on recent analysis.
+        Used by React frontend to provide suggested next steps to users.
+      tags:
+        - Financial Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FollowUpRequest'
+            example:
+              analysis_type: "snapshot"
+              ticker: "AAPL"
+              session_id: "sess_123456"
+      responses:
+        '200':
+          description: Successfully generated follow-up questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowUpResponse'
+              example:
+                success: true
+                questions:
+                  - id: "support_resistance"
+                    text: "Would you like me to analyze AAPL's support and resistance levels?"
+                    action: "button"
+                    template_id: "support_resistance"
+                  - id: "sector_comparison"
+                    text: "How does AAPL compare to other tech stocks today?"
+                    action: "message"
+                  - id: "upcoming_events"
+                    text: "What are the key upcoming events for Apple?"
+                    action: "message"
+                context:
+                  ticker: "AAPL"
+                  analysis_type: "snapshot"
+                  relevance_score: 0.9
+
+  # ====== SYSTEM ENDPOINTS ======
+  
+  /api/v1/health:
+    get:
+      summary: Health Check
+      description: System health check endpoint for monitoring and deployment
+      tags:
+        - System
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: "healthy"
+                message: "Financial Analysis API is running"
+                version: "1.0.0"
+                services:
+                  polygon_api: "connected"
+                  openai_api: "connected"
+                  prompt_templates: "loaded"
+
+  /api/v1/system/status:
+    get:
+      summary: Detailed System Status
+      description: Detailed system status including service health and performance metrics
+      tags:
+        - System
+      responses:
+        '200':
+          description: Detailed system status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemStatusResponse'
+              example:
+                system_health: "operational"
+                services:
+                  polygon_api:
+                    status: "connected"
+                    last_check: "2024-12-01T10:30:00Z"
+                    response_time_ms: 120
+                  openai_api:
+                    status: "connected" 
+                    last_check: "2024-12-01T10:30:00Z"
+                    response_time_ms: 450
+                performance_metrics:
+                  avg_response_time_ms: 3200
+                  requests_per_minute: 45
+                  success_rate: 0.98
+                template_system:
+                  loaded_templates: 3
+                  last_updated: "2024-12-01T08:00:00Z"
+
+# ====== COMPONENT SCHEMAS ======
+
+components:
+  schemas:
+    # Template Management Schemas
+    PromptTemplate:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - emoji
+        - category
+        - requires_ticker
+      properties:
+        id:
+          type: string
+          enum: ["snapshot", "support_resistance", "technical"]
+          description: Unique template identifier
+        name:
+          type: string
+          description: Human-readable template name
+        description:
+          type: string
+          description: Template description for UI display
+        emoji:
+          type: string
+          description: Emoji for visual identification
+        category:
+          type: string
+          enum: ["market_data", "technical_analysis", "fundamental_analysis"]
+          description: Analysis category
+        requires_ticker:
+          type: boolean
+          description: Whether template requires ticker symbol
+        estimated_response_time:
+          type: string
+          description: Estimated processing time range
+          example: "2-5 seconds"
+        example_output:
+          type: string
+          description: Example of expected output format
+          
+    PromptTemplatesResponse:
+      type: object
+      required:
+        - success
+        - templates
+      properties:
+        success:
+          type: boolean
+          example: true
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/PromptTemplate'
+        metadata:
+          type: object
+          properties:
+            total_templates:
+              type: integer
+            last_updated:
+              type: string
+              format: date-time
+
+    # Prompt Generation Schemas
+    PromptGenerationRequest:
+      type: object
+      required:
+        - template_id
+        - variables
+      properties:
+        template_id:
+          type: string
+          enum: ["snapshot", "support_resistance", "technical"]
+        variables:
+          type: object
+          required:
+            - ticker
+          properties:
+            ticker:
+              type: string
+              pattern: "^[A-Z]{1,5}$"
+              description: Stock ticker symbol (uppercase)
+            company_name:
+              type: string
+              description: Optional company name for context
+          additionalProperties: false
+        custom_instructions:
+          type: string
+          maxLength: 500
+          description: Additional context or instructions
+
+    PromptGenerationResponse:
+      type: object
+      required:
+        - success
+        - generated_prompt
+        - template_info
+      properties:
+        success:
+          type: boolean
+        generated_prompt:
+          type: string
+          description: Complete generated prompt ready for AI processing
+        template_info:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            estimated_tokens:
+              type: integer
+        variables_used:
+          type: object
+          description: Variables that were substituted in the prompt
+
+    # Chat Processing Schemas  
+    ChatRequest:
+      type: object
+      required:
+        - message
+        - source
+      properties:
+        message:
+          type: string
+          minLength: 2
+          maxLength: 2000
+          description: User message or generated prompt
+        source:
+          type: string
+          enum: ["button", "user"]
+          description: Source of the message
+        analysis_type:
+          type: string
+          enum: ["snapshot", "support_resistance", "technical"]
+          description: Required when source is "button"
+        ticker:
+          type: string
+          pattern: "^[A-Z]{1,5}$"
+          description: Optional ticker symbol for context
+        session_id:
+          type: string
+          description: Session identifier for conversation tracking
+
+    ChatResponse:
+      type: object
+      required:
+        - success
+        - response
+      properties:
+        success:
+          type: boolean
+        response:
+          type: string
+          description: AI-generated analysis response with emoji formatting
+        metadata:
+          type: object
+          properties:
+            analysis_type:
+              type: string
+            ticker:
+              type: string
+            processing_time_ms:
+              type: integer
+            tokens_used:
+              type: integer
+            data_sources:
+              type: array
+              items:
+                type: string
+        follow_up_questions:
+          type: array
+          items:
+            type: string
+          maxItems: 3
+          description: Suggested follow-up questions
+
+    ChatErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+        - error_code
+        - error_type
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Human-readable error message
+        error_code:
+          type: string
+          enum: 
+            - "GUARDRAIL_TRIGGERED"
+            - "INVALID_TICKER"
+            - "EXTERNAL_API_ERROR"
+            - "RATE_LIMIT_EXCEEDED"
+            - "PROCESSING_TIMEOUT"
+        error_type:
+          type: string
+          enum: ["validation", "external_service", "rate_limit", "timeout"]
+
+    # Follow-up Question Schemas
+    FollowUpRequest:
+      type: object
+      required:
+        - analysis_type
+        - ticker
+      properties:
+        analysis_type:
+          type: string
+          enum: ["snapshot", "support_resistance", "technical"]
+        ticker:
+          type: string
+          pattern: "^[A-Z]{1,5}$"
+        session_id:
+          type: string
+
+    FollowUpQuestion:
+      type: object
+      required:
+        - id
+        - text
+        - action
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        action:
+          type: string
+          enum: ["button", "message"]
+        template_id:
+          type: string
+          description: Required when action is "button"
+
+    FollowUpResponse:
+      type: object
+      required:
+        - success
+        - questions
+      properties:
+        success:
+          type: boolean
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/FollowUpQuestion'
+          maxItems: 3
+        context:
+          type: object
+          properties:
+            ticker:
+              type: string
+            analysis_type:
+              type: string
+            relevance_score:
+              type: number
+              minimum: 0
+              maximum: 1
+
+    # System Health Schemas
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          enum: ["healthy", "degraded", "unhealthy"]
+        message:
+          type: string
+        version:
+          type: string
+        services:
+          type: object
+          additionalProperties:
+            type: string
+
+    SystemStatusResponse:
+      type: object
+      required:
+        - system_health
+        - services
+      properties:
+        system_health:
+          type: string
+          enum: ["operational", "degraded", "maintenance", "outage"]
+        services:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+              last_check:
+                type: string
+                format: date-time
+              response_time_ms:
+                type: integer
+        performance_metrics:
+          type: object
+          properties:
+            avg_response_time_ms:
+              type: integer
+            requests_per_minute:
+              type: integer
+            success_rate:
+              type: number
+              minimum: 0
+              maximum: 1
+        template_system:
+          type: object
+          properties:
+            loaded_templates:
+              type: integer
+            last_updated:
+              type: string
+              format: date-time
+
+    # Generic Error Schema
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error description
+        error_code:
+          type: string
+          description: Machine-readable error code
+
+  # Security Schemes (for future use)
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Optional JWT token authentication
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Optional API key authentication
+
+# Global Tags
+tags:
+  - name: Prompt Templates
+    description: Template management and dynamic prompt generation
+  - name: Financial Analysis
+    description: Core financial analysis processing endpoints
+  - name: System
+    description: Health check and system status endpoints
+
+# External Documentation
+externalDocs:
+  description: Market Parser Documentation
+  url: https://github.com/market-parser-polygon-mcp/docs

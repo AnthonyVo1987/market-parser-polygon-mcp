@@ -75,7 +75,8 @@
       "mcp__filesystem__edit_file",
       "Bash(/home/anthony/Github/market-parser-polygon-mcp/docs/MCP_TESTING_USAGE_GUIDE.md)",
       "Bash(source .env)",
-      "Bash(markdownlint-cli2-fix:*)"
+      "Bash(markdownlint-cli2-fix:*)",
+      "Bash(PYTHONPATH=/home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/src python3 -c \"from main import app; print(''FastAPI app imported successfully'')\")"
     ],
     "deny": [],
     "ask": [],

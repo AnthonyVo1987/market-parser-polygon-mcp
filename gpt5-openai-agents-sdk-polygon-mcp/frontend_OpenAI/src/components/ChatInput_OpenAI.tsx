@@ -1,22 +1,51 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
 
 interface ChatInput_OpenAIProps {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  placeholder?: string;
 }
 
-export default function ChatInput_OpenAI({
+export interface ChatInputRef {
+  focus: () => void;
+  setValue: (value: string) => void;
+  getValue: () => string;
+  clear: () => void;
+}
+
+const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(function ChatInput_OpenAI({
   onSendMessage,
   isLoading,
-}: ChatInput_OpenAIProps) {
-  const [inputValue, setInputValue] = useState('');
+  value: externalValue,
+  onValueChange,
+  placeholder = 'Type your message... (Shift+Enter for new line)',
+}, ref) {
+  const [internalValue, setInternalValue] = useState('');
+  
+  // Use external value if provided, otherwise use internal state
+  const inputValue = externalValue !== undefined ? externalValue : internalValue;
+  
+  // Update internal state when external value changes
+  useEffect(() => {
+    if (externalValue !== undefined) {
+      setInternalValue(externalValue);
+    }
+  }, [externalValue]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() && !isLoading) {
       onSendMessage(inputValue.trim());
-      setInputValue('');
+      
+      // Clear value based on control mode
+      if (externalValue !== undefined && onValueChange) {
+        onValueChange('');
+      } else {
+        setInternalValue('');
+      }
       // Reset textarea height after clearing
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
@@ -25,7 +54,14 @@ export default function ChatInput_OpenAI({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
+    const newValue = e.target.value;
+    
+    // Update appropriate state based on control mode
+    if (externalValue !== undefined && onValueChange) {
+      onValueChange(newValue);
+    } else {
+      setInternalValue(newValue);
+    }
     
     // Auto-resize logic
     const textarea = e.target;
@@ -36,9 +72,48 @@ export default function ChatInput_OpenAI({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as any);
+      // Create a synthetic form event for handleSubmit
+      const syntheticEvent = {
+        preventDefault: () => {},
+        target: e.target,
+        currentTarget: e.target,
+      } as React.FormEvent;
+      handleSubmit(syntheticEvent);
     }
   };
+
+  // Expose imperative methods to parent components
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    },
+    setValue: (value: string) => {
+      if (externalValue !== undefined && onValueChange) {
+        onValueChange(value);
+      } else {
+        setInternalValue(value);
+      }
+      // Auto-resize after setting value
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px';
+      }
+    },
+    getValue: () => inputValue,
+    clear: () => {
+      if (externalValue !== undefined && onValueChange) {
+        onValueChange('');
+      } else {
+        setInternalValue('');
+      }
+      // Reset textarea height after clearing
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    },
+  }), [inputValue, externalValue, onValueChange]);
 
   return (
     <form onSubmit={handleSubmit} className='chat-input-form' role='form' aria-label='Send message'>
@@ -52,7 +127,7 @@ export default function ChatInput_OpenAI({
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder='Type your message... (Shift+Enter for new line)'
+          placeholder={placeholder}
           className='message-input'
           disabled={isLoading}
           rows={4}
@@ -86,7 +161,9 @@ export default function ChatInput_OpenAI({
       </div>
     </form>
   );
-}
+});
+
+export default ChatInput_OpenAI;
 
 // Enhanced inline styles with accessibility improvements
 export const inputStyles = `

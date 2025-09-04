@@ -1,25 +1,42 @@
 # New Task Details
 
-[GPT-5] Remove Testing & Document Future Improvements
+[GPT-5] Add Button Prompts
 
 ## Task Description
 
-<Task 1> Remove premature Testing Infrastructure
+Add Button Prompts for Stock Snapshot, Support & Resistance Levels, & Technical Analysis
 
-- Temporarily shelve, retire and remove the recently added testing infrastructure, since we are still just in the prototyping stage and
-- We need to stress that at the moment the ENTIRE app, including the legacy code Gradio & newer OpenAI GPT5 chat and chat UI feature is still in the prototyping stage do NOT need enterprise grade, production ready, and performance optimized features & enhancements at this time
-- A testing environment & infrastructure adds too much complexity & bloat right now when the code base will be constantly changing, evolving, & prototyped
-- As part of your removal and retirement of the testing feature
+<Task 1> Ask Specialist to review & understand current implementation of the 3x Button Prompts from the Gradio UI code to try and integrate into the OpenAI Chat UI
 
-<Task 2> New doc for future Testing Infrastructure Implementation
+<Task 2> Ask Specialist to use Context7 & Sequential-Thinking tools to Analyze & Research the most up to date, robust best practices, WITHOUT over-engineering for the requested task(s)
 
-- Generate a brand new document .md in the OpenAI Docs folder that will serve as a future implementation guide whenever we decide to finally implement testing again, so at least we have all the notes down, lessons learned, and a working integration of testing to fall back on once we decide to re-implement later on
+1. Prompts should have it's own dedicated file(s) in dedicated prompts folder(s) for optimal best practices for AI Prompt management I.E. .md, JSON format etc. This allows easy modifications & testing of different Prompts without needing to change the code
+2. Need to ensure that ALL button prompts MUST be executed without needing user approval or confirmation
+3. Between 1-3x max relevant follow up questions to the user after the initial Button Prompt Response
 
-<Task 3> Clean Up docs PHASE1_IMPROVEMENTS.md
+4. Snapshot Button: Daily Ticker Snapshot needs ONLY this data provided, formatted to match the Chat UI Emoji\Sentiment Rules
 
-- Re-organize & move /frontend_OpenAI/PHASE1_IMPROVEMENTS.md to the new OpenAI Docs folder to bring all the related docs together
+"ticker": "xxx",
+"% Change": The percentage change since the previous day, to 2 decimal points
+"Change": The value of the change from the previous day
+"Timestamp": The last updated timestamp
+"Open": The open price for the symbol in the given time period
+"High": The highest price for the symbol in the given time period
+"Low": The lowest price for the symbol in the given time period
+"Close": The close price for the symbol in the given time period
+"Volume": The trading volume of the symbol in the given time period
+"VWAP": The volume weighted average price
 
-<Final Task(s)> Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification:
+5. Support & Resistance Levels Button: 3x Support Levels & 3x Resistance Levels
+
+6. Technical Analysis Button
+
+- Focus on Indicators relevant for Options Traders
+- Excluding Support Levels\Resistance Levels since another Button Prompt handles this already
+
+<Task 3> Based on the research & planning from Task 1 & 2, implement the plan for the button prompts
+
+<Task(s)> Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification:
 
 ### Step 1: Review/Fix Loop
 
@@ -58,5 +75,8 @@
 ## Requirements
 
 ## Expected Outcome
+
+- User clicking a button prompt will ONLY fill in the Chatbot input with the prompt text, allowing user to optionally modify prompt before sending to the AI Chat
+- Button Prompts will NOT automatically send the message yet and leave it up to the user to trigger the actual sending
 
 ## Additional Context

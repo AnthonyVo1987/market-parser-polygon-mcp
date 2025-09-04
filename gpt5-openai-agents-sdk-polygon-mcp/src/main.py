@@ -49,7 +49,31 @@ class FinanceOutput(BaseModel):
     reasoning: str
 
 
-# FastAPI Models
+# Import API models and prompt templates system
+from api_models import (
+    # Template Management
+    TemplateListResponse, PromptTemplateInfo, GeneratePromptRequest, GeneratePromptResponse,
+    TickerContextInfo, AnalysisType, PromptMode,
+    # Chat Analysis
+    ChatAnalysisRequest, ChatAnalysisResponse, ChatMessage, FollowUpQuestionsResponse,
+    # Button Analysis
+    ButtonAnalysisRequest, ButtonAnalysisResponse,
+    # System Status
+    SystemHealthResponse, SystemStatusResponse, SystemMetrics,
+    # Error Handling
+    APIErrorResponse, ValidationErrorResponse, ErrorDetail,
+    # Utility
+    AnalysisTypeDetectionRequest, AnalysisTypeDetectionResponse,
+    TickerExtractionRequest, TickerExtractionResponse,
+    SuccessResponse
+)
+
+# Import the existing prompt templates system
+import sys
+sys.path.append('/home/1000211866/Github/market-parser-polygon-mcp/src')
+from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+
+# Legacy models for backward compatibility
 class ChatRequest(BaseModel):
     """Request model for chat endpoint."""
 
@@ -244,9 +268,15 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
         return {"success": False, "response": "", "error": str(e), "error_type": "agent_error"}
 
 
+# Initialize prompt template system
+prompt_manager = PromptTemplateManager()
+ticker_extractor = TickerExtractor()
+
 # FastAPI App Setup
 app = FastAPI(
-    title="Financial Analysis API", description="API for financial queries using Polygon.io data"
+    title="Financial Analysis API", 
+    description="API for financial queries using Polygon.io data and prompt templates",
+    version="1.0.0"
 )
 
 # Add CORS middleware for React frontend
@@ -302,10 +332,288 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         )
 
 
-@app.get("/health")
+# ====== NEW PROMPT TEMPLATES API ENDPOINTS ======
+
+@app.get("/api/v1/prompts/templates", response_model=TemplateListResponse)
+async def get_prompt_templates():
+    """List all available prompt templates."""
+    try:
+        # Convert to response format
+        templates = {}
+        for template_type in AnalysisType:
+            templates[template_type.value] = PromptTemplateInfo(
+                template_type=template_type,
+                available=True,
+                mode=PromptMode.CONVERSATIONAL,
+                enhanced_formatting=True,
+                description=f"{template_type.value.replace('_', ' ').title()} analysis template"
+            )
+        
+        return TemplateListResponse(
+            mode="conversational_only",
+            templates=templates,
+            total_count=len(templates)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve templates: {str(e)}"
+        )
+
+
+@app.post("/api/v1/prompts/generate", response_model=GeneratePromptResponse)
+async def generate_prompt_endpoint(request: GeneratePromptRequest):
+    """Generate a prompt using the specified template and parameters."""
+    try:
+        # Convert AnalysisType to PromptType
+        prompt_type_map = {
+            AnalysisType.SNAPSHOT: PromptType.SNAPSHOT,
+            AnalysisType.SUPPORT_RESISTANCE: PromptType.SUPPORT_RESISTANCE,
+            AnalysisType.TECHNICAL: PromptType.TECHNICAL
+        }
+        
+        prompt_type = prompt_type_map[request.template_type]
+        
+        # Generate the prompt
+        generated_prompt, ticker_context = prompt_manager.generate_prompt(
+            prompt_type=prompt_type,
+            ticker=request.ticker,
+            custom_instructions=request.custom_instructions
+        )
+        
+        # Convert ticker context to response format
+        ticker_info = TickerContextInfo(
+            symbol=ticker_context.symbol,
+            company_name=ticker_context.company_name,
+            sector=ticker_context.sector,
+            last_mentioned=ticker_context.last_mentioned,
+            confidence=ticker_context.confidence,
+            source=ticker_context.source
+        )
+        
+        return GeneratePromptResponse(
+            prompt=generated_prompt,
+            ticker_context=ticker_info,
+            template_type=request.template_type,
+            mode=request.mode
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate prompt: {str(e)}"
+        )
+
+
+# ====== BUTTON ANALYSIS ENDPOINTS ======
+
+@app.post("/api/v1/analysis/snapshot", response_model=ButtonAnalysisResponse)
+async def get_stock_snapshot(request: ButtonAnalysisRequest):
+    """Get stock snapshot analysis for button-triggered requests."""
+    try:
+        # Process through the agent system
+        session = SQLiteSession("finance_conversation")
+        server = create_polygon_mcp_server()
+        
+        query = f"Provide a comprehensive stock snapshot analysis for {request.ticker}. Include current price, volume, OHLC data, and recent performance metrics with clear explanations."
+        
+        async with server:
+            result = await process_financial_query(query, session, server)
+            
+            if result["success"]:
+                return ButtonAnalysisResponse(
+                    analysis=result["response"],
+                    ticker=request.ticker,
+                    analysis_type=AnalysisType.SNAPSHOT,
+                    success=True
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Snapshot analysis failed: {result['error']}"
+                )
+                
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Snapshot analysis error: {str(e)}"
+        )
+
+
+@app.post("/api/v1/analysis/support-resistance", response_model=ButtonAnalysisResponse)
+async def get_support_resistance(request: ButtonAnalysisRequest):
+    """Get support and resistance levels analysis for button-triggered requests."""
+    try:
+        # Process through the agent system
+        session = SQLiteSession("finance_conversation")
+        server = create_polygon_mcp_server()
+        
+        query = f"Analyze key support and resistance levels for {request.ticker}. Identify 3 support levels and 3 resistance levels with explanations of their significance for trading decisions."
+        
+        async with server:
+            result = await process_financial_query(query, session, server)
+            
+            if result["success"]:
+                return ButtonAnalysisResponse(
+                    analysis=result["response"],
+                    ticker=request.ticker,
+                    analysis_type=AnalysisType.SUPPORT_RESISTANCE,
+                    success=True
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Support/Resistance analysis failed: {result['error']}"
+                )
+                
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Support/Resistance analysis error: {str(e)}"
+        )
+
+
+@app.post("/api/v1/analysis/technical", response_model=ButtonAnalysisResponse)
+async def get_technical_analysis(request: ButtonAnalysisRequest):
+    """Get technical analysis for button-triggered requests."""
+    try:
+        # Process through the agent system
+        session = SQLiteSession("finance_conversation")
+        server = create_polygon_mcp_server()
+        
+        query = f"Provide comprehensive technical analysis for {request.ticker} using key indicators including RSI, MACD, and moving averages. Explain momentum and trend direction with trading recommendations."
+        
+        async with server:
+            result = await process_financial_query(query, session, server)
+            
+            if result["success"]:
+                return ButtonAnalysisResponse(
+                    analysis=result["response"],
+                    ticker=request.ticker,
+                    analysis_type=AnalysisType.TECHNICAL,
+                    success=True
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Technical analysis failed: {result['error']}"
+                )
+                
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Technical analysis error: {str(e)}"
+        )
+
+
+# ====== ENHANCED CHAT ANALYSIS ======
+
+@app.post("/api/v1/analysis/chat", response_model=ChatAnalysisResponse)
+async def process_chat_analysis(request: ChatAnalysisRequest):
+    """Process a chat message with financial analysis using the agent system."""
+    try:
+        # Detect analysis type if not provided
+        analysis_type = request.analysis_type
+        if analysis_type is None:
+            detected_type = prompt_manager.detect_analysis_type(request.message)
+            if detected_type:
+                analysis_type_map = {
+                    PromptType.SNAPSHOT: AnalysisType.SNAPSHOT,
+                    PromptType.SUPPORT_RESISTANCE: AnalysisType.SUPPORT_RESISTANCE,
+                    PromptType.TECHNICAL: AnalysisType.TECHNICAL
+                }
+                analysis_type = analysis_type_map.get(detected_type)
+        
+        # Convert chat history to the format expected by the system
+        chat_history = None
+        if request.chat_history:
+            chat_history = [{"content": msg.content, "role": msg.role} for msg in request.chat_history]
+        
+        # Use the existing financial query processing
+        session = SQLiteSession("finance_conversation")
+        server = create_polygon_mcp_server()
+        
+        async with server:
+            result = await process_financial_query(request.message.strip(), session, server)
+            
+            if result["success"]:
+                # Extract ticker if possible
+                ticker_context = ticker_extractor.extract_ticker(request.message, chat_history)
+                
+                return ChatAnalysisResponse(
+                    response=result["response"],
+                    analysis_type=analysis_type,
+                    ticker_detected=ticker_context.symbol if ticker_context.symbol != "[TICKER]" else None,
+                    confidence=ticker_context.confidence,
+                    follow_up_questions=[
+                        f"Would you like a detailed technical analysis for {ticker_context.symbol}?",
+                        f"Should we examine support and resistance levels for {ticker_context.symbol}?",
+                        "Would you like to analyze a different stock?"
+                    ] if ticker_context.symbol != "[TICKER]" else [
+                        "Which stock would you like to analyze?",
+                        "Would you like a market snapshot or technical analysis?"
+                    ],
+                    success=True
+                )
+            else:
+                if result["error_type"] == "guardrail":
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=result["error"]
+                    )
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        detail=f"Analysis failed: {result['error']}"
+                    )
+                    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Chat analysis failed: {str(e)}"
+        )
+
+
+# ====== SYSTEM STATUS ENDPOINTS ======
+
+@app.get("/api/v1/system/status", response_model=SystemStatusResponse)
+async def get_system_status():
+    """Get detailed system status and metrics."""
+    try:
+        metrics = SystemMetrics(
+            api_version="1.0.0",
+            prompt_templates_loaded=len(PromptType),
+            supported_analysis_types=list(AnalysisType)
+        )
+        
+        return SystemStatusResponse(
+            status="operational",
+            metrics=metrics
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve system status: {str(e)}"
+        )
+
+
+@app.get("/health", response_model=SystemHealthResponse)
+@app.get("/api/v1/health", response_model=SystemHealthResponse)
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "message": "Financial Analysis API is running"}
+    return SystemHealthResponse(
+        status="healthy",
+        message="Financial Analysis API is running",
+        version="1.0.0"
+    )
 
 
 # Main CLI

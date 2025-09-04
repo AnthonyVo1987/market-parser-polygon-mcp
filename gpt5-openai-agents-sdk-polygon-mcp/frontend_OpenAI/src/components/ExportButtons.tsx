@@ -55,8 +55,9 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   const updateButtonState = useCallback(
     (buttonId: keyof ButtonStates, state: ButtonState, errorMessage?: string) => {
       // Clear any existing timeout for this button to prevent conflicts
-      if (timeoutRefs.current[buttonId]) {
-        clearTimeout(timeoutRefs.current[buttonId]!);
+      const timeoutId = timeoutRefs.current[buttonId];
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
         timeoutRefs.current[buttonId] = null;
       }
       

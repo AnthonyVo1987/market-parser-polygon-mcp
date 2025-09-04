@@ -3,17 +3,20 @@ import { useState, useRef, useEffect } from 'react';
 import { sendChatMessage } from '../services/api_OpenAI';
 import { Message } from '../types/chat_OpenAI';
 
-import ChatInput_OpenAI from './ChatInput_OpenAI';
+import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import ExportButtons, { exportButtonStyles } from './ExportButtons';
 import RecentMessageButtons, { recentMessageButtonsStyles } from './RecentMessageButtons';
+import AnalysisButtons, { analysisButtonsStyles } from './AnalysisButtons';
 
 export default function ChatInterface_OpenAI() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<ChatInputRef>(null);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -30,6 +33,15 @@ export default function ChatInterface_OpenAI() {
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, newMessage]);
+  };
+
+  // Handle prompt population from analysis buttons
+  const handlePromptGenerated = (prompt: string) => {
+    setInputValue(prompt);
+    // Focus the input after populating
+    if (chatInputRef.current) {
+      chatInputRef.current.focus();
+    }
   };
 
   const handleSendMessage = async (messageContent: string) => {
@@ -85,7 +97,20 @@ export default function ChatInterface_OpenAI() {
       <main className='messages-container' role='log' aria-live='polite' aria-label='Chat conversation'>
         {messages.length === 0 ? (
           <div className='empty-state' role='status'>
-            <p>Start a conversation by typing a message below.</p>
+            <div className='welcome-content'>
+              <h2 className='welcome-title'>Welcome to Financial Analysis Chat</h2>
+              <p className='welcome-description'>
+                Get instant financial insights powered by AI. Use the quick analysis tools below or type your own questions.
+              </p>
+              {/* Analysis buttons for empty state */}
+              <AnalysisButtons 
+                onPromptGenerated={handlePromptGenerated}
+                className='welcome-buttons'
+              />
+              <p className='getting-started'>
+                Or start typing a message in the input field below.
+              </p>
+            </div>
           </div>
         ) : (
           <>
@@ -109,9 +134,24 @@ export default function ChatInterface_OpenAI() {
       </main>
 
       <div role='complementary' className='chat-input-section'>
+        {/* Analysis buttons for active conversation */}
+        {messages.length > 0 && (
+          <AnalysisButtons 
+            onPromptGenerated={handlePromptGenerated}
+            className='conversation-buttons'
+          />
+        )}
+        
         <ChatInput_OpenAI
+          ref={chatInputRef}
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
+          value={inputValue}
+          onValueChange={setInputValue}
+          placeholder={messages.length === 0 
+            ? 'Ask about stocks, earnings, or market trends... (Shift+Enter for new line)'
+            : 'Type your message... (Shift+Enter for new line)'
+          }
         />
       </div>
     </div>
@@ -230,6 +270,18 @@ export const interfaceStyles = `
       padding: 8px;
       max-width: 100vw;
     }
+    
+    .welcome-content {
+      padding: 0 8px;
+    }
+    
+    .welcome-title {
+      font-size: 20px;
+    }
+    
+    .welcome-description {
+      font-size: 14px;
+    }
   }
   
   /* Tablet adjustments */
@@ -246,6 +298,14 @@ export const interfaceStyles = `
       max-width: 1000px;
       padding: 24px;
     }
+    
+    .welcome-title {
+      font-size: 28px;
+    }
+    
+    .welcome-description {
+      font-size: 18px;
+    }
   }
   
   .empty-state {
@@ -254,6 +314,38 @@ export const interfaceStyles = `
     justify-content: center;
     height: 100%;
     color: #666;
+    padding: 20px;
+  }
+  
+  .welcome-content {
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .welcome-title {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .welcome-description {
+    margin: 0 0 24px 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+  }
+  
+  .welcome-buttons {
+    margin: 0 0 24px 0;
+  }
+  
+  .getting-started {
+    margin: 0;
+    font-size: 14px;
+    color: #888;
+    font-style: italic;
   }
   
   .loading-indicator {
@@ -303,6 +395,12 @@ export const interfaceStyles = `
   /* Chat input section styling */
   .chat-input-section {
     flex-shrink: 0;
+  }
+  
+  .conversation-buttons {
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 0;
+    margin: 0;
   }
   
   /* Enhanced compatibility with multi-line input */
@@ -374,4 +472,5 @@ export const interfaceStyles = `
   
   ${exportButtonStyles}
   ${recentMessageButtonsStyles}
+  ${analysisButtonsStyles}
 `;

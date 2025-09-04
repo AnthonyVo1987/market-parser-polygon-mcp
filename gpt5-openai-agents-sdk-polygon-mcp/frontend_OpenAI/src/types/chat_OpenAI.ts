@@ -107,6 +107,70 @@ export const ERROR_CODES = {
 
 export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
 
+// Prompt template types for financial analysis buttons
+export interface PromptTemplate {
+  readonly id: string;
+  readonly type: AnalysisType;
+  readonly name: string;
+  readonly description: string;
+  readonly template: string;
+  readonly icon: string;
+  readonly requiresTicker: boolean;
+  readonly followUpQuestions?: readonly string[];
+}
+
+export type AnalysisType = 'snapshot' | 'support_resistance' | 'technical_analysis';
+
+export interface PromptTemplateResponse {
+  templates: readonly PromptTemplate[];
+  success: boolean;
+  error?: string;
+}
+
+export interface GeneratePromptRequest {
+  templateId: string;
+  ticker?: string;
+  additionalContext?: Record<string, unknown>;
+}
+
+export interface GeneratePromptResponse {
+  prompt: string;
+  templateId: string;
+  success: boolean;
+  error?: string;
+}
+
+// Analysis button component props
+export interface AnalysisButtonProps {
+  template: PromptTemplate;
+  onPromptGenerated: (prompt: string) => void;
+  isLoading?: boolean;
+  disabled?: boolean;
+  className?: string;
+}
+
+export interface AnalysisButtonsProps {
+  onPromptGenerated: (prompt: string) => void;
+  currentTicker?: string;
+  className?: string;
+}
+
+// Hook return types
+export interface UsePromptAPIResult {
+  templates: readonly PromptTemplate[];
+  loading: boolean;
+  error: string | null;
+  generatePrompt: (templateId: string, ticker?: string) => Promise<string>;
+  refreshTemplates: () => Promise<void>;
+}
+
+// API endpoints for prompt functionality
+export const PROMPT_API_ENDPOINTS = {
+  TEMPLATES: '/api/v1/prompts/templates',
+  GENERATE: '/api/v1/prompts/generate',
+  ANALYSIS_CHAT: '/api/v1/analysis/chat',
+} as const;
+
 // Export utility functions for type guards
 export const isValidMessageSender = (sender: string): sender is MessageSender => {
   return sender === 'user' || sender === 'ai';
@@ -128,5 +192,28 @@ export const isValidMessage = (message: unknown): message is Message => {
     typeof (message as Message).content === 'string' &&
     isValidMessageSender((message as Message).sender) &&
     (message as Message).timestamp instanceof Date
+  );
+};
+
+export const isValidAnalysisType = (type: string): type is AnalysisType => {
+  return ['snapshot', 'support_resistance', 'technical_analysis'].includes(type);
+};
+
+export const isValidPromptTemplate = (template: unknown): template is PromptTemplate => {
+  return (
+    typeof template === 'object' &&
+    template !== null &&
+    'id' in template &&
+    'type' in template &&
+    'name' in template &&
+    'template' in template &&
+    'icon' in template &&
+    'requiresTicker' in template &&
+    typeof (template as PromptTemplate).id === 'string' &&
+    typeof (template as PromptTemplate).name === 'string' &&
+    typeof (template as PromptTemplate).template === 'string' &&
+    typeof (template as PromptTemplate).icon === 'string' &&
+    typeof (template as PromptTemplate).requiresTicker === 'boolean' &&
+    isValidAnalysisType((template as PromptTemplate).type)
   );
 };

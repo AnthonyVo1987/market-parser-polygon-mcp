@@ -41,7 +41,7 @@ const sanitizeContent = (content: string): string => {
     
   // Preserve legitimate emojis and markdown formatting
   // This regex allows Unicode emoji ranges and common markdown syntax
-  sanitized = sanitized.replace(/[^\w\s\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Component}\n\r\t.,;:!?()\[\]{}"'`~@#$%^&*+=|\-_/\\<>]/gu, '');
+  sanitized = sanitized.replace(/[^\w\s\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Component}\u000A\u000D\u0009.,;:!?()\[\]{}"'`~@#$%^&*+=|\-_/\\<>]/gu, '');
   
   return sanitized.trim();
 };
