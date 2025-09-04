@@ -300,6 +300,72 @@ export const validateMessages = (messages: Message[]): void => {
   });
 };
 
+/**
+ * Converts a single message to markdown format with proper structure and timestamp
+ * @param message Individual message to convert
+ * @returns Formatted markdown string for the single message
+ */
+export const convertSingleMessageToMarkdown = (message: Message): string => {
+  try {
+    // Validate the single message structure
+    if (!message.id || typeof message.id !== 'string') {
+      throw new Error('Invalid message ID');
+    }
+    
+    if (!message.content || typeof message.content !== 'string') {
+      throw new Error('Invalid message content');
+    }
+    
+    if (!message.sender || !['user', 'ai'].includes(message.sender)) {
+      throw new Error('Invalid message sender');
+    }
+    
+    if (!message.timestamp || !(message.timestamp instanceof Date)) {
+      throw new Error('Invalid message timestamp');
+    }
+
+    const sender = message.sender === 'user' ? '👤 User' : '🤖 AI Assistant';
+    const timestamp = message.timestamp.toLocaleString();
+    
+    // Apply content sanitization to prevent XSS while preserving formatting
+    const content = sanitizeContent(message.content.trim());
+    
+    return `## ${sender} - ${timestamp}\n\n${content}`;
+  } catch (error) {
+    throw new Error(`Failed to convert message to markdown: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
+/**
+ * Gets the most recent message of a specific sender type from messages array
+ * @param messages Array of messages to search through
+ * @param sender The sender type to find ('user' or 'ai')
+ * @returns The most recent message of the specified sender type, or null if not found
+ */
+export const getMostRecentMessage = (messages: Message[], sender: 'user' | 'ai'): Message | null => {
+  try {
+    if (!Array.isArray(messages)) {
+      return null;
+    }
+    
+    if (messages.length === 0) {
+      return null;
+    }
+    
+    // Filter messages by sender type and get the last one
+    const filteredMessages = messages.filter(message => message.sender === sender);
+    
+    if (filteredMessages.length === 0) {
+      return null;
+    }
+    
+    return filteredMessages[filteredMessages.length - 1];
+  } catch (error) {
+    console.warn('Failed to get most recent message:', error);
+    return null;
+  }
+};
+
 // Export utility object for easier importing
 export const exportHelpers = {
   convertToMarkdown,
@@ -307,5 +373,7 @@ export const exportHelpers = {
   copyToClipboard,
   downloadFile,
   generateSafeFilename,
-  validateMessages
+  validateMessages,
+  convertSingleMessageToMarkdown,
+  getMostRecentMessage
 };

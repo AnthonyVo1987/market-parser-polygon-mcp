@@ -6,6 +6,7 @@ import { Message } from '../types/chat_OpenAI';
 import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import ExportButtons, { exportButtonStyles } from './ExportButtons';
+import RecentMessageButtons, { recentMessageButtonsStyles } from './RecentMessageButtons';
 
 export default function ChatInterface_OpenAI() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -47,6 +48,7 @@ export default function ChatInterface_OpenAI() {
       <div className='chat-header'>
         <h1>OpenAI Chat Interface</h1>
         {messages.length > 0 && <ExportButtons messages={messages} />}
+        <RecentMessageButtons messages={messages} />
         {error && <div className='error-banner'>{error}</div>}
       </div>
 
@@ -170,4 +172,5 @@ export const interfaceStyles = `
   }
   
   ${exportButtonStyles}
+  ${recentMessageButtonsStyles}
 `;

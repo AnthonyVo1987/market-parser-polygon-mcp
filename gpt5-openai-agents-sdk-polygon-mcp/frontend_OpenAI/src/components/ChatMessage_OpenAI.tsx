@@ -2,6 +2,7 @@ import { ComponentPropsWithoutRef } from 'react';
 import Markdown from 'react-markdown';
 
 import { Message } from '../types/chat_OpenAI';
+import MessageCopyButton, { messageCopyButtonStyles } from './MessageCopyButton';
 
 interface ChatMessage_OpenAIProps {
   message: Message;
@@ -157,6 +158,7 @@ export default function ChatMessage_OpenAI({
   return (
     <div className={`message ${isUser ? 'user-message' : 'ai-message'}`}>
       <div className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`}>
+        <MessageCopyButton message={message} />
         <div className='message-content'>
           {isUser ? (
             // For user messages, display as plain text
@@ -258,4 +260,6 @@ export const messageStyles = `
   .message-content {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
+
+  ${messageCopyButtonStyles}
 `;
