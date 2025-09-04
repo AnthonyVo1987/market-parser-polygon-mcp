@@ -76,7 +76,16 @@
       "Bash(/home/anthony/Github/market-parser-polygon-mcp/docs/MCP_TESTING_USAGE_GUIDE.md)",
       "Bash(source .env)",
       "Bash(markdownlint-cli2-fix:*)",
-      "Bash(PYTHONPATH=/home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/src python3 -c \"from main import app; print(''FastAPI app imported successfully'')\")"
+      "Bash(PYTHONPATH=/home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/src python3 -c \"from main import app; print(''FastAPI app imported successfully'')\")",
+      "Bash(tree:*)",
+      "Bash(PYTHONPATH=. uv run python -m pytest --version)",
+      "Bash(PYTHONPATH=. uv run python test_api.py)",
+      "Bash(PYTHONPATH=. uv run python -m pytest test_pytest.py -v)",
+      "Read(//tmp/**)",
+      "Bash(PYTHONPATH=. uv run python -m pytest --collect-only)",
+      "Bash(PYTHONPATH=. uv run python -m pytest test_pytest.py -v --tb=line)",
+      "Bash(pylint:*)",
+      "Bash(source:*)"
     ],
     "deny": [],
     "ask": [],

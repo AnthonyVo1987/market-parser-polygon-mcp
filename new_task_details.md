@@ -6,17 +6,19 @@
 
 ## Task Description
 
-<Task 1> Specialist to Use Context7, Sequential-Thinking, & and any other relevant Tools Analyze, Research, & Understand the current implementation of gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI
+<Research Task 1> Specialist to Use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools Analyze, Research, & Understand the current implementation of gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI
 
-<Task 2> Specialist to Use Context7, Sequential-Thinking, & and any other relevant Tools Analyze, Research, & Scope out changes needed to have a fully independent gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI to be later imported into a brand new Github repo WITH any legacy CLI + Gradio UI code
+<Research Task 2> Specialist to Use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools Analyze, Research, & Scope out changes needed to have a fully independent gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI to be later imported into a brand new Github repo WITH any legacy CLI + Gradio UI code
 
-<Task 3> Ask @agent-tech-lead-orchestrator to use Sequential-Thinking to analyze results from research tasks 1 & 2 and generate a implemenation, delegation, & coordination plan for Specialist(s) to perform all task(s) for the Pre-Migration Prep code changes
+<Task 3> Ask @agent-tech-lead-orchestrator to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to analyze results from research tasks 1 & 2 and generate a implementation, delegation, & coordination plan for Specialist(s) to perform all task(s) for the Pre-Migration Prep code changes
 
-<Task 4> Based implementation, delegation, & coordination plan for Specialist(s), perform all the task(s)
+<Task 4> Based on the plan from @agent-tech-lead-orchestrator for implementation, delegation, & coordination for Specialist(s), Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to perform all the task(s) according to the plan
 
-<Task 5> Specialist(s) to review and update ALL gpt5-openai-agents-sdk-polygon-mcp docs to reflect the new Pre-Migration Prep
+<Task 5> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to run full LINT suite for gpt5-openai-agents-sdk-polygon-mcp ONLY and fix any issues
 
-<Task 6> 4x Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
+<Task 6> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to review and update ALL gpt5-openai-agents-sdk-polygon-mcp docs to reflect the new Pre-Migration Prep
+
+<Task 7> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
 
 ### Step 1: Review/Fix Loop
 
