@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 interface ChatInput_OpenAIProps {
   onSendMessage: (message: string) => void;
@@ -10,25 +10,49 @@ export default function ChatInput_OpenAI({
   isLoading,
 }: ChatInput_OpenAIProps) {
   const [inputValue, setInputValue] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() && !isLoading) {
       onSendMessage(inputValue.trim());
       setInputValue('');
+      // Reset textarea height after clearing
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value);
+    
+    // Auto-resize logic
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e as any);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className='chat-input-form'>
       <div className='input-container'>
-        <input
-          type='text'
+        <textarea
+          ref={textareaRef}
           value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          placeholder='Type your message...'
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder='Type your message... (Shift+Enter for new line)'
           className='message-input'
           disabled={isLoading}
+          rows={4}
+          style={{ minHeight: '80px', maxHeight: '200px' }}
         />
         <button
           type='submit'
@@ -61,9 +85,15 @@ export const inputStyles = `
     flex: 1;
     padding: 12px 16px;
     border: 1px solid #ddd;
-    border-radius: 24px;
+    border-radius: 16px;
     outline: none;
     font-size: 14px;
+    resize: none;
+    font-family: inherit;
+    line-height: 1.4;
+    min-height: 80px;
+    max-height: 200px;
+    overflow-y: auto;
   }
   
   .message-input:focus {

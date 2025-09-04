@@ -81,13 +81,23 @@ export default function ChatInterface_OpenAI() {
   );
 }
 
-// Simple inline styles - in production, use CSS modules or styled-components
+// Enhanced responsive styles for cross-platform UI optimization
 export const interfaceStyles = `
   .chat-interface {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
     background-color: #f5f5f5;
+    overflow: hidden; /* Prevent page-level scrolling */
+  }
+  
+  /* Mobile viewport optimizations */
+  @media (max-width: 767px) {
+    .chat-interface {
+      height: 100vh;
+      height: 100svh; /* Small viewport height for mobile browsers */
+    }
   }
   
   .chat-header {
@@ -95,6 +105,19 @@ export const interfaceStyles = `
     padding: 16px;
     border-bottom: 1px solid #e0e0e0;
     text-align: center;
+    flex-shrink: 0; /* Prevent header compression */
+  }
+  
+  /* Mobile header adjustments */
+  @media (max-width: 767px) {
+    .chat-header {
+      padding: 12px 8px;
+    }
+    
+    .chat-header h1 {
+      font-size: 1.25rem;
+      margin: 0 0 8px 0;
+    }
   }
   
   .chat-header h1 {
@@ -115,10 +138,35 @@ export const interfaceStyles = `
   .messages-container {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal page scroll */
     padding: 16px;
-    max-width: 800px;
-    margin: 0 auto;
     width: 100%;
+    max-width: 100%; /* Remove 800px limit for better mobile */
+    margin: 0 auto;
+  }
+  
+  /* Mobile-specific adjustments */
+  @media (max-width: 767px) {
+    .messages-container {
+      padding: 8px;
+      max-width: 100vw;
+    }
+  }
+  
+  /* Tablet adjustments */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .messages-container {
+      max-width: 900px;
+      padding: 20px;
+    }
+  }
+  
+  /* Desktop optimizations */
+  @media (min-width: 1025px) {
+    .messages-container {
+      max-width: 1000px;
+      padding: 24px;
+    }
   }
   
   .empty-state {
@@ -168,6 +216,45 @@ export const interfaceStyles = `
     40% {
       transform: scale(1);
       opacity: 1;
+    }
+  }
+  
+  /* Enhanced compatibility with multi-line input */
+  .chat-input-form {
+    padding: 16px;
+    background: white;
+    border-top: 1px solid #e0e0e0;
+    flex-shrink: 0; /* Prevent input compression */
+  }
+  
+  /* Mobile input adjustments */
+  @media (max-width: 767px) {
+    .chat-input-form {
+      padding: 12px 8px;
+    }
+    
+    .input-container {
+      max-width: 100%;
+      gap: 6px;
+    }
+  }
+  
+  /* Tablet and desktop input optimizations */
+  @media (min-width: 768px) {
+    .chat-input-form {
+      padding: 20px;
+    }
+    
+    .input-container {
+      max-width: 1000px;
+    }
+  }
+  
+  /* Export buttons responsive layout */
+  @media (max-width: 640px) {
+    .export-buttons-grid,
+    .recent-message-buttons {
+      gap: 6px;
     }
   }
   

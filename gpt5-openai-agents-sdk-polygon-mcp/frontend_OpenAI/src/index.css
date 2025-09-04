@@ -5,6 +5,19 @@
   --border-color: #e2e8f0;
   --text-primary: #1a202c;
   --text-secondary: #4a5568;
+  
+  /* Responsive breakpoints as CSS custom properties */
+  --mobile-max: 767px;
+  --tablet-min: 768px;
+  --tablet-max: 1024px;
+  --desktop-min: 1025px;
+  
+  /* Responsive spacing scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 }
 
 body {
@@ -21,22 +34,54 @@ body {
   font-variant-emoji: unicode;
 }
 
-/* Scrollbar styling for better visual appearance */
+/* Advanced scrollbar styling for cross-platform compatibility */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--background-light);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--neutral-color);
+}
+
+/* Enhanced scrollbar for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Firefox scrollbar consistency */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--background-light);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  * {
+    scrollbar-width: auto;
+  }
 }
 
 /* Animation for smooth transitions */
@@ -49,8 +94,98 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Accessibility improvements */
+/* iOS-specific optimizations */
+@supports (-webkit-overflow-scrolling: touch) {
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* iOS safe area handling */
+  .chat-interface {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Android-specific optimizations */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+  /* Enhanced touch targets */
+  button, input, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improved keyboard handling */
+  .chat-interface {
+    height: 100vh;
+    height: calc(100vh - env(keyboard-inset-height, 0px));
+  }
+}
+
+/* Mobile-first responsive spacing */
+.responsive-padding {
+  padding: var(--spacing-sm);
+}
+
+@media (min-width: 768px) {
+  .responsive-padding {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (min-width: 1025px) {
+  .responsive-padding {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Responsive text sizing */
+.responsive-text {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+  .responsive-text {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+/* GPU acceleration for smooth scrolling */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Enhanced focus management for accessibility */
+:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced animation controls with performance optimization */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
   .message-bubble {
     transition: none;
   }
@@ -68,6 +203,25 @@ body {
   }
 }
 
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Crisp borders on high DPI displays */
+  .message-bubble {
+    border: 0.5px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Dark mode preparation */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+    --background-light: #2d3748;
+    --border-color: #4a5568;
+    --neutral-color: #a0aec0;
+  }
+}
+
 /* Print styles for export functionality */
 @media print {
   .message-timestamp {
@@ -78,6 +232,4 @@ body {
     box-shadow: none;
     border: 1px solid var(--border-color);
   }
-
-
 }

@@ -130,18 +130,23 @@ const markdownComponents = {
           borderRadius: '3px',
           fontSize: '0.9em',
           fontFamily: 'monospace',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
         }}
       >
         {children}
       </code>
     ) : (
       <pre
+        className='code-block'
         style={{
           backgroundColor: '#f7fafc',
           padding: '12px',
           borderRadius: '8px',
-          overflow: 'auto',
+          overflowX: 'auto',
+          maxWidth: '100%',
           marginBottom: '8px',
+          whiteSpace: 'pre',
         }}
       >
         <code {...props}>{children}</code>
@@ -194,10 +199,22 @@ export const messageStyles = `
   }
   
   .message-bubble {
-    max-width: 70%;
+    max-width: 85%; /* Mobile first approach */
     padding: 12px 16px;
     border-radius: 16px;
     position: relative;
+    overflow-x: auto;
+    overflow-y: visible;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    scrollbar-width: thin; /* Firefox */
+  }
+  
+  /* Desktop/Tablet breakpoint */
+  @media (min-width: 768px) {
+    .message-bubble {
+      max-width: 70%;
+    }
   }
   
   .user-bubble {
@@ -214,6 +231,9 @@ export const messageStyles = `
     margin-bottom: 4px;
     line-height: 1.6;
     white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
   
   .message-timestamp {
@@ -259,6 +279,74 @@ export const messageStyles = `
   /* Emoji and emoji support */
   .message-content {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Smart scrollbar management */
+  .message-bubble:not(:hover) {
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .message-bubble:not(:hover)::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .message-bubble:hover,
+  .message-bubble:focus-within {
+    scrollbar-width: thin;
+  }
+
+  .message-bubble:hover::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+    height: 8px;
+  }
+
+  .message-bubble:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  /* Code block enhanced styling */
+  .code-block {
+    scrollbar-width: thin; /* Firefox */
+  }
+
+  .code-block::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .code-block::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  .code-block::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  /* Touch device optimization - always show scrollbars */
+  @media (hover: none) {
+    .message-bubble {
+      scrollbar-width: thin;
+    }
+    
+    .message-bubble::-webkit-scrollbar {
+      display: block;
+      width: 8px;
+      height: 8px;
+    }
+    
+    .message-bubble::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    .message-bubble::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
   }
 
   ${messageCopyButtonStyles}
