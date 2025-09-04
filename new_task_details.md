@@ -1,29 +1,21 @@
 # New Task Details
 
-[GPT-5] Add Chat Buttons for Save & Copy to .md & JSON format
+[GPT-5] feat: Enhance Chatbot UI for cross platform dynamic sizing display
 
 ## Task Description
 
-Add .md & JSON format Save & Copy to Clipboard Chat Buttons for the OpenAI GPT-5 Chat UI code
+Task 1. Perform Research & generate a plan to implement the requested new OpenAI GPT-5 Chat UI feature(s) for multiple platforms: Mobile, Desktop, iPad, etc:
+A. Chatbot Responses: Dynamic vertical & horizontal scrollbars & word wrapping for displaying across multiple platforms
 
-Task 1. Perform Research & generate a plan to implement 4x new buttons to the OpenAI GPT-5 Chat UI code that can Save and\or Copy to clipboard the entire contents of the OpenAI GPT-5 Chat
+- The scrollbars should only appear if needed
 
-- Copy to Clipboard .md format Button
-- Copy to Clipboard .json format Button
-- Save to .md format file Button
-- Save to .json format file Button
+B. Chatbot User Request: Dynamic vertical & horizontal scrollbars, word wrapping, and increase default input to be at least 4x lines instead of a single line input textbox for displaying across multiple platforms
+
+- The scrollbars should only appear if needed
 
 Task 2. Based on the research & plan from Task 1, implement the plan
 
-## Requirements
-
-## Expected Outcome
-
-## Additional Context
-
-## MANDATORY POST-TASK ACTIONS
-
-After completing the primary task execution, the following 4-step procedure MUST be executed to ensure production readiness and quality assurance:
+🚨 MANDATORY FINAL CLOSING TASK(S): Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification
 
 ### Step 1: Review/Fix Loop
 
@@ -58,3 +50,11 @@ After completing the primary task execution, the following 4-step procedure MUST
 - All changes (code + docs + summary) must be committed together
 - Task summary generation occurs BEFORE git commit to ensure inclusion
 - Automated workflow ensures consistency and completeness
+
+## Requirements
+
+## Expected Outcome
+
+## Additional Context
+
+- Review the Gradio UI code that implemented a Gradio Based version of the dynamic sizing and scroll bars to get a better idea of what works and doesnt work

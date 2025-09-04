@@ -48,7 +48,7 @@ I'll read the task from new_task_details.md, then use @agent-tech-lead-orchestra
 
 ---
 
-## MANDATORY POST-TASK ACTIONS
+## 🚨 MANDATORY POST-TASK ACTIONS
 
 After completing the primary task execution, the following 4-step procedure MUST be executed to ensure production readiness and quality assurance:
 
