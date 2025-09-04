@@ -1,14 +1,19 @@
 # New Task Details
 
-[GPT-5] Retire complicated color-coded sentiment analysis code & Replace with Emojis
+[GPT-5] Add Chat Buttons for Save & Copy to .md & JSON format
 
 ## Task Description
 
-1. Research our codebase to come up with an implementation plan to completly remove\retire the complicated color-coded sentiment analysis code
+Add .md & JSON format Save & Copy to Clipboard Chat Buttons for the OpenAI GPT-5 Chat UI code
 
-2. Based on the plan, remove\retire the complicated color-coded sentiment analysis code
+Task 1. Perform Research & generate a plan to implement 4x new buttons to the OpenAI GPT-5 Chat UI code that can Save and\or Copy to clipboard the entire contents of the OpenAI GPT-5 Chat
 
-3. Update AI Prompt responses to instead use Emojis for the sentiment indicator
+- Copy to Clipboard .md format Button
+- Copy to Clipboard .json format Button
+- Save to .md format file Button
+- Save to .json format file Button
+
+Task 2. Based on the research & plan from Task 1, implement the plan
 
 ## Requirements
 
@@ -16,41 +21,40 @@
 
 ## Additional Context
 
-- We implemented some complicated color-coded sentiment analysis code that causes perforamnce issues in chat responses, where after a response, there is another loop to analyze sentiment key words, and THEN finally the response if provided
-- We will streamline the responses to remove this convoluted intermediate response formatting
+## MANDATORY POST-TASK ACTIONS
 
-- Hash: 9b9495f: feat: Enhance OpenAI GPT-5 chatbot with color-coded sentiment analysis and markdown support
-- Commit 9b9495f notes:
+After completing the primary task execution, the following 4-step procedure MUST be executed to ensure production readiness and quality assurance:
 
-feat: Enhance OpenAI GPT-5 chatbot with color-coded sentiment analysis and markdown support
+### Step 1: Review/Fix Loop
 
-ENHANCED FEATURES:
-???? Color-coded sentiment analysis (green=bullish, red=bearish)
-?? Structured response format with KEY TAKEAWAYS sections
-?????? Financial emoji integration throughout responses
-?? Full markdown support in React frontend with react-markdown
-? Enhanced CLI with Rich console color coding and emoji rendering
-????? Consistent formatting across CLI and React interfaces
+- Specialist performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Uses `mcp__filesystem__*` tools for all file operations and examination
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle until achieving PASSING code review status
 
-TECHNICAL IMPLEMENTATION:
+### Step 2: Task Summary & CLAUDE.md Update
 
-- Enhanced agent instructions with formatting requirements
-- Sophisticated print_response() function with sentiment detection
-- React ChatMessage component with markdown rendering and color coding
-- CSS styling for bullish/bearish text with proper contrast
-- Added react-markdown v9.0.0 dependency for rich text support
-- Enhanced typography and spacing for improved readability
+- Generate comprehensive task completion summary
+- Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
 
-DOCUMENTATION UPDATES:
+### Step 3: Atomic Git Commit & Push
 
-- Comprehensive OpenAI GPT-5 Enhanced Chatbot section in CLAUDE.md
-- Updated README.md with enhanced features and usage instructions
-- Technical implementation details and visual styling specifications
-- Clear setup instructions for both CLI and React interfaces
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic commit containing ALL changes: code files, documentation updates, and task summary
+- Push commit to GitHub repository using provided personal access token
+- **CRITICAL**: Must push to complete the workflow - commit without push is incomplete
 
-CODE QUALITY:
+### Step 4: Final Verification
 
-- Security-focused implementation preventing XSS vulnerabilities
-- Performance-optimized sentiment analysis with keyword detection
-- TypeScript safety with proper component typing
-- Backward compatibility maintained with existing functionality
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly committed and pushed
+
+**Key Requirements:**
+
+- Single atomic commit prevents code vs documentation separation
+- All changes (code + docs + summary) must be committed together
+- Task summary generation occurs BEFORE git commit to ensure inclusion
+- Automated workflow ensures consistency and completeness
