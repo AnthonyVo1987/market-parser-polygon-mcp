@@ -1,7 +1,5 @@
 /* Enhanced global styles for financial chat interface */
 :root {
-  --bullish-color: #10b981;
-  --bearish-color: #ef4444;
   --neutral-color: #6b7280;
   --background-light: #f8fafc;
   --border-color: #e2e8f0;
@@ -65,8 +63,6 @@ body {
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   :root {
-    --bullish-color: #047857;
-    --bearish-color: #dc2626;
     --text-primary: #000000;
     --background-light: #f9fafb;
   }
@@ -83,13 +79,5 @@ body {
     border: 1px solid var(--border-color);
   }
 
-  .bullish-text {
-    color: #000 !important;
-    text-decoration: underline;
-  }
 
-  .bearish-text {
-    color: #000 !important;
-    text-decoration: line-through;
-  }
 }

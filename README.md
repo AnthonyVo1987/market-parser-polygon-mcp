@@ -2,7 +2,7 @@
 
 ![Project Logo](images/logo.png)
 
-A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-mini` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/). Features an **Enhanced OpenAI GPT-5 Chatbot** with color-coded sentiment analysis, emoji integration, and dual-mode operation (CLI + React frontend).
+A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-mini` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/). Features an **Enhanced OpenAI GPT-5 Chatbot** with emoji-based sentiment indicators, financial emoji integration, and dual-mode operation (CLI + React frontend).
 
 ## Features
 
@@ -15,7 +15,7 @@ A Python CLI and web GUI application for natural language financial queries usin
   Answers are formatted for easy reading in your terminal.
 
 - **Enhanced OpenAI GPT-5 Chatbot:**
-  - 📈📉 **Color-coded Sentiment Analysis** - Bullish content in green, bearish in red
+  - 📈📉 **Emoji-Based Sentiment Indicators** - Direct financial emoji indicators for market sentiment
   - 🎯 **Structured Response Format** - KEY TAKEAWAYS, detailed analysis, disclaimers
   - 💰🏢📊 **Financial Emoji Integration** - Rich visual indicators throughout responses
   - 🖥️📱 **Dual-Mode Operation** - Enhanced CLI and React frontend with consistent formatting
@@ -388,24 +388,24 @@ All enhanced responses follow a consistent, structured format:
 
 ```
 🎯 KEY TAKEAWAYS
-📈 Bullish indicators (automatically styled in green)
-📉 Bearish indicators (automatically styled in red) 
+📈 Bullish indicators with emoji-based sentiment
+📉 Bearish indicators with emoji-based sentiment
 💰 Financial impact and profit analysis
 🏢 Company-specific insights
 
 📊 DETAILED ANALYSIS
-[Comprehensive analysis with automatic sentiment detection]
-[Color-coded content based on market sentiment]
+[Comprehensive analysis with emoji-based sentiment indicators]
+[Financial emojis providing visual market sentiment cues]
 [Enhanced typography for improved readability]
 
 ⚠️ DISCLAIMER  
 [Standard financial disclaimers and risk warnings]
 ```
 
-**Color Coding System:**
-- **Bullish Content** (Green): buy signals, growth, profits, positive momentum, upward trends
-- **Bearish Content** (Red): sell signals, decline, losses, negative sentiment, downward trends
-- **Neutral Content**: general information, disclaimers, technical details
+**Emoji-Based Sentiment System:**
+- **Bullish Indicators**: 📈 buy signals, growth, profits, positive momentum, upward trends
+- **Bearish Indicators**: 📉 sell signals, decline, losses, negative sentiment, downward trends
+- **Neutral Content**: general information, disclaimers, technical details with appropriate financial emojis
 
 **Financial Emoji Integration:**
 - 📈 Bullish/upward trends
@@ -420,15 +420,15 @@ All enhanced responses follow a consistent, structured format:
 ### Technical Implementation
 
 **CLI Features:**
-- Rich console formatting with RGB color support
-- Real-time sentiment analysis using keyword matching
+- Rich console formatting with emoji support
+- Emoji-based sentiment indicators using financial emojis
 - Enhanced typography with proper spacing and markdown rendering
 - Automatic emoji rendering and financial context highlighting
 
 **React Frontend Features:**
 - Full markdown support with react-markdown
 - Custom styled components for enhanced readability
-- Sentiment-based CSS styling aligned with CLI colors
+- Emoji-based sentiment display consistent with CLI
 - Real-time chat interface with loading states and error handling
 - TypeScript for type safety and better development experience
 

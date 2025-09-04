@@ -467,7 +467,8 @@ Please include current market data and recent performance metrics. Focus on prov
 - Provide OHLC data (Open, High, Low, Close) with context
 - Explain what the data means for potential investors
 - Use emojis for EVERY bullet point
-- Use **🟢 GREEN** for bullish indicators and **🔴 RED** for bearish indicators
+- Use sentiment emojis directly: 📈 for bullish indicators, 📉 for bearish indicators
+- Place emojis at the beginning of relevant bullet points for immediate visual sentiment
 - Use clear, professional language with proper formatting
 - Include relevant market context and trends
 - Make the analysis educational and actionable
@@ -507,7 +508,8 @@ Identify the most important price levels where the stock tends to find support (
 - Explain the methodology used (technical analysis, historical data, etc.)
 - Include current price context and trend analysis
 - Use emojis for EVERY bullet point to enhance readability
-- Use **🟢 GREEN** for bullish indicators and **🔴 RED** for bearish indicators
+- Use sentiment emojis directly: 📈 for bullish indicators, 📉 for bearish indicators
+- Place emojis at the beginning of relevant bullet points for immediate visual sentiment
 - Make recommendations clear and actionable for traders
 - End each response with 2-3 relevant follow-up questions"""
         
@@ -551,7 +553,8 @@ Analyze current technical indicators including RSI, MACD, and moving averages. E
 - Include bullish/bearish signals and their strength
 - Provide trading recommendations based on technical setup
 - Use emojis for EVERY bullet point to enhance readability
-- Use **🟢 GREEN** for bullish indicators and **🔴 RED** for bearish indicators
+- Use sentiment emojis directly: 📈 for bullish indicators, 📉 for bearish indicators
+- Place emojis at the beginning of relevant bullet points for immediate visual sentiment
 - Make technical concepts accessible to both novice and experienced traders
 - End each response with 2-3 relevant follow-up questions"""
         

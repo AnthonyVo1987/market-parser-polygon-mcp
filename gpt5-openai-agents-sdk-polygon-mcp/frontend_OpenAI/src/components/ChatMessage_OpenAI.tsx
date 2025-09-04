@@ -7,108 +7,21 @@ interface ChatMessage_OpenAIProps {
   message: Message;
 }
 
-// Sentiment analysis keywords - aligned with backend CLI keywords for consistency
-const BULLISH_KEYWORDS = [
-  'bullish',
-  'buy',
-  'growth',
-  'profit',
-  'gain',
-  'up',
-  'positive',
-  'strong',
-  'upward',
-  'rise',
-  'increase',
-  'rising',
-  'bullish signals',
-  'outperform',
-  'buy signal',
-  'momentum',
-  'rally',
-  '📈',
-  'BULLISH',
-  'BUY',
-  'GROWTH',
-  'PROFIT',
-  'GAIN',
-  'POSITIVE',
-  'UP',
-  'STRONG',
-  'RISING',
-  'RALLY',
-];
 
-const BEARISH_KEYWORDS = [
-  'bearish',
-  'sell',
-  'decline',
-  'loss',
-  'down',
-  'negative',
-  'weak',
-  'downward',
-  'fall',
-  'decrease',
-  'falling',
-  'bearish signals',
-  'underperform',
-  'sell signal',
-  'correction',
-  'crash',
-  '📉',
-  'BEARISH',
-  'SELL',
-  'DECLINE',
-  'LOSS',
-  'NEGATIVE',
-  'DOWN',
-  'WEAK',
-  'FALLING',
-  'CRASH',
-];
 
-// Function to detect sentiment in text
-const detectSentiment = (text: string): 'bullish' | 'bearish' | 'neutral' => {
-  const textLower = text.toLowerCase();
-  const hasBullish = BULLISH_KEYWORDS.some(keyword =>
-    textLower.includes(keyword.toLowerCase())
-  );
-  const hasBearish = BEARISH_KEYWORDS.some(keyword =>
-    textLower.includes(keyword.toLowerCase())
-  );
-
-  if (hasBullish && !hasBearish) return 'bullish';
-  if (hasBearish && !hasBullish) return 'bearish';
-  return 'neutral';
-};
-
-// Custom components for markdown rendering with sentiment analysis
+// Custom components for markdown rendering
 const markdownComponents = {
-  p: ({ children, ...props }: ComponentPropsWithoutRef<'p'>) => {
-    // Apply sentiment styling to paragraph content
-    const textContent =
-      typeof children === 'string' ? children : String(children);
-    const sentiment = detectSentiment(textContent);
-
-    return (
-      <p
-        {...props}
-        style={{
-          marginBottom: '8px',
-          lineHeight: '1.6',
-          color:
-            sentiment === 'bullish'
-              ? '#10b981'
-              : sentiment === 'bearish'
-                ? '#ef4444'
-                : 'inherit',
-        }}
-      >
-        {children}
-      </p>
-    );
-  },
+  p: ({ children, ...props }: ComponentPropsWithoutRef<'p'>) => (
+    <p
+      {...props}
+      style={{
+        marginBottom: '8px',
+        lineHeight: '1.6',
+      }}
+    >
+      {children}
+    </p>
+  ),
   h1: ({ children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
     <h1
       {...props}
@@ -158,53 +71,26 @@ const markdownComponents = {
       {children}
     </ol>
   ),
-  li: ({ children, ...props }: ComponentPropsWithoutRef<'li'>) => {
-    // Apply sentiment styling to list items
-    const textContent =
-      typeof children === 'string' ? children : String(children);
-    const sentiment = detectSentiment(textContent);
-
-    return (
-      <li
-        {...props}
-        style={{
-          marginBottom: '4px',
-          color:
-            sentiment === 'bullish'
-              ? '#10b981'
-              : sentiment === 'bearish'
-                ? '#ef4444'
-                : 'inherit',
-          fontWeight: sentiment !== 'neutral' ? '500' : 'normal',
-        }}
-      >
-        {children}
-      </li>
-    );
-  },
-  strong: ({ children, ...props }: ComponentPropsWithoutRef<'strong'>) => {
-    // Apply sentiment styling to bold text
-    const textContent =
-      typeof children === 'string' ? children : String(children);
-    const sentiment = detectSentiment(textContent);
-
-    return (
-      <strong
-        {...props}
-        style={{
-          fontWeight: '600',
-          color:
-            sentiment === 'bullish'
-              ? '#10b981'
-              : sentiment === 'bearish'
-                ? '#ef4444'
-                : 'inherit',
-        }}
-      >
-        {children}
-      </strong>
-    );
-  },
+  li: ({ children, ...props }: ComponentPropsWithoutRef<'li'>) => (
+    <li
+      {...props}
+      style={{
+        marginBottom: '4px',
+      }}
+    >
+      {children}
+    </li>
+  ),
+  strong: ({ children, ...props }: ComponentPropsWithoutRef<'strong'>) => (
+    <strong
+      {...props}
+      style={{
+        fontWeight: '600',
+      }}
+    >
+      {children}
+    </strong>
+  ),
   em: ({ children, ...props }: ComponentPropsWithoutRef<'em'>) => (
     <em {...props} style={{ fontStyle: 'italic' }}>
       {children}
@@ -290,7 +176,7 @@ export default function ChatMessage_OpenAI({
   );
 }
 
-// Enhanced inline styles with sentiment color classes
+// Enhanced inline styles for message components
 export const messageStyles = `
   .message {
     display: flex;
@@ -333,16 +219,7 @@ export const messageStyles = `
     opacity: 0.7;
   }
 
-  /* Sentiment-based color classes */
-  .bullish-text {
-    color: #10b981 !important;
-    font-weight: 500;
-  }
-  
-  .bearish-text {
-    color: #ef4444 !important;
-    font-weight: 500;
-  }
+
 
   /* Enhanced key takeaways styling */
   .key-takeaways {
