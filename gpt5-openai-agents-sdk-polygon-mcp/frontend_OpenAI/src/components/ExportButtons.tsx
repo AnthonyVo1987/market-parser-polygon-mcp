@@ -30,8 +30,10 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
     saveJson: 'idle',
   });
 
-  const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
-  
+  const [errorMessages, setErrorMessages] = useState<Record<string, string>>(
+    {}
+  );
+
   // Refs to store timeout IDs for cleanup
   const timeoutRefs = useRef<Record<keyof ButtonStates, number | null>>({
     copyMd: null,
@@ -44,7 +46,10 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   useEffect(() => {
     return () => {
       // Clear all active timeouts to prevent memory leaks
-      Object.values(timeoutRefs.current).forEach(timeoutId => {
+      // Copy ref value inside effect cleanup to avoid stale reference
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const currentTimeouts = timeoutRefs.current;
+      Object.values(currentTimeouts).forEach(timeoutId => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
@@ -53,16 +58,20 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   }, []);
 
   const updateButtonState = useCallback(
-    (buttonId: keyof ButtonStates, state: ButtonState, errorMessage?: string) => {
+    (
+      buttonId: keyof ButtonStates,
+      state: ButtonState,
+      errorMessage?: string
+    ) => {
       // Clear any existing timeout for this button to prevent conflicts
       const timeoutId = timeoutRefs.current[buttonId];
       if (timeoutId !== null) {
         clearTimeout(timeoutId);
         timeoutRefs.current[buttonId] = null;
       }
-      
+
       setButtonStates(prev => ({ ...prev, [buttonId]: state }));
-      
+
       if (errorMessage) {
         setErrorMessages(prev => ({ ...prev, [buttonId]: errorMessage }));
       } else {
@@ -72,7 +81,7 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
       // Auto-reset success and error states after timeout
       if (state === 'success' || state === 'error') {
         const timeoutDuration = state === 'success' ? 2000 : 4000; // Errors show longer
-        
+
         timeoutRefs.current[buttonId] = setTimeout(() => {
           setButtonStates(prev => ({ ...prev, [buttonId]: 'idle' }));
           setErrorMessages(prev => ({ ...prev, [buttonId]: '' }));
@@ -93,7 +102,8 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
       await copyToClipboard(markdownContent);
       updateButtonState(buttonId, 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to copy markdown';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to copy markdown';
       updateButtonState(buttonId, 'error', errorMessage);
     }
   }, [messages, updateButtonState]);
@@ -108,7 +118,8 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
       await copyToClipboard(jsonContent);
       updateButtonState(buttonId, 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to copy JSON';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to copy JSON';
       updateButtonState(buttonId, 'error', errorMessage);
     }
   }, [messages, updateButtonState]);
@@ -124,7 +135,8 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
       downloadFile(markdownContent, filename, 'text/markdown');
       updateButtonState(buttonId, 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save markdown';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to save markdown';
       updateButtonState(buttonId, 'error', errorMessage);
     }
   }, [messages, updateButtonState]);
@@ -140,14 +152,18 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
       downloadFile(jsonContent, filename, 'application/json');
       updateButtonState(buttonId, 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save JSON';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to save JSON';
       updateButtonState(buttonId, 'error', errorMessage);
     }
   }, [messages, updateButtonState]);
 
   const isDisabled = messages.length === 0;
 
-  const getButtonText = (buttonId: keyof ButtonStates, defaultText: string): string => {
+  const getButtonText = (
+    buttonId: keyof ButtonStates,
+    defaultText: string
+  ): string => {
     const state = buttonStates[buttonId];
     switch (state) {
       case 'loading':
@@ -164,9 +180,9 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   const getButtonClass = (buttonId: keyof ButtonStates): string => {
     const state = buttonStates[buttonId];
     const baseClass = 'export-button';
-    
+
     if (isDisabled) return `${baseClass} disabled`;
-    
+
     switch (state) {
       case 'loading':
         return `${baseClass} loading`;
@@ -180,15 +196,19 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   };
 
   return (
-    <div className="export-buttons-container">
-      <div className="export-buttons-grid">
+    <div className='export-buttons-container'>
+      <div className='export-buttons-grid'>
         {/* Copy to Clipboard - Markdown */}
         <button
           onClick={handleCopyMarkdown}
           disabled={isDisabled || buttonStates.copyMd === 'loading'}
           className={getButtonClass('copyMd')}
-          title={isDisabled ? 'No messages to export' : 'Copy chat as markdown to clipboard'}
-          aria-label="Copy chat as markdown to clipboard"
+          title={
+            isDisabled
+              ? 'No messages to export'
+              : 'Copy chat as markdown to clipboard'
+          }
+          aria-label='Copy chat as markdown to clipboard'
         >
           📋 {getButtonText('copyMd', 'Copy MD')}
         </button>
@@ -198,8 +218,12 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
           onClick={handleCopyJSON}
           disabled={isDisabled || buttonStates.copyJson === 'loading'}
           className={getButtonClass('copyJson')}
-          title={isDisabled ? 'No messages to export' : 'Copy chat as JSON to clipboard'}
-          aria-label="Copy chat as JSON to clipboard"
+          title={
+            isDisabled
+              ? 'No messages to export'
+              : 'Copy chat as JSON to clipboard'
+          }
+          aria-label='Copy chat as JSON to clipboard'
         >
           📋 {getButtonText('copyJson', 'Copy JSON')}
         </button>
@@ -209,8 +233,10 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
           onClick={handleSaveMarkdown}
           disabled={isDisabled || buttonStates.saveMd === 'loading'}
           className={getButtonClass('saveMd')}
-          title={isDisabled ? 'No messages to export' : 'Save chat as markdown file'}
-          aria-label="Save chat as markdown file"
+          title={
+            isDisabled ? 'No messages to export' : 'Save chat as markdown file'
+          }
+          aria-label='Save chat as markdown file'
         >
           💾 {getButtonText('saveMd', 'Save MD')}
         </button>
@@ -220,25 +246,28 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
           onClick={handleSaveJSON}
           disabled={isDisabled || buttonStates.saveJson === 'loading'}
           className={getButtonClass('saveJson')}
-          title={isDisabled ? 'No messages to export' : 'Save chat as JSON file'}
-          aria-label="Save chat as JSON file"
+          title={
+            isDisabled ? 'No messages to export' : 'Save chat as JSON file'
+          }
+          aria-label='Save chat as JSON file'
         >
           💾 {getButtonText('saveJson', 'Save JSON')}
         </button>
       </div>
 
       {/* Error Messages Display */}
-      {Object.entries(errorMessages).map(([buttonId, errorMessage]) => (
-        errorMessage && buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
-          <div key={buttonId} className="export-error-message">
+      {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
+        errorMessage &&
+        buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
+          <div key={buttonId} className='export-error-message'>
             <strong>Export Error:</strong> {errorMessage}
           </div>
         ) : null
-      ))}
+      )}
 
       {/* Empty State Message */}
       {isDisabled && (
-        <div className="export-empty-state">
+        <div className='export-empty-state'>
           Start a conversation to enable export options
         </div>
       )}

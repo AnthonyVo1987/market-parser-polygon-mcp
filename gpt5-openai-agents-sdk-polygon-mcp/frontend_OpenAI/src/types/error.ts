@@ -17,7 +17,7 @@ export interface ErrorFallbackProps {
 }
 
 // Application error types
-export type AppErrorType = 
+export type AppErrorType =
   | 'network'
   | 'validation'
   | 'server'
@@ -50,11 +50,11 @@ export const createAppError = (
   error.statusCode = options?.statusCode;
   error.timestamp = new Date();
   error.context = options?.context;
-  
+
   if (options?.cause) {
     error.cause = options.cause;
   }
-  
+
   return error;
 };
 

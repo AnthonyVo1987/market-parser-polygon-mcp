@@ -1,42 +1,15 @@
 # New Task Details
 
-[GPT-5] Add Button Prompts
+[GPT-5] Run LINT \ PyLint \ ESLint & fix any Lint issues for gpt5-openai-agents-sdk-polygon-mcp
 
 ## Task Description
 
-Add Button Prompts for Stock Snapshot, Support & Resistance Levels, & Technical Analysis
+<Task 1> Specialist to Use relevant MCP Tools to run & fix all the Linting for the code in gpt5-openai-agents-sdk-polygon-mcp
 
-<Task 1> Ask Specialist to review & understand current implementation of the 3x Button Prompts from the Gradio UI code to try and integrate into the OpenAI Chat UI
+- Lint needs to be run for the entire tech stack of the OpenAI Code
+- If something needs additional Lint config to properly run lint, then auto download\setup what may be needed to run Lint properly
 
-<Task 2> Ask Specialist to use Context7 & Sequential-Thinking tools to Analyze & Research the most up to date, robust best practices, WITHOUT over-engineering for the requested task(s)
-
-1. Prompts should have it's own dedicated file(s) in dedicated prompts folder(s) for optimal best practices for AI Prompt management I.E. .md, JSON format etc. This allows easy modifications & testing of different Prompts without needing to change the code
-2. Need to ensure that ALL button prompts MUST be executed without needing user approval or confirmation
-3. Between 1-3x max relevant follow up questions to the user after the initial Button Prompt Response
-
-4. Snapshot Button: Daily Ticker Snapshot needs ONLY this data provided, formatted to match the Chat UI Emoji\Sentiment Rules
-
-"ticker": "xxx",
-"% Change": The percentage change since the previous day, to 2 decimal points
-"Change": The value of the change from the previous day
-"Timestamp": The last updated timestamp
-"Open": The open price for the symbol in the given time period
-"High": The highest price for the symbol in the given time period
-"Low": The lowest price for the symbol in the given time period
-"Close": The close price for the symbol in the given time period
-"Volume": The trading volume of the symbol in the given time period
-"VWAP": The volume weighted average price
-
-5. Support & Resistance Levels Button: 3x Support Levels & 3x Resistance Levels
-
-6. Technical Analysis Button
-
-- Focus on Indicators relevant for Options Traders
-- Excluding Support Levels\Resistance Levels since another Button Prompt handles this already
-
-<Task 3> Based on the research & planning from Task 1 & 2, implement the plan for the button prompts
-
-<Task(s)> Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification:
+<Task 2> 4x Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
 
 ### Step 1: Review/Fix Loop
 
@@ -76,7 +49,6 @@ Add Button Prompts for Stock Snapshot, Support & Resistance Levels, & Technical 
 
 ## Expected Outcome
 
-- User clicking a button prompt will ONLY fill in the Chatbot input with the prompt text, allowing user to optionally modify prompt before sending to the AI Chat
-- Button Prompts will NOT automatically send the message yet and leave it up to the user to trigger the actual sending
+- All lint issues fixed for our OpenAI Tech Stack
 
 ## Additional Context

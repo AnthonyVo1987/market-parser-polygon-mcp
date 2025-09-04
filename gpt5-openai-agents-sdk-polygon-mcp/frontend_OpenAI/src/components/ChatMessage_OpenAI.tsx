@@ -2,13 +2,13 @@ import { ComponentPropsWithoutRef } from 'react';
 import Markdown from 'react-markdown';
 
 import { Message } from '../types/chat_OpenAI';
-import MessageCopyButton, { messageCopyButtonStyles } from './MessageCopyButton';
+import MessageCopyButton, {
+  messageCopyButtonStyles,
+} from './MessageCopyButton';
 
 interface ChatMessage_OpenAIProps {
   message: Message;
 }
-
-
 
 // Custom components for markdown rendering
 const markdownComponents = {

@@ -105,7 +105,7 @@ export const ERROR_CODES = {
   TIMEOUT_ERROR: 'TIMEOUT_ERROR',
 } as const;
 
-export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
 // Prompt template types for financial analysis buttons
 export interface PromptTemplate {
@@ -119,7 +119,10 @@ export interface PromptTemplate {
   readonly followUpQuestions?: readonly string[];
 }
 
-export type AnalysisType = 'snapshot' | 'support_resistance' | 'technical_analysis';
+export type AnalysisType =
+  | 'snapshot'
+  | 'support_resistance'
+  | 'technical_analysis';
 
 export interface PromptTemplateResponse {
   templates: readonly PromptTemplate[];
@@ -172,7 +175,9 @@ export const PROMPT_API_ENDPOINTS = {
 } as const;
 
 // Export utility functions for type guards
-export const isValidMessageSender = (sender: string): sender is MessageSender => {
+export const isValidMessageSender = (
+  sender: string
+): sender is MessageSender => {
   return sender === 'user' || sender === 'ai';
 };
 
@@ -196,10 +201,14 @@ export const isValidMessage = (message: unknown): message is Message => {
 };
 
 export const isValidAnalysisType = (type: string): type is AnalysisType => {
-  return ['snapshot', 'support_resistance', 'technical_analysis'].includes(type);
+  return ['snapshot', 'support_resistance', 'technical_analysis'].includes(
+    type
+  );
 };
 
-export const isValidPromptTemplate = (template: unknown): template is PromptTemplate => {
+export const isValidPromptTemplate = (
+  template: unknown
+): template is PromptTemplate => {
   return (
     typeof template === 'object' &&
     template !== null &&

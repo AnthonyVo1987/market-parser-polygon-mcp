@@ -5,13 +5,13 @@
   --border-color: #e2e8f0;
   --text-primary: #1a202c;
   --text-secondary: #4a5568;
-  
+
   /* Responsive breakpoints as CSS custom properties */
   --mobile-max: 767px;
   --tablet-min: 768px;
   --tablet-max: 1024px;
   --desktop-min: 1025px;
-  
+
   /* Responsive spacing scale */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -61,12 +61,12 @@ body {
     width: 10px;
     height: 10px;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
   }
-  
+
   ::-webkit-scrollbar-thumb:active {
     background: rgba(0, 0, 0, 0.6);
   }
@@ -99,12 +99,14 @@ body {
   * {
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Prevent zoom on input focus */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-size: 16px !important;
   }
-  
+
   /* iOS safe area handling */
   .chat-interface {
     padding-bottom: env(safe-area-inset-bottom);
@@ -114,11 +116,13 @@ body {
 /* Android-specific optimizations */
 @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
   /* Enhanced touch targets */
-  button, input, textarea {
+  button,
+  input,
+  textarea {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Improved keyboard handling */
   .chat-interface {
     height: 100vh;
@@ -185,7 +189,7 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .message-bubble {
     transition: none;
   }

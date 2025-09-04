@@ -4,7 +4,11 @@ import { usePromptAPI } from '../hooks/usePromptAPI';
 import AnalysisButton, { analysisButtonStyles } from './AnalysisButton';
 
 // Define the expected order of analysis types for consistent display
-const ANALYSIS_TYPE_ORDER: AnalysisType[] = ['snapshot', 'support_resistance', 'technical_analysis'];
+const ANALYSIS_TYPE_ORDER: AnalysisType[] = [
+  'snapshot',
+  'support_resistance',
+  'technical_analysis',
+];
 
 export default function AnalysisButtons({
   onPromptGenerated,
@@ -25,9 +29,12 @@ export default function AnalysisButtons({
   }, [error, loading, refreshTemplates]);
 
   // Handle prompt generation from individual buttons
-  const handlePromptGenerated = useCallback((prompt: string) => {
-    onPromptGenerated(prompt);
-  }, [onPromptGenerated]);
+  const handlePromptGenerated = useCallback(
+    (prompt: string) => {
+      onPromptGenerated(prompt);
+    },
+    [onPromptGenerated]
+  );
 
   // Handle retry button click
   const handleRetry = useCallback(() => {
@@ -38,26 +45,30 @@ export default function AnalysisButtons({
   const sortedTemplates = [...templates].sort((a, b) => {
     const aIndex = ANALYSIS_TYPE_ORDER.indexOf(a.type);
     const bIndex = ANALYSIS_TYPE_ORDER.indexOf(b.type);
-    
+
     // Put known types first in order, unknown types at the end
     if (aIndex === -1 && bIndex === -1) return 0;
     if (aIndex === -1) return 1;
     if (bIndex === -1) return -1;
-    
+
     return aIndex - bIndex;
   });
 
   // Loading state
   if (loading && templates.length === 0) {
     return (
-      <div className={`analysis-buttons-container loading ${className}`} role="status" aria-label="Loading analysis buttons">
-        <div className="loading-content">
-          <div className="loading-spinner-large" aria-hidden="true">
+      <div
+        className={`analysis-buttons-container loading ${className}`}
+        role='status'
+        aria-label='Loading analysis buttons'
+      >
+        <div className='loading-content'>
+          <div className='loading-spinner-large' aria-hidden='true'>
             <span></span>
             <span></span>
             <span></span>
           </div>
-          <p className="loading-text">Loading analysis tools...</p>
+          <p className='loading-text'>Loading analysis tools...</p>
         </div>
       </div>
     );
@@ -66,20 +77,25 @@ export default function AnalysisButtons({
   // Error state with retry option
   if (error && templates.length === 0) {
     return (
-      <div className={`analysis-buttons-container error ${className}`} role="alert">
-        <div className="error-content">
-          <div className="error-icon" aria-hidden="true">⚠️</div>
-          <p className="error-text">Failed to load analysis tools</p>
-          <p className="error-detail">{error}</p>
-          <button 
+      <div
+        className={`analysis-buttons-container error ${className}`}
+        role='alert'
+      >
+        <div className='error-content'>
+          <div className='error-icon' aria-hidden='true'>
+            ⚠️
+          </div>
+          <p className='error-text'>Failed to load analysis tools</p>
+          <p className='error-detail'>{error}</p>
+          <button
             onClick={handleRetry}
-            className="retry-button"
+            className='retry-button'
             disabled={loading}
-            aria-describedby="retry-help"
+            aria-describedby='retry-help'
           >
             {loading ? 'Retrying...' : 'Retry'}
           </button>
-          <div id="retry-help" className="sr-only">
+          <div id='retry-help' className='sr-only'>
             Click to retry loading the analysis tools
           </div>
         </div>
@@ -90,13 +106,18 @@ export default function AnalysisButtons({
   // No templates available
   if (templates.length === 0) {
     return (
-      <div className={`analysis-buttons-container empty ${className}`} role="status">
-        <div className="empty-content">
-          <div className="empty-icon" aria-hidden="true">📊</div>
-          <p className="empty-text">No analysis tools available</p>
-          <button 
+      <div
+        className={`analysis-buttons-container empty ${className}`}
+        role='status'
+      >
+        <div className='empty-content'>
+          <div className='empty-icon' aria-hidden='true'>
+            📊
+          </div>
+          <p className='empty-text'>No analysis tools available</p>
+          <button
             onClick={handleRetry}
-            className="refresh-button"
+            className='refresh-button'
             disabled={loading}
           >
             Refresh
@@ -107,33 +128,37 @@ export default function AnalysisButtons({
   }
 
   return (
-    <div className={`analysis-buttons-container loaded ${className}`} role="group" aria-label="Financial analysis tools">
-      <div className="buttons-header">
-        <h3 className="buttons-title">Quick Analysis</h3>
-        <p className="buttons-subtitle">
+    <div
+      className={`analysis-buttons-container loaded ${className}`}
+      role='group'
+      aria-label='Financial analysis tools'
+    >
+      <div className='buttons-header'>
+        <h3 className='buttons-title'>Quick Analysis</h3>
+        <p className='buttons-subtitle'>
           Click to populate your message with financial analysis prompts
           {currentTicker && (
-            <span className="current-ticker"> for {currentTicker}</span>
+            <span className='current-ticker'> for {currentTicker}</span>
           )}
         </p>
       </div>
 
-      <div className="buttons-grid">
-        {sortedTemplates.map((template) => (
+      <div className='buttons-grid'>
+        {sortedTemplates.map(template => (
           <AnalysisButton
             key={template.id}
             template={template}
             onPromptGenerated={handlePromptGenerated}
             isLoading={loading}
-            className="grid-button"
+            className='grid-button'
           />
         ))}
       </div>
 
       {/* Loading overlay for refresh operations */}
       {loading && templates.length > 0 && (
-        <div className="refresh-overlay" aria-hidden="true">
-          <div className="refresh-spinner">
+        <div className='refresh-overlay' aria-hidden='true'>
+          <div className='refresh-spinner'>
             <span></span>
             <span></span>
             <span></span>
@@ -143,10 +168,10 @@ export default function AnalysisButtons({
 
       {/* Non-blocking error notification for refresh failures */}
       {error && templates.length > 0 && (
-        <div className="refresh-error" role="alert" aria-live="polite">
-          <span className="error-icon-small">⚠️</span>
-          <span className="error-text-small">Failed to refresh: {error}</span>
-          <button onClick={handleRetry} className="retry-button-small">
+        <div className='refresh-error' role='alert' aria-live='polite'>
+          <span className='error-icon-small'>⚠️</span>
+          <span className='error-text-small'>Failed to refresh: {error}</span>
+          <button onClick={handleRetry} className='retry-button-small'>
             Retry
           </button>
         </div>

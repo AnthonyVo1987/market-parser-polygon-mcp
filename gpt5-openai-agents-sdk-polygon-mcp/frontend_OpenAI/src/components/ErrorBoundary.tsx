@@ -1,30 +1,35 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from 'react';
 import { ErrorBoundaryProps, ErrorFallbackProps } from '../types/error';
 import { ErrorBoundaryState, ErrorInfo } from '../types/chat_OpenAI';
 
 // Default error fallback component
-const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ 
-  error, 
-  errorInfo, 
-  resetError 
+const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
+  error,
+  errorInfo,
+  resetError,
 }) => {
   return (
-    <div role="alert" className="error-boundary-fallback">
+    <div role='alert' className='error-boundary-fallback'>
       <h2>Something went wrong</h2>
       <details style={{ whiteSpace: 'pre-wrap' }}>
         <summary>Error Details</summary>
-        <div className="error-details">
-          <p><strong>Error:</strong> {error.message}</p>
+        <div className='error-details'>
+          <p>
+            <strong>Error:</strong> {error.message}
+          </p>
           {errorInfo && (
-            <p><strong>Component Stack:</strong> {errorInfo.componentStack}</p>
+            <p>
+              <strong>Component Stack:</strong> {errorInfo.componentStack}
+            </p>
           )}
         </div>
       </details>
       {resetError && (
-        <button 
+        <button
           onClick={resetError}
-          className="error-reset-button"
-          aria-label="Try again"
+          className='error-reset-button'
+          aria-label='Try again'
         >
           Try again
         </button>
@@ -65,7 +70,8 @@ export default class ErrorBoundary extends React.Component<
       this.props.onError(error, enhancedErrorInfo);
     }
 
-    // Log error for debugging
+    // Log error for debugging - ESLint disabled for error boundary logging
+    // eslint-disable-next-line no-console
     console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
@@ -80,7 +86,7 @@ export default class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError && this.state.error) {
       const FallbackComponent = this.props.fallback || DefaultErrorFallback;
-      
+
       return (
         <FallbackComponent
           error={this.state.error}

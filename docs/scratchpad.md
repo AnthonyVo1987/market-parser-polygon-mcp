@@ -2,6 +2,65 @@
 
 # New Task Details
 
+[GPT-5] Run LINT \ PyLint \ ESLint & fix any Lint issues
+
+## Task Description
+
+[GPT-5] Run LINT & fix all LINT issues
+
+<Task 1> Ask Specialist to review & understand current implementation of the 3x Button Prompts from the Gradio UI code to try and integrate into the OpenAI Chat UI
+
+<Task 2> Ask Specialist to use Context7 & Sequential-Thinking tools to Analyze & Research the most up to date, robust best practices, WITHOUT over-engineering for the requested task(s)
+
+<Task 3> Based on the research & planning from Task 1 & 2, implement the plan for the button prompts
+
+<Task(s)> Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification:
+
+### Step 1: Review/Fix Loop
+
+- Specialist performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Uses `mcp__filesystem__*` tools for all file operations and examination
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle until achieving PASSING code review status
+
+### Step 2: Task Summary & CLAUDE.md Update
+
+- Generate comprehensive task completion summary
+- Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
+
+### Step 3: Atomic Git Commit & Push
+
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic commit containing ALL changes: code files, documentation updates, and task summary
+- Push commit to GitHub repository using provided personal access token
+- **CRITICAL**: Must push to complete the workflow - commit without push is incomplete
+
+### Step 4: Final Verification
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly committed and pushed
+
+**Key Requirements:**
+
+- Single atomic commit prevents code vs documentation separation
+- All changes (code + docs + summary) must be committed together
+- Task summary generation occurs BEFORE git commit to ensure inclusion
+- Automated workflow ensures consistency and completeness
+
+## Requirements
+
+## Expected Outcome
+
+- User clicking a button prompt will ONLY fill in the Chatbot input with the prompt text, allowing user to optionally modify prompt before sending to the AI Chat
+- Button Prompts will NOT automatically send the message yet and leave it up to the user to trigger the actual sending
+
+## Additional Context
+
+# New Task Details
+
 [GPT-5] feat: Enhance Chatbot UI for cross platform dynamic sizing display
 
 ## Task Description
@@ -123,9 +182,9 @@ Here is the expected flow when user invokes the new "/new_task" command:
      Changes:
 
      1. Replace <input> with <textarea>
-       - Default 4 lines height (rows={4})
-       - Auto-resize based on content
-       - Dynamic vertical scrollbar when content exceeds max height
+    - Default 4 lines height (rows={4})
+    - Auto-resize based on content
+    - Dynamic vertical scrollbar when content exceeds max height
      2. Add auto-resize functionality:
      const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
        setInputValue(e.target.value);

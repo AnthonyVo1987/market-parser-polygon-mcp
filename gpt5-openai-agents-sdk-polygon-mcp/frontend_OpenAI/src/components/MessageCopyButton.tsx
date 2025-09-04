@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Message } from '../types/chat_OpenAI';
-import { convertSingleMessageToMarkdown, copyToClipboard } from '../utils/exportHelpers';
+import {
+  convertSingleMessageToMarkdown,
+  copyToClipboard,
+} from '../utils/exportHelpers';
 
 interface MessageCopyButtonProps {
   message: Message;
@@ -9,10 +12,13 @@ interface MessageCopyButtonProps {
 
 type ButtonState = 'idle' | 'loading' | 'success' | 'error';
 
-export default function MessageCopyButton({ message, className = '' }: MessageCopyButtonProps) {
+export default function MessageCopyButton({
+  message,
+  className = '',
+}: MessageCopyButtonProps) {
   const [buttonState, setButtonState] = useState<ButtonState>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  
+
   // Ref to store timeout ID for cleanup
   const timeoutRef = useRef<number | null>(null);
 
@@ -25,43 +31,50 @@ export default function MessageCopyButton({ message, className = '' }: MessageCo
     };
   }, []);
 
-  const updateButtonState = useCallback((state: ButtonState, errorMsg?: string) => {
-    // Clear any existing timeout to prevent conflicts
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    
-    setButtonState(state);
-    setErrorMessage(errorMsg || '');
-
-    // Auto-reset success and error states after timeout
-    if (state === 'success' || state === 'error') {
-      const timeoutDuration = state === 'success' ? 2000 : 4000; // Errors show longer
-      
-      timeoutRef.current = setTimeout(() => {
-        setButtonState('idle');
-        setErrorMessage('');
+  const updateButtonState = useCallback(
+    (state: ButtonState, errorMsg?: string) => {
+      // Clear any existing timeout to prevent conflicts
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
-      }, timeoutDuration);
-    }
-  }, []);
+      }
 
-  const handleCopyMessage = useCallback(async (event: React.MouseEvent) => {
-    // Prevent event from bubbling up to parent elements
-    event.stopPropagation();
-    
-    updateButtonState('loading');
+      setButtonState(state);
+      setErrorMessage(errorMsg || '');
 
-    try {
-      const markdownContent = convertSingleMessageToMarkdown(message);
-      await copyToClipboard(markdownContent);
-      updateButtonState('success');
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to copy message';
-      updateButtonState('error', errorMsg);
-    }
-  }, [message, updateButtonState]);
+      // Auto-reset success and error states after timeout
+      if (state === 'success' || state === 'error') {
+        const timeoutDuration = state === 'success' ? 2000 : 4000; // Errors show longer
+
+        timeoutRef.current = setTimeout(() => {
+          setButtonState('idle');
+          setErrorMessage('');
+          timeoutRef.current = null;
+        }, timeoutDuration);
+      }
+    },
+    []
+  );
+
+  const handleCopyMessage = useCallback(
+    async (event: React.MouseEvent) => {
+      // Prevent event from bubbling up to parent elements
+      event.stopPropagation();
+
+      updateButtonState('loading');
+
+      try {
+        const markdownContent = convertSingleMessageToMarkdown(message);
+        await copyToClipboard(markdownContent);
+        updateButtonState('success');
+      } catch (error) {
+        const errorMsg =
+          error instanceof Error ? error.message : 'Failed to copy message';
+        updateButtonState('error', errorMsg);
+      }
+    },
+    [message, updateButtonState]
+  );
 
   const getButtonIcon = (): string => {
     switch (buttonState) {
@@ -92,7 +105,7 @@ export default function MessageCopyButton({ message, className = '' }: MessageCo
   const getButtonClass = (): string => {
     const baseClass = 'message-copy-button';
     const customClass = className ? ` ${className}` : '';
-    
+
     switch (buttonState) {
       case 'loading':
         return `${baseClass} loading${customClass}`;
@@ -113,7 +126,7 @@ export default function MessageCopyButton({ message, className = '' }: MessageCo
       title={getButtonTitle()}
       aria-label={getButtonTitle()}
     >
-      <span className="copy-icon">{getButtonIcon()}</span>
+      <span className='copy-icon'>{getButtonIcon()}</span>
     </button>
   );
 }

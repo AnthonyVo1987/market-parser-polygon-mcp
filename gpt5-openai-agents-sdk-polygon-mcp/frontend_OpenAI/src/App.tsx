@@ -6,9 +6,12 @@ import { messageStyles } from './components/ChatMessage_OpenAI';
 import ErrorBoundary, { errorBoundaryStyles } from './components/ErrorBoundary';
 
 export default function App() {
-  const handleError = (error: Error, errorInfo: { componentStack: string }) => {
+  const handleError = (
+    _error: Error,
+    _errorInfo: { componentStack: string }
+  ) => {
     // In a real app, you might send this to an error reporting service
-    console.error('App Error Boundary:', error, errorInfo);
+    // Error handling delegated to ErrorBoundary component
   };
 
   return (

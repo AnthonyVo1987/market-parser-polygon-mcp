@@ -13,11 +13,11 @@ export async function sendChatMessage(message: string): Promise<string> {
     });
 
     if (!response.ok) {
-      const errorData = await response.json() as ApiError;
+      const errorData = (await response.json()) as ApiError;
       throw new Error(errorData.error || 'Failed to send message');
     }
 
-    const data = await response.json() as ChatResponse;
+    const data = (await response.json()) as ChatResponse;
     return data.response;
   } catch (error) {
     if (error instanceof Error) {

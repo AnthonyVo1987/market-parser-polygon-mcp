@@ -10,7 +10,8 @@ export default function AnalysisButton({
   className = '',
 }: AnalysisButtonProps) {
   const { generatePrompt, error: apiError } = usePromptAPI();
-  const { isGenerating, generationError, generateWithLoading } = usePromptGeneration();
+  const { isGenerating, generationError, generateWithLoading } =
+    usePromptGeneration();
   const [currentTicker, setCurrentTicker] = useState<string>('');
 
   // Determine if button should show loading state
@@ -21,57 +22,77 @@ export default function AnalysisButton({
   const handleButtonClick = useCallback(async () => {
     if (isButtonDisabled) return;
 
-    const ticker = template.requiresTicker ? currentTicker.trim() || 'AAPL' : undefined;
+    const ticker = template.requiresTicker
+      ? currentTicker.trim() || 'AAPL'
+      : undefined;
 
     try {
       await generateWithLoading(
         () => generatePrompt(template.id, ticker),
-        (generatedPrompt) => {
+        generatedPrompt => {
           onPromptGenerated(generatedPrompt);
         }
       );
     } catch (error) {
       // Error is already handled by generateWithLoading, so we just silently catch to prevent uncaught promise rejection
     }
-  }, [template, currentTicker, generatePrompt, onPromptGenerated, generateWithLoading, isButtonDisabled]);
+  }, [
+    template,
+    currentTicker,
+    generatePrompt,
+    onPromptGenerated,
+    generateWithLoading,
+    isButtonDisabled,
+  ]);
 
   // Handle ticker input change
-  const handleTickerChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    setCurrentTicker(value);
-  }, []);
+  const handleTickerChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      setCurrentTicker(value);
+    },
+    []
+  );
 
   // Handle ticker input key press (Enter to trigger button)
-  const handleTickerKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !isButtonDisabled) {
-      void handleButtonClick(); // Use void operator for floating promise
-    }
-  }, [handleButtonClick, isButtonDisabled]);
+  const handleTickerKeyPress = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' && !isButtonDisabled) {
+        void handleButtonClick(); // Use void operator for floating promise
+      }
+    },
+    [handleButtonClick, isButtonDisabled]
+  );
 
   const displayError = generationError || apiError;
 
   return (
-    <div className={`analysis-button-container ${className}`} role="group" aria-labelledby={`button-${template.id}-label`}>
+    <div
+      className={`analysis-button-container ${className}`}
+      role='group'
+      aria-labelledby={`button-${template.id}-label`}
+    >
       {/* Ticker input for templates that require it */}
       {template.requiresTicker && (
-        <div className="ticker-input-container">
-          <label htmlFor={`ticker-${template.id}`} className="ticker-label">
+        <div className='ticker-input-container'>
+          <label htmlFor={`ticker-${template.id}`} className='ticker-label'>
             Stock Symbol:
           </label>
           <input
             id={`ticker-${template.id}`}
-            type="text"
+            type='text'
             value={currentTicker}
             onChange={handleTickerChange}
             onKeyPress={handleTickerKeyPress}
-            placeholder="AAPL"
+            placeholder='AAPL'
             maxLength={10}
-            className="ticker-input"
+            className='ticker-input'
             disabled={isButtonDisabled}
             aria-describedby={`ticker-help-${template.id}`}
           />
-          <div id={`ticker-help-${template.id}`} className="sr-only">
-            Enter a stock symbol (letters and numbers only). Press Enter to generate analysis.
+          <div id={`ticker-help-${template.id}`} className='sr-only'>
+            Enter a stock symbol (letters and numbers only). Press Enter to
+            generate analysis.
           </div>
         </div>
       )}
@@ -79,21 +100,21 @@ export default function AnalysisButton({
       {/* Main analysis button */}
       <button
         id={`button-${template.id}-label`}
-        type="button"
+        type='button'
         onClick={handleButtonClick}
         disabled={isButtonDisabled}
-        className="analysis-button"
+        className='analysis-button'
         aria-describedby={`button-help-${template.id} ${displayError ? `error-${template.id}` : ''}`}
         title={template.description}
       >
-        <span className="button-icon" aria-hidden="true">
+        <span className='button-icon' aria-hidden='true'>
           {template.icon}
         </span>
-        <span className="button-text">
+        <span className='button-text'>
           {isButtonLoading ? 'Loading...' : template.name}
         </span>
         {isButtonLoading && (
-          <span className="loading-spinner" aria-hidden="true">
+          <span className='loading-spinner' aria-hidden='true'>
             <span></span>
             <span></span>
             <span></span>
@@ -102,19 +123,21 @@ export default function AnalysisButton({
       </button>
 
       {/* Button help text */}
-      <div id={`button-help-${template.id}`} className="sr-only">
+      <div id={`button-help-${template.id}`} className='sr-only'>
         {template.description}
         {template.requiresTicker ? ' Enter a ticker symbol first.' : ''}
-        {isButtonLoading ? ' Loading prompt...' : ' Click to populate chat input with analysis prompt.'}
+        {isButtonLoading
+          ? ' Loading prompt...'
+          : ' Click to populate chat input with analysis prompt.'}
       </div>
 
       {/* Error display */}
       {displayError && (
         <div
           id={`error-${template.id}`}
-          className="error-message"
-          role="alert"
-          aria-live="polite"
+          className='error-message'
+          role='alert'
+          aria-live='polite'
         >
           {displayError}
         </div>
@@ -122,12 +145,14 @@ export default function AnalysisButton({
 
       {/* Follow-up questions hint */}
       {template.followUpQuestions && template.followUpQuestions.length > 0 && (
-        <div className="follow-up-hint">
-          <details className="follow-up-details">
-            <summary className="follow-up-summary">Suggested follow-up questions</summary>
-            <ul className="follow-up-list">
+        <div className='follow-up-hint'>
+          <details className='follow-up-details'>
+            <summary className='follow-up-summary'>
+              Suggested follow-up questions
+            </summary>
+            <ul className='follow-up-list'>
               {template.followUpQuestions.map((question, index) => (
-                <li key={index} className="follow-up-item">
+                <li key={index} className='follow-up-item'>
                   {question}
                 </li>
               ))}

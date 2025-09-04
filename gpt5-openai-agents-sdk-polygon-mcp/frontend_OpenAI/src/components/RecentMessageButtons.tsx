@@ -17,14 +17,18 @@ interface ButtonStates {
   lastUser: ButtonState;
 }
 
-export default function RecentMessageButtons({ messages }: RecentMessageButtonsProps) {
+export default function RecentMessageButtons({
+  messages,
+}: RecentMessageButtonsProps) {
   const [buttonStates, setButtonStates] = useState<ButtonStates>({
     lastAI: 'idle',
     lastUser: 'idle',
   });
 
-  const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
-  
+  const [errorMessages, setErrorMessages] = useState<Record<string, string>>(
+    {}
+  );
+
   // Refs to store timeout IDs for cleanup
   const timeoutRefs = useRef<Record<keyof ButtonStates, number | null>>({
     lastAI: null,
@@ -35,7 +39,10 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
   useEffect(() => {
     return () => {
       // Clear all active timeouts to prevent memory leaks
-      Object.values(timeoutRefs.current).forEach(timeoutId => {
+      // Copy ref value inside effect cleanup to avoid stale reference
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const currentTimeouts = timeoutRefs.current;
+      Object.values(currentTimeouts).forEach(timeoutId => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
@@ -44,15 +51,19 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
   }, []);
 
   const updateButtonState = useCallback(
-    (buttonId: keyof ButtonStates, state: ButtonState, errorMessage?: string) => {
+    (
+      buttonId: keyof ButtonStates,
+      state: ButtonState,
+      errorMessage?: string
+    ) => {
       // Clear any existing timeout for this button to prevent conflicts
       if (timeoutRefs.current[buttonId]) {
-        clearTimeout(timeoutRefs.current[buttonId]!);
+        clearTimeout(timeoutRefs.current[buttonId]);
         timeoutRefs.current[buttonId] = null;
       }
-      
+
       setButtonStates(prev => ({ ...prev, [buttonId]: state }));
-      
+
       if (errorMessage) {
         setErrorMessages(prev => ({ ...prev, [buttonId]: errorMessage }));
       } else {
@@ -62,7 +73,7 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
       // Auto-reset success and error states after timeout
       if (state === 'success' || state === 'error') {
         const timeoutDuration = state === 'success' ? 2000 : 4000; // Errors show longer
-        
+
         timeoutRefs.current[buttonId] = setTimeout(() => {
           setButtonStates(prev => ({ ...prev, [buttonId]: 'idle' }));
           setErrorMessages(prev => ({ ...prev, [buttonId]: '' }));
@@ -82,12 +93,13 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
       if (!lastAIMessage) {
         throw new Error('No AI messages found');
       }
-      
+
       const markdownContent = convertSingleMessageToMarkdown(lastAIMessage);
       await copyToClipboard(markdownContent);
       updateButtonState(buttonId, 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to copy AI response';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to copy AI response';
       updateButtonState(buttonId, 'error', errorMessage);
     }
   }, [messages, updateButtonState]);
@@ -101,12 +113,13 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
       if (!lastUserMessage) {
         throw new Error('No user messages found');
       }
-      
+
       const markdownContent = convertSingleMessageToMarkdown(lastUserMessage);
       await copyToClipboard(markdownContent);
       updateButtonState(buttonId, 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to copy user request';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to copy user request';
       updateButtonState(buttonId, 'error', errorMessage);
     }
   }, [messages, updateButtonState]);
@@ -116,7 +129,10 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
   const hasUserMessages = messages.some(m => m.sender === 'user');
   const isEmpty = messages.length === 0;
 
-  const getButtonText = (buttonId: keyof ButtonStates, defaultText: string): string => {
+  const getButtonText = (
+    buttonId: keyof ButtonStates,
+    defaultText: string
+  ): string => {
     const state = buttonStates[buttonId];
     switch (state) {
       case 'loading':
@@ -130,12 +146,15 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
     }
   };
 
-  const getButtonClass = (buttonId: keyof ButtonStates, isDisabled: boolean): string => {
+  const getButtonClass = (
+    buttonId: keyof ButtonStates,
+    isDisabled: boolean
+  ): string => {
     const state = buttonStates[buttonId];
     const baseClass = 'recent-message-button';
-    
+
     if (isDisabled) return `${baseClass} disabled`;
-    
+
     switch (state) {
       case 'loading':
         return `${baseClass} loading`;
@@ -154,8 +173,8 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
   }
 
   return (
-    <div className="recent-message-buttons-container">
-      <div className="recent-message-buttons">
+    <div className='recent-message-buttons-container'>
+      <div className='recent-message-buttons'>
         {/* Copy Last AI Response Button */}
         <button
           onClick={handleCopyLastAI}
@@ -166,7 +185,7 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
               ? 'No AI responses to copy'
               : 'Copy most recent AI response to clipboard as markdown'
           }
-          aria-label="Copy most recent AI response to clipboard as markdown"
+          aria-label='Copy most recent AI response to clipboard as markdown'
         >
           🤖 {getButtonText('lastAI', 'Copy Last AI Response')}
         </button>
@@ -181,20 +200,21 @@ export default function RecentMessageButtons({ messages }: RecentMessageButtonsP
               ? 'No user requests to copy'
               : 'Copy most recent user request to clipboard as markdown'
           }
-          aria-label="Copy most recent user request to clipboard as markdown"
+          aria-label='Copy most recent user request to clipboard as markdown'
         >
           👤 {getButtonText('lastUser', 'Copy Last User Request')}
         </button>
       </div>
 
       {/* Error Messages Display */}
-      {Object.entries(errorMessages).map(([buttonId, errorMessage]) => (
-        errorMessage && buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
-          <div key={buttonId} className="recent-message-error-message">
+      {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
+        errorMessage &&
+        buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
+          <div key={buttonId} className='recent-message-error-message'>
             <strong>Copy Error:</strong> {errorMessage}
           </div>
         ) : null
-      ))}
+      )}
     </div>
   );
 }

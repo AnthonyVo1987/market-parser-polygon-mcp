@@ -6,7 +6,9 @@ import { Message } from '../types/chat_OpenAI';
 import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import ExportButtons, { exportButtonStyles } from './ExportButtons';
-import RecentMessageButtons, { recentMessageButtonsStyles } from './RecentMessageButtons';
+import RecentMessageButtons, {
+  recentMessageButtonsStyles,
+} from './RecentMessageButtons';
 import AnalysisButtons, { analysisButtonsStyles } from './AnalysisButtons';
 
 export default function ChatInterface_OpenAI() {
@@ -65,17 +67,21 @@ export default function ChatInterface_OpenAI() {
   };
 
   return (
-    <div className='chat-interface' role='application' aria-label='OpenAI Chat Interface'>
+    <div
+      className='chat-interface'
+      role='application'
+      aria-label='OpenAI Chat Interface'
+    >
       {/* Skip link for keyboard navigation */}
       <a href='#main-input' className='skip-link'>
         Skip to message input
       </a>
-      
+
       {/* Live regions for screen reader announcements */}
-      <div 
+      <div
         ref={statusRegionRef}
-        role='status' 
-        aria-live='polite' 
+        role='status'
+        aria-live='polite'
         aria-atomic='true'
         className='sr-only'
       >
@@ -88,22 +94,34 @@ export default function ChatInterface_OpenAI() {
         {messages.length > 0 && <ExportButtons messages={messages} />}
         <RecentMessageButtons messages={messages} />
         {error && (
-          <div className='error-banner' role='alert' aria-describedby='chat-title'>
+          <div
+            className='error-banner'
+            role='alert'
+            aria-describedby='chat-title'
+          >
             {error}
           </div>
         )}
       </header>
 
-      <main className='messages-container' role='log' aria-live='polite' aria-label='Chat conversation'>
+      <main
+        className='messages-container'
+        role='log'
+        aria-live='polite'
+        aria-label='Chat conversation'
+      >
         {messages.length === 0 ? (
           <div className='empty-state' role='status'>
             <div className='welcome-content'>
-              <h2 className='welcome-title'>Welcome to Financial Analysis Chat</h2>
+              <h2 className='welcome-title'>
+                Welcome to Financial Analysis Chat
+              </h2>
               <p className='welcome-description'>
-                Get instant financial insights powered by AI. Use the quick analysis tools below or type your own questions.
+                Get instant financial insights powered by AI. Use the quick
+                analysis tools below or type your own questions.
               </p>
               {/* Analysis buttons for empty state */}
-              <AnalysisButtons 
+              <AnalysisButtons
                 onPromptGenerated={handlePromptGenerated}
                 className='welcome-buttons'
               />
@@ -122,7 +140,11 @@ export default function ChatInterface_OpenAI() {
           </>
         )}
         {isLoading && (
-          <div className='loading-indicator' role='status' aria-label='AI is typing'>
+          <div
+            className='loading-indicator'
+            role='status'
+            aria-label='AI is typing'
+          >
             <div className='typing-dots' aria-hidden='true'>
               <span></span>
               <span></span>
@@ -136,21 +158,22 @@ export default function ChatInterface_OpenAI() {
       <div role='complementary' className='chat-input-section'>
         {/* Analysis buttons for active conversation */}
         {messages.length > 0 && (
-          <AnalysisButtons 
+          <AnalysisButtons
             onPromptGenerated={handlePromptGenerated}
             className='conversation-buttons'
           />
         )}
-        
+
         <ChatInput_OpenAI
           ref={chatInputRef}
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
           value={inputValue}
           onValueChange={setInputValue}
-          placeholder={messages.length === 0 
-            ? 'Ask about stocks, earnings, or market trends... (Shift+Enter for new line)'
-            : 'Type your message... (Shift+Enter for new line)'
+          placeholder={
+            messages.length === 0
+              ? 'Ask about stocks, earnings, or market trends... (Shift+Enter for new line)'
+              : 'Type your message... (Shift+Enter for new line)'
           }
         />
       </div>
