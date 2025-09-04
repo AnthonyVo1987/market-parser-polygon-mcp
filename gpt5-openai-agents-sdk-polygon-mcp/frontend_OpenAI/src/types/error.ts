@@ -30,6 +30,7 @@ export interface AppError extends Error {
   statusCode?: number;
   timestamp: Date;
   context?: Record<string, unknown>;
+  cause?: Error;
 }
 
 // Error factory functions

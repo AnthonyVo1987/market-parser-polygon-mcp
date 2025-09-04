@@ -1,6 +1,6 @@
 # New Task Details
 
-[GPT-5] feat: Research, Review, & Fix\Update OpenAI GPT-5 Chat UI with Best Practices Research using CONTEXT7
+[GPT-5] Remove Testing & Document Future Improvements
 
 ## Task Description
 
@@ -15,16 +15,9 @@
 
 - Generate a brand new document .md in the OpenAI Docs folder that will serve as a future implementation guide whenever we decide to finally implement testing again, so at least we have all the notes down, lessons learned, and a working integration of testing to fall back on once we decide to re-implement later on
 
-<Task 3> New doc for a guide on the current plan & status of the Best Practices Improvments research and analysis
+<Task 3> Clean Up docs PHASE1_IMPROVEMENTS.md
 
-- Generate a brand new document .md in the OpenAI docs folder that will serve as a future implementation guide, status, and research for all the phases
-- We will temporariily pause these tasks to re-visit them at a later point after some more prototyping task(s)
-- This document will also track the progress of the plan
-- Also need to re-organize & move /frontend_OpenAI/PHASE1_IMPROVEMENTS.md to the new OpenAI Docs folder to bring all the related docs together
-Phase 1: CRITICAL Foundation & Safety
-Phase 2: Performance optimization and advanced features
-Phase 3: Enhanced user experience improvements
-Phase 4: Advanced customization and integrations
+- Re-organize & move /frontend_OpenAI/PHASE1_IMPROVEMENTS.md to the new OpenAI Docs folder to bring all the related docs together
 
 <Final Task(s)> Review\Fix Loop, Doc Updates, Atomic Git Commit & Push, & Final Verification:
 

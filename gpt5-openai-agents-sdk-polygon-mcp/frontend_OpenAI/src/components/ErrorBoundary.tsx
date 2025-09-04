@@ -52,7 +52,7 @@ export default class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const enhancedErrorInfo: ErrorInfo = {
-      componentStack: errorInfo.componentStack,
+      componentStack: errorInfo.componentStack || '',
     };
 
     this.setState({
@@ -84,7 +84,7 @@ export default class ErrorBoundary extends React.Component<
       return (
         <FallbackComponent
           error={this.state.error}
-          errorInfo={this.state.errorInfo}
+          errorInfo={this.state.errorInfo ?? undefined}
           resetError={this.resetError}
         />
       );
