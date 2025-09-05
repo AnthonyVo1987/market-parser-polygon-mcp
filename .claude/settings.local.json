@@ -85,7 +85,17 @@
       "Bash(PYTHONPATH=. uv run python -m pytest --collect-only)",
       "Bash(PYTHONPATH=. uv run python -m pytest test_pytest.py -v --tb=line)",
       "Bash(pylint:*)",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "mcp__github__get_me",
+      "mcp__github__list_branches",
+      "mcp__github__get_file_contents",
+      "mcp__github__list_commits",
+      "mcp__github__get_commit",
+      "mcp__github__list_secret_scanning_alerts",
+      "mcp__github__list_tags",
+      "mcp__github__get_tag",
+      "mcp__github__list_releases",
+      "mcp__github__push_files"
     ],
     "deny": [],
     "ask": [],

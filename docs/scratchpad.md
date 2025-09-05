@@ -2,23 +2,17 @@
 
 # New Task Details
 
-[GPT-5] Fix incorrectly setup Github MCP Server
+[GPT-5] Update Standalone OpenAI Migration Guide with Github Tool Usage
 
 ## Task Description
 
-<Task 1> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze, Investigate, & fix incorrectly setup GitHub MCP server
+Update /gpt5-openai-agents-sdk-polygon-mcp/MIGRATION_GUIDE.md with more details:
 
-- There may have been an incorrect understanding when recently setting up the GitHub MCP server
-- Investigate the current code to fix all incorrect code, tests and documentation to remove ALL of the CLI\UI usage of the Github MCP Server
-- Like most MCP servers in our project, MCP servers are mainly focused on the DEVELOPMENT ENVIRONMENT to enhance the workflow
-- The ONLY MCP server that the end user CLI & UI code should use is the Polygon MCP server, which is already being used in our app by the AI Agent running the CLI and\or UI
-- Github, Sequential-Thinking, Context7, Filesystem are all MCP servers in our project that is ONLY for DEVELOPMENT ENVIRONMENT and NOT for the end user
-- It makes zero logical sense to have these development MCP servers being used during the app runtime itself
+<Task 1> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze, Investigate, & Update
 
-<Task 2> Specialist(s) to Test use Github, Context7, Sequential-Thinking, & Filesystem MCP Tools to confirm all the MCP tools are setup correctly, supported, and usable
+<Task 2> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze, Investigate, & Update
 
-
-<Closing_Tasks> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
+<Closing_Tasks> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Github Commit & Github Push, & Final Verification
 
 ### Step 1: Review/Fix Loop
 
@@ -37,15 +31,76 @@
 ### Step 3: Atomic Git Commit & Push
 
 - Run `git status` to review all staged and unstaged changes
-- Create single atomic commit containing ALL changes: code files, documentation updates, and task summary
-- Push commit to GitHub repository using provided personal access token
-- **CRITICAL**: Must push to complete the workflow - commit without push is incomplete
+- Create single atomic Github commit containing ALL changes: code files, documentation updates, and task summary
+- Github Push commit to GitHub repository using provided personal access token
+- **CRITICAL**: Must Github push to complete the workflow - Github commit without Github push is incomplete
 
 ### Step 4: Final Verification
 
 - Run final `git status` to confirm successful commit and push
 - Verify working tree is clean and branch is up-to-date with remote
-- Confirm all changes are properly committed and pushed
+- Confirm all changes are properly Github committed and Github pushed
+
+**Key Requirements:**
+
+## Requirements
+
+## Expected Outcome
+
+## Additional Context
+
+# New Task Details
+
+[GPT-5] Fix incorrectly setup Github MCP Server
+
+## Task Description
+
+<Task 1> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze, Investigate, & fix incorrectly setup GitHub MCP server
+
+- There may have been an incorrect understanding when recently setting up the GitHub MCP server
+- Investigate the current code to fix all incorrect code, tests and documentation to remove ALL references and usage of the CLI\UI for Github MCP Server
+- Like most MCP servers in our project, MCP servers are mainly focused on the DEVELOPMENT ENVIRONMENT to enhance the workflow
+- The ONLY MCP server that the end user CLI & UI code should use is the Polygon MCP server, which is already being used in our app by the AI Agent running the CLI and\or UI
+- Github, Sequential-Thinking, Context7, Filesystem are all MCP servers in our project that is ONLY for DEVELOPMENT ENVIRONMENT and NOT for the end user
+- It makes zero logical sense to have these development MCP servers being used during the app runtime itself because they have nothing to do with a Finance App
+
+<Task 2> Specialist(s) to Test use Github & Sequential-Thinking MCP Tools to confirm all the Github MCP tools are setup correctly, supported, and usable
+
+- Since this is first time usage of Githhub MCp tools, there may be soem authentication steps needed
+
+<Task 3> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze & update MCP_TOOL_USAGE_GUIDE.md with optimal Github MCP Tool Usage Guide
+
+- The Primary tool for Repo management should be Github, since our projects are stored on github repos
+- The Secondary and\or Fail Safe toll for Repo management should be the existin git commands currently used frequently
+
+<Closing_Tasks> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Github Commit & Github Push, & Final Verification
+
+### Step 1: Review/Fix Loop
+
+- Specialist performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Uses `mcp__filesystem__*` tools for all file operations and examination
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle until achieving PASSING code review status
+
+### Step 2: Task Summary & CLAUDE.md Update
+
+- Generate comprehensive task completion summary
+- Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
+
+### Step 3: Atomic Git Commit & Push
+
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic Github commit containing ALL changes: code files, documentation updates, and task summary
+- Github Push commit to GitHub repository using provided personal access token
+- **CRITICAL**: Must Github push to complete the workflow - Github commit without Github push is incomplete
+
+### Step 4: Final Verification
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly Github committed and Github pushed
 
 **Key Requirements:**
 
@@ -260,208 +315,3 @@ claude "I am planning on adding a REACT based frontend end for the Chatbot UI, b
 There are old outdated requirements such as "35% cost reduction, 40% speed improvement, full-stack resource monitoring".  It is TOO early to be worrying about performance improvements at the moment since we are still Prototyping & testing. Use @agent-team-configurator and optimize my project to best use the available subagents with the removal of the "35% cost reduction, 40% speed improvement, full-stack resource monitoring" goals, so we may have to remove specialist(s) and update AI team to remove that goal that is no longer relevant.
 
 Use @agent-tech-lead-orchestrator to review, analyze, and implement the following:
-
-## New Task Goal: Add a new Claude Code new_task "custom slash command" to the project's .claude folder for user usage
-
-## New Task Details
-
-Use All MCP Tools for all task(s):
-
-1. Perform research on how to add a new Claude Code "custom slash command" to the project's .claude folder for user usage
-
-2. After research, create a new custom slash command "/new_task" with the following requirements:
-
-- Generate a brand new "new_task_details.md" in top level
-- Copy\Paste entire tech-lead-orchestrator-enforcement-test-prompt.md into the new "/new_task" details
-- Update both the tech-lead-orchestrator-enforcement-test-prompt.md, and "/new_task" command details to perform task by ONLY reading task details in "new_task_details.md"
-- We need to enforce that "new_task_details.md" should NOT be read on it's own unless a new task is requested, because this file may have old previous closed task details that may not be up to date with the new user task
-
-Here is the expected flow when user invokes the new "/new_task" command:
-
-- User inputs new task details into "new_task_details.md"
-- User invokes "/new_task" command
-- User invoking "new_task" will automically trigger and ask  @agent-tech-lead-orchestrator to follows rules for the "/new_task" command, reads "new_task_details.md" for the task details
-- Based on the analysis of "new_task_details.md", tech-lead-orchestrator creates the AI Specialist Delegation & Coordination Plan with assigned tasks for proper Specialist
-- AI Specialists now starts executing the plan autonmously with MCP tool calls as needed
-- Plan gets executed with Specialists until completion with no freezes\pauses from tech-lead-orchestrator
-- End result is that after initial agent-tech-lead-orchestrator analysis and delegation\coordination plan, ALL tasks will be performed by the appropriate Specialist(s) ONLY
-  ⎿  Plan: Enhance OpenAI GPT-5 Chat UI for Cross-Platform Dynamic Sizing Display
-
-     Research Summary
-
-     Based on my analysis of the current implementation:
-
-     Current Issues Found:
-     1. Input field: Single-line <input> element - no multi-line support or dynamic resizing
-     2. Message display: Fixed max-width: 70% causes horizontal overflow on mobile devices
-     3. Messages container: Only vertical scrolling (overflow-y: auto), no horizontal scrollbar management
-     4. No responsive breakpoints for different screen sizes (mobile, tablet, desktop)
-
-     Gradio Reference Insights:
-  - Uses lines=3 for multi-line text input (3 lines minimum)
-  - Uses height=400 for chat display with dynamic scrollbars
-  - Provides better cross-platform support
-
-     Implementation Plan
-
-     Phase 1: Enhanced Multi-line Input Component
-
-     File: ChatInput_OpenAI.tsx
-
-     Changes:
-
-     1. Replace <input> with <textarea>
-    - Default 4 lines height (rows={4})
-    - Auto-resize based on content
-    - Dynamic vertical scrollbar when content exceeds max height
-     2. Add auto-resize functionality:
-     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-       setInputValue(e.target.value);
-       // Auto-resize logic
-       e.target.style.height = 'auto';
-       e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
-     };
-
-     3. Support Shift+Enter for new lines, Enter to send:
-     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-       if (e.key === 'Enter' && !e.shiftKey) {
-         e.preventDefault();
-         handleSubmit(e);
-       }
-     };
-
-     Phase 2: Responsive Message Display
-
-     Files: ChatMessage_OpenAI.tsx, ChatInterface_OpenAI.tsx
-
-     Changes:
-
-     1. Dynamic message bubble width with responsive breakpoints:
-     .message-bubble {
-       max-width: 85%; /*Mobile */
-       overflow-x: auto; /* Horizontal scroll when needed*/
-       overflow-y: visible;
-       word-wrap: break-word;
-       overflow-wrap: break-word;
-     }
-
-     @media (min-width: 768px) {
-       .message-bubble {
-         max-width: 70%; /*Tablet/Desktop*/
-       }
-     }
-
-     2. Enhanced message container with proper scrollbar management:
-     .messages-container {
-       flex: 1;
-       overflow-y: auto; /*Vertical scroll always */
-       overflow-x: hidden; /* Prevent horizontal scroll on container*/
-       padding: 16px;
-       width: 100%;
-       max-width: 100%;
-     }
-
-     /*Mobile-specific adjustments*/
-     @media (max-width: 767px) {
-       .messages-container {
-         padding: 8px;
-         max-width: 100vw;
-       }
-     }
-
-     3. Code block handling for horizontal overflow:
-     .message-content pre {
-       overflow-x: auto;
-       max-width: 100%;
-       white-space: pre;
-     }
-
-     .message-content code {
-       word-break: break-word;
-     }
-
-     Phase 3: Cross-Platform Optimizations
-
-     1. Touch-friendly scrollbars for mobile:
-
-     /*Larger scrollbars on touch devices*/
-     @media (hover: none) {
-       ::-webkit-scrollbar {
-         width: 10px;
-         height: 10px;
-       }
-     }
-
-     2. Viewport meta tag optimization (if not present):
-
-     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-     3. Platform-specific input enhancements:
-
-  - iOS: Prevent zoom on input focus
-  - Android: Handle keyboard resize events
-  - Desktop: Enhanced mouse wheel scrolling
-
-     Phase 4: Dynamic Scrollbar Visibility
-
-     Smart scrollbar display (only when needed):
-
-     /*Show scrollbars only when content overflows */
-     .message-bubble {
-       overflow-x: auto;
-       overflow-y: auto;
-       scrollbar-width: thin; /* Firefox*/
-     }
-
-     /*Hide scrollbars when not needed */
-     .message-bubble:not(:hover) {
-       scrollbar-width: none; /* Firefox*/
-     }
-
-     .message-bubble:not(:hover)::-webkit-scrollbar {
-       display: none; /*Chrome/Safari*/
-     }
-
-     /*Show on hover/focus*/
-     .message-bubble:hover,
-     .message-bubble:focus-within {
-       scrollbar-width: thin;
-     }
-
-     Files to Modify:
-
-     1. ChatInput_OpenAI.tsx - Convert to multi-line textarea with auto-resize
-     2. ChatMessage_OpenAI.tsx - Add responsive message bubble sizing and overflow handling
-     3. ChatInterface_OpenAI.tsx - Update container styles for better responsive layout
-     4. index.css - Add global responsive utilities and platform-specific optimizations
-
-     Testing Requirements:
-
-     1. Mobile devices (iOS Safari, Android Chrome) - Test touch scrolling and input
-     2. Tablets (iPad Safari, Android tablets) - Test landscape/portrait modes
-     3. Desktop (Chrome, Firefox, Safari, Edge) - Test window resizing
-     4. Long content - Test with messages containing code blocks, long text
-     5. Keyboard navigation - Ensure accessibility maintained
-
-     Success Criteria:
-
-     ✅ Multi-line input with 4+ lines default height
-     ✅ Auto-resizing input based on content
-     ✅ Horizontal scrollbars only appear when needed
-     ✅ Vertical scrollbars for both input and messages when needed
-     ✅ Responsive layout works on all screen sizes
-     ✅ No horizontal page scrolling on mobile
-     ✅ Smooth scrolling experience across platforms
-     ✅ Maintains existing functionality (copy buttons, export, etc.)
-
-     MANDATORY POST-TASK ACTIONS:
-
-     Following implementation, will execute:
-     1. Code review with security & quality assessment
-     2. Update CLAUDE.md with task summary
-     3. Atomic git commit & push
-     4. Final verification
-
-     This comprehensive plan addresses all requirements for cross-platform dynamic sizing with smart scrollbar management.
-  ⎿  5-hour limit reached ∙ resets 7pm
-     /upgrade to increase your usage limit.

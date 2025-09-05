@@ -331,9 +331,346 @@ mcp_filesystem_get_file_info
 
 ---
 
+## 📂 Tool 4: GitHub - Repository Management
+
+### **Current Enforcement Status for GitHub MCP Tools**
+
+- **ALL AGENTS**: **REQUIRED** (PRIMARY choice for repository management)
+- **NO EXCEPTIONS**: All 26 specialists must use GitHub MCP tools as PRIMARY method for repository operations
+- **SECONDARY FALLBACK**: Git bash commands only when GitHub MCP tools don't cover specific needs
+
+### **GitHub MCP Tool Purpose**
+
+GitHub MCP tools provide comprehensive repository management capabilities through natural language interactions. These tools connect directly to GitHub's platform, enabling AI agents to perform repository operations, manage issues and pull requests, analyze code, and automate workflows without requiring local git commands.
+
+### **When to Use GitHub MCP Tools (ALL AGENTS - PRIMARY CHOICE)**
+
+- ✅ Repository creation, forking, and management
+- ✅ File operations (create, update, delete, get contents)
+- ✅ Branch and commit management
+- ✅ Issue and pull request operations
+- ✅ Code search across repositories
+- ✅ Release and tag management
+- ✅ Security analysis (code scanning, secret scanning)
+- ✅ Workflow and action management
+- ✅ Team collaboration (discussions, notifications)
+- ✅ Repository search and discovery
+
+### **When to Use Git Commands (SECONDARY FALLBACK)**
+
+- ❌ **Only when GitHub MCP tools don't provide the specific functionality needed**
+- ❌ Local-only operations not requiring GitHub interaction
+- ❌ Complex git operations not available through GitHub API
+- ❌ When GitHub MCP authentication is unavailable
+
+### **Authentication Setup (REQUIRED)**
+
+#### GitHub Personal Access Token (PAT) Configuration
+
+```json
+// .mcp.json configuration
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@github/github-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}"
+      }
+    }
+  }
+}
+```
+
+```bash
+# Environment variable setup
+export GITHUB_PAT="ghp_your_personal_access_token_here"
+```
+
+### **Core GitHub MCP Tool Syntax (ALL AGENTS)**
+
+#### Repository Management Operations
+
+```javascript
+// Create new repository
+mcp_github_create_repository
+{
+  "name": "my-new-repo",
+  "description": "Repository description",
+  "private": false,
+  "autoInit": true
+}
+
+// Fork repository
+mcp_github_fork_repository
+{
+  "owner": "original-owner",
+  "repo": "repository-name",
+  "organization": "target-org"  // Optional
+}
+
+// Get repository information
+mcp_github_get_file_contents
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "path": "/"  // Root directory
+}
+```
+
+#### File Operations
+
+```javascript
+// Create or update file
+mcp_github_create_or_update_file
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "path": "src/main.py",
+  "content": "file content here",
+  "message": "Add main.py file",
+  "branch": "main",
+  "sha": "existing-file-sha"  // Required for updates
+}
+
+// Get file contents
+mcp_github_get_file_contents
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "path": "src/main.py",
+  "ref": "branch-name"  // Optional
+}
+
+// Delete file
+mcp_github_delete_file
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "path": "src/old-file.py",
+  "message": "Remove old file",
+  "branch": "main"
+}
+```
+
+#### Branch and Commit Operations
+
+```javascript
+// Create branch
+mcp_github_create_branch
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "branch": "feature-branch",
+  "from_branch": "main"  // Optional source branch
+}
+
+// List commits
+mcp_github_list_commits
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "sha": "branch-name",  // Optional
+  "author": "author-username",  // Optional
+  "page": 1,
+  "perPage": 30
+}
+
+// Get commit details
+mcp_github_get_commit
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "sha": "commit-sha-or-branch",
+  "include_diff": true
+}
+```
+
+#### Code Search and Analysis
+
+```javascript
+// Search code across repositories
+mcp_github_search_code
+{
+  "query": "function calculateTotal language:python",
+  "sort": "indexed",
+  "order": "desc",
+  "page": 1,
+  "perPage": 10
+}
+
+// Search repositories
+mcp_github_search_repositories
+{
+  "query": "machine learning language:python stars:>100",
+  "page": 1,
+  "perPage": 10,
+  "minimal_output": true
+}
+```
+
+#### Issue and Pull Request Management
+
+```javascript
+// Create issue
+mcp_github_create_issue
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "title": "Bug report",
+  "body": "Detailed description",
+  "labels": ["bug", "high-priority"],
+  "assignees": ["developer1"]
+}
+
+// Create pull request
+mcp_github_create_pull_request
+{
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "title": "Feature implementation",
+  "body": "PR description",
+  "head": "feature-branch",
+  "base": "main"
+}
+```
+
+### **Best Practices for GitHub MCP Usage (ALL AGENTS)**
+
+#### 1. **Primary Tool Selection**
+- Always use GitHub MCP tools as the PRIMARY choice for repository operations
+- Only fall back to git bash commands when GitHub MCP doesn't support the specific operation
+- Document the reason when using git commands instead of GitHub MCP
+
+#### 2. **Authentication Security**
+- Store GitHub PAT in environment variables, never hardcode in files
+- Use minimal required permissions for PAT scope
+- Regularly rotate PAT tokens for security
+
+#### 3. **Error Handling**
+- Check authentication status before performing operations
+- Handle rate limiting gracefully with appropriate delays
+- Provide clear error messages for failed operations
+
+#### 4. **Batch Operations**
+- Use `push_files` for multiple file operations in single commit
+- Group related operations to minimize API calls
+- Plan operations to avoid unnecessary API requests
+
+### **Integration with Other MCP Tools (ALL AGENTS)**
+
+#### Pattern 1: Research-Driven Repository Operations
+
+```javascript
+// 1. Research best practices (Context7)
+context7_resolve_library_id({"libraryName": "github-api"})
+context7_get_library_docs({...})
+
+// 2. Plan repository structure (Sequential Thinking)
+sequential_thinking({
+  "thought": "Planning repository structure based on research..."
+})
+
+// 3. Create repository with proper structure (GitHub MCP)
+mcp_github_create_repository({...})
+mcp_github_create_or_update_file({...})
+```
+
+#### Pattern 2: Code Analysis and Documentation
+
+```javascript
+// 1. Search and analyze code (GitHub MCP)
+mcp_github_search_code({"query": "security patterns"})
+mcp_github_get_file_contents({...})
+
+// 2. Analyze findings (Sequential Thinking)
+sequential_thinking({
+  "thought": "Analyzing security patterns found in codebase..."
+})
+
+// 3. Create documentation (Filesystem + GitHub MCP)
+filesystem_write_file({...})  // Local draft
+mcp_github_create_or_update_file({...})  // Push to repository
+```
+
+### **Common Integration Examples (ALL AGENTS)**
+
+#### Example 1: Repository Setup with Documentation
+
+```javascript
+// Research documentation patterns
+context7_get_library_docs({
+  "context7CompatibleLibraryID": "/github/docs",
+  "topic": "repository setup best practices"
+})
+
+// Plan repository structure
+sequential_thinking({
+  "thought": "Creating comprehensive repository with proper documentation structure..."
+})
+
+// Create repository and initial files
+mcp_github_create_repository({
+  "name": "project-name",
+  "description": "Project description",
+  "autoInit": true
+})
+
+mcp_github_push_files({
+  "owner": "username",
+  "repo": "project-name", 
+  "branch": "main",
+  "message": "Initial project setup",
+  "files": [
+    {"path": "README.md", "content": "# Project Title\n\nDescription..."},
+    {"path": ".gitignore", "content": "__pycache__/\n*.pyc\n"},
+    {"path": "requirements.txt", "content": "# Dependencies\n"}
+  ]
+})
+```
+
+#### Example 2: Security Analysis and Reporting
+
+```javascript
+// Analyze security alerts
+mcp_github_list_secret_scanning_alerts({
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "state": "open"
+})
+
+// Plan remediation strategy
+sequential_thinking({
+  "thought": "Analyzing security findings and planning remediation approach..."
+})
+
+// Create security issue for tracking
+mcp_github_create_issue({
+  "owner": "repository-owner",
+  "repo": "repository-name",
+  "title": "Security Alert Remediation",
+  "body": "Found X security issues that need attention...",
+  "labels": ["security", "high-priority"]
+})
+```
+
+### **Deprecated Git Operations (NO LONGER PRIMARY)**
+
+**DEPRECATED - These git operations should only be used as SECONDARY fallback:**
+
+- ~~`git clone`~~ - Use `mcp__github__fork_repository` or `mcp__github__get_file_contents`
+- ~~`git add`, `git commit`, `git push`~~ - Use `mcp__github__create_or_update_file` or `mcp__github__push_files`
+- ~~`git branch`, `git checkout`~~ - Use `mcp__github__create_branch` and `mcp__github__list_branches`
+- ~~`git log`~~ - Use `mcp__github__list_commits` and `mcp__github__get_commit`
+- ~~`git remote -v`~~ - Use `mcp__github__get_file_contents` for repository information
+
+**Enhanced**: All repository operations must prioritize GitHub MCP tools for consistency and enhanced integration with AI workflows
+
+---
+
 ## 🔄 Updated Tool Integration Patterns (Enhanced Architecture)
 
-### **Pattern 1: Universal MCP Tool Usage**
+### **Pattern 1: Universal MCP Tool Usage (Including GitHub MCP)**
 
 ```javascript
 // 1. Research latest patterns (ALL AGENTS)
@@ -346,11 +683,12 @@ sequential_thinking({
 })
 
 // 3. Implement using MCP tools (ALL AGENTS)
-// All agents implement using mcp__filesystem__* tools
+// All agents implement using mcp__filesystem__* tools for local operations
+// All agents use mcp__github__* tools for repository operations (PRIMARY)
 // Focus on enhanced JSON architecture and coordination
 ```
 
-### **Pattern 2: Systematic Analysis and Implementation**
+### **Pattern 2: Systematic Analysis and Implementation (GitHub MCP Integrated)**
 
 ```javascript
 // 1. Break down the problem (ALL AGENTS)
@@ -362,11 +700,14 @@ sequential_thinking({
 context7_get_library_docs({...})
 
 // 3. Examine current codebase (ALL AGENTS)
-filesystem_read_multiple_files({...})
+// Local files: filesystem_read_multiple_files({...})
+// Repository analysis: mcp_github_search_code({...}) and mcp_github_get_file_contents({...})
 
 // 4. Implement coordinated tasks (ALL AGENTS)
 // Primary architect (backend-developer) leads with secondary agent support
 // All agents use MCP tools for consistency and efficiency
+// Repository operations: GitHub MCP tools (PRIMARY)
+// Local operations: Filesystem MCP tools
 ```
 
 ---
@@ -380,12 +721,14 @@ filesystem_read_multiple_files({...})
 - [ ] **Context7**: Have you resolved the library ID first?
 - [ ] **Sequential Thinking**: Is the task complex enough to warrant step-by-step analysis?
 - [ ] **Filesystem**: Are you using absolute paths from workspace root?
+- [ ] **GitHub MCP**: Are you using GitHub MCP tools as PRIMARY for repository operations?
 - [ ] **Evidence**: Can you provide specific evidence of MCP tool usage?
 - [ ] **Enhanced Architecture**: Are you considering enhanced JSON architecture coordination?
 - [ ] **Research**: Have you investigated latest patterns and best practices?
-- [ ] **Implementation**: Are you using MCP tools for all file operations?
+- [ ] **Implementation**: Are you using MCP tools for all file and repository operations?
 - [ ] **Documentation**: Have you documented your approach and decisions?
 - [ ] **Coordination**: Are you properly coordinating with primary architects?
+- [ ] **Tool Priority**: Have you prioritized GitHub MCP over git bash commands for repository tasks?
 
 ### **Quality Indicators**
 
@@ -399,9 +742,11 @@ filesystem_read_multiple_files({...})
 - Systematic analysis using Sequential Thinking
 - Research through Context7 for latest patterns
 - Efficient use of MCP Filesystem tools
+- **PRIMARY**: GitHub MCP tools for all repository operations
 - Clear documentation of implementation decisions
 - **Enhanced**: Following enhanced JSON architecture patterns
 - **Enhanced**: Proper coordination with primary architects
+- **GitHub MCP**: Proper authentication and error handling for GitHub operations
 
 ---
 
@@ -451,6 +796,32 @@ write_file("/path/to/new_file.py", "content")
 edit_file("/path/to/file.py", [{"oldText": "...", "newText": "..."}])
 ```
 
+### **GitHub MCP Quick Commands (ALL AGENTS - PRIMARY FOR REPOSITORY OPERATIONS)**
+
+```bash
+# Repository operations (ALL AGENTS)
+create_repository({"name": "repo-name", "private": false})
+fork_repository({"owner": "original-owner", "repo": "repo-name"})
+get_file_contents({"owner": "owner", "repo": "repo", "path": "/"})
+
+# File operations in repository (ALL AGENTS)
+create_or_update_file({"owner": "owner", "repo": "repo", "path": "file.py", "content": "...", "message": "Update file"})
+push_files({"owner": "owner", "repo": "repo", "branch": "main", "files": [...], "message": "Batch update"})
+
+# Branch and commit management (ALL AGENTS)
+create_branch({"owner": "owner", "repo": "repo", "branch": "feature-branch"})
+list_commits({"owner": "owner", "repo": "repo", "sha": "main"})
+get_commit({"owner": "owner", "repo": "repo", "sha": "commit-sha"})
+
+# Code search and analysis (ALL AGENTS)
+search_code({"query": "function calculateTotal language:python"})
+search_repositories({"query": "machine learning python stars:>100"})
+
+# Issue and PR management (ALL AGENTS)
+create_issue({"owner": "owner", "repo": "repo", "title": "Bug report", "body": "..."})
+create_pull_request({"owner": "owner", "repo": "repo", "title": "Feature", "head": "feature-branch", "base": "main"})
+```
+
 ---
 
 ## 🚨 UNIVERSAL MCP TOOL REQUIREMENTS (Enhanced Architecture)
@@ -483,11 +854,13 @@ edit_file("/path/to/file.py", [{"oldText": "...", "newText": "..."}])
 
 - ✅ **MCP sequential thinking evidence** - Mandatory for complex tasks
 - ✅ **MCP context7 research evidence** - Mandatory for research tasks
-- ✅ **MCP filesystem operations evidence** - Mandatory for file operations
+- ✅ **MCP filesystem operations evidence** - Mandatory for local file operations
+- ✅ **MCP GitHub operations evidence** - Mandatory for repository operations (PRIMARY)
 - ✅ Clear documentation of implementation approach and decisions
 - ✅ Test scripts for bug fixes and validation procedures
 - ✅ **Enhanced**: Evidence of enhanced JSON architecture compliance
 - ✅ **Enhanced**: Proper coordination with primary architects
+- ✅ **GitHub MCP**: Proper authentication setup and error handling
 
 ### **Universal Role Requirements (Enhanced Architecture)**
 
@@ -496,11 +869,13 @@ edit_file("/path/to/file.py", [{"oldText": "...", "newText": "..."}])
 ```text
 ✅ mcp__sequential-thinking__sequentialthinking - Systematic analysis steps
 ✅ mcp__context7__resolve-library-id + get-library-docs - Research evidence  
-✅ mcp__filesystem__* - File operations evidence
+✅ mcp__filesystem__* - Local file operations evidence
+✅ mcp__github__* - Repository operations evidence (PRIMARY for repo tasks)
 ✅ Implementation decisions documented with clear reasoning
 ✅ Test scripts and validation procedures for bug fixes
 ✅ Enhanced: Evidence of enhanced JSON architecture compliance
 ✅ Enhanced: Proper coordination with primary architects (especially backend-developer)
+✅ GitHub MCP: Proper authentication and PRIMARY tool usage for repository operations
 ```
 
 ### **Updated Evidence Examples (Enhanced Architecture)**
@@ -517,6 +892,8 @@ Thought 5: Validated approach against enhanced architecture standards...
 
 I used mcp__context7__resolve-library-id to research enhanced JSON schema patterns...
 I used mcp__filesystem__read_multiple_files to analyze current codebase structure...
+I used mcp__github__search_code to analyze repository patterns across the codebase...
+I used mcp__github__create_or_update_file to implement changes in the repository (PRIMARY choice)...
 ```
 
 **❌ Unacceptable Evidence (Deprecated Approach)**:
@@ -526,6 +903,7 @@ I performed systematic analysis of this task:
 Step 1: Analyzed current structure using Read and LS tools... (DEPRECATED)
 Step 2: Researched best practices through documentation review... (INSUFFICIENT - must use Context7)
 Step 3: Implemented using Write and Edit tools... (DEPRECATED - must use MCP filesystem)
+Step 4: Used git commands for repository operations... (SECONDARY - should use GitHub MCP as PRIMARY)
 ```
 
 ## 🚨 Updated Enforcement Protocol (Enhanced Architecture)
@@ -536,11 +914,14 @@ Step 3: Implemented using Write and Edit tools... (DEPRECATED - must use MCP fil
 
 1. **Not using MCP sequential-thinking** → Task lacks systematic analysis
 2. **Not using MCP context7 research** → Implementation may use outdated patterns
-3. **Not using MCP filesystem tools** → File operations inefficient and inconsistent
-4. **Using deprecated Claude tools** → Non-compliance with MCP standards
-5. **Enhanced**: Not considering enhanced JSON architecture coordination
-6. **Enhanced**: Not following enhanced JSON architecture patterns
-7. **Enhanced**: Not coordinating with primary architects
+3. **Not using MCP filesystem tools** → Local file operations inefficient and inconsistent
+4. **Not using GitHub MCP as PRIMARY** → Repository operations not following mandatory tool hierarchy
+5. **Using deprecated Claude tools** → Non-compliance with MCP standards
+6. **Using git bash commands as PRIMARY** → Should be SECONDARY fallback only
+7. **Enhanced**: Not considering enhanced JSON architecture coordination
+8. **Enhanced**: Not following enhanced JSON architecture patterns
+9. **Enhanced**: Not coordinating with primary architects
+10. **GitHub MCP**: Missing proper authentication setup or error handling
 
 ### **Quality Standards (All Agents - Universal MCP Enforcement)**
 
@@ -559,6 +940,10 @@ All tool usage must meet these standards:
 
 - **ALL 26 AGENTS**: Must use MCP tools for all applicable tasks - no exceptions or waivers remain in effect
 - **UNIVERSAL ENFORCEMENT**: Based on successful validation testing of all agent specialists
+- **GITHUB MCP PRIMARY**: GitHub MCP tools are MANDATORY as PRIMARY choice for all repository operations
+- **GIT COMMANDS SECONDARY**: Git bash commands only as fallback when GitHub MCP doesn't support the specific operation
 - **DEPRECATED TOOLS**: Standard Claude tools (Read, Write, Edit, LS, Grep, Bash) are no longer acceptable for MCP-capable tasks
 - **VALIDATION PROVEN**: 238+ successful tool calls demonstrate all agents can effectively use MCP tools
+- **GITHUB MCP TESTED**: GitHub MCP tools fully validated and operational for AI development assistance
 - All enhanced JSON architecture quality standards and development protocols remain fully enforced for all agents
+- **AUTHENTICATION REQUIRED**: GitHub Personal Access Token (PAT) must be properly configured for GitHub MCP usage
