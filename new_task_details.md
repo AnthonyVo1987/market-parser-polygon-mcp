@@ -4,10 +4,11 @@
 
 ## Task Description
 
-There are alot of old deprecated statements and out dated info across the project docs that reference removed\retired funtionality and features
+Fully implement requested Vite Optimizations Phase for the Standalone OpenAI CLI GUI Code
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
+- Read /gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md to provide more details & context for the task(s)
 - Research Implemntation for Phase 1: Quick Wins
 
 1. **Dependency Pre-bundling Configuration**

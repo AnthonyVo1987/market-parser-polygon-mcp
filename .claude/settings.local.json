@@ -95,7 +95,8 @@
       "mcp__github__list_tags",
       "mcp__github__get_tag",
       "mcp__github__list_releases",
-      "mcp__github__push_files"
+      "mcp__github__push_files",
+      "Bash(NODE_ENV=production npm run build)"
     ],
     "deny": [],
     "ask": [],
