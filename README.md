@@ -2,7 +2,7 @@
 
 ![Project Logo](images/logo.png)
 
-A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-mini` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/). Features an **Enhanced OpenAI GPT-5 Chatbot** with emoji-based sentiment indicators, financial emoji integration, and dual-mode operation (CLI + React frontend).
+A Python CLI and web GUI application for natural language financial queries using the [Polygon.io](https://polygon.io/) [MCP server](https://github.com/polygon-io/mcp_polygon) and OpenAI `gpt-5-mini` via the [Pydantic AI Agent Framework](https://ai.pydantic.dev/agents/). Features an **Enhanced OpenAI GPT-5 Chatbot** with emoji-based sentiment indicators, financial emoji integration, and operation across CLI + React frontend.
 
 ## Features
 
@@ -18,18 +18,18 @@ A Python CLI and web GUI application for natural language financial queries usin
   - 📈📉 **Emoji-Based Sentiment Indicators** - Direct financial emoji indicators for market sentiment
   - 🎯 **Structured Response Format** - KEY TAKEAWAYS, detailed analysis, disclaimers
   - 💰🏢📊 **Financial Emoji Integration** - Rich visual indicators throughout responses
-  - 🖥️📱 **Dual-Mode Operation** - Enhanced CLI and React frontend with consistent formatting
+  - 🖥️📱 **Multi-Platform Support** - Enhanced CLI and React frontend with consistent formatting
   - 🎨 **Markdown Support** - Full markdown rendering in React frontend
   - ⚡ **Real-time Processing** - FastAPI-powered backend with live chat interface
 
 - **Enhanced Web Interface:**
   - 🎯 **Single Chat Interface** - All interactions flow through one consolidated chat interface
   - 📊 **Three Analysis Types** - Stock Snapshot, Support & Resistance, Technical Analysis
-  - 🔄 **Dual Response Modes** - Button clicks show JSON data, user messages return conversational text
+  - 💬 **Conversational Responses** - Natural language responses for all interactions
   - ⏳ **Real-time Loading States** - Step-by-step progress feedback
-  - 🛡️ **Advanced Error Recovery** - Non-blocking error recovery with immediate retry
-  - 🔍 **Comprehensive Monitoring** - Enhanced debug logging and performance tracking
-  - 📈 **Cost Optimization** - 35% cost reduction with enhanced performance
+  - 🛡️ **Error Recovery** - Non-blocking error recovery with immediate retry
+  - 🔍 **Monitoring** - Debug logging and performance tracking
+  - 📈 **Usage Tracking** - Token usage monitoring with cost tracking
 
 ## Disclaimer
 
@@ -101,15 +101,15 @@ You can also use a web-based GUI (Gradio) that provides structured analysis tool
   ```
   
   **Features Available in Enhanced Web UI:**
-  - 🧠 **5-State FSM Workflow** - Enhanced state management (IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR)
+  - 🧠 **State Management** - Simple workflow management (IDLE → PROCESSING → COMPLETE → ERROR)
   - 📊 **Three Analysis Buttons** - Stock Snapshot, Support & Resistance, Technical Analysis
   - 🎯 **Smart Ticker Detection** - Automatic extraction from conversation context
   - 💬 **Single Chat Interface** - All interactions in one consolidated conversation view
-  - 🔄 **Dual Response Modes** - Button clicks display structured JSON, user messages return natural language
+  - 💬 **Conversational Responses** - Natural language responses for all interactions
   - ⏳ **Real-time Loading States** - Step-by-step progress feedback during analysis
-  - 🛡️ **Advanced Error Recovery** - Non-blocking error recovery with immediate button retry
-  - 🔍 **Comprehensive Monitoring** - Debug logging and performance tracking
-  - 📈 **Cost Optimization** - Enhanced efficiency with 35% cost reduction
+  - 🛡️ **Error Recovery** - Non-blocking error recovery with immediate button retry
+  - 🔍 **Monitoring** - Debug logging and performance tracking
+  - 📈 **Usage Tracking** - Token usage monitoring
 
 - The app will print a local URL (default `http://127.0.0.1:7860`) to open in your browser.
 - Pricing env vars (set in `.env`) will be used for cost estimates just like the CLI.
@@ -121,38 +121,38 @@ Environment variables:
 
 ---
 
-## Enhanced Architecture Benefits
+## Architecture Benefits
 
-### Why We Enhanced
+### System Design
 
-The system was optimized in 2025 to focus on **simplicity with enhanced performance**:
+The system was designed to focus on **simplicity and reliability**:
 
 - **Single Chat Interface**: Consolidated UI with all interactions in one conversation flow
-- **Dual Response Modes**: Intelligent response formatting based on interaction type
-- **Cost Optimization**: 35% cost reduction through enhanced efficiency
-- **Performance Enhancement**: 40% improvement in processing speed
+- **Conversational Processing**: Natural language responses for all interactions
+- **Usage Tracking**: Token usage monitoring and cost tracking
+- **Monitoring**: Processing monitoring and logging
 - **Simplified Architecture**: Streamlined components for maximum reliability
-- **Team Coordination**: Optimized AI team with clear responsibility boundaries
+- **Team Coordination**: AI team with clear responsibility boundaries
 
-### Enhanced Architecture Features
+### Architecture Features
 
 **Simplified User Interface:**
 - Single chat interface for all interactions and outputs
-- Button clicks display full prompts and structured JSON responses in chat
+- Button clicks display full prompts and conversational responses in chat
 - User messages return natural, conversational responses
 - Transparent processing with visible prompts and system interactions
 
-**5-State FSM with Performance Optimization:**
-- IDLE → BUTTON_TRIGGERED → AI_PROCESSING → RESPONSE_RECEIVED → ERROR
-- Streamlined state transitions with enhanced performance monitoring
+**Simple State Management:**
+- IDLE → PROCESSING → COMPLETE → ERROR
+- Simple state transitions with monitoring
 - Non-blocking error recovery with immediate retry capability
-- Cost-optimized processing with resource monitoring
+- Processing monitoring and resource tracking
 
-**Advanced Monitoring & Performance:**
-- Comprehensive workflow logging with unique request tracking
-- Performance metrics for optimization insights and cost analysis
+**Monitoring & Logging:**
+- Workflow logging with unique request tracking
+- Usage metrics for analysis and cost tracking
 - Error analysis with context preservation and recovery guidance
-- Enhanced debug logging for production troubleshooting
+- Debug logging for troubleshooting
 
 ---
 
@@ -253,7 +253,7 @@ The project has been organized for maximum maintainability with simplified archi
 market-parser-polygon-mcp/
 ├── src/                          # Core application modules
 │   ├── response_parser.py        # Response parsing utilities for structured data extraction
-│   ├── response_manager.py       # Dual-mode response processing (JSON/conversational)
+│   ├── response_manager.py       # Conversational response processing
 │   ├── prompt_templates.py      # Structured prompt templates for analysis types
 │   ├── performance_monitor.py   # Cost optimization and performance tracking
 │   ├── security_utils.py        # Input validation and security utilities
@@ -286,13 +286,12 @@ market-parser-polygon-mcp/
 └── pyproject.toml              # Project configuration
 ```
 
-**Key Benefits of Enhanced Structure:**
-- **Simplicity**: Single chat interface with dual-mode response processing
-- **Performance**: 35% cost reduction with enhanced processing efficiency
-- **Reliability**: Streamlined components with comprehensive error handling
+**Key Benefits of Structure:**
+- **Simplicity**: Single chat interface with conversational response processing
+- **Reliability**: Streamlined components with error handling
 - **Maintainability**: Clear separation of concerns with focused modules
-- **Testing**: Comprehensive test coverage with simplified architecture validation
-- **Monitoring**: Advanced performance tracking and cost optimization
+- **Testing**: Comprehensive test coverage with architecture validation
+- **Monitoring**: Performance tracking and usage monitoring
 
 ---
 
@@ -348,26 +347,26 @@ market-parser-polygon-mcp/
 - **Chat Interface Issues:**
 
   The simplified system uses a single chat interface:
-  - Button clicks display full prompts and JSON responses in chat
+  - Button clicks display full prompts and conversational responses in chat
   - User messages return conversational text responses
   - All interactions are visible in one conversation flow
   - Export functionality available for external analysis
 
 - **UI Stuck in Loading State:**
 
-  With the enhanced 5-state FSM:
+  With the simple state management:
   - Click any analysis button to trigger immediate recovery
   - System automatically returns to IDLE state after errors
   - No system restart required for error recovery
-  - Check debug logs for comprehensive error analysis
+  - Check debug logs for error analysis
 
 - **Performance Issues:**
 
-  Enhanced architecture includes performance optimization:
-  - Monitor cost optimization metrics (35% reduction achieved)
-  - Review processing efficiency improvements (40% faster)
-  - Check resource usage optimization
-  - Analyze comprehensive debug logs for bottlenecks
+  Architecture includes monitoring:
+  - Monitor usage metrics and cost tracking
+  - Review processing efficiency
+  - Check resource usage
+  - Analyze debug logs for bottlenecks
 
 - **Incorrect Responses**
 
@@ -494,27 +493,25 @@ uv run pytest --collect-only tests/
 
 - Loads your Polygon and OpenAI API keys from `.env`
 - Starts the Polygon MCP server in the background
-- Uses enhanced 5-state FSM for reliable workflow management
+- Uses simple state management for reliable workflow
 - Sends your natural language query to OpenAI `gpt-5-mini` via PydanticAI
-- Returns dual-mode responses: structured JSON for buttons, conversational text for user messages
+- Returns conversational responses for all interactions
 - Provides non-blocking error recovery for uninterrupted usage
-- Monitors performance with advanced debug logging and cost optimization
+- Monitors performance with debug logging and usage tracking
 
-### The Enhanced 5-State Workflow
+### Simple Workflow
 
 1. **IDLE**: Ready for user input
-2. **BUTTON_TRIGGERED**: User clicked an analysis button
-3. **AI_PROCESSING**: Waiting for AI response with dual-mode processing
-4. **RESPONSE_RECEIVED**: Display responses in single chat interface
-5. **ERROR**: Non-blocking error state with immediate recovery and detailed logging
+2. **PROCESSING**: Waiting for AI response
+3. **COMPLETE**: Display responses in single chat interface
+4. **ERROR**: Non-blocking error state with immediate recovery and logging
 
-### Simplified Architecture Benefits
+### Architecture Benefits
 
 - **Single Chat Interface**: All interactions flow through one consolidated conversation
-- **Dual Response Modes**: Button clicks show JSON data, user messages return natural language
-- **Cost Optimization**: 35% reduction in processing costs through enhanced efficiency
-- **Performance Enhancement**: 40% improvement in response processing speed
-- **Comprehensive Monitoring**: Advanced logging with performance and cost tracking
+- **Conversational Responses**: Natural language responses for all interactions
+- **Usage Tracking**: Token usage monitoring and cost tracking
+- **Monitoring**: Logging with performance and cost tracking
 
 ---
 
