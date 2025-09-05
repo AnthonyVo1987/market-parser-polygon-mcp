@@ -1,24 +1,33 @@
 # New Task Details
 
-[GPT-5] Pre-Migration Prep for new Github repo for gpt5-openai-agents-sdk-polygon-mcp
-
-- I would like to prep the code base for a full migration to use just the new gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI
+[GPT-5] Fix issues form Secondary Code Review Summary - Pre-Migration Changes
 
 ## Task Description
 
-<Research Task 1> Specialist to Use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools Analyze, Research, & Understand the current implementation of gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI
+All Specialist(s) to Use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools Analyze, Research, Understand, & Implement the requested task(s)
 
-<Research Task 2> Specialist to Use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools Analyze, Research, & Scope out changes needed to have a fully independent gpt5-openai-agents-sdk-polygon-mcp CLI & Chat GUI to be later imported into a brand new Github repo WITH any legacy CLI + Gradio UI code
+<Task 1> Fix issues from Secondary Code Review Summary - Pre-Migration Changes
 
-<Task 3> Ask @agent-tech-lead-orchestrator to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to analyze results from research tasks 1 & 2 and generate a implementation, delegation, & coordination plan for Specialist(s) to perform all task(s) for the Pre-Migration Prep code changes
+  🟡 Major Issues Found (2 issues - need fixing before production)
 
-<Task 4> Based on the plan from @agent-tech-lead-orchestrator for implementation, delegation, & coordination for Specialist(s), Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to perform all the task(s) according to the plan
+  1. Import Error in prompt_templates.py:750
+    - Issue: Import statement for non-existent response_parser module
+    - Impact: Will cause runtime errors during validation tests
+    - Fix needed: Remove or comment out the import, or add proper error handling
+  2. Non-existent Enum References in prompt_templates.py:833-889
+    - Issue: Test functions reference BUTTON_JSON and USER_TEXT modes that don't exist in PromptMode enum
+    - Impact: Test functions will fail if executed
+    - Fix needed: Remove test functions or update to use existing CONVERSATIONAL mode
 
-<Task 5> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to run full LINT suite for gpt5-openai-agents-sdk-polygon-mcp ONLY and fix any issues
+  ---
+  🟢 Minor Suggestions (optional improvements)
 
-<Task 6> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to review and update ALL gpt5-openai-agents-sdk-polygon-mcp docs to reflect the new Pre-Migration Prep
+- Add .gitignore file to project root
+- Group sections in .env.example for better readability
+- Add version info to pytest.ini
+- Add type hints to test function parameters
 
-<Task 7> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
+<Closing_Tasks> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
 
 ### Step 1: Review/Fix Loop
 
@@ -49,23 +58,8 @@
 
 **Key Requirements:**
 
-- Single atomic commit prevents code vs documentation separation
-- All changes (code + docs + summary) must be committed together
-- Task summary generation occurs BEFORE git commit to ensure inclusion
-- Automated workflow ensures consistency and completeness
-
 ## Requirements
 
 ## Expected Outcome
-
-- Completeley working gpt5-openai-agents-sdk-polygon-mcp CLI + GUI with a brand new fresh repo, completely decoupled and removed from the legacy CLI + Gradio UI code
-- End Result is a fresh new project for JUST gpt5-openai-agents-sdk-polygon-mcp CLI + GUI ONLY
-
-1. User will create a brand new fresh Github repo for JUST the gpt5-openai-agents-sdk-polygon-mcp implementation
-2. User will then try and import\copy & paste \ cherry pick the entire gpt5-openai-agents-sdk-polygon-mcp folder with the Pre-Migration Prep changes
-3. User will then run the environment commands to setup, install dependencies\packages for gpt5-openai-agents-sdk-polygon-mcp
-4. User can then issue the command to run the gpt5-openai-agents-sdk-polygon-mcp CLI
-5. User can then issue the command to run the gpt5-openai-agents-sdk-polygon-mcp GUI
-6. Any tests, lint, and\or project configs will be properly setup to run if needed
 
 ## Additional Context
