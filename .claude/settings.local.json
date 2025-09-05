@@ -93,10 +93,11 @@
       "/home/anthony/.claude"
     ]
   },
-  "enableAllProjectMcpServers": false,
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "sequential-thinking",
     "filesystem",
-    "context7"
+    "context7",
+    "github"
   ]
 }

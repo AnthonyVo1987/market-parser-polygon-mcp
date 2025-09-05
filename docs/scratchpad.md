@@ -1,10 +1,61 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
+# New Task Details
 
+[GPT-5] Fix incorrectly setup Github MCP Server
+
+## Task Description
+
+<Task 1> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze, Investigate, & fix incorrectly setup GitHub MCP server
+
+- There may have been an incorrect understanding when recently setting up the GitHub MCP server
+- Investigate the current code to fix all incorrect code, tests and documentation to remove ALL of the CLI\UI usage of the Github MCP Server
+- Like most MCP servers in our project, MCP servers are mainly focused on the DEVELOPMENT ENVIRONMENT to enhance the workflow
+- The ONLY MCP server that the end user CLI & UI code should use is the Polygon MCP server, which is already being used in our app by the AI Agent running the CLI and\or UI
+- Github, Sequential-Thinking, Context7, Filesystem are all MCP servers in our project that is ONLY for DEVELOPMENT ENVIRONMENT and NOT for the end user
+- It makes zero logical sense to have these development MCP servers being used during the app runtime itself
+
+<Task 2> Specialist(s) to Test use Github, Context7, Sequential-Thinking, & Filesystem MCP Tools to confirm all the MCP tools are setup correctly, supported, and usable
+
+
+<Closing_Tasks> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Git Commit & Push, & Final Verification
+
+### Step 1: Review/Fix Loop
+
+- Specialist performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Uses `mcp__filesystem__*` tools for all file operations and examination
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle until achieving PASSING code review status
+
+### Step 2: Task Summary & CLAUDE.md Update
+
+- Generate comprehensive task completion summary
+- Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
+
+### Step 3: Atomic Git Commit & Push
+
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic commit containing ALL changes: code files, documentation updates, and task summary
+- Push commit to GitHub repository using provided personal access token
+- **CRITICAL**: Must push to complete the workflow - commit without push is incomplete
+
+### Step 4: Final Verification
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly committed and pushed
+
+**Key Requirements:**
+
+## Requirements
+
+## Expected Outcome
+
+## Additional Context
 
 Use @agent-code-reviewer to perform a secondary Comprehensive Code Review of the new standalone Pre-Migration Preparation Code changes.  If fixes are needed, do NOT fix on your own, but provide a detailed summary of fixes needed, no new docs, so user can review the summary details
-
-
 
 # New Task Details
 
@@ -77,10 +128,6 @@ Use @agent-code-reviewer to perform a secondary Comprehensive Code Review of the
 6. Any tests, lint, and\or project configs will be properly setup to run if needed
 
 ## Additional Context
-
-
-
-
 
 # New Task Details
 

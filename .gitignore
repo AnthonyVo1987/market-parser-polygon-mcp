@@ -83,3 +83,6 @@ scripts/
 logs/
 json_workflow_debug.log
 node_modules
+
+#mcp servers
+.mcp.json
