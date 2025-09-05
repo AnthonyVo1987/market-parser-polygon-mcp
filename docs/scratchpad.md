@@ -1,5 +1,9 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
+
+Read CLAUDE.md, MCP_TOOL_USAGE_GUIDE.md, and README.md and acknowledge project state and operating rules
+
+
 # New Task Details
 
 [GPT-5] Cleanup & Consolidate Dupe OpenAI Standalone Migration Guide
