@@ -1,29 +1,26 @@
 # New Task Details
 
-[GPT-5] Fix incorrectly setup Github MCP Server
+[GPT-5] Cleanup & Consolidate Dupe OpenAI Standalone Migration Guide
 
 ## Task Description
 
-<Task 1> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze, Investigate, & fix incorrectly setup GitHub MCP server
+There are 2x nearly duplicate and redundant OpenAI Standalone Migration docs that needs to be consolidated into a single OpenAI Standalone Migration Guide
 
-- There may have been an incorrect understanding when recently setting up the GitHub MCP server
-- Investigate the current code to fix all incorrect code, tests and documentation to remove ALL references and usage of the CLI\UI for Github MCP Server
-- Like most MCP servers in our project, MCP servers are mainly focused on the DEVELOPMENT ENVIRONMENT to enhance the workflow
-- The ONLY MCP server that the end user CLI & UI code should use is the Polygon MCP server, which is already being used in our app by the AI Agent running the CLI and\or UI
-- Github, Sequential-Thinking, Context7, Filesystem are all MCP servers in our project that is ONLY for DEVELOPMENT ENVIRONMENT and NOT for the end user
-- It makes zero logical sense to have these development MCP servers being used during the app runtime itself because they have nothing to do with a Finance App
+<Research Task 1> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, Investigate, & perform the following task(s):
 
-<Task 2> Specialist(s) to use Sequential-Thinking Tools to perform test usage of Github MCP Tools to confirm all the Github MCP tools are setup correctly, supported, and usable in the development environment
+- Read & Review the contents of /docs/MIGRATION_GUIDE.md
 
-- Github MCP Tools will serve as the Primary Repo management tool, so we need it out first
-- You can try to create some test branches, tags, commits, to test out the currently supported Github tools
+<Research Task 2> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, Investigate, & perform the following task(s):
 
-- Since this is first time usage of Githhub MCp tools, there may be soem authentication steps needed
+- Read & Review the contents of /gpt5-openai-agents-sdk-polygon-mcp/MIGRATION_GUIDE.md
 
-<Task 3> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Analyze & update MCP_TOOL_USAGE_GUIDE.md, CLAUDE.md, & and any other project docs with newly added Github MCP Tools Support
+<Planning Task 3> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, Investigate, & perform the following task(s):
 
-- The Primary tool for Repo management should be Github, since our projects are stored on github repos
-- The Secondary and\or Fail Safe toll for Repo management should be the existin git commands currently used frequently
+- Based on analysis from Research Tasks 1 & 2, come up with a plan to consolidate both docs into a single new single source of truth migration doc
+
+<Task 4> Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, Investigate, & perform the following task(s):
+
+- Implement the new single source of truth migration doc plan by creating a brand new doc: "/gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md"
 
 <Closing_Tasks> Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform 4x Final Steps for: Review\Fix Loop, Task Summary & CLAUDE.md Update, Atomic Github Commit & Github Push, & Final Verification
 
@@ -33,6 +30,7 @@
 - Uses `mcp__filesystem__*` tools for all file operations and examination
 - Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
 - Continue review/fix cycle until achieving PASSING code review status
+- ONLY AFTER A PASSING REVIEW, delete both deprecated older migration docs so we now have a single source of truth doc for the migration
 
 ### Step 2: Task Summary & CLAUDE.md Update
 
