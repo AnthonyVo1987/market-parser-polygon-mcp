@@ -329,3 +329,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#mcp servers
+.mcp.json
