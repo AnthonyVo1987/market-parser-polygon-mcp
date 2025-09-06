@@ -1,5 +1,7 @@
-import { ComponentPropsWithoutRef } from 'react';
-import Markdown from 'react-markdown';
+import { ComponentPropsWithoutRef, Suspense, lazy } from 'react';
+
+// Lazy load react-markdown for better performance
+const Markdown = lazy(() => import('react-markdown'));
 
 import { Message } from '../types/chat_OpenAI';
 import MessageCopyButton, {
@@ -170,9 +172,15 @@ export default function ChatMessage_OpenAI({
             message.content
           ) : (
             // For AI messages, render as markdown with enhanced formatting
-            <Markdown components={markdownComponents}>
-              {message.content}
-            </Markdown>
+            <Suspense
+              fallback={
+                <div className='markdown-loading'>Loading content...</div>
+              }
+            >
+              <Markdown components={markdownComponents}>
+                {message.content}
+              </Markdown>
+            </Suspense>
           )}
         </div>
         <div className='message-timestamp'>
@@ -347,6 +355,26 @@ export const messageStyles = `
       background: rgba(0, 0, 0, 0.1);
       border-radius: 4px;
     }
+  }
+
+  /* Markdown loading state styling */
+  .markdown-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+    color: #666;
+    font-size: 0.9em;
+    font-style: italic;
+    min-height: 24px;
+  }
+
+  .ai-bubble .markdown-loading {
+    color: #666;
+  }
+
+  .user-bubble .markdown-loading {
+    color: rgba(255, 255, 255, 0.8);
   }
 
   ${messageCopyButtonStyles}

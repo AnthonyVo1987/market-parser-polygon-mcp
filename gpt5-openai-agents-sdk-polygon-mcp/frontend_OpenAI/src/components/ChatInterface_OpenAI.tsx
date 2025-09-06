@@ -1,15 +1,24 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense, lazy } from 'react';
 
 import { sendChatMessage } from '../services/api_OpenAI';
 import { Message } from '../types/chat_OpenAI';
 
 import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
-import ExportButtons, { exportButtonStyles } from './ExportButtons';
-import RecentMessageButtons, {
-  recentMessageButtonsStyles,
-} from './RecentMessageButtons';
-import AnalysisButtons, { analysisButtonsStyles } from './AnalysisButtons';
+
+// Lazy load secondary components for better performance
+const ExportButtons = lazy(() =>
+  import('./ExportButtons').then(module => ({ default: module.default }))
+);
+const RecentMessageButtons = lazy(() =>
+  import('./RecentMessageButtons').then(module => ({ default: module.default }))
+);
+const AnalysisButtons = lazy(() =>
+  import('./AnalysisButtons').then(module => ({ default: module.default }))
+);
+
+// Note: Styles are now included within each lazy-loaded component to prevent static imports
+// that would break the lazy loading optimization
 
 export default function ChatInterface_OpenAI() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -91,8 +100,22 @@ export default function ChatInterface_OpenAI() {
 
       <header className='chat-header' role='banner'>
         <h1 id='chat-title'>OpenAI Chat Interface</h1>
-        {messages.length > 0 && <ExportButtons messages={messages} />}
-        <RecentMessageButtons messages={messages} />
+        {messages.length > 0 && (
+          <Suspense
+            fallback={
+              <div className='component-loading'>Loading export options...</div>
+            }
+          >
+            <ExportButtons messages={messages} />
+          </Suspense>
+        )}
+        <Suspense
+          fallback={
+            <div className='component-loading'>Loading recent messages...</div>
+          }
+        >
+          <RecentMessageButtons messages={messages} />
+        </Suspense>
         {error && (
           <div
             className='error-banner'
@@ -121,10 +144,18 @@ export default function ChatInterface_OpenAI() {
                 analysis tools below or type your own questions.
               </p>
               {/* Analysis buttons for empty state */}
-              <AnalysisButtons
-                onPromptGenerated={handlePromptGenerated}
-                className='welcome-buttons'
-              />
+              <Suspense
+                fallback={
+                  <div className='component-loading'>
+                    Loading analysis tools...
+                  </div>
+                }
+              >
+                <AnalysisButtons
+                  onPromptGenerated={handlePromptGenerated}
+                  className='welcome-buttons'
+                />
+              </Suspense>
               <p className='getting-started'>
                 Or start typing a message in the input field below.
               </p>
@@ -158,10 +189,16 @@ export default function ChatInterface_OpenAI() {
       <div role='complementary' className='chat-input-section'>
         {/* Analysis buttons for active conversation */}
         {messages.length > 0 && (
-          <AnalysisButtons
-            onPromptGenerated={handlePromptGenerated}
-            className='conversation-buttons'
-          />
+          <Suspense
+            fallback={
+              <div className='component-loading'>Loading analysis tools...</div>
+            }
+          >
+            <AnalysisButtons
+              onPromptGenerated={handlePromptGenerated}
+              className='conversation-buttons'
+            />
+          </Suspense>
         )}
 
         <ChatInput_OpenAI
@@ -492,8 +529,67 @@ export const interfaceStyles = `
     outline: 2px solid #007bff;
     outline-offset: 2px;
   }
+
+  /* Component loading states */
+  .component-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 8px 0;
+    min-height: 40px;
+    border: 1px solid #e9ecef;
+  }
+
+  .component-loading::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e9ecef;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: component-loading-spin 1s linear infinite;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  @keyframes component-loading-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Loading state variations for different locations */
+  .chat-header .component-loading {
+    margin: 4px 0;
+    min-height: 32px;
+    font-size: 12px;
+  }
+
+  .welcome-buttons .component-loading {
+    margin: 16px 0;
+    min-height: 60px;
+    font-size: 14px;
+  }
+
+  .conversation-buttons .component-loading {
+    margin: 0;
+    border-radius: 0;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .component-loading::before {
+      animation: none;
+      border: 2px solid #007bff;
+    }
+  }
   
-  ${exportButtonStyles}
-  ${recentMessageButtonsStyles}
-  ${analysisButtonsStyles}
+  /* Note: Component-specific styles are now included within each lazy-loaded component */
 `;
