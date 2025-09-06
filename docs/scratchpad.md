@@ -1,23 +1,15 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
-
-
-https://github.com/ritwickdey/vscode-live-server
-
-
-
-
 # New Task Details
 
 [OpenAI] Research & Setup vscode-live-server after latest Vite Optimizations
 
 ## Task Description
 
-Perform Comprehensive Sanity Check Code Review & Update all Project Docs after finished Vite Optimizations
-
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Research Comprehensive Code Review Items after finished Vite Optimizations Implementation Plan
+- Research how to setup, config, & integrate vscode-live-server into the current Standalone OpenAI CLI GUI code
+- <https://github.com/ritwickdey/vscode-live-server>
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -25,7 +17,8 @@ Perform Comprehensive Sanity Check Code Review & Update all Project Docs after f
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Implement the plan to complete Comprehensive Sanity Check Code Review with LINT & Update all Project Docs
+- Implement the plan to setup, config, & integrate vscode-live-server into the current Standalone OpenAI CLI GUI code
+- Update ALL project docs and migration docs with updated procedures on how to use and test code with the new vscode-live-server integration
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform Final 4 Tasks
 
@@ -73,8 +66,7 @@ Final Task 4: Final Verification
 
 
 
-
-
+####
 
 Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
 

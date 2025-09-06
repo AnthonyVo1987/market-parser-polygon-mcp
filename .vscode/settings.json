@@ -36,5 +36,48 @@
     "**/.DS_Store": true,
     "**/venv": true,
     "**/.venv": true
-  }
+  },
+  
+  // Live Server Configuration for PWA Testing and Production Build Validation
+  "liveServer.settings.root": "gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dist",
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.host": "localhost",
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.AdvanceCustomBrowserCmdLine": "chrome --incognito --remote-debugging-port=9222",
+  "liveServer.settings.NoBrowser": false,
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.donotShowInfoMsg": false,
+  "liveServer.settings.mount": [["/", "./gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dist"]],
+  "liveServer.settings.file": "index.html",
+  "liveServer.settings.wait": 100,
+  "liveServer.settings.fullReload": false,
+  "liveServer.settings.useBrowserPreview": false,
+  "liveServer.settings.useLocalIp": true,
+  "liveServer.settings.showOnStatusbar": true,
+  "liveServer.settings.ignoreFiles": [
+    ".vscode/**",
+    "**/node_modules/**",
+    "**/dist/**/*.map",
+    "**/*.scss",
+    "**/*.sass", 
+    "**/*.less",
+    "**/src/**",
+    "**/.env*",
+    "**/package*.json",
+    "**/tsconfig*.json",
+    "**/vite.config*",
+    "**/README.md",
+    "**/.gitignore",
+    "**/public/sw.js.map",
+    "**/public/workbox-*.js.map"
+  ],
+  "liveServer.settings.https": {
+    "enable": false,
+    "cert": "",
+    "key": "",
+    "passphrase": ""
+  },
+  "liveServer.settings.proxy": [
+    ["/api", "http://localhost:8000"]
+  ]
 }

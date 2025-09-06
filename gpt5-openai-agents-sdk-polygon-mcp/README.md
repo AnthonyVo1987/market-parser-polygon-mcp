@@ -80,6 +80,12 @@ npm run dev  # Development with local API (optimized startup ~337ms)
 # npm run analyze        # Bundle analysis with performance insights
 # npm run lighthouse     # Lighthouse CI performance validation
 
+# Live Server Testing (for production build validation):
+# npm run serve          # Build development version and serve with Live Server
+# npm run serve:production # Build production version and serve with Live Server
+# npm run test:pwa       # Build and test PWA functionality
+# npm run cross-device:setup # Prepare for mobile/tablet testing
+
 # Open http://localhost:3000 for the web interface
 ```
 
@@ -87,6 +93,7 @@ npm run dev  # Development with local API (optimized startup ~337ms)
 - **45% Bundle Size Reduction**: Main bundle optimized from 68KB to 37.19KB
 - **Progressive Web App**: Auto-generated PWA with offline capabilities
 - **Multi-Environment Support**: Development, staging, and production configurations
+- **Live Server Integration**: Production build testing with cross-device support
 - **Zero Code Quality Issues**: All ESLint and TypeScript validations passing
 - **Advanced Performance Features**: Code splitting, lazy loading, and Lighthouse CI monitoring
 
@@ -195,6 +202,21 @@ This will generate a comprehensive report saved to `reports/equities/meta_vs_mic
   # Reports available at dist/bundle-analysis.html
   ```
 
+- **Production build testing:**
+  ```bash
+  npm run serve           # Build and serve with Live Server (port 5500)
+  npm run serve:production # Production build with Live Server (port 5502)
+  npm run test:pwa        # Test PWA functionality offline
+  # Then use VS Code Command Palette: "Live Server: Open with Live Server"
+  ```
+
+- **Cross-device testing:**
+  ```bash
+  npm run cross-device:setup  # Prepare for mobile testing
+  # Find local IP: ipconfig (Windows) or ifconfig (macOS/Linux)
+  # Access from mobile: http://YOUR_LOCAL_IP:5502
+  ```
+
 ### Runtime Issues
 - **Guardrail blocks non‑finance prompts:**  
   Try a market or finance-related query.
@@ -249,9 +271,14 @@ uv install
 cp .env.example .env
 # Edit .env with your API keys
 
-# Frontend setup with Vite optimizations
+# Frontend setup with Vite optimizations and Live Server integration
 cd frontend_OpenAI
 npm install  # Installs optimized dependencies including Vite PWA and Lighthouse CI
+
+# Install VS Code Live Server extension for production build testing:
+# 1. Open VS Code Extensions (Ctrl+Shift+P)
+# 2. Search for "Live Server" by Ritwick Dey
+# 3. Install the extension
 
 # Run tests
 uv run pytest tests/ -v  # Backend tests

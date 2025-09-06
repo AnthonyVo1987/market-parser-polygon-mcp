@@ -23,7 +23,23 @@
     "lighthouse": "npm run build && npx @lhci/cli@0.15.x autorun",
     "lighthouse:collect": "npm run build && npx @lhci/cli@0.15.x collect",
     "lighthouse:assert": "npx @lhci/cli@0.15.x assert",
-    "lighthouse:upload": "npx @lhci/cli@0.15.x upload"
+    "lighthouse:upload": "npx @lhci/cli@0.15.x upload",
+
+    "serve": "npm run build:development && echo '\n📦 Development build complete!\n🚀 To test: Open VS Code Command Palette (Ctrl+Shift+P) and run:\n   > Live Server: Open with Live Server\n🌐 Will serve on http://localhost:5500 from dist/ folder\n✅ SPA routing and PWA features enabled\n'",
+    "serve:staging": "npm run build:staging && echo '\n📦 Staging build complete!\n🚀 To test with staging config:\n   1. Copy .vscode/live-server-staging.json settings to .vscode/settings.json\n   2. Run Live Server (will use port 5501)\n🌐 Will serve on http://localhost:5501 from dist/ folder\n✅ Staging API endpoints and PWA features enabled\n'", 
+    "serve:production": "npm run build && echo '\n📦 Production build complete!\n🚀 To test with production config:\n   1. Copy .vscode/live-server-production.json settings to .vscode/settings.json\n   2. Run Live Server (will use port 5502)\n🌐 Will serve on http://localhost:5502 from dist/ folder\n✅ Production API endpoints and PWA features enabled\n'",
+    
+    "test:pwa": "npm run build:development && echo '\n🔧 Development PWA build ready!\n📱 To test PWA functionality:\n   1. Start Live Server on port 5500\n   2. Open DevTools > Application > Service Workers\n   3. Test offline functionality and PWA install prompt\n✅ Service worker and manifest configured\n'",
+    "test:pwa:staging": "npm run build:staging && echo '\n🔧 Staging PWA build ready!\n📱 To test PWA functionality:\n   1. Use staging Live Server config (port 5501)\n   2. Open DevTools > Application > Service Workers\n   3. Test offline functionality and PWA install prompt\n✅ Service worker and manifest configured for staging\n'",
+    "test:pwa:production": "npm run build && echo '\n🔧 Production PWA build ready!\n📱 To test PWA functionality:\n   1. Use production Live Server config (port 5502)\n   2. Open DevTools > Application > Service Workers\n   3. Test offline functionality and PWA install prompt\n✅ Service worker and manifest configured for production\n'",
+    
+    "lighthouse:live-server": "npm run build && echo '\n🏗️ Production build complete for Lighthouse testing!\n⚡ To run Lighthouse CI:\n   1. Start Live Server on port 5502\n   2. Run: npx @lhci/cli@0.15.x autorun --config=lighthouserc.js\n📊 Performance, PWA, and accessibility will be tested\n'",
+    "lighthouse:live-server:staging": "npm run build:staging && echo '\n🏗️ Staging build complete for Lighthouse testing!\n⚡ To run Lighthouse CI:\n   1. Start Live Server on port 5501\n   2. Run: npx @lhci/cli@0.15.x autorun --config=lighthouserc.js\n📊 Performance, PWA, and accessibility will be tested\n'",
+    
+    "cross-device:setup": "npm run build && echo '\n📱 Production build ready for cross-device testing!\n🌐 Network access enabled - find your local IP:\n   • Windows: ipconfig | Mac/Linux: ifconfig\n   • Access via http://YOUR_LOCAL_IP:5502\n✅ CORS enabled for mobile device testing\n'",
+    "cross-device:staging": "npm run build:staging && echo '\n📱 Staging build ready for cross-device testing!\n🌐 Network access enabled - find your local IP:\n   • Windows: ipconfig | Mac/Linux: ifconfig\n   • Access via http://YOUR_LOCAL_IP:5501\n✅ CORS enabled for mobile device testing\n'",
+    
+    "live-server:help": "echo '\n🔧 Live Server Configuration Help:\n\n📁 Available configurations:\n   • .vscode/settings.json (default dev - port 5500)\n   • .vscode/live-server-staging.json (staging - port 5501)\n   • .vscode/live-server-production.json (production - port 5502)\n\n🚀 Quick Start:\n   1. npm run serve (builds + instructions)\n   2. Open VS Code Command Palette (Ctrl+Shift+P)\n   3. Run: Live Server: Open with Live Server\n\n✅ Features enabled:\n   • SPA routing (React Router support)\n   • PWA functionality (service worker + manifest)\n   • CORS for cross-device testing\n   • API proxy to localhost:8000\n\n📱 Testing on mobile:\n   1. npm run cross-device:setup\n   2. Connect mobile device to same network\n   3. Access via your computer IP address\n'"
   },
   "dependencies": {
     "react": "^18.2.0",
