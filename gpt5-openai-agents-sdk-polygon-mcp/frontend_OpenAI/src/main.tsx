@@ -46,11 +46,13 @@ async function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     try {
       const { registerSW } = await import('virtual:pwa-register');
-      
+
       const updateSW = registerSW({
         onNeedRefresh() {
           // eslint-disable-next-line no-console
-          console.log('PWA: New app version available. Update will be applied automatically.');
+          console.log(
+            'PWA: New app version available. Update will be applied automatically.'
+          );
           // Auto-update strategy - no user prompt needed
         },
         onOfflineReady() {
@@ -59,22 +61,27 @@ async function registerServiceWorker() {
         },
         onRegistered(registration: ServiceWorkerRegistration) {
           // eslint-disable-next-line no-console
-          console.log('PWA: Service worker registered successfully:', registration);
+          console.log(
+            'PWA: Service worker registered successfully:',
+            registration
+          );
         },
         onRegisterError(error: Error) {
           // eslint-disable-next-line no-console
           console.error('PWA: Service worker registration failed:', error);
-        }
+        },
       });
-      
+
       // Auto-update every hour
-      setInterval(() => {
-        updateSW(true).catch((error: Error) => {
-          // eslint-disable-next-line no-console
-          console.error('PWA: Auto-update failed:', error);
-        });
-      }, 60 * 60 * 1000);
-      
+      setInterval(
+        () => {
+          updateSW(true).catch((error: Error) => {
+            // eslint-disable-next-line no-console
+            console.error('PWA: Auto-update failed:', error);
+          });
+        },
+        60 * 60 * 1000
+      );
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('PWA: Failed to register service worker:', error);
@@ -85,5 +92,8 @@ async function registerServiceWorker() {
 // Register service worker after React app is initialized
 registerServiceWorker().catch((error: Error) => {
   // eslint-disable-next-line no-console
-  console.error('PWA: Service worker registration initialization failed:', error);
+  console.error(
+    'PWA: Service worker registration initialization failed:',
+    error
+  );
 });
