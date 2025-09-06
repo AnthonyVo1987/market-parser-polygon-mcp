@@ -1,23 +1,24 @@
 # New Task Details
 
-[OpenAI] Research & Setup vscode-live-server after latest Vite Optimizations
-
 ## Task Description
+
+[OpenAI] Review & Finish Progress of Previously Interrupted Task: Update OpenAI_Vite_Optimization_Plan.md with Deep Dive Enhancements
+
+- You were previously in the middle of a task but you got interrupted and crashed
+- This task is to review the previous progress and finished the previous task
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Research how to setup, config, & integrate vscode-live-server into the current Standalone OpenAI CLI GUI code
-- Live Server VS Code extension has already been installed in our development environment, but has never been properly setup and configured for our project
-- <https://github.com/ritwickdey/vscode-live-server>
+- Read & Review the previous task details that were copied to "/new_task_details_copy.md"
+- Read & Review the potentially partially updated doc from the previous task "OpenAI_Vite_Optimization_Plan.md"
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Based on analysis from Research Tasks, generate a detailed, granular implementation plan to complete the requested task(s)
+- Based on the research task, generate a plan to review, analyze, & fully complete any remaining items from the previous task(s)
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Implement the plan to setup, config, & integrate vscode-live-server into the current Standalone OpenAI CLI GUI code
-- Update ALL project docs and migration docs with updated procedures on how to use and test code with the new vscode-live-server integration
+- Follow the newly generated implementation plan to update the OpenAI_Vite_Optimization_Plan.md
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform Final 4 Tasks
 
@@ -34,6 +35,8 @@ Final Task 2: Task Summary & CLAUDE.md Update
 - Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
 - Include all deliverables, changes made, and completion status
 - This ensures task summary is included in the atomic commit
+
+- Delete previous task(s) details file if it still exists in the project: "/new_task_details_copy.md"
 
 Final Task 3: Atomic Git Commit & Push
 
@@ -54,12 +57,6 @@ Final Task 4: Final Verification
 
 - Entire project is still prototyping, so do NOT implement: Enterprise Grade, Production Ready, Performance Optmization, Testing \ Test Scripts
 - Do NOT over-engineer
-
-## Expected Outcome
-
-- More details & context for the task(s) can be found in : /gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md
 - ALL file\doc changes fully reviewed, fixed, committed, and pushed to the repo
 
 ## Additional Context
-
-- Live Server VS Code extension has already been installed in our development environment, but has never been properly setup and configured for our project
