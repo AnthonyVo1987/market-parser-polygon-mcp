@@ -1,8 +1,11 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
+Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
 
-Read CLAUDE.md, MCP_TOOL_USAGE_GUIDE.md, and README.md and acknowledge project state and operating rules
-
+- README.md
+- CLAUDE.md,
+- MCP_TOOL_USAGE_GUIDE.md
+- OpenAI_Vite_Optimization_Plan.md
 
 # New Task Details
 

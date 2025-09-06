@@ -1,20 +1,19 @@
 # New Task Details
 
-[OpenAI] Vite Optimizations: Phase 1: Quick Wins
+[OpenAI] Vite Optimizations: Phase 2: Performance Optimization
 
 ## Task Description
 
-Fully implement requested Vite Optimizations Phase for the Standalone OpenAI CLI GUI Code
+Fully implement requested Vite Optimizations Phase for the
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Read /gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md to provide more details & context for the task(s)
-- Research Implemntation for Phase 1: Quick Wins
+- Research Implemntation for Phase 2: Performance Optimization
 
-1. **Dependency Pre-bundling Configuration**
-2. **Server Warmup Setup**
-3. **Basic Bundle Analysis Integration**
-4. **Development Proxy Configuration**
+1. **Code Splitting and Lazy Loading**
+2. **Asset Optimization Pipeline**
+3. **Advanced Build Configurations**
+4. **Production Optimization Settings**
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -23,6 +22,7 @@ Fully implement requested Vite Optimizations Phase for the Standalone OpenAI CLI
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - Implement the plan to complete the entire requested Phase
+- Run LINT for the Standalone OpenAI CLI GUI Code Only & Fix any Lint Issues
 - Update project docs with Phase Progress
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform Final 4 Tasks
@@ -32,7 +32,7 @@ Final Task 1: Review/Fix Loop
 - Specialist performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
 - Uses `mcp__filesystem__*` tools for all file operations and examination
 - Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
-- Continue review/fix cycle until achieving PASSING code review status
+- Continue review/fix cycle WITH LINT until achieving PASSING code review status
 
 Final Task 2: Task Summary & CLAUDE.md Update
 
@@ -63,6 +63,7 @@ Final Task 4: Final Verification
 
 ## Expected Outcome
 
+- More details & context for the task(s) can be found in : /gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md
 - ALL file\doc changes fully reviewed, fixed, committed, and pushed to the repo
 
 ## Additional Context
