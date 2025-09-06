@@ -7,7 +7,8 @@ A comprehensive Python application with CLI, FastAPI server, and React frontend 
 ### Multi-Interface Access
 - **CLI Interface**: Enhanced terminal experience with emoji-based sentiment indicators
 - **FastAPI Server**: RESTful API with comprehensive endpoints for financial analysis
-- **React Frontend**: Modern responsive web interface with TypeScript support
+- **React Frontend**: Modern responsive web interface with TypeScript support and Live Server testing
+- **Production Testing**: VS Code Live Server integration for actual built file validation
 
 ### Financial Analysis Capabilities
 - **Ask questions like:**  
@@ -80,22 +81,25 @@ npm run dev  # Development with local API (optimized startup ~337ms)
 # npm run analyze        # Bundle analysis with performance insights
 # npm run lighthouse     # Lighthouse CI performance validation
 
-# Live Server Testing (for production build validation):
-# npm run serve          # Build development version and serve with Live Server
-# npm run serve:production # Build production version and serve with Live Server
-# npm run test:pwa       # Build and test PWA functionality
-# npm run cross-device:setup # Prepare for mobile/tablet testing
+# Live Server Testing (VS Code Live Server required for production build validation):
+npm run serve          # Build development and serve with Live Server (Port 5500)
+npm run serve:staging  # Build staging and serve with Live Server (Port 5501)
+npm run serve:production # Build production and serve with Live Server (Port 5502)
+npm run test:pwa       # Build and test PWA functionality with service worker
+npm run cross-device:setup # Prepare for mobile/tablet testing with network access
 
 # Open http://localhost:3000 for the web interface
 ```
 
-**Vite Optimization Highlights:**
+**Vite + Live Server Integration Highlights:**
 - **45% Bundle Size Reduction**: Main bundle optimized from 68KB to 37.19KB
-- **Progressive Web App**: Auto-generated PWA with offline capabilities
-- **Multi-Environment Support**: Development, staging, and production configurations
-- **Live Server Integration**: Production build testing with cross-device support
+- **Progressive Web App**: Auto-generated PWA with offline capabilities and Live Server service worker testing
+- **Multi-Environment Support**: Development, staging, and production configurations with Live Server testing
+- **Production Build Testing**: VS Code Live Server integration for actual built file validation (Ports 5500/5501/5502)
+- **Cross-Device Testing**: Mobile and tablet testing via Live Server network access
+- **PWA Testing**: Service worker validation, offline testing, and installation prompt testing via Live Server
 - **Zero Code Quality Issues**: All ESLint and TypeScript validations passing
-- **Advanced Performance Features**: Code splitting, lazy loading, and Lighthouse CI monitoring
+- **Advanced Performance Features**: Code splitting, lazy loading, and Lighthouse CI monitoring with Live Server automation
 
 #### Option 3: Legacy CLI (Original)
 ```bash

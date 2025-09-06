@@ -9,6 +9,127 @@ The FastAPI Prompt Templates System provides a comprehensive REST API for integr
 - **Development**: `http://localhost:8000`
 - **Production**: Configure as needed
 
+## Live Server Integration & Testing
+
+The API integrates seamlessly with the VS Code Live Server setup for frontend development and testing. The Live Server configuration includes automatic API proxying to ensure proper backend communication during production build testing.
+
+### API Proxy Configuration
+
+Live Server is configured with automatic API proxying in all environments:
+
+**Development Environment** (Port 5500):
+```json
+{
+  "liveServer.settings.proxy": [
+    ["/api", "http://localhost:8000"]
+  ]
+}
+```
+
+**Staging Environment** (Port 5501):
+```json
+{
+  "liveServer.settings.proxy": [
+    ["/api", "http://localhost:8000"]
+  ]
+}
+```
+
+**Production Environment** (Port 5502):
+```json
+{
+  "liveServer.settings.proxy": [
+    ["/api", "http://localhost:8000"]
+  ]
+}
+```
+
+### Testing API Integration with Live Server
+
+**Prerequisites**:
+1. FastAPI backend running: `uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload`
+2. Frontend built: `npm run build` (in frontend_OpenAI directory)
+3. VS Code Live Server extension installed
+
+**Testing Workflow**:
+
+```bash
+# 1. Start FastAPI backend
+cd gpt5-openai-agents-sdk-polygon-mcp
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 2. Build and serve frontend with API proxy
+cd frontend_OpenAI
+npm run serve  # Development testing (Port 5500)
+# OR
+npm run serve:staging    # Staging testing (Port 5501)
+# OR  
+npm run serve:production # Production testing (Port 5502)
+
+# 3. Test API endpoints
+curl http://localhost:5500/api/v1/health
+curl http://localhost:5501/api/v1/system/status
+```
+
+### Cross-Device API Testing
+
+**Mobile/Tablet Testing Setup**:
+1. Ensure backend running on `http://localhost:8000`
+2. Start Live Server with cross-device configuration:
+   ```bash
+   npm run cross-device:setup  # Find local IP
+   ```
+3. Access from mobile devices: `http://[LOCAL_IP]:5500/api/v1/health`
+4. Test API integration on real devices with touch interfaces
+
+### API Testing Commands
+
+**Health Check Testing**:
+```bash
+# Direct backend
+curl http://localhost:8000/health
+
+# Via Live Server proxy (all environments)
+curl http://localhost:5500/api/v1/health      # Development
+curl http://localhost:5501/api/v1/health      # Staging  
+curl http://localhost:5502/api/v1/health      # Production
+```
+
+**Live Server API Validation**:
+```bash
+# Template endpoints via proxy
+curl http://localhost:5500/api/v1/prompts/templates
+
+# Analysis endpoints via proxy
+curl -X POST http://localhost:5500/api/v1/analysis/snapshot \
+  -H "Content-Type: application/json" \
+  -d '{"ticker": "AAPL", "analysis_type": "snapshot"}'
+
+# Chat analysis via proxy
+curl -X POST http://localhost:5500/api/v1/analysis/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is Apple stock price?", "chat_history": []}'
+```
+
+### Production Build API Integration
+
+Unlike Vite's development server, Live Server serves actual built files and requires explicit proxy configuration for API calls:
+
+**Key Differences**:
+- **Vite Dev Server**: Built-in API proxying via `vite.config.ts`
+- **Live Server**: Manual proxy configuration via `.vscode/settings.json`
+- **Build Testing**: Live Server validates actual production API integration
+- **Environment Testing**: Multi-environment API endpoint validation
+
+**Integration Validation**:
+1. **API Connectivity**: All `/api/*` requests properly proxied to backend
+2. **CORS Configuration**: Cross-origin requests handled correctly
+3. **Error Handling**: API errors properly displayed in production build
+4. **Response Processing**: JSON responses correctly parsed and displayed
+5. **Environment Switching**: API endpoints correctly routed per environment
+
+For comprehensive Live Server usage instructions, see: `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`
+
 ## Authentication
 
 Currently uses the existing API key system for Polygon.io access. No additional authentication required for prompt template endpoints.

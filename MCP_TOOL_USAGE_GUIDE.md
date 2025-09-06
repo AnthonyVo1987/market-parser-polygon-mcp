@@ -668,6 +668,332 @@ mcp_github_create_issue({
 
 ---
 
+## 🖥️ Tool 5: VS Code Live Server Integration - Production Testing
+
+### **Current Enforcement Status for Live Server Integration**
+
+- **ALL FRONTEND AGENTS**: **RECOMMENDED** (Essential for production build testing and validation)
+- **@frontend-developer, @react-component-architect, @vue-component-architect**: **MANDATORY** for production testing
+- **@code-reviewer**: **MANDATORY** for validating production builds before approval
+- **@performance-optimizer**: **MANDATORY** for production performance testing
+
+### **Live Server Integration Purpose**
+
+VS Code Live Server integration provides essential production build testing capabilities that complement MCP tools. Unlike Vite's development server (which serves in-memory builds), Live Server serves actual built files, making it critical for:
+
+- **Production Build Testing**: Validating actual compiled/optimized code
+- **PWA Functionality**: Service worker, offline mode, and installation testing
+- **Cross-Device Testing**: Mobile and tablet validation on real devices
+- **Performance Testing**: Lighthouse CI and production environment simulation
+- **API Integration Testing**: Testing actual API proxy configurations in production builds
+
+### **When to Use Live Server (FRONTEND AGENTS)**
+
+- ✅ Testing actual production builds after development
+- ✅ PWA service worker and offline functionality validation
+- ✅ Cross-device testing on mobile and tablet devices
+- ✅ Performance testing with Lighthouse CI integration
+- ✅ API proxy configuration testing in built applications
+- ✅ Final QA validation before deployment
+- ✅ Environment-specific configuration testing (dev/staging/production)
+
+### **When NOT to Use Live Server**
+
+- ❌ Active development with hot module replacement needs (use Vite dev server)
+- ❌ Source map debugging and development tools (use Vite dev server)
+- ❌ Real-time TypeScript compilation during development (use Vite dev server)
+
+### **Live Server Setup Requirements (FRONTEND AGENTS)**
+
+#### Prerequisites
+
+1. **VS Code Live Server Extension**:
+   - Extension: "Live Server" by Ritwick Dey
+   - Required for all production testing workflows
+
+2. **Frontend Build Completed**:
+   ```bash
+   cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+   npm run build  # Creates dist/ directory with built files
+   ```
+
+3. **Backend API Running**:
+   ```bash
+   cd gpt5-openai-agents-sdk-polygon-mcp
+   uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+### **Environment-Specific Live Server Configuration**
+
+#### Development Environment (Port 5500)
+
+```bash
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run serve
+# Provides usage instructions and builds development version
+# Access: http://localhost:5500
+```
+
+**Configuration**: Uses `.vscode/settings.json`:
+```json
+{
+  "liveServer.settings.root": "./dist",
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.proxy": [["/api", "http://localhost:8000"]],
+  "liveServer.settings.spa": true,
+  "liveServer.settings.cors": true
+}
+```
+
+#### Staging Environment (Port 5501)
+
+```bash
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run serve:staging
+# Copy .vscode/live-server-staging.json settings when prompted
+# Access: http://localhost:5501
+```
+
+#### Production Environment (Port 5502)
+
+```bash
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run serve:production
+# Copy .vscode/live-server-production.json settings when prompted
+# Access: http://localhost:5502
+```
+
+### **PWA Testing with Live Server (FRONTEND AGENTS)**
+
+#### Service Worker Validation Workflow
+
+```bash
+# 1. Build PWA version
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run test:pwa:production
+
+# 2. Start Live Server (production configuration)
+npm run serve:production
+
+# 3. Open in browser: http://localhost:5502
+# 4. Open DevTools → Application → Service Workers
+# 5. Verify service worker registration and caching strategies
+# 6. Test offline functionality (toggle "Offline" checkbox)
+```
+
+#### PWA Installation Testing
+
+1. **Desktop Installation**: Look for browser PWA install prompt (Chrome/Edge)
+2. **Mobile Installation**: Test "Add to Home Screen" functionality
+3. **Standalone Mode**: Validate app behavior after installation
+4. **Manifest Validation**: Verify manifest.json configuration
+
+### **Cross-Device Testing with Live Server (FRONTEND AGENTS)**
+
+#### Mobile/Tablet Testing Setup
+
+```bash
+# 1. Prepare for cross-device testing
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run cross-device:setup
+# Shows local IP address for mobile access
+
+# 2. Find your local IP (alternative methods)
+ipconfig    # Windows
+ifconfig    # macOS/Linux
+
+# 3. Start Live Server with appropriate configuration
+npm run serve  # or serve:staging, serve:production
+
+# 4. Access from mobile devices on same Wi-Fi network
+# http://[LOCAL_IP]:5500 (development)
+# http://[LOCAL_IP]:5501 (staging)
+# http://[LOCAL_IP]:5502 (production)
+```
+
+#### Cross-Device Validation Checklist
+
+- [ ] **Responsive Design**: Layout adapts properly to mobile/tablet screens
+- [ ] **Touch Interactions**: All buttons and interfaces work with touch
+- [ ] **API Integration**: Backend API calls work correctly from mobile devices
+- [ ] **PWA Features**: Installation prompts and offline functionality work
+- [ ] **Performance**: Loading times and interactions are acceptable on mobile
+
+### **API Integration Testing with Live Server (FRONTEND AGENTS)**
+
+#### API Proxy Validation
+
+```bash
+# Test API endpoints through Live Server proxy
+curl http://localhost:5500/api/v1/health      # Development
+curl http://localhost:5501/api/v1/health      # Staging  
+curl http://localhost:5502/api/v1/health      # Production
+
+# Test specific API functionality
+curl -X POST http://localhost:5500/api/v1/analysis/snapshot \
+  -H "Content-Type: application/json" \
+  -d '{"ticker": "AAPL", "analysis_type": "snapshot"}'
+```
+
+#### Frontend-Backend Integration Validation
+
+1. **API Connectivity**: All `/api/*` requests properly proxied to backend
+2. **CORS Configuration**: Cross-origin requests handled correctly
+3. **Error Handling**: API errors properly displayed in production build
+4. **Response Processing**: JSON responses correctly parsed and displayed
+5. **Real-time Features**: WebSocket or polling functionality working
+
+### **Integration with MCP Tools (FRONTEND AGENTS)**
+
+#### Pattern 1: Research-Driven Live Server Setup
+
+```javascript
+// 1. Research latest PWA patterns (Context7)
+mcp__context7__resolve_library_id({"libraryName": "workbox"})
+mcp__context7__get_library_docs({...})
+
+// 2. Plan Live Server testing strategy (Sequential Thinking)
+mcp__sequential_thinking__sequentialthinking({
+  "thought": "Planning comprehensive Live Server testing approach for PWA validation..."
+})
+
+// 3. Configure Live Server settings (Filesystem MCP)
+mcp__filesystem__write_file({
+  "path": "/project/.vscode/settings.json",
+  "content": "Live Server configuration..."
+})
+
+// 4. Validate configuration in repository (GitHub MCP)
+mcp__github__create_or_update_file({
+  "path": ".vscode/settings.json",
+  "content": "Updated Live Server configuration",
+  "message": "Configure Live Server for production testing"
+})
+```
+
+#### Pattern 2: Production Build Testing Workflow
+
+```javascript
+// 1. Analyze current build process (Sequential Thinking)
+mcp__sequential_thinking__sequentialthinking({
+  "thought": "Analyzing production build requirements for Live Server testing..."
+})
+
+// 2. Build application for testing
+// (Use npm run build via bash or appropriate build commands)
+
+// 3. Validate build output (Filesystem MCP)
+mcp__filesystem__directory_tree({
+  "path": "/project/frontend_OpenAI/dist"
+})
+
+// 4. Test Live Server configuration
+// (Start Live Server via VS Code or npm scripts)
+
+// 5. Document testing results (GitHub MCP)
+mcp__github__create_or_update_file({
+  "path": "TESTING_RESULTS.md",
+  "content": "Live Server testing validation results...",
+  "message": "Document Live Server testing validation"
+})
+```
+
+### **Live Server vs Vite Development Server (FRONTEND AGENTS)**
+
+#### When to Use Each Tool
+
+**Use Vite Development Server (`npm run dev`) for**:
+- Active development with hot module replacement (HMR)
+- Real-time TypeScript compilation and error checking
+- Source map debugging and development tools integration
+- Rapid UI iteration and component development
+
+**Use Live Server (`npm run serve`) for**:
+- **Production Build Testing**: Validating actual compiled/optimized code
+- **PWA Functionality**: Service worker, offline mode, and installation testing
+- **Cross-Device Testing**: Mobile and tablet validation on real devices
+- **Performance Testing**: Lighthouse CI and production environment simulation
+- **Final QA Validation**: Pre-deployment testing with built application files
+
+#### Development Workflow Integration
+
+```bash
+# Standard Development Phase
+npm run dev  # Vite development server (Port 3000)
+
+# Production Testing Phase
+npm run build && npm run serve  # Live Server testing (Port 5500)
+
+# Environment-Specific Testing
+npm run serve:staging    # Port 5501
+npm run serve:production # Port 5502
+
+# Cross-Device Testing
+npm run cross-device:setup  # Prepare for mobile testing
+```
+
+### **Performance Testing with Live Server (PERFORMANCE AGENTS)**
+
+#### Lighthouse CI Integration
+
+```bash
+# Run Lighthouse CI with Live Server
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+
+# Production performance testing
+npm run lighthouse:live-server
+
+# Staging performance testing
+npm run lighthouse:live-server:staging
+
+# Local Lighthouse testing
+npm run lighthouse
+```
+
+#### Performance Validation Checklist
+
+- [ ] **Load Times**: Initial page load under acceptable thresholds
+- [ ] **Bundle Size**: JavaScript and CSS bundles optimized
+- [ ] **PWA Score**: Progressive Web App score >90%
+- [ ] **Accessibility**: Accessibility score >95%
+- [ ] **Performance**: Performance score >85%
+- [ ] **SEO**: SEO score optimized for production
+
+### **Troubleshooting Live Server Issues (FRONTEND AGENTS)**
+
+#### Common Issues and Solutions
+
+**Live Server Not Starting**:
+- Ensure VS Code Live Server extension is installed
+- Check that port (5500/5501/5502) is not already in use
+- Verify `.vscode/settings.json` configuration is valid JSON
+
+**API Proxy Not Working**:
+- Confirm FastAPI backend is running on `http://localhost:8000`
+- Check proxy configuration in Live Server settings
+- Verify CORS configuration in both frontend and backend
+
+**PWA Features Not Working**:
+- Ensure application is built with `npm run build`
+- Check service worker registration in DevTools
+- Verify manifest.json is accessible and valid
+
+**Cross-Device Testing Issues**:
+- Confirm all devices are on the same Wi-Fi network
+- Check firewall settings allowing local network access
+- Verify local IP address is correct and accessible
+
+### **Live Server Documentation References**
+
+For comprehensive Live Server usage instructions and advanced configuration:
+
+- **Primary Documentation**: `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`
+- **Migration Guide**: Part III of `/gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md`
+- **Development Workflow**: `/DEVELOPMENT_WORKFLOW.md` (Live Server Integration section)
+- **API Documentation**: `/gpt5-openai-agents-sdk-polygon-mcp/API_DOCUMENTATION.md` (Live Server Integration & Testing section)
+
+---
+
 ## 🔄 Updated Tool Integration Patterns (Enhanced Architecture)
 
 ### **Pattern 1: Universal MCP Tool Usage (Including GitHub MCP)**
@@ -878,7 +1204,7 @@ create_pull_request({"owner": "owner", "repo": "repo", "title": "Feature", "head
 ✅ GitHub MCP: Proper authentication and PRIMARY tool usage for repository operations
 ```
 
-### **Updated Evidence Examples (Enhanced Architecture)**
+### **Updated Evidence Examples (Enhanced Architecture + Live Server)**
 
 **✅ Good MCP Tool Usage Evidence (ALL AGENTS)**:
 
@@ -894,6 +1220,13 @@ I used mcp__context7__resolve-library-id to research enhanced JSON schema patter
 I used mcp__filesystem__read_multiple_files to analyze current codebase structure...
 I used mcp__github__search_code to analyze repository patterns across the codebase...
 I used mcp__github__create_or_update_file to implement changes in the repository (PRIMARY choice)...
+
+[FRONTEND AGENTS] I used Live Server integration for production build validation:
+- Built application with npm run build
+- Tested production build with npm run serve (Port 5500)
+- Validated PWA functionality via Live Server environment
+- Performed cross-device testing on mobile devices
+- Verified API proxy configuration in production build
 ```
 
 **❌ Unacceptable Evidence (Deprecated Approach)**:

@@ -175,21 +175,22 @@ App.tsx
 
 ## Live Server Integration
 
-The project includes comprehensive VS Code Live Server integration for production build testing, PWA validation, and cross-device testing.
+The project includes comprehensive VS Code Live Server integration for production build testing, PWA validation, and cross-device testing. Live Server serves actual built files (unlike Vite's in-memory development server), making it essential for production-ready validation.
 
 ### When to Use Live Server vs Vite
 
 **Use Vite Development Server (`npm run dev`) for**:
-- Active development with hot module replacement
-- Rapid UI iteration and component development
-- Source map debugging and development tools
+- Active development with hot module replacement (HMR)
+- Rapid UI iteration and real-time component development
+- Source map debugging and development tools integration
+- TypeScript compilation and error checking during development
 
 **Use Live Server (`npm run serve`) for**:
-- Testing actual production builds
-- PWA service worker and offline functionality testing
-- Cross-device testing on mobile and tablets
-- Performance testing with Lighthouse CI
-- Final QA and pre-deployment validation
+- **Production Build Testing**: Validating actual compiled/optimized code
+- **PWA Functionality**: Service worker, offline mode, and installation testing
+- **Cross-Device Testing**: Mobile and tablet validation on real devices
+- **Performance Testing**: Lighthouse CI and production environment simulation
+- **Final QA Validation**: Pre-deployment testing with built application files
 
 ### Quick Start with Live Server
 
@@ -281,11 +282,29 @@ For detailed usage instructions, troubleshooting, and advanced configuration, se
 
 ### Integration with Development Workflow
 
-The Live Server integration complements the existing Vite development workflow:
+The Live Server integration complements the existing Vite development workflow, providing comprehensive testing across all phases of development:
 
-1. **Development**: Use `npm run dev` for active coding
-2. **Feature Testing**: Use `npm run serve` to test built features
-3. **PWA Validation**: Use `npm run test:pwa:*` for service worker testing
-4. **Mobile Testing**: Use `npm run cross-device:*` for responsive validation
-5. **Performance Testing**: Use `npm run lighthouse:live-server` for CI integration
-6. **Pre-Deployment**: Use `npm run serve:production` for final validation
+**Standard Development Phase**:
+1. **Active Development**: Use `npm run dev` (Port 3000) for hot reload coding
+2. **Type Checking**: Continuous TypeScript validation during development
+3. **Component Testing**: Real-time UI validation with Vite's development server
+
+**Production Testing Phase**:
+1. **Build Validation**: Use `npm run build && npm run serve` (Port 5500) for production testing
+2. **PWA Testing**: Use `npm run test:pwa:*` for service worker and offline functionality
+3. **Cross-Device Validation**: Use `npm run cross-device:*` for mobile/tablet testing
+4. **Performance Testing**: Use `npm run lighthouse:live-server` for automated CI integration
+
+**Quality Assurance Workflow**:
+1. Develop features with Vite development server (`npm run dev`)
+2. Test production builds with Live Server (`npm run build && npm run serve`)
+3. Validate PWA functionality via Live Server environment-specific testing
+4. Run cross-device testing on real mobile devices before deployment
+5. Execute Lighthouse CI for performance validation and regression detection
+
+**Environment-Specific Testing Integration**:
+- **Development** (Port 5500): Basic PWA and production build validation
+- **Staging** (Port 5501): Pre-production testing with staging API configuration
+- **Production** (Port 5502): Final deployment validation with production optimization
+
+This multi-phase approach ensures comprehensive testing from development through deployment, with Live Server providing the critical production build validation that Vite's development server cannot offer.

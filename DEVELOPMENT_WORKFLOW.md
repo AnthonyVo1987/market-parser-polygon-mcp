@@ -133,11 +133,89 @@ The `.vscode/settings.json` file is configured for:
 
 ## Development Workflow
 
+### Live Server Integration for Production Testing
+
+The VS Code Live Server integration provides essential production build testing capabilities alongside the standard development workflow. Live Server serves actual built files (unlike Vite's in-memory development server), making it critical for:
+
+- **Production Build Validation**: Testing actual compiled/optimized code
+- **PWA Functionality**: Service worker, offline mode, and installation testing
+- **Cross-Device Testing**: Mobile and tablet validation on real devices
+- **Performance Testing**: Lighthouse CI and production environment simulation
+
+#### Live Server Environment Setup
+
+**Prerequisites**:
+- VS Code with Live Server extension ("Live Server" by Ritwick Dey)
+- Completed frontend build: `npm run build` (in frontend_OpenAI directory)
+
+**Environment-Specific Testing**:
+
+```bash
+# Development build testing (Port 5500)
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run serve
+# Access: http://localhost:5500
+
+# Staging build testing (Port 5501) 
+npm run serve:staging
+# Copy .vscode/live-server-staging.json settings when prompted
+# Access: http://localhost:5501
+
+# Production build testing (Port 5502)
+npm run serve:production  
+# Copy .vscode/live-server-production.json settings when prompted
+# Access: http://localhost:5502
+```
+
+#### PWA Testing with Live Server
+
+**Service Worker Validation**:
+1. Build and serve application: `npm run build && npm run serve`
+2. Open DevTools → Application → Service Workers
+3. Verify service worker registration and caching strategies
+4. Test offline functionality by toggling "Offline" checkbox
+
+**Installation Testing**:
+1. Access application via Live Server (http://localhost:5500)
+2. Look for browser PWA install prompt
+3. Test "Add to Home Screen" functionality on mobile devices
+4. Validate standalone app behavior after installation
+
+**Cross-Device Testing Setup**:
+1. Ensure all devices on same Wi-Fi network
+2. Find local IP: `npm run cross-device:setup`
+3. Access from mobile/tablet: `http://[LOCAL_IP]:5500`
+4. Validate responsive design and touch interactions
+
+#### Integration with Development Workflow
+
+**Standard Development** (Hot Reload):
+```bash
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run dev  # Vite development server (Port 3000)
+```
+
+**Production Testing** (Built Files):
+```bash
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run build && npm run serve  # Live Server testing (Port 5500)
+```
+
+**Quality Assurance Workflow**:
+1. Develop with `npm run dev` for hot reload
+2. Test production build with `npm run build && npm run serve`
+3. Validate PWA functionality via Live Server
+4. Run cross-device testing before final deployment
+
+For comprehensive Live Server usage instructions, see: `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`
+
 ### Before Committing
 1. Run `npm run quality-check` to ensure all standards are met
-2. Fix any reported issues
+2. Fix any reported issues  
 3. Run tests: `npm run test`
-4. Commit changes (pre-commit hooks will run automatically)
+4. **NEW**: Test production build with Live Server: `npm run build && npm run serve`
+5. Validate PWA functionality and cross-device compatibility
+6. Commit changes (pre-commit hooks will run automatically)
 
 ### Adding New Code
 1. Follow existing patterns and conventions

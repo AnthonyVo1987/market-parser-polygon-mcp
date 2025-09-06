@@ -36,37 +36,42 @@ The Market Parser has been redesigned with focus on:
 - **User Experience**: Consolidated conversation flow
 - **Maintainability**: Streamlined components and clear separation
 
-### High-Level Architecture
+### High-Level Architecture with Live Server Integration
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Single Chat Interface                    │
+│           Enhanced React Frontend (Vite + Live Server)      │
 │  ┌─────────────────────────────────────────────────────────┐ │
 │  │              Chat Conversation Area                     │ │
 │  │  • User messages (conversational responses)            │ │
 │  │  • Button clicks (JSON responses with prompts)        │ │
 │  │  • System status and error messages                   │ │
+│  │  • Responsive design (mobile/tablet optimized)        │ │
 │  └─────────────────────────────────────────────────────────┘ │
 │  ┌──────────────────┐ ┌──────────────────────────────────┐   │
 │  │   User Input     │ │     Analysis Buttons            │   │
-│  │   Text Area      │ │  [Snapshot] [S&R] [Technical]   │   │
+│  │   Multi-line     │ │  [Snapshot] [S&R] [Technical]   │   │
+│  │   Text Area      │ │  Touch-friendly (44px targets)  │   │
 │  └──────────────────┘ └──────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
+         │                                          │
+         │ Development: Vite (Port 3000)           │
+         │ Production Testing: Live Server (5500)   │
+         │ Cross-Device: Network Access (Mobile)    │
+         ▼                                          │
 ┌─────────────────────────────────────────────────────────────┐
 │                  Dual-Mode Processor                       │
 │  ┌──────────────────┐       ┌──────────────────────────────┐ │
 │  │  User Messages   │       │     Button Clicks           │ │
 │  │  ↓               │       │     ↓                       │ │
 │  │  Conversational  │       │     JSON Response           │ │
-│  │  Response Mode   │       │     Mode                    │ │
+│  │  Response Mode   │       │     Mode (with PWA support) │ │
 │  └──────────────────┘       └──────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   Backend Processing                       │
+│                   Backend Processing + API Proxy           │
 │  ┌──────────────┐ ┌─────────────┐ ┌─────────────────────┐  │
 │  │     FSM      │ │  Response   │ │   Performance       │  │
 │  │  Management  │ │  Manager    │ │   Monitor           │  │
@@ -74,9 +79,9 @@ The Market Parser has been redesigned with focus on:
 │  │  5 States:   │ │  • Mode     │ │  • Cost Tracking    │  │
 │  │  IDLE        │ │    Detection│ │  • Speed Metrics    │  │
 │  │  TRIGGERED   │ │  • Template │ │  • Resource Usage   │  │
-│  │  PROCESSING  │ │    Selection│ │  • Optimization     │  │
-│  │  RECEIVED    │ │  • Response │ │                     │  │
-│  │  ERROR       │ │    Routing  │ │                     │  │
+│  │  PROCESSING  │ │    Selection│ │  • Live Server      │  │
+│  │  RECEIVED    │ │  • Response │ │    Performance      │  │
+│  │  ERROR       │ │    Routing  │ │    Validation       │  │
 │  └──────────────┘ └─────────────┘ └─────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                               │

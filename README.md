@@ -71,29 +71,32 @@ A Python CLI and web GUI application for natural language financial queries usin
    uv run market_parser_demo.py
    ```
 
-   **Enhanced React Web Interface (Optimized with Vite):**
+   **Enhanced React Web Interface (Optimized with Vite + Live Server Testing):**
    ```sh
    # Terminal 1: Start FastAPI server
    cd gpt5-openai-agents-sdk-polygon-mcp
    uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
    
-   # Terminal 2: Start React frontend with Vite optimizations
+   # Terminal 2: Start React frontend development
    cd frontend_OpenAI
    npm install
-   npm run dev  # Development with local API
+   npm run dev  # Development server (Port 3000) with hot reload
    
-   # Alternative environment builds:
-   # npm run dev:staging     # Staging environment
-   # npm run build:staging   # Build for staging
-   # npm run build          # Production build with PWA
+   # Production build testing with VS Code Live Server:
+   npm run build           # Build production application
+   npm run serve          # Live Server (Port 5500) - production testing
+   npm run serve:staging  # Live Server (Port 5501) - staging testing
    ```
-   Open http://localhost:3000 in your browser
+   **Development**: Open http://localhost:3000 (Vite development server)  
+   **Production Testing**: Open http://localhost:5500 (Live Server production testing)
    
-   **Vite Optimization Features:**
+   **Vite + Live Server Integration Features:**
    - **45% Bundle Size Reduction**: Optimized from 68KB to 37.19KB main bundle
-   - **PWA Support**: Progressive Web App with offline capabilities (auto-generated)
-   - **Multi-Environment**: Development, staging, and production configurations
-   - **Performance Monitoring**: Lighthouse CI integration with automated testing
+   - **PWA Support**: Progressive Web App with offline capabilities and service worker testing
+   - **Multi-Environment**: Development, staging, and production configurations with Live Server testing
+   - **Production Build Testing**: VS Code Live Server for actual built file testing
+   - **Cross-Device Testing**: Mobile and tablet testing via Live Server network access
+   - **Performance Monitoring**: Lighthouse CI integration with Live Server automation
    - **Zero Code Quality Issues**: ESLint and TypeScript validation passing
 
 5. **Type your question and press Enter!**
@@ -460,14 +463,14 @@ All enhanced responses follow a consistent, structured format:
 - **Original CLI interface**: `uv run market_parser_demo.py`
 - **Original Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
 
-### Vite Optimization & Build Commands
+### Vite Optimization & Live Server Testing Commands
 
-The React frontend features comprehensive Vite optimizations across 3 phases:
+The React frontend features comprehensive Vite optimizations with integrated Live Server testing for production validation:
 
 ```bash
 # Development with optimized Vite configuration
 cd frontend_OpenAI
-npm run dev          # Local development (dependency pre-bundling, server warmup)
+npm run dev          # Vite development server (Port 3000) with hot reload
 npm run dev:staging  # Staging environment development
 
 # Production builds with advanced optimizations
@@ -475,10 +478,25 @@ npm run build             # Production build with PWA, code splitting, Terser
 npm run build:staging     # Staging environment build
 npm run build:development # Development environment build
 
+# Live Server production testing (requires VS Code Live Server extension)
+npm run serve             # Live Server (Port 5500) - production testing
+npm run serve:staging     # Live Server (Port 5501) - staging testing 
+npm run serve:production  # Live Server (Port 5502) - production testing
+
+# PWA testing with Live Server
+npm run test:pwa          # Build and prepare PWA testing
+npm run test:pwa:staging  # Staging PWA testing
+npm run test:pwa:production # Production PWA testing
+
+# Cross-device testing setup
+npm run cross-device:setup     # Prepare mobile/tablet testing
+npm run cross-device:staging   # Staging cross-device testing
+
 # Performance analysis and monitoring
-npm run analyze          # Bundle analysis with visual reports
-npm run analyze:visualizer # Advanced bundle visualization
-npm run lighthouse       # Lighthouse CI performance testing
+npm run analyze                    # Bundle analysis with visual reports
+npm run lighthouse                 # Local Lighthouse testing
+npm run lighthouse:live-server     # Lighthouse with Live Server (production)
+npm run lighthouse:live-server:staging # Lighthouse with Live Server (staging)
 
 # Code quality validation
 npm run lint           # ESLint validation (zero errors achieved)
@@ -490,9 +508,11 @@ npm run format:check   # Prettier code formatting validation
 - **Bundle Size**: 45% reduction (68KB → 37.19KB main bundle)
 - **Code Splitting**: 3 lazy-loaded component chunks (32.92KB total)
 - **Development Startup**: ~337ms with advanced features
-- **PWA Implementation**: Auto-generated manifest.json and service worker
+- **PWA Implementation**: Auto-generated manifest.json and service worker with Live Server testing
+- **Production Testing**: VS Code Live Server integration for actual built file validation
+- **Cross-Device Support**: Mobile and tablet testing via Live Server network access
+- **Multi-Environment**: Development (Port 3000), Live Server testing (Ports 5500/5501/5502)
 - **Zero Quality Issues**: All ESLint and TypeScript validations passing
-- **Multi-Environment**: Development, staging, production configurations working
 
 ### Testing with PyTest
 

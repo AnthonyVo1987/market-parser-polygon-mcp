@@ -1057,6 +1057,586 @@ class SecurityValidator:
 
 ---
 
+## Part III: VSCode Live Server Integration & Testing
+
+### Overview
+
+**Critical Migration Component**: VSCode Live Server integration provides comprehensive testing and validation capabilities essential for successful migration. Unlike Vite development server, Live Server serves actual built application files, making it indispensable for:
+
+- **Production Build Testing**: Validate actual production builds locally before deployment
+- **PWA Functionality Validation**: Test service workers, offline capability, and install prompts
+- **Cross-Device Testing**: Mobile and tablet testing with real device validation
+- **Migration Quality Assurance**: Comprehensive testing throughout migration process
+- **Performance Validation**: Integration with existing Lighthouse CI workflow
+
+**Integration with Migration Workflow**: Live Server testing complements each migration method, providing critical validation checkpoints that ensure migration success before production deployment.
+
+### VSCode Live Server Setup and Verification
+
+#### Prerequisites and Installation
+
+**1. VSCode Live Server Extension Verification**
+```bash
+# Verify VS Code Live Server extension is installed
+# Extension: "Live Server" by Ritwick Dey
+# If not installed:
+# 1. Open VS Code Extensions (Ctrl+Shift+X)
+# 2. Search "Live Server"
+# 3. Install "Live Server" by Ritwick Dey
+# 4. Reload VS Code window
+```
+
+**2. VS Code Settings Configuration**
+```bash
+# Navigate to frontend directory
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+
+# Verify Live Server configuration files exist
+ls .vscode/
+# Should show:
+# - settings.json (development config)
+# - live-server-staging.json (staging config) 
+# - live-server-production.json (production config)
+```
+
+**3. Backend Dependency Verification**
+```bash
+# Ensure backend is running for API integration
+# In parent directory:
+cd ..
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Verify backend accessibility
+curl http://localhost:8000/health
+# Should return: {"status": "healthy"}
+```
+
+#### Environment-Specific Setup Procedures
+
+**Development Environment (Port 5500)**
+```bash
+# Build and prepare development environment
+npm run serve
+
+# This command will:
+# 1. Build development version with .env.development
+# 2. Configure .vscode/settings.json for port 5500
+# 3. Display Live Server startup instructions
+# 4. Enable API proxy to localhost:8000
+# 5. Configure CORS for cross-device testing
+```
+
+**Staging Environment (Port 5501)**
+```bash
+# Build and prepare staging environment
+npm run serve:staging
+
+# Follow displayed instructions to:
+# 1. Copy staging config: cp .vscode/live-server-staging.json .vscode/settings.json
+# 2. Start Live Server (will use port 5501)
+# 3. Access via http://localhost:5501
+```
+
+**Production Environment (Port 5502)**
+```bash
+# Build and prepare production environment
+npm run serve:production
+
+# Follow displayed instructions to:
+# 1. Copy production config: cp .vscode/live-server-production.json .vscode/settings.json
+# 2. Start Live Server (will use port 5502)
+# 3. Access via http://localhost:5502
+```
+
+### Migration Workflow Integration
+
+#### Integration with Migration Methods
+
+**Method 1 & 3: GitHub MCP Integration**
+```bash
+# After MCP repository creation and file upload:
+
+# 1. Clone repository locally
+git clone https://github.com/username/repository-name.git
+cd repository-name/frontend_OpenAI
+
+# 2. Install dependencies
+npm install
+
+# 3. Verify Live Server integration
+npm run live-server:help
+
+# 4. Test migration quality
+npm run serve:production
+# Start Live Server and validate application functionality
+```
+
+**Method 2: Traditional Git Integration**
+```bash
+# After git repository setup and commits:
+
+# 1. Navigate to frontend
+cd frontend_OpenAI
+
+# 2. Install and verify
+npm install
+npm run serve
+
+# 3. Migration validation
+# Start Live Server and confirm all features work as expected
+```
+
+**Method 4: Local Installation Integration**
+```bash
+# After local file extraction:
+
+# 1. Setup frontend
+cd frontend_OpenAI
+npm install
+
+# 2. Local testing with Live Server
+npm run serve
+# Provides immediate local testing capability without repository overhead
+```
+
+#### When to Use Live Server vs Vite During Migration
+
+**Use Vite Development Server For:**
+- Initial migration development and debugging
+- Component modification and testing
+- Hot reload during migration adjustments
+- Development environment testing
+
+```bash
+# Vite development commands during migration
+npm run dev              # Development with hot reload
+npm run dev:staging      # Staging environment development
+npm run dev:production   # Production environment development
+```
+
+**Use Live Server For:**
+- **Migration Validation**: Testing actual built files
+- **Production Build Verification**: Ensuring builds work correctly
+- **PWA Migration Testing**: Service worker and offline functionality
+- **Cross-Device Validation**: Mobile/tablet testing during migration
+- **Pre-Deployment QA**: Final validation before production
+
+```bash
+# Live Server testing commands during migration
+npm run serve                    # Development build testing
+npm run serve:staging           # Staging build testing
+npm run serve:production        # Production build testing
+```
+
+### PWA Testing During Migration
+
+#### PWA Validation as Part of Migration Process
+
+**Basic PWA Migration Testing**
+```bash
+# 1. Build PWA-ready application
+npm run test:pwa
+
+# 2. Start Live Server (port 5500)
+# Open VS Code Command Palette (Ctrl+Shift+P)
+# Type "Live Server: Open with Live Server"
+
+# 3. Validate PWA features in browser DevTools
+# - F12 → Application tab → Service Workers
+# - Verify service worker registration
+# - Test offline functionality (Network tab → Offline)
+# - Check install prompt availability
+```
+
+**Environment-Specific PWA Testing**
+```bash
+# Staging PWA validation
+npm run test:pwa:staging
+# Use staging Live Server config (port 5501)
+# Test staging-specific PWA functionality
+
+# Production PWA validation  
+npm run test:pwa:production
+# Use production Live Server config (port 5502)
+# Final PWA testing before deployment
+```
+
+**PWA Migration Validation Checklist**
+- [ ] Service Worker registers successfully in all environments
+- [ ] Static assets cached properly (check DevTools → Application → Storage)
+- [ ] Application functions offline (disconnect network and test)
+- [ ] Install prompt appears on supported browsers
+- [ ] PWA manifest loads with correct metadata
+- [ ] Icons and theme colors display properly
+- [ ] App behaves as standalone when installed
+- [ ] Service worker updates work correctly
+
+### Cross-Device Testing Configuration
+
+#### Mobile and Tablet Testing Setup
+
+**Cross-Device Setup for Migration Validation**
+```bash
+# 1. Build for cross-device testing
+npm run cross-device:setup
+# This builds production version with network access enabled
+
+# 2. Find your local IP address
+# Windows:
+ipconfig | findstr "IPv4"
+
+# macOS/Linux:
+ifconfig | grep "inet " | grep -v 127.0.0.1
+
+# 3. Start Live Server with network access
+# Ensure .vscode/settings.json has "useLocalIp": true
+
+# 4. Access from mobile devices
+# Connect mobile device to same Wi-Fi network
+# Navigate to: http://YOUR_LOCAL_IP:5502
+```
+
+**Staging Cross-Device Testing**
+```bash
+npm run cross-device:staging
+# Builds staging version for mobile testing
+# Access via http://YOUR_LOCAL_IP:5501
+# Test staging-specific configurations on mobile devices
+```
+
+**Cross-Device Migration Validation Checklist**
+- [ ] Application loads correctly on iOS Safari
+- [ ] Application loads correctly on Android Chrome
+- [ ] Touch interactions work properly on mobile
+- [ ] Responsive design adapts correctly to different screen sizes
+- [ ] PWA install prompt functions on mobile browsers
+- [ ] API calls work correctly from mobile devices
+- [ ] Service worker operates correctly on mobile
+- [ ] Offline functionality works on mobile devices
+- [ ] Tablet landscape and portrait orientations work
+- [ ] Touch targets are appropriately sized (minimum 44px)
+
+### Performance Testing Integration
+
+#### Lighthouse CI Integration with Live Server
+
+**Production Performance Testing**
+```bash
+# 1. Build and prepare production environment
+npm run serve:production
+# Follow instructions to configure production Live Server
+
+# 2. Start Live Server on port 5502
+# VS Code Command Palette → "Live Server: Open with Live Server"
+
+# 3. Run Lighthouse CI with Live Server
+npm run lighthouse:live-server
+# Tests performance against production build served by Live Server
+```
+
+**Staging Performance Testing**
+```bash
+# 1. Build staging environment
+npm run serve:staging
+# Configure staging Live Server (port 5501)
+
+# 2. Run staging Lighthouse tests
+npm run lighthouse:live-server:staging
+# Validates performance in staging configuration
+```
+
+**Performance Migration Validation**
+- Performance Score: >85% (as established in existing Lighthouse CI)
+- PWA Score: >90% (validates PWA implementation)
+- Accessibility Score: >95% (ensures accessibility compliance)
+- Best Practices: >90% (validates security and modern practices)
+
+### Troubleshooting Migration-Specific Issues
+
+#### Common Live Server Issues During Migration
+
+**Issue 1: Live Server Extension Not Available After Migration**
+```bash
+# Symptoms: "Live Server" not in Command Palette after migration
+# Solutions:
+
+# 1. Verify extension installation
+# VS Code → Extensions → Search "Live Server" by Ritwick Dey
+
+# 2. Reload VS Code window
+# Ctrl+Shift+P → "Developer: Reload Window"
+
+# 3. Check workspace configuration
+# Ensure .vscode/settings.json exists in frontend_OpenAI directory
+
+# 4. Reinstall if necessary
+# Uninstall → Restart VS Code → Reinstall extension
+```
+
+**Issue 2: Port Conflicts During Migration Testing**
+```bash
+# Symptoms: "Port 5500 already in use" during migration validation
+# Solutions:
+
+# 1. Kill existing processes
+# Windows:
+netstat -ano | findstr :5500
+taskkill /PID <PID_NUMBER> /F
+
+# macOS/Linux:
+lsof -ti:5500 | xargs kill -9
+
+# 2. Use alternative environment ports
+# Development: 5500, Staging: 5501, Production: 5502
+# Switch between environments to avoid conflicts
+
+# 3. Check VS Code status bar
+# Look for "Port: 5500" indicator and click to stop if running
+```
+
+**Issue 3: API Proxy Issues After Migration**
+```bash
+# Symptoms: Frontend loads but API calls fail during Live Server testing
+# Solutions:
+
+# 1. Verify backend is running
+curl http://localhost:8000/health
+# Should return healthy status
+
+# 2. Check proxy configuration in .vscode/settings.json
+# Should include:
+{
+  "liveServer.settings.proxy": [
+    ["/api", "http://localhost:8000"]
+  ]
+}
+
+# 3. Verify CORS configuration
+# Ensure "liveServer.settings.cors": true in settings
+
+# 4. Test API accessibility
+# Browser DevTools → Network tab → Check for 404 or CORS errors
+```
+
+**Issue 4: PWA Features Not Working After Migration**
+```bash
+# Symptoms: Service worker not registering after migration
+# Solutions:
+
+# 1. Verify PWA build
+npm run build  # Ensure PWA features are properly built
+ls dist/  # Check for service worker files (sw.js, manifest.json)
+
+# 2. Check service worker registration
+# DevTools → Application → Service Workers
+# Look for registration and activation status
+
+# 3. Clear browser cache completely
+# DevTools → Application → Storage → "Clear site data"
+# Reload application and test again
+
+# 4. Verify HTTPS/localhost requirements
+# PWA features require secure context (HTTPS or localhost)
+# Live Server on localhost satisfies this requirement
+```
+
+**Issue 5: Cross-Device Testing Failures**
+```bash
+# Symptoms: Desktop works but mobile devices cannot connect
+# Solutions:
+
+# 1. Verify network connectivity
+# Ensure both devices are on same Wi-Fi network
+# Test with computer's IP from desktop browser first
+
+# 2. Check firewall settings
+# Windows: Allow ports 5500-5502 through Windows Firewall
+# macOS: System Preferences → Security & Privacy → Firewall
+
+# 3. Verify Live Server network configuration
+# Ensure "useLocalIp": true in .vscode/settings.json
+
+# 4. Find correct network IP
+# Use active Wi-Fi interface IP, not loopback or virtual interfaces
+ipconfig | findstr "Wireless LAN adapter Wi-Fi" -A 5  # Windows
+ifconfig en0 | grep "inet "  # macOS Wi-Fi interface
+```
+
+### Integration with Existing Migration Procedures
+
+#### Enhanced Migration Validation Workflow
+
+**Step 1: Post-Extraction Validation**
+```bash
+# After completing any migration method (1-4):
+
+# 1. Navigate to frontend
+cd frontend_OpenAI
+
+# 2. Install dependencies
+npm install
+
+# 3. Run comprehensive Live Server validation
+npm run serve:production
+# Start Live Server and perform full application testing
+```
+
+**Step 2: Multi-Environment Testing**
+```bash
+# 1. Development environment validation
+npm run serve
+# Test basic functionality and development features
+
+# 2. Staging environment validation
+npm run serve:staging
+# Test staging-specific configurations and API endpoints
+
+# 3. Production environment validation
+npm run serve:production
+# Final comprehensive testing before deployment
+```
+
+**Step 3: PWA and Performance Integration**
+```bash
+# 1. PWA validation across environments
+npm run test:pwa
+npm run test:pwa:staging  
+npm run test:pwa:production
+
+# 2. Cross-device validation
+npm run cross-device:setup
+npm run cross-device:staging
+
+# 3. Performance testing integration
+npm run lighthouse:live-server
+npm run lighthouse:live-server:staging
+```
+
+#### Migration Success Criteria with Live Server
+
+**Technical Validation Checklist**
+- [ ] All three environments (dev/staging/prod) build and serve successfully
+- [ ] Live Server starts without errors in all configurations
+- [ ] API proxy functionality works correctly in all environments
+- [ ] PWA features function properly in all environments
+- [ ] Cross-device testing successful on mobile and tablet
+- [ ] Performance metrics meet established thresholds (Lighthouse CI)
+- [ ] Service worker registration and caching work correctly
+- [ ] Offline functionality tested and working
+- [ ] Install prompts appear and function on supported browsers
+- [ ] Responsive design adapts correctly across device sizes
+
+**Migration Quality Assurance Process**
+1. **Initial Setup**: Verify Live Server extension and configuration files
+2. **Environment Testing**: Test all three environments systematically
+3. **PWA Validation**: Comprehensive service worker and offline testing
+4. **Cross-Device Testing**: Mobile and tablet validation across browsers
+5. **Performance Validation**: Lighthouse CI integration and metrics verification
+6. **Final QA**: Complete end-to-end testing before marking migration complete
+
+### Advanced Live Server Configuration for Migration
+
+#### Custom Migration-Specific Settings
+
+**Enhanced Development Configuration**
+```json
+{
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.useLocalIp": true,
+  "liveServer.settings.cors": true,
+  "liveServer.settings.spa": true,
+  "liveServer.settings.proxy": [
+    ["/api", "http://localhost:8000"]
+  ],
+  "liveServer.settings.headers": {
+    "Service-Worker-Allowed": "/",
+    "Access-Control-Allow-Origin": "*",
+    "Cache-Control": "no-cache, no-store, must-revalidate"
+  },
+  "liveServer.settings.AdvanceCustomBrowserCmdLine": "chrome --incognito --remote-debugging-port=9222 --disable-web-security",
+  "liveServer.settings.ignoreFiles": [
+    ".vscode/**",
+    "**/node_modules/**",
+    "**/src/**",
+    "**/*.map"
+  ]
+}
+```
+
+**Migration Testing Optimization**
+```bash
+# Create migration-specific testing scripts
+cat > migration-test.sh << 'EOF'
+#!/bin/bash
+echo "🔍 MIGRATION VALIDATION WITH LIVE SERVER"
+echo "======================================="
+
+# Test all environments
+echo "📊 Testing Development Environment..."
+npm run serve
+echo "📊 Testing Staging Environment..."
+npm run serve:staging  
+echo "📊 Testing Production Environment..."
+npm run serve:production
+
+# PWA validation
+echo "⚡ PWA Validation..."
+npm run test:pwa:production
+
+# Performance testing
+echo "🚀 Performance Validation..."
+npm run lighthouse:live-server
+
+echo "✅ Migration validation complete!"
+EOF
+
+chmod +x migration-test.sh
+```
+
+### Documentation Cross-References
+
+**Comprehensive Live Server Documentation**
+For detailed Live Server usage, configuration options, and advanced troubleshooting, refer to:
+- **Primary Documentation**: `/frontend_OpenAI/LIVE_SERVER_USAGE.md`
+- **Configuration Files**: `.vscode/` directory with environment-specific settings
+- **Package.json Scripts**: Complete script reference and usage instructions
+
+**Integration with Existing Documentation**
+- **Migration Guide** (this document): High-level workflow integration
+- **LIVE_SERVER_USAGE.md**: Comprehensive technical reference
+- **OpenAI_Vite_Optimization_Plan.md**: Performance optimization context
+- **API_DOCUMENTATION.md**: API integration and proxy configuration
+
+**Migration Success Summary with Live Server Integration**
+
+Upon successful completion of Live Server integration with your migration:
+
+**Enhanced Migration Capabilities:**
+- ✅ **Comprehensive Testing Environment**: Multi-environment validation (dev/staging/prod)
+- ✅ **Production Build Validation**: Test actual built files before deployment
+- ✅ **PWA Functionality Assurance**: Complete service worker and offline testing
+- ✅ **Cross-Device Compatibility**: Mobile and tablet validation across browsers
+- ✅ **Performance Integration**: Seamless Lighthouse CI workflow integration
+- ✅ **Migration Quality Assurance**: Systematic validation throughout migration process
+
+**Professional Development Workflow:**
+- ✅ **Environment Parity**: Consistent testing across development, staging, and production
+- ✅ **API Integration Testing**: Proxy configuration and CORS handling validation
+- ✅ **Performance Monitoring**: Continuous performance validation during migration
+- ✅ **Security Testing**: HTTPS simulation and security header validation
+- ✅ **Responsive Design Validation**: Cross-platform and cross-device compatibility
+
+**Migration Risk Mitigation:**
+- ✅ **Pre-Deployment Validation**: Catch issues before production deployment
+- ✅ **Comprehensive Testing Coverage**: Multi-environment and multi-device validation
+- ✅ **Performance Assurance**: Lighthouse CI integration prevents regression
+- ✅ **PWA Compliance**: Ensures Progressive Web App standards compliance
+- ✅ **Production Readiness**: Complete validation of production build functionality
+
+Live Server integration transforms migration from a simple code transfer into a comprehensive, validated, production-ready deployment process.
+
+---
+
 ## Shared Procedures
 
 ### Repository Setup & Management
