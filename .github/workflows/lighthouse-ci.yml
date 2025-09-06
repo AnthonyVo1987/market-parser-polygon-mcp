@@ -1,4 +1,18 @@
-name: Lighthouse CI
+# TEMPORARILY DISABLED: Lighthouse CI
+# 
+# This workflow is temporarily disabled during the prototyping phase.
+# The project is still in early development and not ready for CI automation.
+# 
+# TO RE-ENABLE THIS WORKFLOW:
+# 1. Change 'if: false' to 'if: true' in both jobs below
+# 2. Or remove the 'if: false' conditions entirely
+# 3. Commit and push the changes
+# 
+# The workflow will automatically run Lighthouse CI on:
+# - Push to main/master/develop branches with frontend changes
+# - Pull requests to main/master/develop branches with frontend changes
+
+name: Lighthouse CI (Disabled)
 
 on:
   push:
@@ -19,6 +33,8 @@ on:
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
+    # TEMPORARILY DISABLED: Remove 'if: false' to re-enable during CI-ready phase
+    if: false
     
     defaults:
       run:
@@ -63,7 +79,9 @@ jobs:
   # Optional: Run performance comparison between environments
   performance-comparison:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    # TEMPORARILY DISABLED: Remove 'if: false' to re-enable during CI-ready phase
+    # Original condition: if: github.event_name == 'pull_request'
+    if: false
     
     defaults:
       run:
