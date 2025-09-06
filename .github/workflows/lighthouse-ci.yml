@@ -1,0 +1,101 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - 'gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/**'
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - 'gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/**'
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/package-lock.json
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+        env:
+          # Use production environment for CI builds
+          NODE_ENV: production
+          
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.15.x autorun
+        env:
+          # GitHub token for storing results (optional)
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          
+      - name: Upload Lighthouse results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: |
+            gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/lighthouserc.js
+            gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/.lighthouseci/
+          retention-days: 30
+
+  # Optional: Run performance comparison between environments
+  performance-comparison:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    defaults:
+      run:
+        working-directory: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+    
+    strategy:
+      matrix:
+        environment: [development, staging, production]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/package-lock.json
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build for ${{ matrix.environment }}
+        run: npm run build:${{ matrix.environment }}
+        
+      - name: Analyze bundle size
+        run: npm run analyze:${{ matrix.environment }}
+        
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis-${{ matrix.environment }}
+          path: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dist/bundle-analysis.html
+          retention-days: 30

@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -15,6 +16,65 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       react(),
+      // PWA functionality with auto-update strategy
+      VitePWA({
+        registerType: 'autoUpdate',
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          cleanupOutdatedCaches: true,
+          sourcemap: isProduction,
+          runtimeCaching: [
+            {
+              urlPattern: new RegExp(`^${env.VITE_API_URL || 'http://localhost:8000'}\/api\/`),
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                networkTimeoutSeconds: 10,
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            }
+          ]
+        },
+        includeAssets: ['favicon.ico'],
+        manifest: {
+          name: 'Market Parser OpenAI Chat',
+          short_name: 'MarketParser',
+          description: 'AI-powered financial market analysis chat application with real-time data from Polygon.io',
+          theme_color: '#000000',
+          background_color: '#ffffff',
+          display: 'standalone',
+          scope: '/',
+          start_url: '/',
+          orientation: 'portrait-primary',
+          icons: [
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'any'
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512', 
+              type: 'image/png',
+              purpose: 'any'
+            },
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'maskable'
+            }
+          ]
+        },
+        // Development options
+        devOptions: {
+          enabled: isDevelopment,
+          type: 'module'
+        }
+      }),
       // Bundle analysis - environment-aware configuration
       (env.ANALYZE || isProduction) && visualizer({
         filename: 'dist/bundle-analysis.html',
@@ -34,12 +94,12 @@ export default defineConfig(({ command, mode }) => {
       warmup: {
         clientFiles: ['./src/main.tsx', './src/App.tsx']
       },
-      // Phase 1: Proxy configuration for seamless backend integration
+      // Phase 1: Environment-aware proxy configuration for seamless backend integration
       proxy: {
         '/api': {
-          target: 'http://localhost:8000',
+          target: env.VITE_API_URL || 'http://localhost:8000',
           changeOrigin: true,
-          secure: false
+          secure: env.VITE_API_URL?.startsWith('https://') || false
         }
       }
     },
@@ -90,7 +150,9 @@ export default defineConfig(({ command, mode }) => {
             // Core React libraries (stable, rarely changes)
             vendor: ['react', 'react-dom'],
             // Heavy markdown processing library (45KB, separate chunk)
-            markdown: ['react-markdown']
+            markdown: ['react-markdown'],
+            // PWA-related workbox libraries (separate chunk for better caching)
+            pwa: ['workbox-window']
           },
           
           // Intelligent asset organization by type with content hashes
@@ -127,7 +189,8 @@ export default defineConfig(({ command, mode }) => {
       include: [
         'react',
         'react-dom',
-        'react-markdown'
+        'react-markdown',
+        'workbox-window'
       ],
       // Exclude problematic dependencies if needed
       exclude: [],
@@ -140,7 +203,12 @@ export default defineConfig(({ command, mode }) => {
       // Expose build information to the application
       __BUILD_MODE__: JSON.stringify(mode),
       __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
-      __IS_PRODUCTION__: JSON.stringify(isProduction)
+      __IS_PRODUCTION__: JSON.stringify(isProduction),
+      // Environment-specific build information
+      __APP_ENV__: JSON.stringify(env.VITE_APP_ENV || mode),
+      __API_URL__: JSON.stringify(env.VITE_API_URL || 'http://localhost:8000'),
+      __PWA_ENABLED__: JSON.stringify(env.VITE_PWA_ENABLED === 'true'),
+      __DEBUG_MODE__: JSON.stringify(env.VITE_DEBUG_MODE === 'true')
     }
   }
 })
