@@ -2,23 +2,35 @@
 
 ## Task Description
 
-[OpenAI] Review & Finish Progress of Previously Interrupted Task: Update OpenAI_Vite_Optimization_Plan.md with Deep Dive Enhancements
+[OpenAI] Pre-migration Docs Prep & Updates: OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
 
-- You were previously in the middle of a task but you got interrupted and crashed
-- This task is to review the previous progress and finished the previous task
+Task 1. Update OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md with detailed guides & steps how to use either of the projects' currently supported development environments using default Vite and\or Live Server for setting up, running, testing, & debugging
+
+Task 2. Disable the automatic Lighthouse CI Github Workflow for now temporarily because prototyping is still too early to run CI yet
+
+Task 3. REMOVE all references to outdated Scenario B: Architecture Migration & Modernization:
+Transform text-based parsing to JSON schema-driven architecture
+Migrate from regex extraction to structured data validation
+Implement modern API patterns and error handling
+Enhance UI with state management and responsive design
+
+Task 4. Comprehensive review of all docs in entire standalone project folder(s) gpt5-openai-agents-sdk-polygon-mcp to ensure up to date and accurate before migration
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Read & Review the previous task details that were copied to "/new_task_details_copy.md"
-- Read & Review the potentially partially updated doc from the previous task "OpenAI_Vite_Optimization_Plan.md"
+- Analzye & Research all the requested task(s), reading any docs that could also be relevant
+- /gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
+- /gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md
+- /gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md
+- /gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_DOCUMENTATION_TEMPLATES.md
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Based on the research task, generate a plan to review, analyze, & fully complete any remaining items from the previous task(s)
+- Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s)
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Follow the newly generated implementation plan to update the OpenAI_Vite_Optimization_Plan.md
+- Perform all of the requested task(s) based on the newly generated implementation plan todo checklist
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem, Github, & any other relevant Tools to perform Final 4 Tasks
 
@@ -54,6 +66,9 @@ Final Task 4: Final Verification
 **Key Requirements:**
 
 ## Requirements
+
+- NONE OF THE Apps will migrate to this legacy outdated Scenario B, so need to remove references from all docs to remove confusion for user
+- There is only a single Scenario A for the Standalone Migration
 
 - Entire project is still prototyping, so do NOT implement: Enterprise Grade, Production Ready, Performance Optmization, Testing \ Test Scripts
 - Do NOT over-engineer
