@@ -86,3 +86,4 @@ node_modules
 
 #mcp servers
 .mcp.json
+.gemini/settings.json
