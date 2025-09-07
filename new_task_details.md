@@ -2,15 +2,33 @@
 
 ## Task Description
 
-[TEST] Dry Run of intial Playwright Comprehensive MCP Test Plan
+[TEST] Update and Dry Run of intial Playwright Comprehensive MCP Test Plan
 
-Task 1. Perform a "dry run" ONLY of intial Playwright Comprehensive MCP Test Plan. AFTER EACH Test Plan Module, Record\Update test report .md so that we can capture the test data & details immediately after a finished Test for efficient Cache Token usage.
+Task 1. Update Playwright MCP test plan in PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md and project docs to reflect new testing strategy below:
+A. ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts.  Remove\fix ANY timeouts lower then 120s
+B. All test plans must capture results and generate a detailed test report with granular test results and save to the new test report folder following the file naming convention for user review
+C. Modify test plan to make these FIRST 3x Test User Input Prompts the very first ones to run:
 
-Task 2. Finalize Test report with an initial High Level Summary section of the test results, a section for suggested next actions\investigations, and then finally the fully detailed granular test results and details.  DO NOT ATTEMPT TO DEBUG\FIX ISSUES flagged from report YET, because user needs to review ALL test reports
+- Test Input: Market Status: Low Verbosity, Raw response format output
+- Test Input: Single Ticker Snapshot: NVDA, SPY, WDC, Low Verbosity, Raw response format output
+- Test Input: Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output
+D. After the first 3x initial test, Research & Addon more test coverage to test every single of the App's functionality at LEAST 1x time
+
+Task 2. Perform a "dry run" ONLY of updated intial Playwright Comprehensive MCP Test Plan. AFTER EACH Test Plan Module, Record\Update test report .md so that we can capture the test data & details immediately after a finished Test for efficient Cache Token usage.
+
+Task 3. Finalize Test report with an initial High Level Summary section of the test results, a section for suggested next actions\investigations, and then finally the fully detailed granular test results and details.  DO NOT ATTEMPT TO DEBUG\FIX ISSUES flagged from report YET, because user needs to review ALL test reports
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Research & Analyze testing task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
+- Research & Analyze testing task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last:
+Research Task 1. Playwright MCP test plan in PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md and project docs to reflect new testing strategy below:
+A. ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts. Remove\fix ANY timeouts lower then 120s
+B. All test plans must capture results and generate a detailed test report with granular test results and save to the new test report folder following the file naming convention for user review
+C. Modify test plan to make these FIRST 3x Test User Input Prompts the very first ones to run:
+- Test Input: Market Status: Low Verbosity, Raw response format output
+- Test Input: Single Ticker Snapshot: NVDA, SPY, WDC, Low Verbosity, Raw response format output
+- Test Input: Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output
+D. After the first 3x initial test, Research & Addon more test coverage to test every single of the App's functionality at LEAST 1x time
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -55,5 +73,15 @@ Final Task 4: Final Verification
 ## Requirements
 
 ## Expected Outcome
+
+PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md Updated with Playwright MCP test plan to reflect new testing strategy below:
+A. ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts.  Remove\fix ANY timeouts lower then 120s
+B. All test plans must capture results and generate a detailed test report with granular test results and save to the new test report folder following the file naming convention for user review
+C. Modify test plan to make these FIRST 3x Test User Input Prompts the very first ones to run:
+
+- Test Input: Market Status: Low Verbosity, Raw response format output
+- Test Input: Single Ticker Snapshot: NVDA, SPY, WDC, Low Verbosity, Raw response format output
+- Test Input: Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output
+D. After the first 3x initial test, Research & Addon more test coverage to test every single of the App's functionality at LEAST 1x time
 
 ## Additional Context

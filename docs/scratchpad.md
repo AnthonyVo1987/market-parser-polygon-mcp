@@ -1,3 +1,12 @@
+
+Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
+
+- Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup
+
+- README.md
+- CLAUDE.md,
+- MCP_TOOL_USAGE_GUIDE.md
+
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
 # New Task Details
@@ -70,9 +79,9 @@ Read the follow project docs and acknowledge project state, last completed task(
 - GEMININ.md,
 - MCP_TOOL_USAGE_GUIDE.md
 
-Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup
-
 Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
+
+- Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup
 
 - README.md
 - CLAUDE.md,
