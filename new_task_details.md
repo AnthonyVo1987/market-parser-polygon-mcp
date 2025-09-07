@@ -2,27 +2,49 @@
 
 ## Task Description
 
-[OpenAI] Pre-migration Docs Prep & Updates: OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
+[DOC] Update new_task protocol with new Last Completed Task Summary file
 
-Task 1. Update OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md with detailed guides & steps how to use either of the projects' currently supported development environments using default Vite and\or Live Server for setting up, running, testing, & debugging
+1. Create new "LAST_TASK_SUMMARY.md" in top level to now be the new location of the full Last Completed Task Summary that is currently location in CLAUDE.md
 
-Task 2. Disable the automatic Lighthouse CI Github Workflow for now temporarily because prototyping is still too early to run CI yet
+2. Change & Enforce CLAUDE.md Last Completed Task Summary section to be at most 20 lines max to provide only high level overview quick glance of the last completed task, and if more details are needed, to refer to LAST_TASK_SUMMARY.md for the full complete Last Completed Task Summary
 
-Task 3. REMOVE all references to outdated Scenario B: Architecture Migration & Modernization:
-Transform text-based parsing to JSON schema-driven architecture
-Migrate from regex extraction to structured data validation
-Implement modern API patterns and error handling
-Enhance UI with state management and responsive design
+- This will greatly reduce the project's memory file context token usage in CLAUDE.md, and gives User and AI Coding agents the ability to have a quick glance of the last completed task and also the option to see the full details in a different document
+- The quick glance summary may even be the verbatim git commit message if it has enough details to provide the quick glance summary
 
-Task 4. Comprehensive review of all docs in entire standalone project folder(s) gpt5-openai-agents-sdk-polygon-mcp to ensure up to date and accurate before migration
+3. Update CLAUDE.md to enforce Entire project is still in the prototyping stage, so ALL task(s) need to enforce the following prototype principles:
+
+- Do NOT over-engineer ANYTHING
+- Does NOT need any of the following: Enterprise Grade, Production Ready, and\or Performance Optmization Solution(s)\Implementation(s)
+- Does NOT need Testing, Test Scripts, Unit Tests, CI\CD Pipeline
+
+4. Update our custom Claude Code slash command "/new_task" with the following new changes & procedures:
+
+- If in PLAN mode, Main Agent MUST use @agent-tech-lead-orchestrator to generate the Plan WITH Specialist Assignments. This will fix a gap in the "/new_task" where Plan mode incorrectly uses the Main Agent to generate the plan and also incorrectly has missing Plan WITH Specialist Assignments.  This ensures whether in Plan mode or Not Plan mode, that "/new_task" uses @agent-tech-lead-orchestrator no matter what for the planning WITH Specialist Assignments
+- Enforce Entire project is still in the prototyping stage, so ALL task(s) need to enforce the following prototype principles:
+- Do NOT over-engineer ANYTHING
+- Does NOT need any of the following: Enterprise Grade, Production Ready, and\or Performance Optmization Solution(s)\Implementation(s)
+- Does NOT need Testing, Test Scripts, Unit Tests, CI\CD Pipeline
+
+- New expected workflow to update the new_task.md slash command procedures:
+A. User invokes "/new_task"
+B. Main Agent uses @agent-tech-lead-orchestrator to read, analyze, and review the new task details in "new_task_details.md", regardless if in Plan Mode or non-Plan Mode
+C. If in Plan Mode, @agent-tech-lead-orchestrator generates the plan WITH Specialist Assignments
+D. If in non-Plan Mode, @agent-tech-lead-orchestrator generates the plan WITH Specialist Assignments
+E. Specialist(s) executes the plan from the @agent-tech-lead-orchestrator
+F. After a PASSING Review\Fix Loop, perform the following doc updates
+- Generate detailed Last Completed Task Summary and overwrite completely the existing LAST_TASK_SUMMARY.md
+- Based on the Last Completed Task Summary, Generate a MAX of 20 lines a high level overview quick glance of the last completed task Summary and then update CLAUDE.md with the quick glance summary
+G. Enforce Primary use of Github Tools and secondary Git tools for Repo Management Operations I.E. Commit, Push etc to
+H. Enforce fully atomic commit where ALL of the following gets committed at the same time:
+- Code\File Changes
+- Doc Changes
+- CLAUDE.md updates
+- LAST_TASK_SUMMARY.md updates
+I. End result of the commit is that all code, doc, and task summary changes are belong in the same Commit without separating code changes vs doc changes
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Analzye & Research all the requested task(s), reading any docs that could also be relevant
-- /gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
-- /gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md
-- /gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md
-- /gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_DOCUMENTATION_TEMPLATES.md
+- Analyze & Research all the requested task(s), reading any project docs that could also be relevant to the task(s)
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -53,7 +75,7 @@ Final Task 2: Task Summary & CLAUDE.md Update
 Final Task 3: Atomic Git Commit & Push
 
 - Run `git status` to review all staged and unstaged changes
-- Create single atomic Github commit containing ALL changes: code files, documentation updates, and task summary
+- Create single atomic Github commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, task summary
 - Github Push commit to GitHub repository using provided personal access token
 - **CRITICAL**: Must Github push to complete the workflow - Github commit without Github push is incomplete
 
@@ -66,12 +88,5 @@ Final Task 4: Final Verification
 **Key Requirements:**
 
 ## Requirements
-
-- NONE OF THE Apps will migrate to this legacy outdated Scenario B, so need to remove references from all docs to remove confusion for user
-- There is only a single Scenario A for the Standalone Migration
-
-- Entire project is still prototyping, so do NOT implement: Enterprise Grade, Production Ready, Performance Optmization, Testing \ Test Scripts
-- Do NOT over-engineer
-- ALL file\doc changes fully reviewed, fixed, committed, and pushed to the repo
 
 ## Additional Context
