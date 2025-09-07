@@ -5,7 +5,7 @@
 This repository contains two projects for financial analysis using natural language queries.
 
 1.  **New Application (FastAPI + React)**: A modern, feature-rich application with a FastAPI backend, a React frontend, and an enhanced CLI. This is the recommended application for development and use.
-2.  **Legacy Application (Gradio)**: A legacy application built with Gradio. This application is slated for retirement.
+2.  **Legacy Application (Gradio)**: A legacy application built with Gradio. This is slated for retirement.
 
 ---
 
@@ -75,6 +75,7 @@ This project is a comprehensive Python application with a CLI, FastAPI server, a
 *   **Linting**: `pylint` for Python and `eslint` for JavaScript.
 *   **Testing**: `pytest` for backend tests. Run with `uv run pytest tests/ -v`.
 *   **Tool Usage**: MCP tools are the **PRIMARY** choice for all development tasks, including file operations, code analysis, and repository management. Standard tools should only be used as a fallback if MCP tools are unavailable or encounter issues.
+*   **Local Sync**: After using `mcp_github` tools to commit changes to the remote repository, you **MUST** run `git pull` to sync the local repository.
 
 ---
 
