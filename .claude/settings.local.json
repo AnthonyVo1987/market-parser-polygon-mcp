@@ -99,7 +99,8 @@
       "Bash(NODE_ENV=production npm run build)",
       "Bash(time npm run dev)",
       "mcp__filesystem__list_directory_with_sizes",
-      "Bash(convert:*)"
+      "Bash(convert:*)",
+      "mcp__github__delete_file"
     ],
     "deny": [],
     "ask": [],

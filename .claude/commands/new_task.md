@@ -44,6 +44,23 @@ MCP Tools are PRIMARY tools for ALL specialists. All specialists MUST use:
 - `mcp__filesystem__*` tools for all file operations
 - `mcp__github__*` tools as primary method for repo operations
 
+  Key Learnings:
+  1. mcp__github__push_files - Creates atomic commit + push in single operation
+  2. mcp__github__delete_file - Deletes and commits removal atomically
+  3. No staging needed - These tools handle the entire git workflow internally
+  4. File content required - Must read and provide actual file content for commits
+  5. Automatic branching - Works directly with specified branch
+
+  Why I used regular git commands earlier:
+  - I misunderstood that GitHub MCP tools require reading all file contents first
+  - For multiple file changes, it's more complex to gather all content
+  - Regular git commands were faster for the immediate atomic commit needed
+
+  Correct future usage:
+  - Use mcp__github__push_files for simple file additions/modifications
+  - Read all file contents first when using GitHub MCP tools
+  - Use regular git for complex multi-file scenarios where speed is critical
+
 ---
 
 ## Execution Protocol - Enhanced A-I Workflow
