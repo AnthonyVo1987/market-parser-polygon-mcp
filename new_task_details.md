@@ -2,85 +2,17 @@
 
 ## Task Description
 
-[OpenAI] Fix Utterly Broken App & development environment because of Incorrect Testing of GUI Vite & Live Server Methods
+[OpenAI] Research Docs for Playwrite MCP\CLI GUI Automated Testing Integration
 
-## Task 1. Analyze, Research, & Fix Standalone OpenAI Vite GUI Issues from User Logs & GUI Screenshot
-
-(market-parser-polygon-mcp) 1000211866@UIML-504F9T2:~/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI (master) 2 dirty$ npm run dev
-
-- User screenshot of broken GUI app found in gpt5-openai-agents-sdk-polygon-mcp/images/Vite_broken_gui_message.PNG
-
-- Logs with warnings\errors:
-
-> frontend-openai@0.0.0 dev
-> vite --mode development
-
-Re-optimizing dependencies because lockfile has changed
-
-  VITE v5.4.19  ready in 288 ms
-
-  ➜  Local:   <http://localhost:3000/>
-  ➜  Network: <http://172.29.229.155:3000/>
-  ➜  Network: <http://172.17.0.1:3000/>
-  ➜  press h + enter to show help
-
-PWA v1.0.3
-mode      generateSW
-precache  1 entries (0.00 KiB)
-files generated
-  dev-dist/sw.js
-  dev-dist/workbox-ed3775ef.js
-warnings
-  One of the glob patterns doesn't match any files. Please remove or fix the following: {
-  "globDirectory": "/home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist",
-  "globPattern": "**/*.{js,css,html,ico,png,svg,woff2}",
-  "globIgnores": [
-    "**/node_modules/**/*",
-    "sw.js",
-    "workbox-*.js"
-}
-
-## Task 2. Analyze, Research, & Fix Standalone OpenAI Live Server Issues from User Logs
-
-- Live Server Method broken - Could not even run npm run build, let alone run the app
-- Is "npm run build" in ANY of the migration or setup\install guides???
-- Did you halluncinate previous Live Server GUI because how can you test Live Server if the npm run build command failed in the first place??????
-- You really need to explain whether or not you tested Live Server or not and make it work
-- Logs:
-(market-parser-polygon-mcp) 1000211866@UIML-504F9T2:~/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI (master) 3 dirty 2 untracked$ npm run build
-
-> frontend-openai@0.0.0 build
-> tsc && vite build --mode production
-
-src/components/ExportButtons.tsx:85:9 - error TS2322: Type 'Timeout' is not assignable to type 'number'.
-
-85         timeoutRefs.current[buttonId] = setTimeout(() => {
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-src/components/MessageCopyButton.tsx:49:9 - error TS2322: Type 'Timeout' is not assignable to type 'number'.
-
-49         timeoutRef.current = setTimeout(() => {
-           ~~~~~~~~~~~~~~~~~~
-
-src/components/RecentMessageButtons.tsx:77:9 - error TS2322: Type 'Timeout' is not assignable to type 'number'.
-
-77         timeoutRefs.current[buttonId] = setTimeout(() => {
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Found 3 errors in 3 files.
-
-Errors  Files
-     1  src/components/ExportButtons.tsx:85
-     1  src/components/MessageCopyButton.tsx:49
-     1  src/components/RecentMessageButtons.tsx:77
-
-## Task 3. Create new Post mortem .md doc in OpenAI folder to explain how all these issues got missed even though you claimed you reviewed and tested, corrective actions, lessons learned etc
-
-## Task 4. Update project docs, especially all setup, install, running instructions across ALL project docs with the updated fixes and proper working procedures
+- This is a research and doc task ONLY - No code is needed
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Analyze & Research all the requested Task 1, Task 2, reading any project docs that could also be relevant to the task(s)
+Task 1. Research & Analyze setting up & integrating Playwrite MCP Server Method into our development environment for you to perform the React GUI Testing
+
+Task 2. Research & Analyze setting up & integrating Playwrite CLI method into our development environment for you to perform the React GUI Testing
+
+Task 3. Based on the previous Research Tasks, research how to generate a comprehensive Guide .md doc saved to OpenAI docs folder to Provide suggested recommendations of which method is best for our current environment that finds the best balance between automation vs ease of setup vs ease of use vs lower token usage. After that, a section to explain what Playwright is and it's capabilities. And then specific sections EACH for MCP AND CLI methods for the full the tutorial to setup, install, integration, & AND usage by you or any AI Coding agents whenever the user decides to pick one of the methods.  The new doc should be the singel source of truth for user, You, or any AI Coding agent to setup, use, and test our REACT based GUI
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 

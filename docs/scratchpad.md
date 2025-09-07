@@ -2,7 +2,7 @@
 
 Research setting up & integrating Playwrite MCP Server into our development environment for you to perform the React GUI Testing
 Research setting up & integrating Playwrite CLI Version into our development environment for you to perform the React GUI Testing
-Generate comprehensive Guide for the setup, install, integration, & AND usage by AI Coding agent for BOTH methods. Provide a final suggested recommendation of which method is best for our current environment, that finds the best balance between automation vs ease of setup vs ease of use vs lower token usage
+Based on the Research, generate comprehensive Guide .md doc to Provide suggested recommendation sof which method is best for our current environment that finds the best balance between automation vs ease of setup vs ease of use vs lower token usage. And then specific sections EACH for MCP AND CLI methods for the full the setup, install, integration, & AND usage by you or any AI Coding agents
 
 Add-on additional Doc tasks to re-organize and update Project Docs CLAUDE.md, README.md, OpenAI Migration Guide with the proper full command sequence to run CLI & GUI from virgin state:
 
