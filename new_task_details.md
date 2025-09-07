@@ -2,17 +2,27 @@
 
 ## Task Description
 
-[OpenAI] Research Docs for Playwrite MCP\CLI GUI Automated Testing Integration
+[DOCS] Playwright Tests & Github Docs Updates
 
-- This is a research and doc task ONLY - No code is needed
+Task 1. Create new folder gpt5-openai-agents-sdk-polygon-mcp/docs/claude_test_reports
+
+Task 2. Update & Enforce project docs that test reports generated for Claude Code Playwright test reports file must follow new naming convention format: "CLAUDE_playwright_mcp_tests_YY-MM-DD_hh-mm.md" - Where Agent must detect real world Date and time to append to the file name in the requested pacific timestamp format
+
+Task 3. Update Playwright MCP test plan and project docs to reflect new testing strategy:
+
+- ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts
+- All test plans must capture results and generate a detailed test report with granular test results and save to the new test report folder following the file naming convention for user review
+- Modify test plan to make these first 3x Test User Input Prompts the very first ones to run:
+- Test Input: Market Status: Low Verbosity, Raw response format output
+- Test Input: Single Ticker Snapshot: NVDA, SPY, WDC, Low Verbosity, Raw response format output
+- Test Input: Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output
+- Research & Addon more test coverage to test every single of the App's functionality at LEAST 1x time
+
+Task 4. Github MCP Tool Removal: Remove all instances in project docs thats says to use GitHub MCP Tools as primary. Standard GIT Commands will now be the Primary, I will remove Github tool support
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-Task 1. Research & Analyze setting up & integrating Playwrite MCP Server Method into our development environment for you to perform the React GUI Testing
-
-Task 2. Research & Analyze setting up & integrating Playwrite CLI method into our development environment for you to perform the React GUI Testing
-
-Task 3. Based on the previous Research Tasks, research how to generate a comprehensive Guide .md doc saved to OpenAI docs folder to Provide suggested recommendations of which method is best for our current environment that finds the best balance between automation vs ease of setup vs ease of use vs lower token usage. After that, a section to explain what Playwright is and it's capabilities. And then specific sections EACH for MCP AND CLI methods for the full the tutorial to setup, install, integration, & AND usage by you or any AI Coding agents whenever the user decides to pick one of the methods.  The new doc should be the singel source of truth for user, You, or any AI Coding agent to setup, use, and test our REACT based GUI
+- Research & Analyze Task 3. Update Playwright MCP test plan and project docs to reflect new testing strategy
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -42,20 +52,27 @@ Final Task 2: Task Summary & CLAUDE.md Update
 Final Task 3: Atomic Git Commit & Push
 
 - Run `git status` to review all staged and unstaged changes
-- Create single atomic Github commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, task summary
-- Github Push commit to GitHub repository using provided personal access token
-- **CRITICAL**: Must Github push to complete the workflow - Github commit without Github push is incomplete
+- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, task summary
+- git Push commit to repository using provided personal access token
+- **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
 
 Final Task 4: Final Verification
 
 - Run final `git status` to confirm successful commit and push
 - Verify working tree is clean and branch is up-to-date with remote
-- Confirm all changes are properly Github committed and Github pushed
+- Confirm all changes are properly git committed and git pushed
 
 **Key Requirements:**
 
 ## Requirements
 
 ## Expected Outcome
+
+- DO NOT RUN TEST PLAN YET - FOLLOW ON TASK to be assigned TBD to run initial basic test plan
+
+- I made a mistake and misunderstood github tools. Basically, for local repo operations of day to day workflow tasks, we should actually be using the standard GIT commands and NOT Github MCP server tools.
+- Github MCP server tools are more geared towards AI Agents for Automations of Workflows and remote Repo management.
+- Because our current project is still prototyping, we do not need the over-engineering of Github MCP Server
+- Use standard git commands from now on for all repo managment operations
 
 ## Additional Context
