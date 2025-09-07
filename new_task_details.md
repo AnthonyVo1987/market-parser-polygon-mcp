@@ -2,7 +2,7 @@
 
 ## Task Description
 
-[TEST] Update and Dry Run of intial Playwright Comprehensive MCP Test Plan
+[TEST] Fix Playwright Commit Violations
 
 Task 1. Update Playwright MCP test plan in PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md and project docs to reflect new testing strategy below:
 A. ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts.  Remove\fix ANY timeouts lower then 120s

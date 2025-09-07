@@ -169,72 +169,276 @@ This section provides a full tutorial on setting up, installing, integrating, an
 
 The Playwright MCP server is integrated with the AI agent through the MCP protocol. The agent sends commands to the server to control the browser.
 
-### 4.3. Usage
+### 4.3. Comprehensive Test Plan
 
-An AI coding agent would use the following workflow to test the GUI:
+This test plan outlines the steps for a comprehensive "dry run" of the React GUI using the Playwright MCP Server.
+
+**Test Configuration:**
+*   **Default Timeout:** Each browser interaction will have a timeout of 120 seconds to accommodate for AI response times.
+*   **Reporting:** A detailed markdown report will be generated and saved to `.gemini/docs/gemini_test_reports/` with the naming convention `GEMINI_playwright_mcp_tests_YY-MM-DD_hh-mm.md`.
+
+**Execution Steps:**
 
 1.  **Start the MCP Server:**
-
-    The MCP server is typically started automatically by the editor or can be started manually:
-
     ```bash
     npx @playwright/mcp@latest --port 8931
     ```
 
 2.  **Start the React Frontend:**
-
     ```bash
     npm run dev --prefix gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
     ```
 
-3.  **Interact with the GUI via MCP Commands:**
+3.  **Navigate to the page:**
+    ```json
+    {
+      "tool": "browser_navigate",
+      "url": "http://localhost:3000"
+    }
+    ```
 
-    The AI agent would send a sequence of commands to the MCP server to test the application.
+4.  **Take an initial snapshot:**
+    ```json
+    {
+      "tool": "browser_snapshot"
+    }
+    ```
 
-    *   **Navigate to the page:**
-        ```json
-        {
-          "tool": "browser_navigate",
-          "url": "http://localhost:3000"
-        }
-        ```
+#### Module 1: Initial Prompts
 
-    *   **Take a snapshot of the page:**
-        ```json
-        {
-          "tool": "browser_snapshot"
-        }
-        ```
+**Test Case 1.1: Market Status**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Market Status: Low Verbosity, Raw response format output"
+    }
+    ```
+*   **Action:** Press Enter.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+*   **Action:** Wait for the response and take a snapshot.
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_snapshot"
+    }
+    ```
 
-    *   **Type into the query input:**
-        ```json
-        {
-          "tool": "browser_type",
-          "element": "The query input field",
-          "ref": "...", // The ref from the snapshot
-          "text": "What is the latest price of AAPL?"
-        }
-        ```
+**Test Case 1.2: Single Ticker Snapshot (NVDA)**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Single Ticker Snapshot: NVDA, Low Verbosity, Raw response format output"
+    }
+    ```
+*   **Action:** Press Enter.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+*   **Action:** Wait for the response and take a snapshot.
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_snapshot"
+    }
+    ```
 
-    *   **Press Enter:**
-        ```json
-        {
-          "tool": "browser_press_key",
-          "key": "Enter"
-        }
-        ```
+**Test Case 1.3: Single Ticker Snapshot (SPY)**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Single Ticker Snapshot: SPY, Low Verbosity, Raw response format output"
+    }
+    ```
+*   **Action:** Press Enter.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+*   **Action:** Wait for the response and take a snapshot.
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_snapshot"
+    }
+    ```
 
-    *   **Wait for the response and take another snapshot:**
-        ```json
-        {
-          "tool": "browser_wait_for",
-          "text": "The response to the query"
-        }
-        ```
-        ```json
-        {
-          "tool": "browser_snapshot"
-        }
-        ```
+**Test Case 1.4: Single Ticker Snapshot (WDC)**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Single Ticker Snapshot: WDC, Low Verbosity, Raw response format output"
+    }
+    ```
+*   **Action:** Press Enter.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+*   **Action:** Wait for the response and take a snapshot.
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_snapshot"
+    }
+    ```
+
+**Test Case 1.5: Full Market Snapshot**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output"
+    }
+    ```
+*   **Action:** Press Enter.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+*   **Action:** Wait for the response and take a snapshot.
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_snapshot"
+    }
+    ```
+
+#### Module 2: Comprehensive Functionality
+
+**Test Case 2.1: Technical Analysis**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Technical Analysis for MSFT"
+    }
+    ```
+*   **Action:** Press Enter and wait for response.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+
+**Test Case 2.2: Support Resistance Analysis**
+*   **Action:** Type the query.
+    ```json
+    {
+      "tool": "browser_type",
+      "element": "The query input field",
+      "ref": "...",
+      "text": "Support Resistance Analysis for AAPL"
+    }
+    ```
+*   **Action:** Press Enter and wait for response.
+    ```json
+    {
+      "tool": "browser_press_key",
+      "key": "Enter"
+    }
+    ```
+    ```json
+    {
+      "tool": "browser_wait_for",
+      "time": 120
+    }
+    ```
+
+**Test Case 2.3: UI Button Tests**
+*   **Action:** Click "Copy chat as markdown to clipboard".
+    ```json
+    {
+      "tool": "browser_click",
+      "element": "Copy chat as markdown to clipboard",
+      "ref": "..."
+    }
+    ```
+*   **Action:** Click "Copy chat as JSON to clipboard".
+    ```json
+    {
+      "tool": "browser_click",
+      "element": "Copy chat as JSON to clipboard",
+      "ref": "..."
+    }
+    ```
+*   **Action:** Click "Copy most recent AI response to clipboard as markdown".
+    ```json
+    {
+      "tool": "browser_click",
+      "element": "Copy most recent AI response to clipboard as markdown",
+      "ref": "..."
+    }
+    ```
+*   **Action:** Click "Copy most recent user request to clipboard as markdown".
+    ```json
+    {
+      "tool": "browser_click",
+      "element": "Copy most recent user request to clipboard as markdown",
+      "ref": "..."
+    }
+    ```
+
 
 This method is powerful for exploratory and interactive testing driven by an AI agent, but as mentioned, it is not the recommended approach for building a repeatable, automated test suite for our project.
