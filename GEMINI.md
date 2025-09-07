@@ -74,8 +74,36 @@ This project is a comprehensive Python application with a CLI, FastAPI server, a
 
 *   **Linting**: `pylint` for Python and `eslint` for JavaScript.
 *   **Testing**: `pytest` for backend tests. Run with `uv run pytest tests/ -v`.
-*   **Tool Usage**: MCP tools are the **PRIMARY** choice for all development tasks, including file operations, code analysis, and repository management. Standard tools should only be used as a fallback if MCP tools are unavailable or encounter issues.
-*   **Local Sync**: After using `mcp_github` tools to commit changes to the remote repository, you **MUST** run `git pull` to sync the local repository.
+*   **Tool Usage**: MCP tools are the **PRIMARY** choice for all development tasks. Standard tools should only be used as a fallback if MCP tools are unavailable or encounter issues.
+
+### MCP GitHub Tool Workflow & Fallback Procedure
+
+When committing files to the repository, the following procedure is mandatory to ensure consistency and prevent sync issues.
+
+#### 1. Primary Method: `mcp_github` Tools
+
+This is the preferred method for all repository file operations.
+
+1.  **Get Latest File SHA:** Before updating a file, always get its latest SHA hash using `mcp_github_get_file_contents`. This is critical to avoid conflicts.
+2.  **Update Remote File:** Use `mcp_github_create_or_update_file` with the new content and the SHA obtained in the previous step.
+3.  **Verify Success:** Check the tool's output to confirm the commit was created successfully.
+
+#### 2. Automatic Fallback Procedure
+
+If the primary method fails for any reason, the following fallback must be triggered **automatically** without user intervention.
+
+1.  **Diagnose and Retry (Once):** If the failure is due to a SHA mismatch (a 409 Conflict error), the agent must re-fetch the latest SHA and attempt the `mcp_github_create_or_update_file` call exactly **one** more time.
+2.  **Execute Fallback:** If the retry fails, or if the initial error was not a SHA mismatch, switch to the fallback method. Use `run_shell_command` to execute the standard `git` workflow:
+    *   `git add <file>`
+    *   `git commit -m "..."`
+    *   `git push`
+3.  **Report Fallback:** After successfully using the fallback, briefly notify the user that the fallback method was used and why.
+
+#### 3. Mandatory Final Step: Local Sync
+
+Regardless of whether the primary or fallback method was used, the final step is **always** to synchronize the local repository.
+
+*   **Run `git pull`:** Use `run_shell_command` to execute `git pull`. This ensures the local workspace reflects the latest changes from the remote repository, preventing sync conflicts for future operations.
 
 ---
 
