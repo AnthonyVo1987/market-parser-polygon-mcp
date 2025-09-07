@@ -1,5 +1,14 @@
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 
+Research setting up & integrating Playwrite MCP Server into our development environment for you to perform the React GUI Testing
+Research setting up & integrating Playwrite CLI Version into our development environment for you to perform the React GUI Testing
+Generate comprehensive Guide for the setup, install, integration, & AND usage by AI Coding agent for BOTH methods. Provide a final suggested recommendation of which method is best for our current environment, that finds the best balance between automation vs ease of setup vs ease of use vs lower token usage
+
+Add-on additional Doc tasks to re-organize and update Project Docs CLAUDE.md, README.md, OpenAI Migration Guide with the proper full command sequence to run CLI & GUI from virgin state:
+
+- The instructions need to be at the very top AND EMPHASIZED as a "quick start install & usage instructions" of project docs becuase currently the instructions are buried randomly in the middle of docs so it's not obvious to user what the full proper sequence is. Other sections can go into deeper detail on all the specifics of the setup, but at least we need the quick start right at the beginning
+- Need steps for setup, install, dependencies, packages, starting ALL servers in the proper order AND with example output snippets of a successful startin & running of the servers so user can compare and make sure the outputs are correct and configured before user attempts to start the GUI
+
 # New Task Details
 
 ## Task Description

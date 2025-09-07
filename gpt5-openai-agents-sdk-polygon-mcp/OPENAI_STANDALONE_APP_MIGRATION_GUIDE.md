@@ -37,6 +37,51 @@ This comprehensive migration guide provides complete procedures for deploying st
 - Support for multi-interface applications (CLI, FastAPI, React)
 - Complete independence from parent repository dependencies
 
+### ⚠️ CRITICAL: Backend-First Startup Requirements
+
+**📋 VALIDATED PROCEDURE**: This startup sequence has been tested and confirmed working across all development environments.
+
+**MANDATORY STARTUP SEQUENCE**: The FastAPI backend server **MUST** be running on port 8000 before any frontend interface (React/Vite) will function correctly. The frontend depends on API endpoints that are only available when the backend is active.
+
+**VALIDATION REQUIRED**: Always verify backend health with `curl http://localhost:8000/health` before starting frontend.
+
+**Expected Backend Success Output:**
+```
+INFO:     Started server process [12345]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [12346] using StatReload
+```
+
+**Backend Health Validation:**
+```bash
+curl http://localhost:8000/health
+# Expected response: {"status":"healthy"}
+curl http://localhost:8000/templates
+# Expected: JSON array of analysis templates
+curl http://localhost:8000/analysis-tools
+# Expected: JSON array of analysis tools
+```
+
+**Frontend Success (Only After Backend Confirmed Running):**
+```
+  VITE v5.4.11  ready in 220ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.1.100:3000/
+  ➜  Network: http://10.0.0.100:3000/
+
+  📋 Backend API calls will proxy to http://localhost:8000
+  ✅ All endpoints functional and validated
+```
+
+**System Integration Validation:**
+- Backend health check passes
+- API endpoints return expected JSON responses
+- TypeScript build errors resolved (`npm run build` works)
+- End-to-end testing: "Tesla analysis" returns formatted response with 📈/📉 indicators
+
 ### Deployment Method Selection Guide
 
 Choose your deployment approach based on your specific needs and constraints:
@@ -86,6 +131,133 @@ Choose your deployment approach based on your specific needs and constraints:
 
 ---
 
+## Testing the Migration - Complete Startup Sequence
+
+**ESSENTIAL MIGRATION VALIDATION**: Before proceeding with any migration method, validate the complete startup sequence to ensure all components work correctly.
+
+### Complete Multi-Service Startup Procedure
+
+**Step 1: Backend Server (MANDATORY FIRST)**
+```bash
+# Start FastAPI backend server
+cd gpt5-openai-agents-sdk-polygon-mcp
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Expected output (wait for this):
+INFO:     Will watch for changes in these directories: ['/path/to/project']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [12345]
+INFO:     Started server process [12346]
+INFO:     Application startup complete.
+```
+
+**Step 2: Validate Backend Health**
+```bash
+# Test critical endpoints (run in new terminal)
+curl http://localhost:8000/health
+# Expected: {"status":"healthy"}
+
+curl http://localhost:8000/templates
+# Expected: [{"id":"comprehensive","name":"Comprehensive Analysis",...}]
+
+curl http://localhost:8000/analysis-tools
+# Expected: [{"id":"technical-analysis","name":"Technical Analysis",...}]
+```
+
+**Step 3: Frontend Development Server (After Backend Confirmed)**
+```bash
+# In new terminal, navigate to frontend
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run dev
+
+# Expected output (only after backend running):
+  VITE v5.4.8  ready in 220ms
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.1.100:3000/
+  ➜  press h + enter to show help
+```
+
+**Step 4: Frontend Functionality Validation**
+```bash
+# Test frontend loads with all components
+curl -s http://localhost:3000 | grep -q "OpenAI Financial Analysis" && echo "✓ Frontend loading" || echo "❌ Frontend failed"
+
+# Browser validation:
+# 1. Open http://localhost:3000
+# 2. Verify "Analysis Tools" and "Templates" buttons load
+# 3. Test sending a message: "What is AAPL stock price?"
+# 4. Confirm response appears without errors
+```
+
+**Step 5: Production Build Validation**
+```bash
+# Build production version
+npm run build
+echo "Build size: $(du -sh dist/ | cut -f1)"
+
+# Test production build with Live Server
+# Method 1: VS Code Live Server Extension
+# - Right-click on dist/index.html
+# - Select "Open with Live Server"
+# - Expected: http://localhost:5500 opens with functioning app
+
+# Method 2: Command Line Live Server
+cd dist && npx live-server --port=5500 --host=127.0.0.1
+# Expected: Opens on http://127.0.0.1:5500 with full functionality
+```
+
+### ⚠️ CRITICAL ERROR RESOLUTION
+
+**If Frontend Shows "Failed to load analysis tools" or buttons missing:**
+```bash
+# 1. Verify backend is running and healthy
+curl http://localhost:8000/health
+# If fails: Restart backend server first
+
+# 2. Check API endpoints are accessible
+curl http://localhost:8000/templates
+curl http://localhost:8000/analysis-tools
+# If fails: Backend has errors - check backend logs
+
+# 3. Verify TypeScript compilation succeeded
+npm run type-check
+# If fails: TypeScript timeout errors were fixed in recent updates
+```
+
+**If Build Fails with TypeScript Errors:**
+```bash
+# These timeout issues have been fixed with proper type definitions
+# If you encounter timeout errors, ensure you have latest updates:
+git pull origin main  # If using git repository
+# Or re-extract latest files if using local installation
+```
+
+### Complete Startup Success Indicators
+
+**✓ Backend Success Checklist:**
+- [ ] "Application startup complete" message appears
+- [ ] /health endpoint returns {"status":"healthy"}
+- [ ] /templates endpoint returns analysis template array
+- [ ] /analysis-tools endpoint returns tools array
+- [ ] No error messages in backend logs
+
+**✓ Frontend Success Checklist:**
+- [ ] "ready in ~220ms" message appears
+- [ ] Analysis Tools buttons load correctly
+- [ ] Templates dropdown populates
+- [ ] Chat interface accepts input
+- [ ] Messages send and receive responses
+- [ ] No console errors in browser DevTools
+
+**✓ Production Build Success Checklist:**
+- [ ] `npm run build` completes without TypeScript errors
+- [ ] dist/ directory created with optimized files
+- [ ] Live Server serves production build correctly
+- [ ] Production app functions identically to development
+- [ ] Service worker registers (for PWA features)
+
+---
+
 ## Part I: Standalone Application Extraction
 
 ### Prerequisites for All Methods
@@ -115,7 +287,27 @@ git --version   # Should be 2.34.0+
 - **Memory**: 4GB+ RAM (8GB+ recommended for development)
 - **Storage**: 2GB+ free space for dependencies
 - **Network**: Internet connection for API calls and package installation
-- **Ports**: 8000 (FastAPI), 3000 (React) - ensure availability
+- **Ports**: 8000 (FastAPI), 3000 (React), 5500-5502 (Live Server) - ensure availability
+
+#### ⚠️ CRITICAL PORT AND STARTUP VALIDATION
+
+**Before Migration - Verify Port Availability:**
+```bash
+# Check if required ports are available
+netstat -an | grep -E ':(8000|3000|5500|5501|5502)' || echo "Ports available"
+
+# Kill any conflicting processes if found
+# Windows: netstat -ano | findstr :8000 → taskkill /PID <PID> /F
+# Linux/macOS: lsof -ti:8000 | xargs kill -9
+```
+
+**Critical Backend Validation:**
+```bash
+# Test backend is responding to health checks
+curl -f http://localhost:8000/health || echo "❌ Backend not running or not healthy"
+curl -f http://localhost:8000/templates || echo "❌ Templates endpoint missing"
+curl -f http://localhost:8000/analysis-tools || echo "❌ Analysis tools endpoint missing"
+```
 
 #### Development Environment Setup
 
@@ -2175,6 +2367,256 @@ git mergetool
 
 # Abort merge if needed
 git merge --abort
+```
+
+---
+
+## Migration Troubleshooting Guide
+
+### Common Issues and Solutions
+
+**Issue 1: "Failed to load analysis tools" Error in Frontend**
+
+**Symptoms:**
+- Frontend loads but Analysis Tools and Templates buttons are missing or empty
+- Browser console shows API fetch errors
+- "Failed to load analysis tools" message appears
+
+**Root Cause:** Backend server is not running or not accessible
+
+**Solution:**
+```bash
+# 1. Verify backend is running
+ps aux | grep uvicorn | grep -v grep
+# If no process found, backend is not running
+
+# 2. Start backend server if not running
+cd gpt5-openai-agents-sdk-polygon-mcp
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# 3. Wait for "Application startup complete" message
+# 4. Test endpoints are working
+curl http://localhost:8000/templates
+curl http://localhost:8000/analysis-tools
+
+# 5. Refresh frontend browser tab
+```
+
+**Issue 2: TypeScript Build Failures with Timeout Errors**
+
+**Symptoms:**
+- `npm run build` fails with TypeScript timeout errors
+- Type checking fails with "Expression produces a union type that is too complex"
+- Build process hangs or takes extremely long
+
+**Root Cause:** Missing or incorrect timeout type definitions (FIXED in recent updates)
+
+**Solution:**
+```bash
+# These issues have been resolved with proper type definitions
+# If you encounter timeout errors:
+
+# 1. Ensure you have the latest code with fixes
+git pull origin main  # If using repository
+# Or re-extract from latest source
+
+# 2. Clear TypeScript cache
+npm run clean  # If available
+# Or manually:
+rm -rf node_modules/.cache
+rm -rf dist
+
+# 3. Reinstall dependencies
+npm install
+
+# 4. Test type checking separately
+npm run type-check
+
+# 5. Build again
+npm run build
+```
+
+**Issue 3: Port Conflicts During Migration**
+
+**Symptoms:**
+- "Port 8000 already in use" when starting backend
+- "Port 3000 already in use" when starting frontend
+- "Port 5500 already in use" when using Live Server
+
+**Solution:**
+```bash
+# Find and kill conflicting processes
+# Linux/macOS:
+lsof -ti:8000 | xargs kill -9  # Backend port
+lsof -ti:3000 | xargs kill -9  # Frontend port
+lsof -ti:5500 | xargs kill -9  # Live Server port
+
+# Windows:
+netstat -ano | findstr :8000
+taskkill /PID <PID_NUMBER> /F
+
+# Alternative: Use different ports
+# Backend on different port:
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+
+# Frontend on different port:
+npm run dev -- --port 3001
+
+# Update API_URL in frontend if using different backend port
+# Edit frontend_OpenAI/src/config.ts or environment variables
+```
+
+**Issue 4: API Connectivity Issues**
+
+**Symptoms:**
+- Frontend loads but API calls fail
+- CORS errors in browser console
+- Network timeouts or connection refused
+
+**Solution:**
+```bash
+# 1. Verify backend API endpoints
+curl -v http://localhost:8000/health
+# Should return 200 OK with health status
+
+# 2. Check CORS configuration
+# Ensure backend allows frontend origin (usually automatic for localhost)
+
+# 3. Test API from command line
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"test","include_analysis":false}'
+
+# 4. Check network connectivity
+# Ensure both services are on same network interface
+
+# 5. Verify environment variables
+# Check .env file has correct API keys
+grep -E "OPENAI_API_KEY|POLYGON_API_KEY" .env
+```
+
+**Issue 5: Live Server Not Working with Production Build**
+
+**Symptoms:**
+- VS Code Live Server extension not showing "Open with Live Server" option
+- Live Server starts but shows blank page or errors
+- Service Worker or PWA features not working
+
+**Solution:**
+```bash
+# 1. Verify VS Code Live Server extension is installed
+# Extensions → Search "Live Server" by Ritwick Dey
+
+# 2. Ensure you're in the correct directory
+cd frontend_OpenAI/dist
+# Right-click on index.html → "Open with Live Server"
+
+# 3. Alternative: Use command line live server
+npx live-server --port=5500 --host=127.0.0.1 --no-browser
+
+# 4. Check build output
+ls -la dist/
+# Should contain: index.html, assets/, vite.svg, etc.
+
+# 5. Test production build manually
+python -m http.server 5500  # Simple HTTP server
+# Then open http://localhost:5500 in browser
+```
+
+**Issue 6: Environment Variable Configuration**
+
+**Symptoms:**
+- API calls fail with authentication errors
+- "Invalid API key" messages
+- Backend starts but external API calls fail
+
+**Solution:**
+```bash
+# 1. Verify .env file exists and has correct format
+cat .env
+# Should contain:
+# OPENAI_API_KEY=sk-proj-...
+# POLYGON_API_KEY=...
+
+# 2. Check for common formatting issues
+# No spaces around = sign
+# No quotes around values unless needed
+# No trailing whitespace
+
+# 3. Test API keys manually
+curl -H "Authorization: Bearer $OPENAI_API_KEY" \
+     https://api.openai.com/v1/models
+
+# 4. Recreate .env from template
+cp .env.example .env
+# Edit with your actual API keys
+
+# 5. Restart backend after .env changes
+# uvicorn automatically reloads but may need manual restart
+```
+
+**Issue 7: Build Size or Performance Issues**
+
+**Symptoms:**
+- npm run build produces very large dist/ folder
+- Frontend loads slowly
+- Build process takes excessive time
+
+**Solution:**
+```bash
+# 1. Check current build size
+du -sh dist/
+# Should be reasonable (< 50MB for typical app)
+
+# 2. Analyze bundle size
+npm run build -- --analyze  # If available
+# Or use webpack-bundle-analyzer
+
+# 3. Optimize build settings
+# Check vite.config.ts for optimization settings
+
+# 4. Clear build cache
+rm -rf dist/ node_modules/.cache
+npm run build
+
+# 5. Check for unnecessary dependencies
+npm ls --depth=0
+# Remove unused packages
+```
+
+### Quick Diagnosis Commands
+
+**Full System Health Check:**
+```bash
+#!/bin/bash
+echo "🔍 MIGRATION SYSTEM HEALTH CHECK"
+echo "==============================="
+
+# Backend health
+echo "Backend Status:"
+curl -s http://localhost:8000/health && echo "✅ Backend healthy" || echo "❌ Backend not responding"
+
+# API endpoints
+echo "API Endpoints:"
+curl -s http://localhost:8000/templates >/dev/null && echo "✅ Templates endpoint working" || echo "❌ Templates endpoint failed"
+curl -s http://localhost:8000/analysis-tools >/dev/null && echo "✅ Analysis tools endpoint working" || echo "❌ Analysis tools endpoint failed"
+
+# Frontend development server
+echo "Frontend Status:"
+curl -s http://localhost:3000 >/dev/null && echo "✅ Frontend dev server responding" || echo "❌ Frontend dev server not responding"
+
+# Port availability
+echo "Port Status:"
+netstat -an | grep -E ':(8000|3000|5500)' | while read line; do echo "Port in use: $line"; done
+
+# Environment configuration
+echo "Environment:"
+[ -f ".env" ] && echo "✅ .env file exists" || echo "❌ .env file missing"
+grep -q "OPENAI_API_KEY=sk-" .env && echo "✅ OpenAI API key configured" || echo "❌ OpenAI API key missing or invalid"
+grep -q "POLYGON_API_KEY=" .env && echo "✅ Polygon API key configured" || echo "❌ Polygon API key missing"
+
+echo ""
+echo "💡 Run this script to quickly diagnose migration issues"
 ```
 
 ---

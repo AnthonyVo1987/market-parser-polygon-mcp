@@ -75,15 +75,34 @@ npm run serve:production        # Production build testing
    - Search for "Live Server" by Ritwick Dey
    - Install the extension
 
-2. **Ensure Backend is Running**:
+2. **CRITICAL: Ensure Backend is Running FIRST**:
    ```bash
-   # In the parent directory
+   # Navigate to parent directory
+   cd ..
    uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+   
+   # Expected success output:
+   # INFO:     Started server process [XXXXX]
+   # INFO:     Waiting for application startup.
+   # INFO:     Application startup complete.
+   # INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+   
+   # Verify backend is ready:
+   curl http://localhost:8000/health  # Must return: {"status":"healthy"}
    ```
 
 ### Basic Usage
 
-1. **Build and Prepare**:
+**⚠️ CRITICAL: Backend server MUST be running on port 8000 before using Live Server**
+
+1. **Verify Backend is Running**:
+   ```bash
+   curl http://localhost:8000/health
+   # Expected: {"status":"healthy"}
+   # If this fails, Live Server frontend will NOT work
+   ```
+
+2. **Build and Prepare**:
    ```bash
    npm run serve
    ```
@@ -92,14 +111,20 @@ npm run serve:production        # Production build testing
    - Display usage instructions
    - Set up the dist/ folder for serving
 
-2. **Start Live Server**:
+3. **Start Live Server**:
    - Open VS Code Command Palette (Ctrl+Shift+P)
    - Type "Live Server: Open with Live Server"
    - Press Enter
 
-3. **Access Application**:
-   - Local: `http://localhost:5500`
-   - Network: `http://YOUR_LOCAL_IP:5500`
+4. **System Validation**:
+   - **Backend Health**: Verify `http://localhost:8000/health` returns success
+   - **API Endpoints**: Test `http://localhost:8000/templates` and `http://localhost:8000/analysis-tools`
+   - **Frontend Access**: Open `http://localhost:5500`
+   - **End-to-End Test**: Type "Tesla stock analysis" and verify response with 📈/📉 indicators
+
+5. **Access URLs**:
+   - **Local**: `http://localhost:5500`
+   - **Network**: `http://YOUR_LOCAL_IP:5500`
 
 ### Environment-Specific Testing
 

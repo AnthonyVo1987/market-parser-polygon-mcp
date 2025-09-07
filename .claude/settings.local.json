@@ -104,7 +104,8 @@
       "WebFetch(domain:localhost)",
       "Bash(live-server:*)",
       "WebFetch(domain:127.0.0.1)",
-      "Bash(time curl:*)"
+      "Bash(time curl:*)",
+      "mcp__filesystem__read_media_file"
     ],
     "deny": [],
     "ask": [],

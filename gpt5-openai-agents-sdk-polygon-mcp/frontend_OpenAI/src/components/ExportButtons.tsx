@@ -35,7 +35,7 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   );
 
   // Refs to store timeout IDs for cleanup
-  const timeoutRefs = useRef<Record<keyof ButtonStates, number | null>>({
+  const timeoutRefs = useRef<Record<keyof ButtonStates, ReturnType<typeof setTimeout> | null>>({
     copyMd: null,
     copyJson: null,
     saveMd: null,

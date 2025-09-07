@@ -637,6 +637,75 @@ async def get_system_status():
         ) from e
 
 
+# ====== LEGACY COMPATIBILITY ENDPOINTS ======
+
+
+@app.get("/templates")
+async def get_templates_legacy():
+    """Legacy endpoint for template data (redirects to v1 API)."""
+    try:
+        # Get templates using the same logic as the v1 endpoint
+        templates = []
+        for template_type in AnalysisType:
+            templates.append({
+                "id": template_type.value,
+                "type": template_type.value,
+                "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
+                "description": f"{template_type.value.replace('_', ' ').title()} analysis template",
+                "template": f"Provide {template_type.value.replace('_', ' ')} analysis for {{ticker}}",
+                "icon": "📊" if template_type == AnalysisType.SNAPSHOT else 
+                       "📈" if template_type == AnalysisType.TECHNICAL else "🎯",
+                "requiresTicker": True,
+                "followUpQuestions": [
+                    "Would you like more details on this analysis?",
+                    "Should we analyze another stock?",
+                ]
+            })
+        
+        return {
+            "success": True,
+            "templates": templates,
+            "total_count": len(templates)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve templates: {str(e)}",
+        ) from e
+
+
+@app.get("/analysis-tools")
+async def get_analysis_tools_legacy():
+    """Legacy endpoint for analysis tools data."""
+    try:
+        analysis_tools = []
+        for template_type in AnalysisType:
+            analysis_tools.append({
+                "id": template_type.value,
+                "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
+                "description": f"Get {template_type.value.replace('_', ' ')} analysis for any stock",
+                "icon": "📊" if template_type == AnalysisType.SNAPSHOT else 
+                       "📈" if template_type == AnalysisType.TECHNICAL else "🎯",
+                "endpoint": f"/api/v1/analysis/{template_type.value.replace('_', '-')}",
+                "requiresTicker": True,
+                "category": "financial_analysis"
+            })
+        
+        return {
+            "success": True,
+            "tools": analysis_tools,
+            "total_count": len(analysis_tools)
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve analysis tools: {str(e)}",
+        ) from e
+
+
+# ====== HEALTH CHECK ENDPOINTS ======
+
+
 @app.get("/health", response_model=SystemHealthResponse)
 @app.get("/api/v1/health", response_model=SystemHealthResponse)
 async def health_check():

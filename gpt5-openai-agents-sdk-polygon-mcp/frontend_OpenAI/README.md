@@ -6,30 +6,62 @@ A modern React frontend for the GPT-5 OpenAI Agents SDK financial analysis appli
 
 ### Prerequisites
 - Node.js 18+ and npm
-- FastAPI backend running (see parent README)
+- **CRITICAL: FastAPI backend MUST be running on port 8000 BEFORE starting frontend**
+- VS Code Live Server extension (for production build testing)
 
 ### Development Setup
 
-1. **Install dependencies:**
+**⚠️ CRITICAL STARTUP ORDER: Backend server MUST be running first**
+
+**STEP 1 (MANDATORY): Start FastAPI Backend**
+```bash
+# Navigate to parent directory
+cd ..
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Expected success output:
+# INFO:     Started server process [XXXXX]
+# INFO:     Waiting for application startup.
+# INFO:     Application startup complete.
+# INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+
+**STEP 2: Verify Backend is Ready**
+```bash
+curl http://localhost:8000/health
+# Expected response: {"status":"healthy"}
+# If this fails, frontend will NOT work
+```
+
+**STEP 3: Install Dependencies**
 ```bash
 npm install
 ```
 
-2. **Start the FastAPI backend:**
-```bash
-# In the parent directory
-uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-3. **Start the React frontend:**
+**STEP 4: Start React Frontend**
 ```bash
 npm run dev
+# Only start this AFTER backend is confirmed running
 ```
 
-4. **Access the application:**
-   - Frontend: `http://localhost:3000`
-   - Backend API: `http://localhost:8000`
-   - API Documentation: `http://localhost:8000/docs`
+**STEP 5: System Validation**
+
+1. **Verify Backend Health:**
+   ```bash
+   curl http://localhost:8000/health
+   curl http://localhost:8000/templates
+   curl http://localhost:8000/analysis-tools
+   ```
+
+2. **Access the application:**
+   - **Frontend**: `http://localhost:3000` (React chat interface)
+   - **Backend API**: `http://localhost:8000` (FastAPI server)
+   - **API Documentation**: `http://localhost:8000/docs` (Swagger UI)
+
+3. **Test End-to-End:**
+   - Open frontend in browser
+   - Type: "Tesla stock analysis"
+   - Should receive formatted response with 📈/📉 indicators
 
 ## Project Structure
 
@@ -77,7 +109,15 @@ frontend_OpenAI/
 ## API Integration
 
 ### Backend Requirements
+
+**⚠️ MANDATORY: FastAPI backend server must be running on port 8000**
+
 The frontend integrates with the FastAPI backend running on `http://localhost:8000` with multiple endpoints:
+
+**Before using frontend, verify backend is running:**
+```bash
+curl http://localhost:8000/health  # Must return: {"status":"healthy"}
+```
 
 #### Core Endpoints
 - **`POST /api/v1/analysis/chat`**: Chat analysis with context

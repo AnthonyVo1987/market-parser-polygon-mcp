@@ -2,6 +2,166 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚀 Quick Start - Complete Command Sequence (Virgin State to Running)
+
+**This is the primary way to get started with the Market Parser application. Follow these exact steps in order:**
+
+### Step 1: Environment Setup
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd market-parser-polygon-mcp
+
+# Copy environment template and add your API keys
+cp .env.example .env
+# Edit .env and add:
+# POLYGON_API_KEY=your_polygon_api_key_here
+# OPENAI_API_KEY=your_openai_api_key_here
+
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install Node.js 18+ (if not already installed)
+# Download from nodejs.org or use your package manager
+node --version  # Should be 18.0.0 or higher
+npm --version   # Should be included with Node.js
+```
+
+### Step 2: Backend Setup (Required First)
+
+```bash
+# Navigate to OpenAI directory
+cd gpt5-openai-agents-sdk-polygon-mcp
+
+# Install Python dependencies
+uv install
+
+# Start FastAPI backend server
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**Expected Output:**
+```
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [XXXX] using WatchFiles
+INFO:     Started server process [XXXX]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+### Step 3: CLI Testing (Verify Backend Works)
+
+**Open a new terminal and test the CLI:**
+
+```bash
+# Navigate to OpenAI directory
+cd gpt5-openai-agents-sdk-polygon-mcp
+
+# Run standalone CLI interface
+uv run src/main.py
+```
+
+**Expected Output:**
+```
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> tell me about NVDA stock
+
+🎯 KEY TAKEAWAYS
+📈 NVIDIA Corporation (NVDA) - Current Price: $124.36 (-$4.64, -3.59%)
+📊 Volume: 224.1M shares (High activity)
+💰 Market Cap: $3.05T (Mega-cap tech stock)
+
+[Additional financial analysis with emoji indicators...]
+
+> exit
+Goodbye!
+Market Analysis Agent shutdown complete
+```
+
+### Step 4: GUI Setup - Vite Development Server (Recommended)
+
+**Open a new terminal for the frontend:**
+
+```bash
+# Navigate to frontend directory
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+
+# Install npm dependencies
+npm install
+
+# Start Vite development server
+npm run dev
+```
+
+**Expected Output:**
+```
+> frontend-openai@0.0.0 dev
+> vite --mode development
+
+  VITE v5.4.19  ready in 220 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://172.29.229.155:3000/
+  ➜  Network: http://172.17.0.1:3000/
+```
+
+**Access the GUI:** Open http://localhost:3000/ in your browser
+
+### Step 5: GUI Setup - Live Server Production (Alternative)
+
+**If you prefer production-optimized serving:**
+
+```bash
+# Navigate to frontend directory
+cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+
+# Build production assets
+npm run build
+
+# Start Live Server (requires VS Code Live Server extension)
+cd dist
+live-server --port=5501 --host=127.0.0.1 --no-browser --wait=1000
+```
+
+**Expected Output:**
+```
+Serving "/path/to/frontend_OpenAI/dist" at http://127.0.0.1:5501
+Ready for changes
+```
+
+**Access the GUI:** Open http://127.0.0.1:5501/ in your browser
+
+### ✅ Complete System Status Check
+
+**After following all steps, you should have:**
+
+1. **FastAPI Backend** running on http://0.0.0.0:8000 (startup complete)
+2. **CLI Interface** working with financial data queries and emoji-based responses
+3. **Vite Dev Server** running on http://localhost:3000/ (220ms startup) OR
+4. **Live Server** running on http://127.0.0.1:5501/ (production build)
+
+**Test the complete system:**
+- CLI: Ask "tell me about NVDA stock" - should get emoji-enhanced financial analysis
+- GUI: Open browser, type financial queries - should get same enhanced responses
+- Both interfaces should show identical emoji-based sentiment indicators (📈📉💰)
+
+### 🔧 Common Issues & Solutions
+
+**Backend Issues:**
+- Missing API keys: Check .env file has both POLYGON_API_KEY and OPENAI_API_KEY
+- Port 8000 busy: Change port with `--port 8001`
+- uv not found: Install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
+
+**Frontend Issues:**
+- npm install fails: Update Node.js to 18+ and try again
+- Port 3000 busy: Vite will auto-select next available port
+- Live Server not found: Install VS Code Live Server extension
+
+**API Issues:**
+- 400 Bad Request: Verify backend is running and API keys are valid
+- MCP server errors: Ensure uvx is in PATH and Polygon API key is correct
+
 ## Project Overview
 
 Market Parser is a Python CLI and web GUI application for natural language financial queries using the Polygon.io MCP server and OpenAI's gpt-5-mini via the Pydantic AI Agent Framework. The application provides conversational responses to user queries and is being expanded with a React frontend to supplement the current Gradio interface.
@@ -41,26 +201,27 @@ All specialists and development work must respect these prototyping constraints 
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-● ✅ COMPLETE: [OpenAI] Pre-Migration Test & Fix Issues from Development Deployment Server Testing for both CLI & GUI - Successfully Delivered
+● ✅ COMPLETE: [OpenAI] Fix Utterly Broken App & Development Environment - Critical System Recovery - Successfully Delivered
 
-**Task:** Comprehensive pre-migration testing across CLI, Vite development, and Live Server production environments with authentic evidence documentation
-**Result:** All three critical environments validated and operational, ready for migration implementation
-**Impact:** Performance baselines established, system integration confirmed, migration readiness achieved
+**Task:** Critical system recovery from completely broken GUI, TypeScript build failures, and missing backend endpoints
+**Result:** All critical systems operational with comprehensive documentation and prevention measures implemented  
+**Impact:** Complete system recovery with testing methodology reform and production readiness achieved
 
 **Key Deliverables:**
 
-- CLI Testing: Real NVDA financial data retrieval (-$4.64, 224M volume) with MCP server integration operational
-- Vite GUI Testing: 290ms startup time, multi-network binding (localhost:3000), hot module replacement validated  
-- Live Server Testing: Production build served (port 36989), 2ms response time, PWA functionality confirmed
-- Evidence Documentation: All actual output logs documented in `/gpt5-openai-agents-sdk-polygon-mcp/PRE_MIGRATION_TEST_RESULTS_2025-09-07.md`
+- **TypeScript Build Fixes**: 3 components fixed (timeout type errors), `npm run build` now works correctly
+- **Backend API Implementation**: Added missing `/templates` and `/analysis-tools` endpoints (404 → 200 OK)
+- **GUI System Recovery**: No more "Failed to load analysis tools" errors, full frontend-backend integration working
+- **Documentation Overhaul**: Quick Start guides added to CLAUDE.md and README.md with backend-first startup procedures
+- **Post-Mortem Analysis**: Comprehensive analysis of how previous "PASSING WITH EXCELLENCE" missed critical failures
 
-**Specialist Coordination:** Tech-lead orchestrated 8-phase workflow with mandatory research, parallel testing, and comprehensive validation
-**Quality Status:** PASSING WITH EXCELLENCE - Code reviewer approval with authentic evidence validation | **Files Created:** 2 comprehensive docs
-**Migration Status:** READY FOR IMPLEMENTATION - All environments operational for Scenario A: Standalone Application Extraction
+**Critical System Status**: FastAPI backend (8000), Vite dev (3000), Live Server prod (5501) all operational
+**Specialist Coordination:** Tech-lead orchestrated 7-phase recovery with forensic analysis and comprehensive validation  
+**Quality Status:** PASS - READY FOR PRODUCTION | **Files Modified:** 4 critical system files + comprehensive documentation
+**Prevention Framework:** Evidence-based validation standards established to prevent future testing methodology failures
 
-📋 **Full Details:** See `/LAST_TASK_SUMMARY.md` for complete specialist reports, technical achievements, and quality validation results.
-
-**Git Commit:** de5ba48 | **Completion:** 2025-09-07
+📋 **Full Details:** See `/LAST_TASK_SUMMARY.md` for complete recovery analysis, technical fixes, and prevention measures.
+📄 **Post-Mortem:** See `/gpt5-openai-agents-sdk-polygon-mcp/POST_MORTEM_BROKEN_GUI_2025-09-07.md` for testing failure analysis.
 **Note:** Corrective actions documented for atomic commit principles and GitHub MCP tools compliance.
 <!-- LAST_COMPLETED_TASK_END -->
 

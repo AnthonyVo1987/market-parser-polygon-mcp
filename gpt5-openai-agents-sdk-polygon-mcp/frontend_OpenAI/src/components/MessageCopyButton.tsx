@@ -20,7 +20,7 @@ export default function MessageCopyButton({
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Ref to store timeout ID for cleanup
-  const timeoutRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cleanup timeout on component unmount
   useEffect(() => {

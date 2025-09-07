@@ -65,11 +65,23 @@ uv run src/main.py
 ```
 
 #### Option 2: FastAPI Server + Optimized React Frontend
+
+**⚠️ CRITICAL: Backend server MUST be running first on port 8000 for frontend to work**
+
 ```bash
-# Terminal 1: Start FastAPI server
+# STEP 1 (MANDATORY): Start FastAPI server first
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Terminal 2: Start Vite-optimized React frontend
+# Expected success output:
+# INFO:     Started server process [XXXXX]
+# INFO:     Waiting for application startup.
+# INFO:     Application startup complete.
+# INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+
+# STEP 2: Verify backend is ready
+curl http://localhost:8000/health  # Should return: {"status":"healthy"}
+
+# STEP 3: Start Vite-optimized React frontend
 cd frontend_OpenAI
 npm install
 npm run dev  # Development with local API (optimized startup ~337ms)
@@ -179,16 +191,39 @@ This will generate a comprehensive report saved to `reports/equities/meta_vs_mic
   ```
 
 ### Frontend Issues
-- **React frontend won't start:**
+- **React frontend won't start or shows "Failed to fetch":**
   ```bash
+  # FIRST: Ensure backend is running (CRITICAL)
+  curl http://localhost:8000/health || echo "Backend not running - start it first!"
+  
+  # If backend not running:
+  uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+  
+  # THEN: Fix frontend if needed
   cd frontend_OpenAI
   rm -rf node_modules package-lock.json
   npm install
   npm run dev  # Optimized Vite development server
   ```
 
-- **CORS errors:**  
-  Ensure FastAPI server is running on port 8000 and React on port 3000. The Vite proxy configuration automatically handles API routing.
+- **CORS errors or "Failed to fetch" in browser:**  
+  ```bash
+  # 1. VERIFY BACKEND IS RUNNING FIRST:
+  curl http://localhost:8000/health
+  # Should return: {"status":"healthy"}
+  
+  # 2. Check API endpoints are functional:
+  curl http://localhost:8000/templates
+  curl http://localhost:8000/analysis-tools
+  
+  # 3. If backend not running, start it:
+  uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+  
+  # 4. Then start frontend:
+  cd frontend_OpenAI && npm run dev
+  ```
+  
+  **Note:** FastAPI server on port 8000 is MANDATORY. Frontend on port 3000 uses Vite proxy configuration for API routing.
 
 - **Environment-specific issues:**
   ```bash

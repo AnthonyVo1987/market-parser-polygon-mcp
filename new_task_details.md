@@ -2,39 +2,89 @@
 
 ## Task Description
 
-[OpenAI] Pre-Migration Test & Fix Issues from Development Deployment Server Testing for both CLI & GUI
+[OpenAI] Fix Utterly Broken App & development environment because of Incorrect Testing of GUI Vite & Live Server Methods
 
-## Task 1. Run Standalone OpenAI CLI and perform simple test to ask "NVDA Daily Snapshot for the last trading & keep response minimal and less verbose"
+## Task 1. Analyze, Research, & Fix Standalone OpenAI Vite GUI Issues from User Logs & GUI Screenshot
 
-- You will need to set a terminal\bash timeout of at least 120 seconds to allow the terminal\bash commands to respond because reponses are NOT instant
-- Confirm that the CLI app start up and also is able to respond to the test query
-- Fix any issue seen from logs
+(market-parser-polygon-mcp) 1000211866@UIML-504F9T2:~/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI (master) 2 dirty$ npm run dev
 
-## Task 2. Run Standalone OpenAI GUI using default Vite dev server method(s) and perform simple test to WebFetch the localhost website to trigger the  Web App to try and load
+- User screenshot of broken GUI app found in gpt5-openai-agents-sdk-polygon-mcp/images/Vite_broken_gui_message.PNG
 
-- Reminder that just starting the dev server is NOT complete - the web site\web app\ local host url MUST be browsed\fetched to trigger the full GUI test
-- You will need to set a terminal\bash timeout of at least 120 seconds to allow the terminal\bash commands to respond because reponses are NOT instant
-- Confirm that the app starts up OK
-- Fix any issue seen from logs
+- Logs with warnings\errors:
 
-## Task 3. Run Standalone OpenAI GUI using Live Server dev server method(s) and perform simple test to WebFetch the localhost website to trigger the Web App to try and load
+> frontend-openai@0.0.0 dev
+> vite --mode development
 
-- Reminder that just starting the dev server is NOT complete - the web site\web app\ local host url MUST be browsed\fetched to trigger the full GUI test
-- You will need to set a terminal\bash timeout of at least 120 seconds to allow the terminal\bash commands to respond because reponses are NOT instant
-- Confirm that the app starts up OK
-- Fix any issue seen from logs
+Re-optimizing dependencies because lockfile has changed
 
-## Task 4. Create new .md doc in OpenAI folder to track status & results from all the pre-migration Testing Tasks 1, 2, & 3
+  VITE v5.4.19  ready in 288 ms
 
-- Update any other project docs if needed from fixes
+  ➜  Local:   <http://localhost:3000/>
+  ➜  Network: <http://172.29.229.155:3000/>
+  ➜  Network: <http://172.17.0.1:3000/>
+  ➜  press h + enter to show help
+
+PWA v1.0.3
+mode      generateSW
+precache  1 entries (0.00 KiB)
+files generated
+  dev-dist/sw.js
+  dev-dist/workbox-ed3775ef.js
+warnings
+  One of the glob patterns doesn't match any files. Please remove or fix the following: {
+  "globDirectory": "/home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist",
+  "globPattern": "**/*.{js,css,html,ico,png,svg,woff2}",
+  "globIgnores": [
+    "**/node_modules/**/*",
+    "sw.js",
+    "workbox-*.js"
+}
+
+## Task 2. Analyze, Research, & Fix Standalone OpenAI Live Server Issues from User Logs
+
+- Live Server Method broken - Could not even run npm run build, let alone run the app
+- Is "npm run build" in ANY of the migration or setup\install guides???
+- Did you halluncinate previous Live Server GUI because how can you test Live Server if the npm run build command failed in the first place??????
+- You really need to explain whether or not you tested Live Server or not and make it work
+- Logs:
+(market-parser-polygon-mcp) 1000211866@UIML-504F9T2:~/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI (master) 3 dirty 2 untracked$ npm run build
+
+> frontend-openai@0.0.0 build
+> tsc && vite build --mode production
+
+src/components/ExportButtons.tsx:85:9 - error TS2322: Type 'Timeout' is not assignable to type 'number'.
+
+85         timeoutRefs.current[buttonId] = setTimeout(() => {
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+src/components/MessageCopyButton.tsx:49:9 - error TS2322: Type 'Timeout' is not assignable to type 'number'.
+
+49         timeoutRef.current = setTimeout(() => {
+           ~~~~~~~~~~~~~~~~~~
+
+src/components/RecentMessageButtons.tsx:77:9 - error TS2322: Type 'Timeout' is not assignable to type 'number'.
+
+77         timeoutRefs.current[buttonId] = setTimeout(() => {
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Found 3 errors in 3 files.
+
+Errors  Files
+     1  src/components/ExportButtons.tsx:85
+     1  src/components/MessageCopyButton.tsx:49
+     1  src/components/RecentMessageButtons.tsx:77
+
+## Task 3. Create new Post mortem .md doc in OpenAI folder to explain how all these issues got missed even though you claimed you reviewed and tested, corrective actions, lessons learned etc
+
+## Task 4. Update project docs, especially all setup, install, running instructions across ALL project docs with the updated fixes and proper working procedures
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Analyze & Research all the requested Task 1, Task 2, & Task 3, reading any project docs that could also be relevant to the task(s)
+- Analyze & Research all the requested Task 1, Task 2, reading any project docs that could also be relevant to the task(s)
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- IF RESEARCH FROM ALL 3x Task were NOT performed, this is a VIOLATION and task must be restarted from the beginning
+- IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
 - Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s)
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
@@ -75,8 +125,5 @@ Final Task 4: Final Verification
 ## Requirements
 
 ## Expected Outcome
-
-- CLI tested with a proper AI response back
-- Vite & Live Serve GUI methods tested WITH an explicit local host url test to trigger the actual dev server to load\compile the app because JUST starting dev servers does NOT test the actuall at all
 
 ## Additional Context
