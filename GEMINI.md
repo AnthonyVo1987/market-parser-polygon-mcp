@@ -67,13 +67,14 @@ This project is a comprehensive Python application with a CLI, FastAPI server, a
 
 3.  **Run the CLI:**
     ```bash
-    uv run src/main.py
+    uv run src.main.py
     ```
 
 ### Development Conventions
 
 *   **Linting**: `pylint` for Python and `eslint` for JavaScript.
 *   **Testing**: `pytest` for backend tests. Run with `uv run pytest tests/ -v`.
+*   **Tool Usage**: MCP tools are the **PRIMARY** choice for all development tasks, including file operations, code analysis, and repository management. Standard tools should only be used as a fallback if MCP tools are unavailable or encounter issues.
 
 ---
 
