@@ -10,242 +10,137 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 
 The project has been recently updated to consolidate migration documentation into a single comprehensive guide. See `/gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md` for complete migration instructions.
 
+## Prototyping Principles (ENFORCED)
+
+**CRITICAL PROJECT STAGE NOTICE:** This project is currently in the prototyping stage. All development work must adhere to the following principles:
+
+### Core Prototyping Requirements
+
+- **Do NOT over-engineer ANYTHING** - Focus on functional prototypes, not perfect solutions
+- **Prioritize functionality over optimization** - Get features working before making them efficient
+- **Maintain prototype simplicity** - Avoid complex architectural patterns unless absolutely necessary
+
+### NOT REQUIRED for Prototyping Stage
+
+- **Enterprise Grade solutions** - Simple, functional implementations are preferred
+- **Production Ready implementations** - Focus on demonstrating functionality
+- **Performance Optimization** - Optimize only if performance blocks functionality
+- **Comprehensive Testing** - Basic functional validation is sufficient
+- **Test Scripts or Unit Tests** - Manual testing is acceptable for prototyping
+- **CI/CD Pipeline implementation** - Basic git workflows are sufficient
+
+### Prototyping Development Guidelines
+
+- **Rapid iteration over perfect implementation** - Build, test, learn, iterate
+- **Functional completeness over code quality** - Make it work first, refine later
+- **Future scalability awareness without over-engineering** - Consider future needs but don't implement them yet
+- **Documentation focused on usage, not internal architecture** - Help users understand what it does, not how it works internally
+
+All specialists and development work must respect these prototyping constraints to maintain project momentum and avoid premature optimization.
+
+## /new_task Workflow (Enhanced A-I Process)
+
+**UPDATED WORKFLOW:** The `/new_task` command follows a systematic A-I process with tech-lead orchestration for all modes.
+
+### Core Workflow Steps
+
+**A. User Invokes `/new_task`**
+- User provides task details via `/new_task` command
+- Task details captured for analysis and planning
+
+**B. Tech-Lead Orchestrator Analysis (ALWAYS REQUIRED)**
+- Main Agent MUST use `@agent-tech-lead-orchestrator` regardless of Plan Mode or Non-Plan Mode
+- Tech-lead reads, analyzes, and reviews task details in `new_task_details.md`
+- Systematic evaluation of requirements and constraints
+
+**C. Plan Mode: Tech-Lead Orchestrated Planning**
+- `@agent-tech-lead-orchestrator` generates comprehensive plan WITH Specialist Assignments
+- Detailed task breakdown with specialist role allocations
+- Resource requirements and dependency mapping
+
+**D. Non-Plan Mode: Tech-Lead Orchestrated Planning**
+- `@agent-tech-lead-orchestrator` generates streamlined plan WITH Specialist Assignments
+- Focused task execution plan with specialist coordination
+- Efficient resource allocation for immediate implementation
+
+**E. Specialist Execution**
+- Specialists execute plan from `@agent-tech-lead-orchestrator`
+- ALL specialists MUST use MCP tools as primary method:
+  - `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+  - `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` for research
+  - `mcp__filesystem__*` for all file operations
+- Prototyping principles enforced throughout execution
+
+**F. Documentation Updates (Post-Execution)**
+- Generate detailed Last Completed Task Summary → overwrite `LAST_TASK_SUMMARY.md`
+- Generate high-level 20-line summary → update CLAUDE.md task summary section
+- Ensure comprehensive documentation of all changes and outcomes
+
+**G. Primary GitHub Tools Usage**
+- PRIMARY: `mcp__github__push_files` for all atomic commit operations
+- Secondary: Traditional git commands only when GitHub MCP tools insufficient
+- Must justify fallback to traditional git commands
+
+**H. Atomic Commit Execution**
+- Single atomic commit containing ALL changes:
+  - Code/file changes
+  - Documentation updates
+  - CLAUDE.md updates  
+  - LAST_TASK_SUMMARY.md updates
+- No separation between code changes and documentation changes
+
+**I. Single Commit Completion**
+- All code, documentation, and task summary changes belong in same commit
+- Comprehensive commit message documenting all changes
+- Clean working tree with all changes properly versioned
+
+### Workflow Enforcement
+
+**Tech-Lead Orchestrator Requirements:**
+- MANDATORY for both Plan Mode and Non-Plan Mode
+- Ensures consistent specialist assignments across all task types
+- Provides systematic analysis and resource coordination
+- Maintains quality standards and prototyping principles compliance
+
+**Prototyping Constraints Integration:**
+- All workflow steps respect prototyping stage limitations
+- Focus on functional delivery over perfect implementation
+- Avoid over-engineering during specialist execution
+- Rapid iteration and prototype-appropriate solutions
+
+**Quality Assurance Integration:**
+- Review/Fix Loop with PASSING status required before documentation
+- Comprehensive validation using MCP tools for systematic analysis
+- Atomic commit ensures complete change integration
+- Final verification confirms successful completion
+
+This enhanced A-I workflow ensures consistent tech-lead orchestration, proper specialist coordination, prototyping principles compliance, and comprehensive atomic commit management for all `/new_task` operations.
+
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
 ● ✅ COMPLETE: [OpenAI] Pre-migration Docs Prep & Updates: OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md - Successfully Delivered
 
-📋 TASK COMPLETION SUMMARY:
+**Quick Overview:**
+- **Task:** Pre-migration documentation preparation with Scenario B removal, development environment enhancement, and CI workflow management
+- **Result:** Migration guide streamlined for single-path migration with comprehensive development environment integration
+- **Impact:** Streamlined user experience eliminating dual-path confusion with enhanced development capabilities
 
-**Task Overview:**
-
-- **Task**: [OpenAI] Pre-migration Docs Prep & Updates: OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md - COMPLETED
-- **Scope**: Successfully completed pre-migration documentation preparation with Scenario B removal, development environment enhancement, and CI workflow management
-- **Timeline**: Complete 4-task workflow delivered using tech-lead orchestrated specialist assignments with systematic execution and quality assurance
-- **Result**: COMPLETE SUCCESS - Migration guide streamlined for single-path migration with comprehensive development environment integration
-
-**Specialist Task Execution Summary:**
-
-**Task 1: @code-archaeologist - Initial Documentation Analysis (✅ EXCELLENT)**
-- Comprehensive documentation inventory across 13 files in 4 directories
-- Precise Scenario B reference identification with exact line numbers (5 locations mapped)
-- Development environment documentation assessment rated 9.2/10 (no updates required)
-- Low-risk operation confirmed with minimal cross-dependencies
-
-**Task 2: @documentation-specialist - Remove Scenario B References (✅ COMPLETE)**
-- Complete removal of "Architecture Migration & Modernization" content (~347 lines)
-- Eliminated all references to outdated text-to-JSON architecture transformation concepts
-- Streamlined user pathway to single Scenario A: Standalone Application Extraction
-- Maintained professional document structure with clean navigation
-
-**Task 3: @documentation-specialist - Update Migration Guide Dev Environment (✅ EXCELLENT)**
-- Enhanced prerequisites section with comprehensive Vite and Live Server setup
-- Integrated development environment procedures into all 4 migration methods
-- Added strategic usage guidelines and decision matrix for tool selection
-- Enhanced cross-references to existing Live Server documentation in Part III
-
-**Task 4: @backend-developer - Disable Lighthouse CI Workflow (✅ COMPLETE)**
-- Implemented conditional disable with `if: false` for prototyping phase
-- Preserved complete configuration for future re-enablement
-- Added comprehensive documentation for restoration procedures
-- Workflow now disabled but easily reversible for post-prototyping
-
-**Task 5: @code-archaeologist - Final Documentation Review (✅ PASSED WITH EXCELLENCE)**
-- Validated zero remaining Scenario B references across all documentation
-- Confirmed development environment documentation comprehensively integrated
-- Verified CI workflow properly disabled with clear restoration path
-- Comprehensive quality validation with migration-ready status confirmed
-
-**Task 6: @code-reviewer - Quality Assurance Review (✅ PASSING APPROVAL)**
-- Security review confirmed no sensitive information exposure
-- Technical accuracy validated for all development procedures
-- Project requirements compliance fully satisfied
-- Professional documentation standards maintained throughout
-- Final authorization granted for git commit and push
-
-**Task 7: Main Agent - Git Commit and Push (✅ COMPLETE)**
-- Atomic commit containing all changes with comprehensive commit message
-- Successfully pushed to GitHub repository (commit: de5ba48)
-- Clean working tree confirmed post-push
-- All changes properly versioned and available
-
-**Key Technical Implementations Completed:**
-
-**Migration Guide Enhancements:**
-
-1. **Scenario B Complete Removal (✅ EXCELLENT)**: Eliminated all 5 references to outdated architecture migration concepts with zero remaining instances
-2. **Single Migration Path Focus (✅ EXCELLENT)**: Streamlined guide to focus solely on Scenario A: Standalone Application Extraction
-3. **Development Environment Integration (✅ EXCELLENT)**: Comprehensive Vite and Live Server setup integrated across all 4 migration methods
-4. **Enhanced Prerequisites Section (✅ EXCELLENT)**: Added Node.js 18+, VS Code Live Server extension, and environment verification procedures
-5. **Strategic Tool Usage Guidelines (✅ EXCELLENT)**: Clear decision matrix for when to use Vite vs Live Server throughout migration process
-6. **Cross-Reference Enhancement (✅ EXCELLENT)**: Improved navigation between main workflow and Part III Live Server documentation
-
-**CI Workflow Management:**
-
-1. **Temporary Disable Implementation (✅ EXCELLENT)**: Added conditional flags preventing automatic execution during prototyping
-2. **Configuration Preservation (✅ EXCELLENT)**: All workflow settings maintained for easy future restoration
-3. **Clear Re-enablement Documentation (✅ EXCELLENT)**: Step-by-step procedures for activating CI post-prototyping
-4. **Professional Implementation Standards (✅ EXCELLENT)**: Best practices followed for temporary workflow management
-
-**Files Enhanced with Documentation Updates:**
-
-**Primary Documentation Files:**
-
-- **`/gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md`** - Comprehensively updated with Scenario B removal and development environment integration
-- **`/.github/workflows/lighthouse-ci.yml`** - Professionally disabled with preservation of configuration and restoration documentation
-
-**Technical Achievements Delivered:**
-
-**Documentation Quality Excellence:**
-
-- **Single Migration Path**: Clear focus on standalone application extraction eliminating dual-path confusion
-- **Development Environment Integration**: Comprehensive Vite and Live Server procedures integrated into all methods
-- **Professional Standards**: Maintained enterprise-grade documentation quality throughout all modifications
-- **Enhanced Usability**: Improved discoverability and workflow integration for development environment setup
-- **Technical Accuracy**: All procedures verified against current tooling versions and validated as implementable
-
-**Migration Readiness Enhancement:**
-
-- **Streamlined Workflow**: Users now have clear, single-path migration guidance without legacy confusion
-- **Comprehensive Dev Setup**: Both Vite and Live Server environments documented with setup, running, testing, and debugging procedures
-- **Cross-Platform Support**: Development procedures cover all environments and device configurations
-- **Professional Validation**: Complete testing and quality assurance procedures integrated throughout migration workflow
-- **Future-Ready Foundation**: CI workflow temporarily disabled but preserved for post-prototyping activation
-
-**Quality Results Achieved:**
-
-**Specialist Coordination Excellence:**
-
-- **Tech-Lead Orchestration**: Followed exact specialist assignments with proper sequential and parallel task execution
-- **MCP Tool Compliance**: All specialists used required MCP tools (sequential-thinking, filesystem, context7)
-- **Quality Gate Validation**: Each task validated before proceeding to next phase ensuring systematic completion
-- **Professional Standards**: Enterprise-grade development workflow with specialist expertise applied throughout
-- **Final Approval Process**: Mandatory code-reviewer approval achieved before git operations
-
-**Project Requirements Satisfaction:**
-
-- **Prototyping Focus Maintained**: No over-engineering, appropriate complexity level for current project phase
-- **Single Scenario A Migration**: Complete elimination of legacy Scenario B confusion for users
-- **Development Environment Ready**: Comprehensive setup procedures enabling successful migration implementation
-- **CI Workflow Management**: Appropriate disable for prototyping with clear future activation pathway
-- **Documentation Excellence**: Professional standards maintained with enhanced usability and technical accuracy
-
-**Code Review and Quality Assurance:**
-
-- **PASSING Code Review Status**: Comprehensive quality assurance completed with excellent ratings across all changes
-- **Security Compliance**: No security risks identified, no sensitive information exposure
-- **Technical Validation**: All development procedures verified against current tooling and confirmed implementable
-- **Change Impact Assessment**: Low-risk modifications with positive impact on documentation clarity and usability
-- **Migration Readiness**: Documentation fully prepared for immediate migration implementation
-
-**Project Value Added:**
-
-**Migration Preparation Excellence:**
-
-- **Streamlined User Experience**: Eliminated dual-path confusion with clear single migration approach
-- **Enhanced Development Workflow**: Comprehensive environment setup enabling successful migration execution
-- **Professional Documentation Standards**: Enterprise-grade migration guide with technical accuracy and usability
-- **Quality Assurance Integration**: Systematic validation ensuring migration readiness and implementation success
-- **Future-Ready Infrastructure**: CI workflow preserved for post-prototyping activation with clear procedures
-
-**Technical Documentation Enhancement:**
-
-- **Complete Migration Path**: Single Scenario A approach with comprehensive 4-method implementation options
-- **Development Environment Integration**: Both Vite and Live Server procedures integrated throughout migration workflow
-- **Cross-Reference Excellence**: Enhanced navigation and discoverability between migration methods and testing procedures
-- **Professional Implementation Standards**: Enterprise-grade procedures with validation, troubleshooting, and advanced configuration
-- **Migration Success Criteria**: Clear validation checkpoints and quality assurance procedures throughout
-
-**Development Team Enablement:**
-
-- **Clear Migration Guidance**: Streamlined documentation enabling immediate implementation without confusion
-- **Comprehensive Development Setup**: Environment procedures supporting both rapid development and production validation
-- **Quality Assurance Framework**: Systematic validation procedures ensuring migration success and professional standards
-- **Team Training Ready**: Documentation structured for effective team onboarding and migration execution
-- **Continuous Improvement Foundation**: Framework supporting ongoing migration refinement and optimization
-
-**Specialist Assignment Success Framework:**
-
-**@code-archaeologist Excellence:**
-
-- Comprehensive documentation analysis and validation with precision mapping and quality assessment
-- Final review validation confirming all requirements satisfied and migration-ready status achieved
-- Professional analytical approach with systematic evaluation and risk assessment
-
-**@documentation-specialist Excellence:**
-
-- Complete Scenario B removal with zero remaining references and maintained document integrity
-- Comprehensive development environment integration enhancing all 4 migration methods with professional procedures
+**Key Deliverables:**
+- Complete Scenario B removal with zero remaining references across all documentation
+- Comprehensive Vite and Live Server setup integrated across all 4 migration methods
+- Professional CI workflow disable implementation with configuration preservation and clear restoration procedures
 - Enhanced cross-references and navigation supporting optimal user experience throughout migration workflow
 
-**@backend-developer Excellence:**
+**Specialist Coordination:** Tech-lead orchestrated workflow with systematic execution across @code-archaeologist, @documentation-specialist, @backend-developer, and @code-reviewer
 
-- Professional CI workflow disable implementation with configuration preservation and clear restoration procedures
-- Best practices followed for temporary workflow management enabling future activation without disruption
+**Quality Status:** PASSING with comprehensive validation and all specialist approvals | **Files Updated:** 2 core files
 
-**@code-reviewer Excellence:**
+📋 **Full Details:** See `/LAST_TASK_SUMMARY.md` for complete specialist reports, technical achievements, and quality validation results.
 
-- Comprehensive quality assurance with security, technical accuracy, and project requirements validation
-- Professional approval process ensuring all changes meet enterprise standards and migration readiness criteria
-- Final authorization confirming changes ready for production implementation
+**Git Commit:** de5ba48 | **Completion:** 2025-09-07
 
-🚀 IMPLEMENTATION SUCCESS VALIDATION:
-
-**PASSING Status Criteria Achieved:**
-
-- **Complete Scenario B Elimination**: Zero references remaining with comprehensive single-path migration approach
-- **Development Environment Integration**: Comprehensive Vite and Live Server procedures integrated across all methods
-- **CI Workflow Management**: Professional disable with preservation and clear restoration procedures
-- **Quality Assurance Excellence**: Comprehensive validation with PASSING approval from all specialists
-- **Migration Readiness**: Documentation fully prepared for immediate implementation with professional standards
-- **Git Operations Success**: Clean atomic commit and push with comprehensive change documentation
-
-**Project Impact Delivered:**
-
-- **Streamlined Migration Experience**: Single-path approach eliminating user confusion and decision paralysis
-- **Enhanced Development Capabilities**: Comprehensive environment setup enabling successful migration implementation
-- **Professional Documentation Standards**: Enterprise-grade migration guide with technical accuracy and usability excellence
-- **Quality Assurance Integration**: Systematic validation framework ensuring migration success and professional implementation
-- **Future-Ready Foundation**: CI workflow preserved with clear activation procedures for post-prototyping phase
-- **Team Enablement**: Documentation structured for effective team training and migration execution
-
-**Technical Excellence Summary:**
-
-**Overall Assessment**: **EXCELLENT** - Comprehensive pre-migration documentation preparation achieving complete Scenario B removal, development environment integration, and professional CI workflow management with systematic specialist coordination.
-
-**Documentation Quality Score**: **A** - Professional standards maintained with enhanced usability and comprehensive development environment integration
-**Migration Readiness Score**: **A** - Complete single-path approach with comprehensive procedures enabling immediate implementation
-**Quality Assurance Score**: **A** - Systematic validation with PASSING approval from all specialists and comprehensive change verification
-**Project Requirements Score**: **A** - All requirements satisfied including prototyping focus, single scenario approach, and professional standards
-**Team Enablement Score**: **A** - Documentation structured for effective team training and successful migration execution
-
-**⚠️ CORRECTIVE ACTIONS REQUIRED:**
-
-## Violation 1: Atomic Commit Principle Breach
-
-- CLAUDE.md task summary should have been included in primary commit (de5ba48)
-- Created confusing dual-commit structure instead of single atomic commit
-- Violated "Final Task 3: Atomic Git Commit & Push" requirement for ALL changes in single commit
-
-## Violation 2: GitHub MCP Tools Directive Ignored
-
-- Used traditional git commands instead of required GitHub MCP tools as primary method
-- Should have used `mcp__github__push_files` for atomic operations
-- Violated tech-lead orchestrator's coordination requirements for MCP tool usage
-
-**Corrective Actions Implemented:**
-
-- Updated CLAUDE.md with violation acknowledgment and corrective measures
-- Will use GitHub MCP tools (`mcp__github__push_files`) for proper atomic operations in future
-- Documented atomic commit best practices for team reference
-
-**Lessons Learned:**
-
-- Always include CLAUDE.md task summary in primary atomic commit
-- GitHub MCP tools must be used as primary method per project requirements
-- Atomic commits are critical for clean version history and team coordination
-
-[OpenAI] Pre-migration Docs Prep & Updates: OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md successfully completed with PASSING status achieved - comprehensive single-path migration approach implemented, development environment integration delivered, CI workflow professionally managed, and complete team-ready documentation provided. **CORRECTIVE ACTIONS DOCUMENTED** for atomic commit and GitHub MCP tools compliance.
+**Note:** Corrective actions documented for atomic commit principles and GitHub MCP tools compliance in future workflows.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## AI Team Configuration (autogenerated by team-configurator, 2025-09-02)
@@ -291,12 +186,15 @@ The project has been recently updated to consolidate migration documentation int
 
 ### Coordination Rules
 
-**1. Prototyping-First Development:**
+**1. Prototyping-First Development (ENFORCED):**
 
+- **CRITICAL**: Project is in prototyping stage - Do NOT over-engineer ANYTHING
 - Focus on getting core functionality working reliably
 - Prioritize feature completeness over optimization during prototype phase
+- **NOT REQUIRED**: Enterprise Grade, Production Ready, Performance Optimization solutions
+- **NOT REQUIRED**: Testing, Test Scripts, Unit Tests, CI/CD Pipeline
 - Test early and iterate based on functionality feedback
-- Build with future scalability in mind but don't over-engineer
+- Build with future scalability in mind but maintain prototype simplicity
 
 **2. Security & Quality Gates:**
 
@@ -348,30 +246,64 @@ The project has been recently updated to consolidate migration documentation int
 
 **Failure to use required MCP tools will result in work rejection.**
 
-### Development Workflow
+### GitHub MCP Tools Requirements
 
-**Backend Development:**
+**PRIMARY Git Operations Method:**
 
-1. **Planning**: `@backend-developer` for Python architecture and core functionality
-2. **Implementation**: Backend specialist handles core development with testing
-3. **API Design**: `@api-architect` ensures clean, frontend-ready API contracts
-4. **Review**: MANDATORY `@code-reviewer` validation
+- `mcp__github__create_or_update_file` - For single file operations
+- `mcp__github__push_files` - For multi-file atomic commits (REQUIRED for all task completion)
+- `mcp__github__create_branch` - For feature branch creation
+- `mcp__github__search_code` - For code discovery and analysis
 
-**Frontend Development:**
+**Secondary Fallback:**
 
-1. **React Planning**: `@react-component-architect` for component design and architecture
-2. **Implementation**: React specialist handles frontend development with modern patterns
-3. **Integration**: `@api-architect` ensures smooth backend API integration
-4. **Testing**: Frontend functionality testing and component validation
-5. **Review**: MANDATORY `@code-reviewer` validation for React code
+- Traditional git commands via Bash tool only when GitHub MCP tools are insufficient
+- Must justify why GitHub MCP tools cannot be used for the specific operation
+- All atomic commits for task completion MUST use `mcp__github__push_files` as primary method
 
-**Full-Stack Features:**
+**Atomic Commit Requirements:**
 
-1. **API Design**: `@api-architect` designs end-to-end feature contracts
-2. **Backend Implementation**: `@backend-developer` implements backend functionality
-3. **Frontend Implementation**: `@react-component-architect` implements React frontend
-4. **Testing**: Both backend (pytest) and frontend testing for feature validation
-5. **Documentation**: `@documentation-specialist` documents feature architecture and usage
+- ALL task completions require single atomic commit containing:
+  - Code/file changes
+  - Documentation updates 
+  - CLAUDE.md task summary updates
+  - LAST_TASK_SUMMARY.md updates (if applicable)
+- Use `mcp__github__push_files` for atomic operations
+- No separation of code changes vs documentation changes
+- Single commit with comprehensive change documentation
+
+### Development Workflow (Prototyping-Optimized)
+
+**Backend Development (Prototype Focus):**
+
+1. **Planning**: `@backend-developer` for functional Python implementation (avoid over-engineering)
+2. **Implementation**: Backend specialist handles core development (basic functional validation sufficient)
+3. **API Design**: `@api-architect` ensures working API contracts (simple, functional designs preferred)
+4. **Review**: MANDATORY `@code-reviewer` validation (focus on functionality, not perfect code quality)
+
+**Frontend Development (Prototype Focus):**
+
+1. **React Planning**: `@react-component-architect` for functional component design (avoid complex patterns)
+2. **Implementation**: React specialist handles frontend development (working prototypes over perfect architecture)
+3. **Integration**: `@api-architect` ensures basic API integration works (functional connection sufficient)
+4. **Testing**: Manual functional validation (automated testing not required for prototyping)
+5. **Review**: MANDATORY `@code-reviewer` validation for React code (functional focus)
+
+**Full-Stack Features (Prototype Focus):**
+
+1. **API Design**: `@api-architect` designs functional end-to-end contracts (simple, working solutions)
+2. **Backend Implementation**: `@backend-developer` implements functional backend (prototype-appropriate complexity)
+3. **Frontend Implementation**: `@react-component-architect` implements working React frontend (rapid iteration focus)
+4. **Testing**: Basic functional validation ensuring feature works (comprehensive testing not required)
+5. **Documentation**: `@documentation-specialist` documents usage and functionality (internal architecture details not required)
+
+**Prototyping Workflow Principles:**
+
+- **Functionality First**: Make it work before making it perfect
+- **Rapid Iteration**: Quick implementation cycles with immediate feedback
+- **Simple Solutions**: Avoid complex patterns unless absolutely necessary for functionality
+- **Manual Validation**: Basic testing to confirm features work as intended
+- **Usage Documentation**: Focus on how to use features, not internal implementation details
 
 ## Development Commands
 

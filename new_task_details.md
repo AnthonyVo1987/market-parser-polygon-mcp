@@ -19,6 +19,7 @@
 
 4. Update our custom Claude Code slash command "/new_task" with the following new changes & procedures:
 
+- MCP Tools are PRIMARY tools for ALL Specialist(s), and fallback to default tools if needed
 - If in PLAN mode, Main Agent MUST use @agent-tech-lead-orchestrator to generate the Plan WITH Specialist Assignments. This will fix a gap in the "/new_task" where Plan mode incorrectly uses the Main Agent to generate the plan and also incorrectly has missing Plan WITH Specialist Assignments.  This ensures whether in Plan mode or Not Plan mode, that "/new_task" uses @agent-tech-lead-orchestrator no matter what for the planning WITH Specialist Assignments
 - Enforce Entire project is still in the prototyping stage, so ALL task(s) need to enforce the following prototype principles:
 - Do NOT over-engineer ANYTHING
@@ -69,8 +70,6 @@ Final Task 2: Task Summary & CLAUDE.md Update
 - Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
 - Include all deliverables, changes made, and completion status
 - This ensures task summary is included in the atomic commit
-
-- Delete previous task(s) details file if it still exists in the project: "/new_task_details_copy.md"
 
 Final Task 3: Atomic Git Commit & Push
 
