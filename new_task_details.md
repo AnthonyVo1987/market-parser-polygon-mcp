@@ -2,53 +2,39 @@
 
 ## Task Description
 
-[DOC] Update new_task protocol with new Last Completed Task Summary file
+[OpenAI] Pre-Migration Test & Fix Issues from Development Deployment Server Testing for both CLI & GUI
 
-1. Create new "LAST_TASK_SUMMARY.md" in top level to now be the new location of the full Last Completed Task Summary that is currently location in CLAUDE.md
+## Task 1. Run Standalone OpenAI CLI and perform simple test to ask "NVDA Daily Snapshot for the last trading & keep response minimal and less verbose"
 
-2. Change & Enforce CLAUDE.md Last Completed Task Summary section to be at most 20 lines max to provide only high level overview quick glance of the last completed task, and if more details are needed, to refer to LAST_TASK_SUMMARY.md for the full complete Last Completed Task Summary
+- You will need to set a terminal\bash timeout of at least 120 seconds to allow the terminal\bash commands to respond because reponses are NOT instant
+- Confirm that the CLI app start up and also is able to respond to the test query
+- Fix any issue seen from logs
 
-- This will greatly reduce the project's memory file context token usage in CLAUDE.md, and gives User and AI Coding agents the ability to have a quick glance of the last completed task and also the option to see the full details in a different document
-- The quick glance summary may even be the verbatim git commit message if it has enough details to provide the quick glance summary
+## Task 2. Run Standalone OpenAI GUI using default Vite dev server method(s) and perform simple test to WebFetch the localhost website to trigger the  Web App to try and load
 
-3. Update CLAUDE.md to enforce Entire project is still in the prototyping stage, so ALL task(s) need to enforce the following prototype principles:
+- Reminder that just starting the dev server is NOT complete - the web site\web app\ local host url MUST be browsed\fetched to trigger the full GUI test
+- You will need to set a terminal\bash timeout of at least 120 seconds to allow the terminal\bash commands to respond because reponses are NOT instant
+- Confirm that the app starts up OK
+- Fix any issue seen from logs
 
-- Do NOT over-engineer ANYTHING
-- Does NOT need any of the following: Enterprise Grade, Production Ready, and\or Performance Optmization Solution(s)\Implementation(s)
-- Does NOT need Testing, Test Scripts, Unit Tests, CI\CD Pipeline
+## Task 3. Run Standalone OpenAI GUI using Live Server dev server method(s) and perform simple test to WebFetch the localhost website to trigger the Web App to try and load
 
-4. Update our custom Claude Code slash command "/new_task" with the following new changes & procedures:
+- Reminder that just starting the dev server is NOT complete - the web site\web app\ local host url MUST be browsed\fetched to trigger the full GUI test
+- You will need to set a terminal\bash timeout of at least 120 seconds to allow the terminal\bash commands to respond because reponses are NOT instant
+- Confirm that the app starts up OK
+- Fix any issue seen from logs
 
-- MCP Tools are PRIMARY tools for ALL Specialist(s), and fallback to default tools if needed
-- If in PLAN mode, Main Agent MUST use @agent-tech-lead-orchestrator to generate the Plan WITH Specialist Assignments. This will fix a gap in the "/new_task" where Plan mode incorrectly uses the Main Agent to generate the plan and also incorrectly has missing Plan WITH Specialist Assignments.  This ensures whether in Plan mode or Not Plan mode, that "/new_task" uses @agent-tech-lead-orchestrator no matter what for the planning WITH Specialist Assignments
-- Enforce Entire project is still in the prototyping stage, so ALL task(s) need to enforce the following prototype principles:
-- Do NOT over-engineer ANYTHING
-- Does NOT need any of the following: Enterprise Grade, Production Ready, and\or Performance Optmization Solution(s)\Implementation(s)
-- Does NOT need Testing, Test Scripts, Unit Tests, CI\CD Pipeline
+## Task 4. Create new .md doc in OpenAI folder to track status & results from all the pre-migration Testing Tasks 1, 2, & 3
 
-- New expected workflow to update the new_task.md slash command procedures:
-A. User invokes "/new_task"
-B. Main Agent uses @agent-tech-lead-orchestrator to read, analyze, and review the new task details in "new_task_details.md", regardless if in Plan Mode or non-Plan Mode
-C. If in Plan Mode, @agent-tech-lead-orchestrator generates the plan WITH Specialist Assignments
-D. If in non-Plan Mode, @agent-tech-lead-orchestrator generates the plan WITH Specialist Assignments
-E. Specialist(s) executes the plan from the @agent-tech-lead-orchestrator
-F. After a PASSING Review\Fix Loop, perform the following doc updates
-- Generate detailed Last Completed Task Summary and overwrite completely the existing LAST_TASK_SUMMARY.md
-- Based on the Last Completed Task Summary, Generate a MAX of 20 lines a high level overview quick glance of the last completed task Summary and then update CLAUDE.md with the quick glance summary
-G. Enforce Primary use of Github Tools and secondary Git tools for Repo Management Operations I.E. Commit, Push etc to
-H. Enforce fully atomic commit where ALL of the following gets committed at the same time:
-- Code\File Changes
-- Doc Changes
-- CLAUDE.md updates
-- LAST_TASK_SUMMARY.md updates
-I. End result of the commit is that all code, doc, and task summary changes are belong in the same Commit without separating code changes vs doc changes
+- Update any other project docs if needed from fixes
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Analyze & Research all the requested task(s), reading any project docs that could also be relevant to the task(s)
+- Analyze & Research all the requested Task 1, Task 2, & Task 3, reading any project docs that could also be relevant to the task(s)
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
+- IF RESEARCH FROM ALL 3x Task were NOT performed, this is a VIOLATION and task must be restarted from the beginning
 - Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s)
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
@@ -87,5 +73,10 @@ Final Task 4: Final Verification
 **Key Requirements:**
 
 ## Requirements
+
+## Expected Outcome
+
+- CLI tested with a proper AI response back
+- Vite & Live Serve GUI methods tested WITH an explicit local host url test to trigger the actual dev server to load\compile the app because JUST starting dev servers does NOT test the actuall at all
 
 ## Additional Context

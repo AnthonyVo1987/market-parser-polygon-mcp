@@ -100,7 +100,11 @@
       "Bash(time npm run dev)",
       "mcp__filesystem__list_directory_with_sizes",
       "Bash(convert:*)",
-      "mcp__github__delete_file"
+      "mcp__github__delete_file",
+      "WebFetch(domain:localhost)",
+      "Bash(live-server:*)",
+      "WebFetch(domain:127.0.0.1)",
+      "Bash(time curl:*)"
     ],
     "deny": [],
     "ask": [],
