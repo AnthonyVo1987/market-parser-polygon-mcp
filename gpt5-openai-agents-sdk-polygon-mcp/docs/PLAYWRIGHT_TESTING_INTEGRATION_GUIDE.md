@@ -3,6 +3,1016 @@
 > **Single Source of Truth for Playwright Integration**  
 > Comprehensive guide for implementing Playwright testing in our React/TypeScript/Vite/FastAPI stack
 
+## Priority Test Execution Framework
+
+> **EXECUTE THESE 3 TESTS FIRST** - Priority tests provide immediate validation of core functionality before comprehensive testing
+
+### Priority Test 1: Market Status Check
+**Objective**: Verify basic market data connectivity and API health
+**Expected Duration**: 120 seconds maximum
+**Configuration**:
+- Verbosity: Low
+- Response Format: Raw response format output
+- Timeout: 120 seconds
+
+```json
+{
+  "testName": "Priority_1_Market_Status",
+  "description": "Basic market connectivity and health check",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_snapshot", "parameters": {}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "What is the current market status?"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_network_requests", "parameters": {}}
+  ]
+}
+```
+
+### Priority Test 2: Single Ticker Snapshot (NVDA, SPY, WDC)
+**Objective**: Validate single ticker data retrieval across different asset classes
+**Expected Duration**: 120 seconds maximum per ticker
+**Configuration**:
+- Verbosity: Low
+- Response Format: Raw response format output
+- Timeout: 120 seconds
+
+```json
+{
+  "testName": "Priority_2_Single_Ticker_Snapshot",
+  "description": "Individual ticker data validation",
+  "timeout": 120000,
+  "tickers": ["NVDA", "SPY", "WDC"],
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"foreach": "ticker", "steps": [
+      {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Get current price and analysis for {{ticker}}"}},
+      {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+      {"tool": "browser_wait_for", "parameters": {"text": "📈|📉", "time": 120}},
+      {"tool": "browser_snapshot", "parameters": {}}
+    ]}
+  ]
+}
+```
+
+### Priority Test 3: Full Market Snapshot (NVDA, SPY, QQQ, IWM)
+**Objective**: Test multi-ticker analysis and comprehensive market overview
+**Expected Duration**: 120 seconds maximum
+**Configuration**:
+- Verbosity: Low
+- Response Format: Raw response format output
+- Timeout: 120 seconds
+
+```json
+{
+  "testName": "Priority_3_Full_Market_Snapshot",
+  "description": "Multi-ticker comprehensive market analysis",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Provide comprehensive market analysis for NVDA, SPY, QQQ, and IWM with current prices and sentiment indicators"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelectorAll('.message-assistant:last-child').length > 0 && /NVDA.*SPY.*QQQ.*IWM/.test(document.querySelector('.message-assistant:last-child').textContent)"}},
+    {"tool": "browser_network_requests", "parameters": {}}
+  ]
+}
+```
+
+### Priority Test Execution Sequence
+1. **Execute Priority Tests 1-3** in order with immediate failure reporting
+2. **Validate Results** - All priority tests must pass before comprehensive testing
+3. **Generate Priority Report** - Document results in `/docs/claude_test_reports/`
+4. **Proceed to Comprehensive Testing** - Only after priority validation completes
+
+---
+
+## Comprehensive Test Coverage Plan
+
+> **COMPLETE APPLICATION FUNCTIONALITY TESTING** - After priority tests pass, execute comprehensive testing of ALL app features
+
+### Test Categories Overview
+
+| Category | Test Count | MCP Tools Used | Expected Duration | Coverage |
+|----------|------------|----------------|-------------------|----------|
+| **Template Button Interactions** | 8 tests | `browser_click`, `browser_wait_for`, `browser_network_requests` | 120s each | All template buttons |
+| **Message Input Variations** | 6 tests | `browser_type`, `browser_press_key`, `browser_evaluate` | 120s each | Multi-line, special chars, edge cases |
+| **Export Functionality** | 5 tests | `browser_click`, `browser_file_upload`, `browser_evaluate` | 120s each | All export formats |
+| **Responsive Design** | 4 tests | `browser_resize`, `browser_take_screenshot`, `browser_evaluate` | 120s each | All breakpoints |
+| **Backend API Integration** | 7 tests | `browser_network_requests`, `browser_evaluate` | 120s each | All endpoints |
+| **Error Handling** | 6 tests | `browser_handle_dialog`, `browser_console_messages` | 120s each | Error scenarios |
+| **Performance Validation** | 4 tests | `browser_evaluate`, `browser_take_screenshot` | 120s each | Load times, memory |
+| **Accessibility Testing** | 5 tests | `browser_snapshot`, `browser_press_key`, `browser_hover` | 120s each | A11y compliance |
+| **Cross-Browser Compatibility** | 3 tests | All MCP tools | 120s each | Browser differences |
+
+**Total Comprehensive Tests: 48 tests | Expected Duration: ~96 minutes**
+
+### 1. Template Button Interaction Tests
+
+#### Test 1.1: Technical Analysis Button
+```json
+{
+  "testName": "Template_Technical_Analysis_Button",
+  "description": "Validate technical analysis template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_snapshot", "parameters": {}, "validation": "Template buttons visible"},
+    {"tool": "browser_click", "parameters": {"element": "Technical Analysis button", "ref": "[data-testid='template-technical']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "📊 Technical Analysis", "time": 120}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "API call to /api/templates"},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('.message-assistant:last-child').textContent.includes('📊')"}}
+  ]
+}
+```
+
+#### Test 1.2: Fundamental Analysis Button
+```json
+{
+  "testName": "Template_Fundamental_Analysis_Button",
+  "description": "Validate fundamental analysis template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Fundamental Analysis button", "ref": "[data-testid='template-fundamental']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "💼 Fundamental Analysis", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /P\/E|EPS|Revenue|Earnings/.test(document.querySelector('.message-assistant:last-child').textContent)"}}
+  ]
+}
+```
+
+#### Test 1.3: Market Overview Button
+```json
+{
+  "testName": "Template_Market_Overview_Button",
+  "description": "Validate market overview template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Market Overview button", "ref": "[data-testid='template-market-overview']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🏛️ Market Overview", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /SPY|QQQ|IWM|VIX/.test(document.querySelector('.message-assistant:last-child').textContent)"}}
+  ]
+}
+```
+
+#### Test 1.4: Sector Analysis Button
+```json
+{
+  "testName": "Template_Sector_Analysis_Button",
+  "description": "Validate sector analysis template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Sector Analysis button", "ref": "[data-testid='template-sector']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🏭 Sector Analysis", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /Technology|Healthcare|Financial|Energy/.test(document.querySelector('.message-assistant:last-child').textContent)"}}
+  ]
+}
+```
+
+#### Test 1.5: Risk Assessment Button
+```json
+{
+  "testName": "Template_Risk_Assessment_Button",
+  "description": "Validate risk assessment template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Risk Assessment button", "ref": "[data-testid='template-risk']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "⚠️ Risk Assessment", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /volatility|risk|beta|drawdown/.test(document.querySelector('.message-assistant:last-child').textContent.toLowerCase())"}}
+  ]
+}
+```
+
+#### Test 1.6: Portfolio Analysis Button
+```json
+{
+  "testName": "Template_Portfolio_Analysis_Button",
+  "description": "Validate portfolio analysis template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Portfolio Analysis button", "ref": "[data-testid='template-portfolio']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "📊 Portfolio Analysis", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /diversification|allocation|correlation/.test(document.querySelector('.message-assistant:last-child').textContent.toLowerCase())"}}
+  ]
+}
+```
+
+#### Test 1.7: Options Analysis Button
+```json
+{
+  "testName": "Template_Options_Analysis_Button",
+  "description": "Validate options analysis template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Options Analysis button", "ref": "[data-testid='template-options']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 Options Analysis", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /calls|puts|strike|expiration|volatility/.test(document.querySelector('.message-assistant:last-child').textContent.toLowerCase())"}}
+  ]
+}
+```
+
+#### Test 1.8: Economic Calendar Button
+```json
+{
+  "testName": "Template_Economic_Calendar_Button",
+  "description": "Validate economic calendar template functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Economic Calendar button", "ref": "[data-testid='template-economic']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "📅 Economic Calendar", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => /CPI|GDP|unemployment|fed|earnings/.test(document.querySelector('.message-assistant:last-child').textContent.toLowerCase())"}}
+  ]
+}
+```
+
+### 2. Message Input Variation Tests
+
+#### Test 2.1: Multi-line Message Input
+```json
+{
+  "testName": "Input_Multiline_Message",
+  "description": "Test multi-line message handling with Shift+Enter",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Analyze these stocks:"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Shift+Enter"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "- AAPL\n- MSFT\n- GOOGL\n- TSLA"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('textarea').value.includes('\\n')"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}}
+  ]
+}
+```
+
+#### Test 2.2: Special Characters Input
+```json
+{
+  "testName": "Input_Special_Characters",
+  "description": "Test handling of special characters and symbols",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "What's the P/E ratio for $AAPL & $MSFT? Compare 52-week high/low ranges."}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "📈|📉", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('.message-user:last-child').textContent.includes('&')"}}
+  ]
+}
+```
+
+#### Test 2.3: Long Message Input (Edge Case)
+```json
+{
+  "testName": "Input_Long_Message",
+  "description": "Test handling of very long messages",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Provide detailed technical and fundamental analysis for Apple Inc including moving averages support resistance levels earnings projections analyst ratings sector comparison peer analysis market cap valuation metrics dividend yield growth rates recent news catalysts upcoming events regulatory concerns competitive landscape innovation pipeline supply chain analysis geographic revenue breakdown institutional ownership insider trading activity options activity volume analysis momentum indicators RSI MACD Bollinger Bands Fibonacci retracements"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('textarea').value.length > 500"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}}
+  ]
+}
+```
+
+#### Test 2.4: Empty Message Handling
+```json
+{
+  "testName": "Input_Empty_Message",
+  "description": "Test empty message submission handling",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Message input", "ref": "textarea"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelectorAll('.message-user').length"}},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "No error messages for empty input"}
+  ]
+}
+```
+
+#### Test 2.5: Unicode and Emoji Input
+```json
+{
+  "testName": "Input_Unicode_Emoji",
+  "description": "Test Unicode characters and emoji handling",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Show me 📈 trending stocks in 🇺🇸 US market with 💰 high volume today. Include 🏛️ sector analysis."}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('.message-user:last-child').textContent.includes('📈')"}}
+  ]
+}
+```
+
+#### Test 2.6: Copy-Paste Input
+```json
+{
+  "testName": "Input_Copy_Paste",
+  "description": "Test copy-paste functionality into message input",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const text = 'What are the top performing stocks in the technology sector this week?'; navigator.clipboard.writeText(text); }"}},
+    {"tool": "browser_click", "parameters": {"element": "Message input", "ref": "textarea"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Control+V"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('textarea').value.includes('technology sector')"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}}
+  ]
+}
+```
+
+### 3. Export Functionality Tests
+
+#### Test 3.1: Markdown Export
+```json
+{
+  "testName": "Export_Markdown",
+  "description": "Test markdown export functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Analyze AAPL stock"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_click", "parameters": {"element": "Export button", "ref": "[data-testid='export-button']"}},
+    {"tool": "browser_click", "parameters": {"element": "Export as Markdown", "ref": "[data-testid='export-markdown']"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const links = document.querySelectorAll('a[download]'); return links.length > 0; }"}}
+  ]
+}
+```
+
+#### Test 3.2: JSON Export
+```json
+{
+  "testName": "Export_JSON",
+  "description": "Test JSON export functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Export as JSON", "ref": "[data-testid='export-json']"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const links = document.querySelectorAll('a[download]'); return Array.from(links).some(link => link.download.includes('.json')); }"}}
+  ]
+}
+```
+
+#### Test 3.3: PDF Export
+```json
+{
+  "testName": "Export_PDF",
+  "description": "Test PDF export functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Export as PDF", "ref": "[data-testid='export-pdf']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "Generating PDF", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const links = document.querySelectorAll('a[download]'); return Array.from(links).some(link => link.download.includes('.pdf')); }"}}
+  ]
+}
+```
+
+#### Test 3.4: Copy to Clipboard
+```json
+{
+  "testName": "Export_Clipboard",
+  "description": "Test copy to clipboard functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Copy to Clipboard", "ref": "[data-testid='copy-clipboard']"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "Copied!", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => navigator.clipboard.readText().then(text => text.includes('KEY TAKEAWAYS'))"}}
+  ]
+}
+```
+
+#### Test 3.5: Email Export
+```json
+{
+  "testName": "Export_Email",
+  "description": "Test email export functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_click", "parameters": {"element": "Email Report", "ref": "[data-testid='export-email']"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const mailto = document.querySelector('a[href^=\"mailto:\"]'); return mailto !== null; }"}}
+  ]
+}
+```
+
+### 4. Responsive Design Tests
+
+#### Test 4.1: Mobile Viewport (375px)
+```json
+{
+  "testName": "Responsive_Mobile",
+  "description": "Test mobile responsive design",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_resize", "parameters": {"width": 375, "height": 667}},
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.chat-container')).padding"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.message-bubble')).maxWidth"}},
+    {"tool": "browser_take_screenshot", "parameters": {"filename": "mobile-375px.png", "fullPage": true}},
+    {"validation": "8px padding, 85% message width, touch-friendly scrollbars"}
+  ]
+}
+```
+
+#### Test 4.2: Tablet Viewport (768px)
+```json
+{
+  "testName": "Responsive_Tablet",
+  "description": "Test tablet responsive design",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_resize", "parameters": {"width": 768, "height": 1024}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.chat-container')).padding"}},
+    {"tool": "browser_take_screenshot", "parameters": {"filename": "tablet-768px.png", "fullPage": true}},
+    {"validation": "16px padding, intermediate layout"}
+  ]
+}
+```
+
+#### Test 4.3: Desktop Viewport (1200px)
+```json
+{
+  "testName": "Responsive_Desktop",
+  "description": "Test desktop responsive design",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_resize", "parameters": {"width": 1200, "height": 800}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.chat-container')).padding"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.message-bubble')).maxWidth"}},
+    {"tool": "browser_take_screenshot", "parameters": {"filename": "desktop-1200px.png", "fullPage": true}},
+    {"validation": "24px padding, 70% message width, thin scrollbars"}
+  ]
+}
+```
+
+#### Test 4.4: Ultrawide Viewport (1920px)
+```json
+{
+  "testName": "Responsive_Ultrawide",
+  "description": "Test ultrawide responsive design",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_resize", "parameters": {"width": 1920, "height": 1080}},
+    {"tool": "browser_take_screenshot", "parameters": {"filename": "ultrawide-1920px.png", "fullPage": true}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('.chat-container').offsetWidth < window.innerWidth"}},
+    {"validation": "Layout remains centered, no excessive stretching"}
+  ]
+}
+```
+
+### 5. Backend API Integration Tests
+
+#### Test 5.1: Health Endpoint
+```json
+{
+  "testName": "API_Health_Check",
+  "description": "Test backend health endpoint",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => fetch('/health').then(r => r.json())"}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "200 status from /health"},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "No health check errors"}
+  ]
+}
+```
+
+#### Test 5.2: Chat Endpoint
+```json
+{
+  "testName": "API_Chat_Endpoint",
+  "description": "Test main chat API endpoint",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test API integration"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "POST to /api/v1/chat with 200 status"},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}}
+  ]
+}
+```
+
+#### Test 5.3: Templates Endpoint
+```json
+{
+  "testName": "API_Templates_Endpoint",
+  "description": "Test templates API endpoint",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => fetch('/api/templates').then(r => r.json())"}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "GET to /api/templates with 200 status"}
+  ]
+}
+```
+
+#### Test 5.4: Analysis Tools Endpoint
+```json
+{
+  "testName": "API_Analysis_Tools_Endpoint",
+  "description": "Test analysis tools API endpoint",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => fetch('/api/analysis-tools').then(r => r.json())"}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "GET to /api/analysis-tools with 200 status"}
+  ]
+}
+```
+
+#### Test 5.5: Export Endpoint
+```json
+{
+  "testName": "API_Export_Endpoint",
+  "description": "Test export API endpoint",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => fetch('/api/export', {method: 'POST', body: JSON.stringify({format: 'markdown', content: 'test'}), headers: {'Content-Type': 'application/json'}}).then(r => r.status)"}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "POST to /api/export with expected status"}
+  ]
+}
+```
+
+#### Test 5.6: Rate Limiting
+```json
+{
+  "testName": "API_Rate_Limiting",
+  "description": "Test API rate limiting behavior",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const promises = []; for(let i = 0; i < 10; i++) { promises.push(fetch('/api/v1/chat', {method: 'POST', body: JSON.stringify({message: 'test'}), headers: {'Content-Type': 'application/json'}})); } return Promise.all(promises).then(responses => responses.map(r => r.status)); }"}},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "Rate limiting messages if applicable"}
+  ]
+}
+```
+
+#### Test 5.7: WebSocket Connection
+```json
+{
+  "testName": "API_WebSocket_Connection",
+  "description": "Test WebSocket connection for real-time updates",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const ws = new WebSocket('ws://localhost:8000/ws'); return new Promise((resolve) => { ws.onopen = () => resolve('connected'); ws.onerror = () => resolve('failed'); setTimeout(() => resolve('timeout'), 5000); }); }"}},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "WebSocket connection status"}
+  ]
+}
+```
+
+### 6. Error Handling Tests
+
+#### Test 6.1: Network Failure Handling
+```json
+{
+  "testName": "Error_Network_Failure",
+  "description": "Test handling of network connectivity issues",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { window.navigator.serviceWorker.ready.then(registration => { registration.unregister(); }); }"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test network failure handling"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "Connection error|Network error|Failed to fetch", "time": 120}},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "Appropriate error messages logged"}
+  ]
+}
+```
+
+#### Test 6.2: Invalid API Response Handling
+```json
+{
+  "testName": "Error_Invalid_API_Response",
+  "description": "Test handling of malformed API responses",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const originalFetch = window.fetch; window.fetch = function(url, options) { if (url.includes('/api/v1/chat')) { return Promise.resolve({ ok: false, status: 500, json: () => Promise.resolve({error: 'Internal server error'}) }); } return originalFetch(url, options); }; }"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test error response"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "Error|Failed|Something went wrong", "time": 120}},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "Error handling messages present"}
+  ]
+}
+```
+
+#### Test 6.3: Timeout Handling
+```json
+{
+  "testName": "Error_Request_Timeout",
+  "description": "Test handling of request timeouts",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const originalFetch = window.fetch; window.fetch = function(url, options) { if (url.includes('/api/v1/chat')) { return new Promise((resolve) => { setTimeout(() => resolve({ ok: false, status: 408, json: () => Promise.resolve({error: 'Request timeout'}) }), 30000); }); } return originalFetch(url, options); }; }"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test timeout handling"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "Timeout|Taking longer than expected|Please try again", "time": 120}}
+  ]
+}
+```
+
+#### Test 6.4: JavaScript Error Handling
+```json
+{
+  "testName": "Error_JavaScript_Exception",
+  "description": "Test handling of JavaScript runtime errors",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { window.addEventListener('error', (e) => { console.error('Caught error:', e.error); }); throw new Error('Test runtime error'); }"}},
+    {"tool": "browser_console_messages", "parameters": {}, "validation": "JavaScript errors caught and logged"},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test after error"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"validation": "Application remains functional after JavaScript error"}
+  ]
+}
+```
+
+#### Test 6.5: Rate Limit Error Handling
+```json
+{
+  "testName": "Error_Rate_Limit_Exceeded",
+  "description": "Test handling of API rate limit errors",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const originalFetch = window.fetch; window.fetch = function(url, options) { if (url.includes('/api/v1/chat')) { return Promise.resolve({ ok: false, status: 429, json: () => Promise.resolve({error: 'Rate limit exceeded', retryAfter: 60}) }); } return originalFetch(url, options); }; }"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test rate limiting"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "Rate limit|Too many requests|Please wait", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('input, textarea').disabled"}}
+  ]
+}
+```
+
+#### Test 6.6: Dialog and Alert Handling
+```json
+{
+  "testName": "Error_Dialog_Alert_Handling",
+  "description": "Test handling of browser dialogs and alerts",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => alert('Test alert dialog')"}},
+    {"tool": "browser_handle_dialog", "parameters": {"accept": true}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => confirm('Test confirm dialog')"}},
+    {"tool": "browser_handle_dialog", "parameters": {"accept": false}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => prompt('Test prompt dialog', 'default value')"}},
+    {"tool": "browser_handle_dialog", "parameters": {"accept": true, "promptText": "Test input"}},
+    {"validation": "All dialog types handled appropriately"}
+  ]
+}
+```
+
+### 7. Performance Validation Tests
+
+#### Test 7.1: Page Load Performance
+```json
+{
+  "testName": "Performance_Page_Load",
+  "description": "Test initial page load performance metrics",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const perfData = performance.getEntriesByType('navigation')[0]; return { loadTime: perfData.loadEventEnd - perfData.fetchStart, domContentLoaded: perfData.domContentLoadedEventEnd - perfData.fetchStart, firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0 }; }"}},
+    {"tool": "browser_take_screenshot", "parameters": {"filename": "performance-load.png"}},
+    {"validation": "Load time < 3000ms, DOMContentLoaded < 1500ms"}
+  ]
+}
+```
+
+#### Test 7.2: Message Response Performance
+```json
+{
+  "testName": "Performance_Message_Response",
+  "description": "Test AI response time performance",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => window.performanceStartTime = Date.now()"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "What is AAPL stock price?"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const responseTime = Date.now() - window.performanceStartTime; return { responseTime, isAcceptable: responseTime < 30000 }; }"}},
+    {"validation": "AI response received within 30 seconds"}
+  ]
+}
+```
+
+#### Test 7.3: Memory Usage Monitoring
+```json
+{
+  "testName": "Performance_Memory_Usage",
+  "description": "Test memory consumption during extended usage",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { if (performance.memory) { return { initial: performance.memory.usedJSHeapSize }; } return { initial: 0 }; }"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Generate 5 different stock analyses"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { if (performance.memory) { return { final: performance.memory.usedJSHeapSize, increase: performance.memory.usedJSHeapSize - (window.initialMemory || 0) }; } return { final: 0, increase: 0 }; }"}},
+    {"validation": "Memory increase < 50MB during extended usage"}
+  ]
+}
+```
+
+#### Test 7.4: Concurrent Request Performance
+```json
+{
+  "testName": "Performance_Concurrent_Requests",
+  "description": "Test performance under concurrent request load",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const startTime = Date.now(); const promises = []; for(let i = 0; i < 5; i++) { promises.push(fetch('/api/v1/chat', { method: 'POST', body: JSON.stringify({message: `Test message ${i}`}), headers: {'Content-Type': 'application/json'} }).then(r => r.json())); } return Promise.all(promises).then(results => ({ duration: Date.now() - startTime, successCount: results.filter(r => r.status === 'success').length })); }"}},
+    {"tool": "browser_network_requests", "parameters": {}, "validation": "All concurrent requests complete successfully"},
+    {"validation": "Concurrent request handling within acceptable limits"}
+  ]
+}
+```
+
+### 8. Accessibility Testing
+
+#### Test 8.1: Keyboard Navigation
+```json
+{
+  "testName": "Accessibility_Keyboard_Navigation",
+  "description": "Test complete keyboard navigation functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Tab"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.activeElement.tagName"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Tab"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Tab"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ focused: document.activeElement.tagName, hasVisibleFocus: window.getComputedStyle(document.activeElement).outline !== 'none' })"}},
+    {"validation": "All interactive elements accessible via keyboard"}
+  ]
+}
+```
+
+#### Test 8.2: Screen Reader Compatibility
+```json
+{
+  "testName": "Accessibility_Screen_Reader",
+  "description": "Test screen reader compatibility via accessibility tree",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_snapshot", "parameters": {}, "validation": "Complete accessibility tree structure"},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const inputs = document.querySelectorAll('input, textarea, button'); const withoutLabels = []; inputs.forEach(el => { const label = document.querySelector(`label[for='${el.id}']`) || el.closest('label') || el.getAttribute('aria-label'); if (!label) withoutLabels.push(el.tagName); }); return { totalInputs: inputs.length, withoutLabels: withoutLabels.length }; }"}},
+    {"validation": "All form elements have appropriate labels"}
+  ]
+}
+```
+
+#### Test 8.3: Color Contrast and Visual Accessibility
+```json
+{
+  "testName": "Accessibility_Visual_Contrast",
+  "description": "Test color contrast and visual accessibility requirements",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_take_screenshot", "parameters": {"filename": "accessibility-visual.png", "fullPage": true}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const elements = document.querySelectorAll('*'); const contrastIssues = []; elements.forEach(el => { const styles = window.getComputedStyle(el); const color = styles.color; const backgroundColor = styles.backgroundColor; if (color !== 'rgba(0, 0, 0, 0)' && backgroundColor !== 'rgba(0, 0, 0, 0)') { contrastIssues.push({ element: el.tagName, color, backgroundColor }); } }); return { checkedElements: elements.length, potentialIssues: contrastIssues.length }; }"}},
+    {"validation": "Color contrast meets WCAG guidelines"}
+  ]
+}
+```
+
+#### Test 8.4: Focus Management
+```json
+{
+  "testName": "Accessibility_Focus_Management",
+  "description": "Test focus management for dynamic content",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test focus management"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.activeElement.tagName"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ activeElement: document.activeElement.tagName, focusVisible: document.activeElement.matches(':focus-visible') })"}},
+    {"validation": "Focus properly managed after dynamic content updates"}
+  ]
+}
+```
+
+#### Test 8.5: ARIA Attributes and Semantic HTML
+```json
+{
+  "testName": "Accessibility_ARIA_Semantic",
+  "description": "Test ARIA attributes and semantic HTML structure",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_snapshot", "parameters": {}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => { const ariaElements = document.querySelectorAll('[aria-label], [aria-describedby], [aria-expanded], [role]'); const semanticElements = document.querySelectorAll('main, nav, header, footer, section, article, aside'); return { ariaCount: ariaElements.length, semanticCount: semanticElements.length, hasMainLandmark: !!document.querySelector('main, [role=main]') }; }"}},
+    {"tool": "browser_hover", "parameters": {"element": "Export button", "ref": "[data-testid='export-button']"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ tooltip: document.querySelector('[role=tooltip]'), ariaExpanded: document.querySelector('[aria-expanded]')?.getAttribute('aria-expanded') })"}},
+    {"validation": "Proper ARIA attributes and semantic HTML structure"}
+  ]
+}
+```
+
+### 9. Cross-Browser Compatibility Tests
+
+#### Test 9.1: Chromium-specific Features
+```json
+{
+  "testName": "CrossBrowser_Chromium_Features",
+  "description": "Test Chromium/Chrome specific functionality",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ userAgent: navigator.userAgent, isChromium: !!window.chrome, clipboardAPI: !!navigator.clipboard })"}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test Chromium compatibility"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"validation": "All features work correctly in Chromium-based browsers"}
+  ]
+}
+```
+
+#### Test 9.2: Firefox-specific Features
+```json
+{
+  "testName": "CrossBrowser_Firefox_Features",
+  "description": "Test Firefox-specific functionality and compatibility",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ userAgent: navigator.userAgent, isFirefox: navigator.userAgent.includes('Firefox'), scrollBehavior: window.getComputedStyle(document.documentElement).scrollBehavior })"}},
+    {"tool": "browser_resize", "parameters": {"width": 1024, "height": 768}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test Firefox compatibility"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"validation": "All features work correctly in Firefox"}
+  ]
+}
+```
+
+#### Test 9.3: WebKit/Safari-specific Features
+```json
+{
+  "testName": "CrossBrowser_WebKit_Features",
+  "description": "Test WebKit/Safari-specific functionality and compatibility",
+  "timeout": 120000,
+  "steps": [
+    {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ userAgent: navigator.userAgent, isSafari: navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome'), webkitFeatures: !!window.webkit })"}},
+    {"tool": "browser_resize", "parameters": {"width": 1200, "height": 800}},
+    {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "Test WebKit compatibility"}},
+    {"tool": "browser_press_key", "parameters": {"key": "Enter"}},
+    {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 120}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ appearance: window.getComputedStyle(document.querySelector('textarea')).appearance, webkitAppearance: window.getComputedStyle(document.querySelector('textarea')).webkitAppearance })"}},
+    {"validation": "All features work correctly in WebKit/Safari browsers"}
+  ]
+}
+```
+
+## Test Reporting Requirements
+
+### Report Generation Framework
+
+#### Pacific Timezone Naming Convention
+**Format**: `CLAUDE_playwright_mcp_tests_YY-MM-DD_hh-mm.md`
+**Timezone**: Pacific Standard Time (PST) / Pacific Daylight Time (PDT)
+**Location**: `/docs/claude_test_reports/`
+
+**Example filenames**:
+- `CLAUDE_playwright_mcp_tests_25-01-15_14-30.md` (January 15, 2025 at 2:30 PM PT)
+- `CLAUDE_playwright_mcp_tests_25-01-15_09-45.md` (January 15, 2025 at 9:45 AM PT)
+
+#### Timezone Detection Script
+```javascript
+// Automatic Pacific timezone detection and formatting
+function generateReportFilename() {
+  const now = new Date();
+  const pacificTime = new Date(now.toLocaleString("en-US", {timeZone: "America/Los_Angeles"}));
+  
+  const year = pacificTime.getFullYear().toString().slice(-2);
+  const month = (pacificTime.getMonth() + 1).toString().padStart(2, '0');
+  const day = pacificTime.getDate().toString().padStart(2, '0');
+  const hours = pacificTime.getHours().toString().padStart(2, '0');
+  const minutes = pacificTime.getMinutes().toString().padStart(2, '0');
+  
+  return `CLAUDE_playwright_mcp_tests_${year}-${month}-${day}_${hours}-${minutes}.md`;
+}
+```
+
+### Test Report Template Structure
+
+#### High-Level Summary Section
+```markdown
+# Playwright MCP Test Report - {TIMESTAMP}
+
+## Executive Summary
+
+### Test Execution Overview
+- **Start Time**: {Pacific Time}
+- **End Time**: {Pacific Time}
+- **Total Duration**: {Minutes}m {Seconds}s
+- **Total Tests**: {Count}
+- **Passed**: {Count} ({Percentage}%)
+- **Failed**: {Count} ({Percentage}%)
+- **Skipped**: {Count} ({Percentage}%)
+
+### Priority Tests Status
+- ✅/❌ **Priority Test 1**: Market Status Check
+- ✅/❌ **Priority Test 2**: Single Ticker Snapshot (NVDA, SPY, WDC)
+- ✅/❌ **Priority Test 3**: Full Market Snapshot (NVDA, SPY, QQQ, IWM)
+
+**Priority Tests Result**: {PASS/FAIL} - {Description}
+
+### Comprehensive Testing Status
+- **Template Button Interactions**: {Pass}/{Total} tests
+- **Message Input Variations**: {Pass}/{Total} tests
+- **Export Functionality**: {Pass}/{Total} tests
+- **Responsive Design**: {Pass}/{Total} tests
+- **Backend API Integration**: {Pass}/{Total} tests
+- **Error Handling**: {Pass}/{Total} tests
+- **Performance Validation**: {Pass}/{Total} tests
+- **Accessibility Testing**: {Pass}/{Total} tests
+- **Cross-Browser Compatibility**: {Pass}/{Total} tests
+
+### Critical Issues
+{List any blocking issues that prevent normal application usage}
+
+### Environment Information
+- **Frontend URL**: http://localhost:3000
+- **Backend URL**: http://localhost:8000
+- **Browser**: {Browser} {Version}
+- **Viewport**: {Width}x{Height}
+- **Test Framework**: Playwright MCP Integration
+```
+
+#### Suggested Next Actions Section
+```markdown
+## Recommended Next Actions
+
+### Immediate Actions Required
+1. {Action 1 - High Priority}
+2. {Action 2 - High Priority}
+
+### Follow-up Investigations
+1. {Investigation 1 - Medium Priority}
+2. {Investigation 2 - Medium Priority}
+
+### Performance Optimizations
+1. {Optimization 1 - Low Priority}
+2. {Optimization 2 - Low Priority}
+
+### Test Infrastructure Improvements
+1. {Infrastructure 1}
+2. {Infrastructure 2}
+```
+
+#### Detailed Granular Test Results Section
+```markdown
+## Detailed Test Results
+
+### Priority Tests (MUST PASS)
+
+#### Priority Test 1: Market Status Check
+- **Status**: ✅ PASS / ❌ FAIL
+- **Duration**: {Seconds}s
+- **Details**: {Detailed description of test execution}
+- **Screenshots**: {Links to relevant screenshots}
+- **Network Requests**: {API call analysis}
+- **Console Messages**: {Relevant console output}
+
+#### Priority Test 2: Single Ticker Snapshot
+- **Status**: ✅ PASS / ❌ FAIL
+- **NVDA**: {Result} - {Details}
+- **SPY**: {Result} - {Details}  
+- **WDC**: {Result} - {Details}
+- **Duration**: {Seconds}s
+- **Performance**: {Response time analysis}
+
+#### Priority Test 3: Full Market Snapshot
+- **Status**: ✅ PASS / ❌ FAIL
+- **Tickers Covered**: NVDA, SPY, QQQ, IWM
+- **Analysis Quality**: {Emoji indicators present, structured format}
+- **Duration**: {Seconds}s
+
+### Comprehensive Test Results
+
+{Repeat detailed format for each test category}
+
+### Failed Test Analysis
+
+{Detailed analysis of any failed tests with}
+- Error messages
+- Screenshots at failure point
+- Network request logs
+- Console error logs
+- Suggested fixes
+
+### Performance Metrics
+
+- **Average Response Time**: {Milliseconds}ms
+- **Memory Usage**: {MB} peak
+- **Network Requests**: {Count} total
+- **Page Load Time**: {Milliseconds}ms
+
+### Browser Compatibility Summary
+
+- **Chromium**: {Status} - {Notes}
+- **Firefox**: {Status} - {Notes}
+- **WebKit**: {Status} - {Notes}
+```
+
+---
+
 ## Executive Summary & Recommendations
 
 ### Quick Decision Matrix
@@ -327,7 +1337,7 @@ test.describe('Chat Interface', () => {
     await expect(page.locator('.message-user')).toContainText('AAPL stock price');
     
     // Wait for AI response
-    await expect(page.locator('.message-assistant')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.message-assistant')).toBeVisible({ timeout: 120000 });
     
     // Verify response contains expected elements
     const response = page.locator('.message-assistant').last();
@@ -557,7 +1567,7 @@ test.describe('Full Stack Integration', () => {
     
     // Wait for backend processing
     await expect(page.locator('.loading-indicator')).toBeVisible();
-    await expect(page.locator('.loading-indicator')).toBeHidden({ timeout: 15000 });
+    await expect(page.locator('.loading-indicator')).toBeHidden({ timeout: 120000 });
     
     // Verify structured response
     const response = page.locator('.message-assistant').last();
@@ -1360,7 +2370,7 @@ Leverage structured accessibility data:
 #### Issue: Slow Response Times
 **Symptoms**: Timeouts on `browser_wait_for` operations
 **Solutions**:
-1. Increase timeout values for AI responses (30-60 seconds)
+1. Increase timeout values for AI responses (120 seconds)
 2. Monitor network requests to identify bottlenecks
 3. Check backend health endpoint status
 4. Verify API keys and rate limits
@@ -1411,13 +2421,13 @@ Leverage structured accessibility data:
         "endpoint": "/api/v1/chat",
         "method": "POST",
         "expectedStatus": 200,
-        "timeout": 30000
+        "timeout": 120000
       },
       {
         "endpoint": "/api/templates",
         "method": "GET",
         "expectedStatus": 200,
-        "timeout": 5000
+        "timeout": 120000
       }
     ]
   }
@@ -1692,9 +2702,9 @@ export default defineConfig({
   fullyParallel: true,
   
   // Reduce timeout for faster feedback
-  timeout: 10000,
+  timeout: 120000,
   expect: {
-    timeout: 5000,
+    timeout: 120000,
   },
 });
 ```
@@ -1867,7 +2877,7 @@ export default defineConfig({
       command: 'cd .. && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000',
       url: 'http://localhost:8000/health',
       reuseExistingServer: !process.env.CI,
-      timeout: 60000,
+      timeout: 120000,
     },
   ],
 });
@@ -2013,9 +3023,9 @@ export default defineConfig({
   workers: process.env.CI ? 2 : Math.max(1, Math.floor(require('os').cpus().length / 2)),
   
   // Reduce timeouts for faster feedback
-  timeout: 30000,
+  timeout: 120000,
   expect: {
-    timeout: 10000,
+    timeout: 120000,
   },
   
   use: {
