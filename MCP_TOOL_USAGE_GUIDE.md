@@ -994,6 +994,414 @@ For comprehensive Live Server usage instructions and advanced configuration:
 
 ---
 
+## 🎭 Tool 6: Playwright MCP - Browser Testing Automation
+
+### **Current Enforcement Status**
+
+- **@frontend-developer, @react-component-architect, @code-reviewer**: **MANDATORY** for GUI testing and validation
+- **@performance-optimizer**: **MANDATORY** for cross-browser performance testing
+- **@api-architect**: **RECOMMENDED** for API integration testing via browser interfaces
+- **ALL OTHER AGENTS**: **AVAILABLE** when browser automation testing is required
+
+### **Playwright MCP Tool Purpose**
+
+Playwright MCP provides comprehensive browser automation capabilities through structured JSON responses optimized for AI agents. These tools enable systematic testing of web applications with 20+ specialized browser automation tools, real-time accessibility snapshots, and token-efficient communication patterns.
+
+**Core Capabilities:**
+- **Cross-Browser Testing**: Chromium, Firefox, WebKit automation
+- **Structured JSON Responses**: AI-optimized output for systematic analysis
+- **Accessibility Testing**: Real-time accessibility tree inspection and DOM analysis
+- **Performance Monitoring**: Network request analysis and performance metrics
+- **Token Efficiency**: Compact, parseable responses reduce AI token usage
+- **React Integration**: Optimized patterns for our React/TypeScript/Vite stack
+
+### **When to Use Playwright MCP Tools (ALL AGENTS)**
+
+- ✅ **GUI Testing and Validation**: Systematic testing of React component behavior
+- ✅ **Cross-Browser Compatibility**: Testing across Chromium, Firefox, WebKit browsers
+- ✅ **Accessibility Validation**: Structured accessibility tree analysis for compliance
+- ✅ **API Integration Testing**: Testing frontend-backend API interactions through browser
+- ✅ **Performance Analysis**: Monitoring network requests and browser performance metrics
+- ✅ **Responsive Design Testing**: Validating mobile and desktop layouts with viewport management
+- ✅ **User Workflow Validation**: End-to-end testing of complete user interactions
+- ✅ **Real-time Debugging**: Interactive browser analysis with structured feedback
+
+### **When NOT to Use Playwright MCP Tools**
+
+- ❌ **Unit Testing**: Use Jest/Vitest for isolated component unit tests
+- ❌ **Backend-Only Testing**: Use direct API testing tools for pure backend validation
+- ❌ **Static Analysis**: Use linting and type checking tools for code analysis
+- ❌ **Build Process Testing**: Use build system tools for compilation validation
+
+### **Complete MCP Tool Inventory & Capabilities Matrix (ALL AGENTS)**
+
+#### Browser Management Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_navigate` | Navigate to URL | `url: string` | Success status | Load chat interface |
+| `browser_resize` | Resize browser window | `width: number, height: number` | Success status | Test responsive design |
+| `browser_close` | Close current page | None | Success status | Cleanup after tests |
+| `browser_install` | Install browser binaries | None | Installation status | Setup environment |
+
+#### Core Interaction Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_click` | Click element | `element: string, ref: string, button?: string, doubleClick?: boolean` | Click result | Send button, export buttons |
+| `browser_type` | Type text into element | `element: string, ref: string, text: string, slowly?: boolean, submit?: boolean` | Type result | Message input, multi-line queries |
+| `browser_press_key` | Press keyboard key | `key: string` | Key press result | Enter, Shift+Enter, Tab navigation |
+| `browser_hover` | Hover over element | `element: string, ref: string` | Hover result | Tooltip triggers, button states |
+| `browser_drag` | Drag and drop | `startElement: string, startRef: string, endElement: string, endRef: string` | Drag result | File uploads, reordering |
+
+#### Form and Input Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_fill_form` | Fill multiple form fields | `fields: Array<{name, type, ref, value}>` | Form fill result | Bulk input operations |
+| `browser_select_option` | Select dropdown option | `element: string, ref: string, values: string[]` | Selection result | Template selection |
+| `browser_file_upload` | Upload files | `paths: string[]` | Upload result | Document analysis uploads |
+
+#### Testing & Verification Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_snapshot` | Accessibility snapshot | None | Structured DOM tree | Page state verification |
+| `browser_take_screenshot` | Visual screenshot | `element?: string, ref?: string, fullPage?: boolean, type?: 'png'\|'jpeg'` | Image data | Visual regression testing |
+| `browser_evaluate` | Execute JavaScript | `function: string, element?: string, ref?: string` | Evaluation result | State inspection, custom logic |
+| `browser_console_messages` | Get console logs | None | Console messages | Error detection |
+| `browser_network_requests` | Get network activity | None | Network requests | API call verification |
+
+#### Advanced Features
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_handle_dialog` | Handle alerts/dialogs | `accept: boolean, promptText?: string` | Dialog result | Confirmation handling |
+| `browser_tabs` | Manage browser tabs | `action: 'list'\|'new'\|'close'\|'select', index?: number` | Tab management | Multi-tab testing |
+| `browser_wait_for` | Wait for conditions | `text?: string, textGone?: string, time?: number` | Wait result | Response loading, state changes |
+
+### **Proper Tool Call Syntax (ALL AGENTS)**
+
+#### Basic Navigation and Page Analysis
+
+```javascript
+// Navigate to application
+mcp__playwright__browser_navigate
+{
+  "url": "http://localhost:3000"
+}
+
+// Take accessibility snapshot for analysis
+mcp__playwright__browser_snapshot
+{
+  // Returns structured DOM tree with accessibility information
+}
+
+// Resize for responsive testing
+mcp__playwright__browser_resize
+{
+  "width": 375,
+  "height": 667
+}
+```
+
+#### User Interaction Testing
+
+```javascript
+// Type message in chat interface
+mcp__playwright__browser_type
+{
+  "element": "Message input field",
+  "ref": "textarea[data-testid='message-input']",
+  "text": "What is the latest Apple stock price?"
+}
+
+// Click send button
+mcp__playwright__browser_click
+{
+  "element": "Send button",
+  "ref": "[data-testid='send-button']"
+}
+
+// Handle multi-line input with Shift+Enter
+mcp__playwright__browser_press_key
+{
+  "key": "Shift+Enter"
+}
+```
+
+#### Advanced Testing and Validation
+
+```javascript
+// Wait for AI response with timeout
+mcp__playwright__browser_wait_for
+{
+  "text": "🎯 KEY TAKEAWAYS",
+  "time": 30
+}
+
+// Execute JavaScript for custom validation
+mcp__playwright__browser_evaluate
+{
+  "function": "() => { const msgs = document.querySelectorAll('.message-assistant'); const lastMsg = msgs[msgs.length-1]; return { hasEmoji: /📈|📉/.test(lastMsg.textContent), wordCount: lastMsg.textContent.split(' ').length, containsKeyTakeaways: lastMsg.textContent.includes('🎯 KEY TAKEAWAYS') }; }"
+}
+
+// Monitor network requests for API validation
+mcp__playwright__browser_network_requests
+{
+  // Returns array of network requests with status, timing, and response data
+}
+```
+
+#### Form and File Operations
+
+```javascript
+// Fill multiple form fields at once
+mcp__playwright__browser_fill_form
+{
+  "fields": [
+    {
+      "name": "Message input",
+      "type": "textbox",
+      "ref": "textarea[placeholder*='message']",
+      "value": "Analyze NVDA stock performance"
+    }
+  ]
+}
+
+// Upload file for analysis
+mcp__playwright__browser_file_upload
+{
+  "paths": ["/path/to/document.pdf"]
+}
+```
+
+### **Best Practices for Playwright MCP Usage (ALL AGENTS)**
+
+#### 1. **Systematic Testing Approach**
+- Use `browser_snapshot` after navigation to understand page structure before interactions
+- Take screenshots at key validation points for visual documentation
+- Monitor network requests to validate API integration during testing
+- Use structured JavaScript evaluation for complex state validation
+
+#### 2. **Token Efficiency Strategies**
+- Batch related operations in logical sequences
+- Use specific selectors to avoid large DOM tree returns
+- Take snapshots only when page state significantly changes
+- Leverage targeted JavaScript evaluation for specific data extraction
+
+#### 3. **Error Handling and Debugging**
+- Always check console messages after interactions for JavaScript errors
+- Use `browser_wait_for` with appropriate timeouts for async operations
+- Implement fallback selectors when primary selectors may fail
+- Document unexpected behavior with screenshots and network request logs
+
+#### 4. **Responsive Design Testing**
+- Test multiple viewport sizes (mobile: 375x667, tablet: 768x1024, desktop: 1200x800)
+- Validate touch interactions on mobile viewports
+- Verify responsive layout changes with `browser_evaluate` for computed styles
+- Test cross-device functionality with network request monitoring
+
+### **Integration with Other MCP Tools (ALL AGENTS)**
+
+#### Pattern 1: Research-Driven Browser Testing
+
+```javascript
+// 1. Research latest testing patterns (Context7)
+mcp__context7__resolve_library_id({"libraryName": "playwright"})
+mcp__context7__get_library_docs({"context7CompatibleLibraryID": "/microsoft/playwright", "topic": "browser automation best practices"})
+
+// 2. Plan testing strategy (Sequential Thinking)
+mcp__sequential_thinking__sequentialthinking({
+  "thought": "Planning comprehensive browser testing approach for React chat interface..."
+})
+
+// 3. Execute browser testing (Playwright MCP)
+mcp__playwright__browser_navigate({"url": "http://localhost:3000"})
+mcp__playwright__browser_snapshot({})
+
+// 4. Document results (GitHub MCP)
+mcp__github__create_or_update_file({
+  "path": "TESTING_RESULTS.md",
+  "content": "Browser testing validation results...",
+  "message": "Document Playwright MCP testing validation"
+})
+```
+
+#### Pattern 2: Performance Testing with Cross-Tool Analysis
+
+```javascript
+// 1. Analyze current performance (Sequential Thinking)
+mcp__sequential_thinking__sequentialthinking({
+  "thought": "Analyzing performance requirements for browser testing..."
+})
+
+// 2. Execute performance testing (Playwright MCP)
+mcp__playwright__browser_navigate({"url": "http://localhost:3000"})
+mcp__playwright__browser_network_requests({})
+mcp__playwright__browser_evaluate({"function": "() => performance.now()"})
+
+// 3. Analyze local test files (Filesystem MCP)
+mcp__filesystem__read_multiple_files({"paths": ["/tests/performance.spec.js", "/tests/integration.spec.js"]})
+
+// 4. Update repository with findings (GitHub MCP)
+mcp__github__create_or_update_file({"path": "tests/browser-performance.md", "message": "Update browser performance testing results"})
+```
+
+#### Pattern 3: Component Testing with Accessibility Validation
+
+```javascript
+// 1. Research accessibility patterns (Context7)
+mcp__context7__get_library_docs({"context7CompatibleLibraryID": "/w3c/wcag", "topic": "web accessibility guidelines"})
+
+// 2. Plan accessibility testing (Sequential Thinking)
+mcp__sequential_thinking__sequentialthinking({
+  "thought": "Planning comprehensive accessibility validation for chat components..."
+})
+
+// 3. Execute accessibility testing (Playwright MCP)
+mcp__playwright__browser_navigate({"url": "http://localhost:3000"})
+mcp__playwright__browser_snapshot({})  // Returns structured accessibility tree
+mcp__playwright__browser_evaluate({"function": "() => document.querySelectorAll('[aria-label], [role]').length"})
+
+// 4. Validate component files (Filesystem MCP)
+mcp__filesystem__read_text_file({"path": "/src/components/ChatInterface_OpenAI.tsx"})
+```
+
+### **OpenAI GUI-Specific Usage Patterns (FRONTEND AGENTS)**
+
+#### Chat Interface Testing Workflow
+
+```javascript
+// Complete chat workflow validation
+[
+  {"tool": "browser_navigate", "parameters": {"url": "http://localhost:3000"}},
+  {"tool": "browser_snapshot", "parameters": {}},
+  {"tool": "browser_type", "parameters": {"element": "Message input", "ref": "textarea", "text": "What is NVDA trading at?"}},
+  {"tool": "browser_click", "parameters": {"element": "Send button", "ref": "[data-testid='send-button']"}},
+  {"tool": "browser_wait_for", "parameters": {"text": "🎯 KEY TAKEAWAYS", "time": 30}},
+  {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('.message-assistant:last-child').textContent.includes('📈') || document.querySelector('.message-assistant:last-child').textContent.includes('📉')"}},
+  {"tool": "browser_network_requests", "parameters": {}}
+]
+```
+
+#### Responsive Design Validation
+
+```javascript
+// Cross-device testing sequence
+[
+  {"tool": "browser_resize", "parameters": {"width": 375, "height": 667}},  // Mobile
+  {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.message-bubble')).maxWidth"}},
+  {"tool": "browser_resize", "parameters": {"width": 1200, "height": 800}}, // Desktop
+  {"tool": "browser_evaluate", "parameters": {"function": "() => window.getComputedStyle(document.querySelector('.message-bubble')).maxWidth"}},
+  {"tool": "browser_take_screenshot", "parameters": {"fullPage": true}}
+]
+```
+
+#### Template Button and Export Testing
+
+```javascript
+// Template and export functionality validation
+[
+  {"tool": "browser_click", "parameters": {"element": "Technical Analysis template", "ref": "[data-testid='template-technical']"}},
+  {"tool": "browser_wait_for", "parameters": {"text": "📊 Technical Analysis", "time": 15}},
+  {"tool": "browser_click", "parameters": {"element": "Export button", "ref": "[data-testid='export-button']"}},
+  {"tool": "browser_click", "parameters": {"element": "Export as Markdown", "ref": "[data-testid='export-markdown']"}},
+  {"tool": "browser_evaluate", "parameters": {"function": "() => { const downloads = document.querySelectorAll('[download]'); return downloads.length > 0; }"}}
+]
+```
+
+### **Environment-Specific Configuration (FRONTEND AGENTS)**
+
+#### Development Environment Testing
+```javascript
+// Development testing configuration
+{
+  "environment": "development",
+  "baseUrl": "http://localhost:3000",
+  "backendUrl": "http://localhost:8000",
+  "timeouts": {
+    "navigation": 10,
+    "interaction": 5,
+    "apiResponse": 30
+  }
+}
+```
+
+#### Production Environment Testing
+```javascript
+// Production testing configuration
+{
+  "environment": "production",
+  "baseUrl": "https://app.example.com",
+  "backendUrl": "https://api.example.com",
+  "timeouts": {
+    "navigation": 20,
+    "interaction": 15,
+    "apiResponse": 60
+  }
+}
+```
+
+### **Troubleshooting Common Issues (ALL AGENTS)**
+
+#### Element Not Found
+**Symptoms**: MCP tools return "element not found" errors
+**Solutions**:
+1. Take fresh `browser_snapshot` to see current page state
+2. Use alternative selectors (CSS class, data attributes, XPath)
+3. Wait for dynamic content with `browser_wait_for`
+4. Check for overlapping elements or z-index issues
+
+```javascript
+// Troubleshooting sequence
+[
+  {"tool": "browser_snapshot", "purpose": "Inspect current DOM structure"},
+  {"tool": "browser_console_messages", "purpose": "Check for JavaScript errors"},
+  {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('your-selector')"}, "purpose": "Verify selector exists"}
+]
+```
+
+#### Slow Response Times
+**Symptoms**: Timeouts on `browser_wait_for` operations
+**Solutions**:
+1. Increase timeout values for AI responses (30-60 seconds)
+2. Monitor network requests to identify bottlenecks
+3. Check backend health endpoint status
+4. Verify API keys and rate limits
+
+```javascript
+// Performance debugging sequence
+[
+  {"tool": "browser_network_requests", "purpose": "Identify slow API calls"},
+  {"tool": "browser_evaluate", "parameters": {"function": "() => performance.now()"}, "purpose": "Timestamp interactions"},
+  {"tool": "browser_console_messages", "purpose": "Check for performance warnings"}
+]
+```
+
+### **Best Practices Summary (ALL AGENTS)**
+
+#### Test Organization and Execution
+- **Systematic Approach**: Always start with navigation and snapshot
+- **Token Efficiency**: Use targeted selectors and specific evaluations
+- **Error Handling**: Monitor console messages and network requests
+- **Documentation**: Take screenshots at key validation points
+
+#### Integration with Development Workflow
+- **Research First**: Use Context7 to understand latest testing patterns
+- **Plan Systematically**: Use Sequential Thinking for complex test scenarios
+- **Coordinate with Team**: Use GitHub MCP to document and share test results
+- **Validate Comprehensively**: Test responsive design, accessibility, and performance
+
+#### Quality Assurance Standards
+- **Cross-Browser Testing**: Test on Chromium, Firefox, and WebKit
+- **Responsive Validation**: Test mobile, tablet, and desktop viewports
+- **Accessibility Compliance**: Use structured accessibility tree analysis
+- **Performance Monitoring**: Track network requests and interaction timing
+- **API Integration**: Validate frontend-backend communication through browser testing
+
+---
+
 ## 🔄 Updated Tool Integration Patterns (Enhanced Architecture)
 
 ### **Pattern 1: Universal MCP Tool Usage (Including GitHub MCP)**
@@ -1012,6 +1420,33 @@ sequential_thinking({
 // All agents implement using mcp__filesystem__* tools for local operations
 // All agents use mcp__github__* tools for repository operations (PRIMARY)
 // Focus on enhanced JSON architecture and coordination
+```
+
+### **Pattern 3: Playwright MCP Testing Workflow (ALL AGENTS)**
+
+```javascript
+// 1. Research testing best practices (Context7)
+context7_resolve_library_id({"libraryName": "playwright"})
+context7_get_library_docs({"context7CompatibleLibraryID": "/microsoft/playwright", "topic": "browser automation"})
+
+// 2. Plan comprehensive testing strategy (Sequential Thinking)
+sequential_thinking({
+  "thought": "Planning systematic browser testing for React chat interface with accessibility validation..."
+})
+
+// 3. Execute browser testing workflow (Playwright MCP)
+browser_navigate({"url": "http://localhost:3000"})
+browser_snapshot({})  // Structured accessibility analysis
+browser_type({"element": "Message input", "ref": "textarea", "text": "Test query"})
+browser_wait_for({"text": "🎯 KEY TAKEAWAYS", "time": 30})
+browser_network_requests({})  // API integration validation
+
+// 4. Analyze test results and update codebase (Filesystem + GitHub MCP)
+filesystem_read_text_file({"path": "/src/components/ChatInterface.tsx"})  // Component analysis
+github_create_or_update_file({"path": "tests/browser-validation.md", "message": "Update browser testing results"})
+
+// 5. Document findings and coordinate with team (All MCP Tools)
+// Focus on cross-tool integration for comprehensive testing coverage
 ```
 
 ### **Pattern 2: Systematic Analysis and Implementation (GitHub MCP Integrated)**
@@ -1148,6 +1583,30 @@ create_issue({"owner": "owner", "repo": "repo", "title": "Bug report", "body": "
 create_pull_request({"owner": "owner", "repo": "repo", "title": "Feature", "head": "feature-branch", "base": "main"})
 ```
 
+### **Playwright MCP Quick Commands (FRONTEND/TESTING AGENTS)**
+
+```bash
+# Basic browser operations (FRONTEND AGENTS)
+browser_navigate({"url": "http://localhost:3000"})
+browser_snapshot({})  # Structured accessibility analysis
+browser_take_screenshot({"fullPage": true})
+
+# User interaction testing (FRONTEND AGENTS)
+browser_type({"element": "Message input", "ref": "textarea", "text": "Test message"})
+browser_click({"element": "Send button", "ref": "[data-testid='send-button']"})
+browser_press_key({"key": "Enter"})
+
+# Advanced validation (FRONTEND AGENTS)
+browser_wait_for({"text": "🎯 KEY TAKEAWAYS", "time": 30})
+browser_evaluate({"function": "() => document.querySelector('.message-assistant').textContent.includes('📈')"})
+browser_network_requests({})  # API integration validation
+
+# Responsive and accessibility testing (FRONTEND AGENTS)
+browser_resize({"width": 375, "height": 667})  # Mobile viewport
+browser_fill_form({"fields": [{"name": "input", "type": "textbox", "ref": "textarea", "value": "test"}]})
+browser_handle_dialog({"accept": true})
+```
+
 ---
 
 ## 🚨 UNIVERSAL MCP TOOL REQUIREMENTS (Enhanced Architecture)
@@ -1197,6 +1656,7 @@ create_pull_request({"owner": "owner", "repo": "repo", "title": "Feature", "head
 ✅ mcp__context7__resolve-library-id + get-library-docs - Research evidence  
 ✅ mcp__filesystem__* - Local file operations evidence
 ✅ mcp__github__* - Repository operations evidence (PRIMARY for repo tasks)
+✅ mcp__playwright__* - Browser testing automation (frontend/testing agents)
 ✅ Implementation decisions documented with clear reasoning
 ✅ Test scripts and validation procedures for bug fixes
 ✅ Enhanced: Evidence of enhanced JSON architecture compliance

@@ -9,22 +9,35 @@
 
 | Scenario | Recommended Method | Reason |
 |----------|-------------------|--------|
-| **AI Agent Testing** | MCP Server (`@playwright/mcp`) | Structured JSON responses, higher token efficiency |
-| **Human Development** | CLI (`@playwright/test`) | Mature ecosystem, universal compatibility |
-| **Component Testing** | CLI with React CT | Proven patterns, extensive documentation |
-| **E2E Testing** | Either (preference: CLI) | Both methods equally capable |
-| **CI/CD Integration** | CLI | Proven pipeline patterns, extensive tooling |
+| **AI Agent Testing** | **Method 3: MCP Server Integration** | 20+ tools, structured JSON responses, optimal token efficiency |
+| **Interactive AI Testing** | **Method 3: MCP Server Integration** | Real-time DOM analysis, accessibility snapshots |
+| **Human Development** | **Method 2: CLI Integration** | Mature ecosystem, universal compatibility |
+| **Component Testing** | **Method 2: CLI with React CT** | Proven patterns, extensive documentation |
+| **E2E Testing** | **Method 2 or 3** (preference: CLI for teams, MCP for AI) | Both methods equally capable |
+| **CI/CD Integration** | **Method 2: CLI Integration** | Proven pipeline patterns, extensive tooling |
+| **Prototype Testing** | **Method 3: MCP Server Integration** | Rapid iteration, AI-driven test generation |
 
 ### Recommended Approach for Our Stack
 
-**Primary Recommendation: CLI Method** for the following reasons:
+**Primary Recommendations by Use Case:**
+
+**For AI Agents & Interactive Testing: Method 3 (MCP Server Integration)**
+- 20+ specialized browser automation tools
+- Structured JSON responses optimized for AI interpretation
+- Token-efficient communication patterns
+- Real-time accessibility snapshots and DOM analysis
+- OpenAI GUI-specific integration patterns
+
+**For Human Development Teams: Method 2 (CLI Integration)**
 - Mature ecosystem with extensive React/TypeScript support
 - Seamless Vite integration via `ctViteConfig`
-- No additional infrastructure dependencies
-- Proven CI/CD patterns
-- Universal team compatibility
+- Proven CI/CD patterns and universal team compatibility
+- Rich debugging tools and IDE integration
 
-**Secondary: MCP Server** for AI-driven testing scenarios where structured responses and token efficiency are critical.
+**For Hybrid Workflows: Combined Approach**
+- Use Method 3 for AI-driven exploratory testing and rapid prototyping
+- Use Method 2 for stable regression testing and CI/CD integration
+- Cross-reference between methods for comprehensive coverage
 
 ### Implementation Timeline
 
@@ -759,6 +772,694 @@ test.describe('useChatHistory Hook', () => {
 
 ## Decision Framework
 
+## Method 3: MCP Server Integration (Advanced AI-Driven Testing)
+
+> **Advanced Method for AI Agents**  
+> Comprehensive MCP server integration for structured, AI-driven browser automation with enhanced OpenAI GUI testing capabilities
+
+### Executive Overview
+
+**Method 3: MCP Server Integration** provides the most advanced approach for AI-driven testing scenarios, offering structured JSON responses, comprehensive tool inventory, and optimized token efficiency. This method is specifically designed for AI agents that need to interpret test results and perform complex browser interactions.
+
+**Key Advantages:**
+- **20+ MCP Tools**: Complete browser automation toolkit
+- **Structured Responses**: JSON-based output for AI interpretation
+- **Token Efficiency**: Compact, parseable responses reduce AI token usage
+- **Real-time Context**: Live accessibility snapshots and DOM analysis
+- **OpenAI GUI Optimized**: Specific patterns for our React/TypeScript stack
+
+### Prerequisites & Requirements
+
+**System Requirements:**
+- Node.js 18+ (LTS recommended)
+- MCP client implementation (Claude Desktop, VS Code with MCP extension)
+- TypeScript 4.7+ (for enhanced type safety)
+- Python 3.10+ (for backend integration)
+- Active internet connection (for browser downloads)
+
+**Environment Setup:**
+```bash
+# Verify Node.js version
+node --version  # Should be 18.0.0 or higher
+
+# Verify MCP client availability
+# For Claude Desktop: Check settings for MCP servers
+# For VS Code: Install MCP extension
+
+# Backend requirements
+python --version  # Should be 3.10 or higher
+uv --version      # Package manager verification
+```
+
+### Complete MCP Tool Inventory & Capabilities Matrix
+
+#### Browser Management Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_navigate` | Navigate to URL | `url: string` | Success status | Load chat interface |
+| `browser_resize` | Resize browser window | `width: number, height: number` | Success status | Test responsive design |
+| `browser_close` | Close current page | None | Success status | Cleanup after tests |
+| `browser_install` | Install browser binaries | None | Installation status | Setup environment |
+
+#### Core Interaction Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_click` | Click element | `element: string, ref: string, button?: string, doubleClick?: boolean` | Click result | Send button, export buttons |
+| `browser_type` | Type text into element | `element: string, ref: string, text: string, slowly?: boolean, submit?: boolean` | Type result | Message input, multi-line queries |
+| `browser_press_key` | Press keyboard key | `key: string` | Key press result | Enter, Shift+Enter, Tab navigation |
+| `browser_hover` | Hover over element | `element: string, ref: string` | Hover result | Tooltip triggers, button states |
+| `browser_drag` | Drag and drop | `startElement: string, startRef: string, endElement: string, endRef: string` | Drag result | File uploads, reordering |
+
+#### Form and Input Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_fill_form` | Fill multiple form fields | `fields: Array<{name, type, ref, value}>` | Form fill result | Bulk input operations |
+| `browser_select_option` | Select dropdown option | `element: string, ref: string, values: string[]` | Selection result | Template selection |
+| `browser_file_upload` | Upload files | `paths: string[]` | Upload result | Document analysis uploads |
+
+#### Testing & Verification Tools
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_snapshot` | Accessibility snapshot | None | Structured DOM tree | Page state verification |
+| `browser_take_screenshot` | Visual screenshot | `element?: string, ref?: string, fullPage?: boolean, type?: 'png'\|'jpeg'` | Image data | Visual regression testing |
+| `browser_evaluate` | Execute JavaScript | `function: string, element?: string, ref?: string` | Evaluation result | State inspection, custom logic |
+| `browser_console_messages` | Get console logs | None | Console messages | Error detection |
+| `browser_network_requests` | Get network activity | None | Network requests | API call verification |
+
+#### Advanced Features
+
+| Tool | Purpose | Parameters | Return Type | OpenAI GUI Use Case |
+|------|---------|------------|-------------|---------------------|
+| `browser_handle_dialog` | Handle alerts/dialogs | `accept: boolean, promptText?: string` | Dialog result | Confirmation handling |
+| `browser_tabs` | Manage browser tabs | `action: 'list'\|'new'\|'close'\|'select', index?: number` | Tab management | Multi-tab testing |
+| `browser_wait_for` | Wait for conditions | `text?: string, textGone?: string, time?: number` | Wait result | Response loading, state changes |
+
+### OpenAI GUI-Specific Integration Patterns
+
+#### Component Selector Reference
+
+Based on our React application structure, here are the key selectors for MCP tool usage:
+
+```typescript
+// Primary Interface Elements
+interface OpenAIGUISelectors {
+  // Message Input Components
+  messageInput: 'textarea[data-testid="message-input"]' | 'textarea[placeholder*="message"]';
+  sendButton: '[data-testid="send-button"]' | 'button[type="submit"]';
+  
+  // Chat Interface Elements
+  chatContainer: '[data-testid="chat-container"]' | '.chat-interface';
+  messageUser: '.message-user' | '[data-message-type="user"]';
+  messageAssistant: '.message-assistant' | '[data-message-type="assistant"]';
+  
+  // Template Buttons
+  templateButtons: '.template-button' | '[data-testid^="template-"]';
+  analysisTools: '[data-testid="analysis-tools"]';
+  
+  // Export Functionality
+  exportButton: '[data-testid="export-button"]';
+  exportMarkdown: '[data-testid="export-markdown"]';
+  
+  // Responsive Elements
+  mobileMenu: '.mobile-menu' | '[data-testid="mobile-menu"]';
+  desktopSidebar: '.desktop-sidebar' | '[data-testid="sidebar"]';
+}
+```
+
+#### API Integration Points
+
+Our OpenAI GUI integrates with these backend endpoints that can be monitored during MCP testing:
+
+```typescript
+// Backend API Endpoints for Monitoring
+interface APIEndpoints {
+  health: '/health';                    // System health check
+  chat: '/api/v1/chat';                // Main chat endpoint
+  templates: '/api/templates';          // Template retrieval
+  analysisTools: '/api/analysis-tools'; // Analysis tool options
+  export: '/api/export';               // Export functionality
+}
+```
+
+### Comprehensive Test Plan Implementation
+
+#### Test Case 1: Basic Message Send Workflow
+
+**Objective**: Verify basic chat functionality with MCP tools
+**Tools Used**: `browser_navigate`, `browser_snapshot`, `browser_type`, `browser_click`, `browser_wait_for`
+
+```json
+[
+  {
+    "tool": "browser_navigate",
+    "parameters": {
+      "url": "http://localhost:3000"
+    },
+    "expected": "Navigation success"
+  },
+  {
+    "tool": "browser_snapshot",
+    "parameters": {},
+    "expected": "Page structure with chat interface visible"
+  },
+  {
+    "tool": "browser_type",
+    "parameters": {
+      "element": "Message input field",
+      "ref": "textarea[data-testid='message-input']",
+      "text": "What is the latest Apple stock price?"
+    },
+    "expected": "Text entered successfully"
+  },
+  {
+    "tool": "browser_click",
+    "parameters": {
+      "element": "Send button",
+      "ref": "[data-testid='send-button']"
+    },
+    "expected": "Message sent, loading state visible"
+  },
+  {
+    "tool": "browser_wait_for",
+    "parameters": {
+      "textGone": "AI is responding",
+      "time": 30
+    },
+    "expected": "Response received and displayed"
+  },
+  {
+    "tool": "browser_snapshot",
+    "parameters": {},
+    "expected": "Chat history with user message and AI response"
+  }
+]
+```
+
+#### Test Case 2: Multi-line Input with Shift+Enter
+
+**Objective**: Test advanced input handling
+**Tools Used**: `browser_type`, `browser_press_key`, `browser_evaluate`
+
+```json
+[
+  {
+    "tool": "browser_navigate",
+    "parameters": {
+      "url": "http://localhost:3000"
+    }
+  },
+  {
+    "tool": "browser_type",
+    "parameters": {
+      "element": "Message input",
+      "ref": "textarea[data-testid='message-input']",
+      "text": "Analyze these stocks:"
+    }
+  },
+  {
+    "tool": "browser_press_key",
+    "parameters": {
+      "key": "Shift+Enter"
+    },
+    "expected": "New line created, no message sent"
+  },
+  {
+    "tool": "browser_type",
+    "parameters": {
+      "element": "Message input",
+      "ref": "textarea[data-testid='message-input']",
+      "text": "- AAPL\n- MSFT\n- GOOGL"
+    }
+  },
+  {
+    "tool": "browser_evaluate",
+    "parameters": {
+      "function": "(element) => element.value.includes('\\n')",
+      "element": "Message input",
+      "ref": "textarea[data-testid='message-input']"
+    },
+    "expected": "Multi-line content verified"
+  },
+  {
+    "tool": "browser_press_key",
+    "parameters": {
+      "key": "Enter"
+    },
+    "expected": "Multi-line message sent successfully"
+  }
+]
+```
+
+#### Test Case 3: Template Button Interaction
+
+**Objective**: Test template button functionality
+**Tools Used**: `browser_snapshot`, `browser_click`, `browser_network_requests`
+
+```json
+[
+  {
+    "tool": "browser_navigate",
+    "parameters": {
+      "url": "http://localhost:3000"
+    }
+  },
+  {
+    "tool": "browser_snapshot",
+    "parameters": {},
+    "expected": "Template buttons visible in interface"
+  },
+  {
+    "tool": "browser_click",
+    "parameters": {
+      "element": "Technical Analysis button",
+      "ref": "[data-testid='template-technical']"
+    }
+  },
+  {
+    "tool": "browser_network_requests",
+    "parameters": {},
+    "expected": "API call to /api/templates endpoint"
+  },
+  {
+    "tool": "browser_wait_for",
+    "parameters": {
+      "text": "📊 Technical Analysis",
+      "time": 15
+    }
+  },
+  {
+    "tool": "browser_snapshot",
+    "parameters": {},
+    "expected": "Technical analysis response with financial emojis"
+  }
+]
+```
+
+#### Test Case 4: Responsive Design Validation
+
+**Objective**: Test responsive behavior across viewport sizes
+**Tools Used**: `browser_resize`, `browser_evaluate`, `browser_snapshot`
+
+```json
+[
+  {
+    "tool": "browser_navigate",
+    "parameters": {
+      "url": "http://localhost:3000"
+    }
+  },
+  {
+    "tool": "browser_resize",
+    "parameters": {
+      "width": 375,
+      "height": 667
+    },
+    "expected": "Mobile viewport applied"
+  },
+  {
+    "tool": "browser_evaluate",
+    "parameters": {
+      "function": "() => window.getComputedStyle(document.querySelector('.message-bubble')).maxWidth"
+    },
+    "expected": "85% width for mobile"
+  },
+  {
+    "tool": "browser_resize",
+    "parameters": {
+      "width": 1200,
+      "height": 800
+    },
+    "expected": "Desktop viewport applied"
+  },
+  {
+    "tool": "browser_evaluate",
+    "parameters": {
+      "function": "() => window.getComputedStyle(document.querySelector('.message-bubble')).maxWidth"
+    },
+    "expected": "70% width for desktop"
+  },
+  {
+    "tool": "browser_snapshot",
+    "parameters": {},
+    "expected": "Desktop layout with proper spacing"
+  }
+]
+```
+
+### Real-world Usage Examples
+
+#### Example 1: Complete Financial Query Test
+
+```json
+{
+  "testName": "Complete Financial Query Workflow",
+  "description": "End-to-end test of financial query with emoji validation",
+  "steps": [
+    {
+      "tool": "browser_navigate",
+      "parameters": { "url": "http://localhost:3000" },
+      "validation": "Page loads successfully"
+    },
+    {
+      "tool": "browser_type",
+      "parameters": {
+        "element": "Message input",
+        "ref": "textarea[placeholder*='message']",
+        "text": "What is the current NVIDIA stock price and market sentiment?"
+      },
+      "validation": "Query entered correctly"
+    },
+    {
+      "tool": "browser_press_key",
+      "parameters": { "key": "Enter" },
+      "validation": "Message sent"
+    },
+    {
+      "tool": "browser_wait_for",
+      "parameters": { "text": "🎯 KEY TAKEAWAYS", "time": 45 },
+      "validation": "AI response received with structured format"
+    },
+    {
+      "tool": "browser_evaluate",
+      "parameters": {
+        "function": "() => document.querySelector('.message-assistant:last-child').textContent.includes('📈') || document.querySelector('.message-assistant:last-child').textContent.includes('📉')"
+      },
+      "validation": "Financial emoji indicators present"
+    },
+    {
+      "tool": "browser_network_requests",
+      "parameters": {},
+      "validation": "Backend API calls successful"
+    }
+  ]
+}
+```
+
+#### Example 2: Export Functionality Test
+
+```json
+{
+  "testName": "Export Functionality Validation",
+  "description": "Test chat export with download verification",
+  "steps": [
+    {
+      "tool": "browser_navigate",
+      "parameters": { "url": "http://localhost:3000" }
+    },
+    {
+      "tool": "browser_type",
+      "parameters": {
+        "element": "Message input",
+        "ref": "textarea",
+        "text": "Generate a sample financial report for testing"
+      }
+    },
+    {
+      "tool": "browser_press_key",
+      "parameters": { "key": "Enter" }
+    },
+    {
+      "tool": "browser_wait_for",
+      "parameters": { "textGone": "AI is responding", "time": 30 }
+    },
+    {
+      "tool": "browser_click",
+      "parameters": {
+        "element": "Export button",
+        "ref": "[data-testid='export-button']"
+      }
+    },
+    {
+      "tool": "browser_click",
+      "parameters": {
+        "element": "Export as Markdown",
+        "ref": "[data-testid='export-markdown']"
+      }
+    },
+    {
+      "tool": "browser_evaluate",
+      "parameters": {
+        "function": "() => { const downloads = document.querySelectorAll('[download]'); return downloads.length > 0; }"
+      },
+      "validation": "Download initiated successfully"
+    }
+  ]
+}
+```
+
+### Performance and Best Practices
+
+#### Optimal Tool Sequencing
+
+**Pattern 1: Navigation + Snapshot**
+```json
+[
+  {"tool": "browser_navigate", "parameters": {"url": "..."}},
+  {"tool": "browser_snapshot", "parameters": {}}
+]
+```
+*Always take a snapshot after navigation to understand page structure*
+
+**Pattern 2: Interaction + Validation**
+```json
+[
+  {"tool": "browser_type", "parameters": {...}},
+  {"tool": "browser_evaluate", "parameters": {...}}
+]
+```
+*Validate interactions immediately to catch issues early*
+
+**Pattern 3: Wait + Verify**
+```json
+[
+  {"tool": "browser_wait_for", "parameters": {...}},
+  {"tool": "browser_network_requests", "parameters": {}}
+]
+```
+*Check network activity after waiting for async operations*
+
+#### Token Efficiency Strategies
+
+1. **Batch Related Operations**: Group logically related MCP calls
+2. **Use Specific Selectors**: Avoid generic selectors that return large DOM trees
+3. **Strategic Snapshots**: Take snapshots only when page state significantly changes
+4. **Targeted Evaluations**: Use `browser_evaluate` for specific data extraction
+
+#### Error Handling Patterns
+
+```json
+{
+  "errorHandling": {
+    "timeouts": {
+      "navigation": 30,
+      "interactions": 10,
+      "apiResponses": 60
+    },
+    "retryPatterns": {
+      "networkFailure": "Retry navigation up to 3 times",
+      "elementNotFound": "Take snapshot and re-evaluate selectors",
+      "timeoutExpired": "Check console messages and network requests"
+    },
+    "fallbackStrategies": {
+      "primarySelectorFails": "Use alternative CSS selector or XPath",
+      "javascriptDisabled": "Use pure click/type interactions",
+      "slowResponse": "Increase timeout and add intermediate checks"
+    }
+  }
+}
+```
+
+### Advanced MCP Integration Features
+
+#### Custom JavaScript Evaluation
+
+Use `browser_evaluate` for complex state inspection:
+
+```json
+{
+  "tool": "browser_evaluate",
+  "parameters": {
+    "function": "() => { const msgs = document.querySelectorAll('.message-assistant'); const lastMsg = msgs[msgs.length-1]; return { hasEmoji: /📈|📉/.test(lastMsg.textContent), wordCount: lastMsg.textContent.split(' ').length, containsKeyTakeaways: lastMsg.textContent.includes('🎯 KEY TAKEAWAYS') }; }"
+  }
+}
+```
+
+#### Network Request Monitoring
+
+Monitor API calls for integration validation:
+
+```json
+{
+  "tool": "browser_network_requests",
+  "parameters": {},
+  "expectedPatterns": [
+    {
+      "url": "**/api/v1/chat",
+      "method": "POST",
+      "status": 200,
+      "responseTimeMs": "< 5000"
+    },
+    {
+      "url": "**/health",
+      "method": "GET",
+      "status": 200,
+      "responseTimeMs": "< 1000"
+    }
+  ]
+}
+```
+
+#### Accessibility Tree Analysis
+
+Leverage structured accessibility data:
+
+```json
+{
+  "tool": "browser_snapshot",
+  "parameters": {},
+  "analysis": {
+    "checkFor": [
+      "aria-labels on interactive elements",
+      "proper heading hierarchy",
+      "keyboard navigation support",
+      "screen reader compatibility"
+    ],
+    "accessibilityValidation": {
+      "forms": "All inputs have associated labels",
+      "buttons": "All buttons have descriptive text or aria-label",
+      "navigation": "Tab order is logical and complete"
+    }
+  }
+}
+```
+
+### Troubleshooting & Common Issues
+
+#### Issue: Element Not Found
+**Symptoms**: MCP tools return "element not found" errors
+**Solutions**:
+1. Take a fresh `browser_snapshot` to see current page state
+2. Use alternative selectors (CSS class, data attributes, XPath)
+3. Wait for dynamic content with `browser_wait_for`
+4. Check for overlapping elements or z-index issues
+
+```json
+{
+  "troubleshootingSequence": [
+    {"tool": "browser_snapshot", "purpose": "Inspect current DOM structure"},
+    {"tool": "browser_console_messages", "purpose": "Check for JavaScript errors"},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => document.querySelector('your-selector')"}, "purpose": "Verify selector exists"}
+  ]
+}
+```
+
+#### Issue: Slow Response Times
+**Symptoms**: Timeouts on `browser_wait_for` operations
+**Solutions**:
+1. Increase timeout values for AI responses (30-60 seconds)
+2. Monitor network requests to identify bottlenecks
+3. Check backend health endpoint status
+4. Verify API keys and rate limits
+
+```json
+{
+  "performanceDebugging": [
+    {"tool": "browser_network_requests", "purpose": "Identify slow API calls"},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => performance.now()"}, "purpose": "Timestamp interactions"},
+    {"tool": "browser_console_messages", "purpose": "Check for performance warnings"}
+  ]
+}
+```
+
+#### Issue: Responsive Design Problems
+**Symptoms**: Elements not visible or improperly sized
+**Solutions**:
+1. Use `browser_resize` to test different viewport sizes
+2. Evaluate computed styles with `browser_evaluate`
+3. Take screenshots at different resolutions
+4. Check CSS media query breakpoints
+
+```json
+{
+  "responsiveDebugging": [
+    {"tool": "browser_resize", "parameters": {"width": 375, "height": 667}},
+    {"tool": "browser_evaluate", "parameters": {"function": "() => ({ width: window.innerWidth, height: window.innerHeight, devicePixelRatio: window.devicePixelRatio })"}},
+    {"tool": "browser_take_screenshot", "parameters": {"fullPage": true}}
+  ]
+}
+```
+
+### Integration with Backend Systems
+
+#### FastAPI Health Check Integration
+
+```json
+{
+  "backendValidation": {
+    "healthCheck": {
+      "tool": "browser_evaluate",
+      "parameters": {
+        "function": "() => fetch('/health').then(r => r.json()).then(data => data.status === 'healthy')"
+      }
+    },
+    "apiEndpointTests": [
+      {
+        "endpoint": "/api/v1/chat",
+        "method": "POST",
+        "expectedStatus": 200,
+        "timeout": 30000
+      },
+      {
+        "endpoint": "/api/templates",
+        "method": "GET",
+        "expectedStatus": 200,
+        "timeout": 5000
+      }
+    ]
+  }
+}
+```
+
+#### Environment-Specific Configuration
+
+```json
+{
+  "environments": {
+    "development": {
+      "baseUrl": "http://localhost:3000",
+      "backendUrl": "http://localhost:8000",
+      "timeouts": {
+        "navigation": 10,
+        "interaction": 5,
+        "apiResponse": 30
+      }
+    },
+    "staging": {
+      "baseUrl": "https://staging.example.com",
+      "backendUrl": "https://api-staging.example.com",
+      "timeouts": {
+        "navigation": 15,
+        "interaction": 10,
+        "apiResponse": 45
+      }
+    },
+    "production": {
+      "baseUrl": "https://app.example.com",
+      "backendUrl": "https://api.example.com",
+      "timeouts": {
+        "navigation": 20,
+        "interaction": 15,
+        "apiResponse": 60
+      }
+    }
+  }
+}
+```
+
 ### When to Use MCP vs CLI
 
 #### Use MCP Server When:
@@ -767,6 +1468,9 @@ test.describe('useChatHistory Hook', () => {
 - **Token Efficiency**: Minimizing token usage for AI interactions
 - **Accessibility Focus**: Leveraging structured accessibility snapshots
 - **Real-time Analysis**: Need for live DOM and accessibility context
+- **Interactive Debugging**: Step-by-step browser interaction with immediate feedback
+- **Cross-platform Compatibility**: Testing across different operating systems
+- **Dynamic Test Generation**: AI-generated test scenarios based on page analysis
 
 #### Use CLI When:
 - **Human Development**: Traditional development workflows
@@ -774,6 +1478,9 @@ test.describe('useChatHistory Hook', () => {
 - **Component Testing**: React component isolation testing
 - **Debugging Needs**: Rich debugging tools and IDE integration
 - **Team Collaboration**: Universal tool compatibility requirements
+- **Performance Testing**: Load testing and parallel execution
+- **Regression Testing**: Stable, repeatable test suites
+- **Enterprise Integration**: Integration with existing testing infrastructure
 
 ### Component vs E2E Testing Decisions
 

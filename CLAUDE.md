@@ -42,6 +42,7 @@ uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 **Expected Output:**
+
 ```
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [XXXX] using WatchFiles
@@ -63,6 +64,7 @@ uv run src/main.py
 ```
 
 **Expected Output:**
+
 ```
 Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
 > tell me about NVDA stock
@@ -95,6 +97,7 @@ npm run dev
 ```
 
 **Expected Output:**
+
 ```
 > frontend-openai@0.0.0 dev
 > vite --mode development
@@ -106,7 +109,7 @@ npm run dev
   ➜  Network: http://172.17.0.1:3000/
 ```
 
-**Access the GUI:** Open http://localhost:3000/ in your browser
+**Access the GUI:** Open <http://localhost:3000/> in your browser
 
 ### Step 5: GUI Setup - Live Server Production (Alternative)
 
@@ -125,23 +128,25 @@ live-server --port=5501 --host=127.0.0.1 --no-browser --wait=1000
 ```
 
 **Expected Output:**
+
 ```
 Serving "/path/to/frontend_OpenAI/dist" at http://127.0.0.1:5501
 Ready for changes
 ```
 
-**Access the GUI:** Open http://127.0.0.1:5501/ in your browser
+**Access the GUI:** Open <http://127.0.0.1:5501/> in your browser
 
 ### ✅ Complete System Status Check
 
 **After following all steps, you should have:**
 
-1. **FastAPI Backend** running on http://0.0.0.0:8000 (startup complete)
+1. **FastAPI Backend** running on <http://0.0.0.0:8000> (startup complete)
 2. **CLI Interface** working with financial data queries and emoji-based responses
-3. **Vite Dev Server** running on http://localhost:3000/ (220ms startup) OR
-4. **Live Server** running on http://127.0.0.1:5501/ (production build)
+3. **Vite Dev Server** running on <http://localhost:3000/> (220ms startup) OR
+4. **Live Server** running on <http://127.0.0.1:5501/> (production build)
 
 **Test the complete system:**
+
 - CLI: Ask "tell me about NVDA stock" - should get emoji-enhanced financial analysis
 - GUI: Open browser, type financial queries - should get same enhanced responses
 - Both interfaces should show identical emoji-based sentiment indicators (📈📉💰)
@@ -149,16 +154,19 @@ Ready for changes
 ### 🔧 Common Issues & Solutions
 
 **Backend Issues:**
+
 - Missing API keys: Check .env file has both POLYGON_API_KEY and OPENAI_API_KEY
 - Port 8000 busy: Change port with `--port 8001`
 - uv not found: Install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 **Frontend Issues:**
+
 - npm install fails: Update Node.js to 18+ and try again
 - Port 3000 busy: Vite will auto-select next available port
 - Live Server not found: Install VS Code Live Server extension
 
 **API Issues:**
+
 - 400 Bad Request: Verify backend is running and API keys are valid
 - MCP server errors: Ensure uvx is in PATH and Polygon API key is correct
 
@@ -201,28 +209,28 @@ All specialists and development work must respect these prototyping constraints 
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-● ✅ COMPLETE: [OpenAI] Fix Utterly Broken App & Development Environment - Critical System Recovery - Successfully Delivered
+● ✅ COMPLETE: [OpenAI] Initial Playwright MCP Tool Testing Guide & Initial Test Plan - Successfully Delivered
 
-**Task:** Critical system recovery from completely broken GUI, TypeScript build failures, and missing backend endpoints
-**Result:** All critical systems operational with comprehensive documentation and prevention measures implemented  
-**Impact:** Complete system recovery with testing methodology reform and production readiness achieved
+**Task:** Research Playwright MCP capabilities, analyze OpenAI GUI codebase, create test plan, and update documentation with comprehensive MCP integration
+**Result:** Complete Playwright MCP integration documentation with 20+ tools researched, GUI component analysis, and prototype test plan implemented
+**Impact:** Comprehensive testing framework documentation enabling AI-driven browser automation for OpenAI GUI with MCP tool integration
 
 **Key Deliverables:**
 
-- **TypeScript Build Fixes**: 3 components fixed (timeout type errors), `npm run build` now works correctly
-- **Backend API Implementation**: Added missing `/templates` and `/analysis-tools` endpoints (404 → 200 OK)
-- **GUI System Recovery**: No more "Failed to load analysis tools" errors, full frontend-backend integration working
-- **Documentation Overhaul**: Quick Start guides added to CLAUDE.md and README.md with backend-first startup procedures
-- **Post-Mortem Analysis**: Comprehensive analysis of how previous "PASSING WITH EXCELLENCE" missed critical failures
+- **Playwright MCP Research**: 20+ tools researched with complete capabilities matrix and optimal usage patterns
+- **OpenAI GUI Analysis**: Component structure analyzed with specific selectors, API endpoints, and integration patterns
+- **Prototype Test Plan**: Basic test plan designed for 3 messages + button interactions using systematic MCP tool sequences  
+- **PLAYWRIGHT Guide Enhancement**: Method 3 MCP Server Integration section added (~700 lines) with comprehensive tool inventory and test implementations
+- **MCP Tool Guide Integration**: Tool 6 Playwright MCP section added following exact Tools 1-5 pattern with strategic content reuse
 
-**Critical System Status**: FastAPI backend (8000), Vite dev (3000), Live Server prod (5501) all operational
-**Specialist Coordination:** Tech-lead orchestrated 7-phase recovery with forensic analysis and comprehensive validation  
-**Quality Status:** PASS - READY FOR PRODUCTION | **Files Modified:** 4 critical system files + comprehensive documentation
-**Prevention Framework:** Evidence-based validation standards established to prevent future testing methodology failures
+**Critical Deliverables**: 2 major documentation updates with complete MCP integration, test plans, and cross-tool coordination patterns
+**Specialist Coordination:** Tech-lead orchestrated 7-phase implementation with @code-archaeologist research, @documentation-specialist implementation, and @code-reviewer validation
+**Quality Status:** PASS - Grade A code review | **Files Modified:** 2 major documentation files + comprehensive integration
+**MCP Integration:** Complete Playwright MCP tool support added with 20+ tools, usage patterns, and OpenAI GUI-specific implementations
 
-📋 **Full Details:** See `/LAST_TASK_SUMMARY.md` for complete recovery analysis, technical fixes, and prevention measures.
-📄 **Post-Mortem:** See `/gpt5-openai-agents-sdk-polygon-mcp/POST_MORTEM_BROKEN_GUI_2025-09-07.md` for testing failure analysis.
-**Note:** Corrective actions documented for atomic commit principles and GitHub MCP tools compliance.
+📋 **Research Foundation**: Comprehensive analysis of Playwright MCP capabilities and OpenAI GUI testability requirements
+📄 **Documentation Scope**: Method 3 integration + Tool 6 addition with strategic content reuse for token efficiency
+**Note:** NO test execution performed - documentation and planning phase only per task requirements.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## AI Team Configuration (autogenerated by team-configurator, 2025-09-02)
