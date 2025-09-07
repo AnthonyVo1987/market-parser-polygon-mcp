@@ -105,7 +105,17 @@
       "Bash(live-server:*)",
       "WebFetch(domain:127.0.0.1)",
       "Bash(time curl:*)",
-      "mcp__filesystem__read_media_file"
+      "mcp__filesystem__read_media_file",
+      "mcp__playwright__browser_install",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_close",
+      "Bash(netstat:*)",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_resize"
     ],
     "deny": [],
     "ask": [],
