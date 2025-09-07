@@ -1557,7 +1557,7 @@ write_file("/path/to/new_file.py", "content")
 edit_file("/path/to/file.py", [{"oldText": "...", "newText": "..."}])
 ```
 
-### **GitHub MCP Quick Commands (ALL AGENTS - PRIMARY FOR REPOSITORY OPERATIONS)**
+### **GitHub MCP Quick Commands (ALL AGENTS - SECONDARY FOR AUTOMATION)**
 
 ```bash
 # Repository operations (ALL AGENTS)
@@ -1696,7 +1696,7 @@ I performed systematic analysis of this task:
 Step 1: Analyzed current structure using Read and LS tools... (DEPRECATED)
 Step 2: Researched best practices through documentation review... (INSUFFICIENT - must use Context7)
 Step 3: Implemented using Write and Edit tools... (DEPRECATED - must use MCP filesystem)
-Step 4: Used git commands for repository operations... (SECONDARY - should use GitHub MCP as PRIMARY)
+Step 4: Used git commands for repository operations... (PRIMARY - GitHub MCP is SECONDARY for automation)
 ```
 
 ## 🚨 Updated Enforcement Protocol (Enhanced Architecture)
@@ -1710,7 +1710,7 @@ Step 4: Used git commands for repository operations... (SECONDARY - should use G
 3. **Not using MCP filesystem tools** → Local file operations inefficient and inconsistent
 4. **Not using GitHub MCP as PRIMARY** → Repository operations not following mandatory tool hierarchy
 5. **Using deprecated Claude tools** → Non-compliance with MCP standards
-6. **Using git bash commands as PRIMARY** → Should be SECONDARY fallback only
+6. **Using git bash commands as PRIMARY** → CORRECT - Git commands are primary for local repo operations
 7. **Enhanced**: Not considering enhanced JSON architecture coordination
 8. **Enhanced**: Not following enhanced JSON architecture patterns
 9. **Enhanced**: Not coordinating with primary architects
