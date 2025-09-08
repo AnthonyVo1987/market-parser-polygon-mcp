@@ -12,7 +12,7 @@ This directory contains comprehensive test reports generated during Playwright M
 ### Recent Cleanup Summary
 - ✅ **Duplicate Reports Removed:** 7 duplicate reports from secondary location deleted
 - ✅ **Contradictory Reports Archived:** Invalid reports moved to `invalidated_reports/` subdirectory
-- ✅ **Single Directory Established:** `/docs/claude_test_reports/` is now the only report location
+- ✅ **Single Directory Established:** `/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/` is now the only report location
 - ✅ **Timeout Issue Identified:** Backend 5.0s timeout prevents proper test execution
 
 ## Naming Convention
@@ -89,7 +89,7 @@ All previous test reports have been invalidated due to a critical backend timeou
 ### Invalidated Reports Archive
 All invalidated reports have been moved to:
 ```
-/docs/claude_test_reports/invalidated_reports/
+/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/invalidated_reports/
 ├── INVALIDATION_NOTICE.md (detailed explanation)
 ├── CLAUDE_playwright_mcp_tests_25-09-07_15-34.md (Session 2 - invalid)
 └── CLAUDE_playwright_mcp_FINAL_SUMMARY_25-09-07_15-35.md (Session 2 - invalid)
@@ -98,7 +98,7 @@ All invalidated reports have been moved to:
 ### Post-Fix Directory Structure
 After timeout configuration is corrected:
 ```
-/docs/claude_test_reports/
+/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/
 ├── README.md (this file)
 ├── TEMPLATE_playwright_mcp_test_report.md (report template)
 ├── invalidated_reports/ (archive of invalid reports)

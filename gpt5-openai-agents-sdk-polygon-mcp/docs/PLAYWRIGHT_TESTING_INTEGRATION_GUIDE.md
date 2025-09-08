@@ -84,7 +84,7 @@
 ### Priority Test Execution Sequence
 1. **Execute Priority Tests 1-3** in order with immediate failure reporting
 2. **Validate Results** - All priority tests must pass before comprehensive testing
-3. **Generate Priority Report** - Document results in `/docs/claude_test_reports/`
+3. **Generate Priority Report** - Document results in `/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/`
 4. **Proceed to Comprehensive Testing** - Only after priority validation completes
 
 ---
@@ -866,7 +866,7 @@
 #### Pacific Timezone Naming Convention
 **Format**: `CLAUDE_playwright_mcp_tests_YY-MM-DD_hh-mm.md`
 **Timezone**: Pacific Standard Time (PST) / Pacific Daylight Time (PDT)
-**Location**: `/docs/claude_test_reports/`
+**Location**: `/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/`
 
 **Example filenames**:
 - `CLAUDE_playwright_mcp_tests_25-01-15_14-30.md` (January 15, 2025 at 2:30 PM PT)

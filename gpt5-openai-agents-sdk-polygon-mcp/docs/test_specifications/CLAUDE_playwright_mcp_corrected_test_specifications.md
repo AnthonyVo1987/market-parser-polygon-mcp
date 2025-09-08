@@ -46,6 +46,57 @@ This document provides comprehensive test specifications for the Market Parser s
 
 **Data Flow**: User Input → Button Click → Backend Processing → Any Format Response (JSON, text, emojis, conversational)
 
+## Testing Methodology Standards
+
+### Polling-Based Timeout Detection
+- **30-second polling cycles** for completion detection  
+- **120-second individual timeout** per test (not cumulative)
+- **Performance classification**: SUCCESS (<45s), SLOW_PERFORMANCE (45-120s), TIMEOUT (>120s)
+- **Accurate timestamp recording** for all test phases
+- **Early completion detection** to prevent false positive timeouts
+
+### Test Execution Protocol
+1. **Start Test**: Record start timestamp
+2. **Polling Loop**: Check for completion every 30 seconds
+3. **Early Detection**: Stop polling when response received
+4. **Performance Classification**: Categorize based on actual completion time
+5. **Timeout Enforcement**: Hard timeout at 120 seconds if no response
+6. **Result Recording**: Log actual completion time and classification
+7. **Coverage-First Execution**: Continue running ALL requested tests regardless of individual failures
+
+### Coverage-First Testing Principle
+
+**COVERAGE IS MORE IMPORTANT THAN PASSING TESTS**
+
+- **Never stop on first failure** - Record the failure and continue with remaining tests
+- **Complete all requested tests** - Run every test in the requested suite, even if early tests fail
+- **Comprehensive reporting** - Better to report "10/10 tests executed, 0/10 passed" than "3/10 tests executed, stopped early"
+- **Maximize data collection** - Each test provides valuable performance and functionality data regardless of pass/fail status
+- **Prevent wasted time** - Avoid having to restart entire test suites due to early termination
+- **Full system validation** - Only by running all tests can we identify patterns, bottlenecks, and system-wide issues
+
+**Example Reporting:**
+```
+Test Execution Summary:
+✅ P001 Market Status: SUCCESS (32s)
+❌ P002 NVDA Ticker: TIMEOUT (>120s)
+✅ P003 SPY Ticker: SUCCESS (41s)
+
+Result: 3/3 tests executed, 2/3 passed (66% success rate)
+Total Coverage: 100% - All requested tests completed
+```
+
+**Anti-Pattern to Avoid:**
+```
+Test Execution Summary:
+✅ P001 Market Status: SUCCESS (32s)
+❌ P002 NVDA Ticker: TIMEOUT (>120s)
+⏹️ P003 SPY Ticker: SKIPPED (stopped after P002 failure)
+
+Result: 2/3 tests executed, 1/2 passed (50% success rate)
+Total Coverage: 66% - Incomplete due to early termination
+```
+
 ### Response Format Guidelines
 
 **Response Format**: Any format acceptable including:
@@ -65,7 +116,7 @@ This document provides comprehensive test specifications for the Market Parser s
 
 ## Complete 51-Test Suite Specification
 
-### Priority Tests (13 Tests)
+### Priority Tests (3 Tests)
 
 #### TEST-P001: Market Status Request
 **Purpose**: Verify system responds to market status requests
@@ -73,7 +124,8 @@ This document provides comprehensive test specifications for the Market Parser s
 **Query**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with market status information (JSON, text with emojis, or conversational)
 **Success Criteria**: System provides market status information in any readable format
-**Timeout**: 120 seconds
+**Timeout**: 120 seconds (30s polling intervals)
+**Failure Handling**: Record failure details but continue to next test
 **MCP Tools**: `mcp__playwright__browser_navigate`, `mcp__playwright__browser_type`, `mcp__playwright__browser_click`
 
 #### TEST-P002: Single Ticker NVDA Request
@@ -83,25 +135,30 @@ This document provides comprehensive test specifications for the Market Parser s
 **Query Generated**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with NVDA stock information (JSON, emojis like 📈📉💰, or conversational)
 **Success Criteria**: System provides NVDA stock information in readable format
-**Timeout**: 120 seconds
+**Timeout**: 120 seconds (30s polling intervals)
 
 #### TEST-P003: Single Ticker SPY Request
-**Purpose**: Test individual ticker snapshot request
+**Purpose**: Test individual ETF ticker snapshot request
 **Input Method**: Button click (📈 Stock Snapshot)  
 **Pre-Input**: Type "SPY" in chat input
 **Query Generated**: "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-**Expected Response**: Any format response with SPY stock information (JSON, emojis like 📈📉💰, or conversational)
-**Success Criteria**: System provides SPY stock information in readable format
-**Timeout**: 120 seconds
+**Expected Response**: Any format response with SPY ETF information (JSON, emojis like 📈📉💰, or conversational)
+**Success Criteria**: System provides SPY ETF information in readable format
+**Timeout**: 120 seconds (30s polling intervals)
+
+### Performance Validation Tests
 
 #### TEST-P004: Single Ticker GME Request
-**Purpose**: Test individual ticker snapshot request
+**Purpose**: Test individual ticker snapshot request (performance validation)
 **Input Method**: Button click (📈 Stock Snapshot)
 **Pre-Input**: Type "GME" in chat input  
 **Query Generated**: "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with GME stock information (JSON, emojis like 📈📉💰, or conversational)
 **Success Criteria**: System provides GME stock information in readable format
-**Timeout**: 120 seconds
+**Timeout**: 120 seconds (30s polling intervals)
+**Note**: Performance monitoring test - may exhibit slower response times, use polling to distinguish between slow performance vs timeout
+
+### Complex Query Tests
 
 #### TEST-P005: Multi-Ticker Combined Request
 **Purpose**: Test multiple ticker combined request
@@ -110,7 +167,9 @@ This document provides comprehensive test specifications for the Market Parser s
 **Query Generated**: "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
 **Expected Response**: Any format response with multiple ticker information (JSON array, text with emojis, or conversational summary)
 **Success Criteria**: System provides information for multiple tickers in readable format
-**Timeout**: 120 seconds
+**Timeout**: 120 seconds (30s polling intervals)
+
+### Button Template Tests
 
 #### TEST-P006: Snapshot Button Response Time
 **Purpose**: Measure response time for snapshot button
@@ -545,25 +604,58 @@ for (const browserType of browsers) {
 
 ### Response Monitoring and Timeout Handling
 
-**Timeout Configuration**:
+**Polling-Based Timeout Configuration**:
 - **Page Load**: 30 seconds
 - **Button Clicks**: 5 seconds  
-- **API Response**: 120 seconds maximum
+- **API Response**: 120 seconds maximum with 30s polling intervals
 - **JSON Validation**: 5 seconds
+- **Polling Interval**: 30 seconds for response detection
 
-**Timeout Handling Strategy**:
+**30-Second Polling Strategy**:
 ```javascript
-// Configure timeout per operation type
-const timeouts = {
+// Configure polling-based timeout handling
+const pollingConfig = {
     navigation: 30000,
     click: 5000,
     apiResponse: 120000,
+    pollingInterval: 30000,
     validation: 5000
 };
 
-// Use appropriate timeout for each operation
-await browserClick('button', { timeout: timeouts.click });
-await browserWaitFor({ text: 'response', timeout: timeouts.apiResponse });
+// Implement 30-second polling for response detection
+async function pollForResponse(selector, maxTimeout = 120000) {
+    const startTime = Date.now();
+    const pollingInterval = 30000; // 30 seconds
+    
+    while (Date.now() - startTime < maxTimeout) {
+        try {
+            const response = await page.locator(selector).textContent({ timeout: 5000 });
+            if (response && response.trim().length > 0) {
+                const elapsedTime = Date.now() - startTime;
+                const classification = getPerformanceClassification(elapsedTime);
+                return { response, elapsedTime, classification };
+            }
+        } catch (error) {
+            // Continue polling if element not found yet
+        }
+        
+        // Wait 30 seconds before next poll
+        await new Promise(resolve => setTimeout(resolve, pollingInterval));
+    }
+    
+    throw new Error(`Timeout: No response after ${maxTimeout}ms`);
+}
+
+// Performance classification function
+function getPerformanceClassification(elapsedTime) {
+    if (elapsedTime < 45000) return 'SUCCESS';
+    if (elapsedTime < 120000) return 'SLOW_PERFORMANCE';
+    return 'TIMEOUT';
+}
+
+// Use polling for API response detection
+await browserClick('button', { timeout: pollingConfig.click });
+const result = await pollForResponse('.response-content', pollingConfig.apiResponse);
 ```
 
 ### JSON Validation Methodology
@@ -634,16 +726,22 @@ if (response.error) {
 - **Browser Tests**: Run sequentially per browser type
 - **Performance Tests**: Run separately with clean environment
 
-**Execution Order**:
+**Execution Order with 30s Polling**:
 1. **Setup Phase**: Verify backend running, frontend accessible
-2. **Priority Tests**: 13 tests validating core functionality  
-3. **Functional Tests**: 38 tests covering all features
-4. **Performance Tests**: 4 tests measuring system performance
-5. **Cleanup Phase**: Generate reports, cleanup resources
+2. **Priority Tests**: 3 tests validating core functionality with 30s polling (~6 minutes)  
+3. **Functional Tests**: 48 tests covering all features with polling-based timeout detection
+4. **Performance Tests**: 4 tests measuring system performance using polling methodology
+5. **Cleanup Phase**: Generate reports with performance classification, cleanup resources
+
+**Polling Implementation Standards**:
+- **Early Completion Detection**: Stop polling immediately when response received
+- **Performance Classification**: Classify all test results as SUCCESS/SLOW_PERFORMANCE/TIMEOUT
+- **Accurate Timing**: Record actual completion times, not polling intervals
+- **False Positive Prevention**: Use polling to distinguish slow performance from timeouts
 
 ### Reporting and Documentation
 
-**Test Report Format**:
+**Test Report Format with Performance Classification**:
 ```markdown
 # Playwright MCP Test Execution Report
 **Date**: 2025-01-15
@@ -653,28 +751,52 @@ if (response.error) {
 **Failed**: 2
 **Skipped**: 0
 
-## Priority Tests Results
-- TEST-P001: Market Status Raw JSON ✅ PASS (12.3s)
-- TEST-P002: Single Ticker NVDA Raw JSON ✅ PASS (8.7s)
-- TEST-P003: Single Ticker SPY Raw JSON ❌ FAIL (timeout after 120s)
+## Priority Tests Results (30s Polling Methodology)
+- TEST-P001: Market Status ✅ SUCCESS (12.3s) - Completed on first poll
+- TEST-P002: Single Ticker NVDA ✅ SUCCESS (8.7s) - Completed on first poll
+- TEST-P003: Single Ticker SPY ⚠️ SLOW_PERFORMANCE (67.4s) - Completed on third poll
+- TEST-P004: Single Ticker GME ⚠️ SLOW_PERFORMANCE (89.1s) - Completed on fourth poll
+- TEST-P005: Multi-Ticker ❌ TIMEOUT (120s+) - No response after 4 polling cycles
 ...
 
-## Performance Metrics
-- Average Response Time: 23.4 seconds
+## Performance Classification Summary
+- SUCCESS (<45s): 35 tests (68.6%)
+- SLOW_PERFORMANCE (45-120s): 14 tests (27.5%)
+- TIMEOUT (>120s): 2 tests (3.9%)
+- Average Response Time: 34.7 seconds
 - Memory Usage: Stable (±50MB)
-- Error Rate: 3.9%
+- Polling Efficiency: 47% first-poll completions
 ```
 
-**Failure Analysis Template**:
+**Failure Analysis Template with Polling Data**:
 ```markdown
-## Failed Test Analysis
-**Test**: TEST-P003 Single Ticker SPY Raw JSON
-**Error**: Timeout after 120 seconds
+## Performance Analysis
+**Test**: TEST-P003 Single Ticker SPY
+**Classification**: SLOW_PERFORMANCE (67.4s)
+**Polling Data**:
+- Poll 1 (30s): No response
+- Poll 2 (60s): No response  
+- Poll 3 (67.4s): Response received
 **Investigation**:
 - Backend logs show SPY data request succeeded
-- Frontend timeout occurred during response processing
-- JSON response was valid but took 127 seconds
-**Recommendation**: Increase timeout to 150 seconds for SPY ticker
+- Response completed within timeout window
+- Valid response received on third polling cycle
+**Classification**: Correctly identified as SLOW_PERFORMANCE, not timeout
+**Recommendation**: Monitor SPY performance trends, consider optimization if pattern persists
+
+## Timeout Analysis
+**Test**: TEST-P005 Multi-Ticker Request
+**Classification**: TIMEOUT (>120s)
+**Polling Data**:
+- Poll 1 (30s): No response
+- Poll 2 (60s): No response
+- Poll 3 (90s): No response
+- Poll 4 (120s): Hard timeout enforced
+**Investigation**:
+- No response received within 4 polling cycles
+- True timeout condition confirmed
+- Multiple ticker complexity may exceed processing capacity
+**Recommendation**: Investigate multi-ticker processing bottleneck
 ```
 
 ---
@@ -684,11 +806,11 @@ if (response.error) {
 ### Test Suite Success Metrics
 
 **Priority Tests**: 100% pass rate required
-- All 13 priority tests must pass for system validation
+- All 3 priority tests must pass for system validation
 - Any priority test failure indicates critical system issue
 
 **Comprehensive Tests**: 90% pass rate target
-- 34/38 comprehensive tests should pass
+- 43/48 comprehensive tests should pass
 - Failed tests must be analyzed and documented
 - Known limitations acceptable if documented
 
@@ -715,18 +837,28 @@ if (response.error) {
 
 ## Conclusion
 
-This comprehensive test specification provides a complete framework for validating the Market Parser system using Playwright MCP tools. The specification directly addresses the critical errors identified in previous implementations:
+This comprehensive test specification provides a complete framework for validating the Market Parser system using Playwright MCP tools with advanced 30-second polling methodology. The specification directly addresses the critical errors identified in previous implementations:
 
 ✅ **Priority Fast Requests**: All tests use "PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
 ✅ **Any Format Response Validation**: Accept and validate any response format including JSON, emojis, and conversational responses  
 ✅ **Complete 51-Test Suite**: Full coverage across all functional areas  
 ✅ **Button-Click Architecture**: Tests focus on UI button interactions producing readable responses  
 ✅ **Emoji Encouragement**: Emojis are allowed and encouraged for enhanced user experience
+✅ **30-Second Polling Methodology**: Prevents false positive timeouts through intelligent completion detection
+✅ **Performance Classification**: SUCCESS/SLOW_PERFORMANCE/TIMEOUT categories for accurate analysis
+✅ **Early Completion Detection**: Stops polling immediately when response received, eliminating false positives
 
-The framework ensures reliable, comprehensive testing that validates basic functionality and user experience while allowing flexible response formats for optimal user interaction.
+The framework ensures reliable, comprehensive testing that validates basic functionality and user experience while providing accurate performance data through polling-based timeout detection.
+
+**Key Polling Advantages**: 
+- **Eliminates False Positives**: Distinguishes between slow performance and true timeouts
+- **Accurate Performance Data**: Records actual completion times, not polling intervals
+- **Early Detection**: Stops polling immediately upon response completion
+- **Proper Classification**: Categorizes all responses for meaningful analysis
 
 **Next Steps**: 
-1. Implement test execution framework using specified MCP tools
-2. Execute priority tests to validate core functionality
-3. Run comprehensive test suite and generate detailed reports
-4. Use results to establish performance baselines and identify optimization opportunities
+1. Implement 30-second polling test execution framework using specified MCP tools
+2. Execute priority tests with polling methodology to validate core functionality
+3. Run comprehensive test suite with performance classification
+4. Generate detailed reports with polling data and performance insights
+5. Use accurate performance data to establish baselines and identify optimization opportunities

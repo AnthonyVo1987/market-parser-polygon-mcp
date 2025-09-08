@@ -140,6 +140,9 @@ def create_polygon_mcp_server():
     api_key = os.getenv("POLYGON_API_KEY")
     if not api_key:
         raise ValueError("POLYGON_API_KEY not set in environment.")
+    # Configure timeout from environment variable (default: 120s)
+    timeout_seconds = float(os.getenv("MCP_TIMEOUT_SECONDS", "120.0"))
+    
     return MCPServerStdio(
         params={
             "command": "uvx",
@@ -150,7 +153,7 @@ def create_polygon_mcp_server():
             ],
             "env": {**os.environ, "POLYGON_API_KEY": api_key},
         },
-        client_session_timeout_seconds=180.0  # Increased from default 5s to 180s for Playwright test compatibility
+        client_session_timeout_seconds=timeout_seconds  # Configurable timeout (default 120s)
     )
 
 

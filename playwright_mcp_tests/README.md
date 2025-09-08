@@ -181,7 +181,7 @@ generateFinalReport() -> CLAUDE_playwright_mcp_tests_YY-MM-DD_hh-mm.md
 - [ ] Backend health check (port 8000 accessible)
 - [ ] Frontend health check (port 3001 accessible) 
 - [ ] MCP Playwright tools initialized
-- [ ] Test report directory exists (`/docs/claude_test_reports/`)
+- [x] Test report directory exists (`/gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/`)
 
 ## 🚀 Next Steps for Test Execution
 
