@@ -43,13 +43,45 @@ Each test report contains:
 
 **Total**: 51 tests (3 priority + 48 comprehensive)
 
+## 🚨 CRITICAL: Same Browser Instance Testing Protocol
+
+**Same Browser Instance Requirement**: ALL browser tests MUST execute in one continuous browser session
+
+### Browser Session Protocol
+
+**✅ CORRECT METHODOLOGY (ENFORCED):**
+```
+Single Browser Instance Testing Protocol:
+Browser Start → P001 → P002 → P003 → P004 → P005 → P006 → P007 → P008 → P009 → P010 → P011 → P012 → P013 → Browser End
+```
+
+**❌ INCORRECT METHODOLOGY (PROHIBITED):**
+```
+❌ Browser → P001-P003 → Close → Browser → P004-P005 → Close → Browser → P006-P013 → Close
+❌ New browser → Run Priority Tests → Close browser
+❌ New browser → Run Performance Tests → Close browser
+❌ New browser → Run Button Tests → Close browser
+❌ Any pattern that opens/closes browser between test groups
+❌ Fresh browser state between related test sequences
+```
+
+### ⚠️ BROWSER INSTANCE REQUIREMENT
+ALL tests in a sequence MUST execute in the SAME browser instance. Opening new browser instances between test groups does NOT simulate real-world usage and invalidates session state continuity testing.
+
+**Real-World Simulation Rationale:**
+- Users don't close app between different actions
+- State continuity preserved throughout entire test sequence
+- Session data, cookies, UI state maintained across all tests
+- Performance baseline accuracy through session preservation
+
 ## Usage Instructions
 
 ### For Test Execution
-1. Run priority tests FIRST using the sequences defined in the Playwright testing guide
-2. Only proceed to comprehensive testing after ALL priority tests pass
-3. Generate reports using Pacific timezone naming convention
-4. Store all reports in this directory
+1. **CRITICAL**: ALL tests must execute in SAME browser instance (no browser restarts between test groups)
+2. Run priority tests FIRST using single-browser-instance sequences defined in the Playwright testing guide
+3. Continue with comprehensive testing in SAME browser instance after ALL priority tests pass
+4. Generate reports using Pacific timezone naming convention
+5. Store all reports in this directory
 
 ### For Report Analysis
 1. Always review High-Level Summary first for critical issues

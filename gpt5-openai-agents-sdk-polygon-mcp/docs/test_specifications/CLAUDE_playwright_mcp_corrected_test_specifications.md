@@ -48,6 +48,35 @@ This document provides comprehensive test specifications for the Market Parser s
 
 ## Testing Methodology Standards
 
+### 🚨 CRITICAL: Same Browser Instance Requirement
+
+**Single Session Rule**: ALL tests execute in one continuous browser session
+- **Real-World Simulation**: Mimics actual user behavior staying in same application
+- **State Preservation**: Maintains session data, UI state, performance characteristics
+- **No Restarts**: Browser opens once, closes once per complete test execution
+- **Continuous Testing**: ALL tests (P001-P013, or any sequence) execute in the SAME browser instance
+
+### Browser Session Protocol
+
+**✅ CORRECT METHODOLOGY (ENFORCED):**
+```
+Single Browser Instance Testing Protocol:
+Browser Start → P001 → P002 → P003 → P004 → P005 → P006 → P007 → P008 → P009 → P010 → P011 → P012 → P013 → Browser End
+```
+
+**❌ INCORRECT METHODOLOGY (PROHIBITED):**
+```
+❌ Browser → P001-P003 → Close → Browser → P004-P005 → Close → Browser → P006-P013 → Close
+❌ New browser → Run Priority Tests → Close browser
+❌ New browser → Run Performance Tests → Close browser  
+❌ New browser → Run Button Tests → Close browser
+❌ Any pattern that opens/closes browser between test groups
+❌ Fresh browser state between related test sequences
+```
+
+### ⚠️ BROWSER INSTANCE REQUIREMENT
+ALL tests in a sequence MUST execute in the SAME browser instance. Opening new browser instances between test groups does NOT simulate real-world usage and invalidates session state continuity testing.
+
 ### Polling-Based Timeout Detection
 - **30-second polling cycles** for completion detection  
 - **120-second individual timeout** per test (not cumulative)
@@ -539,12 +568,19 @@ assert(hasTickerInfo, 'Response should contain ticker information');
 ### Required MCP Tools Usage
 
 **Primary Playwright MCP Tools**:
-- `mcp__playwright__browser_navigate`: Navigate to application URL
+- `mcp__playwright__browser_navigate`: Navigate to application URL (ONCE at session start)
+- `mcp__playwright__browser_close`: Close browser (ONCE at session end)
 - `mcp__playwright__browser_snapshot`: Capture page state for debugging
 - `mcp__playwright__browser_click`: Click buttons and interactive elements
 - `mcp__playwright__browser_type`: Input text into form fields
 - `mcp__playwright__browser_wait_for`: Wait for specific conditions
 - `mcp__playwright__browser_evaluate`: Execute JavaScript for advanced validation
+
+**Browser Session Management**:
+- `browser_navigate` called ONCE at session start
+- `browser_close` called ONCE at session end
+- All tests use existing browser context
+- Session state preserved between test groups
 
 **Sequential Thinking Tool**:
 - `mcp__sequential-thinking__sequentialthinking`: Use for complex test logic and validation sequences
@@ -555,29 +591,34 @@ assert(hasTickerInfo, 'Response should contain ticker information');
 
 ### Playwright MCP Implementation Patterns
 
-**Basic Test Structure**:
+**Single Browser Session Test Structure**:
 ```javascript
-// 1. Setup and Navigation
+// SESSION START - Browser opens ONCE
 await browserNavigate('http://localhost:3000/');
 await browserSnapshot(); // Capture initial state
 
-// 2. Input Preparation
+// TEST P001 - First test in same browser instance
 await browserType('chat-input', 'NVDA');
-
-// 3. Action Execution
 await browserClick('snapshot-button', { timeout: 5000 });
-
-// 4. Response Waiting
 await browserWaitFor({ text: 'metadata', timeout: 120000 });
+// ... validate P001 results
 
-// 5. Result Validation
-const jsonResponse = await browserEvaluate('() => document.querySelector("#snapshot-json").textContent');
-const parsedData = JSON.parse(jsonResponse);
+// TEST P002 - Continue in SAME browser instance
+await browserType('chat-input', 'SPY'); // Clear and type new ticker
+await browserClick('snapshot-button', { timeout: 5000 });
+// ... validate P002 results
 
-// 6. Schema Assertion
-assert(parsedData.metadata.ticker_symbol === 'NVDA');
-assert(typeof parsedData.snapshot_data.current_price === 'number');
+// ... Continue P003-P013 in SAME browser instance
+
+// SESSION END - Browser closes ONCE
+await browserClose();
 ```
+
+**Real-World User Simulation**:
+- Users don't close app between different actions
+- State continuity preserved throughout entire test sequence
+- Session data, cookies, UI state maintained across all tests
+- Performance baseline accuracy through session preservation
 
 **Error Handling Pattern**:
 ```javascript
@@ -592,12 +633,19 @@ try {
 }
 ```
 
-**Multi-Browser Testing Pattern**:
+**Multi-Browser Testing Pattern (Single Session Per Browser)**:
 ```javascript
 const browsers = ['chromium', 'firefox', 'webkit'];
 for (const browserType of browsers) {
-    await browserNavigate('http://localhost:3000/');
-    // Run test suite for each browser
+    // SINGLE SESSION PER BROWSER TYPE
+    await browserNavigate('http://localhost:3000/'); // Session start
+    
+    // Run ALL tests P001-P013 in SAME browser instance
+    await runPriorityTests(); // P001-P003 in same session
+    await runPerformanceTests(); // P004+ in same session
+    await runComprehensiveTests(); // Remaining tests in same session
+    
+    await browserClose(); // Session end
     // Validate consistent behavior across browsers
 }
 ```
@@ -720,18 +768,27 @@ if (response.error) {
 
 ### Test Runner Configuration
 
-**Test Organization**:
-- **Priority Tests**: Run first, must pass for continuation
-- **Comprehensive Tests**: Run in parallel where possible
-- **Browser Tests**: Run sequentially per browser type
-- **Performance Tests**: Run separately with clean environment
+**Single Browser Session Organization**:
+- **Session Start**: Browser opens once at beginning
+- **Priority Tests**: Run first in same browser instance
+- **Comprehensive Tests**: Continue in same browser instance
+- **Performance Tests**: Execute in same browser instance for accurate baseline
+- **Session End**: Browser closes once at completion
 
-**Execution Order with 30s Polling**:
+**Single-Session Execution Order with 30s Polling**:
 1. **Setup Phase**: Verify backend running, frontend accessible
-2. **Priority Tests**: 3 tests validating core functionality with 30s polling (~6 minutes)  
-3. **Functional Tests**: 48 tests covering all features with polling-based timeout detection
-4. **Performance Tests**: 4 tests measuring system performance using polling methodology
-5. **Cleanup Phase**: Generate reports with performance classification, cleanup resources
+2. **Browser Session Start**: Single `browser_navigate` call
+3. **Priority Tests**: P001-P003 in same browser instance with 30s polling (~6 minutes)
+4. **Performance Tests**: P004+ in same browser instance with polling methodology
+5. **Functional Tests**: Remaining tests in same browser instance
+6. **Browser Session End**: Single `browser_close` call
+7. **Cleanup Phase**: Generate reports with session continuity data
+
+**Session Continuity Benefits**:
+- **Real-World Accuracy**: Matches actual user behavior patterns
+- **Performance Baseline**: Accurate timing without browser startup overhead
+- **State Validation**: Tests session state preservation and UI consistency
+- **Resource Efficiency**: Eliminates redundant browser initialization cycles
 
 **Polling Implementation Standards**:
 - **Early Completion Detection**: Stop polling immediately when response received

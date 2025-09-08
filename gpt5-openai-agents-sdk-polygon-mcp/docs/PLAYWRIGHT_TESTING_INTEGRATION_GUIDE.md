@@ -81,11 +81,43 @@
 }
 ```
 
-### Priority Test Execution Sequence
-1. **Execute Priority Tests 1-3** in order with immediate failure reporting
-2. **Validate Results** - All priority tests must pass before comprehensive testing
-3. **Generate Priority Report** - Document results in `/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/`
-4. **Proceed to Comprehensive Testing** - Only after priority validation completes
+## 🚨 CRITICAL: Same Browser Instance Testing Protocol
+
+**Same Browser Instance Requirement**: ALL tests MUST execute in one continuous browser session
+
+### Browser Session Protocol
+
+**✅ CORRECT METHODOLOGY (ENFORCED):**
+```
+Single Browser Instance Testing Protocol:
+Browser Start → Priority Test 1 → Priority Test 2 → Priority Test 3 → [Comprehensive Tests] → Browser End
+```
+
+**❌ INCORRECT METHODOLOGY (PROHIBITED):**
+```
+❌ Browser → Priority Tests → Close → Browser → Comprehensive Tests → Close
+❌ New browser → Run Priority Tests → Close browser
+❌ New browser → Run Performance Tests → Close browser
+❌ Any pattern that opens/closes browser between test groups
+❌ Fresh browser state between related test sequences
+```
+
+### ⚠️ BROWSER INSTANCE REQUIREMENT
+ALL tests in a sequence MUST execute in the SAME browser instance. Opening new browser instances between test groups does NOT simulate real-world usage and invalidates session state continuity testing.
+
+**Real-World Simulation Rationale:**
+- Users don't close app between different actions
+- State continuity preserved throughout entire test sequence
+- Session data, cookies, UI state maintained across all tests
+- Performance baseline accuracy through session preservation
+
+### Priority Test Execution Sequence (Single Browser Instance)
+1. **Browser Session Start** - Single `browser_navigate` to open browser instance
+2. **Execute Priority Tests 1-3** in order in SAME browser instance with immediate failure reporting
+3. **Validate Results** - All priority tests must pass before comprehensive testing
+4. **Continue Comprehensive Testing** - Execute in SAME browser instance (no browser restart)
+5. **Generate Complete Report** - Document results in `/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/`
+6. **Browser Session End** - Single `browser_close` to close browser instance
 
 ---
 

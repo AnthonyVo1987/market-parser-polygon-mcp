@@ -140,7 +140,7 @@ Ready for changes
 
 **After following all steps, you should have:**
 
-1. **FastAPI Backend** running on <http://0.0.0.0:8000> (startup complete)
+1. **FastAPI Backend** running on <http://0.0.0.0:8000> (startup complete) 
 2. **CLI Interface** working with financial data queries and emoji-based responses
 3. **Vite Dev Server** running on <http://localhost:3000/> (220ms startup) OR
 4. **Live Server** running on <http://127.0.0.1:5501/> (production build)
@@ -657,6 +657,25 @@ This is a functional prototype with the following improvements:
 - FSM tests ensure state transition integrity
 - **Priority testing** uses 3-test core suite (P001-P003) for rapid validation
 - **30s polling intervals** enable early detection of successful operations
+
+### 🚨 CRITICAL: Browser Testing Protocol
+
+**Same Browser Instance Requirement**: ALL browser tests MUST execute in one continuous browser session
+
+**✅ CORRECT METHODOLOGY (ENFORCED):**
+- **Single Session Rule**: Browser opens once, all tests run in same instance, browser closes once
+- **Real-World Simulation**: Mimics actual user behavior staying in same application
+- **State Preservation**: Maintains session data, UI state, performance characteristics
+- **Continuous Testing**: ALL tests (P001-P013, or any sequence) in SAME browser instance
+
+**❌ INCORRECT METHODOLOGY (PROHIBITED):**
+- ❌ New browser → Run Priority Tests → Close browser
+- ❌ New browser → Run Performance Tests → Close browser
+- ❌ New browser → Run Button Tests → Close browser
+- ❌ Any pattern that opens/closes browser between test groups
+- ❌ Fresh browser state between related test sequences
+
+**⚠️ BROWSER INSTANCE REQUIREMENT**: ALL tests in a sequence MUST execute in the SAME browser instance. Opening new browser instances between test groups does NOT simulate real-world usage and invalidates session state continuity testing.
 
 ### Import Patterns
 
