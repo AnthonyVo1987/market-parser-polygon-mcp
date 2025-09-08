@@ -2,17 +2,20 @@
 
 ## Task Description
 
-[TEST] Fix Issues from: CLAUDE_playwright_mcp_tests_25-09-08_12-53.md
+[DOCS] Fix Wrong Test Plans from CLAUDE_playwright_mcp_corrected_test_specifications.md & Remove Github
 
-1. Review test report results & test plan
-- gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/CLAUDE_playwright_mcp_tests_25-09-08_12-53.md
-- gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
+- DOCUMENTATION TASK(S) ONLY
 
-2. Fix all issues from the report, excluding these 2x doc issues have already been addressed in a previous commit:
-- Update Testing Documentation - Modify all test procedures to enforce single-browser-instance methodology
-- Document Methodology Standard - Update all project documentation to reflect correct testing approach
+1. Fix Priority Tests to be correct Chat message Query ONLY
+TEST-P001: Market Status Request - No change
+TEST-P002: Single Ticker NVDA Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
+TEST-P003: Single Ticker SPY Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
+TEST-P004: Single Ticker GME Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
+TEST-P004: Multi-Ticker Combined Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
 
-3. Start a Fix Test Validation & Fix loop, re-run the same tests with potential fixes, validate if fixes work, and if still NOT fixes, investigated & re-fix & re-test as part of the loop until a passing test
+2. Remove ALL references to Gitub MCP Tools because they were removed and now Git commands are now the ONLY single source of truth for Repo management
+
+- Alot of incorrect Github tool references in market-parser-polygon-mcp/MCP_TOOL_USAGE_GUIDE.md
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -66,3 +69,5 @@ Final Task 4: Final Verification
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 
 ## Additional Context
+
+- Priority Test were incorrectly using BUtton Click test when the proper test should be Chat message Query Test. There is ALREADY a later button click test section that is focused on button clicks

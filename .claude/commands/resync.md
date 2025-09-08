@@ -18,6 +18,7 @@ When you invoke `/resync`, I will:
 - LAST_TASK_SUMMARY.md
 - MCP_TOOL_USAGE_GUIDE.md
 
+
 2. Acknowledge and provide high level summary of current understanding of the project
 
 ---

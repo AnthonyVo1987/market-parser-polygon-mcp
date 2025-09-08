@@ -278,18 +278,16 @@ Total Coverage: 66% - Incomplete due to early termination
 
 #### TEST-P002: Single Ticker NVDA Request
 **Purpose**: Test individual ticker snapshot request
-**Input Method**: Button click (📈 Stock Snapshot)
-**Pre-Input**: Type "NVDA" in chat input
-**Query Generated**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Input Method**: Chat message
+**Query**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with NVDA stock information (JSON, emojis like 📈📉💰, or conversational)
 **Success Criteria**: System provides NVDA stock information in readable format
 **Timeout**: 120 seconds (30s polling intervals)
 
 #### TEST-P003: Single Ticker SPY Request
 **Purpose**: Test individual ETF ticker snapshot request
-**Input Method**: Button click (📈 Stock Snapshot)  
-**Pre-Input**: Type "SPY" in chat input
-**Query Generated**: "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Input Method**: Chat message
+**Query**: "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with SPY ETF information (JSON, emojis like 📈📉💰, or conversational)
 **Success Criteria**: System provides SPY ETF information in readable format
 **Timeout**: 120 seconds (30s polling intervals)
@@ -298,9 +296,8 @@ Total Coverage: 66% - Incomplete due to early termination
 
 #### TEST-P004: Single Ticker GME Request
 **Purpose**: Test individual ticker snapshot request (performance validation)
-**Input Method**: Button click (📈 Stock Snapshot)
-**Pre-Input**: Type "GME" in chat input  
-**Query Generated**: "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Input Method**: Chat message
+**Query**: "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with GME stock information (JSON, emojis like 📈📉💰, or conversational)
 **Success Criteria**: System provides GME stock information in readable format
 **Timeout**: 120 seconds (30s polling intervals)
@@ -310,9 +307,8 @@ Total Coverage: 66% - Incomplete due to early termination
 
 #### TEST-P005: Multi-Ticker Combined Request
 **Purpose**: Test multiple ticker combined request
-**Input Method**: Button click (📈 Stock Snapshot)
-**Pre-Input**: Type "NVDA, SPY, QQQ, IWM" in chat input
-**Query Generated**: "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
+**Input Method**: Chat message
+**Query**: "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
 **Expected Response**: Any format response with multiple ticker information (JSON array, text with emojis, or conversational summary)
 **Success Criteria**: System provides information for multiple tickers in readable format
 **Timeout**: 120 seconds (30s polling intervals)
