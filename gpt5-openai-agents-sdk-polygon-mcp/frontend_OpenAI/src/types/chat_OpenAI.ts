@@ -169,7 +169,7 @@ export interface UsePromptAPIResult {
 
 // API endpoints for prompt functionality
 export const PROMPT_API_ENDPOINTS = {
-  TEMPLATES: '/api/v1/prompts/templates',
+  TEMPLATES: '/templates',
   GENERATE: '/api/v1/prompts/generate',
   ANALYSIS_CHAT: '/api/v1/analysis/chat',
 } as const;

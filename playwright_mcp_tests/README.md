@@ -1,8 +1,124 @@
 # Playwright MCP Test Framework - Complete 51-Test Suite
 
+## 🚨 MANDATORY: Specialists Must Follow Official Test Plan
+
+**⚠️ SPECIALISTS CANNOT MAKE UP THEIR OWN TESTS**
+
+All specialists working with testing MUST read and follow the official test specifications from:
+
+**📋 Official Test Plan**: `/gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md`
+
+**This document contains:**
+- ✅ Complete 51-test suite specifications (P001-P013 + comprehensive tests)
+- ✅ Exact test procedures and expected results
+- ✅ Official testing methodology with 30-second polling
+- ✅ Required MCP tools and implementation patterns
+- ✅ Performance classification criteria (SUCCESS/SLOW_PERFORMANCE/TIMEOUT)
+
+**🚫 DO NOT:**
+- Create custom tests without consulting the official plan
+- Modify test procedures without documentation approval
+- Skip reading the test specifications when tests are requested
+
+**✅ ALWAYS:**
+- Reference the official test plan for all test implementations
+- Follow the exact test procedures specified in the documentation
+- Use the defined MCP tools and validation criteria
+
+---
+
 **Implementation Status**: ✅ FRAMEWORK COMPLETE - Ready for Test Execution
 
 This directory contains the complete implementation of the corrected Playwright MCP test framework for the Market Parser application, addressing all critical issues identified in previous test implementations.
+
+---
+
+## 🚨 CRITICAL: Server Startup Requirements - MANDATORY BEFORE TESTING
+
+### ⚠️ FAILURE POINT IDENTIFIED: Server Startup Validation Required
+
+**CRITICAL ISSUE**: Previous test executions have failed because both backend and frontend servers were not properly started and verified before test execution. **ALL TESTING IS BLOCKED UNTIL BOTH SERVERS ARE CONFIRMED RUNNING**.
+
+#### Required Pre-Test Server Startup (MANDATORY)
+
+**Step 1: FastAPI Backend Server**
+```bash
+# Terminal 1: Start Backend Server
+cd /path/to/gpt5-openai-agents-sdk-polygon-mcp
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Wait for SUCCESS CONFIRMATION:
+# "INFO: Application startup complete." ✅
+```
+
+**Step 2: React Frontend Server**
+```bash
+# Terminal 2: Start Frontend Server
+cd /path/to/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run dev
+
+# Wait for SUCCESS CONFIRMATION:
+# "VITE v5.4.19 ready in [X]ms" ✅
+# Note: Port auto-selection (3000→3001→3002→3003, etc.) is normal
+```
+
+#### Mandatory Server Health Validation
+
+**Before ANY test execution, run these validation commands:**
+
+```bash
+# Backend Health Check
+curl -f http://localhost:8000/health || echo "❌ BACKEND FAILED - STOP ALL TESTING"
+
+# Frontend Health Check (adjust port to match Vite output)
+curl -f http://localhost:3003/ || echo "❌ FRONTEND FAILED - STOP ALL TESTING"
+
+# Manual Browser Verification
+# Open http://localhost:[VITE_PORT]/ - must load React application successfully
+```
+
+#### Server Startup Validation Checklist
+
+**✅ MANDATORY VERIFICATION BEFORE ANY TESTS**:
+- [ ] **Backend Started**: "Application startup complete." message confirmed
+- [ ] **Frontend Started**: "VITE ready" message confirmed with port number
+- [ ] **Backend Responding**: curl health check returns 200 OK
+- [ ] **Frontend Loading**: React app loads in browser without errors
+- [ ] **CORS Working**: No 400 Bad Request errors on OPTIONS requests
+- [ ] **Port Documented**: Note actual frontend port for test configuration
+
+### 🚫 AUTOMATIC TEST BLOCKING CONDITIONS
+
+**DO NOT PROCEED WITH TESTING IF**:
+- ❌ Backend server not showing "Application startup complete"
+- ❌ Frontend server not showing "VITE ready" 
+- ❌ Health check commands returning errors
+- ❌ React application not loading in browser
+- ❌ CORS requests showing 400 Bad Request responses
+
+**⚠️ MANDATORY RULE: FAILED SERVER STARTUP = NO TEST EXECUTION**
+
+If any server startup requirement fails, all test results are invalid and testing must not proceed until servers are properly configured and running.
+
+#### Port Management for Testing
+
+**Vite Port Auto-Selection**:
+- Vite automatically tries ports: 3000 → 3001 → 3002 → 3003 → etc.
+- **CRITICAL**: Update test configuration to use actual selected port
+- **CORS Impact**: Backend CORS must allow the selected frontend port
+- **Test URLs**: All browser navigation must use correct port
+
+**Example Port Configuration Update**:
+```javascript
+// Update test configuration based on Vite output
+const FRONTEND_PORT = 3003; // From "Local: http://localhost:3003/"
+const FRONTEND_URL = `http://localhost:${FRONTEND_PORT}/`;
+
+// All tests must use this URL
+await browserNavigate(FRONTEND_URL);
+```
+
+---
 
 ## 📋 Framework Overview
 

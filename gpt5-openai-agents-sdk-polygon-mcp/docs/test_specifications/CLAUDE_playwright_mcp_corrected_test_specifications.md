@@ -9,6 +9,125 @@
 
 ---
 
+## 🚨 CRITICAL: Server Startup Requirements
+
+### MANDATORY PRE-TEST SETUP
+
+**⚠️ CRITICAL FAILURE POINT IDENTIFIED**: Tests have failed due to servers not being properly started before test execution. **BOTH SERVERS MUST BE RUNNING CONCURRENTLY BEFORE ANY TEST EXECUTION**.
+
+#### Required Server Startup Sequence
+
+**1. FastAPI Backend Server (REQUIRED FIRST)**:
+```bash
+cd /path/to/gpt5-openai-agents-sdk-polygon-mcp
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**Expected Success Output**:
+```
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [XXXX] using WatchFiles
+INFO:     Started server process [XXXX]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.    # ✅ KEY SUCCESS INDICATOR
+```
+
+**2. React Frontend Server (REQUIRED SECOND)**:
+```bash
+cd /path/to/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+npm run dev
+```
+
+**Expected Success Output**:
+```
+> frontend-openai@0.0.0 dev
+> vite --mode development
+
+[Port auto-selection may occur]
+Port 3000 is in use, trying another one...
+Port 3001 is in use, trying another one...
+Port 3002 is in use, trying another one...
+
+  VITE v5.4.19  ready in 277 ms          # ✅ KEY SUCCESS INDICATOR
+
+  ➜  Local:   http://localhost:3003/     # ✅ Note: Port auto-selected to 3003
+  ➜  Network: http://172.29.229.155:3003/
+  ➜  Network: http://172.17.0.1:3003/
+```
+
+#### Server Health Verification (MANDATORY)
+
+**Before ANY test execution, verify both servers are operational:**
+
+```bash
+# Backend Health Check
+curl -f http://localhost:8000/health || echo "❌ Backend startup FAILED - DO NOT PROCEED"
+
+# Frontend Health Check (adjust port as needed)
+curl -f http://localhost:3003/ || echo "❌ Frontend startup FAILED - DO NOT PROCEED"
+
+# Manual Browser Verification
+# Open http://localhost:3003/ in browser - should load React application
+```
+
+#### Server Startup Validation Checklist
+
+**✅ REQUIRED PRE-TEST VALIDATION**:
+- [ ] **Backend Server**: "Application startup complete." message confirmed
+- [ ] **Frontend Server**: "VITE ready" message confirmed with active port
+- [ ] **Backend Health**: HTTP 200 response from backend health endpoint
+- [ ] **Frontend Access**: React application loads in browser
+- [ ] **CORS Configuration**: Both servers configured for cross-origin requests
+- [ ] **Port Documentation**: Note actual frontend port (may auto-select 3001, 3002, 3003, etc.)
+
+#### Port Management and CORS Requirements
+
+**Port Auto-Selection Handling**:
+- Vite automatically selects available port (3000 → 3001 → 3002 → 3003, etc.)
+- **CRITICAL**: Update CORS configuration to match selected frontend port
+- **TEST CONFIGURATION**: Update test URLs to match actual frontend port
+
+**CORS Configuration Verification**:
+```bash
+# Verify CORS headers are properly configured
+curl -H "Origin: http://localhost:3003" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: Content-Type" -X OPTIONS http://localhost:8000/templates
+```
+
+**Expected CORS Response**: Should return appropriate Access-Control headers, not 400 Bad Request
+
+#### Troubleshooting Server Startup Issues
+
+**Backend Issues**:
+- **Missing API Keys**: Check `.env` file has both `POLYGON_API_KEY` and `OPENAI_API_KEY`
+- **Port 8000 Busy**: Change port with `--port 8001` and update test configuration
+- **uv Not Found**: Install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **Dependencies Missing**: Run `uv install` in backend directory
+
+**Frontend Issues**:
+- **npm Install Fails**: Update Node.js to 18+ and retry
+- **Ports 3000-3005 Busy**: Allow Vite to auto-select higher port numbers
+- **Build Errors**: Check `package.json` dependencies and run `npm install`
+
+**API Integration Issues**:
+- **400 Bad Request on OPTIONS**: CORS configuration mismatch between servers
+- **Connection Refused**: Backend server not running or port mismatch
+- **Timeout Errors**: Verify both servers are fully started before tests begin
+
+### 🚫 TEST EXECUTION BLOCKING CONDITIONS
+
+**AUTOMATIC TEST FAILURE CONDITIONS**:
+- ❌ Backend server not showing "Application startup complete."
+- ❌ Frontend server not showing "VITE ready"
+- ❌ Health checks returning errors
+- ❌ CORS requests returning 400 Bad Request
+- ❌ Frontend application not loading in browser
+
+**⚠️ FAILURE TO START SERVERS = AUTOMATIC TEST SUITE FAILURE**
+
+**DO NOT PROCEED WITH TESTING** if any server startup requirement is not met. All test failures due to server startup issues invalidate the entire test execution.
+
+---
+
 ## Executive Summary
 
 This document provides comprehensive test specifications for the Market Parser system, correcting critical errors identified in previous implementations. The specifications cover 51 tests designed to validate the button-click → response architecture with basic functionality testing, allowing emojis and any response format.
@@ -516,7 +635,7 @@ Total Coverage: 66% - Incomplete due to early termination
 ### Button-Click → JSON Response Methodology
 
 **Core Testing Pattern**:
-1. **Navigate** to `http://localhost:3000/`
+1. **Navigate** to `http://localhost:[FRONTEND_PORT]/` (verify actual port from server startup)
 2. **Input** ticker symbol in chat input field
 3. **Click** specific analysis button (📈/🎯/🔧)
 4. **Wait** for response (max 120 seconds)
@@ -594,7 +713,9 @@ assert(hasTickerInfo, 'Response should contain ticker information');
 **Single Browser Session Test Structure**:
 ```javascript
 // SESSION START - Browser opens ONCE
-await browserNavigate('http://localhost:3000/');
+// NOTE: Use actual frontend port from server startup (e.g., 3003)
+const FRONTEND_URL = 'http://localhost:3003/'; // Update based on Vite output
+await browserNavigate(FRONTEND_URL);
 await browserSnapshot(); // Capture initial state
 
 // TEST P001 - First test in same browser instance
@@ -638,7 +759,8 @@ try {
 const browsers = ['chromium', 'firefox', 'webkit'];
 for (const browserType of browsers) {
     // SINGLE SESSION PER BROWSER TYPE
-    await browserNavigate('http://localhost:3000/'); // Session start
+    const FRONTEND_URL = 'http://localhost:3003/'; // Update based on actual port
+    await browserNavigate(FRONTEND_URL); // Session start
     
     // Run ALL tests P001-P013 in SAME browser instance
     await runPriorityTests(); // P001-P003 in same session
