@@ -2,11 +2,38 @@
 
 ## Task Description
 
-[TEST] Run the Corrected 5x Priority Tests and save report
+[TEST] Fix Incorrect Playwrite MCP Timeout Procedure & Update Timeouts back down to 120s
+
+Task A. Convert the MCP Polygon Timeout to a more visible config type variable\setting so that it is more obvious to change this timeout, because right now it is buried beneath the code and not obvious how to change it. Update timeout back down to 120s from now on since we profiled and 180s is too long since we found out that it was a testing issue and a timeout of 120s is more reasonable
+
+- market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/src/main.py- create_polygon_mcp_server()
+
+Task B. Update CLAUDE_playwright_mcp_corrected_test_specifications.md Priority Test(s)
+
+- Reduce the Priority Tests to JUST have these 3x quick tests:
+
+1. Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+2. Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+3. Full Market Snapshot with multiple Tickers: SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+
+- Move the 8x Button test TEST-P006: Snapshot Button Response Time - TEST-P013: Button Visual Feedback back out of priority.  End result is priority test is just 3x test for now since there are lingering issues with button test that will will fix later on TBD
+
+ Task C. Update CLAUDE_playwright_mcp_corrected_test_specifications.md with updated corrected actions Test Plan Procedures:
+
+- New 120s timeout enforcement for ALL test
+- New proper 30s polling and proper timeout detection and timer restart\stop for each test
+- ENTIRE comprhensive test plan suite needs to be updated with the correct testing procedure to prevent false positive triggers
+
+Task D. Migrate entire market-parser-polygon-mcp/docs/claude_test_reports to proper folder underneath OpenAI docs folder
+
+- gpt5-openai-agents-sdk-polygon-mcp/docs is the proper folder
+
+Task E. Update ALL relevant project docs with the udpated & corrected new testing methodology
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
+- market-parser-polygon-mcp/docs/claude_test_reports/CLAUDE_playwright_mcp_corrected_test_specifications.md
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -28,7 +55,7 @@ Final Task 1: Review/Fix Loop
 
 Final Task 2: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
 
-- Generate detailed task completion summary & OVERWRITE LAST_TASK_SUMMARY.md
+- Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
 - Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
 - Include all deliverables, changes made, and completion status
 - This ensures task summary is included in the atomic commit
@@ -53,7 +80,6 @@ Final Task 4: Final Verification
 
 ## Expected Outcome
 
-- 5x priority test run, with saved and committed report - DO NOT FIX on your own
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 
 ## Additional Context

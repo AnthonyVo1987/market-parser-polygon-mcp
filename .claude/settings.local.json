@@ -116,7 +116,8 @@
       "mcp__playwright__browser_type",
       "mcp__playwright__browser_network_requests",
       "mcp__playwright__browser_resize",
-      "mcp__filesystem__read_file"
+      "mcp__filesystem__read_file",
+      "mcp__playwright__browser_press_key"
     ],
     "deny": [],
     "ask": [],

@@ -1,4 +1,12 @@
 
+Read the follow project docs ONE AT A TIME and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
+
+- Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup
+
+- README.md
+- CLAUDE.md,
+- MCP_TOOL_USAGE_GUIDE.md
+
 Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
 
 # New Task Details
@@ -60,9 +68,6 @@ Final Task 4: Final Verification
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 
 ## Additional Context
-
-
-
 
 - Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup.  you have repeatly ignored MCP tool use, such as Sequential Thinking, Filesystem etc
 
@@ -140,15 +145,7 @@ Final Task 4: Final Verification
 Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
 
 - README.md
-- GEMININ.md,
-- MCP_TOOL_USAGE_GUIDE.md
-
-Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
-
-- Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup
-
-- README.md
-- CLAUDE.md,
+- GEMININI.md,
 - MCP_TOOL_USAGE_GUIDE.md
 
 /home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/docs/PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md
