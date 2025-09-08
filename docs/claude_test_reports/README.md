@@ -1,7 +1,19 @@
 # Claude Test Reports Directory
 
+## ⚠️ IMPORTANT: Cleanup Completed (2025-09-07)
+
+**STATUS:** Clean slate prepared for corrected test execution  
+**ACTION REQUIRED:** Fix backend timeout configuration before new test execution  
+**CRITICAL ISSUE:** Previous reports invalidated due to 5.0s timeout overriding 120s Playwright standard  
+
 ## Overview
 This directory contains comprehensive test reports generated during Playwright MCP testing sessions. All reports follow standardized formatting and Pacific timezone naming conventions.
+
+### Recent Cleanup Summary
+- ✅ **Duplicate Reports Removed:** 7 duplicate reports from secondary location deleted
+- ✅ **Contradictory Reports Archived:** Invalid reports moved to `invalidated_reports/` subdirectory
+- ✅ **Single Directory Established:** `/docs/claude_test_reports/` is now the only report location
+- ✅ **Timeout Issue Identified:** Backend 5.0s timeout prevents proper test execution
 
 ## Naming Convention
 **Format**: `CLAUDE_playwright_mcp_tests_YY-MM-DD_hh-mm.md`
@@ -55,3 +67,40 @@ This directory is referenced in:
 - Comprehensive test coverage documentation
 
 All test reports should be generated automatically during MCP test execution and stored here for analysis and tracking.
+
+## CRITICAL CONFIGURATION REQUIREMENT
+
+**⚠️ BEFORE EXECUTING NEW TESTS:**
+
+### Backend Timeout Configuration Fix Required
+All previous test reports have been invalidated due to a critical backend timeout misconfiguration:
+
+- **Current Problem:** Backend MCP server timeout is 5.0 seconds
+- **Required Fix:** Backend timeout must match Playwright's 120-second standard
+- **Impact:** 5.0s timeout causes false positives and false negatives in test results
+- **Evidence:** Contradictory reports claiming both "CRITICAL FAILURE" and "ALL TESTS PASSED"
+
+### Configuration Validation Steps
+1. **Fix Backend Timeout:** Increase MCP server timeout from 5.0s to 120s in backend configuration
+2. **Test Independently:** Verify MCP server responds within 120s timeout window
+3. **Validate Configuration:** Run standalone MCP queries to confirm timeout fix
+4. **Execute Fresh Tests:** Only then proceed with Playwright MCP test execution
+
+### Invalidated Reports Archive
+All invalidated reports have been moved to:
+```
+/docs/claude_test_reports/invalidated_reports/
+├── INVALIDATION_NOTICE.md (detailed explanation)
+├── CLAUDE_playwright_mcp_tests_25-09-07_15-34.md (Session 2 - invalid)
+└── CLAUDE_playwright_mcp_FINAL_SUMMARY_25-09-07_15-35.md (Session 2 - invalid)
+```
+
+### Post-Fix Directory Structure
+After timeout configuration is corrected:
+```
+/docs/claude_test_reports/
+├── README.md (this file)
+├── TEMPLATE_playwright_mcp_test_report.md (report template)
+├── invalidated_reports/ (archive of invalid reports)
+└── [New valid test reports with 120s timeout]
+```

@@ -149,7 +149,8 @@ def create_polygon_mcp_server():
                 "mcp_polygon",
             ],
             "env": {**os.environ, "POLYGON_API_KEY": api_key},
-        }
+        },
+        client_session_timeout_seconds=120.0  # Increased from default 5s to 120s for Playwright test compatibility
     )
 
 

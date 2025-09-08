@@ -1,11 +1,13 @@
 
 Read the follow project docs and acknowledge project state, last completed task(s), & operating rules before I assign some new task(s):
 
-- Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup
+- Acknowledge MCP PRIMARY TOOL, and fallback to standard tools as secondary backup.  you have repeatly ignored MCP tool use, such as Sequential Thinking, Filesystem etc
 
 - README.md
-- CLAUDE.md,
-- MCP_TOOL_USAGE_GUIDE.md
+- GEMINI.md,
+- market-parser-polygon-mcp/MCP_TOOL_USAGE_GUIDE.md
+- market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
+
 
 ### THIS DOCUMENT SHOULD NOT BE OPENED OR READ BY AI AGENTS BECAUSE IT IS ONLY FOR TEMPORARY USER SCRATCHPAD AND NOTES
 

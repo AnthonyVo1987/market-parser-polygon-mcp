@@ -2,44 +2,32 @@
 
 ## Task Description
 
-[TEST] Update and Dry Run of intial Playwright Comprehensive MCP Test Plan
+[OPENAI] Migrate Standalone OpenAI App to new Repo using Method 3: Hybrid GitHub MCP + Git Workflow
+- User has already created a local folder for the new repo and copied over the .env file with API keys to "~/Github/Stock_Sage_Agent"
+- The new repo should be renamed to "Stock_Sage_Agent"
+- We will migrate and setup JUST the Standalone OpenAI CLI & REACT Gui App from "gpt5-openai-agents-sdk-polygon-mcp" folder
+- We will not migrate the legacy CLI and Gradio Based UI
+- End result is the new repo will just be the standalone gpt5-openai-agents-sdk-polygon-mcp OpenAI CLI & REACT GUI
+- Follow all steps up un
 
-Task 1. Update .gemini Playwright MCP test plan and gemini project docs to reflect new testing strategy below:
-A. ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts.  Remove\fix ANY timeouts lower then 120s
-B. All test plans must capture results and generate a detailed test report with granular test results and save to the new test report folder following the file naming convention for user review
-C. Modify test plan to make these FIRST 3x Test User Input Prompts the very first ones to run:
 
-- Test Input: Market Status: Low Verbosity, Raw response format output
-- Test Input: Single Ticker Snapshot: NVDA, SPY, WDC, Low Verbosity, Raw response format output
-- Test Input: Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output
-D. After the first 3x initial test, Research & Addon more test coverage to test every single of the App's functionality at LEAST 1x time
 
-Task 2. Perform a "dry run" ONLY of updated intial Playwright Comprehensive MCP Test Plan. AFTER EACH Test Plan Module, Record\Update test report .md so that we can capture the test data & details immediately after a finished Test for efficient Cache Token usage.
+Task 2. USE SEQUENTIAL THINKING ALL MANDATED MCP TOOLS TO 
 
-Task 3. Finalize Test report with an initial High Level Summary section of the test results, a section for suggested next actions\investigations, and then finally the fully detailed granular test results and details.  DO NOT ATTEMPT TO DEBUG\FIX ISSUES flagged from report YET, because user needs to review ALL test reports
+## Research Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s):
 
-## Research Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+- USE ALL MANDATED MCP TOOLS to Read & Understand the Method 3: Hybrid GitHub MCP + Git Workflow from OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
 
-- Research & Analyze testing task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last:
-Research Task 1. Playwright MCP test plan in gemini docs to reflect new testing strategy below:
-A. ALL testing needs an initial but configurable timeout of 120 seconds PER Playwright Test to allow time for AI to generate and send the response.  Some actions will respond quicker than 120s, so we will just start with an initial test command timeout of 120s for now which SHOULD cover most app actions & prompts. Remove\fix ANY timeouts lower then 120s
-B. All test plans must capture results and generate a detailed test report with granular test results and save to the new test report folder following the file naming convention for user review
-C. Modify test plan to make these FIRST 3x Test User Input Prompts the very first ones to run:
-- Test Input: Market Status: Low Verbosity, Raw response format output
-- Test Input: Single Ticker Snapshot: NVDA, SPY, WDC, Low Verbosity, Raw response format output
-- Test Input: Full Market Snapshot: NVDA, SPY, QQQ, IWM, Low Verbosity, Raw response format output
-D. After the first 3x initial test, Research & Addon more test coverage to test every single of the App's functionality at LEAST 1x time
-
-## Planning Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+## Planning Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s):
 
 - IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
-- Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s)
+- Based on the research task(s), USE SEQUENTIAL-THINKING AND ALL MANDATED MCP TOOLS generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s) to migrate using Method 3: Hybrid GitHub MCP + Git Workflow from OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md
 
-## Implementation Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+## Implementation Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s):
 
 - Perform all of the requested task(s) based on the newly generated implementation plan todo checklist
 
-## Final Task(s) - Use to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
+## Final Task(s) - Use to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 3 Tasks
 
 Final Task 1: Review/Fix Loop
 

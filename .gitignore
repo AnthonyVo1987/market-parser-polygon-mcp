@@ -87,3 +87,4 @@ node_modules
 #mcp servers
 .mcp.json
 .gemini/settings.json
+.gemini/gemini_new_task_details.md
