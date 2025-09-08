@@ -2,26 +2,7 @@
 
 ## Task Description
 
-[TEST] FIX AGAIN Incorrect Playwright MCP Test Plan
-
-- Your last commit of test plan changes are STILL incorrect and not what I want from Commit 'd5875d0dc7ad667e61c4ad1484f8cd6ea7666a56'
-- THERE IS NO ENFORCEMENT OF JSON OUTPUT only so you completely made up a requirement
-- RAW OUTPUT FORMAT, LOW\NO VERBOSITY DOES NOT MEAN JSON ONLY. EMOJIS ARE ALLOWED
-- docs/claude_test_reports/CLAUDE_playwright_mcp_corrected_test_specifications.md
-
-A. Here are the new updated priority test prompts to use and replace the current incorrect test::
-
-1. "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-2. "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-3. "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-4. "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-5. "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-
-B. Fix the rest of the entire test plan to ENFORCE BASIC FUNCTIONALITY TESTING ONLY AND PROMPTS SHOULD BE STRAIGHT FORWARD with low\no verbosity only, NOT JSON ONLY output, Emoji allowed
-
-- EVERY single test MUST include these instructions in the test to unify a common practice: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
-- REMOVE ALL OUTPUT FORMAT EXAMPLES SHOWING EXPECTED OUTPUT OF JSON ONLY BECAUSE THAT IS NOT WHAT I WANT
-- multiple test files need to be updated
+[TEST] Run the Corrected 5x Priority Tests and save report
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -48,7 +29,7 @@ Final Task 1: Review/Fix Loop
 Final Task 2: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
 
 - Generate detailed task completion summary & OVERWRITE LAST_TASK_SUMMARY.md
-- Based on detailed task completion summary, generate high level task completion summary & Update CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
 - Include all deliverables, changes made, and completion status
 - This ensures task summary is included in the atomic commit
 
@@ -72,7 +53,7 @@ Final Task 4: Final Verification
 
 ## Expected Outcome
 
-- DO NOT RUN TESTS - THIS IS PURELY UPDATING AND FIXING TEST PLAN DOCS
+- 5x priority test run, with saved and committed report - DO NOT FIX on your own
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 
 ## Additional Context
