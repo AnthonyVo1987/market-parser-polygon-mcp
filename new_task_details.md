@@ -2,205 +2,26 @@
 
 ## Task Description
 
-[TEST] FIX & re-run Incorrect Playwright MCP Test Plan
+[TEST] FIX AGAIN Incorrect Playwright MCP Test Plan
 
-- We are going to invalidate AGAIN all the claude test reports. It looks like you I have to spell out exactly the test plan because you are an idiot and have no understanding of correct test plan:
+- Your last commit of test plan changes are STILL incorrect and not what I want from Commit 'd5875d0dc7ad667e61c4ad1484f8cd6ea7666a56'
+- THERE IS NO ENFORCEMENT OF JSON OUTPUT only so you completely made up a requirement
+- RAW OUTPUT FORMAT, LOW\NO VERBOSITY DOES NOT MEAN JSON ONLY. EMOJIS ARE ALLOWED
+- docs/claude_test_reports/CLAUDE_playwright_mcp_corrected_test_specifications.md
 
-A. Fix Market Status Test
+A. Here are the new updated priority test prompts to use and replace the current incorrect test::
 
-1. What's current market status with Raw Output Format Only with NO verbosity
+1. "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+2. "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+3. "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+4. "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+5. "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 
-- Expected output format:
-{
-  "afterHours": false,
-  "currencies": {
-    "crypto": "open",
-    "fx": "open"
-  },
-  "earlyHours": false,
-  "exchanges": {
-    "nasdaq": "closed",
-    "nyse": "closed",
-    "otc": "closed"
-  },
-  "indicesGroups": {
-    "s_and_p": "closed",
-    "societe_generale": "closed",
-    "msci": "closed",
-    "ftse_russell": "closed",
-    "mstar": "open",
-    "mstarc": "open",
-    "cccy": "open",
-    "cgi": "closed",
-    "nasdaq": "closed",
-    "dow_jones": "closed"
-  },
-  "market": "closed",
-  "serverTime": "2025-09-07T20:56:20-04:00"
-}
+B. Fix the rest of the entire test plan to ENFORCE BASIC FUNCTIONALITY TESTING ONLY AND PROMPTS SHOULD BE STRAIGHT FORWARD with low\no verbosity only, NOT JSON ONLY output, Emoji allowed
 
-B. FIX 3x Single Ticker Snapshots for NVDA, SPY, GME, Raw Output Format Only with NO verbosity:  They are MEANT TO BE RUN 3X SEPARATE TIMES BECAUSE IT IS SINGLE TICKER ONLY:
-
-1. Single Ticker Snaphots for NVDA, Raw Output Format Only with NO verbosity
-2. Single Ticker Snaphots for SPY, Raw Output Format Only with NO verbosity
-3. Single Ticker Snaphots for GME, Raw Output Format Only with NO verbosity
-
-- Expected output format for a SINGLE ticker, so for 3x tickers, 3x requests and 3x separate responses.  DO NOT COMBINE ALL 3 in a single request.  we need SEPARATE:
-{
-  "ticker": {
-    "ticker": "NVDA",
-    "todaysChangePerc": -3.2447862052895218,
-    "todaysChange": -5.569999999999993,
-    "updated": 1757116800000000000,
-    "day": {
-      "o": 168.03,
-      "h": 169.03,
-      "l": 164.07,
-      "c": 167.02,
-      "v": 224912773,
-      "vw": 166.5568
-    },
-    "min": {
-      "av": 224912773,
-      "t": 1757116740000,
-      "n": 228,
-      "o": 166.09,
-      "h": 166.12,
-      "l": 166.05,
-      "c": 166.09,
-      "v": 24677,
-      "vw": 166.0836
-    },
-    "prevDay": {
-      "o": 170.57,
-      "h": 171.86,
-      "l": 169.41,
-      "c": 171.66,
-      "v": 141670144,
-      "vw": 170.8473
-    }
-  },
-  "status": "OK",
-  "request_id": "9e12c34eb2700295bafb0f35e74df293"
-}
-
-C. FIX Full Market Snapshot for NVDA, SPY, QQQ, IWM with Raw Output Format Only with NO verbosity
-
-- Expected output format:
-{
-  "tickers": [
-    {
-      "ticker": "NVDA",
-      "todaysChangePerc": -3.2447862052895218,
-      "todaysChange": -5.569999999999993,
-      "updated": 1757116800000000000,
-      "day": {
-        "o": 168.03,
-        "h": 169.03,
-        "l": 164.07,
-        "c": 167.02,
-        "v": 224912773,
-        "vw": 166.5568
-      },
-      "min": {
-        "av": 224912773,
-        "t": 1757116740000,
-        "n": 228,
-        "o": 166.09,
-        "h": 166.12,
-        "l": 166.05,
-        "c": 166.09,
-        "v": 24677,
-        "vw": 166.0836
-      },
-      "prevDay": {
-        "o": 170.57,
-        "h": 171.86,
-        "l": 169.41,
-        "c": 171.66,
-        "v": 141670144,
-        "vw": 170.8473
-      }
-    },
-    {
-      "ticker": "IWM",
-      "todaysChangePerc": 0.4987531172069854,
-      "todaysChange": 1.1800000000000068,
-      "updated": 1757116800000000000,
-      "day": {
-        "o": 237.72,
-        "h": 239.68,
-        "l": 234.95,
-        "c": 237.77,
-        "v": 47516407,
-        "vw": 237.1802
-      },
-      "min": {
-        "av": 47516407,
-        "t": 1757116740000,
-        "n": 5,
-        "o": 237.26,
-        "h": 237.26,
-        "l": 237.26,
-        "c": 237.26,
-        "v": 339,
-        "vw": 237.3266
-      },
-      "prevDay": {
-        "o": 234.23,
-        "h": 236.6665,
-        "l": 233.58,
-        "c": 236.59,
-        "v": 30323833,
-        "vw": 235.0977
-      }
-    },
-    {
-      "ticker": "SPY",
-      "todaysChangePerc": -0.28962287404486003,
-      "todaysChange": -1.8799999999999955,
-      "updated": 1757116800000000000,
-      "day": {
-        "o": 651.48,
-        "h": 652.21,
-        "l": 643.33,
-        "c": 647.24,
-        "v": 85163302,
-        "vw": 647.1536
-      },
-      "min": {
-        "av": 85163302,
-        "t": 1757116740000,
-        "n": 36,
-        "o": 645.95,
-        "h": 646,
-        "l": 645.93,
-        "c": 645.96,
-        "v": 3330,
-        "vw": 645.9554
-      },
-      "prevDay": {
-        "o": 644.42,
-        "h": 649.15,
-        "l": 643.51,
-        "c": 649.12,
-        "v": 65219228,
-        "vw": 646.6617
-      }
-    }
-  ],
-  "status": "OK",
-  "request_id": "bca09352c4941eebb6523dd9405dded6",
-  "count": 3
-}
-
-D. Fix the rest of the entire test plan to ENFORCE BASIC FUNCTIONALITY TESTING ONLY AND PROMPTS SHOULD BE STRAIGHT FORWARD with low verbosity only
-
-- For Testing, we want single straight forward propt requests with with low verbosity only to avoid timeouts
-
-E. Re-run corrected test plan to generate new test report only, do NOT fix issues
-
-F. Delete ALL invalidated claude test reports
+- EVERY single test MUST include these instructions in the test to unify a common practice: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+- REMOVE ALL OUTPUT FORMAT EXAMPLES SHOWING EXPECTED OUTPUT OF JSON ONLY BECAUSE THAT IS NOT WHAT I WANT
+- multiple test files need to be updated
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -251,6 +72,7 @@ Final Task 4: Final Verification
 
 ## Expected Outcome
 
+- DO NOT RUN TESTS - THIS IS PURELY UPDATING AND FIXING TEST PLAN DOCS
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 
 ## Additional Context

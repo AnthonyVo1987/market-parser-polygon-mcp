@@ -11,21 +11,22 @@
 
 ## Executive Summary
 
-This document provides comprehensive test specifications for the Market Parser system, correcting critical errors identified in previous implementations. The specifications cover 51 tests designed to validate the button-click → JSON response architecture with proper schema validation.
+This document provides comprehensive test specifications for the Market Parser system, correcting critical errors identified in previous implementations. The specifications cover 51 tests designed to validate the button-click → response architecture with basic functionality testing, allowing emojis and any response format.
 
 ### Critical Errors Corrected
 
 **Previous Implementation Issues:**
-- ❌ Used verbose AI analysis queries instead of simple raw JSON requests
-- ❌ Expected emoji-formatted responses instead of raw JSON API data
+- ❌ Used verbose AI analysis queries instead of simple priority requests
+- ❌ Incorrectly enforced JSON-only responses when user wants emojis allowed
 - ❌ Only executed 3 tests instead of required 51-test suite
-- ❌ Completely missed the button-click → JSON response architecture
+- ❌ Missed the button-click → response architecture
 
 **New Implementation Focus:**
-- ✅ Simple "Raw Output Format Only with NO verbosity" requests
-- ✅ Raw JSON responses matching defined schemas
+- ✅ Simple "PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity" requests
+- ✅ Any response format acceptable including emojis and conversational responses
 - ✅ Complete 51-test suite across 9 categories
-- ✅ Button-click → JSON response methodology with schema validation
+- ✅ Button-click → response methodology with basic functionality validation
+- ✅ Emojis are ALLOWED and encouraged in all responses
 
 ---
 
@@ -43,64 +44,22 @@ This document provides comprehensive test specifications for the Market Parser s
 - Integration with Polygon.io MCP server
 - OpenAI GPT-5-mini processing
 
-**Data Flow**: User Input → Button Click → Backend Processing → JSON Schema Response
+**Data Flow**: User Input → Button Click → Backend Processing → Any Format Response (JSON, text, emojis, conversational)
 
-### JSON Response Schemas
+### Response Format Guidelines
 
-**Snapshot Schema**:
-```json
-{
-  "metadata": {
-    "timestamp": "2025-01-15T10:30:00Z",
-    "ticker_symbol": "AAPL",
-    "confidence_score": 0.95,
-    "schema_version": "1.0"
-  },
-  "snapshot_data": {
-    "current_price": 150.25,
-    "percentage_change": 2.5,
-    "dollar_change": 3.75,
-    "volume": 45000000,
-    "vwap": 149.80,
-    "open": 148.50,
-    "high": 151.00,
-    "low": 147.25,
-    "close": 146.50
-  }
-}
-```
+**Response Format**: Any format acceptable including:
+- JSON responses for structured data
+- Text responses with emojis for enhanced readability
+- Conversational responses with financial indicators
+- Mixed format responses combining text, emojis, and data
 
-**Support & Resistance Schema**:
-```json
-{
-  "metadata": {...},
-  "support_levels": {
-    "S1": {"price": 145.50, "strength": "strong", "confidence": 0.9},
-    "S2": {"price": 142.00, "strength": "moderate", "confidence": 0.8},
-    "S3": {"price": 138.75, "strength": "weak", "confidence": 0.7}
-  },
-  "resistance_levels": {
-    "R1": {"price": 155.25, "strength": "moderate", "confidence": 0.85},
-    "R2": {"price": 158.50, "strength": "strong", "confidence": 0.9},
-    "R3": {"price": 162.00, "strength": "weak", "confidence": 0.75}
-  }
-}
-```
+**Emoji Usage**: Emojis are ENCOURAGED and should be used for:
+- Financial sentiment indicators (📈 📉 💰 💸)
+- Visual enhancement of responses
+- Improved user experience and readability
 
-**Technical Analysis Schema**:
-```json
-{
-  "metadata": {...},
-  "oscillators": {
-    "RSI": {"value": 65.2, "interpretation": "neutral", "period": 14},
-    "MACD": {"value": 2.1, "signal": 1.8, "histogram": 0.3, "interpretation": "bullish"}
-  },
-  "moving_averages": {
-    "exponential": {"EMA_5": 151.2, "EMA_10": 149.8, "EMA_20": 148.5},
-    "simple": {"SMA_5": 150.9, "SMA_10": 149.5, "SMA_20": 148.2}
-  }
-}
-```
+**Basic Functionality Focus**: Tests validate that system responds appropriately to user requests, regardless of format.
 
 ---
 
@@ -108,59 +67,49 @@ This document provides comprehensive test specifications for the Market Parser s
 
 ### Priority Tests (5 Tests)
 
-#### TEST-P001: Market Status Raw JSON
-**Purpose**: Verify system can return raw market status data
+#### TEST-P001: Market Status Request
+**Purpose**: Verify system responds to market status requests
 **Input Method**: Chat message
-**Query**: "Raw Output Format Only with NO verbosity"
-**Expected Response**: JSON with market status fields
-**Schema Validation**: 
-```json
-{
-  "afterHours": boolean,
-  "currencies": {...},
-  "exchanges": {...},
-  "indicesGroups": {...},
-  "market": "string",
-  "serverTime": "2025-01-15T10:30:00.000Z"
-}
-```
+**Query**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Expected Response**: Any format response with market status information (JSON, text with emojis, or conversational)
+**Success Criteria**: System provides market status information in any readable format
 **Timeout**: 120 seconds
 **MCP Tools**: `mcp__playwright__browser_navigate`, `mcp__playwright__browser_type`, `mcp__playwright__browser_click`
 
-#### TEST-P002: Single Ticker NVDA Raw JSON
+#### TEST-P002: Single Ticker NVDA Request
 **Purpose**: Test individual ticker snapshot request
 **Input Method**: Button click (📈 Stock Snapshot)
 **Pre-Input**: Type "NVDA" in chat input
-**Query Generated**: "Raw Output Format Only with NO verbosity"
-**Expected Response**: Snapshot schema JSON for NVDA
-**Schema Validation**: Full snapshot schema with NVDA ticker_symbol
+**Query Generated**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Expected Response**: Any format response with NVDA stock information (JSON, emojis like 📈📉💰, or conversational)
+**Success Criteria**: System provides NVDA stock information in readable format
 **Timeout**: 120 seconds
 
-#### TEST-P003: Single Ticker SPY Raw JSON
+#### TEST-P003: Single Ticker SPY Request
 **Purpose**: Test individual ticker snapshot request
 **Input Method**: Button click (📈 Stock Snapshot)  
 **Pre-Input**: Type "SPY" in chat input
-**Query Generated**: "Raw Output Format Only with NO verbosity"
-**Expected Response**: Snapshot schema JSON for SPY
-**Schema Validation**: Full snapshot schema with SPY ticker_symbol
+**Query Generated**: "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Expected Response**: Any format response with SPY stock information (JSON, emojis like 📈📉💰, or conversational)
+**Success Criteria**: System provides SPY stock information in readable format
 **Timeout**: 120 seconds
 
-#### TEST-P004: Single Ticker GME Raw JSON
+#### TEST-P004: Single Ticker GME Request
 **Purpose**: Test individual ticker snapshot request
 **Input Method**: Button click (📈 Stock Snapshot)
 **Pre-Input**: Type "GME" in chat input  
-**Query Generated**: "Raw Output Format Only with NO verbosity"
-**Expected Response**: Snapshot schema JSON for GME
-**Schema Validation**: Full snapshot schema with GME ticker_symbol
+**Query Generated**: "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Expected Response**: Any format response with GME stock information (JSON, emojis like 📈📉💰, or conversational)
+**Success Criteria**: System provides GME stock information in readable format
 **Timeout**: 120 seconds
 
-#### TEST-P005: Multi-Ticker Combined Raw JSON
+#### TEST-P005: Multi-Ticker Combined Request
 **Purpose**: Test multiple ticker combined request
 **Input Method**: Button click (📈 Stock Snapshot)
 **Pre-Input**: Type "NVDA, SPY, QQQ, IWM" in chat input
-**Query Generated**: "Raw Output Format Only with NO verbosity"  
-**Expected Response**: JSON array with multiple ticker snapshots
-**Schema Validation**: Array of snapshot schemas for all 4 tickers
+**Query Generated**: "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
+**Expected Response**: Any format response with multiple ticker information (JSON array, text with emojis, or conversational summary)
+**Success Criteria**: System provides information for multiple tickers in readable format
 **Timeout**: 120 seconds
 
 ### Template Button Interactions (8 Tests)
@@ -168,22 +117,22 @@ This document provides comprehensive test specifications for the Market Parser s
 #### TEST-T001: Snapshot Button Response Time
 **Purpose**: Measure response time for snapshot button
 **Method**: Click 📈 Stock Snapshot button with "AAPL" pre-input
-**Expected**: JSON response within 120 seconds
-**Validation**: Response contains valid snapshot schema
+**Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
+**Validation**: Response contains AAPL stock information in readable format
 **Performance**: Log response time for baseline
 
 #### TEST-T002: Support & Resistance Button Response Time
 **Purpose**: Measure response time for S&R button
 **Method**: Click 🎯 Support & Resistance button with "TSLA" pre-input
-**Expected**: JSON response within 120 seconds
-**Validation**: Response contains valid support_resistance schema
+**Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
+**Validation**: Response contains TSLA support/resistance information in readable format
 **Performance**: Log response time for baseline
 
 #### TEST-T003: Technical Analysis Button Response Time
 **Purpose**: Measure response time for technical button
 **Method**: Click 🔧 Technical Analysis button with "MSFT" pre-input
-**Expected**: JSON response within 120 seconds
-**Validation**: Response contains valid technical schema
+**Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
+**Validation**: Response contains MSFT technical analysis information in readable format
 **Performance**: Log response time for baseline
 
 #### TEST-T004: Button State During Processing
@@ -195,8 +144,8 @@ This document provides comprehensive test specifications for the Market Parser s
 #### TEST-T005: Multiple Button Clicks Sequential
 **Purpose**: Test sequential button clicks
 **Method**: Click Snapshot → wait for response → click S&R → wait for response
-**Expected**: Each button produces independent valid responses
-**Validation**: Both responses match respective schemas
+**Expected**: Each button produces independent responses in any format
+**Validation**: Both responses contain relevant financial information
 
 #### TEST-T006: Button Click Without Input
 **Purpose**: Test button behavior with empty input
@@ -487,29 +436,29 @@ This document provides comprehensive test specifications for the Market Parser s
 6. **Extract** JSON from response textbox
 7. **Assert** schema compliance and data validity
 
-### JSON Schema Validation Approach
+### Basic Response Validation Approach
 
 **Validation Pipeline**:
 ```javascript
-// 1. Extract JSON from UI element
-const jsonText = await page.locator('[data-testid="snapshot-json"]').textContent();
+// 1. Extract response content from UI element
+const responseText = await page.locator('[data-testid="response-content"]').textContent();
 
-// 2. Parse JSON
-const responseData = JSON.parse(jsonText);
+// 2. Validate basic functionality
+const hasContent = responseText && responseText.trim().length > 0;
 
-// 3. Validate against schema
-const isValid = validateSchema(responseData, 'snapshot');
+// 3. Check for relevant information
+const hasTickerInfo = responseText.includes(expectedTicker);
 
-// 4. Assert specific fields
-assert(responseData.metadata.ticker_symbol === expectedTicker);
-assert(typeof responseData.snapshot_data.current_price === 'number');
+// 4. Verify readable response (any format acceptable)
+assert(hasContent, 'Response should contain readable content');
+assert(hasTickerInfo, 'Response should contain ticker information');
 ```
 
-**Schema Validation Functions**:
-- `validateSnapshotSchema(data)`: Validates snapshot response structure
-- `validateSupportResistanceSchema(data)`: Validates S&R response structure  
-- `validateTechnicalSchema(data)`: Validates technical analysis response structure
-- `validateMetadata(metadata)`: Validates common metadata fields
+**Basic Validation Functions**:
+- `validateResponseExists(data)`: Validates response contains content
+- `validateTickerPresent(data, ticker)`: Validates ticker information present
+- `validateReadableFormat(data)`: Validates response is in readable format (JSON, text, emojis acceptable)
+- `validateBasicFunctionality(data)`: Validates system responds appropriately to requests
 
 ### Test Data Management
 
@@ -750,17 +699,17 @@ if (response.error) {
 
 ### JSON Schema Compliance
 
-**Schema Validation Requirements**:
-- 100% of successful responses must pass schema validation
-- All required fields must be present and correctly typed
-- Data values must be within expected ranges
-- Timestamps must be in correct ISO format
+**Basic Functionality Requirements**:
+- 100% of successful responses must contain readable content
+- Responses must relate to the requested ticker or market data
+- Any format acceptable (JSON, text with emojis, conversational)
+- Emojis encouraged for enhanced user experience
 
-**Data Quality Validation**:
-- Ticker symbols must match requested symbols
-- Numeric values must be reasonable (no negative prices, etc.)
-- Confidence scores must be between 0.0 and 1.0
-- Timestamps must be recent (within last 24 hours)
+**Content Quality Validation**:
+- Response must contain information relevant to the request
+- Financial data should be reasonable (no obviously incorrect values)
+- Emojis like 📈📉💰 encouraged for sentiment indicators
+- Response format should be user-friendly and readable
 
 ---
 
@@ -768,12 +717,13 @@ if (response.error) {
 
 This comprehensive test specification provides a complete framework for validating the Market Parser system using Playwright MCP tools. The specification directly addresses the critical errors identified in previous implementations:
 
-✅ **Simple Raw JSON Requests**: All tests use "Raw Output Format Only with NO verbosity"  
-✅ **Raw JSON Response Validation**: Expect and validate raw JSON matching defined schemas  
+✅ **Priority Fast Requests**: All tests use "PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
+✅ **Any Format Response Validation**: Accept and validate any response format including JSON, emojis, and conversational responses  
 ✅ **Complete 51-Test Suite**: Full coverage across all functional areas  
-✅ **Button-Click Architecture**: Tests focus on UI button interactions producing JSON responses  
+✅ **Button-Click Architecture**: Tests focus on UI button interactions producing readable responses  
+✅ **Emoji Encouragement**: Emojis are allowed and encouraged for enhanced user experience
 
-The framework ensures reliable, comprehensive testing that validates both functional correctness and system performance while establishing clear baselines for future development.
+The framework ensures reliable, comprehensive testing that validates basic functionality and user experience while allowing flexible response formats for optimal user interaction.
 
 **Next Steps**: 
 1. Implement test execution framework using specified MCP tools

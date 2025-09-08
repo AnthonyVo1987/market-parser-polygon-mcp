@@ -2,13 +2,14 @@
  * Playwright MCP Test Framework - Complete 51-Test Suite Implementation
  * 
  * This framework implements the corrected test specifications for Market Parser
- * focusing on button-click → JSON response architecture with proper schema validation.
+ * focusing on button-click → response architecture with basic functionality validation.
  * 
  * Key Corrections Applied:
- * - Simple "Raw Output Format Only with NO verbosity" requests
- * - JSON schema validation instead of emoji/text pattern matching
+ * - Simple "PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity" requests
+ * - Basic functionality validation instead of strict JSON schema enforcement
  * - Complete 51-test suite across 9 categories
  * - Proper timeout handling (120 seconds for API responses)
+ * - Emojis are ALLOWED and encouraged in all responses
  */
 
 class PlaywrightMCPTestFramework {
@@ -22,148 +23,92 @@ class PlaywrightMCPTestFramework {
             apiResponse: 120000,
             validation: 5000
         };
-        this.schemas = this.initializeSchemas();
+        this.responseValidation = this.initializeBasicValidation();
     }
 
     /**
-     * Initialize JSON schemas for validation
+     * Initialize basic validation for any response format
      */
-    initializeSchemas() {
+    initializeBasicValidation() {
         return {
-            snapshot: {
-                required: ['metadata', 'snapshot_data'],
-                metadata: {
-                    required: ['timestamp', 'ticker_symbol', 'confidence_score', 'schema_version'],
-                    types: {
-                        timestamp: 'string',
-                        ticker_symbol: 'string',
-                        confidence_score: 'number',
-                        schema_version: 'string'
-                    }
+            allowedFormats: ['json', 'text', 'emoji', 'conversational', 'mixed'],
+            requiredElements: {
+                hasContent: (response) => response && response.trim().length > 0,
+                hasRelevantInfo: (response, ticker) => {
+                    if (!ticker) return true;
+                    return response.toLowerCase().includes(ticker.toLowerCase());
                 },
-                snapshot_data: {
-                    required: ['current_price', 'percentage_change', 'dollar_change', 'volume'],
-                    types: {
-                        current_price: 'number',
-                        percentage_change: 'number',
-                        dollar_change: 'number',
-                        volume: 'number',
-                        vwap: 'number',
-                        open: 'number',
-                        high: 'number',
-                        low: 'number',
-                        close: 'number'
-                    }
+                isReadable: (response) => {
+                    // Any format is acceptable - JSON, text with emojis, conversational
+                    return response && typeof response === 'string' && response.trim().length > 0;
                 }
             },
-            supportResistance: {
-                required: ['metadata', 'support_levels', 'resistance_levels'],
-                metadata: {
-                    required: ['timestamp', 'ticker_symbol', 'confidence_score', 'schema_version'],
-                    types: {
-                        timestamp: 'string',
-                        ticker_symbol: 'string',
-                        confidence_score: 'number',
-                        schema_version: 'string'
-                    }
-                }
-            },
-            technical: {
-                required: ['metadata', 'oscillators', 'moving_averages'],
-                metadata: {
-                    required: ['timestamp', 'ticker_symbol', 'confidence_score', 'schema_version'],
-                    types: {
-                        timestamp: 'string',
-                        ticker_symbol: 'string',
-                        confidence_score: 'number',
-                        schema_version: 'string'
-                    }
-                }
-            },
-            marketStatus: {
-                required: ['afterHours', 'currencies', 'exchanges', 'indicesGroups', 'market', 'serverTime'],
-                types: {
-                    afterHours: 'boolean',
-                    market: 'string',
-                    serverTime: 'string'
+            emojiIndicators: {
+                financialEmojis: ['📈', '📉', '💰', '💸', '🏢', '📊', '🎯', '🔧'],
+                isEmojiPresent: (response) => {
+                    return /[📈📉💰💸🏢📊🎯🔧]/.test(response);
                 }
             }
         };
     }
 
     /**
-     * Validate JSON response against schema
-     * @param {Object} data - JSON data to validate
-     * @param {string} schemaType - Type of schema to validate against
-     * @returns {Object} Validation result with success flag and errors
+     * Validate basic functionality of any response format
+     * @param {string} response - Response text to validate (any format acceptable)
+     * @param {string} ticker - Expected ticker symbol (optional)
+     * @param {string} requestType - Type of request made (optional)
+     * @returns {Object} Validation result with success flag and notes
      */
-    validateSchema(data, schemaType) {
-        const schema = this.schemas[schemaType];
-        const errors = [];
+    validateBasicFunctionality(response, ticker = null, requestType = 'general') {
+        const validation = this.responseValidation;
+        const notes = [];
+        const warnings = [];
 
-        if (!schema) {
-            return { success: false, errors: [`Unknown schema type: ${schemaType}`] };
+        // Basic content validation
+        if (!validation.requiredElements.hasContent(response)) {
+            return { success: false, errors: ['Response is empty or contains no content'], notes, warnings };
         }
 
-        // Check required top-level fields
-        for (const field of schema.required) {
-            if (!(field in data)) {
-                errors.push(`Missing required field: ${field}`);
-            }
+        // Check for relevant information
+        if (ticker && !validation.requiredElements.hasRelevantInfo(response, ticker)) {
+            warnings.push(`Response may not contain information about requested ticker: ${ticker}`);
         }
 
-        // Validate metadata if present
-        if (schema.metadata && data.metadata) {
-            for (const field of schema.metadata.required) {
-                if (!(field in data.metadata)) {
-                    errors.push(`Missing required metadata field: ${field}`);
-                }
-            }
-
-            // Check metadata types
-            for (const [field, expectedType] of Object.entries(schema.metadata.types)) {
-                if (field in data.metadata && typeof data.metadata[field] !== expectedType) {
-                    errors.push(`Invalid type for metadata.${field}: expected ${expectedType}, got ${typeof data.metadata[field]}`);
-                }
-            }
+        // Verify response is readable (any format is acceptable)
+        if (!validation.requiredElements.isReadable(response)) {
+            return { success: false, errors: ['Response is not in a readable format'], notes, warnings };
         }
 
-        // Validate snapshot_data if present
-        if (schema.snapshot_data && data.snapshot_data) {
-            for (const field of schema.snapshot_data.required) {
-                if (!(field in data.snapshot_data)) {
-                    errors.push(`Missing required snapshot_data field: ${field}`);
-                }
-            }
+        // Check for emoji presence (encouraged but not required)
+        if (validation.emojiIndicators.isEmojiPresent(response)) {
+            notes.push('✅ Response contains financial emojis - excellent user experience!');
+        } else {
+            notes.push('ℹ️  Response could be enhanced with emojis (📈📉💰) for better user experience');
+        }
 
-            // Check snapshot_data types
-            for (const [field, expectedType] of Object.entries(schema.snapshot_data.types)) {
-                if (field in data.snapshot_data && typeof data.snapshot_data[field] !== expectedType) {
-                    errors.push(`Invalid type for snapshot_data.${field}: expected ${expectedType}, got ${typeof data.snapshot_data[field]}`);
-                }
-            }
-
-            // Validate data ranges
-            if (data.snapshot_data.current_price <= 0) {
-                errors.push('current_price must be positive');
-            }
-            if (data.snapshot_data.volume < 0) {
-                errors.push('volume must be non-negative');
+        // Determine response format
+        let formatType = 'text';
+        try {
+            JSON.parse(response);
+            formatType = 'json';
+        } catch {
+            if (validation.emojiIndicators.isEmojiPresent(response)) {
+                formatType = 'emoji-enhanced';
+            } else if (response.includes('analysis') || response.includes('data') || response.includes('price')) {
+                formatType = 'conversational';
             }
         }
 
-        // Validate top-level types for marketStatus
-        if (schema.types) {
-            for (const [field, expectedType] of Object.entries(schema.types)) {
-                if (field in data && typeof data[field] !== expectedType) {
-                    errors.push(`Invalid type for ${field}: expected ${expectedType}, got ${typeof data[field]}`);
-                }
-            }
-        }
+        notes.push(`📋 Response format detected: ${formatType} (all formats acceptable)`);
 
         return {
-            success: errors.length === 0,
-            errors: errors
+            success: true,
+            errors: [],
+            notes,
+            warnings,
+            responseFormat: formatType,
+            hasEmojis: validation.emojiIndicators.isEmojiPresent(response),
+            contentLength: response.length
         };
     }
 

@@ -36,14 +36,20 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
             const responseTime = Date.now() - startTime;
             
-            const jsonData = this.parseJSONFromResponse(response);
-            const validation = this.validateSchema(jsonData, 'snapshot');
+            // Validate basic functionality (any format acceptable)
+            const validation = this.validateBasicFunctionality(response, 'AAPL', 'ticker_snapshot');
             
             if (!validation.success) {
-                throw new Error(`Schema validation failed: ${validation.errors.join(', ')}`);
+                throw new Error(`Basic functionality validation failed: ${validation.errors.join(', ')}`);
             }
             
-            return { responseTime, jsonData, validation };
+            return { 
+                responseTime, 
+                response, 
+                validation,
+                hasEmojis: validation.hasEmojis,
+                responseFormat: validation.responseFormat 
+            };
         });
     }
 
@@ -57,14 +63,20 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
             const responseTime = Date.now() - startTime;
             
-            const jsonData = this.parseJSONFromResponse(response);
-            const validation = this.validateSchema(jsonData, 'supportResistance');
+            // Validate basic functionality (any format acceptable)
+            const validation = this.validateBasicFunctionality(response, 'TSLA', 'support_resistance');
             
             if (!validation.success) {
-                throw new Error(`Schema validation failed: ${validation.errors.join(', ')}`);
+                throw new Error(`Basic functionality validation failed: ${validation.errors.join(', ')}`);
             }
             
-            return { responseTime, jsonData, validation };
+            return { 
+                responseTime, 
+                response, 
+                validation,
+                hasEmojis: validation.hasEmojis,
+                responseFormat: validation.responseFormat 
+            };
         });
     }
 
@@ -78,14 +90,20 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
             const responseTime = Date.now() - startTime;
             
-            const jsonData = this.parseJSONFromResponse(response);
-            const validation = this.validateSchema(jsonData, 'technical');
+            // Validate basic functionality (any format acceptable)
+            const validation = this.validateBasicFunctionality(response, 'MSFT', 'technical_analysis');
             
             if (!validation.success) {
-                throw new Error(`Schema validation failed: ${validation.errors.join(', ')}`);
+                throw new Error(`Basic functionality validation failed: ${validation.errors.join(', ')}`);
             }
             
-            return { responseTime, jsonData, validation };
+            return { 
+                responseTime, 
+                response, 
+                validation,
+                hasEmojis: validation.hasEmojis,
+                responseFormat: validation.responseFormat 
+            };
         });
     }
 
@@ -120,7 +138,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             // First click - Snapshot
             await this.browser.clickStockSnapshotButton();
             const response1 = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            const json1 = this.parseJSONFromResponse(response1);
             
             // Wait a moment between requests
             await this.browser.sleep(2000);
@@ -128,14 +145,14 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             // Second click - Support & Resistance
             await this.browser.clickSupportResistanceButton();
             const response2 = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            const json2 = this.parseJSONFromResponse(response2);
             
-            const validation1 = this.validateSchema(json1, 'snapshot');
-            const validation2 = this.validateSchema(json2, 'supportResistance');
+            // Validate basic functionality for both responses
+            const validation1 = this.validateBasicFunctionality(response1, 'AAPL', 'ticker_snapshot');
+            const validation2 = this.validateBasicFunctionality(response2, 'AAPL', 'support_resistance');
             
             return {
-                firstResponse: { data: json1, validation: validation1 },
-                secondResponse: { data: json2, validation: validation2 },
+                firstResponse: { data: response1, validation: validation1 },
+                secondResponse: { data: response2, validation: validation2 },
                 bothSuccessful: validation1.success && validation2.success
             };
         });

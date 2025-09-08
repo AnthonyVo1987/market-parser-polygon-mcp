@@ -37,14 +37,18 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
             
             try {
                 const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-                const jsonData = this.parseJSONFromResponse(response);
+                
+                // Validate basic functionality (any format acceptable)
+                const validation = this.validateBasicFunctionality(response, 'AAPL', 'ticker_snapshot');
                 
                 return {
                     viewport: { width: 375, height: 667 },
-                    functionalityWorking: true,
+                    functionalityWorking: validation.success,
                     responseReceived: true,
                     mobileCompatible: true,
-                    jsonData: jsonData
+                    response: response,
+                    validation: validation,
+                    hasEmojis: validation.hasEmojis
                 };
             } catch (error) {
                 return {
@@ -72,14 +76,18 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
             
             try {
                 const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-                const jsonData = this.parseJSONFromResponse(response);
+                
+                // Validate basic functionality (any format acceptable)
+                const validation = this.validateBasicFunctionality(response, 'MSFT', 'ticker_snapshot');
                 
                 return {
                     viewport: { width: 1920, height: 1080 },
-                    functionalityWorking: true,
+                    functionalityWorking: validation.success,
                     responseReceived: true,
                     desktopOptimized: true,
-                    jsonData: jsonData
+                    response: response,
+                    validation: validation,
+                    hasEmojis: validation.hasEmojis
                 };
             } catch (error) {
                 return {
