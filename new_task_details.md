@@ -2,20 +2,38 @@
 
 ## Task Description
 
-[DOCS] Fix Wrong Test Plans from CLAUDE_playwright_mcp_corrected_test_specifications.md & Remove Github
+[DOCS] Update Test Plans & Add Custom Test Commands
 
 - DOCUMENTATION TASK(S) ONLY
 
-1. Fix Priority Tests to be correct Chat message Query ONLY
-TEST-P001: Market Status Request - No change
-TEST-P002: Single Ticker NVDA Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
-TEST-P003: Single Ticker SPY Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
-TEST-P004: Single Ticker GME Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
-TEST-P004: Multi-Ticker Combined Request - NOT A BUTTON CLICK TEST; FIX TO Chat message Query Test
+1. Rename references from "Priority Tests" to "Basic Tests" in  CLAUDE_playwright_mcp_corrected_test_specifications.md
 
-2. Remove ALL references to Gitub MCP Tools because they were removed and now Git commands are now the ONLY single source of truth for Repo management
+2. Update  CLAUDE_playwright_mcp_corrected_test_specifications.md so that Basic Tests now will have the current 5x test(s):
+TEST-P001: Market Status Request
+TEST-P002: Single Ticker NVDA Request
+TEST-P003: Single Ticker SPY Request
+TEST-P004: Single Ticker GME Request
+TEST-P005: Multi-Ticker Combined Request
 
-- Alot of incorrect Github tool references in market-parser-polygon-mcp/MCP_TOOL_USAGE_GUIDE.md
+3. Remove Sections for Performance Validation Tests & Complex Query Tests since those tests are actually just Basic test in CLAUDE_playwright_mcp_corrected_test_specifications.md
+
+4. Update ALL docs, especially CLAUDE_playwright_mcp_corrected_test_specifications.md, that references ANY hard coded # of Basic Tests, and Test numbers.  We will constantly modify, add, remove, update, re-classify tests, so we need to remove all potential points of confusion that are hard coded.
+
+- By removing all HARD CODED test #s and Test IDs, future testing can be dynamic such as running JUST Basic Tests, Button Prompt tests etc
+- By removing hard code, it allows flexibililty for tests to be constantly modified, added, removed, updated, re-classifed WITHOUT needing to update the hard codes in the test plan
+- I.E Running basic test now has 5 x test, but later on it can expand to 20x test, so running basic test again will know to run the full 20x test without need to provide explicit number of tests and\or test ID
+- I.E. Running Basic & Button Prompts test will run all exising Basic tests AND all existing Button Prompt tests, without needing to modify any hard codes.
+
+5. Add brand new Claude Code Custom Slash Commands to trigger some test runs:
+
+- Read & Review how to properly create new Slash Commands from: docs/Custom_Slash_Commands.md
+- Review and read how the current "new_task.md" command works when user invokes /new_task, to get an idea of how to make sure @agent-tech-lead-orchestrator only orchestrates and delegatges the testing to appropriate specialist(s)
+- EACH of the following 3x new test commands need to follow the same procedure: @agent-tech-lead-orchestrator to be invoked to delegate Specialist(s) to USE all relevant MCP Tools and: ENFORCE THAT SPECIALIST CANNOT MAKE UP THEIR OWN TESTS, and if they do not know what test to run, then re-read  CLAUDE_playwright_mcp_corrected_test_specifications.md if needed on the proper test plan, FIRST Read gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md, THEN follow the mandatory server setups, THEN Run the requested Test(s) following Testing Procedures outlined in the doc, git commit & push test report docs to repo WITHOUT trying to fix anything.
+
+Here are the new run test custom commands we are adding:
+A. /run_test_basic = Run JUST the Basic Tests
+B. /run_test_basic_button = Run JUST the Basic & Button Prompt Tests
+C. /run_test_button = Run JUST the Button Prompt Tests
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -67,7 +85,12 @@ Final Task 4: Final Verification
 ## Expected Outcome
 
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+- CLAUDE_playwright_mcp_corrected_test_specifications.md only references Basic Tests, No hardcoded test numbers and\or test IDs, no more Performance Validation Tests & Complex Query Tests
+- No other docs ever referencing hard coded test numbers or test IDs
+- No more references ANYWHERE about "priority tests" label since we changed it to Basic Test Label.  DO NOT REMOVE "PRIORITY" from the chat prompts itself since the PROMPTS are priority, but they are still basic tests
+- 3x new custom slash commands stored in .claude/commands for:
+A. /run_test_basic = Run JUST the Basic Tests
+B. /run_test_basic_button = Run JUST the Basic & Button Prompt Tests
+C. /run_test_button = Run JUST the Button Prompt Tests
 
 ## Additional Context
-
-- Priority Test were incorrectly using BUtton Click test when the proper test should be Chat message Query Test. There is ALREADY a later button click test section that is focused on button clicks
