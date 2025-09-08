@@ -65,7 +65,7 @@ This document provides comprehensive test specifications for the Market Parser s
 
 ## Complete 51-Test Suite Specification
 
-### Priority Tests (5 Tests)
+### Priority Tests (13 Tests)
 
 #### TEST-P001: Market Status Request
 **Purpose**: Verify system responds to market status requests
@@ -112,58 +112,58 @@ This document provides comprehensive test specifications for the Market Parser s
 **Success Criteria**: System provides information for multiple tickers in readable format
 **Timeout**: 120 seconds
 
-### Template Button Interactions (8 Tests)
-
-#### TEST-T001: Snapshot Button Response Time
+#### TEST-P006: Snapshot Button Response Time
 **Purpose**: Measure response time for snapshot button
 **Method**: Click 📈 Stock Snapshot button with "AAPL" pre-input
 **Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
 **Validation**: Response contains AAPL stock information in readable format
 **Performance**: Log response time for baseline
 
-#### TEST-T002: Support & Resistance Button Response Time
+#### TEST-P007: Support & Resistance Button Response Time
 **Purpose**: Measure response time for S&R button
 **Method**: Click 🎯 Support & Resistance button with "TSLA" pre-input
 **Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
 **Validation**: Response contains TSLA support/resistance information in readable format
 **Performance**: Log response time for baseline
 
-#### TEST-T003: Technical Analysis Button Response Time
+#### TEST-P008: Technical Analysis Button Response Time
 **Purpose**: Measure response time for technical button
 **Method**: Click 🔧 Technical Analysis button with "MSFT" pre-input
 **Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
 **Validation**: Response contains MSFT technical analysis information in readable format
 **Performance**: Log response time for baseline
 
-#### TEST-T004: Button State During Processing
+#### TEST-P009: Button State During Processing
 **Purpose**: Verify buttons show processing state
 **Method**: Click any analysis button and immediately check state
 **Expected**: Button shows loading/disabled state during processing
 **Validation**: UI state changes appropriately
 
-#### TEST-T005: Multiple Button Clicks Sequential
+#### TEST-P010: Multiple Button Clicks Sequential
 **Purpose**: Test sequential button clicks
 **Method**: Click Snapshot → wait for response → click S&R → wait for response
 **Expected**: Each button produces independent responses in any format
 **Validation**: Both responses contain relevant financial information
 
-#### TEST-T006: Button Click Without Input
+#### TEST-P011: Button Click Without Input
 **Purpose**: Test button behavior with empty input
 **Method**: Clear input field, click 📈 Stock Snapshot
 **Expected**: Appropriate error handling or default behavior
 **Validation**: System handles gracefully without crashing
 
-#### TEST-T007: Button Click with Invalid Ticker
+#### TEST-P012: Button Click with Invalid Ticker
 **Purpose**: Test button with invalid ticker symbol
 **Method**: Input "INVALID123", click 📈 Stock Snapshot
 **Expected**: Error response or appropriate handling
 **Validation**: System provides meaningful error feedback
 
-#### TEST-T008: Button Visual Feedback
+#### TEST-P013: Button Visual Feedback
 **Purpose**: Verify buttons provide visual feedback
 **Method**: Click each button and observe visual changes
 **Expected**: Buttons show hover, active, and processing states
 **Validation**: All visual states function correctly
+
+
 
 ### Message Input Variations (6 Tests)
 
@@ -636,8 +636,8 @@ if (response.error) {
 
 **Execution Order**:
 1. **Setup Phase**: Verify backend running, frontend accessible
-2. **Priority Tests**: 5 tests validating core functionality  
-3. **Functional Tests**: 43 tests covering all features
+2. **Priority Tests**: 13 tests validating core functionality  
+3. **Functional Tests**: 38 tests covering all features
 4. **Performance Tests**: 4 tests measuring system performance
 5. **Cleanup Phase**: Generate reports, cleanup resources
 
@@ -684,11 +684,11 @@ if (response.error) {
 ### Test Suite Success Metrics
 
 **Priority Tests**: 100% pass rate required
-- All 5 priority tests must pass for system validation
+- All 13 priority tests must pass for system validation
 - Any priority test failure indicates critical system issue
 
 **Comprehensive Tests**: 90% pass rate target
-- 43/48 comprehensive tests should pass
+- 34/38 comprehensive tests should pass
 - Failed tests must be analyzed and documented
 - Known limitations acceptable if documented
 

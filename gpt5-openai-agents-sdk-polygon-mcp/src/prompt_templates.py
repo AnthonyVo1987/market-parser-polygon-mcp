@@ -517,7 +517,9 @@ CONVERSATIONAL RESPONSE MODE:
 
 Please include current market data and recent performance metrics. Focus on providing clear, actionable insights for investors."""
 
-        formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
+        formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+
+RESPONSE FORMATTING GUIDELINES:
 - Start with current price and percentage change
 - Include trading volume and volume analysis
 - Provide OHLC data (Open, High, Low, Close) with context
@@ -556,7 +558,9 @@ Please include current market data and recent performance metrics. Focus on prov
 
 Identify the most important price levels where the stock tends to find support (price floors) and resistance (price ceilings). Explain the significance of these levels for trading decisions and provide actionable insights for traders."""
 
-        formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
+        formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+
+RESPONSE FORMATTING GUIDELINES:
 - Provide comprehensive analysis with clear structure and insights
 - Identify 3 key support levels and 3 key resistance levels
 - Explain the strength of each level (strong, moderate, weak)
@@ -601,7 +605,9 @@ Identify the most important price levels where the stock tends to find support (
 
 Analyze current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction, and provide actionable insights for trading decisions."""
 
-        formatting_instructions = """RESPONSE FORMATTING GUIDELINES:
+        formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+
+RESPONSE FORMATTING GUIDELINES:
 - Deliver thorough analysis with clear explanations and actionable insights
 - Include key oscillators (RSI, MACD) with current values and interpretations
 - Provide moving average analysis (short-term and long-term trends)
