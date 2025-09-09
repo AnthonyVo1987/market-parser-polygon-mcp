@@ -9,6 +9,7 @@ Markdown reports in the `reports/` directory.
 import asyncio
 import os
 import re
+from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -57,6 +58,10 @@ from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
 load_dotenv()
 
 console = Console()
+
+# Global shared resources for FastAPI lifespan management
+shared_mcp_server = None
+shared_session = None
 
 
 # Models
@@ -288,8 +293,38 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
 prompt_manager = PromptTemplateManager()
 ticker_extractor = TickerExtractor()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """FastAPI lifespan management for shared MCP server and session instances."""
+    global shared_mcp_server, shared_session
+    
+    # Startup: Create shared instances
+    try:
+        console.print("[bold green]Starting FastAPI with shared MCP server...[/bold green]")
+        shared_session = SQLiteSession("finance_conversation")
+        shared_mcp_server = create_polygon_mcp_server()
+        await shared_mcp_server.__aenter__()
+        console.print("[bold green]✓ Shared MCP server and session initialized[/bold green]")
+    except Exception as e:
+        console.print(f"[bold red]✗ Failed to initialize shared resources: {e}[/bold red]")
+        raise
+    
+    yield
+    
+    # Cleanup: Close shared instances
+    try:
+        console.print("[bold yellow]Shutting down shared MCP server...[/bold yellow]")
+        if shared_mcp_server:
+            await shared_mcp_server.__aexit__(None, None, None)
+        console.print("[bold green]✓ Shared resources cleaned up[/bold green]")
+    except Exception as e:
+        console.print(f"[bold red]✗ Error during cleanup: {e}[/bold red]")
+
+
 # FastAPI App Setup
 app = FastAPI(
+    lifespan=lifespan,
     title="Financial Analysis API",
     description="API for financial queries using Polygon.io data and prompt templates",
     version="1.0.0",
@@ -315,6 +350,8 @@ app.add_middleware(
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Process a financial query and return the response."""
+    global shared_mcp_server, shared_session
+    
     if not request.message or len(request.message.strip()) < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -322,25 +359,23 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         )
 
     try:
-        # Create session and server for this request
-        session = SQLiteSession("finance_conversation")
-        server = create_polygon_mcp_server()
+        # Use shared instances instead of creating new ones
+        result = await process_financial_query(
+            request.message.strip(), shared_session, shared_mcp_server
+        )
 
-        async with server:
-            result = await process_financial_query(request.message.strip(), session, server)
+        if result["success"]:
+            return ChatResponse(response=result["response"])
 
-            if result["success"]:
-                return ChatResponse(response=result["response"])
-
-            if result["error_type"] == "guardrail":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-                )
-
+        if result["error_type"] == "guardrail":
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Agent error: {result['error']}",
+                status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
             )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Agent error: {result['error']}",
+        )
 
     except HTTPException:
         raise
@@ -428,32 +463,30 @@ async def generate_prompt_endpoint(request: GeneratePromptRequest):
 @app.post("/api/v1/analysis/snapshot", response_model=ButtonAnalysisResponse)
 async def get_stock_snapshot(request: ButtonAnalysisRequest):
     """Get stock snapshot analysis for button-triggered requests."""
+    global shared_mcp_server, shared_session
+    
     try:
-        # Process through the agent system
-        session = SQLiteSession("finance_conversation")
-        server = create_polygon_mcp_server()
-
         query = (
             f"Provide a comprehensive stock snapshot analysis for {request.ticker}. "
             "Include current price, volume, OHLC data, and recent performance metrics "
             "with clear explanations."
         )
 
-        async with server:
-            result = await process_financial_query(query, session, server)
+        # Use shared instances instead of creating new ones
+        result = await process_financial_query(query, shared_session, shared_mcp_server)
 
-            if result["success"]:
-                return ButtonAnalysisResponse(
-                    analysis=result["response"],
-                    ticker=request.ticker,
-                    analysis_type=AnalysisType.SNAPSHOT,
-                    success=True,
-                )
-
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Snapshot analysis failed: {result['error']}",
+        if result["success"]:
+            return ButtonAnalysisResponse(
+                analysis=result["response"],
+                ticker=request.ticker,
+                analysis_type=AnalysisType.SNAPSHOT,
+                success=True,
             )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Snapshot analysis failed: {result['error']}",
+        )
 
     except HTTPException:
         raise
@@ -467,32 +500,30 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
 @app.post("/api/v1/analysis/support-resistance", response_model=ButtonAnalysisResponse)
 async def get_support_resistance(request: ButtonAnalysisRequest):
     """Get support and resistance levels analysis for button-triggered requests."""
+    global shared_mcp_server, shared_session
+    
     try:
-        # Process through the agent system
-        session = SQLiteSession("finance_conversation")
-        server = create_polygon_mcp_server()
-
         query = (
             f"Analyze key support and resistance levels for {request.ticker}. "
             "Identify 3 support levels and 3 resistance levels with explanations "
             "of their significance for trading decisions."
         )
 
-        async with server:
-            result = await process_financial_query(query, session, server)
+        # Use shared instances instead of creating new ones
+        result = await process_financial_query(query, shared_session, shared_mcp_server)
 
-            if result["success"]:
-                return ButtonAnalysisResponse(
-                    analysis=result["response"],
-                    ticker=request.ticker,
-                    analysis_type=AnalysisType.SUPPORT_RESISTANCE,
-                    success=True,
-                )
-
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Support/Resistance analysis failed: {result['error']}",
+        if result["success"]:
+            return ButtonAnalysisResponse(
+                analysis=result["response"],
+                ticker=request.ticker,
+                analysis_type=AnalysisType.SUPPORT_RESISTANCE,
+                success=True,
             )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Support/Resistance analysis failed: {result['error']}",
+        )
 
     except HTTPException:
         raise
@@ -506,32 +537,30 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
 @app.post("/api/v1/analysis/technical", response_model=ButtonAnalysisResponse)
 async def get_technical_analysis(request: ButtonAnalysisRequest):
     """Get technical analysis for button-triggered requests."""
+    global shared_mcp_server, shared_session
+    
     try:
-        # Process through the agent system
-        session = SQLiteSession("finance_conversation")
-        server = create_polygon_mcp_server()
-
         query = (
             f"Provide comprehensive technical analysis for {request.ticker} using "
             "key indicators including RSI, MACD, and moving averages. Explain momentum "
             "and trend direction with trading recommendations."
         )
 
-        async with server:
-            result = await process_financial_query(query, session, server)
+        # Use shared instances instead of creating new ones
+        result = await process_financial_query(query, shared_session, shared_mcp_server)
 
-            if result["success"]:
-                return ButtonAnalysisResponse(
-                    analysis=result["response"],
-                    ticker=request.ticker,
-                    analysis_type=AnalysisType.TECHNICAL,
-                    success=True,
-                )
-
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Technical analysis failed: {result['error']}",
+        if result["success"]:
+            return ButtonAnalysisResponse(
+                analysis=result["response"],
+                ticker=request.ticker,
+                analysis_type=AnalysisType.TECHNICAL,
+                success=True,
             )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Technical analysis failed: {result['error']}",
+        )
 
     except HTTPException:
         raise
@@ -548,6 +577,8 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
 @app.post("/api/v1/analysis/chat", response_model=ChatAnalysisResponse)
 async def process_chat_analysis(request: ChatAnalysisRequest):
     """Process a chat message with financial analysis using the agent system."""
+    global shared_mcp_server, shared_session
+    
     try:
         # Detect analysis type if not provided
         analysis_type = request.analysis_type
@@ -568,50 +599,48 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
                 {"content": msg.content, "role": msg.role} for msg in request.chat_history
             ]
 
-        # Use the existing financial query processing
-        session = SQLiteSession("finance_conversation")
-        server = create_polygon_mcp_server()
+        # Use shared instances instead of creating new ones
+        result = await process_financial_query(
+            request.message.strip(), shared_session, shared_mcp_server
+        )
 
-        async with server:
-            result = await process_financial_query(request.message.strip(), session, server)
+        if result["success"]:
+            # Extract ticker if possible
+            ticker_context = ticker_extractor.extract_ticker(request.message, chat_history)
 
-            if result["success"]:
-                # Extract ticker if possible
-                ticker_context = ticker_extractor.extract_ticker(request.message, chat_history)
-
-                return ChatAnalysisResponse(
-                    response=result["response"],
-                    analysis_type=analysis_type,
-                    ticker_detected=(
-                        ticker_context.symbol if ticker_context.symbol != "[TICKER]" else None
-                    ),
-                    confidence=ticker_context.confidence,
-                    follow_up_questions=(
-                        [
-                            f"Would you like a detailed technical analysis for "
-                            f"{ticker_context.symbol}?",
-                            f"Should we examine support and resistance levels for "
-                            f"{ticker_context.symbol}?",
-                            "Would you like to analyze a different stock?",
-                        ]
-                        if ticker_context.symbol != "[TICKER]"
-                        else [
-                            "Which stock would you like to analyze?",
-                            "Would you like a market snapshot or technical analysis?",
-                        ]
-                    ),
-                    success=True,
-                )
-
-            if result["error_type"] == "guardrail":
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-                )
-
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Analysis failed: {result['error']}",
+            return ChatAnalysisResponse(
+                response=result["response"],
+                analysis_type=analysis_type,
+                ticker_detected=(
+                    ticker_context.symbol if ticker_context.symbol != "[TICKER]" else None
+                ),
+                confidence=ticker_context.confidence,
+                follow_up_questions=(
+                    [
+                        f"Would you like a detailed technical analysis for "
+                        f"{ticker_context.symbol}?",
+                        f"Should we examine support and resistance levels for "
+                        f"{ticker_context.symbol}?",
+                        "Would you like to analyze a different stock?",
+                    ]
+                    if ticker_context.symbol != "[TICKER]"
+                    else [
+                        "Which stock would you like to analyze?",
+                        "Would you like a market snapshot or technical analysis?",
+                    ]
+                ),
+                success=True,
             )
+
+        if result["error_type"] == "guardrail":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
+            )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Analysis failed: {result['error']}",
+        )
 
     except HTTPException:
         raise
