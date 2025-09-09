@@ -9,7 +9,7 @@ import {
   isValidPromptTemplate,
 } from '../types/chat_OpenAI';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8001';
 
 // Cache for template data to avoid unnecessary API calls
 const templateCache = {
