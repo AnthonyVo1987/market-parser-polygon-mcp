@@ -4,12 +4,15 @@
 
 [TEST] Fix ALL Issues from Basic Test Report: docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md
 
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
+
 1. FIRST, Specialist to Read & understand testing protocol and test suite from: CLAUDE_playwright_mcp_corrected_test_specifications.md
 2. SECOND, Specialist to Read, Investigate, & Fix issues from the requested test report docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md to understand the tests ran and the failures
 3. IF EITHER of these docs were NOT read by a Specialist, TASK VIOLATION AND START THE ENTIRE NEW TASK OVER: CLAUDE_playwright_mcp_corrected_test_specifications.md or playwright_mcp_basic_test_execution_report_2025-01-09.md
 4. After fixing, Specialist to Start a Test\Fix Loop re-running THE SAME EXACT FAILING TESTS FROM FAILING REPORT WITH NO DEVIATIONS: playwright_mcp_basic_test_execution_report_2025-01-09.md
 5. AFTER EACH individual test is run, Specialist to double check that the test just ran matches VERBATIM FROM playwright_mcp_basic_test_execution_report_2025-01-09.md
 6. Specialist: The loop should Keep running tests and fixing issues until all 6x test finally pass:
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
 ## Individual Test Results from docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md
 
@@ -82,15 +85,18 @@
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
 - Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s)
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - Perform all of the requested task(s) based on the newly generated implementation plan todo checklist
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
@@ -125,6 +131,8 @@ Final Task 4: Final Verification
 **Key Requirements:**
 
 ## Requirements
+
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
 - THE EXACT SAME TEST MUST BE RAN FROM docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md VERBATIM
 - RUNNING EVEN 1X TEST that is NOT VERBATIM IS A TASK FAILURE VIOLATION AND MUST START ENTIRE TASK(S) OVER

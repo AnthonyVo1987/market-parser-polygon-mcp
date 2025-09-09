@@ -5,6 +5,17 @@ Read the follow project docs ONE AT A TIME and acknowledge project state, last c
 
 
 
+
+Task 1. Main Agent to commit missing file gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist/sw.js that we incorrectly left out of previous atomic commit
+Task 2. Main Agent to Read & Understand Testing Protocol and Test plan from CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 3. Main Agent to Run the Basic and Button Tests (20 total test) from CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 4. After testing is complete, ask @agent-documentation-specialist to generate the test report follow rules and template from CLAUDE_playwright_mcp_corrected_test_specifications.md. DO NOT FIX ANYTHING ON YOUR OWN
+Task 5. Atomic git commit & push of ALL docs and reports
+
+
+
+
+
 # New Task Details
 
 ## Task Description
