@@ -119,7 +119,11 @@
       "mcp__filesystem__read_file",
       "mcp__playwright__browser_press_key",
       "mcp__playwright__browser_evaluate",
-      "Bash(TZ:*)"
+      "Bash(TZ:*)",
+      "Bash(break)",
+      "Bash(continue)",
+      "Bash(done)",
+      "mcp__playwright__browser_console_messages"
     ],
     "deny": [],
     "ask": [],
