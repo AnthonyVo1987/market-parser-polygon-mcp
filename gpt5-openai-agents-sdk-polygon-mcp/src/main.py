@@ -336,10 +336,12 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",  # React dev server
         "http://localhost:3001",  # Alternative React port
-        "http://localhost:3003",  # Current frontend port
+        "http://localhost:3003",  # Alternative React port
+        "http://localhost:3004",  # Current frontend port
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3001",
-        "http://127.0.0.1:3003",  # Current frontend port
+        "http://127.0.0.1:3003",
+        "http://127.0.0.1:3004",  # Current frontend port
     ],
     allow_credentials=True,
     allow_methods=["*"],
