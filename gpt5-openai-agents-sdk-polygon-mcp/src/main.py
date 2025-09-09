@@ -34,6 +34,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from rich.console import Console
 from rich.markdown import Markdown
 
@@ -58,6 +59,39 @@ from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
 load_dotenv()
 
 console = Console()
+
+
+# ====== CONFIGURATION SETTINGS ======
+
+class Settings(BaseSettings):
+    """Application configuration settings loaded from environment variables."""
+    
+    # FastAPI server configuration
+    fastapi_host: str = "0.0.0.0"
+    fastapi_port: int = 8000
+    
+    # API Keys
+    polygon_api_key: str
+    openai_api_key: str
+    
+    # MCP Configuration
+    mcp_timeout_seconds: float = 120.0
+    
+    # Agent Configuration
+    openai_model: str = "gpt-5-mini"
+    agent_session_name: str = "finance_conversation"
+    
+    # CORS Configuration
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
+        extra = "ignore"  # Ignore extra fields from .env file
+
+
+# Initialize settings
+settings = Settings()
 
 # Global shared resources for FastAPI lifespan management
 shared_mcp_server = None
@@ -142,11 +176,8 @@ async def finance_guardrail(context, agent, input_data):  # pylint: disable=unus
 
 def create_polygon_mcp_server():
     """Create a stdio MCP server instance configured with POLYGON_API_KEY."""
-    api_key = os.getenv("POLYGON_API_KEY")
-    if not api_key:
+    if not settings.polygon_api_key:
         raise ValueError("POLYGON_API_KEY not set in environment.")
-    # Configure timeout from environment variable (default: 120s)
-    timeout_seconds = float(os.getenv("MCP_TIMEOUT_SECONDS", "120.0"))
     
     return MCPServerStdio(
         params={
@@ -156,9 +187,9 @@ def create_polygon_mcp_server():
                 "git+https://github.com/polygon-io/mcp_polygon@v0.4.0",
                 "mcp_polygon",
             ],
-            "env": {**os.environ, "POLYGON_API_KEY": api_key},
+            "env": {**os.environ, "POLYGON_API_KEY": settings.polygon_api_key},
         },
-        client_session_timeout_seconds=timeout_seconds  # Configurable timeout (default 120s)
+        client_session_timeout_seconds=settings.mcp_timeout_seconds
     )
 
 
@@ -260,7 +291,7 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                 mcp_servers=[server],
                 tools=[save_analysis_report],
                 input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
-                model=OpenAIResponsesModel(model="gpt-5-mini", openai_client=AsyncOpenAI()),
+                model=OpenAIResponsesModel(model=settings.openai_model, openai_client=AsyncOpenAI()),
                 model_settings=ModelSettings(truncation="auto"),
             )
             output = await Runner.run(analysis_agent, query, session=session)
@@ -301,8 +332,9 @@ async def lifespan(app: FastAPI):
     
     # Startup: Create shared instances
     try:
-        console.print("[bold green]Starting FastAPI with shared MCP server...[/bold green]")
-        shared_session = SQLiteSession("finance_conversation")
+        console.print(f"[bold green]Starting FastAPI server on {settings.fastapi_host}:{settings.fastapi_port}[/bold green]")
+        console.print("[bold green]Initializing shared MCP server...[/bold green]")
+        shared_session = SQLiteSession(settings.agent_session_name)
         shared_mcp_server = create_polygon_mcp_server()
         await shared_mcp_server.__aenter__()
         console.print("[bold green]✓ Shared MCP server and session initialized[/bold green]")
@@ -330,15 +362,27 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Dynamic CORS configuration for React frontend development
-# Allows localhost and 127.0.0.1 on any port to support Vite port auto-selection
-app.add_middleware(
-    CORSMiddleware,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1):\d+$",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Dynamic CORS configuration using settings
+# Supports both explicit origins and regex for development flexibility
+if settings.cors_origins:
+    # Parse comma-separated origins from settings
+    cors_origins = [origin.strip() for origin in settings.cors_origins.split(",") if origin.strip()]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Fallback to regex pattern for any localhost/127.0.0.1 port
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1):\d+$",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -750,7 +794,7 @@ async def cli_async():
     print("Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.")
 
     try:
-        session = SQLiteSession("finance_conversation")
+        session = SQLiteSession(settings.agent_session_name)
         server = create_polygon_mcp_server()
 
         async with server:
@@ -815,4 +859,24 @@ async def cli_async():
 
 
 if __name__ == "__main__":
-    asyncio.run(cli_async())
+    import sys
+    
+    if len(sys.argv) > 1 and sys.argv[1] == "--server":
+        # Run as FastAPI server
+        import uvicorn
+        console.print(f"[bold blue]Starting FastAPI server with settings:[/bold blue]")
+        console.print(f"[dim]Host: {settings.fastapi_host}[/dim]")
+        console.print(f"[dim]Port: {settings.fastapi_port}[/dim]")
+        console.print(f"[dim]Model: {settings.openai_model}[/dim]")
+        console.print(f"[dim]Session: {settings.agent_session_name}[/dim]")
+        
+        uvicorn.run(
+            "main:app",
+            host=settings.fastapi_host,
+            port=settings.fastapi_port,
+            reload=True,
+            timeout_keep_alive=120
+        )
+    else:
+        # Run as CLI
+        asyncio.run(cli_async())

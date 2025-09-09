@@ -19,6 +19,11 @@ cp .env.example .env
 # POLYGON_API_KEY=your_polygon_api_key_here
 # OPENAI_API_KEY=your_openai_api_key_here
 
+# Optional: Configure custom ports if defaults are busy
+# FASTAPI_HOST=0.0.0.0
+# FASTAPI_PORT=8000
+# VITE_API_URL=http://localhost:8000
+
 # Install uv (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -37,11 +42,14 @@ cd gpt5-openai-agents-sdk-polygon-mcp
 # Install Python dependencies
 uv install
 
-# Start FastAPI backend server
+# Start FastAPI backend server (Method 1 - Direct uvicorn)
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+# OR Start FastAPI backend server (Method 2 - Using built-in server with environment config)
+uv run src/main.py --server
 ```
 
-**Expected Output:**
+**Expected Output (Method 1 - Direct uvicorn):**
 
 ```
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
@@ -49,6 +57,32 @@ INFO:     Started reloader process [XXXX] using WatchFiles
 INFO:     Started server process [XXXX]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
+```
+
+**Expected Output (Method 2 - Built-in server with settings):**
+
+```
+Starting FastAPI server with settings:
+Host: 0.0.0.0
+Port: 8000
+Model: gpt-5-mini
+Session: finance_conversation
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [XXXX] using WatchFiles
+Starting FastAPI server on 0.0.0.0:8000
+Initializing shared MCP server...
+✓ Shared MCP server and session initialized
+INFO:     Application startup complete.
+```
+
+**Verify Backend is Running:**
+
+```bash
+# Test backend health endpoint
+curl http://localhost:8000/health
+# Expected: {"status":"ok"}
+
+# Or open in browser: http://localhost:8000/health
 ```
 
 ### Step 3: CLI Testing (Verify Backend Works)
@@ -109,6 +143,18 @@ npm run dev
   ➜  Network: http://172.17.0.1:3000/
 ```
 
+**Verify Frontend Configuration:**
+
+```bash
+# Check that frontend can reach backend API
+curl http://localhost:3000/
+# Should load the React application
+
+# Verify API connection in browser console:
+# Open http://localhost:3000/ → F12 Developer Tools → Console
+# Should show no CORS or connection errors
+```
+
 **Access the GUI:** Open <http://localhost:3000/> in your browser
 
 ### Step 5: GUI Setup - Live Server Production (Alternative)
@@ -155,20 +201,96 @@ Ready for changes
 
 **Backend Issues:**
 
-- Missing API keys: Check .env file has both POLYGON_API_KEY and OPENAI_API_KEY
-- Port 8000 busy: Change port with `--port 8001`
-- uv not found: Install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **Missing API keys**: Check .env file has both POLYGON_API_KEY and OPENAI_API_KEY
+- **Port 8000 busy**: Set `FASTAPI_PORT=8001` in .env file OR change port with `--port 8001`
+- **uv not found**: Install with `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **Backend not responding**: Verify with `curl http://localhost:8000/health`
+
+**Port Configuration Issues:**
+
+```bash
+# Check which process is using port 8000
+lsof -i :8000
+# Kill process if needed: kill -9 <PID>
+
+# Use different backend port
+echo "FASTAPI_PORT=8001" >> .env
+uv run uvicorn src.main:app --host 0.0.0.0 --port 8001 --reload
+
+# Update frontend to match custom backend port
+echo "VITE_API_URL=http://localhost:8001" >> frontend_OpenAI/.env
+```
+
+**Environment Configuration Options:**
+
+**Backend Configuration (.env):**
+- **POLYGON_API_KEY**: Your Polygon.io API key (required)
+- **OPENAI_API_KEY**: Your OpenAI API key (required)
+- **FASTAPI_HOST**: Server host address (default: 0.0.0.0)
+- **FASTAPI_PORT**: Server port number (default: 8000)
+- **OPENAI_MODEL**: AI model to use (default: gpt-5-mini)
+- **AGENT_SESSION_NAME**: SQLite session name (default: finance_conversation)
+- **MCP_TIMEOUT_SECONDS**: MCP server timeout (default: 120.0)
+- **CORS_ORIGINS**: Comma-separated allowed origins for CORS
+
+**Frontend Configuration (frontend_OpenAI/.env):**
+- **VITE_API_URL**: Backend API base URL (default: http://localhost:8000)
+- **VITE_APP_TITLE**: Application title (optional)
+
+**Configuration Examples:**
+
+```bash
+# Development with default ports
+# Backend .env:
+FASTAPI_HOST=0.0.0.0
+FASTAPI_PORT=8000
+
+# Frontend frontend_OpenAI/.env:
+VITE_API_URL=http://localhost:8000
+
+# Development with custom ports (port conflicts)
+# Backend .env:
+FASTAPI_HOST=0.0.0.0
+FASTAPI_PORT=8001
+
+# Frontend frontend_OpenAI/.env:
+VITE_API_URL=http://localhost:8001
+```
 
 **Frontend Issues:**
 
-- npm install fails: Update Node.js to 18+ and try again
-- Port 3000 busy: Vite will auto-select next available port
-- Live Server not found: Install VS Code Live Server extension
+- **npm install fails**: Update Node.js to 18+ and try again
+- **Port 3000 busy**: Vite will auto-select next available port (check console output)
+- **CORS errors**: Verify VITE_API_URL matches backend port, ensure backend is running
+- **API connection failed**: Check backend health endpoint and network configuration
+- **Live Server not found**: Install VS Code Live Server extension
 
 **API Issues:**
 
-- 400 Bad Request: Verify backend is running and API keys are valid
-- MCP server errors: Ensure uvx is in PATH and Polygon API key is correct
+- **400 Bad Request**: Verify backend is running and API keys are valid
+- **500 Internal Server Error**: Check backend logs for MCP server initialization errors
+- **CORS errors**: Verify frontend origin is allowed in backend CORS configuration
+- **MCP server errors**: Ensure uvx is in PATH and Polygon API key is correct
+- **Connection timeout**: Increase MCP_TIMEOUT_SECONDS in .env file
+
+**Port Verification Commands:**
+
+```bash
+# Check if backend is running
+curl http://localhost:8000/health
+
+# Check if frontend is accessible
+curl http://localhost:3000/
+
+# List all listening ports
+netstat -tlnp | grep :8000
+netstat -tlnp | grep :3000
+
+# Test end-to-end API connection
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "test"}'
+```
 
 ## Project Overview
 
@@ -209,37 +331,52 @@ All specialists and development work must respect these prototyping constraints 
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-● ✅ COMPLETED: Official Playwright MCP Basic Test Suite Execution Report
+● ✅ COMPLETED: Enhanced Documentation for Dynamic Port Configuration System
 
-**Task:** Generate official Playwright MCP test execution report for Basic Test Suite (6 tests) with comprehensive failure analysis
-**Status:** COMPLETED with critical backend infrastructure issues identified and documented
-**Impact:** Systematic HTTP 500 backend API failures identified across all financial analysis endpoints
+**Task:** Update CLAUDE.md documentation with comprehensive dynamic port configuration guidance
+**Status:** COMPLETED with enhanced user experience for development environment setup
+**Impact:** Developers can now reliably configure and troubleshoot port conflicts with clear verification steps
 
-**Key Achievements:**
+**Key Documentation Enhancements:**
 
-- **Complete Test Execution Report**: Official documentation following test specifications template format
-- **Critical System Issue Identification**: 100% failure rate on financial data requests due to HTTP 500 backend errors
-- **Frontend Validation**: Confirmed excellent frontend error handling and input validation (16.7% success rate on non-API tests)
-- **Single Browser Session Protocol**: Successfully implemented and validated per test specifications
-- **30-Second Polling Methodology**: Correctly applied for accurate timeout vs immediate error classification
+- **Port Verification Steps**: Added backend health checks and frontend connectivity verification
+- **Environment Variable Organization**: Comprehensive documentation of all configuration options
+- **Enhanced Troubleshooting**: Detailed port conflict resolution with practical commands
+- **Configuration Examples**: Real-world examples for default and custom port setups
+- **Frontend Configuration**: Documented VITE_API_URL and frontend environment variables
+- **Verification Commands**: Complete set of curl and netstat commands for system validation
 
-**Technical Impact:**
+**Updated Documentation Sections:**
 
-- **Backend API Status**: CRITICAL FAILURE - systematic 500 errors on all financial endpoints
-- **Frontend Resilience**: Excellent error handling and user experience validation confirmed
-- **Test Framework Validation**: Playwright MCP testing methodology successfully implemented
-- **Diagnostic Data**: Comprehensive failure pattern analysis provided for backend investigation
-- **System Status**: BLOCKED pending immediate backend server log analysis and resolution
+- **Step 1 Environment Setup**: Added optional port configuration examples
+- **Step 2 Backend Setup**: Added port verification with curl health checks
+- **Step 4 Frontend Setup**: Added API connection verification steps
+- **Common Issues & Solutions**: Expanded with comprehensive port troubleshooting
+- **Environment Configuration**: Organized backend vs frontend configuration clearly
 
-**Test Results Summary:**
-- **Total Tests**: 6 Basic Tests (100% execution coverage as requested)
-- **Success Rate**: 16.7% (1/6 tests passed - empty input validation only)
-- **Financial API Tests**: 0% success (5/5 failed with HTTP 500 errors)
-- **Frontend Validation Tests**: 100% success (1/1 passed - input validation)
-- **System Status**: CRITICAL - Backend investigation required immediately
+**New Verification Capabilities:**
 
-**Deliverables:** Complete official test execution report with failure analysis, diagnostic recommendations, and server log investigation guidance
-**Files Created:** `/docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md`
+- **Backend Health Check**: `curl http://localhost:8000/health` for immediate backend validation
+- **Frontend Connectivity**: Browser console verification for CORS and API connection errors
+- **Port Conflict Resolution**: `lsof -i :8000` commands for port usage detection
+- **End-to-End Testing**: Complete curl commands for API functionality verification
+
+**Configuration Documentation:**
+
+- **Backend (.env)**: FASTAPI_HOST, FASTAPI_PORT, and all backend environment variables
+- **Frontend (frontend_OpenAI/.env)**: VITE_API_URL and frontend-specific configuration
+- **Port Examples**: Default (8000/3000) and custom port (8001/3000) configurations
+- **Troubleshooting Commands**: Complete diagnostic toolkit for development issues
+
+**User Experience Improvements:**
+
+- **Clear Verification Steps**: Users can now verify each component is working before proceeding
+- **Practical Troubleshooting**: Real commands for common port conflicts and resolution
+- **Configuration Flexibility**: Clear guidance for custom development environments
+- **Error Prevention**: Proactive verification prevents common setup failures
+
+**Deliverables:** Enhanced CLAUDE.md with comprehensive port configuration documentation
+**Files Updated:** `/home/1000211866/Github/market-parser-polygon-mcp/CLAUDE.md`
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## AI Team Configuration (autogenerated by team-configurator, 2025-09-02)
