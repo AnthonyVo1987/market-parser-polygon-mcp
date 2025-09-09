@@ -173,20 +173,20 @@ This document provides comprehensive test specifications for the Market Parser s
 - **Real-World Simulation**: Mimics actual user behavior staying in same application
 - **State Preservation**: Maintains session data, UI state, performance characteristics
 - **No Restarts**: Browser opens once, closes once per complete test execution
-- **Continuous Testing**: ALL tests (P001-P013, or any sequence) execute in the SAME browser instance
+- **Continuous Testing**: ALL tests in a sequence execute in the SAME browser instance
 
 ### Browser Session Protocol
 
 **✅ CORRECT METHODOLOGY (ENFORCED):**
 ```
 Single Browser Instance Testing Protocol:
-Browser Start → P001 → P002 → P003 → P004 → P005 → P006 → P007 → P008 → P009 → P010 → P011 → P012 → P013 → Browser End
+Browser Start → Basic Tests → Button Tests → Other Tests → Browser End
 ```
 
 **❌ INCORRECT METHODOLOGY (PROHIBITED):**
 ```
-❌ Browser → P001-P003 → Close → Browser → P004-P005 → Close → Browser → P006-P013 → Close
-❌ New browser → Run Priority Tests → Close browser
+❌ Browser → Basic Tests → Close → Browser → Button Tests → Close → Browser → Other Tests → Close
+❌ New browser → Run Basic Tests → Close browser
 ❌ New browser → Run Performance Tests → Close browser  
 ❌ New browser → Run Button Tests → Close browser
 ❌ Any pattern that opens/closes browser between test groups
@@ -226,9 +226,9 @@ ALL tests in a sequence MUST execute in the SAME browser instance. Opening new b
 **Example Reporting:**
 ```
 Test Execution Summary:
-✅ P001 Market Status: SUCCESS (32s)
-❌ P002 NVDA Ticker: TIMEOUT (>120s)
-✅ P003 SPY Ticker: SUCCESS (41s)
+✅ Market Status Test: SUCCESS (32s)
+❌ NVDA Ticker Test: TIMEOUT (>120s)
+✅ SPY Ticker Test: SUCCESS (41s)
 
 Result: 3/3 tests executed, 2/3 passed (66% success rate)
 Total Coverage: 100% - All requested tests completed
@@ -237,9 +237,9 @@ Total Coverage: 100% - All requested tests completed
 **Anti-Pattern to Avoid:**
 ```
 Test Execution Summary:
-✅ P001 Market Status: SUCCESS (32s)
-❌ P002 NVDA Ticker: TIMEOUT (>120s)
-⏹️ P003 SPY Ticker: SKIPPED (stopped after P002 failure)
+✅ Market Status Test: SUCCESS (32s)
+❌ NVDA Ticker Test: TIMEOUT (>120s)
+⏹️ SPY Ticker Test: SKIPPED (stopped after NVDA failure)
 
 Result: 2/3 tests executed, 1/2 passed (50% success rate)
 Total Coverage: 66% - Incomplete due to early termination
@@ -264,111 +264,91 @@ Total Coverage: 66% - Incomplete due to early termination
 
 ## Complete 51-Test Suite Specification
 
-### Priority Tests (3 Tests)
+### Basic Tests
 
-#### TEST-P001: Market Status Request
+**Purpose**: Core functionality validation through fundamental system operations
+
+**Test Categories**:
+
+#### Market Status Tests
 **Purpose**: Verify system responds to market status requests
 **Input Method**: Chat message
-**Query**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Query Pattern**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 **Expected Response**: Any format response with market status information (JSON, text with emojis, or conversational)
 **Success Criteria**: System provides market status information in any readable format
 **Timeout**: 120 seconds (30s polling intervals)
 **Failure Handling**: Record failure details but continue to next test
 **MCP Tools**: `mcp__playwright__browser_navigate`, `mcp__playwright__browser_type`, `mcp__playwright__browser_click`
 
-#### TEST-P002: Single Ticker NVDA Request
-**Purpose**: Test individual ticker snapshot request
+#### Single Ticker Tests
+**Purpose**: Test individual ticker snapshot requests
 **Input Method**: Chat message
-**Query**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-**Expected Response**: Any format response with NVDA stock information (JSON, emojis like 📈📉💰, or conversational)
-**Success Criteria**: System provides NVDA stock information in readable format
+**Query Pattern**: "Single Ticker Snapshot: [TICKER], PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Test Tickers**: NVDA, SPY, GME (performance validation ticker)
+**Expected Response**: Any format response with ticker stock information (JSON, emojis like 📈📉💰, or conversational)
+**Success Criteria**: System provides ticker information in readable format
 **Timeout**: 120 seconds (30s polling intervals)
+**Note**: Some tickers may exhibit slower response times, use polling to distinguish between slow performance vs timeout
 
-#### TEST-P003: Single Ticker SPY Request
-**Purpose**: Test individual ETF ticker snapshot request
+#### Multi-Ticker Tests
+**Purpose**: Test multiple ticker combined requests
 **Input Method**: Chat message
-**Query**: "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-**Expected Response**: Any format response with SPY ETF information (JSON, emojis like 📈📉💰, or conversational)
-**Success Criteria**: System provides SPY ETF information in readable format
-**Timeout**: 120 seconds (30s polling intervals)
-
-### Performance Validation Tests
-
-#### TEST-P004: Single Ticker GME Request
-**Purpose**: Test individual ticker snapshot request (performance validation)
-**Input Method**: Chat message
-**Query**: "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-**Expected Response**: Any format response with GME stock information (JSON, emojis like 📈📉💰, or conversational)
-**Success Criteria**: System provides GME stock information in readable format
-**Timeout**: 120 seconds (30s polling intervals)
-**Note**: Performance monitoring test - may exhibit slower response times, use polling to distinguish between slow performance vs timeout
-
-### Complex Query Tests
-
-#### TEST-P005: Multi-Ticker Combined Request
-**Purpose**: Test multiple ticker combined request
-**Input Method**: Chat message
-**Query**: "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"  
+**Query Pattern**: "Full Market Snapshot with multiple Tickers: [TICKER_LIST]: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+**Example Tickers**: NVDA, SPY, QQQ, IWM
 **Expected Response**: Any format response with multiple ticker information (JSON array, text with emojis, or conversational summary)
 **Success Criteria**: System provides information for multiple tickers in readable format
 **Timeout**: 120 seconds (30s polling intervals)
 
-### Button Template Tests
+### Button Prompt Tests
 
-#### TEST-P006: Snapshot Button Response Time
-**Purpose**: Measure response time for snapshot button
-**Method**: Click 📈 Stock Snapshot button with "AAPL" pre-input
+**Purpose**: Validate UI button interactions and response processing through the web interface
+
+**Test Categories**:
+
+#### Button Response Time Tests
+**Purpose**: Measure response times for analysis buttons
+**Methods**: 
+- Click 📈 Stock Snapshot button with ticker pre-input
+- Click 🎯 Support & Resistance button with ticker pre-input  
+- Click 🔧 Technical Analysis button with ticker pre-input
+**Test Tickers**: AAPL, TSLA, MSFT (or any valid ticker symbols)
 **Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
-**Validation**: Response contains AAPL stock information in readable format
+**Validation**: Response contains ticker-specific information in readable format
 **Performance**: Log response time for baseline
 
-#### TEST-P007: Support & Resistance Button Response Time
-**Purpose**: Measure response time for S&R button
-**Method**: Click 🎯 Support & Resistance button with "TSLA" pre-input
-**Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
-**Validation**: Response contains TSLA support/resistance information in readable format
-**Performance**: Log response time for baseline
-
-#### TEST-P008: Technical Analysis Button Response Time
-**Purpose**: Measure response time for technical button
-**Method**: Click 🔧 Technical Analysis button with "MSFT" pre-input
-**Expected**: Any format response within 120 seconds (JSON, emojis, conversational)
-**Validation**: Response contains MSFT technical analysis information in readable format
-**Performance**: Log response time for baseline
-
-#### TEST-P009: Button State During Processing
-**Purpose**: Verify buttons show processing state
+#### Button State Tests
+**Purpose**: Verify buttons show appropriate processing states
 **Method**: Click any analysis button and immediately check state
 **Expected**: Button shows loading/disabled state during processing
 **Validation**: UI state changes appropriately
 
-#### TEST-P010: Multiple Button Clicks Sequential
+#### Sequential Button Tests
 **Purpose**: Test sequential button clicks
-**Method**: Click Snapshot → wait for response → click S&R → wait for response
+**Method**: Click first button → wait for response → click second button → wait for response
 **Expected**: Each button produces independent responses in any format
 **Validation**: Both responses contain relevant financial information
 
-#### TEST-P011: Button Click Without Input
+#### Empty Input Tests
 **Purpose**: Test button behavior with empty input
-**Method**: Clear input field, click 📈 Stock Snapshot
+**Method**: Clear input field, click any analysis button
 **Expected**: Appropriate error handling or default behavior
 **Validation**: System handles gracefully without crashing
 
-#### TEST-P012: Button Click with Invalid Ticker
-**Purpose**: Test button with invalid ticker symbol
-**Method**: Input "INVALID123", click 📈 Stock Snapshot
+#### Invalid Input Tests
+**Purpose**: Test button with invalid ticker symbols
+**Method**: Input invalid ticker (e.g., "INVALID123"), click analysis button
 **Expected**: Error response or appropriate handling
 **Validation**: System provides meaningful error feedback
 
-#### TEST-P013: Button Visual Feedback
+#### Visual Feedback Tests
 **Purpose**: Verify buttons provide visual feedback
-**Method**: Click each button and observe visual changes
+**Method**: Click each button type and observe visual changes
 **Expected**: Buttons show hover, active, and processing states
 **Validation**: All visual states function correctly
 
 
 
-### Message Input Variations (6 Tests)
+### Message Input Variations
 
 #### TEST-M001: Natural Language Query Processing
 **Purpose**: Test natural language input processing
@@ -406,7 +386,7 @@ Total Coverage: 66% - Incomplete due to early termination
 **Expected**: System processes or truncates appropriately
 **Validation**: System remains stable and responsive
 
-### Export Functionality (5 Tests)
+### Export Functionality
 
 #### TEST-E001: JSON Copy to Clipboard
 **Purpose**: Test JSON export via copy functionality
@@ -438,7 +418,7 @@ Total Coverage: 66% - Incomplete due to early termination
 **Expected**: Export handles errors gracefully
 **Validation**: Export either works or provides clear error message
 
-### Responsive Design (4 Tests)
+### Responsive Design
 
 #### TEST-R001: Mobile Viewport Testing
 **Purpose**: Test interface on mobile screen size
@@ -464,7 +444,7 @@ Total Coverage: 66% - Incomplete due to early termination
 **Expected**: Interface adapts smoothly without breaking
 **Validation**: No layout breaks or element overlaps
 
-### Backend API Integration (7 Tests)
+### Backend API Integration
 
 #### TEST-A001: FastAPI Health Check
 **Purpose**: Verify backend API is accessible
@@ -508,7 +488,7 @@ Total Coverage: 66% - Incomplete due to early termination
 **Expected**: All errors follow consistent schema
 **Validation**: Error responses include proper error codes and messages
 
-### Error Handling (6 Tests)
+### Error Handling
 
 #### TEST-H001: Network Error Recovery
 **Purpose**: Test behavior when backend is unavailable
@@ -546,33 +526,7 @@ Total Coverage: 66% - Incomplete due to early termination
 **Expected**: System recovers or fails gracefully
 **Validation**: No data loss, clear error communication
 
-### Performance Validation (4 Tests)
-
-#### TEST-F001: Response Time Benchmarking
-**Purpose**: Establish baseline response times
-**Method**: Measure response times for all analysis types
-**Expected**: All responses within acceptable time limits
-**Validation**: Response times logged for performance tracking
-
-#### TEST-F002: Memory Usage Monitoring
-**Purpose**: Monitor browser memory usage during testing
-**Method**: Run extended test session while monitoring memory
-**Expected**: No significant memory leaks
-**Validation**: Memory usage remains stable over time
-
-#### TEST-F003: Large Dataset Handling
-**Purpose**: Test performance with large JSON responses
-**Method**: Request multi-ticker analysis with many stocks
-**Expected**: System handles large responses efficiently
-**Validation**: No performance degradation with large datasets
-
-#### TEST-F004: Concurrent User Simulation
-**Purpose**: Test system under concurrent load
-**Method**: Simulate multiple users accessing system
-**Expected**: System maintains performance under load
-**Validation**: Response times remain acceptable with multiple users
-
-### Accessibility Testing (5 Tests)
+### Accessibility Testing
 
 #### TEST-C001: Keyboard Navigation
 **Purpose**: Test full keyboard accessibility
@@ -604,7 +558,7 @@ Total Coverage: 66% - Incomplete due to early termination
 **Expected**: All images have descriptive alt text
 **Validation**: Alt text accurately describes image content
 
-### Cross-Browser Compatibility (3 Tests)
+### Cross-Browser Compatibility
 
 #### TEST-B001: Chrome Compatibility Testing
 **Purpose**: Verify full functionality in Chrome
@@ -714,18 +668,18 @@ const FRONTEND_URL = 'http://localhost:3003/'; // Update based on Vite output
 await browserNavigate(FRONTEND_URL);
 await browserSnapshot(); // Capture initial state
 
-// TEST P001 - First test in same browser instance
+// First Basic Test - in same browser instance
 await browserType('chat-input', 'NVDA');
 await browserClick('snapshot-button', { timeout: 5000 });
 await browserWaitFor({ text: 'metadata', timeout: 120000 });
-// ... validate P001 results
+// ... validate first test results
 
-// TEST P002 - Continue in SAME browser instance
+// Second Basic Test - Continue in SAME browser instance
 await browserType('chat-input', 'SPY'); // Clear and type new ticker
 await browserClick('snapshot-button', { timeout: 5000 });
-// ... validate P002 results
+// ... validate second test results
 
-// ... Continue P003-P013 in SAME browser instance
+// ... Continue with remaining tests in SAME browser instance
 
 // SESSION END - Browser closes ONCE
 await browserClose();
@@ -758,9 +712,9 @@ for (const browserType of browsers) {
     const FRONTEND_URL = 'http://localhost:3003/'; // Update based on actual port
     await browserNavigate(FRONTEND_URL); // Session start
     
-    // Run ALL tests P001-P013 in SAME browser instance
-    await runPriorityTests(); // P001-P003 in same session
-    await runPerformanceTests(); // P004+ in same session
+    // Run ALL tests in SAME browser instance
+    await runBasicTests(); // Basic tests in same session
+    await runButtonTests(); // Button tests in same session
     await runComprehensiveTests(); // Remaining tests in same session
     
     await browserClose(); // Session end
@@ -888,7 +842,7 @@ if (response.error) {
 
 **Single Browser Session Organization**:
 - **Session Start**: Browser opens once at beginning
-- **Priority Tests**: Run first in same browser instance
+- **Basic Tests**: Run first in same browser instance
 - **Comprehensive Tests**: Continue in same browser instance
 - **Performance Tests**: Execute in same browser instance for accurate baseline
 - **Session End**: Browser closes once at completion
@@ -896,8 +850,8 @@ if (response.error) {
 **Single-Session Execution Order with 30s Polling**:
 1. **Setup Phase**: Verify backend running, frontend accessible
 2. **Browser Session Start**: Single `browser_navigate` call
-3. **Priority Tests**: P001-P003 in same browser instance with 30s polling (~6 minutes)
-4. **Performance Tests**: P004+ in same browser instance with polling methodology
+3. **Basic Tests**: Core functionality tests in same browser instance with 30s polling (~10 minutes)
+4. **Button Tests**: UI interaction tests in same browser instance with polling methodology
 5. **Functional Tests**: Remaining tests in same browser instance
 6. **Browser Session End**: Single `browser_close` call
 7. **Cleanup Phase**: Generate reports with session continuity data
@@ -926,12 +880,12 @@ if (response.error) {
 **Failed**: 2
 **Skipped**: 0
 
-## Priority Tests Results (30s Polling Methodology)
-- TEST-P001: Market Status ✅ SUCCESS (12.3s) - Completed on first poll
-- TEST-P002: Single Ticker NVDA ✅ SUCCESS (8.7s) - Completed on first poll
-- TEST-P003: Single Ticker SPY ⚠️ SLOW_PERFORMANCE (67.4s) - Completed on third poll
-- TEST-P004: Single Ticker GME ⚠️ SLOW_PERFORMANCE (89.1s) - Completed on fourth poll
-- TEST-P005: Multi-Ticker ❌ TIMEOUT (120s+) - No response after 4 polling cycles
+## Basic Tests Results (30s Polling Methodology)
+- Market Status Test ✅ SUCCESS (12.3s) - Completed on first poll
+- Single Ticker NVDA Test ✅ SUCCESS (8.7s) - Completed on first poll
+- Single Ticker SPY Test ⚠️ SLOW_PERFORMANCE (67.4s) - Completed on third poll
+- Single Ticker GME Test ⚠️ SLOW_PERFORMANCE (89.1s) - Completed on fourth poll
+- Multi-Ticker Test ❌ TIMEOUT (120s+) - No response after 4 polling cycles
 ...
 
 ## Performance Classification Summary
@@ -946,7 +900,7 @@ if (response.error) {
 **Failure Analysis Template with Polling Data**:
 ```markdown
 ## Performance Analysis
-**Test**: TEST-P003 Single Ticker SPY
+**Test**: Single Ticker SPY Test
 **Classification**: SLOW_PERFORMANCE (67.4s)
 **Polling Data**:
 - Poll 1 (30s): No response
@@ -960,7 +914,7 @@ if (response.error) {
 **Recommendation**: Monitor SPY performance trends, consider optimization if pattern persists
 
 ## Timeout Analysis
-**Test**: TEST-P005 Multi-Ticker Request
+**Test**: Multi-Ticker Request Test
 **Classification**: TIMEOUT (>120s)
 **Polling Data**:
 - Poll 1 (30s): No response
@@ -980,9 +934,9 @@ if (response.error) {
 
 ### Test Suite Success Metrics
 
-**Priority Tests**: 100% pass rate required
-- All 3 priority tests must pass for system validation
-- Any priority test failure indicates critical system issue
+**Basic Tests**: 100% pass rate required
+- All basic tests must pass for system validation
+- Any basic test failure indicates critical system issue
 
 **Comprehensive Tests**: 90% pass rate target
 - 43/48 comprehensive tests should pass
