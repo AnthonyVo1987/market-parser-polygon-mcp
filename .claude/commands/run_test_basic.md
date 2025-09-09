@@ -1,6 +1,8 @@
 # Run Test Basic Slash Command
 
-Execute Basic Tests using AI Team orchestration with the @agent-tech-lead-orchestrator.
+@agent-tech-lead-orchestrator to delegate & coordinate Specialist(s) to Execute Basic Tests
+
+## 🚨 CRITICAL: @agent-tech-lead-orchestrator IS NOT ALLOWED TO RUN ANY TESTS & CAN ONLY DELEGATE & COORDINATE TASK(S) TO SPECIALIST(S)
 
 **Testing Focus:** Run ONLY the Basic Tests as defined in the official test specifications. NO custom test creation allowed.
 
@@ -13,6 +15,8 @@ Execute Basic Tests using AI Team orchestration with the @agent-tech-lead-orches
 ## What This Command Does
 
 When you invoke `/run_test_basic`, I will:
+
+## 🚨 CRITICAL: @agent-tech-lead-orchestrator IS NOT ALLOWED TO RUN ANY TESTS & CAN ONLY DELEGATE & COORDINATE TASK(S) TO SPECIALIST(S)
 
 1. **Invoke @agent-tech-lead-orchestrator** to analyze the Basic Testing requirements and create a specialist assignment plan
 2. **Execute the Basic Tests** using the exact agents recommended by the tech-lead
@@ -43,6 +47,7 @@ When Basic Tests are requested, specialists MUST read the official test plan fro
 `gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md`
 
 **Basic Tests Definition**:
+
 - **Market Status Tests**: System response to market status requests
 - **Single Ticker Tests**: Individual ticker snapshot requests (NVDA, SPY, GME)  
 - **Multi-Ticker Tests**: Combined multiple ticker requests
@@ -70,6 +75,8 @@ When Basic Tests are requested, specialists MUST read the official test plan fro
 
 ## Execution Protocol - Basic Testing A-I Workflow
 
+## 🚨 CRITICAL: @agent-tech-lead-orchestrator IS NOT ALLOWED TO RUN ANY TESTS & CAN ONLY DELEGATE & COORDINATE TASK(S) TO SPECIALIST(S)
+
 The `/run_test_basic` command follows a systematic A-I process with tech-lead orchestration for Basic Tests execution.
 
 ### A-I Workflow Steps
@@ -88,7 +95,7 @@ The `/run_test_basic` command follows a systematic A-I process with tech-lead or
 **C. Server Verification Phase**
 
 - Tech-lead assigns specialist to verify MANDATORY server startup requirements
-- **FastAPI Backend**: Must show "Application startup complete." on http://0.0.0.0:8000
+- **FastAPI Backend**: Must show "Application startup complete." on <http://0.0.0.0:8000>
 - **React Frontend**: Must show "VITE ready" on auto-selected port (3000→3003, etc.)
 - **Health Checks**: Both servers must respond to health check requests
 - **CORS Configuration**: Verify cross-origin requests work properly
@@ -96,7 +103,7 @@ The `/run_test_basic` command follows a systematic A-I process with tech-lead or
 **D. Basic Testing Execution Phase**
 
 - Specialist(s) execute Basic Tests using MCP playwright tools
-- **Single Browser Session**: ALL tests execute in SAME browser instance 
+- **Single Browser Session**: ALL tests execute in SAME browser instance
 - **30-Second Polling**: Use polling methodology for accurate timeout detection
 - **Performance Classification**: Record SUCCESS/SLOW_PERFORMANCE/TIMEOUT for each test
 - **Coverage-First**: Continue ALL tests even if early tests fail
@@ -142,12 +149,14 @@ The `/run_test_basic` command follows a systematic A-I process with tech-lead or
 **BOTH SERVERS MUST BE RUNNING BEFORE ANY TEST EXECUTION**:
 
 1. **FastAPI Backend Server**:
+
 ```bash
 cd gpt5-openai-agents-sdk-polygon-mcp
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 2. **React Frontend Server**:
+
 ```bash
 cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
 npm run dev
@@ -179,11 +188,13 @@ npm run dev
 ### Single Browser Session Testing (ENFORCED)
 
 **✅ CORRECT METHODOLOGY**:
+
 ```
 Single Browser Session: Browser Start → All Basic Tests → Browser End
 ```
 
 **❌ PROHIBITED METHODOLOGY**:
+
 ```
 ❌ Browser → Test → Close → Browser → Test → Close → etc.
 ❌ Fresh browser state between any Basic tests
@@ -194,9 +205,11 @@ Single Browser Session: Browser Start → All Basic Tests → Browser End
 **Market Status Query Pattern**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 
 **Single Ticker Query Pattern**: "Single Ticker Snapshot: [TICKER], PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+
 - Example tickers: NVDA, SPY, GME
 
 **Multi-Ticker Query Pattern**: "Full Market Snapshot with multiple Tickers: [TICKER_LIST]: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+
 - Example ticker list: NVDA, SPY, QQQ, IWM
 
 ### Response Format Requirements

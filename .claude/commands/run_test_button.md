@@ -1,6 +1,8 @@
 # Run Test Button Slash Command
 
-Execute Button Prompt Tests using AI Team orchestration with the @agent-tech-lead-orchestrator.
+@agent-tech-lead-orchestrator to delegate & coordinate Specialist(s) to Execute Button Prompt Tests
+
+## 🚨 CRITICAL: @agent-tech-lead-orchestrator IS NOT ALLOWED TO RUN ANY TESTS & CAN ONLY DELEGATE & COORDINATE TASK(S) TO SPECIALIST(S)
 
 **Testing Focus:** Run ONLY Button Prompt Tests as defined in the official test specifications. NO custom test creation allowed.
 
@@ -13,6 +15,8 @@ Execute Button Prompt Tests using AI Team orchestration with the @agent-tech-lea
 ## What This Command Does
 
 When you invoke `/run_test_button`, I will:
+
+## 🚨 CRITICAL: @agent-tech-lead-orchestrator IS NOT ALLOWED TO RUN ANY TESTS & CAN ONLY DELEGATE & COORDINATE TASK(S) TO SPECIALIST(S)
 
 1. **Invoke @agent-tech-lead-orchestrator** to analyze the Button Prompt Testing requirements and create a specialist assignment plan
 2. **Execute the Button Test Suite** using the exact agents recommended by the tech-lead
@@ -45,6 +49,7 @@ When Button Prompt Tests are requested, specialists MUST read the official test 
 **Button Prompt Test Suite Definition**:
 
 **Button Prompt Tests**:
+
 - **Button Response Time Tests**: Analysis button response measurements (📈 Stock Snapshot, 🎯 S&R, 🔧 Technical Analysis)
 - **Button State Tests**: Processing state verification
 - **Sequential Button Tests**: Multiple button click sequences
@@ -75,6 +80,8 @@ When Button Prompt Tests are requested, specialists MUST read the official test 
 
 ## Execution Protocol - Button Testing A-I Workflow
 
+## 🚨 CRITICAL: @agent-tech-lead-orchestrator IS NOT ALLOWED TO RUN ANY TESTS & CAN ONLY DELEGATE & COORDINATE TASK(S) TO SPECIALIST(S)
+
 The `/run_test_button` command follows a systematic A-I process with tech-lead orchestration for Button Prompt Tests execution.
 
 ### A-I Workflow Steps
@@ -93,7 +100,7 @@ The `/run_test_button` command follows a systematic A-I process with tech-lead o
 **C. Server Verification Phase**
 
 - Tech-lead assigns specialist to verify MANDATORY server startup requirements
-- **FastAPI Backend**: Must show "Application startup complete." on http://0.0.0.0:8000
+- **FastAPI Backend**: Must show "Application startup complete." on <http://0.0.0.0:8000>
 - **React Frontend**: Must show "VITE ready" on auto-selected port (3000→3003, etc.)
 - **Health Checks**: Both servers must respond to health check requests
 - **CORS Configuration**: Verify cross-origin requests work properly
@@ -101,7 +108,7 @@ The `/run_test_button` command follows a systematic A-I process with tech-lead o
 **D. Button Test Execution Phase**
 
 - Specialist(s) execute ONLY Button Prompt Tests using MCP playwright tools
-- **Single Browser Session**: ALL Button tests execute in SAME browser instance 
+- **Single Browser Session**: ALL Button tests execute in SAME browser instance
 - **30-Second Polling**: Use polling methodology for accurate timeout detection
 - **Performance Classification**: Record SUCCESS/SLOW_PERFORMANCE/TIMEOUT for each test
 - **Coverage-First**: Continue ALL Button tests even if early tests fail
@@ -147,12 +154,14 @@ The `/run_test_button` command follows a systematic A-I process with tech-lead o
 **BOTH SERVERS MUST BE RUNNING BEFORE ANY TEST EXECUTION**:
 
 1. **FastAPI Backend Server**:
+
 ```bash
 cd gpt5-openai-agents-sdk-polygon-mcp
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 2. **React Frontend Server**:
+
 ```bash
 cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
 npm run dev
@@ -184,11 +193,13 @@ npm run dev
 ### Single Browser Session Testing (ENFORCED)
 
 **✅ CORRECT METHODOLOGY**:
+
 ```
 Single Browser Session: Browser Start → All Button Tests → Browser End
 ```
 
 **❌ PROHIBITED METHODOLOGY**:
+
 ```
 ❌ Browser → Some Button Tests → Close → Browser → Other Button Tests → Close
 ❌ Fresh browser state between any Button tests
@@ -199,6 +210,7 @@ Single Browser Session: Browser Start → All Button Tests → Browser End
 **Button Prompt Tests**:
 
 **Button Response Time Methods**: Input ticker in chat field, click analysis button (📈/🎯/🔧), wait for response
+
 - Example tickers: AAPL, TSLA, MSFT
 
 **Button State Method**: Click any analysis button and immediately check button state during processing
