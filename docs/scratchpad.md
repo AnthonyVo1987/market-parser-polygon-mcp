@@ -4,13 +4,13 @@ Read the follow project docs ONE AT A TIME and acknowledge project state, last c
 - MCP_TOOL_USAGE_GUIDE.md
 
 
+- USE SEQUENTIAL-THINKING and ALL MCP Tools for EVERY task:
+- WE ALREADY previosly fixed basic tests that are passing 6/6 from latest code. so if the first 6/6 do NOT pass, it is a setup\config\port issue.  fix the ports issue if needed to ensure full test coverage
 
-
-Task 1. Main Agent to commit missing file gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist/sw.js that we incorrectly left out of previous atomic commit
-Task 2. Main Agent to Read & Understand Testing Protocol and Test plan from CLAUDE_playwright_mcp_corrected_test_specifications.md
-Task 3. Main Agent to Run the Basic and Button Tests (20 total test) from CLAUDE_playwright_mcp_corrected_test_specifications.md
-Task 4. After testing is complete, ask @agent-documentation-specialist to generate the test report follow rules and template from CLAUDE_playwright_mcp_corrected_test_specifications.md. DO NOT FIX ANYTHING ON YOUR OWN
-Task 5. Atomic git commit & push of ALL docs and reports
+Task 1. Main Agent to Read & Understand Testing Protocol and Test plan from CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 2. Main Agent to Run the Basic and Button Tests (20 total test) from CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 3. After testing is complete, ask @agent-documentation-specialist to generate the test report follow rules and template from CLAUDE_playwright_mcp_corrected_test_specifications.md. DO NOT FIX ANYTHING ON YOUR OWN
+Task 4. Atomic git commit & push of ALL docs and reports
 
 
 

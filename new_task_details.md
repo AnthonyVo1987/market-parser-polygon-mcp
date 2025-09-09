@@ -2,19 +2,18 @@
 
 ## Task Description
 
-[TEST] Fix ALL Issues from Basic Test Report: docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md
+[FIX] Fix ALL Hard-coded Dev Ports\Address through code base AND Environment Variables
 
 *ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
-1. FIRST, Specialist to Read & understand testing protocol and test suite from: CLAUDE_playwright_mcp_corrected_test_specifications.md
-2. SECOND, Specialist to Read, Investigate, & Fix issues from the requested test report docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md to understand the tests ran and the failures
-3. IF EITHER of these docs were NOT read by a Specialist, TASK VIOLATION AND START THE ENTIRE NEW TASK OVER: CLAUDE_playwright_mcp_corrected_test_specifications.md or playwright_mcp_basic_test_execution_report_2025-01-09.md
-4. After fixing, Specialist to Start a Test\Fix Loop re-running THE SAME EXACT FAILING TESTS FROM FAILING REPORT WITH NO DEVIATIONS: playwright_mcp_basic_test_execution_report_2025-01-09.md
-5. AFTER EACH individual test is run, Specialist to double check that the test just ran matches VERBATIM FROM playwright_mcp_basic_test_execution_report_2025-01-09.md
-6. Specialist: The loop should Keep running tests and fixing issues until all 6x test finally pass:
-*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
+1. Convert ALL hard coded static Ip Address & Ports from Code, Environment Variables, docs to be dynamic detected - NO MORE HARD CODES
+- Hard coded values are caussing false positive failures because sometimes ports change, and the hard code looks at the wrong ports, thinking it is a failure when it is not
 
-## Individual Test Results from docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md
+2. Docs needs to be update to enforce reviewing the new dynamic ports FIRST, and then pointing all the backend/frontend  to proper ports for proper app running.  update all docs on the REAL working steps to start ALL dev servers and the app  to take into account the dynamic ports that can change
+
+3. Validate fixes by running playwright mcp tests below:
+
+## Validation Tests to be ran VERBATIM USING playwright CLAUDE_playwright_mcp_corrected_test_specifications.md
 
 ### TEST-B001: Market Status Test
 
@@ -134,12 +133,12 @@ Final Task 4: Final Verification
 
 *ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
-- THE EXACT SAME TEST MUST BE RAN FROM docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md VERBATIM
+- THE EXACT SAME TEST MUST BE RAN
 - RUNNING EVEN 1X TEST that is NOT VERBATIM IS A TASK FAILURE VIOLATION AND MUST START ENTIRE TASK(S) OVER
 
 ## Expected Outcome
 
-- All 6/6 tests PASSED that originally failed from docs/test_reports/playwright_mcp_basic_test_execution_report_2025-01-09.md
+- All 6/6 tests PASSED
 - All code fixes, doc updates, test reports, and 6/6 test ALL PASS and everything is committed and pushed atomically
 
 ## Additional Context
