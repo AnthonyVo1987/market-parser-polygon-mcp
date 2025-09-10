@@ -2,13 +2,12 @@
 
 ## Task Description
 
-[TEST] Run The 6x Basic Test Suite
+[CLI_TEST] Run new Playwright CLI 6x Basic Test Suite
 
-- Re-run the same 6x tests with some modifications: Adjust the test prompts to now enforce "raw JSON Output format, no verbosity, no emojis"
-- Save results to new report
-
-- Read this doc to understand the Playwright MCP Testing Procedure gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
-- Read this doc to understand the 8x basic tests & reporting format: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_dynamic_port_validation_report_2025-01-09.md
+- We added new CLI Playwright Basic Tests to folder: gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+- Read this doc to understand the 6x basic tests & reporting format: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_cli_test_report_2025-01-10.md
+- Run the new CLI 6x Basis Tests, and then save the report
+- After all tests are finished and report is finished, perform git commit & push of the test report
 
 ## Research Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
