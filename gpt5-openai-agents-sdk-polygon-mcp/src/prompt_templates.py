@@ -520,7 +520,9 @@ Please include current market data and recent performance metrics. Focus on prov
         formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
 
 RESPONSE FORMATTING GUIDELINES:
-- Start with current price and percentage change
+- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using bullet points
+- Explicitly mention the ticker symbol ({ticker}) throughout the response
+- Include current price and percentage change with ticker symbol
 - Include trading volume and volume analysis
 - Provide OHLC data (Open, High, Low, Close) with context
 - Explain what the data means for potential investors
@@ -530,17 +532,25 @@ RESPONSE FORMATTING GUIDELINES:
 - Use clear, professional language with proper formatting
 - Include relevant market context and trends
 - Make the analysis educational and actionable
-- End each response with 2-3 relevant follow-up questions"""
+- End with standard disclaimers in a clearly formatted section
+- Follow this structure: 🎯 KEY TAKEAWAYS, 📊 DETAILED ANALYSIS, ⚠️ DISCLAIMER"""
 
-        example_response = """📊 **Apple Inc. (AAPL) Market Snapshot**
+        example_response = """🎯 KEY TAKEAWAYS
+• 📈 AAPL trading at $150.25 (+2.5%) with strong bullish momentum
+• 📊 Volume 45M shares (above average) indicating strong investor interest
+• 💰 Price near daily highs with solid support from institutional buyers
 
-💰 **Current Price:** $150.25 (+2.5% / +$3.75)
+📊 DETAILED ANALYSIS
+💰 **Current Price:** AAPL $150.25 (+2.5% / +$3.75)
 📈 **Trading Volume:** 45,000,000 shares (above average)
 📊 **Daily Range:** $147.25 - $151.00
 🏁 **Previous Close:** $146.50
 ⚖️ **VWAP:** $149.80
 
-**Analysis:** Apple is showing strong bullish momentum with above-average volume support. The stock has broken above key resistance levels and is trading near daily highs, suggesting continued investor confidence."""
+**Analysis:** AAPL is showing strong bullish momentum with above-average volume support. The stock has broken above key resistance levels and is trading near daily highs, suggesting continued investor confidence.
+
+⚠️ DISCLAIMER
+Not financial advice. For informational purposes only."""
 
         context_guidance = """Focus on making the data accessible and meaningful for both novice and experienced investors. Explain the significance of price movements and volume patterns in a clear, educational manner."""
 
@@ -561,6 +571,8 @@ Identify the most important price levels where the stock tends to find support (
         formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
 
 RESPONSE FORMATTING GUIDELINES:
+- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using bullet points
+- Explicitly mention the ticker symbol ({ticker}) throughout the response
 - Provide comprehensive analysis with clear structure and insights
 - Identify 3 key support levels and 3 key resistance levels
 - Explain the strength of each level (strong, moderate, weak)
@@ -571,13 +583,18 @@ RESPONSE FORMATTING GUIDELINES:
 - Use sentiment emojis directly: 📈 for bullish indicators, 📉 for bearish indicators
 - Place emojis at the beginning of relevant bullet points for immediate visual sentiment
 - Make recommendations clear and actionable for traders
-- End each response with 2-3 relevant follow-up questions"""
+- End with standard disclaimers in a clearly formatted section
+- Follow this structure: 🎯 KEY TAKEAWAYS, 📊 DETAILED ANALYSIS, ⚠️ DISCLAIMER"""
 
-        example_response = """🎯 **Apple Inc. (AAPL) Support & Resistance Analysis**
+        example_response = """🎯 KEY TAKEAWAYS
+• 📈 AAPL currently at $150.25, positioned between key S1 ($145.50) and R1 ($155.25)
+• 🔻 Strong support at $145.50 from 50-day MA confluence
+• 🔺 Key resistance at $158.50 representing major technical barrier
 
+📊 DETAILED ANALYSIS
 🔻 **Support Levels:**
 • **S1: $145.50** (Strong) - 50-day moving average confluence
-• **S2: $142.00** (Moderate) - Previous breakout level
+• **S2: $142.00** (Moderate) - Previous breakout level  
 • **S3: $138.75** (Weak) - Psychological support zone
 
 🔺 **Resistance Levels:**
@@ -585,9 +602,12 @@ RESPONSE FORMATTING GUIDELINES:
 • **R2: $158.50** (Strong) - Key technical resistance
 • **R3: $162.00** (Weak) - Long-term trend line
 
-📈 **Current Price:** $150.25 (between S1 and R1)
+📈 **Current Price:** AAPL $150.25 (between S1 and R1)
 
-**Trading Strategy:** Watch for bounces at support levels for long entries, and resistance levels for profit-taking opportunities."""
+**Trading Strategy:** Watch for bounces at support levels for long entries, and resistance levels for profit-taking opportunities.
+
+⚠️ DISCLAIMER
+Not financial advice. For informational purposes only."""
 
         context_guidance = """Focus on actionable trading insights and explain why these levels are significant based on technical analysis and market structure. Make the analysis educational and useful for both novice and experienced traders."""
 
@@ -608,6 +628,8 @@ Analyze current technical indicators including RSI, MACD, and moving averages. E
         formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
 
 RESPONSE FORMATTING GUIDELINES:
+- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using bullet points
+- Explicitly mention the ticker symbol ({ticker}) throughout the response
 - Deliver thorough analysis with clear explanations and actionable insights
 - Include key oscillators (RSI, MACD) with current values and interpretations
 - Provide moving average analysis (short-term and long-term trends)
@@ -618,23 +640,31 @@ RESPONSE FORMATTING GUIDELINES:
 - Use sentiment emojis directly: 📈 for bullish indicators, 📉 for bearish indicators
 - Place emojis at the beginning of relevant bullet points for immediate visual sentiment
 - Make technical concepts accessible to both novice and experienced traders
-- End each response with 2-3 relevant follow-up questions"""
+- End with standard disclaimers in a clearly formatted section
+- Follow this structure: 🎯 KEY TAKEAWAYS, 📊 DETAILED ANALYSIS, ⚠️ DISCLAIMER"""
 
-        example_response = """🔍 **Apple Inc. (AAPL) Technical Analysis**
+        example_response = """🎯 KEY TAKEAWAYS
+• 📈 AAPL showing bullish momentum with RSI at 68.5 (approaching overbought)
+• 📊 MACD bullish crossover confirmed above signal line
+• 📈 Price above all major moving averages indicating strong uptrend
 
+📊 DETAILED ANALYSIS
 📈 **Momentum Indicators:**
 • **RSI (14):** 68.5 - Approaching overbought territory, but still neutral
 • **MACD:** 0.25 above signal line (0.18) - Bullish momentum confirmed
 
 📊 **Moving Averages:**
-• **Short-term:** Price above EMA-5 ($151.20) and EMA-10 ($149.85)
+• **Short-term:** AAPL price above EMA-5 ($151.20) and EMA-10 ($149.85)
 • **Medium-term:** Strong support at EMA-50 ($144.75)
 • **Long-term:** Well above EMA-200 ($140.25) - Bullish trend intact
 
 ✨ **Analysis Summary:**
 🔹 **Trend Direction:** Bullish with moderate momentum
 🔹 **Signal Strength:** Moderate - watch for RSI divergence
-🔹 **Recommendation:** Hold current positions, watch for pullback opportunities"""
+🔹 **Recommendation:** Hold current AAPL positions, watch for pullback opportunities
+
+⚠️ DISCLAIMER
+Not financial advice. For informational purposes only."""
 
         context_guidance = """Make technical analysis accessible and actionable for all skill levels. Explain what each indicator means and how it affects trading decisions. Focus on educational value while providing practical trading insights."""
 

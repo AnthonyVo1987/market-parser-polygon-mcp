@@ -256,11 +256,13 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                     "Financial analysis agent. Steps:\n"
                     "1. Verify finance-related using guardrail\n"
                     "2. Call Polygon tools precisely; pull the minimal required data.\n"
-                    "3. Include disclaimers.\n"
-                    "4. Offer to save reports if not asked by the user to save a report.\n\n"
+                    "3. Handle invalid tickers gracefully with clear error messages.\n"
+                    "4. Include disclaimers.\n"
+                    "5. Offer to save reports if not asked by the user to save a report.\n\n"
                     "FORMATTING REQUIREMENTS:\n"
-                    "- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using "
-                    "numbered bullet points\n"
+                    "- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using bullet points\n"
+                    "- ALWAYS explicitly mention ticker symbols throughout the response\n"
+                    "- Follow this exact structure: 🎯 KEY TAKEAWAYS, 📊 DETAILED ANALYSIS, ⚠️ DISCLAIMER\n"
                     "- Use financial emojis throughout: 📈 (bullish), 📉 (bearish), "
                     "💰 (money/profit), 💸 (loss), 🏢 (company), 📊 (data/analysis)\n"
                     "- Structure responses with proper sections and line spacing for readability\n"
@@ -271,8 +273,8 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                     "indicators, 📉 for bearish/negative indicators\n"
                     "- Place emojis at the beginning of relevant bullet points and "
                     "statements for immediate visual sentiment\n"
-                    "- Example format: '📈 Strong growth momentum detected' or "
-                    "'📉 Declining revenue trend observed'\n"
+                    "- Example format: '📈 AAPL Strong growth momentum detected' or "
+                    "'📉 TSLA Declining revenue trend observed'\n"
                     "- Use 📊 for neutral analysis, 💰 for profit/gains, 💸 for "
                     "losses, 🏢 for company info\n"
                     "- End with standard disclaimers in a clearly formatted section\n\n"
@@ -284,6 +286,9 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                     "data you pull based \n"
                     "on the users input to minimize context being exceeded.\n"
                     "If data unavailable or tool fails, explain gracefully — never fabricate.\n"
+                    "For invalid ticker symbols, respond with: 'The ticker symbol [TICKER] "
+                    "could not be found or may not be valid. Please verify the symbol and try again.'\n"
+                    "Validate ticker symbols before making API calls when possible.\n"
                     "TOOLS:\n"
                     "Polygon.io data, save_analysis_report\n"
                     "Disclaimer: Not financial advice. For informational purposes only."
@@ -390,16 +395,31 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Process a financial query and return the response."""
     global shared_mcp_server, shared_session
     
-    if not request.message or len(request.message.strip()) < 2:
+    # Enhanced input validation for empty and whitespace-only inputs
+    if not request.message:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Query must be at least 2 characters long",
+            detail="Query cannot be empty. Please enter a financial question.",
+        )
+    
+    stripped_message = request.message.strip()
+    if len(stripped_message) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Query must be at least 2 characters long. Please enter a valid financial question.",
+        )
+    
+    # Check for whitespace-only or control character inputs
+    if not stripped_message or stripped_message.isspace():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Query cannot be empty or contain only whitespace. Please enter a valid financial question.",
         )
 
     try:
         # Use shared instances instead of creating new ones
         result = await process_financial_query(
-            request.message.strip(), shared_session, shared_mcp_server
+            stripped_message, shared_session, shared_mcp_server
         )
 
         if result["success"]:
@@ -503,9 +523,25 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
     """Get stock snapshot analysis for button-triggered requests."""
     global shared_mcp_server, shared_session
     
+    # Validate ticker input
+    if not request.ticker or len(request.ticker.strip()) < 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ticker symbol is required for stock analysis.",
+        )
+    
+    ticker = request.ticker.strip().upper()
+    
+    # Basic ticker validation (alphanumeric, 1-5 characters typically)
+    if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
+        )
+    
     try:
         query = (
-            f"Provide a comprehensive stock snapshot analysis for {request.ticker}. "
+            f"Provide a comprehensive stock snapshot analysis for {ticker}. "
             "Include current price, volume, OHLC data, and recent performance metrics "
             "with clear explanations."
         )
@@ -516,7 +552,7 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
         if result["success"]:
             return ButtonAnalysisResponse(
                 analysis=result["response"],
-                ticker=request.ticker,
+                ticker=ticker,
                 analysis_type=AnalysisType.SNAPSHOT,
                 success=True,
             )
@@ -540,9 +576,25 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
     """Get support and resistance levels analysis for button-triggered requests."""
     global shared_mcp_server, shared_session
     
+    # Validate ticker input
+    if not request.ticker or len(request.ticker.strip()) < 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ticker symbol is required for support/resistance analysis.",
+        )
+    
+    ticker = request.ticker.strip().upper()
+    
+    # Basic ticker validation
+    if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
+        )
+    
     try:
         query = (
-            f"Analyze key support and resistance levels for {request.ticker}. "
+            f"Analyze key support and resistance levels for {ticker}. "
             "Identify 3 support levels and 3 resistance levels with explanations "
             "of their significance for trading decisions."
         )
@@ -553,7 +605,7 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
         if result["success"]:
             return ButtonAnalysisResponse(
                 analysis=result["response"],
-                ticker=request.ticker,
+                ticker=ticker,
                 analysis_type=AnalysisType.SUPPORT_RESISTANCE,
                 success=True,
             )
@@ -577,9 +629,25 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
     """Get technical analysis for button-triggered requests."""
     global shared_mcp_server, shared_session
     
+    # Validate ticker input
+    if not request.ticker or len(request.ticker.strip()) < 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ticker symbol is required for technical analysis.",
+        )
+    
+    ticker = request.ticker.strip().upper()
+    
+    # Basic ticker validation
+    if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
+        )
+    
     try:
         query = (
-            f"Provide comprehensive technical analysis for {request.ticker} using "
+            f"Provide comprehensive technical analysis for {ticker} using "
             "key indicators including RSI, MACD, and moving averages. Explain momentum "
             "and trend direction with trading recommendations."
         )
@@ -590,7 +658,7 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
         if result["success"]:
             return ButtonAnalysisResponse(
                 analysis=result["response"],
-                ticker=request.ticker,
+                ticker=ticker,
                 analysis_type=AnalysisType.TECHNICAL,
                 success=True,
             )
@@ -726,8 +794,8 @@ async def get_templates_legacy():
                 "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
                 "description": f"{template_type.value.replace('_', ' ').title()} analysis template",
                 "template": f"Provide {template_type.value.replace('_', ' ')} analysis for {{ticker}}",
-                "icon": "📊" if template_type == AnalysisType.SNAPSHOT else 
-                       "📈" if template_type == AnalysisType.TECHNICAL else "🎯",
+                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else 
+                       "🔧" if template_type == AnalysisType.TECHNICAL else "🎯",
                 "requiresTicker": True,
                 "followUpQuestions": [
                     "Would you like more details on this analysis?",
@@ -757,8 +825,8 @@ async def get_analysis_tools_legacy():
                 "id": template_type.value,
                 "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
                 "description": f"Get {template_type.value.replace('_', ' ')} analysis for any stock",
-                "icon": "📊" if template_type == AnalysisType.SNAPSHOT else 
-                       "📈" if template_type == AnalysisType.TECHNICAL else "🎯",
+                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else 
+                       "🔧" if template_type == AnalysisType.TECHNICAL else "🎯",
                 "endpoint": f"/api/v1/analysis/{template_type.value.replace('_', '-')}",
                 "requiresTicker": True,
                 "category": "financial_analysis"

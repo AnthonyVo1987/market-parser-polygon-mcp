@@ -93,9 +93,9 @@ export {
  */
 export const COMPREHENSIVE_TEST_CONFIG = {
   polling: {
-    pollingIntervalMs: 30000,
-    maxTimeoutMs: 120000,
-    successThresholdMs: 45000,
+    pollingIntervalMs: 100,     // 100ms polling for fast responses
+    maxTimeoutMs: 5000,         // 5s max timeout for button responses
+    successThresholdMs: 100,    // <100ms = excellent performance
   },
   portDetection: {
     frontendPortRange: { start: 3000, end: 3010 },
@@ -131,20 +131,20 @@ export const COMPREHENSIVE_TEST_CONFIG = {
     accessibilityChecks: true,   // Enable accessibility validation
   },
   
-  // Common test timeouts
+  // Common test timeouts - Optimized for fast responses
   timeouts: {
-    test: 120000,        // 120-second test timeout
-    polling: 30000,      // 30-second polling interval
-    navigation: 30000,   // 30-second navigation timeout
-    element: 10000,      // 10-second element timeout
-    button: 5000,        // 5-second button interaction timeout
+    test: 30000,         // 30-second test timeout (reduced from 120s)
+    polling: 100,        // 100ms polling interval (reduced from 30s)
+    navigation: 10000,   // 10-second navigation timeout (reduced from 30s)
+    element: 5000,       // 5-second element timeout (reduced from 10s)
+    button: 2000,        // 2-second button interaction timeout (reduced from 5s)
   },
   
-  // Performance thresholds
+  // Performance thresholds - Optimized for <100ms target
   performance: {
-    success: 45000,      // < 45 seconds = SUCCESS
-    slowPerformance: 120000, // 45-120 seconds = SLOW_PERFORMANCE
-    timeout: 120000      // > 120 seconds = TIMEOUT
+    success: 100,        // < 100ms = SUCCESS (excellent performance)
+    slowPerformance: 1000, // 100ms-1s = SLOW_PERFORMANCE (acceptable)
+    timeout: 5000        // > 5s = TIMEOUT (too slow)
   },
   
   // Common test data

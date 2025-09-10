@@ -368,24 +368,26 @@ function generateServerValidation(serverStatus?: ServerStatus): ServerValidation
   }
 
   // Map server status to validation format
+  const isHealthy = serverStatus.accessible && serverStatus.running;
+  
   return {
     cliServerStatus: {
       url: 'CLI Interface (Local)',
-      status: serverStatus.backend.healthy ? '✅ HEALTHY' : '❌ UNHEALTHY',
-      healthCheck: serverStatus.backend.healthy ? 'CLI startup successful' : 'CLI startup failed',
+      status: isHealthy ? '✅ HEALTHY' : '❌ UNHEALTHY',
+      healthCheck: isHealthy ? 'CLI startup successful' : 'CLI startup failed',
       portConfiguration: 'Local execution environment'
     },
     backendServerStatus: {
-      url: `http://localhost:${serverStatus.backend.port}`,
-      status: serverStatus.backend.healthy ? '✅ HEALTHY' : '❌ UNHEALTHY',
-      healthCheck: serverStatus.backend.healthy ? 'HTTP 200 OK response confirmed' : 'Health check failed',
-      portConfiguration: serverStatus.backend.healthy ? `Static port ${serverStatus.backend.port} working correctly` : `Port ${serverStatus.backend.port} configuration issues`
+      url: `http://localhost:${serverStatus.port}`,
+      status: isHealthy ? '✅ HEALTHY' : '❌ UNHEALTHY',
+      healthCheck: isHealthy ? 'HTTP 200 OK response confirmed' : 'Health check failed',
+      portConfiguration: isHealthy ? `Static port ${serverStatus.port} working correctly` : `Port ${serverStatus.port} configuration issues`
     },
     criticalFixes: {
-      cliConfiguration: serverStatus.backend.healthy ? '✅ RESOLVED' : '❌ PENDING',
-      backendIntegration: serverStatus.backend.healthy ? '✅ RESOLVED' : '❌ PENDING',
+      cliConfiguration: isHealthy ? '✅ RESOLVED' : '❌ PENDING',
+      backendIntegration: isHealthy ? '✅ RESOLVED' : '❌ PENDING',
       errorHandling: '✅ RESOLVED', // Assume resolved for CLI
-      performanceOptimization: serverStatus.backend.healthy ? '✅ RESOLVED' : '⚠️ PARTIAL'
+      performanceOptimization: isHealthy ? '✅ RESOLVED' : '⚠️ PARTIAL'
     }
   };
 }
@@ -587,7 +589,7 @@ function generateSystemStatus(testResults: TestExecutionResult[], serverStatus?:
   return {
     currentHealth: {
       cliInterface: healthStatus,
-      backendApi: serverStatus?.backend.healthy ? '✅ HEALTHY' : '⚠️ DEGRADED',
+      backendApi: serverStatus?.accessible ? '✅ HEALTHY' : '⚠️ DEGRADED',
       dataProcessing: successRate >= 80 ? '✅ HEALTHY' : '⚠️ DEGRADED',
       userExperience: successRate >= 80 ? '✅ HEALTHY' : '⚠️ DEGRADED',
       performance: testResults.every(r => r.classification !== PerformanceClassification.TIMEOUT) ? '✅ HEALTHY' : '⚠️ DEGRADED'
