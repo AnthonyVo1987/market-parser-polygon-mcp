@@ -19,7 +19,7 @@ Task 3. Main Agent: Kill all dev servers for fresh test run
 
 Task 3. Main Agent: Use the requested Playwright [CLI vs MCP] Method to Run the requested Tests following the procedure & format from: "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_2025-09-10_11-39.md":
 
-Copy\Pasted Snippet of Tests Ran from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_2025-09-10_11-39.md"
+Copy\Pasted Snippet of Playwright Tests Ran from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_2025-09-10_11-39.md": Reminder these tests were ran using Playwright CLI Method, but new request is to re-run with Playwright MCP Method
 
 ## Individual Test Results - Basic Tests (B001-B006)
 
