@@ -123,7 +123,8 @@
       "Bash(break)",
       "Bash(continue)",
       "Bash(done)",
-      "mcp__playwright__browser_console_messages"
+      "mcp__playwright__browser_console_messages",
+      "Bash(lsof:*)"
     ],
     "deny": [],
     "ask": [],
