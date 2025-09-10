@@ -1,3 +1,13 @@
+
+
+
+THESE ARE THE ONLY MCP SERVERS YOU HAVE.  You even detected them. Even teh MPC server guide these are the only 4x MCP servers you have!.  So 2x tools PER mcp server
+   * Internal thought processes: sequential-thinking
+   * Research and documentation retrieval: context7
+   * File system operations: filesystem
+   * Browser automation and interaction with web interfaces: playwright
+
+
 Read the follow project docs ONE AT A TIME and acknowledge project state, last completed task(s), operating rules, & MCP Tool PRIMARY use FIRST, before I assign some new task(s):
 - CLAUDE.md
 - LAST_TASK_SUMMARY.md

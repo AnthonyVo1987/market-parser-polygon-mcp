@@ -2,12 +2,13 @@
 
 ## Task Description
 
-[OPENAI] Initial Repo Migrate Standalone OpenAI App to new Repo using Method 3: Hybrid GitHub MCP + Git Workflow
-- User has already created a local folder for the new repo and copied over the .env file with API keys to "~/Github/Stock_Sage_Agent"
-- The new repo should be renamed to "Stock_Sage_Agent"
-- We will migrate and setup JUST the Standalone OpenAI CLI & REACT Gui App from "gpt5-openai-agents-sdk-polygon-mcp" folder
-- We will not migrate the legacy CLI and Gradio Based UI
-- End result is the new repo will just be the standalone gpt5-openai-agents-sdk-polygon-mcp OpenAI CLI & REACT GUI
+[TEST] Run The 6x Basic Test Suite
+
+- Re-run the same 6x tests with some modifications: Adjust the test prompts to now enforce "raw JSON Output format, no verbosity, no emojis"
+- Save results to new report
+
+- Read this doc to understand the Playwright MCP Testing Procedure gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
+- Read this doc to understand the 8x basic tests & reporting format: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_dynamic_port_validation_report_2025-01-09.md
 
 ## Research Task(s) - Use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 

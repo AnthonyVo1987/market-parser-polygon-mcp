@@ -2,6 +2,9 @@
 
 ## Task Description
 
+
+/home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_dynamic_port_validation_report_2025-01-09.md
+
 [OPENAI] Initial Repo Migrate Standalone OpenAI App to new Repo using Method 3: Hybrid GitHub MCP + Git Workflow
 
 - User has already created a local folder for the new repo and copied over the .env file with API keys to "~/Github/Stock_Sage_Agent"
