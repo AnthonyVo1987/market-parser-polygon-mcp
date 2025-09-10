@@ -37,6 +37,8 @@ Task 6. ONLY After all 16/16 tests have completed running for FULL test coverage
 7. Save test report to gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports
 8. ONLY A SINGLE test report .md doc is needed - every test run will only have a single source of truth for the entire test execution run and test results in the same doc
 
+Task 7. After Task 6 is complete, wait for User to review the test results report
+
 Analyze & Fix all Playwright MCP Method Bugs from playwright_mcp_comprehensive_test_execution_report_2025-01-10_12-37-45.md
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
@@ -61,218 +63,30 @@ Task 5. [Specialist] Based on all research, analysis, & investigation, fix all t
 
 ## Testing Task(s) - Specialist(s) to use Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- After fixes are implemented, Kill all dev servers for fresh test run, and then validate the fixes by re-running the test plan OF ALL 16 tests (B001-B016) from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright & from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_comprehensive_test_execution_report_2025-01-10_12-37-45.md"
+- After fixes are implemented, perform the test plan by marking off each TODO item:
 
-### Basic Tests (B001-B006) - Core Functionality ✅
-
-#### TEST-B001: Market Status Query
-
-**Start Time:** 12:29:03 PM  
-**End Time:** 12:29:40 PM  
-**Duration:** ~37 seconds  
-**Performance:** SUCCESS  
-**Result:** ✅ PASSED
-
-**Test Details:**
-
-- **Query:** "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Response Format:** Perfect "🎯 KEY TAKEAWAYS" structure with financial emoji indicators
-- **Content Quality:** Comprehensive market status including NASDAQ, NYSE, OTC, Crypto, and FX markets
-- **Data Accuracy:** Real-time market data with proper timestamp (2025-09-10T15:29:20-04:00)
-- **Emoji Integration:** Full emoji-based sentiment indicators (📈📉💰🏢📊) as specified
-
-**Response Highlights:**
-
-```
-🎯 KEY TAKEAWAYS
-📈 Market status: OPEN — U.S. equities market is currently trading
-📈 Major exchanges: NASDAQ and NYSE are open
-📈 Crypto & FX: crypto and FX markets are open
-🏢 Tickers: No specific ticker symbols requested
-
-📊 DETAILED ANALYSIS
-📈 BULLISH — Overall market status: open
-📈 NASDAQ: open | NYSE: open | OTC: open | Crypto: open | FX: open
-
-⚠️ DISCLAIMER
-💸 This is informational only — not financial advice
-```
-
-#### TEST-B002: NVDA Single Ticker Analysis
-
-**Start Time:** 12:30:08 PM  
-**End Time:** 12:30:44 PM  
-**Duration:** ~36 seconds  
-**Performance:** SUCCESS  
-**Result:** ✅ PASSED
-
-**Test Details:**
-
-- **Query:** "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Response Quality:** Comprehensive NVDA analysis with real-time pricing data
-- **Financial Data:** Price $176.06 (+$5.35, +3.13%), Volume ~185M, VWAP $177.54
-- **Market Context:** Intraday range $175.47-$179.29, previous close $170.76
-- **Sentiment Analysis:** 📈 BULLISH intraday momentum with buyer strength indicators
-
-**Key Financial Metrics Captured:**
-
-- **Current Price:** $176.06 (+3.13% bullish momentum)
-- **Volume Analysis:** 185,017,488 shares (heavy trading activity)
-- **Technical Indicators:** VWAP 177.5377 showing price concentration
-- **Trend Signal:** Positive gap vs. prior close indicating buyer strength
-
-#### TEST-B003: SPY Market Index Analysis
-
-**Start Time:** 12:31:15 PM  
-**End Time:** 12:31:37 PM  
-**Duration:** ~22 seconds  
-**Performance:** SUCCESS  
-**Result:** ✅ PASSED
-
-**Test Details:**
-
-- **Query:** "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Market Performance:** SPY $651.20 (+$0.89, +0.14%) - slight bullish uptick
-- **Volume Analysis:** ~55.9M shares with VWAP $652.93 indicating good liquidity
-- **Technical Range:** Intraday $650.845-$654.55, Open $653.62
-- **Market Sentiment:** 📈 Mildly bullish with modest positive move vs. prior close
-
-#### TEST-B004: GME Meme Stock Analysis
-
-**Start Time:** 12:32:19 PM  
-**End Time:** 12:32:42 PM  
-**Duration:** ~23 seconds  
-**Performance:** SUCCESS  
-**Result:** ✅ PASSED
-
-**Test Details:**
-
-- **Query:** "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Price Movement:** GME $24.215 (+$0.62, +2.63%) - intraday bullish move
-- **Trading Activity:** Volume ~37.3M with VWAP $24.9469 showing elevated activity
-- **Volatility Range:** $24.04-$25.43 with opening gap analysis
-- **Risk Assessment:** Buying interest present with intraday volatility monitoring recommended
-
-#### TEST-B005: Multi-Ticker Portfolio Analysis
-
-**Start Time:** 12:33:22 PM  
-**End Time:** 12:34:24 PM  
-**Duration:** ~62 seconds  
-**Performance:** SUCCESS  
-**Result:** ✅ PASSED
-
-**Test Details:**
-
-- **Query:** "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Portfolio Coverage:** 4-ticker comprehensive analysis with comparative performance
-- **Market Sector Analysis:** Tech (NVDA, QQQ), Broad Market (SPY), Small-Cap (IWM)
-- **Performance Divergence:** NVDA strong (+3.29%), SPY flat (+0.14%), QQQ/IWM negative
-
-**Multi-Ticker Performance Summary:**
-
-```
-📈 NVDA: $176.01 (+$5.61, +3.29%) — BULLISH intraday momentum
-📈 SPY: $651.07 (+$0.91, +0.14%) — Mildly bullish / flat
-📉 QQQ: $578.97 (−$1.16, −0.20%) — Slight bearish pressure
-📉 IWM: $236.22 (−$0.63, −0.27%) — Small weakness in small-caps
-```
-
-#### TEST-B006: Empty Message Validation
-
-**Start Time:** 12:35:12 PM  
-**End Time:** 12:35:46 PM  
-**Duration:** ~34 seconds  
-**Performance:** SUCCESS  
-**Result:** ✅ PASSED
-
-**Test Details:**
-
-- **Validation Target:** Empty message submission handling
-- **Button State:** Send button properly disabled when input field empty
-- **Keyboard Handling:** Enter key press prevented when no message content
-- **UI Behavior:** Proper user feedback with "Enter a message to enable sending"
-- **Error Prevention:** System correctly prevents empty message submission
-
-**Validation Results:**
-
-- ✅ Send button disabled state maintained
-- ✅ Keyboard submission blocked appropriately
-- ✅ User feedback messaging clear and helpful
-- ✅ No errors or crashes during empty input testing
-
-### Button Tests (B007-B016) - Template API Issues ❌
-
-Button testing revealed systematic API validation failures requiring immediate attention.
-
-#### TEST-B007: Stock Snapshot Button (📈)
-
-**Start Time:** 12:36:15 PM  
-**End Time:** 12:36:42 PM  
-**Duration:** ~27 seconds  
-**Performance:** FAILED  
-**Result:** ❌ FAILED - 422 API Validation Error
-
-**Error Analysis:**
-
-- **HTTP Status:** 422 Unprocessable Entity
-- **API Endpoint:** `/api/v1/prompts/generate`
-- **Error Message:** "Failed to generate prompt: 422 Unprocessable Entity"
-- **UI State:** Button click registered, ticker (NVDA) entered correctly
-- **Root Cause:** Button template API validation schema failure
-
-**Technical Details:**
-
-- Button interaction successful (UI level)
-- Stock symbol input validation passed (NVDA accepted)
-- API request triggered but validation rejected
-- Error properly displayed to user with red alert message
-
-#### TEST-B008: Support Resistance Button (🎯)
-
-**Start Time:** 12:37:05 PM  
-**End Time:** 12:37:28 PM  
-**Duration:** ~23 seconds  
-**Performance:** FAILED  
-**Result:** ❌ FAILED - 422 API Validation Error
-
-**Error Analysis:**
-
-- **HTTP Status:** 422 Unprocessable Entity (identical to B007)
-- **API Endpoint:** `/api/v1/prompts/generate` (same endpoint)
-- **Error Message:** "Failed to generate prompt: 422 Unprocessable Entity"
-- **UI State:** Button click registered, ticker (AAPL) entered correctly
-- **Pattern Confirmation:** Systematic button template API failure confirmed
-
-#### TEST-B009: Technical Analysis Button
-
-**Start Time:** 12:37:45 PM  
-**End Time:** 12:37:45 PM  
-**Duration:** Immediate  
-**Performance:** NOT FOUND  
-**Result:** ❌ NOT FOUND - Missing UI Component
-
-**Missing Component Analysis:**
-
-- **UI Inspection:** Only 2 button groups present (Snapshot + Support Resistance)
-- **Expected Button:** Technical Analysis button not implemented
-- **Frontend Gap:** Missing UI component as documented in previous assessment
-- **Implementation Required:** Frontend component development needed
-
-#### TEST-B010 to TEST-B016: Multi-Button and Advanced Tests
-
-**Status:** SKIPPED  
-**Reason:** Systematic button template API failure (422 errors)  
-**Rationale:** Core button functionality broken, advanced testing not viable
-
-**Affected Test Coverage:**
-
-- B010: Multi-button interaction testing
-- B011: Button state validation
-- B012: Button error handling
-- B013: Button performance validation
-- B014: Button accessibility
-- B015: Button UI consistency  
-- B016: Button integration
+☐ Kill all existing dev servers for fresh test run
+☐ Start fresh backend server (FastAPI)
+☐ Start fresh frontend server (Vite)
+☐ Verify both servers operational before testing
+☐ Execute TEST B001 - Market Status Check using Playwright MCP
+☐ Execute TEST B002 - NVDA Ticker Analysis using Playwright MCP
+☐ Execute TEST B003 - SPY Ticker Analysis using Playwright MCP
+☐ Execute TEST B004 - GME Ticker Analysis using Playwright MCP
+☐ Execute TEST B005 - Multi-Ticker Analysis using Playwright MCP
+☐ Execute TEST B006 - Empty Message Handling using Playwright MCP
+☐ Execute TEST B007 - Stock Snapshot Button using Playwright MCP
+☐ Execute TEST B008 - Support Resistance Button using Playwright MCP
+☐ Execute TEST B009 - Technical Analysis Button using Playwright MCP
+☐ Execute TEST B010 - Multi-Button Interaction using Playwright MCP
+☐ Execute TEST B011 - Button State Validation using Playwright MCP
+☐ Execute TEST B012 - Button Error Handling using Playwright MCP
+☐ Execute TEST B013 - Button Performance Validation using Playwright MCP
+☐ Execute TEST B014 - Button Accessibility using Playwright MCP
+☐ Execute TEST B015 - Button UI Consistency using Playwright MCP
+☐ Execute TEST B016 - Button Integration using Playwright MCP
+☐ CRITICAL: Verify 16/16 test coverage completed
+☐ Use @documentation-specialist to generate comprehensive test report
 
 [Specialist] After all tests completed running, generate a fully detailed granular test report with the following requirements:
 

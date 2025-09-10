@@ -1,3 +1,31 @@
+☐ Kill all existing dev servers for fresh test run
+☐ Start fresh backend server (FastAPI)
+☐ Start fresh frontend server (Vite)
+☐ Verify both servers operational before testing
+☐ Execute TEST B001 - Market Status Check using Playwright MCP
+☐ Execute TEST B002 - NVDA Ticker Analysis using Playwright MCP
+☐ Execute TEST B003 - SPY Ticker Analysis using Playwright MCP
+☐ Execute TEST B004 - GME Ticker Analysis using Playwright MCP
+☐ Execute TEST B005 - Multi-Ticker Analysis using Playwright MCP
+☐ Execute TEST B006 - Empty Message Handling using Playwright MCP
+☐ Execute TEST B007 - Stock Snapshot Button using Playwright MCP
+☐ Execute TEST B008 - Support Resistance Button using Playwright MCP
+☐ Execute TEST B009 - Technical Analysis Button using Playwright MCP
+☐ Execute TEST B010 - Multi-Button Interaction using Playwright MCP
+☐ Execute TEST B011 - Button State Validation using Playwright MCP
+☐ Execute TEST B012 - Button Error Handling using Playwright MCP
+☐ Execute TEST B013 - Button Performance Validation using Playwright MCP
+☐ Execute TEST B014 - Button Accessibility using Playwright MCP
+☐ Execute TEST B015 - Button UI Consistency using Playwright MCP
+☐ Execute TEST B016 - Button Integration using Playwright MCP
+☐ CRITICAL: Verify 16/16 test coverage completed
+☐ Use @documentation-specialist to generate comprehensive test report
+
+
+
+
+
+
 /home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_comprehensive_test_execution_report_2025-01-10_12-37-45.md
 
 # New Task Details
