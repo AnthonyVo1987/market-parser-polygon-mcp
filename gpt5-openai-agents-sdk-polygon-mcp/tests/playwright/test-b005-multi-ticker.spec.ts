@@ -43,7 +43,7 @@ test.describe('TEST-B005: Multi-Ticker', () => {
     
     if (!systemStatus.ready) {
       console.log('[TEST-B005] System not ready - errors:', systemStatus.errors);
-      test.skip('System not ready for testing');
+      test.skip(true, 'System not ready for testing');
     }
     
     console.log('[TEST-B005] System validation completed');
@@ -267,7 +267,7 @@ test.describe('TEST-B005: Multi-Ticker', () => {
         
       } else {
         console.log('[TEST-B005] ⚠️ Skipping ticker validation due to execution failure');
-        test.skip('Ticker validation skipped due to execution failure');
+        test.skip(true, 'Ticker validation skipped due to execution failure');
       }
       
     } catch (error) {
@@ -347,7 +347,7 @@ test.describe('TEST-B005: Multi-Ticker', () => {
         
       } else {
         console.log('[TEST-B005] ⚠️ Skipping comprehensiveness validation due to execution failure');
-        test.skip('Comprehensiveness validation skipped due to execution failure');
+        test.skip(true, 'Comprehensiveness validation skipped due to execution failure');
       }
       
     } catch (error) {

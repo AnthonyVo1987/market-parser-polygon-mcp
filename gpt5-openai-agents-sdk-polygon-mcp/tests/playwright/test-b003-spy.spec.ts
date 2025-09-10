@@ -43,7 +43,7 @@ test.describe('TEST-B003: Single Ticker SPY', () => {
     
     if (!systemStatus.ready) {
       console.log('[TEST-B003] System not ready - errors:', systemStatus.errors);
-      test.skip('System not ready for testing');
+      test.skip(true, 'System not ready for testing');
     }
     
     console.log('[TEST-B003] System validation completed');
@@ -145,10 +145,10 @@ test.describe('TEST-B003: Single Ticker SPY', () => {
       
       // Look for sentiment indicators specific to SPY
       const bullishEmojis = validationResult.detectedEmojis.filter(emoji => 
-        [FINANCIAL_EMOJIS.BULLISH, FINANCIAL_EMOJIS.MONEY].includes(emoji)
+        ['📈', '💰'].includes(emoji)
       );
       const bearishEmojis = validationResult.detectedEmojis.filter(emoji => 
-        [FINANCIAL_EMOJIS.BEARISH, FINANCIAL_EMOJIS.MONEY_LOSS].includes(emoji)
+        ['📉', '💸'].includes(emoji)
       );
       
       if (bullishEmojis.length > 0) {
@@ -255,7 +255,7 @@ test.describe('TEST-B003: Single Ticker SPY', () => {
         
       } else {
         console.log('[TEST-B003] ⚠️ Skipping ticker validation due to execution failure');
-        test.skip('Ticker validation skipped due to execution failure');
+        test.skip(true, 'Ticker validation skipped due to execution failure');
       }
       
     } catch (error) {
@@ -363,7 +363,7 @@ test.describe('TEST-B003: Single Ticker SPY', () => {
         
       } else {
         console.log('[TEST-B003] ⚠️ Skipping sentiment validation due to execution failure');
-        test.skip('Sentiment validation skipped due to execution failure');
+        test.skip(true, 'Sentiment validation skipped due to execution failure');
       }
       
     } catch (error) {

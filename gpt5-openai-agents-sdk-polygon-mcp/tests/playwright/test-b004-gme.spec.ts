@@ -43,7 +43,7 @@ test.describe('TEST-B004: Single Ticker GME', () => {
     
     if (!systemStatus.ready) {
       console.log('[TEST-B004] System not ready - errors:', systemStatus.errors);
-      test.skip('System not ready for testing');
+      test.skip(true, 'System not ready for testing');
     }
     
     console.log('[TEST-B004] System validation completed');
@@ -145,10 +145,10 @@ test.describe('TEST-B004: Single Ticker GME', () => {
       
       // Look for sentiment indicators specific to GME
       const bullishEmojis = validationResult.detectedEmojis.filter(emoji => 
-        [FINANCIAL_EMOJIS.BULLISH, FINANCIAL_EMOJIS.MONEY].includes(emoji)
+        ['📈', '💰'].includes(emoji)
       );
       const bearishEmojis = validationResult.detectedEmojis.filter(emoji => 
-        [FINANCIAL_EMOJIS.BEARISH, FINANCIAL_EMOJIS.MONEY_LOSS].includes(emoji)
+        ['📉', '💸'].includes(emoji)
       );
       
       if (bullishEmojis.length > 0) {
@@ -255,7 +255,7 @@ test.describe('TEST-B004: Single Ticker GME', () => {
         
       } else {
         console.log('[TEST-B004] ⚠️ Skipping ticker validation due to execution failure');
-        test.skip('Ticker validation skipped due to execution failure');
+        test.skip(true, 'Ticker validation skipped due to execution failure');
       }
       
     } catch (error) {
@@ -363,7 +363,7 @@ test.describe('TEST-B004: Single Ticker GME', () => {
         
       } else {
         console.log('[TEST-B004] ⚠️ Skipping sentiment validation due to execution failure');
-        test.skip('Sentiment validation skipped due to execution failure');
+        test.skip(true, 'Sentiment validation skipped due to execution failure');
       }
       
     } catch (error) {

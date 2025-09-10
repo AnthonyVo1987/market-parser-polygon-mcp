@@ -42,7 +42,7 @@ test.describe('TEST-B001: Market Status', () => {
     
     if (!systemStatus.ready) {
       console.log('[TEST-B001] System not ready - errors:', systemStatus.errors);
-      test.skip('System not ready for testing');
+      test.skip(true, 'System not ready for testing');
     }
     
     console.log('[TEST-B001] System validation completed');
@@ -218,7 +218,7 @@ test.describe('TEST-B001: Market Status', () => {
         
       } else {
         console.log('[TEST-B001] ⚠️ Skipping format validation due to execution failure');
-        test.skip('Format validation skipped due to execution failure');
+        test.skip(true, 'Format validation skipped due to execution failure');
       }
       
     } catch (error) {

@@ -39,7 +39,7 @@ test.describe('TEST-B006: Empty Message', () => {
     
     if (!systemStatus.ready) {
       console.log('[TEST-B006] System not ready - errors:', systemStatus.errors);
-      test.skip('System not ready for testing');
+      test.skip(true, 'System not ready for testing');
     }
     
     console.log('[TEST-B006] System validation completed');

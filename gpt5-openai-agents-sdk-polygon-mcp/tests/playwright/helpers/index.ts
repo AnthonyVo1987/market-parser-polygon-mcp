@@ -70,6 +70,23 @@ export {
   type TickerValidationConfig
 } from './validation';
 
+// Button interaction utilities - Financial analysis button testing
+export {
+  clickButtonAndWaitForResponse,
+  inputTicker,
+  clickButton,
+  validateButtonState,
+  detectProcessingState,
+  executeMultiButtonTest,
+  validateButtonAccessibility,
+  generateButtonTestReport,
+  ButtonType,
+  BUTTON_SELECTORS,
+  DEFAULT_BUTTON_STATE_CONFIG,
+  type ButtonInteractionResult,
+  type ButtonStateConfig
+} from './button-helpers';
+
 /**
  * Comprehensive test suite configuration
  * Combines all helper configurations for easy setup
@@ -105,12 +122,22 @@ export const COMPREHENSIVE_TEST_CONFIG = {
     waitForFocus: true,
   },
   
+  // Button interaction configuration
+  buttonInteraction: {
+    clickTimeout: 5000,          // 5-second timeout for button clicks
+    stateValidationTimeout: 5000, // 5-second timeout for state validation
+    processingDetectionDelay: 1000, // 1-second delay after click to detect processing
+    multiButtonDelay: 3000,      // 3-second delay between multi-button tests
+    accessibilityChecks: true,   // Enable accessibility validation
+  },
+  
   // Common test timeouts
   timeouts: {
     test: 120000,        // 120-second test timeout
     polling: 30000,      // 30-second polling interval
     navigation: 30000,   // 30-second navigation timeout
     element: 10000,      // 10-second element timeout
+    button: 5000,        // 5-second button interaction timeout
   },
   
   // Performance thresholds
@@ -128,7 +155,16 @@ export const COMPREHENSIVE_TEST_CONFIG = {
       'analyze AAPL performance',
       'what is MSFT doing today'
     ],
-    emptyInputs: ['', '   ', '\n', '\t']
+    emptyInputs: ['', '   ', '\n', '\t'],
+    buttonTestTickers: ['NVDA', 'AAPL', 'GME'], // Tickers for button testing
+    buttonCombinations: [
+      ['STOCK_SNAPSHOT'],
+      ['SUPPORT_RESISTANCE'], 
+      ['TECHNICAL_ANALYSIS'],
+      ['STOCK_SNAPSHOT', 'SUPPORT_RESISTANCE'],
+      ['STOCK_SNAPSHOT', 'TECHNICAL_ANALYSIS'],
+      ['SUPPORT_RESISTANCE', 'TECHNICAL_ANALYSIS']
+    ]
   }
 };
 
@@ -346,7 +382,13 @@ export const HELPERS_CONFIG = {
     'KEY TAKEAWAYS section detection',
     'Ticker-specific response validation',
     'Performance classification (SUCCESS/SLOW_PERFORMANCE/TIMEOUT)',
-    'Comprehensive test reporting'
+    'Comprehensive test reporting',
+    'Button interaction testing (Stock Snapshot, Support & Resistance, Technical Analysis)',
+    'Button state validation (enabled/disabled/loading/pressed)',
+    'Processing state detection',
+    'Multi-button interaction testing',
+    'Button accessibility validation',
+    'Button UI consistency testing'
   ],
   requirements: {
     node: '>=18.0.0',
@@ -355,6 +397,11 @@ export const HELPERS_CONFIG = {
     ports: {
       frontend: '3000-3010',
       backend: '8000'
+    },
+    buttons: {
+      types: ['STOCK_SNAPSHOT', 'SUPPORT_RESISTANCE', 'TECHNICAL_ANALYSIS'],
+      emojis: ['📈', '🎯', '🔧'],
+      maxInteractionTime: '5000ms'
     }
   }
 };
