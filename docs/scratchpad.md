@@ -313,15 +313,32 @@ Final Task 4: Final Verification
 Use Sequential-Thinking Tool as many times as needed & Filesystem Tool(s) as many times as needed to TO PERFORM ALL TASK(S)
 
 - Run ALL tests from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright using Playwright MCP Method with details below:
-- test-b001 through test-b016, 16x total tests to be ran
+- test-b001 through test-b016, 16x total tests to be ran for full 100% test coverage
 
-Task 1. Use @agent-documentation-specialist To review testing procedures again before starting & acknowledge: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 1. Review testing procedures again before starting & acknowledge: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
 
-Task 2. Review Full test plan from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+Task 2. Main Agent: Review Full test plan from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+
+Task 3. Main Agent: Review bad test results that incorrectly ran only 7 test instead of the full 16x tests: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_14-54.md
 
 Task 3. Main Agent: Kill all dev servers for fresh test run
 
-Task 3. Main Agent: Use the requested Playwright [CLI vs MCP] Method to Run the requested Tests following the procedure & format from: "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_2025-09-10_11-39.md":
+Task 4. Main Agent: Use the requested Playwright [CLI vs MCP] Method to Run the requested Tests following the procedure & format from: "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_14-54.md"
+
+Task 5. Main Agent: CRITICAL SHORT CIRCUIT CHECK TO CONFIRM 100% 16/16 TEST COVERAGE: Sanity Check that ALL 16x Tests were ran:
+- If 100% 16/16 TEST COVERAGE, Proceed to Task 6.
+- If NOT 100% 16/16 TEST COVERAGE, TASK COMPLETETY FAILED, PROVIDE A POST-MORTEM ANALYSIS (NO DOCS NEEDS) WHAT WENT WRONG, AND WAIT FOR USER REVIEW
+
+Task 6. ONLY After all 16/16 tests have completed running for FULL test coverage, use @agent-documentation-specialist to generate a fully detailed granular test report with the following requirements:
+
+1. Match same reporting style from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_14-54.md"
+2. Include ALL testing requirments, such as the 120s timeout PER test, 30sec polling etc, execution time etc
+3. Include any details if dev server ports\address needed the dynamic adjustment for a proper run
+4. EACH Test needs to have it's own "mini-dedicated section\module report" to add more granular details during that specific test's execution run & also include the specific test file names\file locations for EACH test
+5. Detect the current REAL world date and Pacific timestamp for the report file name *I.E. YY-MM-DD_hh-mm.md: 25-09-10_13-45 for Sept 10, 2025 at 1:45 PM Pacific etc*
+6. Report file name should now be saved in a new standardized report name format, depending if Playwright MCP and\or Playwright CLI method was used to the the tests: "playwright_MCP_test_YY-MM-DD_hh-mm.md" vs "playwright_CLI_test_YY-MM-DD_hh-mm.md"
+7. Save test report to gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports
+8. ONLY A SINGLE test report .md doc is needed - every test run will only have a single source of truth for the entire test execution run and test results in the same doc
 
 Copy\Pasted Snippet of Playwright Tests Ran from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_2025-09-10_11-39.md": Reminder these tests were ran using Playwright CLI Method, but new request is to re-run with Playwright MCP Method
 
