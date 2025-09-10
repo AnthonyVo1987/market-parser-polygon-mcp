@@ -32,7 +32,7 @@ class PromptMode(str, Enum):
 class PromptTemplateInfo(BaseModel):
     """Information about a prompt template"""
 
-    template_type: AnalysisType
+    template_type: AnalysisType = Field(alias="templateId")
     available: bool = True
     mode: PromptMode = PromptMode.CONVERSATIONAL
     enhanced_formatting: bool = True
@@ -49,8 +49,11 @@ class TemplateListResponse(BaseModel):
 
 class GeneratePromptRequest(BaseModel):
     """Request model for generating a prompt"""
+    
+    class Config:
+        allow_population_by_field_name = True
 
-    template_type: AnalysisType
+    template_type: AnalysisType = Field(alias="templateId")
     ticker: Optional[str] = Field(None, description="Stock ticker symbol (e.g., AAPL)")
     custom_instructions: Optional[str] = Field(None, description="Additional custom instructions")
     mode: PromptMode = PromptMode.CONVERSATIONAL

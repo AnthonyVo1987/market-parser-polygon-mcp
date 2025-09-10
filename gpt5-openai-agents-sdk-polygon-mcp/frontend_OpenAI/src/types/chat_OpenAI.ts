@@ -122,7 +122,8 @@ export interface PromptTemplate {
 export type AnalysisType =
   | 'snapshot'
   | 'support_resistance'
-  | 'technical_analysis';
+  | 'technical_analysis'
+  | 'technical';
 
 export interface PromptTemplateResponse {
   templates: readonly PromptTemplate[];
@@ -201,7 +202,7 @@ export const isValidMessage = (message: unknown): message is Message => {
 };
 
 export const isValidAnalysisType = (type: string): type is AnalysisType => {
-  return ['snapshot', 'support_resistance', 'technical_analysis'].includes(
+  return ['snapshot', 'support_resistance', 'technical_analysis', 'technical'].includes(
     type
   );
 };

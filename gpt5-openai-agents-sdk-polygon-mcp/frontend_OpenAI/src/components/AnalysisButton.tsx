@@ -2,6 +2,21 @@ import { useState, useCallback } from 'react';
 import { AnalysisButtonProps } from '../types/chat_OpenAI';
 import { usePromptAPI, usePromptGeneration } from '../hooks/usePromptAPI';
 
+// Map template types to expected data-testid attributes for test compatibility
+const getTestId = (templateType: string): string => {
+  switch (templateType) {
+    case 'snapshot':
+      return 'stock-snapshot-button';
+    case 'support_resistance':
+      return 'support-resistance-button';
+    case 'technical_analysis':
+    case 'technical':
+      return 'technical-analysis-button';
+    default:
+      return `${templateType}-button`;
+  }
+};
+
 export default function AnalysisButton({
   template,
   onPromptGenerated,
@@ -104,6 +119,7 @@ export default function AnalysisButton({
         onClick={handleButtonClick}
         disabled={isButtonDisabled}
         className='analysis-button'
+        data-testid={getTestId(template.type)}
         aria-describedby={`button-help-${template.id} ${displayError ? `error-${template.id}` : ''}`}
         title={template.description}
       >

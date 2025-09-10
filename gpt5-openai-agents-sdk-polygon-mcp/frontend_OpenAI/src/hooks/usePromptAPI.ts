@@ -151,13 +151,16 @@ export function usePromptAPI(): UsePromptAPIResult {
           );
         }
 
-        const data = (await response.json()) as GeneratePromptResponse;
+        const data = await response.json();
 
-        if (!data.success) {
+        // Handle both response formats: direct prompt response and wrapped response
+        if (data.prompt) {
+          return data.prompt;
+        } else if (data.success && data.prompt) {
+          return data.prompt;
+        } else {
           throw new Error(data.error || 'Failed to generate prompt');
         }
-
-        return data.prompt;
       } catch (err) {
         const errorMessage =
           err instanceof Error
