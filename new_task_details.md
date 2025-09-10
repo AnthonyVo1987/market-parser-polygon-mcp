@@ -2,100 +2,35 @@
 
 ## Task Description
 
-[FIX] Fix ALL Hard-coded Dev Ports\Address through code base AND Environment Variables
-
-*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
-
-1. Convert ALL hard coded static Ip Address & Ports from Code, Environment Variables, docs to be dynamic detected - NO MORE HARD CODES
-- Hard coded values are caussing false positive failures because sometimes ports change, and the hard code looks at the wrong ports, thinking it is a failure when it is not
-
-2. Docs needs to be update to enforce reviewing the new dynamic ports FIRST, and then pointing all the backend/frontend  to proper ports for proper app running.  update all docs on the REAL working steps to start ALL dev servers and the app  to take into account the dynamic ports that can change
-
-3. Validate fixes by running playwright mcp tests below:
-
-## Validation Tests to be ran VERBATIM USING playwright CLAUDE_playwright_mcp_corrected_test_specifications.md
-
-### TEST-B001: Market Status Test
-
-- **Input Method**: Chat message
-- **Query**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Expected**: Market status information in any readable format
-- **Result**: ❌ **FAILURE** - HTTP 500 Internal Server Error
-- **Duration**: 120s (timeout reached)
-- **Classification**: TIMEOUT
-- **Error Details**: Backend returned 500 status after initial response delay
-- **Frontend Behavior**: Appropriate error handling displayed to user
-
-### TEST-B002: Single Ticker NVDA Test
-
-- **Input Method**: Chat message
-- **Query**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Expected**: NVDA stock information in any format
-- **Result**: ❌ **FAILURE** - HTTP 500 Internal Server Error
-- **Duration**: Immediate failure (<5s)
-- **Classification**: IMMEDIATE_ERROR
-- **Error Details**: Backend API returned 500 status immediately upon request
-- **Console Output**: Repeated 500 error responses logged
-
-### TEST-B003: Single Ticker SPY Test
-
-- **Input Method**: Chat message
-- **Query**: "Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Expected**: SPY stock information in any format
-- **Result**: ❌ **FAILURE** - HTTP 500 Internal Server Error
-- **Duration**: Immediate failure (<5s)
-- **Classification**: IMMEDIATE_ERROR
-- **Error Details**: Consistent 500 error pattern, identical to NVDA test
-- **Pattern Confirmation**: Systematic backend API failure confirmed
-
-### TEST-B004: Single Ticker GME Test
-
-- **Input Method**: Chat message
-- **Query**: "Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Expected**: GME stock information in any format
-- **Result**: ❌ **FAILURE** - HTTP 500 Internal Server Error
-- **Duration**: Immediate failure (<5s)
-- **Classification**: IMMEDIATE_ERROR
-- **Error Details**: Same 500 error pattern across all ticker requests
-- **System Impact**: Zero successful financial data retrievals achieved
-
-### TEST-B005: Multi-Ticker Test
-
-- **Input Method**: Chat message
-- **Query**: "Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-- **Expected**: Multiple ticker information in any readable format
-- **Result**: ❌ **FAILURE** - HTTP 500 Internal Server Error
-- **Duration**: Immediate failure (<5s)
-- **Classification**: IMMEDIATE_ERROR
-- **Error Details**: Backend API failure consistent with single ticker patterns
-- **Multi-Ticker Impact**: Complex requests also affected by systematic backend issue
-
-### TEST-B006: Empty Message Test
-
-- **Input Method**: Chat message (empty input)
-- **Query**: "" (empty string)
-- **Expected**: Appropriate error handling or user guidance
-- **Result**: ✅ **SUCCESS** - Proper error handling
-- **Duration**: Immediate (<1s)
-- **Classification**: SUCCESS
-- **Frontend Behavior**: Send button remained disabled, no API call made
-- **Validation**: Excellent input validation prevented invalid requests
+[PLAYWRIGHT] Integrate Playwright CLI Testing into OpenAI Codebase
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
 *ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
+
+- Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
+
+1. Read doc to understand the Playwright MCP Testing Procedure & Playwright CLI Integration: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
+2. Read doc to understand the 6x basic tests & reporting format for the new CLI Integration: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_dynamic_port_validation_report_2025-01-09.md
+3. Use Sequential-Thinking, Context7 Tools, and any other tools to research how to integrate PlayWright CLI Testing into our OpenAI codebase based on research
+4. Use Sequential-Thinking, Context7 Tools, and any other tools to research how to create initial Playwright CLI Basic Test scripts to run the 6x Basic Tests from playwright_mcp_dynamic_port_validation_report_2025-01-09.md
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
+*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
+
 - IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
 - Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s)
-*ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
 ## Implementation Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-- Perform all of the requested task(s) based on the newly generated implementation plan todo checklist
 *ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
+
+- Based on all the research & newly generated implementation plan task breakdown todo checklist:
+
+5. Integrate Playwright CLI Testing
+6. Generate initial Playwright CLI Test Script for 6x Basic Test from playwright_mcp_dynamic_port_validation_report_2025-01-09.md
+7. Run new CLI 6x Basic Tests, fixing any issues in test scripts, & saving report based on same format of playwright_mcp_dynamic_port_validation_report_2025-01-09.md
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
@@ -133,12 +68,9 @@ Final Task 4: Final Verification
 
 *ALL TASKS MUST BE PERFORMED WITH MCP TOOLS*
 
-- THE EXACT SAME TEST MUST BE RAN
-- RUNNING EVEN 1X TEST that is NOT VERBATIM IS A TASK FAILURE VIOLATION AND MUST START ENTIRE TASK(S) OVER
-
 ## Expected Outcome
 
-- All 6/6 tests PASSED
+- All 6/6 tests PASSED with same results to the baseline gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_dynamic_port_validation_report_2025-01-09.md
 - All code fixes, doc updates, test reports, and 6/6 test ALL PASS and everything is committed and pushed atomically
 
 ## Additional Context
