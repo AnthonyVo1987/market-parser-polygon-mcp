@@ -4,7 +4,7 @@
 
 ## Task Description
 
-[PLAYWRIGHT] Add CLI Button Tests Suite to Match MCP Button Test suite
+[CLI_TEST] Fix CLI Button Test Issues from playwright_cli_button_test_execution_report_2025-01-09.md
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -14,10 +14,9 @@
 
 *IF IN PLAN MODE, MAIN AGENT MUST USE @agent-tech-lead-orchestrator to generate initial plan WITH AI Specialists Delegation & Coordination assignments; a Plan WITH any Specialists from @agent-tech-lead-orchestrator is an IMMEDIATE TASK VIOLATION AND TASK MUST BE ABORTED FOR NON COMPLIANCE*
 
-1. Read doc to understand the Playwright CLI Integration: gpt5-openai-agents-sdk-polygon-mcp/docs/PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md
-2. Read doc to understand the Playwright Testing Procedure: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
-3. Read doc to understand the Button Tests reporting format for the new CLI Button Tests:docs/test_reports/playwright_mcp_button_test_execution_report_2025-01-09.md
-4. Use Sequential-Thinking, Context7 Tools, and any other tools to research how to create Playwright CLI Button Test scripts to run the same Button Tests from playwright_mcp_dynamic_port_validation_report_2025-01-09.md
+1. Read doc to understand the results & issues: gpt5-openai-agents-sdk-polygon-mcp/CLI_BUTTON_TESTS_EXECUTION_RESULTS.md
+2. Read doc to understand the results & issues: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_cli_button_test_execution_report_2025-01-09.md
+3. Based on analysis from 2x test reports, research potential root cause(s) & potential fix(es)
 
 ## Planning Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -32,8 +31,9 @@
 
 - Based on all the research & newly generated implementation plan task breakdown todo checklist:
 
-5. Create new CLI Button Tests to match docs/test_reports/playwright_mcp_button_test_execution_report_2025-01-09.md
-6. Run new CLI Button Tests, fixing any issues in test scripts, & saving report based on same format of docs/test_reports/playwright_mcp_button_test_execution_report_2025-01-09.md
+5. Fix ALL issues from playwright_cli_button_test_execution_report_2025-01-09.md
+6. After fixing ALL issues, re-run the same exact tests to validate the fix(es) from playwright_cli_button_test_execution_report_2025-01-09.md
+7. If ANY tests fail, need to start the fix\test loop all over again until we get full passing test results from playwright_cli_button_test_execution_report_2025-01-09.md
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
@@ -54,7 +54,7 @@ Final Task 2: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
 Final Task 3: Atomic Git Commit & Push
 
 - Run `git status` to review all staged and unstaged changes
-- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, task summary
+- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 - git Push commit to repository using provided personal access token
 - **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
@@ -76,8 +76,7 @@ Final Task 4: Final Verification
 
 ## Expected Outcome*IF IN PLAN MODE, MAIN AGENT MUST USE @agent-tech-lead-orchestrator to generate initial plan WITH AI Specialists Delegation & Coordination assignments; a Plan WITH any Specialists from @agent-tech-lead-orchestrator is an IMMEDIATE TASK VIOLATION AND TASK MUST BE ABORTED FOR NON COMPLIANCE*
 
-- ALL new CLI Button Tests results match with parity to MCP method results: docs/test_reports/playwright_mcp_button_test_execution_report_2025-01-09.md
-- Both Playwright Testing for CLI AND MCP Methods wil now have complete 100% Parity for Basic Tests & Button tests, where if we run both methods, test reports should have the same results and testing methodology and no deviations
+- ALL issues fixed from playwright_cli_button_test_execution_report_2025-01-09.md
 - All code fixes, doc updates, test reports, and 6/6 test ALL PASS and everything is committed and pushed atomically
 
 ## Additional Context
