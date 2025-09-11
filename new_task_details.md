@@ -4,95 +4,82 @@
 
 ## Task Description
 
-[CORRECTED Playwright CLI Method Test Request]
+[Consolidated Playwright Test Plan Instructions for CLI & MCP Method]
 
-Use Sequential-Thinking Tool as many times as needed & Filesystem Tool(s) as many times as needed to TO PERFORM ALL TASK(S)
+Task 1. [Specialist] Review Integration Guide: gpt5-openai-agents-sdk-polygon-mcp/docs/PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md
 
-- Run ALL tests from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright using Playwright CLI Method with details below:
-- test-b001 through test-b016, 16x total tests to be ran for full 100% test coverage
+Task 2. [Specialist] Review testing procedures: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
 
-● 🚨 LINE-BY-LINE COMPARISON: INCORRECT vs REQUIRED TESTS
+Task 3. [Specialist] Review Full test plan files from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
 
-  | Test # | REQUIRED TEST (B001-B016)                                              | INCORRECT TEST EXECUTED                    | COMPLIANCE   |
-  |--------|------------------------------------------------------------------------|--------------------------------------------|--------------|
-  | B001   | Execute TEST B001 - Market Status Check using Playwright CLI           | B001 - Market Snapshot Button Test         | ❌ WRONG TEST |
-  | B002   | Execute TEST B002 - NVDA Ticker Analysis using Playwright CLI          | B002 - Support/Resistance Button Test      | ❌ WRONG TEST |
-  | B003   | Execute TEST B003 - SPY Ticker Analysis using Playwright CLI           | B003 - Technical Analysis Button Test      | ❌ WRONG TEST |
-  | B004   | Execute TEST B004 - GME Ticker Analysis using Playwright CLI           | B004 - Button Visual State Test            | ❌ WRONG TEST |
-  | B005   | Execute TEST B005 - Multi-Ticker Analysis using Playwright CLI         | B005 - Button Availability Test            | ❌ WRONG TEST |
-  | B006   | Execute TEST B006 - Empty Message Handling using Playwright CLI        | B006 - API Integration Test                | ❌ WRONG TEST |
-  | B007   | Execute TEST B007 - Stock Snapshot Button using Playwright CLI         | B007 - Response Processing Test            | ❌ WRONG TEST |
-  | B008   | Execute TEST B008 - Support Resistance Button using Playwright CLI     | B008 - Error Handling Test                 | ❌ WRONG TEST |
-  | B009   | Execute TEST B009 - Technical Analysis Button using Playwright CLI     | B009 - Multiple Button Test                | ❌ WRONG TEST |
-  | B010   | Execute TEST B010 - Multi-Button Interaction using Playwright CLI      | B010 - Button State Management Test        | ❌ WRONG TEST |
-  | B011   | Execute TEST B011 - Button State Validation using Playwright CLI       | B011 - Data Validation Test                | ❌ WRONG TEST |
-  | B012   | Execute TEST B012 - Button Error Handling using Playwright CLI         | B012 - UI Responsiveness Test              | ❌ WRONG TEST |
-  | B013   | Execute TEST B013 - Button Performance Validation using Playwright CLI | B013 - Chat Integration Test               | ❌ WRONG TEST |
-  | B014   | Execute TEST B014 - Button Accessibility using Playwright CLI          | B014 - Template System Test                | ❌ WRONG TEST |
-  | B015   | Execute TEST B015 - Button UI Consistency using Playwright CLI         | B015 - Frontend-Backend Communication Test | ❌ WRONG TEST |
-  | B016   | Execute TEST B016 - Button Integration using Playwright CLI            | B016 - Complete Workflow Test              | ❌ WRONG TEST |
+Task 4. [Specialist] Review CORRECT Playwright CLI commands (npx playwright test) Methodlogy & Test Results: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_25-09-10_18-30.md
 
-Task 1. Review testing procedures again before starting & acknowledge: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 5. [Specialist] Review CORRECT Playwright MCP Tool Methodlogy & Test Results: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_16-35.md
 
-Task 2. Main Agent: Review Full test plan from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+Task 6. [Specialist] Generate a brand new consolidated, single source of truth comprehensive Playwright Testing Plan & Procedure .md doc in gpt5-openai-agents-sdk-polygon-mcp/tests/playwright that will be the ONLY doc needed for AI Agents to read, and properly run tests for EITHER Playwright CLI commands (npx playwright test) Methodlogy OR Playwright MCP Tool Methodlogy.
 
-● 🚨 LINE-BY-LINE COMPARISON: INCORRECT vs REQUIRED TESTS
+- The new doc should spell out the entire proper testing procedure that SPELLS out exact testing methodolgy with all the corrective actions and lessons learned
+- It should have dedicated sections for Playwright CLI commands (npx playwright test) Methodlogy AND Playwright MCP Tool Methodlogy, that spells out the test plan checklist whenever tests are requested to be run:
 
-  | Test # | REQUIRED TEST (B001-B016)                                              | INCORRECT TEST EXECUTED                    | COMPLIANCE   |
-  |--------|------------------------------------------------------------------------|--------------------------------------------|--------------|
-  | B001   | Execute TEST B001 - Market Status Check using Playwright CLI           | B001 - Market Snapshot Button Test         | ❌ WRONG TEST |
-  | B002   | Execute TEST B002 - NVDA Ticker Analysis using Playwright CLI          | B002 - Support/Resistance Button Test      | ❌ WRONG TEST |
-  | B003   | Execute TEST B003 - SPY Ticker Analysis using Playwright CLI           | B003 - Technical Analysis Button Test      | ❌ WRONG TEST |
-  | B004   | Execute TEST B004 - GME Ticker Analysis using Playwright CLI           | B004 - Button Visual State Test            | ❌ WRONG TEST |
-  | B005   | Execute TEST B005 - Multi-Ticker Analysis using Playwright CLI         | B005 - Button Availability Test            | ❌ WRONG TEST |
-  | B006   | Execute TEST B006 - Empty Message Handling using Playwright CLI        | B006 - API Integration Test                | ❌ WRONG TEST |
-  | B007   | Execute TEST B007 - Stock Snapshot Button using Playwright CLI         | B007 - Response Processing Test            | ❌ WRONG TEST |
-  | B008   | Execute TEST B008 - Support Resistance Button using Playwright CLI     | B008 - Error Handling Test                 | ❌ WRONG TEST |
-  | B009   | Execute TEST B009 - Technical Analysis Button using Playwright CLI     | B009 - Multiple Button Test                | ❌ WRONG TEST |
-  | B010   | Execute TEST B010 - Multi-Button Interaction using Playwright CLI      | B010 - Button State Management Test        | ❌ WRONG TEST |
-  | B011   | Execute TEST B011 - Button State Validation using Playwright CLI       | B011 - Data Validation Test                | ❌ WRONG TEST |
-  | B012   | Execute TEST B012 - Button Error Handling using Playwright CLI         | B012 - UI Responsiveness Test              | ❌ WRONG TEST |
-  | B013   | Execute TEST B013 - Button Performance Validation using Playwright CLI | B013 - Chat Integration Test               | ❌ WRONG TEST |
-  | B014   | Execute TEST B014 - Button Accessibility using Playwright CLI          | B014 - Template System Test                | ❌ WRONG TEST |
-  | B015   | Execute TEST B015 - Button UI Consistency using Playwright CLI         | B015 - Frontend-Backend Communication Test | ❌ WRONG TEST |
-  | B016   | Execute TEST B016 - Button Integration using Playwright CLI            | B016 - Complete Workflow Test              | ❌ WRONG TEST |
+Test Plan Checklist for Playwright CLI commands (npx playwright test) Method
+-
 
-Task 3. Main Agent: Review previous passing PLaywright MCP Method test results that ran the full 16x tests: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_16-35.md
-
-Task 3. Main Agent: Kill all dev servers for fresh test run
-
-Task 4. Main Agent: Use the requested Playwright [CLI vs MCP] Method to Run the requested Tests following the procedure & format from: "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_16-35.md" & perform the test plan by marking off each TODO Test Task:
+- Perform the test plan by marking off each TODO Test Task:
 ☐ Kill all existing dev servers for fresh test run
 ☐ Start fresh backend server (FastAPI)
 ☐ Start fresh frontend server (Vite)
 ☐ Verify both servers operational before testing
-☐ Execute TEST B001 - Market Status Check using Playwright CLI
-☐ Execute TEST B002 - NVDA Ticker Analysis using Playwright CLI
-☐ Execute TEST B003 - SPY Ticker Analysis using Playwright CLI
-☐ Execute TEST B004 - GME Ticker Analysis using Playwright CLI
-☐ Execute TEST B005 - Multi-Ticker Analysis using Playwright CLI
-☐ Execute TEST B006 - Empty Message Handling using Playwright CLI
-☐ Execute TEST B007 - Stock Snapshot Button using Playwright CLI
-☐ Execute TEST B008 - Support Resistance Button using Playwright CLI
-☐ Execute TEST B009 - Technical Analysis Button using Playwright CLI
-☐ Execute TEST B010 - Multi-Button Interaction using Playwright CLI
-☐ Execute TEST B011 - Button State Validation using Playwright CLI
-☐ Execute TEST B012 - Button Error Handling using Playwright CLI
-☐ Execute TEST B013 - Button Performance Validation using Playwright CLI
-☐ Execute TEST B014 - Button Accessibility using Playwright CLI
-☐ Execute TEST B015 - Button UI Consistency using Playwright CLI
-☐ Execute TEST B016 - Button Integration using Playwright CLI
+☐ Execute TEST B001 - Market Status Check using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B002 - NVDA Ticker Analysis using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B003 - SPY Ticker Analysis using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B004 - GME Ticker Analysis using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B005 - Multi-Ticker Analysis using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B006 - Empty Message Handling using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B007 - Stock Snapshot Button using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B008 - Support Resistance Button using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B009 - Technical Analysis Button using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B010 - Multi-Button Interaction using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B011 - Button State Validation using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B012 - Button Error Handling using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B013 - Button Performance Validation using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B014 - Button Accessibility using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B015 - Button UI Consistency using Playwright CLI commands (npx playwright test)
+☐ Execute TEST B016 - Button Integration using Playwright CLI commands (npx playwright test)
 ☐ CRITICAL: Verify 16/16 test coverage completed AND verify that B001-B016 requirements were ran and NOT custom tests
 ☐ Use @documentation-specialist to generate comprehensive test report
 
-Task 5. Main Agent: CRITICAL SHORT CIRCUIT CHECK TO CONFIRM 100% 16/16 TEST COVERAGE: Sanity Check that ALL 16x Tests were ran:
+Test Plan Checklist for Playwright MCP Tools Method
+-
 
-- If 100% 16/16 TEST COVERAGE, Proceed to Task 6.
-- If NOT 100% 16/16 TEST COVERAGE, TASK COMPLETETY FAILED, PROVIDE A POST-MORTEM ANALYSIS (NO DOCS NEEDS) WHAT WENT WRONG, AND WAIT FOR USER REVIEW
+- Perform the test plan by marking off each TODO Test Task:
+☐ Kill all existing dev servers for fresh test run
+☐ Start fresh backend server (FastAPI)
+☐ Start fresh frontend server (Vite)
+☐ Verify both servers operational before testing
+☐ Execute TEST B001 - Market Status Check using Playwright MCP Tools Method
+☐ Execute TEST B002 - NVDA Ticker Analysis using Playwright MCP Tools Method
+☐ Execute TEST B003 - SPY Ticker Analysis using Playwright MCP Tools Method
+☐ Execute TEST B004 - GME Ticker Analysis using Playwright MCP Tools Method
+☐ Execute TEST B005 - Multi-Ticker Analysis using Playwright MCP Tools Method
+☐ Execute TEST B006 - Empty Message Handling using Playwright MCP Tools Method
+☐ Execute TEST B007 - Stock Snapshot Button using Playwright MCP Tools Method
+☐ Execute TEST B008 - Support Resistance Button using Playwright MCP Tools Method
+☐ Execute TEST B009 - Technical Analysis Button using Playwright MCP Tools Method
+☐ Execute TEST B010 - Multi-Button Interaction using Playwright MCP Tools Method
+☐ Execute TEST B011 - Button State Validation using Playwright MCP Tools Method
+☐ Execute TEST B012 - Button Error Handling using Playwright MCP Tools Method
+☐ Execute TEST B013 - Button Performance Validation using Playwright MCP Tools Method
+☐ Execute TEST B014 - Button Accessibility using Playwright MCP Tools Method
+☐ Execute TEST B015 - Button UI Consistency using Playwright MCP Tools Method
+☐ Execute TEST B016 - Button Integration using Playwright MCP Tools Method
+☐ CRITICAL: Verify 16/16 test coverage completed AND verify that B001-B016 requirements were ran and NOT custom tests
+☐ Use @documentation-specialist to generate comprehensive test report
 
-Task 6. ONLY After all 16/16 tests have completed running for FULL test coverage, use @agent-documentation-specialist to generate a fully detailed granular test report with the following requirements:
+Task 7. Add documentation steps to handle test report format rules:
 
-1. Match same reporting style from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_16-35.md"
+ONLY After all tests have completed running for FULL test coverage, use @agent-documentation-specialist to generate a fully detailed granular test report with the following requirements:
+
+1. Match same reporting style from playwright_CLI_test_25-09-10_18-30.md / playwright_MCP_test_25-09-10_16-35.md
 2. Include ALL testing requirments, such as the 120s timeout PER test, 30sec polling etc, execution time etc
 3. Include any details if dev server ports\address needed the dynamic adjustment for a proper run
 4. EACH Test needs to have it's own "mini-dedicated section\module report" to add more granular details during that specific test's execution run & also include the specific test file names\file locations for EACH test
@@ -100,8 +87,6 @@ Task 6. ONLY After all 16/16 tests have completed running for FULL test coverage
 6. Report file name should now be saved in a new standardized report name format, depending if Playwright MCP and\or Playwright CLI method was used to the the tests: "playwright_MCP_test_YY-MM-DD_hh-mm.md" vs "playwright_CLI_test_YY-MM-DD_hh-mm.md"
 7. Save test report to gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports
 8. ONLY A SINGLE test report .md doc is needed - every test run will only have a single source of truth for the entire test execution run and test results in the same doc
-
-Task 7. After Task 6 is complete, wait for User to review the test results report
 
 ## Research Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -119,8 +104,6 @@ Task 5. [Specialist] Based on all research, analysis, & investigation, fix all t
 - Based on all the research & newly generated implementation plan task breakdown todo checklist:
 
 ## Testing Task(s) - Specialist(s) to use Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
-
-- After fixes are implemented, perform the test plan by marking off each TODO item:
 
 ## Final Task(s) - Specialist(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
@@ -161,7 +144,6 @@ Final Task 4: Final Verification
 
 ## Expected Outcome*IF IN PLAN MODE, MAIN AGENT MUST USE @agent-tech-lead-orchestrator to generate initial plan WITH AI Specialists Delegation & Coordination assignments; a Plan WITH any Specialists from @agent-tech-lead-orchestrator is an IMMEDIATE TASK VIOLATION AND TASK MUST BE ABORTED FOR NON COMPLIANCE*
 
-- ALL 16/16 test Ran and PASSED from Full test plan OF ALL 16 tests (B001-B016) from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright & from "gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_mcp_comprehensive_test_execution_report_2025-01-10_12-37-45.md"
 - All code fixes, doc updates, 1x single test report saved in correct location with correct naming format playwright_MCP_test_YY-MM-DD_hh-mm.md, and everything is committed and pushed atomically
 
 ## Additional Context
