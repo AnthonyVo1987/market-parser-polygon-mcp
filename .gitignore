@@ -88,3 +88,4 @@ node_modules
 .mcp.json
 .gemini/settings.json
 .gemini/gemini_new_task_details.md
+gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist/sw.js
