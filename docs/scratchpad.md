@@ -1,6 +1,6 @@
 ### THIS FILE IS A TEMPORARY SCRATCHPAD FOR USER TO JOT DOWN NOTES; AI AGENTS SUCH AS CLAUDE, GEMINI ETC SHOULD NOT OPEN OR READ THIS FILE TO PREVENT CONTEXT POLLUTION ###
 
-Sanity Check #4 Doc Review of gpt5-openai-agents-sdk-polygon-mcp/tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+Sanity Check #8: Use Sequential-Thinking Tools & Filesystem Tools to perform another Doc Review of gpt5-openai-agents-sdk-polygon-mcp/tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
 
   1. Can AI Agent fully replicate the entire test sequence and test report from playwright_CLI_test_25-09-10_18-30.md by JUST reading PLAYWRIGHT_TESTING_MASTER_PLAN.md?  If not, fix Fix
   PLAYWRIGHT_TESTING_MASTER_PLAN.md until PLAYWRIGHT_TESTING_MASTER_PLAN.md can fully replicate the entire test sequence and test report from playwright_CLI_test_25-09-10_18-30.md.
@@ -8,7 +8,56 @@ Sanity Check #4 Doc Review of gpt5-openai-agents-sdk-polygon-mcp/tests/playwrigh
   2. Can AI Agent fully replicate the entire test sequence and test report from  playwright_MCP_test_25-09-10_16-35.md by JUST reading PLAYWRIGHT_TESTING_MASTER_PLAN.md? If not, fix Fix
   PLAYWRIGHT_TESTING_MASTER_PLAN.md until PLAYWRIGHT_TESTING_MASTER_PLAN.md can fully replicate the entire test sequence and test report from playwright_MCP_test_25-09-10_16-35.md
 
-  3. After performing fixes, wait for user review and feedback - do NOT commit anything yet
+  3. After performing fixes, wait for user review and feedback - do NOT commit anything yet\
+
+  Wait, let's get something straight first:
+
+Answer some questions first:
+
+- We don't need backward compatilbility with the reports since with the new changes, we will test out and generate new reports to verify it follows the new rules
+- Don't need the new timing mapping etc
+- For the CLI COmmand mismatch, which command is better for us?  THe Master plan command is more complex but thats with Context7 research recommendation so maybe the master plan command is better?  please confirm this first
+
+  Adjust the plan again with the following:
+- ALL Tasks require sequential-thinking tool usage
+- CLI Method updates requires Context7 Tool to make sure we are working with the most update to date robust Playwright CLI NPX Methods & sequential-thinking tool
+- MCP Method updates requires Context7 Tool to make sure we are working with the most update to date robust Playwright MCP Tool Call Methods & sequential-thinking tool
+
+Add on further updates and adjustments for MCP Method:
+
+- Add detailed Playwright MCP Tool calls, usage, syntax, inputs, outputs for EACH of the tests
+- The reason is other AI Agents may not realize the proper usage of the PLaywright MCP Tools in order to perform the test(s), so we need to add more granular details to spell out what is the proper Playwright MCP tool calls for
+- End result is the MCP Method Master Plan for EACH test has all the proper details needed for an AI Agent that has NEVER used Playwright MCP Tools before, to properly utilize the tools for proper test
+- AI Agents may not know what tools to call, what to input, what output to expect, they may call the wrong tools, or even call proper tools but the parameters are incorrect etc
+
+Playwright MCP Tool Call Usage and\or Parameters for:
+
+- Starting a test matching the test's requirements
+- Proper Response Polling every 10s vs 120s max timeout detection
+- Response Detection
+- Proper Reponse verification for Pass\Fail Criteria
+
+In addition to the issues you flagged, lets make some updates & adjustments to the testings process, config, rules, pass\fail criteria, performance criteria, and how test results should be interpreted for CLI vs MCP method since there are inherent different requirements for each method:
+
+- MCP Method inherently takes longer to respond per test, so it is expected to be slower than CLI Method
+- We will not flag and\or focus on Performance Issues at this time, since we are prototpying.  Just add notes regarding performance for the test report.  So performance issues are now NOT part of a test's Pass\Fail criteria
+
+1. BOTH Methods will share the following Common Criteria for EACH test:
+
+- PASS: Test responds  AND within 120s max test timeout, regardless of performance
+- FAIL: Test responds incorrectly and\or responds longer than max test timeout and\or never responds at all (timeout)
+- PERFORMANCE: Categorize by 3 buckets now, with an emoji for each of the 3x different buckets:
+- Good: Responds within 30s
+- OK: Responds within 60s
+- Slow: Responds longer than 60s but less than the 120s max timeout
+
+2. CLI Method Only Adjustments:
+
+- Polling time for responses is 100ms by default for CLI Method; does NOT need to poll every 30 sec like MPC Method does.  So do NOT flag 100 ms polling time as a config failure for CLI method
+
+3. MCP Method
+
+- Polling time for responses adjusted lower to every 10 sec, down from 30s to allow better performance measurement granularity.  Flag polling time config issue if it is NOT 10 sec polling time
 
 ● ✅ TASK COMPLETION STATUS: 100% SUCCESS
 

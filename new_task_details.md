@@ -2,22 +2,49 @@
 
 ## Task Description
 
+- I have manually moved some things around CLAUDE.md, updated /resync command, and removed unused Specialists for Django, Laravel, Rails, Vue
+- Review ALL the changes made currently unstaged first
+- Update LAST_TASK_SUMMARY.md with full details
+- Update CLAUDE.md with last task summary
+- Perform a commit, push, & sync of all the latest Project Doc changes
+
+Lets' make some adjustments:
+
+Ask @agent-team-configurator to use Sequential-Thinking Tools & Context7 Tools and optimize my project to best use the available subagents to now support all the massive code changes we made especially to Standalone OpenAI based Python CLI + FastAPI + React GUI frontend + OpenAI + Agents SDK + VITE + Pytest + Pydantic with the following details:
+- Ignore legacy Gradio based CLI & GUI code since we plan to retire that soon
+- You cannot create new Specialists like a playwright-test-architect; Refer to the current available agents for the best config
+- Recommend which Agents we can remove completely that is not part of our stack I.E. Django, Laravel, Rails, Vue etc
+- Playwright CLI (npx playwright test) Method - Running, Updating, Changing, Creating Test(s)
+- Playwright Testing Integration for Playwright Tools Method - Running, Updating, Changing, Creating Test(s)
+- Playwright Test Report Generation\Review
+- Dyanmic Port Handling
+- Multiple Fixes
+- etc anything else for the OpenAI app
+
+use @agent-team-configurator and optimize my project to best use the available subagents to now support all the massive code changes we made especially to Standalone OpenAI based Python CLI + FastAPI + React GUI frontend + OpenAI Agents SDK + Pydantic:
+
+- Playwright Testing Integration for Playwright CLI (npx playwright test) Method
+- Playwright Testing Integration for Playwright Tools Method
+- Dyanmic Port Handling
+- Multiple Fixes
+- etc anything else for the OpenAI app
+
 - I deleted the bad test plan doc so we can start over
 - DO NOT USE SPECIALISTS FOR ANY OF THESE TASKS TO CORRECT THE MASTER PLAN
 
 [CORRECTED Consolidated Playwright Test Plan Instructions for CLI & MCP Method]
 
-Task 1. [Main_Agent] Review Integration Guide: gpt5-openai-agents-sdk-polygon-mcp/docs/PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md
+Task 1. [SPECIALISTS] Review Integration Guide: gpt5-openai-agents-sdk-polygon-mcp/docs/PLAYWRIGHT_TESTING_INTEGRATION_GUIDE.md
 
-Task 2. [Main_Agent] Review testing procedures: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
+Task 2. [SPECIALISTS] Review testing procedures: gpt5-openai-agents-sdk-polygon-mcp/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md
 
-Task 3. [Main_Agent] Review Full test plan files from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+Task 3. [SPECIALISTS] Review Full test plan files from gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
 
-Task 4. [Main_Agent] Review CORRECT Playwright CLI commands (npx playwright test) Methodlogy & Test Results: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_25-09-10_18-30.md
+Task 4. [SPECIALISTS] Review CORRECT Playwright CLI commands (npx playwright test) Methodlogy & Test Results: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_CLI_test_25-09-10_18-30.md
 
-Task 5. [Main_Agent] Review CORRECT Playwright MCP Tool Methodlogy & Test Results: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_16-35.md
+Task 5. [SPECIALISTS] Review CORRECT Playwright MCP Tool Methodlogy & Test Results: gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports/playwright_MCP_test_25-09-10_16-35.md
 
-Task 6. [Main_Agent] Generate a brand new consolidated, single source of truth comprehensive Playwright Testing Plan & Procedure .md doc in gpt5-openai-agents-sdk-polygon-mcp/tests/playwright that will be the ONLY doc needed for AI Agents to read, and properly run tests for EITHER Playwright CLI commands (npx playwright test) Methodlogy OR Playwright MCP Tool Methodlogy.
+Task 6. [SPECIALISTS] Generate a brand new consolidated, single source of truth comprehensive Playwright Testing Plan & Procedure .md doc in gpt5-openai-agents-sdk-polygon-mcp/tests/playwright that will be the ONLY doc needed for AI Agents to read, and properly run tests for EITHER Playwright CLI commands (npx playwright test) Methodlogy OR Playwright MCP Tool Methodlogy.
 
 - The new doc should spell out the entire proper testing procedure that SPELLS out exact testing methodolgy with all the corrective actions and lessons learned
 - It should have dedicated sections for Playwright CLI commands (npx playwright test) Methodlogy AND Playwright MCP Tool Methodlogy, that spells out the test plan checklist whenever tests are requested to be run:
@@ -87,28 +114,28 @@ ONLY After all tests have completed running for FULL test coverage, generate a f
 7. Save test report to gpt5-openai-agents-sdk-polygon-mcp/docs/test_reports
 8. ONLY A SINGLE test report .md doc is needed - every test run will only have a single source of truth for the entire test execution run and test results in the same doc
 
-## Research Task(s) - Main_Agent(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+## Research Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
 
-## Planning Task(s) - Main_Agent(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+## Planning Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
 - Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s):
 
-Task 5. [Main_Agent] Based on all research, analysis, & investigation, fix all the issues
+Task 5. [SPECIALISTS] Based on all research, analysis, & investigation, fix all the issues
 
-## Implementation Task(s) - Main_Agent(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+## Implementation Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
 - Based on all the research & newly generated implementation plan task breakdown todo checklist:
 
-## Testing Task(s) - Main_Agent(s) to use Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
+## Testing Task(s) - SPECIALISTS(s) to use Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
-## Final Task(s) - Main_Agent(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
+## Final Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
 Final Task 1: Review/Fix Loop
 
-- Main_Agent performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- SPECIALISTS performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
 - Uses `mcp__filesystem__*` tools for all file operations and examination
 - Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
 - Continue review/fix cycle WITH LINT until achieving PASSING code review status
@@ -137,6 +164,7 @@ Final Task 4: Final Verification
 **Key Requirements:**
 
 ## Requirements
+
 - DO NOT USE SPECIALISTS FOR ANY OF THESE TASKS TO CORRECT THE MASTER PLAN
 
 ## Expected Outcome*
