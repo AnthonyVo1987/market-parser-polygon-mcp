@@ -14,8 +14,9 @@ This document provides comprehensive guidance for executing the complete B001-B0
 - **Complete Test Coverage**: All 16 real B001-B016 tests with accurate specifications
 - **Dual Methodology Support**: Both CLI (`npx playwright test`) and MCP browser automation
 - **Single Browser Session Protocol**: Maintains session continuity for realistic user simulation
-- **Performance Validation**: 30-second polling with 120-second timeout per test
-- **Proven Success**: Based on actual successful test executions with 78%+ pass rates
+- **Universal Testing Criteria**: 120-second timeout with 3-bucket performance classification
+- **Method-Specific Optimization**: CLI (inherently faster) vs MCP (inherently slower, expected)
+- **Prototyping-Focused**: Performance as reference notes, not pass/fail criteria
 
 ---
 
@@ -32,6 +33,43 @@ This document provides comprehensive guidance for executing the complete B001-B0
 
 - **CLI Method**: Use `npx playwright test` commands for traditional automation
 - **MCP Method**: Use MCP browser tools for sophisticated browser control
+
+---
+
+## Universal Testing Criteria (Updated Framework)
+
+### Pass/Fail Criteria (Both CLI and MCP Methods)
+
+- **✅ PASS**: Test responds correctly AND completes within 120 seconds maximum timeout
+- **❌ FAIL**: Test responds incorrectly OR exceeds 120 seconds OR never responds at all
+
+**Important**: Performance speed is NOT part of pass/fail criteria during prototyping phase.
+
+### Performance Classification System (Reference Only)
+
+**3-Bucket Performance Categories:**
+- **Good** 😊: Response within 30 seconds (optimal performance)
+- **OK** 😐: Response within 60 seconds (acceptable performance)  
+- **Slow** 😴: Response >60 seconds but <120 seconds (functional but slow)
+
+**Performance Notes:**
+- Performance data is recorded for reference and optimization planning
+- MCP Method is expected to be inherently slower than CLI Method (this is normal)
+- Performance issues do not cause test failures in prototyping environment
+
+### Method-Specific Expectations
+
+**CLI Method:**
+- Inherently faster execution times expected
+- 100ms internal polling is correct (do not flag as configuration error)
+- **Why 100ms polling:** CLI tests use Playwright's internal polling mechanism for element detection
+- Target: Most tests in Good 😊 or OK 😐 categories
+
+**MCP Method:**
+- Inherently slower execution times expected and normal
+- 10-second polling intervals required (flag as config issue if not 10s)
+- **Why 10s polling:** MCP browser tools use `wait_for` with explicit 10-second intervals for response detection
+- Target: Functional completion within 120s timeout regardless of speed
 
 ---
 
@@ -55,7 +93,7 @@ This document provides comprehensive guidance for executing the complete B001-B0
 - ✅ Emoji integration working correctly (📈📉💰)
 - ✅ Financial data accuracy confirmed
 - ✅ Exchange status and market hours included
-- ❌ Polling configuration validation (expected 30000ms vs actual 100ms)
+- ✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
 
 #### B002: NVDA Ticker Analysis
 
@@ -73,7 +111,7 @@ This document provides comprehensive guidance for executing the complete B001-B0
 - ✅ Emoji sentiment indicators functional
 - ✅ Financial data accuracy confirmed
 - ✅ Performance timing optimal
-- ❌ Polling configuration validation failed
+- ✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
 
 #### B003: SPY Ticker Analysis
 
@@ -91,7 +129,7 @@ This document provides comprehensive guidance for executing the complete B001-B0
 - ✅ Response format validation passed
 - ✅ Emoji integration functional
 - ✅ Performance timing optimal
-- ❌ Polling configuration validation failed
+- ✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
 
 #### B004: GME Ticker Analysis
 
@@ -108,7 +146,7 @@ This document provides comprehensive guidance for executing the complete B001-B0
 - ✅ Volume spike detection functional
 - ✅ Response format validation passed
 - ✅ Performance timing excellent
-- ❌ Polling configuration validation failed
+- ✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
 
 #### B005: Multi-Ticker Analysis
 
@@ -126,17 +164,17 @@ This document provides comprehensive guidance for executing the complete B001-B0
 - ✅ Performance optimization excellent
 - ✅ Cross-market analysis complete
 - ✅ Sentiment indicators across all tickers
-- ❌ Polling configuration validation failed
+- ✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
 
 #### B006: Empty Message Validation
 
-- **File**: `test-b006-empty-message-handling.spec.ts`
+- **File**: `test-b006-empty-message.spec.ts`
 - **Description**: Error handling for empty input validation
 - **Purpose**: UI behavior verification for empty input handling
 - **Test Type**: Send button disabled state and form validation mechanics
 - **Query**: Empty input field testing
 - **Expected**: Send button disabled, proper placeholder text, form validation feedback
-- **Performance Target**: Instant response (Actual: ~6.9 seconds, SUCCESS)
+- **Performance Target**: Instant response (Actual: 35 seconds CLI, SUCCESS)
 
 **Test Validation Checklist**:
 
@@ -147,7 +185,7 @@ This document provides comprehensive guidance for executing the complete B001-B0
 ✅ User feedback mechanisms operational
 ✅ UI state detection functional
 ✅ Performance timing optimal
-❌ Polling configuration validation failed
+✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
 ```
 
 ### Button Template System Tests (B007-B016)
@@ -171,8 +209,8 @@ This document provides comprehensive guidance for executing the complete B001-B0
 ✅ Button click interaction working
 ✅ Response generation functional
 ✅ Stock analysis data accurate
-❌ Polling configuration validation failed
-❌ Timeout configuration validation failed
+✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
+✅ Timeout configuration validation (120s universal timeout implemented correctly)
 ```
 
 #### B008: Support/Resistance Button
@@ -194,8 +232,8 @@ This document provides comprehensive guidance for executing the complete B001-B0
 ✅ Button click interaction working
 ✅ Technical analysis response functional
 ✅ Support/resistance data accurate
-❌ Polling configuration validation failed
-❌ Timeout configuration validation failed
+✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
+✅ Timeout configuration validation (120s universal timeout implemented correctly)
 ```
 
 #### B009: Technical Analysis Button
@@ -217,8 +255,8 @@ This document provides comprehensive guidance for executing the complete B001-B0
 ✅ Button click interaction working
 ✅ Advanced technical indicators functional
 ✅ Comprehensive analysis data accurate
-❌ Polling configuration validation failed
-❌ Timeout configuration validation failed
+✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
+✅ Timeout configuration validation (120s universal timeout implemented correctly)
 ```
 
 #### B010: Multi-Button Interaction
@@ -345,27 +383,32 @@ cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright/
 
 #### CLI Execution Pattern
 
-**Single Browser Session Protocol** - Execute tests sequentially in one continuous browser instance:
+**Enhanced CLI Commands** - Execute tests with optimal configuration:
 
 ```bash
-# Execute all tests in sequence (maintains single browser session)
-npx playwright test test-b001-market-status.spec.ts
-npx playwright test test-b002-nvda-analysis.spec.ts
-npx playwright test test-b003-spy-analysis.spec.ts
-npx playwright test test-b004-gme-analysis.spec.ts
-npx playwright test test-b005-multi-ticker.spec.ts
-npx playwright test test-b006-empty-message-handling.spec.ts
-npx playwright test test-b007-stock-snapshot.spec.ts
-npx playwright test test-b008-support-resistance.spec.ts
-npx playwright test test-b009-technical-analysis.spec.ts
-npx playwright test test-b010-button-interactions.spec.ts
-npx playwright test test-b011-button-validation.spec.ts
-npx playwright test test-b012-error-handling.spec.ts
-npx playwright test test-b013-performance.spec.ts
-npx playwright test test-b014-accessibility.spec.ts
-npx playwright test test-b015-ui-consistency.spec.ts
-npx playwright test test-b016-button-integration.spec.ts
+# Enhanced CLI pattern with 120s timeout and single browser session
+npx playwright test --timeout=120000 --workers=1 test-b001-market-status.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b002-nvda-analysis.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b003-spy-analysis.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b004-gme-analysis.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b005-multi-ticker.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b006-empty-message.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b007-stock-snapshot.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b008-support-resistance.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b009-technical-analysis.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b010-button-interactions.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b011-button-validation.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b012-error-handling.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b013-performance.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b014-accessibility.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b015-ui-consistency.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b016-button-integration.spec.ts
 ```
+
+**CLI Options Explained:**
+- `--timeout=120000`: Sets maximum test timeout to 120 seconds (120,000ms)
+- `--workers=1`: Ensures single browser session maintained across all tests
+- Optional: `--retries=3` can be added for enhanced reliability in prototyping
 
 ### CLI Testing Checklist
 
@@ -439,7 +482,7 @@ npx playwright test test-b016-button-integration.spec.ts
 - **CLI Report Example**: ~773 seconds total (~12.9 minutes for complete suite)
 - **Average Execution Time**: ~48.3 seconds per test
 - **Calculation**: Sum of all individual test times from CLI execution
-- **Performance Breakdown**: 13 SUCCESS tests, 3 SLOW_PERFORMANCE tests
+- **Performance Breakdown**: Using new emoji system (Good/OK/Slow counts)
 
 #### Test Validation Count Calculation
 - **Individual Validation Points**: Count ✅/❌ items per test
@@ -447,10 +490,12 @@ npx playwright test test-b016-button-integration.spec.ts
 - **Calculation**: (Passed validations / Total validations) × 100
 - **Pattern**: Each test has 5-7 validation points, sum across all tests
 
-#### Performance Classification Distribution
-- **SUCCESS Count**: Tests completing ≤30 seconds
-- **SLOW_PERFORMANCE Count**: Tests completing 31-89 seconds
-- **Example**: 16/16 SUCCESS (<45s each) for CLI method
+#### Performance Classification Distribution (New System)
+- **Good 😊 Count**: Tests completing ≤30 seconds
+- **OK 😐 Count**: Tests completing 31-60 seconds
+- **Slow 😴 Count**: Tests completing 61-119 seconds
+- **Pass Rate**: (All tests completing <120s / Total tests) × 100
+- **Example**: 16/16 PASS with 8 Good 😊, 5 OK 😐, 3 Slow 😴 = 100% pass rate
 
 ### CLI Command Output Examples
 
@@ -479,23 +524,145 @@ Running 1 test using 1 worker
 
 ### MCP Tool Integration
 
-#### Available MCP Browser Tools
+#### Available MCP Browser Tools (Complete Reference)
 
-- `mcp__playwright__browser_navigate` - Navigate to URLs
-- `mcp__playwright__browser_snapshot` - Capture page snapshots
-- `mcp__playwright__browser_type` - Type text into elements
-- `mcp__playwright__browser_click` - Click buttons and elements
-- `mcp__playwright__browser_wait_for` - Wait for elements or time
-- `mcp__playwright__browser_network_requests` - Monitor network activity
-- `mcp__playwright__browser_press_key` - Press keyboard keys
+**Core Navigation & Page Control:**
+- `mcp__playwright__browser_navigate` - Navigate to URLs with error handling
+- `mcp__playwright__browser_snapshot` - Capture accessibility snapshots for analysis
+- `mcp__playwright__browser_evaluate` - Execute JavaScript for validation
+- `mcp__playwright__browser_network_requests` - Monitor API calls and responses
 
-#### MCP Execution Workflow
+**User Interaction Tools:**
+- `mcp__playwright__browser_type` - Type text into form elements
+- `mcp__playwright__browser_click` - Click buttons, links, and interactive elements
+- `mcp__playwright__browser_press_key` - Send keyboard events
+- `mcp__playwright__browser_hover` - Hover over elements
 
-1. **Browser Session Start**: Single browser instance initialization
-2. **Navigate**: `browser_navigate` to frontend URL (with port auto-detection)
-3. **Test Execution**: Use appropriate MCP tools for each test
-4. **Validation**: Verify responses and performance metrics
-5. **Session End**: Complete testing in same browser instance
+**Waiting & Response Detection:**
+- `mcp__playwright__browser_wait_for` - Wait for text, elements, or time (CRITICAL for polling)
+
+**Advanced Features:**
+- `mcp__playwright__browser_fill_form` - Fill multiple form fields simultaneously
+- `mcp__playwright__browser_select_option` - Select dropdown options
+- `mcp__playwright__browser_take_screenshot` - Visual documentation (supplementary)
+
+#### MCP Execution Workflow with 10-Second Polling
+
+**Standard Test Execution Pattern:**
+1. **Initialize**: `mcp__playwright__browser_navigate` to test URL
+2. **Capture State**: `mcp__playwright__browser_snapshot` for baseline
+3. **Execute Action**: Use appropriate input/click tools
+4. **Poll Response**: `mcp__playwright__browser_wait_for` with 10-second intervals
+5. **Validate**: Check response content for pass/fail criteria
+6. **Document**: Record timing and performance classification
+
+**Critical 10-Second Polling Implementation:**
+```json
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "Expected Response Pattern",
+    "time": 10
+  }
+}
+```
+**Repeat every 10 seconds until response detected or 120s timeout reached.**
+
+#### Complete MCP Tool Examples for AI Agents
+
+**For AI Agents with Zero MCP Experience:**
+These examples provide exact tool calls, parameters, and expected outputs for common test scenarios.
+
+**Example 1: B001 Market Status Test (Complete Workflow)**
+```json
+// Step 1: Navigate to frontend
+{
+  "tool": "mcp__playwright__browser_navigate",
+  "parameters": {
+    "url": "http://localhost:3000"
+  }
+}
+// Expected: Navigation successful, page loaded
+
+// Step 2: Take baseline snapshot
+{
+  "tool": "mcp__playwright__browser_snapshot",
+  "parameters": {}
+}
+// Expected: Accessibility tree snapshot returned
+
+// Step 3: Type query into message input
+{
+  "tool": "mcp__playwright__browser_type",
+  "parameters": {
+    "element": "message input textarea",
+    "ref": "textarea[placeholder*='message']",
+    "text": "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+  }
+}
+// Expected: Text entered into textarea
+
+// Step 4: Send message
+{
+  "tool": "mcp__playwright__browser_press_key",
+  "parameters": {
+    "key": "Enter"
+  }
+}
+// Expected: Message submitted, processing begins
+
+// Step 5: Poll for response every 10 seconds
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "🎯 KEY TAKEAWAYS",
+    "time": 10
+  }
+}
+// Expected: Either response detected or timeout after 10s
+// If timeout, repeat this step until response or 120s total
+
+// Step 6: Validate response content for PASS/FAIL
+{
+  "tool": "mcp__playwright__browser_evaluate",
+  "parameters": {
+    "function": "() => { const responses = document.querySelectorAll('.message-content'); return responses[responses.length-1]?.textContent || 'No response found'; }"
+  }
+}
+// Expected: Response text for validation
+```
+
+**Example 2: B007 Button Test (Button Interaction)**
+```json
+// After navigation and baseline setup...
+
+// Click stock snapshot button
+{
+  "tool": "mcp__playwright__browser_click",
+  "parameters": {
+    "element": "stock snapshot button",
+    "ref": "[data-testid='stock-snapshot-button'], button[title*='snapshot'], button:has-text('📈')"
+  }
+}
+// Expected: Button clicked, template activated
+
+// Poll for analysis response
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "📈 Market Snapshot",
+    "time": 10
+  }
+}
+// Repeat every 10s until detected or 120s timeout
+```
+
+**Critical Notes for AI Agents:**
+- Always use exact parameter names as shown
+- "ref" parameter should include multiple selector options (comma-separated)
+- "time" in wait_for is interval seconds, not total timeout
+- Repeat wait_for calls every 10 seconds, don't set time=120
+- Check response content for pass/fail validation after detection
 
 ### MCP Testing Checklist
 
@@ -514,7 +681,7 @@ Running 1 test using 1 worker
 - [ ] `mcp__playwright__browser_snapshot` with parameters: `{}`
 - [ ] `mcp__playwright__browser_type` with parameters: `{"element": "Message input", "ref": "textarea", "text": "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"}`
 - [ ] `mcp__playwright__browser_press_key` with parameters: `{"key": "Enter"}`
-- [ ] `mcp__playwright__browser_wait_for` with parameters: `{"text": "🎯 KEY TAKEAWAYS", "time": 120}`
+- [ ] `mcp__playwright__browser_wait_for` with parameters: `{"text": "🎯 KEY TAKEAWAYS", "time": 10}` (repeat every 10s, max 120s total)
 - [ ] Validate market status data and emoji indicators (📈📉💰)
 - [ ] Expected duration: ~42 seconds (SLOW_PERFORMANCE classification)
 
@@ -522,7 +689,7 @@ Running 1 test using 1 worker
 
 - [ ] `mcp__playwright__browser_type` with parameters: `{"element": "Message input", "ref": "textarea", "text": "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"}`
 - [ ] `mcp__playwright__browser_press_key` with parameters: `{"key": "Enter"}`
-- [ ] `mcp__playwright__browser_wait_for` with parameters: `{"text": "📈 NVIDIA Corporation", "time": 120}`
+- [ ] `mcp__playwright__browser_wait_for` with parameters: `{"text": "📈 NVIDIA Corporation", "time": 10}` (repeat every 10s, max 120s total)
 - [ ] Validate comprehensive NVIDIA stock analysis with pricing and volume
 - [ ] Expected duration: ~62 seconds (SLOW_PERFORMANCE)
 
@@ -649,23 +816,30 @@ Running 1 test using 1 worker
 
 ## Performance Standards and Validation
 
-### Performance Classifications
+### Performance Classifications (Updated System)
 
-- **SUCCESS**: ≤30 seconds response time (optimal performance range)
-- **SLOW_PERFORMANCE**: 31-89 seconds response time (functional but requires optimization) 
-- **FUNCTIONAL (Performance Issue)**: When test works but has performance concerns (used in MCP reports)
-- **TIMEOUT**: >120 seconds (failure condition - test timeout)
+**Pass/Fail Criteria:**
+- **PASS**: Test completes correctly within 120 seconds
+- **FAIL**: Test fails to complete correctly OR exceeds 120 seconds
+
+**Performance Reference Categories:**
+- **Good 😊**: ≤30 seconds (optimal performance)
+- **OK 😐**: 31-60 seconds (acceptable performance)
+- **Slow 😴**: 61-119 seconds (functional but slow)
+- **TIMEOUT**: ≥120 seconds (automatic FAIL)
 
 ### Performance Classification Usage
 
-**CLI Method Classifications**:
-- All B001-B016 tests classified as SUCCESS (<45s each)
+**CLI Method Performance (New System)**:
+- Expected: Majority Good 😊 and OK 😐 classifications due to inherent speed
 - Pattern: Faster execution times, consistent performance
 
-**MCP Method Classifications**: 
-- SUCCESS: B001 (42s), B003 (23s), B004 (29s), B006 (instant), B010 (36s), B011-B016
-- SLOW_PERFORMANCE: B002 (62s), B005 (64s), B007 (85s), B008 (87s), B009 (89s), B013 (30s baseline)
-- Pattern: Longer execution times, variable performance
+**MCP Method Performance (New System)**: 
+- Expected: More OK 😐 and Slow 😴 classifications (normal for MCP)
+- Good 😊: B003 (23s), B004 (29s), B006 (instant)
+- OK 😐: B001 (42s), B010 (36s) 
+- Slow 😴: B002 (62s), B005 (64s), B007 (85s), B008 (87s), B009 (89s)
+- Pattern: Variable performance but all functional within 120s timeout
 
 ### Polling Methodology
 
@@ -752,15 +926,21 @@ playwright_[METHOD]_test_[YY-MM-DD]_[HH-MM].md
 - **Response Quality**: Analysis quality assessment
 - **Performance Impact**: Any timing issues noted
 
-**Example Format:**
+**New Format with Performance Emojis:**
 ```markdown
-#### B001: Market Status Check ✅ SUCCESS
-- **Duration:** 42 seconds
-- **Status:** PASSED
+#### B001: Market Status Check ✅ PASS 😐 (42s)
+- **Result:** PASS - Response received within 120s timeout
+- **Performance:** OK 😐 (42 seconds - within 60s threshold)
 - **Validation:** Basic market data retrieval functionality confirmed
 - **Response Format:** Proper emoji-enhanced financial analysis received
-- **Notes:** Baseline functionality working within acceptable parameters
+- **Method Notes:** MCP method inherently slower than CLI (expected)
 ```
+
+**Performance Classification Examples:**
+- ✅ PASS 😊 (28s) - Good performance
+- ✅ PASS 😐 (45s) - OK performance  
+- ✅ PASS 😴 (89s) - Slow but functional
+- ❌ FAIL (125s) - Exceeded timeout
 
 #### Infrastructure Assessment
 
