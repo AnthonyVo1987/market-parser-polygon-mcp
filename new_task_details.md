@@ -21,8 +21,7 @@ Task 6. [Specialist] Generate a brand new consolidated, single source of truth c
 - The new doc should spell out the entire proper testing procedure that SPELLS out exact testing methodolgy with all the corrective actions and lessons learned
 - It should have dedicated sections for Playwright CLI commands (npx playwright test) Methodlogy AND Playwright MCP Tool Methodlogy, that spells out the test plan checklist whenever tests are requested to be run:
 
-Test Plan Checklist for Playwright CLI commands (npx playwright test) Method
--
+Test Plan Checklist for Playwright CLI commands (npx playwright test) Method:
 
 - Perform the test plan by marking off each TODO Test Task:
 ☐ Kill all existing dev servers for fresh test run
@@ -48,8 +47,7 @@ Test Plan Checklist for Playwright CLI commands (npx playwright test) Method
 ☐ CRITICAL: Verify 16/16 test coverage completed AND verify that B001-B016 requirements were ran and NOT custom tests
 ☐ Use @documentation-specialist to generate comprehensive test report
 
-Test Plan Checklist for Playwright MCP Tools Method
--
+Test Plan Checklist for Playwright MCP Tools Method:
 
 - Perform the test plan by marking off each TODO Test Task:
 ☐ Kill all existing dev servers for fresh test run
@@ -142,7 +140,12 @@ Final Task 4: Final Verification
 
 *IF IN PLAN MODE, MAIN AGENT MUST USE @agent-tech-lead-orchestrator to generate initial plan WITH AI Specialists Delegation & Coordination assignments; a Plan WITH any Specialists from @agent-tech-lead-orchestrator is an IMMEDIATE TASK VIOLATION AND TASK MUST BE ABORTED FOR NON COMPLIANCE*
 
-## Expected Outcome*IF IN PLAN MODE, MAIN AGENT MUST USE @agent-tech-lead-orchestrator to generate initial plan WITH AI Specialists Delegation & Coordination assignments; a Plan WITH any Specialists from @agent-tech-lead-orchestrator is an IMMEDIATE TASK VIOLATION AND TASK MUST BE ABORTED FOR NON COMPLIANCE*
+## Expected Outcome*
+
+- Both Playwright CLI commands (npx playwright test) & Playwright MCP Tools Method will run the EXACT SAME MATCHING TESTS with the only difference being the methodology
+- NO SEPARATE TESTS PLANS FOR Playwright CLI commands (npx playwright test) VS Playwright MCP Tools Method
+
+*IF IN PLAN MODE, MAIN AGENT MUST USE @agent-tech-lead-orchestrator to generate initial plan WITH AI Specialists Delegation & Coordination assignments; a Plan WITH any Specialists from @agent-tech-lead-orchestrator is an IMMEDIATE TASK VIOLATION AND TASK MUST BE ABORTED FOR NON COMPLIANCE*
 
 - All code fixes, doc updates, 1x single test report saved in correct location with correct naming format playwright_MCP_test_YY-MM-DD_hh-mm.md, and everything is committed and pushed atomically
 
