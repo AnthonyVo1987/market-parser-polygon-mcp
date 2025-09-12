@@ -1131,6 +1131,11 @@ __Key Requirements:__
 
 ## Task Description
 
+ Main Agent: review docs/ENHANCED_10_PHASE_MIGRATION_ORCHESTRATION_PLAN.md and
+   come up with a plan to run the Playwright CLI npx test method for all 16 tests
+   and generating the matching report that follows the template from the plan.  this
+   will be the very first dry run of the CLI test suite after the migration
+
 [Playwright MCP Method Test Request]
 
 Use Sequential-Thinking Tool as many times as needed & Filesystem Tool(s) as many times as needed to TO PERFORM ALL TASK(S)
