@@ -2,13 +2,15 @@
 
 ## Task Description
 
-[Migration] Phase 1 & 2 Implementation
+[Migration] Phase 3 & 4 Implementation
 
 1. Read & Review docs/ENHANCED_10_PHASE_MIGRATION_ORCHESTRATION_PLAN.md to understand details of requested Phase Implementation
-2. Implement PHASE 1: Pre-Migration Validation & Branch Setup
-3. Implement PHASE 2: Documentation Migration Preparation
+2. Implement PHASE 3: Remove Legacy Python Core Code
+3. Implement PHASE 4: Remove Legacy Testing Infrastructure
 4. Update and mark off current phase status\progress in docs/ENHANCED_10_PHASE_MIGRATION_ORCHESTRATION_PLAN.md
-5. During the Commit, Push, & Sync task(s), create new tag of the new branch called [v0.0.2] that will reflect Complete Phase 1-2
+5. During the Final Task(s), create new tag of the new branch called [v0.0.4] that will reflect Complete Phase 3-4
+
+*SINGLE ATOMIC COMMIT OF ALL FILES AND DOC CHANGES - DO NOT COMMIT MORE THAN 1x for the same Phases.  DO NOT COMMIT UNLESS ALL FILES AND DOC CHANGES ARE FINALIZED AND READY TO BE COMMITTED*
 
 ## Research Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the following task(s)
 
@@ -60,6 +62,8 @@ __Key Requirements:__
 ## Requirements
 
 ## Expected Outcome*
+
+*SINGLE ATOMIC COMMIT OF ALL FILES AND DOC CHANGES - DO NOT COMMIT MORE THAN 1x for the same Phases.  DO NOT COMMIT UNLESS ALL FILES AND DOC CHANGES ARE FINALIZED AND READY TO BE COMMITTED*
 
 ## Additional Context
 
