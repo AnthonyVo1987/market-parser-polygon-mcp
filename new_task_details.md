@@ -2,6 +2,77 @@
 
 ## Task Description
 
+## Task 1. Read & review PHASE_7_10_MIGRATION_STATUS_REPORT.md to be in sync with the current task that froze in the middle.  After reading, perform final closing tasks below
+
+A. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Closing Tasks: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
+
+- Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
+- Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
+
+B. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Atomic Git Commit & Push
+
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
+- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+- git Push commit to repository using provided personal access token
+- __CRITICAL__: Must git push to complete the workflow - git commit without git push is incomplete
+
+C. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Final Verification
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly git committed and git pushed
+
+---
+
+## QUEUED Task 2. ONLY AFTER TASK 1 HAS BEEN FULLY ATOMICALLY COMMITED, THEN run the full Playwright CLI npx test method with details below
+
+- MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Read & Review test plan and testing procedures from tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+- MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Run Full 16 Test Plan using Playwright CLI npx test method and generate test report following procedures from: tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+---
+
+## QUEUED Task 3. ONLY AFTER QUEUED TASK 2 HAS BEEN FULLY COMPLETED WITH FULL TEST REPORT, THEN run the full Playwright MCP Tools method with details below
+
+- MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Read & Review test plan and testing procedures from tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+- MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Run Full 16 Test Plan using Playwright MCP Tools method and generate test report following procedures from: tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+---
+
+AFTER ALL QUEUED TASKS ARE COMPLETE, NOW PERFORM CLOSING COMMIT TASKS:
+
+A. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Closing Tasks: Review/Fix Loop
+
+- performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Uses `mcp__filesystem__*` tools for all file operations and examination
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle WITH LINT until achieving PASSING code review status
+
+B. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Closing Tasks: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
+
+- Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
+- Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
+
+C. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Atomic Git Commit & Push
+
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
+- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+- git Push commit to repository using provided personal access token
+- __CRITICAL__: Must git push to complete the workflow - git commit without git push is incomplete
+
+D. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to: perform Final Verification
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly git committed and git pushed
+
 [Migration] FINISH Phase 9, & 10 Implementation
 
 We were in the middle of implementing all remaining Phases 7, 8, 9, & 10, but hung and froze near the end and found out that Phase 9 & 10 may not have been properly validated
@@ -112,8 +183,6 @@ __Key Requirements:__
 ## Requirements
 
 ## Expected Outcome*
-
-- SINGLE .md doc report of phase progress so User can review and figure out the next task
 
 *SINGLE ATOMIC COMMIT OF ALL FILES AND DOC CHANGES - DO NOT COMMIT MORE THAN 1x for the same Phases.  DO NOT COMMIT UNLESS ALL FILES AND DOC CHANGES ARE FINALIZED AND READY TO BE COMMITTED*
 

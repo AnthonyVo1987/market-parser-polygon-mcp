@@ -1,5 +1,18 @@
 ### THIS FILE IS A TEMPORARY SCRATCHPAD FOR USER TO JOT DOWN NOTES; AI AGENTS SUCH AS CLAUDE, GEMINI ETC SHOULD NOT OPEN OR READ THIS FILE TO PREVENT CONTEXT POLLUTION ###
 
+[QUEUED TASK] THIS IS AN ADDON QUEUED TASK(S) TO ONLY BE WORKED ON BY THE MAIN AGENT ONCE YOUR CURRENT TASK(S) TO complete the actual Phase 9 migration US FULLY COMPLETE, REVIEWED, AND ATOMICALLY COMMITTED
+
+ONLY START THESE TASKS AFTER THE complete the actual Phase 9 migration TASK IS ATOMICALLY COMMITTED:
+Reminder that main agent performs ALL of these task(s) and no specialist(s) are needed:
+
+Task 1. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Read & Review test plan and testing procedures from tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+Task 2. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Run Full 16 Test Plan using Playwright CLI npx test method and generate test report following procedures from: tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+Task 3. MAIN Agent: After all testing and rest reports are complete, perform doc commit, push, & sync to the repo
+
+Task 3. MAIN Agent: Use Sequential-Thinking, Filesystem & any other relevant Tools as often as needed to perform the following task(s): Run Full 16 Test Plan using Playwright MCP Tools method and generate test report following procedures from: tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
 ● You can continue this chat session later by using Claude Code's session management features. Here are the key approaches:
 
   1. Session Recovery via Chat History
