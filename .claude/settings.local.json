@@ -128,7 +128,8 @@
       "Bash(HEALTH_STATUS=\"PASSED\")",
       "Bash(HEALTH_STATUS=\"FAILED\")",
       "Bash(fi)",
-      "Bash(exit 1)"
+      "Bash(exit 1)",
+      "Bash(xargs -r kill -9)"
     ],
     "deny": [],
     "ask": [],
