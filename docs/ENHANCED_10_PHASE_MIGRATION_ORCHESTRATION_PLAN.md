@@ -355,8 +355,8 @@ documentation:
 
 Track progress by marking completed phases:
 
-- [ ] Phase 1: Setup
-- [ ] Phase 2: Documentation prep
+- [x] Phase 1: Setup (COMPLETED - Branch created, system state validated)
+- [x] Phase 2: Documentation prep (COMPLETED - Audit matrix and state snapshot created)
 - [ ] Phase 3: Remove legacy Python
 - [ ] Phase 4: Remove legacy tests
 - [ ] Phase 5: Move to root
