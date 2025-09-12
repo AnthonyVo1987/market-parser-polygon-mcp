@@ -10,6 +10,8 @@ Key Features:
 - Dual-mode response processing (JSON/conversational)
 - Real-time market data via Polygon.io MCP server
 - Comprehensive prompt template system for various analysis types
+- Response formatting instructions optimized for natural language
+- Removal of JSON schema dependencies for simplified architecture
 """
 
 # Handle optional imports gracefully for development/testing environments

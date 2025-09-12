@@ -3,7 +3,6 @@ import {
   PromptTemplate,
   PromptTemplateResponse,
   GeneratePromptRequest,
-  GeneratePromptResponse,
   UsePromptAPIResult,
   PROMPT_API_ENDPOINTS,
   isValidPromptTemplate,

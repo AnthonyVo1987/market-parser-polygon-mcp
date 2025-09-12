@@ -353,15 +353,17 @@ documentation:
 
 ### Simple Status
 
+**MIGRATION PROGRESS: 60% COMPLETE (6/10 phases)**
+
 Track progress by marking completed phases:
 
 - [x] Phase 1: Setup (COMPLETED - Branch created, system state validated)
 - [x] Phase 2: Documentation prep (COMPLETED - Audit matrix and state snapshot created)
 - [x] Phase 3: Remove legacy Python (COMPLETED - Legacy Python core removed: chat_ui.py, market_parser_demo.py, /src/, /stock_data_fsm/)
 - [x] Phase 4: Remove legacy tests (COMPLETED - Legacy test infrastructure removed: /tests/ directory, OpenAI tests preserved)
-- [ ] Phase 5: Move to root
-- [ ] Phase 6: Move frontend
-- [ ] Phase 7: Update config
+- [x] Phase 5: Move to root (COMPLETED - System migrated to root: /src/, configs merged, backend functional)
+- [x] Phase 6: Move frontend (COMPLETED - Frontend migrated to root: /frontend/, build validated, API connectivity confirmed)
+- [ ] Phase 7: Update config ← **NEXT PHASE** (Assigned to: @api-architect)
 - [ ] Phase 8: Update docs
 - [ ] Phase 9: Update tests
 - [ ] Phase 10: Final check

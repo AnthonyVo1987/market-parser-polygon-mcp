@@ -1,19 +1,21 @@
 [project]
 name = "market-parser-polygon-mcp"
-version = "1.0.0"
-description = "This shows off the Polygon.io MCP server in action within an agentic workflow using Pydantic AI."
-authors = [{ name = "Alex Novotny", email = "alex.novotny@polygon.io" }]
+version = "0.1.0"
+description = "Agentic workflow demo using GPT-5, OpenAI Agents SDK and Polygon.io"
+readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "pydantic-ai-slim[openai,mcp]",
-    "python-dotenv",
-    "rich",
-    "gradio>=4.0.0"
+authors = [
+  { name = "Alex Novotny" }
 ]
-
-[project.optional-dependencies]
-dev = [
-    "pytest"
+license = { file = "LICENSE" }
+dependencies = [
+  "openai-agents",
+  "pydantic",
+  "rich",
+  "python-dotenv", 
+  "openai",
+  "fastapi",
+  "uvicorn[standard]"
 ]
 
 [build-system]
@@ -21,28 +23,53 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-# Package configuration for new directory structure
-py-modules = ["market_parser_demo", "chat_ui"]
-packages = ["src", "stock_data_fsm"] 
+package-dir = {"" = "src"}
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.1",
-    "pytest-asyncio>=1.1.0",
+    "pylint>=3.0.0",
+    "black>=23.12.0",
+    "isort>=5.13.0",
+    "mypy>=1.7.0",
+    "pytest>=7.4.0",
 ]
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = [
-    "--import-mode=importlib",
-    "-ra",
-    "-q"
-]
-testpaths = [
-    "tests",
-]
-pythonpath = [
-    ".",
-    "src", 
-    "stock_data_fsm"
-]
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.venv
+  | build
+  | dist
+  | node_modules
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+known_first_party = ["src", "stock_data_fsm"]
+known_third_party = ["openai", "pydantic", "rich", "fastapi", "uvicorn", "agents"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Gradual adoption
+ignore_missing_imports = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["openai.*", "rich.*", "fastapi.*", "uvicorn.*", "agents.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["src.*", "stock_data_fsm.*"]
+disallow_untyped_defs = true
+warn_unused_ignores = true
