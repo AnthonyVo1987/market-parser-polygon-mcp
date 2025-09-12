@@ -46,6 +46,7 @@ async function isBackendRunning(): Promise<boolean> {
 
 /**
  * Optimized Playwright configuration for React/Vite stack
+ * Updated for new project structure with backend at /src/ and frontend at /frontend/
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
@@ -115,11 +116,11 @@ export default defineConfig({
     },
   ],
 
-  /* Web server configuration with dynamic port detection and backend verification */
+  /* Web server configuration updated for new project structure */
   webServer: [
     {
-      // Frontend React/Vite server
-      command: 'cd frontend_OpenAI && npm run dev',
+      // Frontend React/Vite server - updated path for new structure
+      command: 'cd frontend && npm run dev',
       port: 3000,
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
@@ -129,7 +130,7 @@ export default defineConfig({
       },
     },
     {
-      // Backend FastAPI server verification
+      // Backend FastAPI server verification - backend now at /src/
       command: 'echo "Backend server check - should already be running on port 8000"',
       port: 8000,
       reuseExistingServer: true, // Always reuse existing backend server
@@ -163,6 +164,11 @@ export default defineConfig({
       sequential_execution: true,
       no_retries: true,
       dynamic_port_detection: '3000-3003+'
+    },
+    project_structure: {
+      backend: '/src/',
+      frontend: '/frontend/',
+      tests: '/tests/'
     }
   },
 });

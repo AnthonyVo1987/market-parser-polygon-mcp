@@ -51,7 +51,7 @@ OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
 
 **STEP 1: Start Backend Server (Terminal 1)**
 ```bash
-cd gpt5-openai-agents-sdk-polygon-mcp
+# From project root directory
 uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 **Expected Success Output:**
@@ -67,7 +67,7 @@ INFO:     Started reloader process [12346] using StatReload
 **STEP 2: Test CLI (Terminal 2 - Optional but Recommended)**
 ```bash
 # Test standalone CLI first to verify setup
-uv run gpt5-openai-agents-sdk-polygon-mcp/src/main.py
+uv run src/main.py
 ```
 **Expected Output:**
 ```
@@ -90,7 +90,7 @@ NVIDIA (NVDA) continues its remarkable bullish run...
 
 **STEP 3A: Vite Development Server (Terminal 3 - For Development)**
 ```bash
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+cd frontend
 npm install
 npm run dev
 ```
@@ -106,7 +106,7 @@ npm run dev
 
 **STEP 3B: Live Server Production Testing (Alternative)**
 ```bash
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+cd frontend
 npm run build
 npm run serve  # Uses Live Server on port 5500
 ```
@@ -157,8 +157,8 @@ Ready for connections.
 
 **Backend Not Starting:**
 ```bash
-# 1. Verify you're in correct directory:
-pwd  # Should end with /gpt5-openai-agents-sdk-polygon-mcp
+# 1. Verify you're in project root directory:
+pwd  # Should end with /market-parser-polygon-mcp
 
 # 2. Verify dependencies are installed:
 uv install
@@ -175,7 +175,7 @@ uv run src/main.py  # Should start CLI without errors
 ```bash
 # TypeScript timeout errors have been FIXED
 # Build now works properly:
-cd frontend_OpenAI
+cd frontend
 npm run build  # Should complete successfully
 
 # If still having issues, clear cache:
@@ -274,7 +274,7 @@ uv run market_parser_demo.py
 
    **Enhanced OpenAI GPT-5 CLI (Recommended):**
    ```sh
-   uv run gpt5-openai-agents-sdk-polygon-mcp/src/main.py
+   uv run src/main.py
    ```
 
    **Original CLI:**
@@ -284,12 +284,11 @@ uv run market_parser_demo.py
 
    **Enhanced React Web Interface (Optimized with Vite + Live Server Testing):**
    ```sh
-   # Terminal 1: Start FastAPI server
-   cd gpt5-openai-agents-sdk-polygon-mcp
+   # Terminal 1: Start FastAPI server (from project root)
    uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
    
    # Terminal 2: Start React frontend development
-   cd frontend_OpenAI
+   cd frontend
    npm install
    npm run dev  # Development server (Port 3000) with hot reload
    
@@ -671,7 +670,7 @@ All enhanced responses follow a consistent, structured format:
 
 ### Running the Application
 
-- **Enhanced OpenAI CLI**: `uv run gpt5-openai-agents-sdk-polygon-mcp/src/main.py`
+- **Enhanced OpenAI CLI**: `uv run src/main.py`
 - **Optimized React Web Interface**: Start FastAPI server + Vite-optimized React frontend (see setup section)
 - **Original CLI interface**: `uv run market_parser_demo.py`
 - **Original Web GUI interface**: `uv run chat_ui.py` (opens at <http://127.0.0.1:7860>)
@@ -682,7 +681,7 @@ The React frontend features comprehensive Vite optimizations with integrated Liv
 
 ```bash
 # Development with optimized Vite configuration
-cd frontend_OpenAI
+cd frontend
 npm run dev          # Vite development server (Port 3000) with hot reload
 npm run dev:staging  # Staging environment development
 
@@ -737,7 +736,7 @@ The project includes comprehensive PyTest infrastructure for reliable testing:
 uv install --dev
 
 # Run all tests
-# OpenAI Playwright Testing
+# OpenAI Playwright Testing (still in legacy location)
 cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
 npx playwright test
 

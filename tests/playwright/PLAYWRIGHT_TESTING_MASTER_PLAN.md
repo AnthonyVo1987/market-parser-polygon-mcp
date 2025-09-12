@@ -378,7 +378,7 @@ curl -f http://localhost:8000/health || echo "❌ Backend not ready"
 curl -f http://localhost:3000/ || curl -f http://localhost:3001/ || curl -f http://localhost:3002/ || echo "❌ Frontend not ready"
 
 # Navigate to test directory
-cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright/
+cd tests/playwright/
 ```
 
 #### CLI Execution Pattern

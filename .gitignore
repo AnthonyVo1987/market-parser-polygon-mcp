@@ -88,6 +88,11 @@ node_modules
 .mcp.json
 .gemini/settings.json
 .gemini/gemini_new_task_details.md
-gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist/sw.js
-gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist/sw.js
-gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dev-dist/sw.js
+
+# Frontend build artifacts
+frontend/dev-dist/
+frontend/dist/
+frontend/node_modules/
+
+# Legacy migration directory (temporary)
+gpt5-openai-agents-sdk-polygon-mcp/

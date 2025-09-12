@@ -53,7 +53,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 100
-known_first_party = ["src", "stock_data_fsm"]
+known_first_party = ["src"]
 known_third_party = ["openai", "pydantic", "rich", "fastapi", "uvicorn", "agents"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
@@ -70,6 +70,6 @@ module = ["openai.*", "rich.*", "fastapi.*", "uvicorn.*", "agents.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = ["src.*", "stock_data_fsm.*"]
+module = ["src.*"]
 disallow_untyped_defs = true
 warn_unused_ignores = true
