@@ -214,12 +214,13 @@ from src.security_utils import validate_input, sanitize_data
 ### Testing Strategy
 
 ```bash
-# Run all tests
-uv run pytest tests/
+# Run all OpenAI Playwright tests
+cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+npx playwright test
 
 # Run specific test categories
-uv run pytest tests/test_integration.py
-uv run pytest tests/test_production_*.py
+npx playwright test test-b001-market-status.spec.ts
+npx playwright test test-b00*.spec.ts
 
 # Run FSM-specific tests
 uv run pytest stock_data_fsm/tests/

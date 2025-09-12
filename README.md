@@ -558,16 +558,18 @@ market-parser-polygon-mcp/
   Run tests from the project root using the enhanced structure:
   ```sh
   # All tests (comprehensive coverage)
-  uv run pytest tests/
+  # OpenAI Playwright Testing (Primary Method)
+  cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+  npx playwright test  # Run all Playwright tests (B001-B016)
   
-  # Specific test files
-  uv run pytest tests/test_integration.py
+  # Specific Playwright tests
+  npx playwright test test-b001-market-status.spec.ts
   
-  # Simplified architecture tests
-  uv run pytest tests/test_simplified_*.py
+  # Browser testing with debugging
+  npx playwright test --headed --debug
   
-  # Performance validation
-  uv run python tests/validate_performance_optimization.py
+  # Generate test reports
+  npx playwright test --reporter=html
   ```
 
 - **Chat Interface Issues:**
@@ -735,16 +737,18 @@ The project includes comprehensive PyTest infrastructure for reliable testing:
 uv install --dev
 
 # Run all tests
-uv run pytest tests/
+# OpenAI Playwright Testing
+cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+npx playwright test
 
 # Run specific test file
-uv run pytest tests/test_file.py -v
+npx playwright test test-b001-market-status.spec.ts
 
-# Run validation tests
-uv run pytest tests/validate_pytest_setup.py -v
+# Run with debugging
+npx playwright test --debug
 
-# Test discovery
-uv run pytest --collect-only tests/
+# List all available Playwright tests
+npx playwright test --list
 ```
 
 #### Test Infrastructure
@@ -753,9 +757,9 @@ uv run pytest --collect-only tests/
 - **Validation**: Use `tests/validate_pytest_setup.py` to verify setup
 
 #### Enhanced Test Coverage
-- **Run all tests**: `uv run pytest tests/` (comprehensive coverage with simplified architecture)
-- **Run specific test**: `uv run pytest tests/test_file.py`
-- **Run simplified architecture tests**: `uv run pytest tests/test_simplified_*.py`
+- **Run all tests**: `npx playwright test` (comprehensive B001-B016 test suite)
+- **Run specific test**: `npx playwright test test-b001-market-status.spec.ts`
+- **Run with browser visible**: `npx playwright test --headed`
 - **Validate performance optimization**: `uv run python tests/validate_performance_optimization.py`
 
 ### Environment Management

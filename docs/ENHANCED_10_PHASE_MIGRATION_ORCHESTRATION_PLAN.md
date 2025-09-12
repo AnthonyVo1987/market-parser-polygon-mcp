@@ -357,8 +357,8 @@ Track progress by marking completed phases:
 
 - [x] Phase 1: Setup (COMPLETED - Branch created, system state validated)
 - [x] Phase 2: Documentation prep (COMPLETED - Audit matrix and state snapshot created)
-- [ ] Phase 3: Remove legacy Python
-- [ ] Phase 4: Remove legacy tests
+- [x] Phase 3: Remove legacy Python (COMPLETED - Legacy Python core removed: chat_ui.py, market_parser_demo.py, /src/, /stock_data_fsm/)
+- [x] Phase 4: Remove legacy tests (COMPLETED - Legacy test infrastructure removed: /tests/ directory, OpenAI tests preserved)
 - [ ] Phase 5: Move to root
 - [ ] Phase 6: Move frontend
 - [ ] Phase 7: Update config
