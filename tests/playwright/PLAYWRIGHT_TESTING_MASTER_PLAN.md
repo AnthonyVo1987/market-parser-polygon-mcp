@@ -483,9 +483,9 @@ cd tests/playwright/
 ```bash
 # Enhanced CLI pattern with 120s timeout and single browser session
 npx playwright test --timeout=120000 --workers=1 test-b001-market-status.spec.ts
-npx playwright test --timeout=120000 --workers=1 test-b002-nvda-analysis.spec.ts
-npx playwright test --timeout=120000 --workers=1 test-b003-spy-analysis.spec.ts
-npx playwright test --timeout=120000 --workers=1 test-b004-gme-analysis.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b002-nvda.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b003-spy.spec.ts
+npx playwright test --timeout=120000 --workers=1 test-b004-gme.spec.ts
 npx playwright test --timeout=120000 --workers=1 test-b005-multi-ticker.spec.ts
 npx playwright test --timeout=120000 --workers=1 test-b006-empty-message.spec.ts
 npx playwright test --timeout=120000 --workers=1 test-b007-stock-snapshot.spec.ts
