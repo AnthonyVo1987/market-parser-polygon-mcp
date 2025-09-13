@@ -380,7 +380,7 @@ VS Code Live Server integration provides essential production build testing capa
 
 2. **Frontend Build Completed**:
    ```bash
-   cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+   cd frontend
    npm run build  # Creates dist/ directory with built files
    ```
 
@@ -395,7 +395,7 @@ VS Code Live Server integration provides essential production build testing capa
 #### Development Environment (Port 5500)
 
 ```bash
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+cd frontend
 npm run serve
 # Provides usage instructions and builds development version
 # Access: http://localhost:5500

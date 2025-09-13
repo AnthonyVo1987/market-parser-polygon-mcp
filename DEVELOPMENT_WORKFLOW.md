@@ -10,9 +10,9 @@ This document outlines the unified code quality workflow for the Market Parser p
 uv install
 
 # JavaScript dependencies (React frontend)
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+cd frontend
 npm install
-cd ../..
+cd ..
 ```
 
 ### Run Quality Checks
@@ -34,9 +34,7 @@ market-parser-polygon-mcp/
 ├── stock_data_fsm/               # FSM implementation
 ├── tests/                        # Python tests
 ├── scripts/                      # Utility scripts
-├── gpt5-openai-agents-sdk-polygon-mcp/
-│   ├── src/                      # OpenAI integration Python code
-│   └── frontend_OpenAI/          # React TypeScript frontend
+├── frontend/                     # React TypeScript frontend
 ├── package.json                  # Unified npm scripts
 ├── pyproject.toml               # Python project config
 ├── .pre-commit-config.yaml      # Git hooks
@@ -146,13 +144,13 @@ The VS Code Live Server integration provides essential production build testing 
 
 **Prerequisites**:
 - VS Code with Live Server extension ("Live Server" by Ritwick Dey)
-- Completed frontend build: `npm run build` (in frontend_OpenAI directory)
+- Completed frontend build: `npm run build` (in frontend directory)
 
 **Environment-Specific Testing**:
 
 ```bash
 # Development build testing (Port 5500)
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+cd frontend
 npm run serve
 # Access: http://localhost:5500
 
@@ -207,7 +205,7 @@ npm run build && npm run serve  # Live Server testing (Port 5500)
 3. Validate PWA functionality via Live Server
 4. Run cross-device testing before final deployment
 
-For comprehensive Live Server usage instructions, see: `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`
+For comprehensive Live Server usage instructions, see: `/frontend/LIVE_SERVER_USAGE.md`
 
 ### Before Committing
 1. Run `npm run quality-check` to ensure all standards are met

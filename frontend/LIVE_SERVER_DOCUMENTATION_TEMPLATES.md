@@ -26,7 +26,7 @@
 
 ### Key Live Server Information Patterns
 
-Based on the comprehensive `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md` guide, the following information patterns must be standardized across all documentation:
+Based on the comprehensive `/frontend/LIVE_SERVER_USAGE.md` guide, the following information patterns must be standardized across all documentation:
 
 **Core Information Elements:**
 - **Port Configuration**: 5500 (development), 5501 (staging), 5502 (production)
@@ -51,7 +51,7 @@ Based on the comprehensive `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/
 ### Template 1A: Migration Guide Live Server Section
 
 **Target Files:**
-- `/gpt5-openai-agents-sdk-polygon-mcp/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md`
+- `/docs/deprecated/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md`
 - `/docs/enhanced-openai-gpt5-migration-plan.md`
 
 **Template Content:**
@@ -169,7 +169,7 @@ npm run test:pwa:production
 - Copy Live Server configurations to local workspace
 - Set up Live Server testing for local validation
 
-> **📖 Complete Reference**: See `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md` for comprehensive Live Server documentation, troubleshooting, and advanced configuration options.
+> **📖 Complete Reference**: See `/frontend/LIVE_SERVER_USAGE.md` for comprehensive Live Server documentation, troubleshooting, and advanced configuration options.
 ```
 
 ### Template 1B: Development Workflow Live Server Section
@@ -287,7 +287,7 @@ npm run lighthouse             # Performance validation
    - Ensure `"liveServer.settings.cors": true` in VS Code settings
    - Verify mobile device on same network as development machine
 
-> **📖 Comprehensive Guide**: For detailed Live Server setup, configuration, and troubleshooting, see `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`.
+> **📖 Comprehensive Guide**: For detailed Live Server setup, configuration, and troubleshooting, see `/frontend/LIVE_SERVER_USAGE.md`.
 ```
 
 ---
@@ -297,8 +297,8 @@ npm run lighthouse             # Performance validation
 ### Template 2A: Frontend Technical Documentation Live Server Section
 
 **Target Files:**
-- `/gpt5-openai-agents-sdk-polygon-mcp/OpenAI_Vite_Optimization_Plan.md`
-- `/gpt5-openai-agents-sdk-polygon-mcp/BUTTON_PROMPTS_ARCHITECTURE.md`
+- `/docs/OpenAI_Vite_Optimization_Plan.md`
+- `/docs/BUTTON_PROMPTS_ARCHITECTURE.md`
 
 **Template Content:**
 
@@ -435,13 +435,13 @@ npm run cross-device:setup
    # Verify manifest.json loads correctly
    ```
 
-> **📖 Detailed Reference**: See `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md` for complete Live Server configuration, troubleshooting, and advanced features.
+> **📖 Detailed Reference**: See `/frontend/LIVE_SERVER_USAGE.md` for complete Live Server configuration, troubleshooting, and advanced features.
 ```
 
 ### Template 2B: API Documentation Live Server Section
 
 **Target Files:**
-- `/gpt5-openai-agents-sdk-polygon-mcp/API_DOCUMENTATION.md`
+- `/docs/API_DOCUMENTATION.md`
 
 **Template Content:**
 
@@ -557,7 +557,7 @@ npm run cross-device:setup
    - Check firewall settings
    - Use local IP address for access
 
-> **📖 Complete API Testing Guide**: For comprehensive API testing procedures with Live Server, including authentication, error handling, and performance testing, see `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`.
+> **📖 Complete API Testing Guide**: For comprehensive API testing procedures with Live Server, including authentication, error handling, and performance testing, see `/frontend/LIVE_SERVER_USAGE.md`.
 ```
 
 ---
@@ -686,7 +686,7 @@ npm run cross-device:setup
    - Use local IP instead of localhost
    - Check firewall settings for ports 5500-5502
 
-> **📖 Comprehensive API Testing**: For detailed API integration testing procedures, authentication setup, and troubleshooting, see `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`.
+> **📖 Comprehensive API Testing**: For detailed API integration testing procedures, authentication setup, and troubleshooting, see `/frontend/LIVE_SERVER_USAGE.md`.
 ```
 
 ---
@@ -712,11 +712,10 @@ project-root/
 │   ├── settings.json                    # Development Live Server config (port 5500)
 │   ├── live-server-staging.json        # Staging Live Server config (port 5501)
 │   └── live-server-production.json     # Production Live Server config (port 5502)
-├── gpt5-openai-agents-sdk-polygon-mcp/
-│   └── frontend_OpenAI/
-│       ├── LIVE_SERVER_USAGE.md         # Comprehensive Live Server documentation
-│       ├── package.json                 # Live Server npm scripts
-│       └── dist/                        # Built files served by Live Server
+├── frontend/
+│   ├── LIVE_SERVER_USAGE.md             # Comprehensive Live Server documentation
+│   ├── package.json                     # Live Server npm scripts
+│   └── dist/                            # Built files served by Live Server
 ```
 
 ### Live Server Scripts and Commands
@@ -740,7 +739,7 @@ npm run lighthouse:live-server  # Performance testing with Lighthouse CI
 ### Documentation Structure for Live Server
 
 **Core Documentation Files:**
-- **`LIVE_SERVER_USAGE.md`**: Comprehensive guide (primary reference)
+- **`/frontend/LIVE_SERVER_USAGE.md`**: Comprehensive guide (primary reference)
 - **Migration Guides**: Include Live Server testing steps
 - **Development Workflow**: Integration with Live Server testing
 - **API Documentation**: Live Server proxy configuration
@@ -758,7 +757,7 @@ npm run lighthouse:live-server  # Performance testing with Lighthouse CI
 - User guides include Live Server validation steps
 - Migration guides include Live Server setup requirements
 
-> **📖 Master Reference**: `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md` contains complete Live Server documentation including setup, configuration, troubleshooting, and advanced usage.
+> **📖 Master Reference**: `/frontend/LIVE_SERVER_USAGE.md` contains complete Live Server documentation including setup, configuration, troubleshooting, and advanced usage.
 ```
 
 ### Template 4B: General Documentation Live Server Reference
@@ -803,7 +802,7 @@ npm run serve:production   # Production testing (port 5502)
 - Staging: 5501  
 - Production: 5502
 
-> **📖 Complete Guide**: For comprehensive Live Server setup, troubleshooting, and advanced configuration, see `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`.
+> **📖 Complete Guide**: For comprehensive Live Server setup, troubleshooting, and advanced configuration, see `/frontend/LIVE_SERVER_USAGE.md`.
 ```
 
 ---
@@ -896,7 +895,7 @@ npm run test:pwa:production
 2. Check that you're using a supported browser (Chrome, Edge, Firefox)
 3. Verify you're using HTTPS or localhost (required for PWA)
 
-> **📖 Technical Details**: For complete Live Server setup and troubleshooting information, developers can reference `/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/LIVE_SERVER_USAGE.md`.
+> **📖 Technical Details**: For complete Live Server setup and troubleshooting information, developers can reference `/frontend/LIVE_SERVER_USAGE.md`.
 ```
 
 ---
@@ -1083,7 +1082,7 @@ These templates ensure consistent, complete, and appropriate Live Server documen
 **Key Success Factors:**
 1. **Use appropriate template** for each documentation category
 2. **Maintain consistent terminology** across all documents
-3. **Include proper cross-references** to the master LIVE_SERVER_USAGE.md guide
+3. **Include proper cross-references** to the master `/frontend/LIVE_SERVER_USAGE.md` guide
 4. **Match information depth** to document purpose and audience
 5. **Integrate naturally** with existing content flow
 

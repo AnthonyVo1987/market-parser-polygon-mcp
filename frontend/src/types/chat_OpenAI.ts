@@ -202,9 +202,12 @@ export const isValidMessage = (message: unknown): message is Message => {
 };
 
 export const isValidAnalysisType = (type: string): type is AnalysisType => {
-  return ['snapshot', 'support_resistance', 'technical_analysis', 'technical'].includes(
-    type
-  );
+  return [
+    'snapshot',
+    'support_resistance',
+    'technical_analysis',
+    'technical',
+  ].includes(type);
 };
 
 export const isValidPromptTemplate = (

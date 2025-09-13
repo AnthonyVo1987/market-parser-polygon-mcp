@@ -21,14 +21,14 @@ on:
       - master
       - develop
     paths:
-      - 'gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/**'
+      - 'frontend/**'
   pull_request:
     branches:
       - main
       - master
       - develop
     paths:
-      - 'gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/**'
+      - 'frontend/**'
 
 jobs:
   lighthouse:
@@ -38,7 +38,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+        working-directory: frontend
     
     steps:
       - name: Checkout code
@@ -49,7 +49,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
           
       - name: Install dependencies
         run: npm ci
@@ -72,8 +72,8 @@ jobs:
         with:
           name: lighthouse-results
           path: |
-            gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/lighthouserc.js
-            gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/.lighthouseci/
+            frontend/lighthouserc.js
+            frontend/.lighthouseci/
           retention-days: 30
 
   # Optional: Run performance comparison between environments
@@ -85,7 +85,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+        working-directory: frontend
     
     strategy:
       matrix:
@@ -100,7 +100,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
           
       - name: Install dependencies
         run: npm ci
@@ -115,5 +115,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bundle-analysis-${{ matrix.environment }}
-          path: gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI/dist/bundle-analysis.html
+          path: frontend/dist/bundle-analysis.html
           retention-days: 30

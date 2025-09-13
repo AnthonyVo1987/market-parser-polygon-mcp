@@ -217,7 +217,7 @@ git branch --show-current  # Should show migration-experimental
 
 ### Simple Tasks
 
-1. Move files from gpt5-openai-agents-sdk-polygon-mcp/src/ to root /src/
+1. Move files from legacy /src/ to root /src/
 2. Update import paths in all Python files
 3. Move and merge configuration files
 4. Update pyproject.toml and uv.lock
@@ -231,9 +231,9 @@ git branch --show-current  # Should show migration-experimental
 ```bash
 # Simple import path update
 # Find and manually update import statements:
-# Change: from gpt5-openai-agents-sdk-polygon-mcp.src
+# Change: from legacy.src
 # To: from src
-grep -r "gpt5-openai-agents-sdk-polygon-mcp" . --include="*.py"
+grep -r "legacy_references" . --include="*.py"
 # Then manually fix the found imports
 ```
 

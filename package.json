@@ -5,12 +5,12 @@
   "scripts": {
     "lint": "npm run lint:python && npm run lint:js",
     "lint:python": "uv run python scripts/lint.py",
-    "lint:js": "cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI && npm run lint",
+    "lint:js": "cd frontend && npm run lint",
     "format": "npm run format:python && npm run format:js",
     "format:python": "uv run python scripts/format.py",
-    "format:js": "cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI && npm run format",
+    "format:js": "cd frontend && npm run format",
     "fix": "npm run format && npm run lint:fix",
-    "lint:fix": "npm run format:python && cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI && npm run lint:fix",
+    "lint:fix": "npm run format:python && cd frontend && npm run lint:fix",
     "quality:check": "uv run python scripts/quality_check.py",
     "quality:format": "npm run format"
   },

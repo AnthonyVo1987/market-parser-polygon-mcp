@@ -32,7 +32,7 @@ This project is a comprehensive Python application with a CLI, FastAPI server, a
 
 1.  **Navigate to the project directory:**
     ```bash
-    cd gpt5-openai-agents-sdk-polygon-mcp
+    cd market-parser-polygon-mcp
     ```
 
 2.  **Set up your API keys:**
@@ -48,7 +48,7 @@ This project is a comprehensive Python application with a CLI, FastAPI server, a
 
 4.  **Install Node.js dependencies:**
     ```bash
-    cd frontend_OpenAI
+    cd frontend
     npm install
     cd ..
     ```
@@ -62,7 +62,7 @@ This project is a comprehensive Python application with a CLI, FastAPI server, a
 
 2.  **Start the React frontend:**
     ```bash
-    npm run dev --prefix frontend_OpenAI
+    npm run dev --prefix frontend
     ```
 
 3.  **Run the CLI:**

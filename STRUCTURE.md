@@ -215,7 +215,7 @@ from src.security_utils import validate_input, sanitize_data
 
 ```bash
 # Run all OpenAI Playwright tests
-cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+cd tests/playwright
 npx playwright test
 
 # Run specific test categories

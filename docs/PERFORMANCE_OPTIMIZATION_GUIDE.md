@@ -643,7 +643,7 @@ VS Code Live Server integration provides essential performance testing capabilit
 
 ```bash
 # Complete performance testing workflow
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
+cd frontend
 
 # Step 1: Build optimized production version
 npm run build  # Creates dist/ with optimized bundles

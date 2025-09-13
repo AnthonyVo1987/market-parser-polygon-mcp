@@ -112,7 +112,7 @@ npm run serve  # Uses Live Server on port 5500
 ```
 **Expected Output:**
 ```
-Serving "/frontend_OpenAI/dist" at http://127.0.0.1:5500
+Serving "/frontend/dist" at http://127.0.0.1:5500
 Ready for connections.
 ```
 **Access:** Open http://127.0.0.1:5500 (Production build testing)
@@ -558,7 +558,7 @@ market-parser-polygon-mcp/
   ```sh
   # All tests (comprehensive coverage)
   # OpenAI Playwright Testing (Primary Method)
-  cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+  cd tests/playwright
   npx playwright test  # Run all Playwright tests (B001-B016)
   
   # Specific Playwright tests
@@ -737,7 +737,7 @@ uv install --dev
 
 # Run all tests
 # OpenAI Playwright Testing (still in legacy location)
-cd gpt5-openai-agents-sdk-polygon-mcp/tests/playwright
+cd tests/playwright
 npx playwright test
 
 # Run specific test file
