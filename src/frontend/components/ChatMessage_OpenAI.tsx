@@ -185,6 +185,11 @@ export default function ChatMessage_OpenAI({
         </div>
         <div className='message-timestamp'>
           {message.timestamp.toLocaleTimeString()}
+          {message.sender === 'ai' && message.metadata?.processingTime && (
+            <span className='response-time'>
+              {' '}({message.metadata.processingTime.toFixed(1)}s)
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -247,6 +252,16 @@ export const messageStyles = `
   .message-timestamp {
     font-size: 0.75rem;
     opacity: 0.7;
+  }
+  
+  .response-time {
+    opacity: 0.6;
+    font-style: italic;
+    color: #666;
+  }
+  
+  .user-bubble .response-time {
+    color: rgba(255, 255, 255, 0.8);
   }
 
 

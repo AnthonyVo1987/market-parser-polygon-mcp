@@ -1,10 +1,10 @@
-/* Enhanced global styles for financial chat interface */
+/* Enhanced global styles for financial chat interface - DARK MODE DEFAULT */
 :root {
-  --neutral-color: #6b7280;
-  --background-light: #f8fafc;
-  --border-color: #e2e8f0;
-  --text-primary: #1a202c;
-  --text-secondary: #4a5568;
+  --neutral-color: #a0aec0; /* Light gray for dark mode */
+  --background-light: #2d3748; /* Dark background */
+  --border-color: #4a5568; /* Dark border */
+  --text-primary: #f7fafc; /* Light text */
+  --text-secondary: #e2e8f0; /* Light secondary text */
 
   /* Responsive breakpoints as CSS custom properties */
   --mobile-max: 767px;
@@ -26,7 +26,7 @@ body {
     'Cantarell', sans-serif;
   line-height: 1.5;
   color: var(--text-primary);
-  background-color: #ffffff;
+  background-color: #1a202c; /* Dark body background */
 }
 
 /* Enhanced emoji and special character support */
@@ -55,7 +55,7 @@ body {
   background: var(--neutral-color);
 }
 
-/* Enhanced scrollbar for touch devices */
+/* Enhanced scrollbar for touch devices - DARK MODE */
 @media (hover: none) and (pointer: coarse) {
   ::-webkit-scrollbar {
     width: 10px;
@@ -63,12 +63,12 @@ body {
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(160, 174, 192, 0.4); /* Light scrollbar for dark mode */
     border-radius: 5px;
   }
 
   ::-webkit-scrollbar-thumb:active {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(160, 174, 192, 0.6); /* Lighter on active */
   }
 }
 
@@ -91,7 +91,7 @@ body {
 
 .message-bubble:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Darker shadow for dark mode */
 }
 
 /* iOS-specific optimizations */
@@ -167,9 +167,9 @@ body {
   will-change: scroll-position;
 }
 
-/* Enhanced focus management for accessibility */
+/* Enhanced focus management for accessibility - DARK MODE */
 :focus-visible {
-  outline: 2px solid #007bff;
+  outline: 2px solid #63b3ed; /* Light blue focus for dark mode */
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -199,32 +199,25 @@ body {
   }
 }
 
-/* High contrast mode support */
+/* High contrast mode support - DARK MODE */
 @media (prefers-contrast: high) {
   :root {
-    --text-primary: #000000;
-    --background-light: #f9fafb;
+    --text-primary: #ffffff; /* White text for high contrast dark mode */
+    --background-light: #1a202c; /* Darker background for high contrast */
+    --border-color: #718096; /* More visible borders */
+    --neutral-color: #cbd5e0; /* Higher contrast neutral */
   }
 }
 
-/* High DPI display optimizations */
+/* High DPI display optimizations - DARK MODE */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  /* Crisp borders on high DPI displays */
+  /* Crisp borders on high DPI displays for dark mode */
   .message-bubble {
-    border: 0.5px solid rgba(0, 0, 0, 0.1);
+    border: 0.5px solid rgba(160, 174, 192, 0.2); /* Light border for dark mode */
   }
 }
 
-/* Dark mode preparation */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #ffffff;
-    --text-secondary: #e2e8f0;
-    --background-light: #2d3748;
-    --border-color: #4a5568;
-    --neutral-color: #a0aec0;
-  }
-}
+/* Dark mode is now the default theme - no media queries needed */
 
 /* Print styles for export functionality */
 @media print {

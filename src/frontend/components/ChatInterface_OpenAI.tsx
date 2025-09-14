@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, Suspense, lazy } from 'react';
 
 import { sendChatMessage } from '../services/api_OpenAI';
-import { Message } from '../types/chat_OpenAI';
+import { Message, MessageMetadata } from '../types/chat_OpenAI';
 
 import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import SharedTickerInput, { SharedTickerInputRef } from './SharedTickerInput';
+import DebugPanel from './DebugPanel';
 
 // Lazy load secondary components for better performance
 const ExportButtons = lazy(() =>
@@ -27,6 +28,8 @@ export default function ChatInterface_OpenAI() {
   const [error, setError] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState<string>('');
   const [sharedTicker, setSharedTicker] = useState<string>('NVDA');
+  const [latestResponseTime, setLatestResponseTime] = useState<number | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputRef>(null);
@@ -39,12 +42,13 @@ export default function ChatInterface_OpenAI() {
     }
   }, [messages]);
 
-  const addMessage = (content: string, sender: 'user' | 'ai') => {
+  const addMessage = (content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
     const newMessage: Message = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       content,
       sender,
       timestamp: new Date(),
+      metadata,
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -58,21 +62,30 @@ export default function ChatInterface_OpenAI() {
     }
   };
 
+
+
   const handleSendMessage = async (messageContent: string) => {
     // Add user message immediately
     addMessage(messageContent, 'user');
     setIsLoading(true);
     setError(null);
 
+    // Start timing for response tracking
+    const startTime = Date.now();
+
     try {
       // Send to API and get response
       const aiResponse = await sendChatMessage(messageContent);
-      addMessage(aiResponse, 'ai');
+      const processingTime = (Date.now() - startTime) / 1000;
+      setLatestResponseTime(processingTime); // Update debug panel with latest response time
+      addMessage(aiResponse, 'ai', { processingTime });
     } catch (err) {
+      const processingTime = (Date.now() - startTime) / 1000;
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
-      addMessage(`Error: ${errorMessage}`, 'ai');
+      setLatestResponseTime(processingTime); // Track response time even for errors
+      addMessage(`Error: ${errorMessage}`, 'ai', { processingTime, isError: true });
     } finally {
       setIsLoading(false);
     }
@@ -101,25 +114,9 @@ export default function ChatInterface_OpenAI() {
         {error ? `Error: ${error}` : ''}
       </div>
 
-      {/* TOP SECTION: Header */}
+      {/* SECTION 1: Header - Clean title only */}
       <header className='chat-header' role='banner'>
         <h1 id='chat-title'>OpenAI Chat Interface</h1>
-        {messages.length > 0 && (
-          <Suspense
-            fallback={
-              <div className='component-loading'>Loading export options...</div>
-            }
-          >
-            <ExportButtons messages={messages} />
-          </Suspense>
-        )}
-        <Suspense
-          fallback={
-            <div className='component-loading'>Loading recent messages...</div>
-          }
-        >
-          <RecentMessageButtons messages={messages} />
-        </Suspense>
         {error && (
           <div
             className='error-banner'
@@ -131,7 +128,7 @@ export default function ChatInterface_OpenAI() {
         )}
       </header>
 
-      {/* TOP SECTION: Messages Container */}
+      {/* SECTION 2: Messages Container */}
       <main
         className='messages-section'
         role='log'
@@ -178,24 +175,9 @@ export default function ChatInterface_OpenAI() {
         )}
       </main>
 
-      {/* MIDDLE SECTION: User Inputs */}
-      <section className='user-inputs-section' role='complementary' aria-label='User input controls'>
-        <div className='inputs-container'>
-          <div className='ticker-input-wrapper'>
-            <SharedTickerInput
-              ref={tickerInputRef}
-              value={sharedTicker}
-              onChange={setSharedTicker}
-              label='Stock Symbol'
-              placeholder='NVDA'
-              className='shared-ticker-input'
-              aria-describedby='ticker-help'
-            />
-            <div id='ticker-help' className='sr-only'>
-              Enter a stock ticker symbol to use with analysis tools
-            </div>
-          </div>
-          
+      {/* SECTION 3: Chat Input */}
+      <section className='chat-input-section' role='complementary' aria-label='Message input'>
+        <div className='chat-input-container'>
           <ChatInput_OpenAI
             ref={chatInputRef}
             onSendMessage={handleSendMessage}
@@ -207,7 +189,25 @@ export default function ChatInterface_OpenAI() {
         </div>
       </section>
 
-      {/* BOTTOM SECTION: Analysis Buttons */}
+      {/* SECTION 4: Ticker Input */}
+      <section className='ticker-input-section' role='complementary' aria-label='Stock symbol input'>
+        <div className='ticker-input-container'>
+          <SharedTickerInput
+            ref={tickerInputRef}
+            value={sharedTicker}
+            onChange={setSharedTicker}
+            label='Stock Symbol'
+            placeholder='NVDA'
+            className='shared-ticker-input'
+            aria-describedby='ticker-help'
+          />
+          <div id='ticker-help' className='sr-only'>
+            Enter a stock ticker symbol to use with analysis tools
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5: Analysis Buttons */}
       <section className='analysis-buttons-section' role='complementary' aria-label='Quick analysis tools'>
         <Suspense
           fallback={
@@ -222,6 +222,36 @@ export default function ChatInterface_OpenAI() {
             className='fixed-analysis-buttons'
           />
         </Suspense>
+      </section>
+
+      {/* SECTION 6: Export/Recent Buttons */}
+      <section className='export-buttons-section' role='complementary' aria-label='Export and recent message functions'>
+        {messages.length > 0 && (
+          <div className='export-recent-container'>
+            <Suspense
+              fallback={
+                <div className='component-loading'>Loading recent messages...</div>
+              }
+            >
+              <RecentMessageButtons messages={messages} />
+            </Suspense>
+            <Suspense
+              fallback={
+                <div className='component-loading'>Loading export options...</div>
+              }
+            >
+              <ExportButtons messages={messages} />
+            </Suspense>
+          </div>
+        )}
+      </section>
+
+      {/* SECTION 7: Debug Panel */}
+      <section className='debug-section' role='complementary' aria-label='Debug information'>
+        <DebugPanel 
+          latestResponseTime={latestResponseTime}
+          className='main-debug-panel'
+        />
       </section>
     </div>
   );
@@ -260,18 +290,22 @@ export const interfaceStyles = `
     border: 0;
   }
   
-  /* THREE-SECTION LAYOUT: Modern CSS Grid Implementation */
+  /* SEVEN-SECTION LAYOUT: Modern CSS Grid Implementation - DARK MODE */
   .chat-interface {
     display: grid;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto 1fr auto auto auto auto auto;
     grid-template-areas: 
       "header"
       "messages"
-      "inputs"
-      "buttons";
+      "chat-input"
+      "ticker-input"
+      "buttons"
+      "export-buttons"
+      "debug";
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
-    background-color: #f5f5f5;
+    background-color: #1a202c; /* Dark background */
+    color: #e2e8f0; /* Light text */
     overflow: hidden; /* Prevent page-level scrolling */
     gap: 0; /* No gaps between sections for seamless design */
   }
@@ -281,19 +315,19 @@ export const interfaceStyles = `
     .chat-interface {
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
-      grid-template-rows: auto 1fr auto auto;
+      grid-template-rows: auto 1fr auto auto auto auto auto;
     }
   }
   
-  /* HEADER SECTION: Fixed height, no layout shift */
+  /* SECTION 1: Header - Clean title only - DARK MODE */
   .chat-header {
     grid-area: header;
     position: relative;
-    background: white;
+    background: #2d3748; /* Dark header background */
     padding: 16px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #4a5568; /* Dark border */
     text-align: center;
-    min-height: 60px; /* Prevent layout shifts */
+    min-height: 70px; /* Prevent layout shifts */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -303,6 +337,7 @@ export const interfaceStyles = `
   @media (max-width: 767px) {
     .chat-header {
       padding: 12px 8px;
+      min-height: 50px;
     }
     
     .chat-header h1 {
@@ -314,19 +349,19 @@ export const interfaceStyles = `
   .chat-header h1 {
     margin: 0 0 8px 0;
     font-size: 1.5rem;
-    color: #333;
+    color: #f7fafc; /* Light title text */
   }
   
   .error-banner {
-    background-color: #fee;
-    color: #c33;
+    background-color: #742a2a; /* Dark red background */
+    color: #fed7d7; /* Light red text */
     padding: 8px 16px;
     margin-top: 8px;
     border-radius: 4px;
     font-size: 0.875rem;
   }
   
-  /* MESSAGES SECTION: Flexible height, scrollable */
+  /* SECTION 2: Messages - Flexible height, scrollable */
   .messages-section {
     grid-area: messages;
     overflow-y: auto;
@@ -348,22 +383,22 @@ export const interfaceStyles = `
     outline-offset: -2px;
   }
   
-  /* Modern scrollbar styling */
+  /* Modern scrollbar styling - DARK MODE */
   .messages-section::-webkit-scrollbar {
     width: 6px;
   }
   
   .messages-section::-webkit-scrollbar-track {
-    background: #f7fafc;
+    background: #2d3748; /* Dark scrollbar track */
   }
   
   .messages-section::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
+    background: #4a5568; /* Dark scrollbar thumb */
     border-radius: 3px;
   }
   
   .messages-section::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
+    background: #718096; /* Lighter on hover */
   }
   
   /* Mobile-specific adjustments */
@@ -419,7 +454,7 @@ export const interfaceStyles = `
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #666;
+    color: #a0aec0; /* Light gray text for dark mode */
     padding: 20px;
   }
   
@@ -433,14 +468,14 @@ export const interfaceStyles = `
     margin: 0 0 12px 0;
     font-size: 24px;
     font-weight: 600;
-    color: #333;
+    color: #f7fafc; /* Light welcome title */
   }
   
   .welcome-description {
     margin: 0 0 24px 0;
     font-size: 16px;
     line-height: 1.5;
-    color: #666;
+    color: #cbd5e0; /* Light description text */
   }
   
   .welcome-buttons {
@@ -450,7 +485,7 @@ export const interfaceStyles = `
   .getting-started {
     margin: 0;
     font-size: 14px;
-    color: #888;
+    color: #a0aec0; /* Light getting started text */
     font-style: italic;
   }
   
@@ -467,7 +502,7 @@ export const interfaceStyles = `
     align-items: center;
     gap: 4px;
     padding: 12px 16px;
-    background-color: #f1f1f1;
+    background-color: #4a5568; /* Dark typing background */
     border-radius: 16px;
   }
   
@@ -475,7 +510,7 @@ export const interfaceStyles = `
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: #999;
+    background-color: #cbd5e0; /* Light dots on dark background */
     animation: typing 1.4s infinite ease-in-out;
   }
   
@@ -498,34 +533,49 @@ export const interfaceStyles = `
     }
   }
   
-  /* USER INPUTS SECTION: Fixed height, no layout shift */
-  .user-inputs-section {
-    grid-area: inputs;
-    background: white;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
+  /* SECTION 3: Chat Input - User message input - DARK MODE */
+  .chat-input-section {
+    grid-area: chat-input;
+    background: #2d3748; /* Dark input section background */
+    border-top: 1px solid #4a5568; /* Dark border */
+    border-bottom: 1px solid #4a5568; /* Dark border */
     padding: 16px;
-    min-height: 120px; /* Fixed minimum height prevents jumping */
-    max-height: 200px; /* Prevent excessive expansion */
+    min-height: 90px; /* Fixed minimum height prevents jumping */
+    max-height: 150px; /* Prevent excessive expansion */
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
   
-  .inputs-container {
+  .chat-input-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
   }
   
-  .ticker-input-wrapper {
+  /* SECTION 4: Ticker Input - Stock symbol input - DARK MODE */
+  .ticker-input-section {
+    grid-area: ticker-input;
+    background: #2d3748; /* Dark ticker section background */
+    border-bottom: 1px solid #4a5568; /* Dark border */
+    padding: 16px;
+    min-height: 70px; /* Fixed minimum height prevents jumping */
+    max-height: 100px; /* Prevent excessive expansion */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .ticker-input-container {
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
   }
   
   .shared-ticker-input {
@@ -534,13 +584,14 @@ export const interfaceStyles = `
   
   /* Mobile input adjustments */
   @media (max-width: 767px) {
-    .user-inputs-section {
+    .chat-input-section {
       padding: 12px 8px;
-      min-height: 100px;
+      min-height: 70px;
     }
     
-    .inputs-container {
-      gap: 10px;
+    .ticker-input-section {
+      padding: 12px 8px;
+      min-height: 50px;
     }
     
     .shared-ticker-input {
@@ -550,31 +601,33 @@ export const interfaceStyles = `
   
   /* Tablet and desktop input optimizations */
   @media (min-width: 768px) {
-    .user-inputs-section {
+    .chat-input-section {
       padding: 20px;
-      min-height: 140px;
+      min-height: 80px;
     }
     
-    .inputs-container {
-      gap: 16px;
+    .ticker-input-section {
+      padding: 20px;
+      min-height: 60px;
     }
   }
   
-  /* ANALYSIS BUTTONS SECTION: Fixed height, always visible */
+  /* SECTION 5: Analysis Buttons - Quick analysis tools - DARK MODE */
   .analysis-buttons-section {
     grid-area: buttons;
-    background: #fafafa;
-    border-top: 1px solid #e0e0e0;
+    background: #1a202c; /* Dark analysis section background */
+    border-top: 1px solid #4a5568; /* Dark border */
+    border-bottom: 1px solid #4a5568; /* Dark border */
     padding: 8px 16px;
-    min-height: 180px; /* Fixed minimum height prevents jumping */
-    max-height: 250px; /* Prevent excessive expansion */
+    min-height: 140px; /* Fixed minimum height prevents jumping */
+    max-height: 200px; /* Prevent excessive expansion */
     overflow-y: auto;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    /* Custom scrollbar for modern look */
+    /* Custom scrollbar for modern look - dark mode */
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e0 #f7fafc;
+    scrollbar-color: #4a5568 #2d3748;
   }
   
   .analysis-buttons-section::-webkit-scrollbar {
@@ -582,11 +635,11 @@ export const interfaceStyles = `
   }
   
   .analysis-buttons-section::-webkit-scrollbar-track {
-    background: #f7fafc;
+    background: #2d3748; /* Dark scrollbar track */
   }
   
   .analysis-buttons-section::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
+    background: #4a5568; /* Dark scrollbar thumb */
     border-radius: 2px;
   }
   
@@ -601,16 +654,17 @@ export const interfaceStyles = `
   
   .analysis-loading {
     min-height: 80px;
-    background: #f8f9fa;
+    background: #2d3748; /* Dark loading background */
     border-radius: 8px;
     margin: 8px 0;
+    color: #cbd5e0; /* Light loading text */
   }
   
   /* Mobile analysis buttons adjustments */
   @media (max-width: 767px) {
     .analysis-buttons-section {
       padding: 6px 8px;
-      min-height: 150px;
+      min-height: 100px;
     }
     
     .analysis-buttons-section::-webkit-scrollbar {
@@ -622,8 +676,104 @@ export const interfaceStyles = `
   @media (min-width: 768px) {
     .analysis-buttons-section {
       padding: 12px 20px;
-      min-height: 200px;
+      min-height: 120px;
     }
+  }
+  
+  /* SECTION 6: Export/Recent Buttons - Export and recent message functions - DARK MODE */
+  .export-buttons-section {
+    grid-area: export-buttons;
+    background: #2d3748; /* Dark export section background */
+    border-top: 1px solid #4a5568; /* Dark border */
+    border-bottom: 1px solid #4a5568; /* Dark border */
+    padding: 12px 16px;
+    min-height: 70px; /* Fixed minimum height prevents jumping */
+    max-height: 120px; /* Increased for both button sets */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .export-recent-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 1000px;
+    align-items: center;
+  }
+  
+  /* Mobile export-recent container adjustments */
+  @media (max-width: 767px) {
+    .export-recent-container {
+      gap: 6px;
+    }
+  }
+  
+  /* SECTION 7: Debug Panel - Developer information - DARK MODE */
+  .debug-section {
+    grid-area: debug;
+    background: #1a202c; /* Dark debug section background */
+    border-top: 1px solid #4a5568; /* Dark border */
+    padding: 12px 16px;
+    min-height: 80px; /* Fixed minimum height prevents jumping */
+    max-height: 120px; /* Prevent excessive expansion */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .main-debug-panel {
+    margin: 0;
+    border: none;
+    background: transparent;
+    width: 100%;
+    max-width: 1000px;
+    padding: 0;
+    box-shadow: none;
+  }
+  
+  /* Mobile export and debug section adjustments */
+  @media (max-width: 767px) {
+    .export-buttons-section {
+      padding: 8px 12px;
+      min-height: 60px;
+      max-height: 100px; /* Increased for both button sets */
+    }
+    
+    .debug-section {
+      padding: 8px 12px;
+      min-height: 50px;
+      max-height: 80px;
+    }
+  }
+  
+  /* Tablet and desktop export and debug section optimizations */
+  @media (min-width: 768px) {
+    .export-buttons-section {
+      padding: 16px 20px;
+      min-height: 70px;
+      max-height: 110px; /* Increased for both button sets */
+    }
+    
+    .debug-section {
+      padding: 16px 20px;
+      min-height: 70px;
+      max-height: 100px;
+    }
+  }
+  
+  /* Export and debug section focus management - DARK MODE */
+  .export-buttons-section:focus-within {
+    border-color: #63b3ed; /* Light blue border for dark mode */
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
+  }
+  
+  .debug-section:focus-within {
+    border-color: #63b3ed; /* Light blue border for dark mode */
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
   
   /* Export buttons responsive layout */
@@ -680,54 +830,61 @@ export const interfaceStyles = `
     }
   }
   
-  /* Focus visible improvements with modern focus rings */
+  /* Focus visible improvements with modern focus rings - DARK MODE */
   .chat-interface *:focus-visible {
-    outline: 2px solid #007bff;
+    outline: 2px solid #63b3ed; /* Light blue focus ring for dark mode */
     outline-offset: 2px;
     border-radius: 4px;
   }
   
-  /* Enhanced section focus management */
+  /* Enhanced section focus management - DARK MODE */
   .messages-section:focus-within,
-  .user-inputs-section:focus-within,
-  .analysis-buttons-section:focus-within {
-    background-color: rgba(0, 123, 255, 0.02);
+  .chat-input-section:focus-within,
+  .ticker-input-section:focus-within,
+  .analysis-buttons-section:focus-within,
+  .export-buttons-section:focus-within {
+    background-color: rgba(99, 179, 237, 0.1); /* Light blue overlay for dark mode */
     transition: background-color 0.2s ease;
   }
   
-  /* Modern focus indicators for sections */
-  .user-inputs-section:focus-within {
-    border-color: #007bff;
-    box-shadow: inset 0 0 0 1px rgba(0, 123, 255, 0.2);
+  /* Modern focus indicators for sections - DARK MODE */
+  .chat-input-section:focus-within {
+    border-color: #63b3ed; /* Light blue border for dark mode */
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
+  }
+  
+  .ticker-input-section:focus-within {
+    border-color: #63b3ed; /* Light blue border for dark mode */
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
   
   .analysis-buttons-section:focus-within {
-    border-color: #007bff;
-    box-shadow: inset 0 0 0 1px rgba(0, 123, 255, 0.2);
+    border-color: #63b3ed; /* Light blue border for dark mode */
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
 
-  /* Component loading states */
+  /* Component loading states - DARK MODE */
   .component-loading {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 12px;
-    color: #666;
+    color: #a0aec0; /* Light loading text */
     font-size: 13px;
     font-style: italic;
-    background: #f8f9fa;
+    background: #2d3748; /* Dark loading background */
     border-radius: 8px;
     margin: 8px 0;
     min-height: 40px;
-    border: 1px solid #e9ecef;
+    border: 1px solid #4a5568; /* Dark border */
   }
 
   .component-loading::before {
     content: '';
     width: 16px;
     height: 16px;
-    border: 2px solid #e9ecef;
-    border-top: 2px solid #007bff;
+    border: 2px solid #4a5568; /* Dark loading ring */
+    border-top: 2px solid #63b3ed; /* Light blue accent */
     border-radius: 50%;
     animation: component-loading-spin 1s linear infinite;
     margin-right: 8px;
@@ -772,37 +929,20 @@ export const interfaceStyles = `
     }
   }
   
-  /* Dark mode preparation */
-  @media (prefers-color-scheme: dark) {
-    .chat-interface {
-      background-color: #1a202c;
-    }
-    
-    .chat-header {
-      background: #2d3748;
-      border-bottom-color: #4a5568;
-    }
-    
-    .user-inputs-section {
-      background: #2d3748;
-      border-color: #4a5568;
-    }
-    
-    .analysis-buttons-section {
-      background: #1a202c;
-      border-top-color: #4a5568;
-    }
-  }
+  /* Dark mode is now the default theme - no media queries needed */
   
-  /* Reduced motion support */
+  /* Reduced motion support - DARK MODE */
   @media (prefers-reduced-motion: reduce) {
     .component-loading::before {
       animation: none;
-      border: 2px solid #007bff;
+      border: 2px solid #63b3ed; /* Light blue for dark mode */
     }
     
-    .user-inputs-section,
-    .analysis-buttons-section {
+    .chat-input-section,
+    .ticker-input-section,
+    .analysis-buttons-section,
+    .export-buttons-section,
+    .debug-section {
       transition: none;
     }
   }
