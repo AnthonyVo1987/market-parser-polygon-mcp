@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { AnalysisButtonProps } from '../types/chat_OpenAI';
 import { usePromptAPI, usePromptGeneration } from '../hooks/usePromptAPI';
 
@@ -19,6 +19,7 @@ const getTestId = (templateType: string): string => {
 
 export default function AnalysisButton({
   template,
+  ticker,
   onPromptGenerated,
   isLoading = false,
   disabled = false,
@@ -27,23 +28,22 @@ export default function AnalysisButton({
   const { generatePrompt, error: apiError } = usePromptAPI();
   const { isGenerating, generationError, generateWithLoading } =
     usePromptGeneration();
-  const [currentTicker, setCurrentTicker] = useState<string>('');
 
   // Determine if button should show loading state
   const isButtonLoading = isLoading || isGenerating;
-  const isButtonDisabled = disabled || isButtonLoading;
+  const isButtonDisabled = disabled || isButtonLoading || (template.requiresTicker && ticker.length < 3);
 
   // Handle button click to generate and populate prompt
   const handleButtonClick = useCallback(async () => {
     if (isButtonDisabled) return;
 
-    const ticker = template.requiresTicker
-      ? currentTicker.trim() || 'AAPL'
+    const tickerValue = template.requiresTicker
+      ? ticker.trim() || 'AAPL'
       : undefined;
 
     try {
       await generateWithLoading(
-        () => generatePrompt(template.id, ticker),
+        () => generatePrompt(template.id, tickerValue),
         generatedPrompt => {
           onPromptGenerated(generatedPrompt);
         }
@@ -53,31 +53,14 @@ export default function AnalysisButton({
     }
   }, [
     template,
-    currentTicker,
+    ticker,
     generatePrompt,
     onPromptGenerated,
     generateWithLoading,
     isButtonDisabled,
   ]);
 
-  // Handle ticker input change
-  const handleTickerChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      setCurrentTicker(value);
-    },
-    []
-  );
 
-  // Handle ticker input key press (Enter to trigger button)
-  const handleTickerKeyPress = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter' && !isButtonDisabled) {
-        void handleButtonClick(); // Use void operator for floating promise
-      }
-    },
-    [handleButtonClick, isButtonDisabled]
-  );
 
   const displayError = generationError || apiError;
 
@@ -87,30 +70,7 @@ export default function AnalysisButton({
       role='group'
       aria-labelledby={`button-${template.id}-label`}
     >
-      {/* Ticker input for templates that require it */}
-      {template.requiresTicker && (
-        <div className='ticker-input-container'>
-          <label htmlFor={`ticker-${template.id}`} className='ticker-label'>
-            Stock Symbol:
-          </label>
-          <input
-            id={`ticker-${template.id}`}
-            type='text'
-            value={currentTicker}
-            onChange={handleTickerChange}
-            onKeyPress={handleTickerKeyPress}
-            placeholder='AAPL'
-            maxLength={10}
-            className='ticker-input'
-            disabled={isButtonDisabled}
-            aria-describedby={`ticker-help-${template.id}`}
-          />
-          <div id={`ticker-help-${template.id}`} className='sr-only'>
-            Enter a stock symbol (letters and numbers only). Press Enter to
-            generate analysis.
-          </div>
-        </div>
-      )}
+
 
       {/* Main analysis button */}
       <button
@@ -141,7 +101,7 @@ export default function AnalysisButton({
       {/* Button help text */}
       <div id={`button-help-${template.id}`} className='sr-only'>
         {template.description}
-        {template.requiresTicker ? ' Enter a ticker symbol first.' : ''}
+        {template.requiresTicker ? ` Uses ticker symbol: ${ticker}` : ''}
         {isButtonLoading
           ? ' Loading prompt...'
           : ' Click to populate chat input with analysis prompt.'}
@@ -201,59 +161,22 @@ export const analysisButtonStyles = `
     gap: 8px;
     margin-bottom: 12px;
     width: 100%;
-    max-width: 280px;
+    max-width: 320px; /* Slightly larger for better content fit */
+    /* Performance optimizations */
+    contain: layout style;
+    /* Better box model control */
+    box-sizing: border-box;
   }
 
-  /* Ticker input styling */
-  .ticker-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
 
-  .ticker-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-    margin-bottom: 2px;
-  }
 
-  .ticker-input {
-    padding: 6px 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    text-transform: uppercase;
-    background: white;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .ticker-input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-  }
-
-  .ticker-input:focus-visible {
-    outline: 2px solid #007bff;
-    outline-offset: 2px;
-  }
-
-  .ticker-input:disabled {
-    background-color: #f5f5f5;
-    color: #999;
-    cursor: not-allowed;
-  }
-
-  /* Main button styling */
+  /* Enhanced main button styling */
   .analysis-button {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 16px;
+    padding: 14px 18px; /* More generous padding */
     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
     color: white;
     border: none;
@@ -261,16 +184,39 @@ export const analysisButtonStyles = `
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    min-height: 44px; /* Touch-friendly minimum */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing */
+    min-height: 48px; /* Enhanced touch-friendly minimum */
     position: relative;
     overflow: hidden;
+    /* Performance optimizations */
+    will-change: transform, box-shadow;
+    /* Enhanced box model */
+    box-sizing: border-box;
+    /* Improved text rendering */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
   .analysis-button:not(:disabled):hover {
     background: linear-gradient(135deg, #0056b3 0%, #004494 100%);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+
+  /* Enhanced focus states for better accessibility */
+  .analysis-button:focus-visible {
+    outline: 3px solid #007bff;
+    outline-offset: 2px;
+    /* Ensure focus is visible in high contrast mode */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+  }
+
+  /* Focus-within state for container when button is focused */
+  .analysis-button-container:focus-within {
+    /* Subtle container highlight when button is focused */
+    background: rgba(0, 123, 255, 0.02);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
   }
 
   .analysis-button:not(:disabled):active {
@@ -286,8 +232,10 @@ export const analysisButtonStyles = `
   }
 
   .analysis-button:focus-visible {
-    outline: 2px solid #007bff;
+    outline: 3px solid #007bff;
     outline-offset: 2px;
+    /* Enhanced focus visibility */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
   }
 
   /* Button content styling */
@@ -384,43 +332,148 @@ export const analysisButtonStyles = `
     line-height: 1.3;
   }
 
-  /* Mobile responsiveness */
+  /* Enhanced mobile responsiveness (320px-767px) */
   @media (max-width: 767px) {
     .analysis-button-container {
       max-width: 100%;
     }
 
     .analysis-button {
-      padding: 14px 12px;
+      padding: 16px 14px; /* More generous mobile padding */
       font-size: 15px;
-      min-height: 48px; /* Larger touch targets on mobile */
+      min-height: 52px; /* Larger touch targets on mobile */
+      /* Enhanced mobile interactions */
+      -webkit-tap-highlight-color: transparent;
+      /* Better mobile typography */
+      letter-spacing: 0.025em;
     }
 
-    .ticker-input {
-      padding: 10px 12px;
-      font-size: 16px; /* Prevents iOS zoom */
+    .button-icon {
+      font-size: 20px; /* Slightly larger icons on mobile */
     }
   }
 
-  /* High contrast mode support */
+  /* Tablet optimizations (768px-1024px) */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .analysis-button {
+      padding: 15px 17px;
+      min-height: 50px;
+      font-size: 14.5px;
+    }
+  }
+
+  /* Desktop optimizations (1025px+) */
+  @media (min-width: 1025px) {
+    .analysis-button {
+      /* Enhanced hover effects for desktop */
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .analysis-button:not(:disabled):hover {
+      /* Refined desktop hover state */
+      background: linear-gradient(135deg, #0056b3 0%, #004494 100%);
+      transform: translateY(-2px); /* Slightly more pronounced lift */
+      box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
+    }
+  }
+
+  /* Cross-platform input method optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    /* Touch devices - optimize for touch interaction */
+    .analysis-button {
+      min-height: 56px; /* Larger touch targets */
+      /* Remove hover states on touch devices */
+      transition: background-color 0.1s ease;
+    }
+
+    .analysis-button:not(:disabled):hover {
+      /* Disable hover transform on touch devices */
+      transform: none;
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    }
+
+    /* Enhanced touch feedback */
+    .analysis-button:not(:disabled):active {
+      background: linear-gradient(135deg, #004494 0%, #003366 100%);
+      transform: scale(0.98);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    /* Mouse/trackpad devices - optimize for precision */
+    .analysis-button {
+      /* Refined hover states for precise input devices */
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  /* Enhanced accessibility features */
+  @media (prefers-color-scheme: dark) {
+    /* Dark mode preparation */
+    .analysis-button {
+      /* Future dark mode button styling */
+      /* background: linear-gradient(135deg, #0066cc 0%, #004499 100%); */
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .analysis-button {
+      background: white !important;
+      color: black !important;
+      border: 2px solid #000 !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .loading-spinner {
+      display: none;
+    }
+  }
+
+  /* Forced colors mode support (Windows High Contrast) */
+  @media (forced-colors: active) {
+    .analysis-button {
+      border: 2px solid ButtonBorder;
+      background: ButtonFace;
+      color: ButtonText;
+      forced-color-adjust: none;
+    }
+
+    .analysis-button:focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+      box-shadow: none;
+    }
+
+    .analysis-button:not(:disabled):hover {
+      background: Highlight;
+      color: HighlightText;
+    }
+  }
+
+  /* Enhanced high contrast mode support */
   @media (prefers-contrast: high) {
     .analysis-button {
       border: 2px solid;
-    }
-
-    .ticker-input {
-      border: 2px solid;
+      background: ButtonFace;
+      color: ButtonText;
     }
 
     .error-message {
       border-width: 2px;
+      background: Mark;
+      color: MarkText;
+    }
+
+    .analysis-button:focus-visible {
+      outline-width: 4px;
     }
   }
 
-  /* Reduced motion support */
+  /* Enhanced reduced motion support */
   @media (prefers-reduced-motion: reduce) {
-    .analysis-button,
-    .ticker-input {
+    .analysis-button {
       transition: none;
     }
 
@@ -428,8 +481,16 @@ export const analysisButtonStyles = `
       transform: none;
     }
 
+    .analysis-button:not(:disabled):active {
+      transform: none;
+    }
+
     .loading-spinner span {
       animation: none;
+    }
+
+    .analysis-button-container:focus-within {
+      transition: none;
     }
   }
 `;

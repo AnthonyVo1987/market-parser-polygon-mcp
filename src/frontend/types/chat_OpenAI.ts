@@ -147,6 +147,7 @@ export interface GeneratePromptResponse {
 // Analysis button component props
 export interface AnalysisButtonProps {
   template: PromptTemplate;
+  ticker: string; // NEW: shared ticker from parent component
   onPromptGenerated: (prompt: string) => void;
   isLoading?: boolean;
   disabled?: boolean;
@@ -155,7 +156,7 @@ export interface AnalysisButtonProps {
 
 export interface AnalysisButtonsProps {
   onPromptGenerated: (prompt: string) => void;
-  currentTicker?: string;
+  currentTicker: string; // UPDATED: Required ticker for shared system
   className?: string;
 }
 

@@ -148,6 +148,7 @@ export default function AnalysisButtons({
           <AnalysisButton
             key={template.id}
             template={template}
+            ticker={currentTicker}
             onPromptGenerated={handlePromptGenerated}
             isLoading={loading}
             className='grid-button'
@@ -198,7 +199,7 @@ export const analysisButtonsStyles = `
     border: 0;
   }
 
-  /* Main container */
+  /* Enhanced main container with modern CSS features */
   .analysis-buttons-container {
     background: white;
     border: 1px solid #e0e0e0;
@@ -208,6 +209,24 @@ export const analysisButtonsStyles = `
     width: 100%;
     max-width: 100%;
     position: relative;
+    /* Modern container query support for component-based responsive design */
+    container-type: inline-size;
+    container-name: analysis-buttons;
+    /* Performance optimizations */
+    contain: layout style;
+    /* Enhanced visual appearance */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Better box model */
+    box-sizing: border-box;
+    /* Smooth appearance changes */
+    transition: box-shadow 0.2s ease;
+  }
+
+  /* Enhanced container hover state for desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .analysis-buttons-container:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
   }
 
   /* Header section */
@@ -235,17 +254,29 @@ export const analysisButtonsStyles = `
     color: #007bff;
   }
 
-  /* Button grid layout */
+  /* Modern responsive button grid layout */
   .buttons-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    /* Use explicit responsive columns for better control */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 16px;
-    align-items: start;
+    align-items: stretch; /* Ensure consistent button heights */
+    justify-items: center;
+    /* Performance optimizations */
+    contain: layout style;
+    /* Ensure grid stability */
+    min-height: 60px; /* Prevent layout shift during loading */
   }
 
   .grid-button {
     width: 100%;
     max-width: none;
+    /* Ensure consistent button sizing within grid */
+    min-height: 60px;
+    /* Performance optimization for button animations */
+    will-change: transform;
+    /* Better box model control */
+    box-sizing: border-box;
   }
 
   /* Loading state */
@@ -487,11 +518,13 @@ export const analysisButtonsStyles = `
     background: #b91c1c;
   }
 
-  /* Mobile responsive design */
+  /* Enhanced mobile responsive design (320px-767px) */
   @media (max-width: 767px) {
     .analysis-buttons-container {
       margin: 8px 0;
       padding: 12px;
+      /* Enhance mobile touch interactions */
+      -webkit-tap-highlight-color: transparent;
     }
 
     .buttons-header {
@@ -504,11 +537,16 @@ export const analysisButtonsStyles = `
 
     .buttons-subtitle {
       font-size: 12px;
+      line-height: 1.5; /* Better mobile readability */
     }
 
     .buttons-grid {
+      /* Single column for mobile with optimized spacing */
       grid-template-columns: 1fr;
-      gap: 12px;
+      gap: 14px; /* Slightly larger gap for touch */
+      justify-items: stretch; /* Full-width buttons on mobile */
+      /* Minimum touch target compliance */
+      min-height: 64px; /* Accommodate larger mobile buttons */
     }
 
     .refresh-error {
@@ -521,21 +559,132 @@ export const analysisButtonsStyles = `
     }
   }
 
-  /* Tablet responsive design */
+  /* Enhanced tablet responsive design (768px-1024px) */
   @media (min-width: 768px) and (max-width: 1024px) {
     .buttons-grid {
+      /* Two columns for optimal tablet layout */
       grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  /* Desktop optimizations */
-  @media (min-width: 1025px) {
-    .buttons-grid {
-      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      justify-items: stretch;
+      /* Ensure consistent spacing */
+      grid-auto-rows: minmax(60px, auto);
     }
 
     .analysis-buttons-container {
-      padding: 20px;
+      padding: 18px; /* Balanced tablet padding */
+    }
+  }
+
+  /* Enhanced desktop optimizations (1025px+) */
+  @media (min-width: 1025px) {
+    .buttons-grid {
+      /* Three columns for desktop with refined spacing */
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px; /* More generous desktop spacing */
+      justify-items: stretch;
+      /* Consistent button heights */
+      grid-auto-rows: minmax(60px, auto);
+    }
+
+    .analysis-buttons-container {
+      padding: 24px; /* Generous desktop padding */
+    }
+
+    /* Desktop hover optimizations */
+    .buttons-grid:hover {
+      /* Subtle grid interaction feedback */
+      will-change: transform;
+    }
+  }
+
+  /* Large desktop optimizations (1440px+) */
+  @media (min-width: 1440px) {
+    .buttons-grid {
+      /* Maintain 3 columns but with better spacing */
+      max-width: 1200px; /* Prevent buttons from becoming too wide */
+      margin: 0 auto; /* Center the grid */
+      gap: 20px;
+    }
+
+    .analysis-buttons-container {
+      padding: 28px;
+    }
+  }
+
+  /* Ultra-wide display support (1920px+) */
+  @media (min-width: 1920px) {
+    .buttons-grid {
+      /* Consider 4 columns for ultra-wide displays */
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      max-width: 1400px;
+      gap: 24px;
+    }
+  }
+
+  /* Modern container queries for component-based responsive design */
+  /* These provide more precise control than viewport-based media queries */
+  @container analysis-buttons (max-width: 400px) {
+    .buttons-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .buttons-header {
+      margin-bottom: 10px;
+    }
+
+    .buttons-title {
+      font-size: 14px;
+    }
+  }
+
+  @container analysis-buttons (min-width: 401px) and (max-width: 600px) {
+    .buttons-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+
+  @container analysis-buttons (min-width: 601px) and (max-width: 900px) {
+    .buttons-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @container analysis-buttons (min-width: 901px) {
+    .buttons-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+  }
+
+  /* Cross-platform input method optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    /* Touch devices - enhance touch targets */
+    .buttons-grid {
+      gap: 16px; /* Larger gaps for touch */
+    }
+
+    .grid-button {
+      min-height: 64px; /* Larger touch targets */
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    /* Mouse/trackpad devices - optimize for precision */
+    .buttons-grid {
+      gap: 14px; /* Tighter spacing for precision input */
+    }
+  }
+
+  /* Enhanced accessibility and performance features */
+  @media (prefers-color-scheme: dark) {
+    .analysis-buttons-container {
+      /* Dark mode preparation - can be activated when dark mode is implemented */
+      /* background: #1a1a1a; */
+      /* border-color: #404040; */
+      /* color: #ffffff; */
     }
   }
 
@@ -552,7 +701,7 @@ export const analysisButtonsStyles = `
     }
   }
 
-  /* Reduced motion support */
+  /* Enhanced reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     .loading-spinner-large span,
     .refresh-spinner span {
@@ -562,6 +711,49 @@ export const analysisButtonsStyles = `
     .retry-button,
     .refresh-button {
       transition: none;
+    }
+
+    /* Remove all transforms and transitions for reduced motion */
+    .analysis-buttons-container {
+      transition: none;
+    }
+
+    .buttons-grid:hover {
+      will-change: auto;
+    }
+
+    .grid-button {
+      will-change: auto;
+    }
+  }
+
+  /* Print styles for better document printing */
+  @media print {
+    .analysis-buttons-container {
+      background: white !important;
+      border: 1px solid #000;
+      box-shadow: none;
+    }
+
+    .loading-spinner-large,
+    .refresh-spinner,
+    .refresh-overlay {
+      display: none;
+    }
+  }
+
+  /* Forced colors mode support (Windows High Contrast) */
+  @media (forced-colors: active) {
+    .analysis-buttons-container {
+      border: 2px solid ButtonBorder;
+      background: ButtonFace;
+    }
+
+    .retry-button,
+    .refresh-button {
+      border: 2px solid ButtonBorder;
+      background: ButtonFace;
+      color: ButtonText;
     }
   }
 `;
