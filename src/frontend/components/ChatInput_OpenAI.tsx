@@ -552,17 +552,17 @@ export const inputStyles = `
     }
     
     .message-input.input-focused {
-      border: 3px solid var(--primary-300);
+      border: 2px solid var(--primary-300);
       box-shadow: none;
     }
     
     .message-input.input-error {
-      border: 3px solid var(--error-500);
+      border: 2px solid var(--error-500);
       box-shadow: none;
     }
     
     .message-input.input-success {
-      border: 3px solid var(--success-500);
+      border: 2px solid var(--success-500);
       box-shadow: none;
     }
     

@@ -274,14 +274,14 @@ export const interfaceStyles = `
   /* SIX-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
   .chat-interface {
     display: grid;
-    /* Stable grid rows using minmax() to prevent layout shifts during loading states */
-    grid-template-rows: 
-      minmax(70px, auto)    /* Header: stable minimum height */
+    /* Fixed grid rows to completely prevent layout shifts during loading states */
+    grid-template-rows:
+      70px                  /* Header: fixed height prevents any growth */
       1fr                   /* Messages: flexible space for scrolling */
-      minmax(90px, 150px)   /* Chat Input: stable height range */
-      minmax(180px, 280px)  /* Analysis Buttons with Ticker: increased height range */
-      minmax(70px, 120px)   /* Export Buttons: stable height range */
-      minmax(80px, 120px);  /* Debug: stable height range */
+      minmax(90px, 150px)   /* Chat Input: bounded height range */
+      minmax(180px, 280px)  /* Analysis Buttons with Ticker: bounded height range */
+      minmax(70px, 120px)   /* Export Buttons: bounded height range */
+      minmax(80px, 120px);  /* Debug: bounded height range */
     grid-template-areas: 
       "header"
       "messages"
@@ -323,9 +323,9 @@ export const interfaceStyles = `
     .chat-interface {
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
-      /* Mobile-optimized stable grid rows */
-      grid-template-rows: 
-        minmax(50px, auto)    /* Header: smaller mobile minimum */
+      /* Mobile-optimized fixed grid rows to prevent layout shifts */
+      grid-template-rows:
+        50px                  /* Header: fixed height for mobile */
         1fr                   /* Messages: flexible space */
         minmax(70px, 120px)   /* Chat Input: mobile-optimized range */
         minmax(150px, 240px)  /* Analysis Buttons with Ticker: mobile-optimized range */

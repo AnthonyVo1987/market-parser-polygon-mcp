@@ -64,7 +64,7 @@ export default function DebugPanel({
       >
         <div className="header-content">
           <div className="header-left">
-            <h3 className="debug-title">Debug Info</h3>
+            <h3 className="debug-title">Debug Info {isExpanded ? '(Expanded)' : '(Collapsed)'}</h3>
           </div>
           <div className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`} aria-hidden="true">
             ▶
@@ -154,17 +154,29 @@ export const debugPanelStyles = `
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
+    /* Enhanced visual cues for clickability */
+    background: rgba(59, 130, 246, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Add subtle gradient */
+    background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
   }
 
   .debug-header.clickable-header:hover {
-    background: var(--glass-surface-1);
+    background: rgba(59, 130, 246, 0.08);
     border-color: var(--accent-info);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(59, 130, 246, 0.1);
+    /* Enhanced gradient on hover */
+    background-image: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
   }
 
   .debug-header.clickable-header:focus-visible {
     outline: 2px solid var(--accent-info);
     outline-offset: 2px;
-    background: var(--glass-surface-1);
+    background: rgba(59, 130, 246, 0.08);
+    border-color: var(--accent-info);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(59, 130, 246, 0.2);
   }
 
   .debug-header .header-content {
@@ -204,32 +216,44 @@ export const debugPanelStyles = `
     font-size: var(--font-size-small);
   }
 
-  /* Chevron icon styling for debug panel */
+  /* Enhanced chevron icon styling for debug panel with better visibility */
   .debug-header .chevron-icon {
-    font-size: 14px;
-    color: var(--text-secondary);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+    font-size: 16px;
+    color: var(--accent-info);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease, background 0.2s ease;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     margin-left: var(--spacing-2);
+    /* Enhanced visual prominence */
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    font-weight: bold;
   }
 
   .debug-header .chevron-icon.expanded {
     transform: rotate(90deg);
     color: var(--accent-info);
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
   }
 
   .debug-header.clickable-header:hover .chevron-icon {
     color: var(--accent-info);
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: scale(1.1) rotateZ(0deg);
+  }
+
+  .debug-header.clickable-header:hover .chevron-icon.expanded {
+    transform: scale(1.1) rotate(90deg);
   }
 
   /* Collapsible content container for debug panel */

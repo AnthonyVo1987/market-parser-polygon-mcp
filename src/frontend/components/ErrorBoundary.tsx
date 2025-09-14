@@ -341,7 +341,7 @@ export const errorBoundaryStyles = `
   /* High Contrast Mode Support */
   @media (prefers-contrast: high) {
     .error-boundary-fallback {
-      border: 3px solid var(--accent-error);
+      border: 2px solid var(--accent-error);
       background: var(--background-primary);
     }
     
