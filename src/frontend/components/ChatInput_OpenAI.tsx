@@ -6,6 +6,8 @@ import {
   useEffect,
   useCallback,
 } from 'react';
+import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
+import { logger } from '../utils/logger';
 
 interface ChatInput_OpenAIProps {
   onSendMessage: (message: string) => void;
@@ -37,6 +39,10 @@ const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
     const [isFocused, setIsFocused] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    
+    // Initialize logging
+    useComponentLogger('ChatInput_OpenAI', { placeholder });
+    const logInteraction = useInteractionLogger('ChatInput_OpenAI');
 
     // Use external value if provided, otherwise use internal state
     const inputValue =
@@ -45,6 +51,11 @@ const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
     // Update internal state when external value changes
     useEffect(() => {
       if (externalValue !== undefined) {
+        logger.debug('📝 External value updated', {
+          component: 'ChatInput_OpenAI',
+          newValueLength: externalValue.length,
+          hasContent: externalValue.length > 0
+        });
         setInternalValue(externalValue);
       }
     }, [externalValue]);

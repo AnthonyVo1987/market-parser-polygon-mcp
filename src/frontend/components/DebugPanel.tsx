@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
+import { logger } from '../utils/logger';
 
 /**
  * Props interface for the DebugPanel component
@@ -8,6 +10,8 @@ interface DebugPanelProps {
   latestResponseTime: number | null;
   /** Additional CSS classes to apply to the component */
   className?: string;
+  /** Optional callback for debug actions */
+  onDebugAction?: (action: string, details: any) => void;
 }
 
 /**
@@ -21,12 +25,29 @@ interface DebugPanelProps {
  */
 export default function DebugPanel({ 
   latestResponseTime, 
-  className = '' 
+  className = '',
+  onDebugAction
 }: DebugPanelProps) {
+  // Initialize logging
+  useComponentLogger('DebugPanel', { 
+    hasResponseTime: latestResponseTime !== null,
+    responseTime: latestResponseTime 
+  });
+  const logInteraction = useInteractionLogger('DebugPanel');
+  
   // Collapsible state management with localStorage persistence
   const [isExpanded, setIsExpanded] = useState(() => {
     const saved = localStorage.getItem('debugPanelExpanded');
-    return saved !== null ? JSON.parse(saved) : true; // Default expanded
+    const defaultExpanded = saved !== null ? JSON.parse(saved) : true;
+    
+    logger.debug('🔧 DebugPanel initialized', {
+      component: 'DebugPanel',
+      expanded: defaultExpanded,
+      hasResponseTime: latestResponseTime !== null,
+      responseTime: latestResponseTime
+    });
+    
+    return defaultExpanded;
   });
 
   // Persist expand/collapse state

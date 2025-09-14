@@ -9,6 +9,8 @@ Markdown reports in the `reports/` directory.
 import asyncio
 import os
 import re
+import time
+import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -38,6 +40,15 @@ from pydantic_settings import BaseSettings
 from rich.console import Console
 from rich.markdown import Markdown
 
+# Import logging utilities
+from .utils.logger import (
+    get_logger,
+    log_api_request,
+    log_api_response,
+    log_mcp_operation,
+    log_agent_processing,
+)
+
 from .api_models import (
     AnalysisType,
     ButtonAnalysisRequest,
@@ -59,6 +70,7 @@ from .prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
 load_dotenv()
 
 console = Console()
+logger = get_logger(__name__)
 
 
 # ====== CONFIGURATION SETTINGS ======
@@ -106,6 +118,9 @@ settings = Settings()
 # Global shared resources for FastAPI lifespan management
 shared_mcp_server = None
 shared_session = None
+
+# Request tracking for logging
+active_requests = {}
 
 
 # Models
@@ -247,7 +262,7 @@ def print_guardrail_error(exception):
     console.print("------------------\n")
 
 
-async def process_financial_query(query: str, session: SQLiteSession, server) -> dict:
+async def process_financial_query(query: str, session: SQLiteSession, server, request_id: Optional[str] = None) -> dict:
     """Process a financial query using the agent system.
 
     Returns:
@@ -258,6 +273,16 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
             'error_type': str or None
         }
     """
+    start_time = time.time()
+    if not request_id:
+        request_id = str(uuid.uuid4())[:8]
+    
+    log_agent_processing(logger, "Starting financial query processing", {
+        "request_id": request_id,
+        "query_length": len(query),
+        "session_name": session.session_name if hasattr(session, 'session_name') else 'unknown'
+    })
+    
     try:
         with trace("Polygon.io Demo"):
             analysis_agent = Agent(
@@ -309,8 +334,21 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                 model=OpenAIResponsesModel(model=settings.openai_model, openai_client=AsyncOpenAI()),
                 model_settings=ModelSettings(truncation="auto"),
             )
+            log_agent_processing(logger, "Running analysis agent", {
+                "request_id": request_id,
+                "model": settings.openai_model
+            })
+            
             output = await Runner.run(analysis_agent, query, session=session)
             final_output = getattr(output, "final_output", output)
+            
+            processing_time = time.time() - start_time
+            log_agent_processing(logger, "Agent processing completed successfully", {
+                "request_id": request_id,
+                "processing_time": f"{processing_time:.3f}s",
+                "response_length": len(str(final_output))
+            })
+            
             return {
                 "success": True,
                 "response": str(final_output),
@@ -318,20 +356,39 @@ async def process_financial_query(query: str, session: SQLiteSession, server) ->
                 "error_type": None,
             }
     except InputGuardrailTripwireTriggered as e:
+        processing_time = time.time() - start_time
         reasoning = ""
         if hasattr(e, "output_info") and e.output_info:  # pylint: disable=no-member
             reasoning = f" Reasoning: {e.output_info.reasoning}"  # pylint: disable=no-member
+        
+        error_msg = (
+            f"This query is not related to finance.{reasoning} "
+            "Please ask about stock prices, market data, financial analysis, "
+            "economic indicators, or company financials."
+        )
+        
+        log_agent_processing(logger, "Guardrail triggered - non-finance query", {
+            "request_id": request_id,
+            "processing_time": f"{processing_time:.3f}s",
+            "reasoning": reasoning.strip(),
+            "query_preview": query[:50] + "..." if len(query) > 50 else query
+        })
+        
         return {
             "success": False,
             "response": "",
-            "error": (
-                f"This query is not related to finance.{reasoning} "
-                "Please ask about stock prices, market data, financial analysis, "
-                "economic indicators, or company financials."
-            ),
+            "error": error_msg,
             "error_type": "guardrail",
         }
     except Exception as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
+        processing_time = time.time() - start_time
+        log_agent_processing(logger, "Agent processing failed with exception", {
+            "request_id": request_id,
+            "processing_time": f"{processing_time:.3f}s",
+            "error_type": type(e).__name__,
+            "error_message": str(e)[:200] + "..." if len(str(e)) > 200 else str(e)
+        })
+        
         return {"success": False, "response": "", "error": str(e), "error_type": "agent_error"}
 
 
@@ -345,27 +402,77 @@ async def lifespan(app: FastAPI):
     """FastAPI lifespan management for shared MCP server and session instances."""
     global shared_mcp_server, shared_session
 
+    startup_start = time.time()
+    logger.info("🚀 FastAPI application startup initiated", {
+        "host": settings.fastapi_host,
+        "port": settings.fastapi_port,
+        "model": settings.openai_model,
+        "session_name": settings.agent_session_name
+    })
+
     # Startup: Create shared instances
     try:
         console.print(f"[bold green]Starting FastAPI server on {settings.fastapi_host}:{settings.fastapi_port}[/bold green]")
         console.print("[bold green]Initializing shared MCP server...[/bold green]")
+        
+        # Initialize session
+        session_start = time.time()
         shared_session = SQLiteSession(settings.agent_session_name)
+        session_time = time.time() - session_start
+        logger.debug(f"📊 SQLite session initialized in {session_time:.3f}s")
+        
+        # Initialize MCP server
+        mcp_start = time.time()
         shared_mcp_server = create_polygon_mcp_server()
         await shared_mcp_server.__aenter__()
+        mcp_time = time.time() - mcp_start
+        log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
+        
+        startup_time = time.time() - startup_start
+        logger.info(f"✅ FastAPI application startup completed in {startup_time:.3f}s", {
+            "total_startup_time": f"{startup_time:.3f}s",
+            "session_init_time": f"{session_time:.3f}s",
+            "mcp_init_time": f"{mcp_time:.3f}s"
+        })
+        
         console.print("[bold green]✓ Shared MCP server and session initialized[/bold green]")
     except Exception as e:
+        startup_time = time.time() - startup_start
+        logger.error(f"❌ FastAPI startup failed after {startup_time:.3f}s", {
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "startup_time": f"{startup_time:.3f}s"
+        })
         console.print(f"[bold red]✗ Failed to initialize shared resources: {e}[/bold red]")
         raise
 
     yield
 
     # Cleanup: Close shared instances
+    shutdown_start = time.time()
+    logger.info("🔄 FastAPI application shutdown initiated")
+    
     try:
         console.print("[bold yellow]Shutting down shared MCP server...[/bold yellow]")
         if shared_mcp_server:
+            mcp_shutdown_start = time.time()
             await shared_mcp_server.__aexit__(None, None, None)
+            mcp_shutdown_time = time.time() - mcp_shutdown_start
+            log_mcp_operation(logger, "MCP server shutdown", mcp_shutdown_time, True)
+        
+        shutdown_time = time.time() - shutdown_start
+        logger.info(f"✅ FastAPI application shutdown completed in {shutdown_time:.3f}s", {
+            "shutdown_time": f"{shutdown_time:.3f}s"
+        })
+        
         console.print("[bold green]✓ Shared resources cleaned up[/bold green]")
     except Exception as e:
+        shutdown_time = time.time() - shutdown_start
+        logger.error(f"❌ FastAPI shutdown failed after {shutdown_time:.3f}s", {
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "shutdown_time": f"{shutdown_time:.3f}s"
+        })
         console.print(f"[bold red]✗ Error during cleanup: {e}[/bold red]")
 
 
@@ -404,6 +511,11 @@ else:
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Process a financial query and return the response."""
     global shared_mcp_server, shared_session
+    
+    request_id = str(uuid.uuid4())[:8]
+    start_time = time.time()
+    
+    log_api_request(logger, "POST", "/chat", request.message, request_id)
 
     # Enhanced input validation for empty and whitespace-only inputs
     if not request.message:
@@ -429,17 +541,24 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     try:
         # Use shared instances instead of creating new ones
         result = await process_financial_query(
-            stripped_message, shared_session, shared_mcp_server
+            stripped_message, shared_session, shared_mcp_server, request_id
         )
 
+        response_time = time.time() - start_time
+        
         if result["success"]:
+            log_api_response(logger, 200, response_time, request_id=request_id)
             return ChatResponse(response=result["response"])
 
         if result["error_type"] == "guardrail":
+            response_time = time.time() - start_time
+            log_api_response(logger, 400, response_time, request_id=request_id)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
             )
 
+        response_time = time.time() - start_time
+        log_api_response(logger, 500, response_time, request_id=request_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Agent error: {result['error']}",
@@ -448,6 +567,14 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     except HTTPException:
         raise
     except Exception as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
+        response_time = time.time() - start_time
+        log_api_response(logger, 500, response_time, request_id=request_id)
+        logger.error(f"💥 Unhandled exception in chat endpoint", {
+            "request_id": request_id,
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "response_time": f"{response_time:.3f}s"
+        })
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Server error: {str(e)}"
         ) from e
