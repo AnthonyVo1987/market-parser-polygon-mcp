@@ -1,4 +1,4 @@
-// React import not needed with modern JSX transform
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Props interface for the DebugPanel component
@@ -23,25 +23,70 @@ export default function DebugPanel({
   latestResponseTime, 
   className = '' 
 }: DebugPanelProps) {
+  // Collapsible state management with localStorage persistence
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('debugPanelExpanded');
+    return saved !== null ? JSON.parse(saved) : true; // Default expanded
+  });
+
+  // Persist expand/collapse state
+  useEffect(() => {
+    localStorage.setItem('debugPanelExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
+
+  // Toggle expand/collapse with keyboard support
+  const toggleExpanded = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
+    if (event && 'key' in event) {
+      // Handle keyboard events
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+      event.preventDefault();
+    }
+    setIsExpanded(prev => !prev);
+  }, []);
+
   return (
     <div 
       className={`debug-panel ${className}`}
       role="status"
       aria-label="Debug information"
     >
-      <div className="debug-header">
-        <h3 className="debug-title">Debug Info</h3>
+      <div 
+        className="debug-header clickable-header"
+        onClick={toggleExpanded}
+        onKeyDown={toggleExpanded}
+        role="button"
+        aria-expanded={isExpanded}
+        aria-controls="debug-panel-content"
+        tabIndex={0}
+        aria-label={`${isExpanded ? 'Collapse' : 'Expand'} Debug Info section`}
+      >
+        <div className="header-content">
+          <div className="header-left">
+            <h3 className="debug-title">Debug Info</h3>
+          </div>
+          <div className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`} aria-hidden="true">
+            ▶
+          </div>
+        </div>
       </div>
       
-      <div className="debug-content">
-        <div className="debug-metric">
-          <span className="debug-label">Latest Response Time:</span>
-          <span className="debug-value" aria-live="polite">
-            {latestResponseTime !== null 
-              ? `${latestResponseTime.toFixed(1)}s`
-              : 'No responses yet'
-            }
-          </span>
+      <div 
+        id="debug-panel-content"
+        className={`collapsible-content ${isExpanded ? 'expanded' : 'collapsed'}`}
+        aria-hidden={!isExpanded}
+      >
+        <div className="debug-content">
+          <div className="debug-metric">
+            <span className="debug-label">Latest Response Time:</span>
+            <span className="debug-value" aria-live="polite">
+              {latestResponseTime !== null 
+                ? `${latestResponseTime.toFixed(1)}s`
+                : 'No responses yet'
+              }
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -99,6 +144,40 @@ export const debugPanelStyles = `
     padding-bottom: var(--spacing-2);
     position: relative;
   }
+
+  .debug-header.clickable-header {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    padding: var(--spacing-2) var(--spacing-3) var(--spacing-2) var(--spacing-3);
+    margin: 0 0 var(--spacing-2) 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+
+  .debug-header.clickable-header:hover {
+    background: var(--glass-surface-1);
+    border-color: var(--accent-info);
+  }
+
+  .debug-header.clickable-header:focus-visible {
+    outline: 2px solid var(--accent-info);
+    outline-offset: 2px;
+    background: var(--glass-surface-1);
+  }
+
+  .debug-header .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .debug-header .header-left {
+    flex: 1;
+    text-align: left;
+  }
   
   .debug-title {
     margin: 0;
@@ -114,10 +193,59 @@ export const debugPanelStyles = `
     align-items: center;
     gap: var(--spacing-1);
   }
+
+  .clickable-header .debug-title {
+    margin: 0;
+    text-align: left;
+  }
   
   .debug-title::before {
     content: '⚙️';
     font-size: var(--font-size-small);
+  }
+
+  /* Chevron icon styling for debug panel */
+  .debug-header .chevron-icon {
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-left: var(--spacing-2);
+  }
+
+  .debug-header .chevron-icon.expanded {
+    transform: rotate(90deg);
+    color: var(--accent-info);
+  }
+
+  .debug-header.clickable-header:hover .chevron-icon {
+    color: var(--accent-info);
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  /* Collapsible content container for debug panel */
+  .debug-panel .collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+
+  .debug-panel .collapsible-content.expanded {
+    max-height: 500px; /* Sufficient for debug content */
+    opacity: 1;
+  }
+
+  .debug-panel .collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
   }
   
   .debug-content {
@@ -204,8 +332,37 @@ export const debugPanelStyles = `
       border-radius: 10px;
     }
     
+    .debug-header.clickable-header {
+      padding: var(--spacing-2);
+      border-radius: 6px;
+    }
+
+    .debug-header .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-1);
+    }
+
+    .debug-header .header-left {
+      order: 1;
+      width: 100%;
+    }
+
+    .debug-header .chevron-icon {
+      order: 2;
+      align-self: flex-end;
+      margin: 0;
+      font-size: 12px;
+      width: 18px;
+      height: 18px;
+    }
+    
     .debug-title {
       font-size: var(--font-size-small);
+    }
+
+    .clickable-header .debug-title {
+      margin-bottom: var(--spacing-1);
     }
     
     .debug-metric {

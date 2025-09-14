@@ -1,7 +1,8 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { AnalysisButtonsProps, AnalysisType } from '../types/chat_OpenAI';
 import { usePromptAPI } from '../hooks/usePromptAPI';
 import AnalysisButton, { analysisButtonStyles } from './AnalysisButton';
+import SharedTickerInput, { sharedTickerInputStyles } from './SharedTickerInput';
 
 // Define the expected order of analysis types for consistent display
 const ANALYSIS_TYPE_ORDER: AnalysisType[] = [
@@ -13,6 +14,7 @@ const ANALYSIS_TYPE_ORDER: AnalysisType[] = [
 export default function AnalysisButtons({
   onPromptGenerated,
   currentTicker,
+  onTickerChange,
   className = '',
 }: AnalysisButtonsProps) {
   const { templates, loading, error, refreshTemplates } = usePromptAPI();
@@ -40,6 +42,29 @@ export default function AnalysisButtons({
   const handleRetry = useCallback(() => {
     void refreshTemplates(); // Use void operator for floating promise
   }, [refreshTemplates]);
+
+  // Collapsible state management with localStorage persistence
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const saved = localStorage.getItem('quickAnalysisExpanded');
+    return saved !== null ? JSON.parse(saved) : true; // Default expanded
+  });
+
+  // Persist expand/collapse state
+  useEffect(() => {
+    localStorage.setItem('quickAnalysisExpanded', JSON.stringify(isExpanded));
+  }, [isExpanded]);
+
+  // Toggle expand/collapse with keyboard support
+  const toggleExpanded = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
+    if (event && 'key' in event) {
+      // Handle keyboard events
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+      event.preventDefault();
+    }
+    setIsExpanded(prev => !prev);
+  }, []);
 
   // Sort templates by the predefined order for consistent UI
   const sortedTemplates = [...templates].sort((a, b) => {
@@ -133,17 +158,53 @@ export default function AnalysisButtons({
       role='group'
       aria-label='Financial analysis tools'
     >
-      <div className='buttons-header'>
-        <h3 className='buttons-title'>Quick Analysis</h3>
-        <p className='buttons-subtitle'>
-          Click to populate your message with financial analysis prompts
-          {currentTicker && (
-            <span className='current-ticker'> for {currentTicker}</span>
-          )}
-        </p>
+      {/* Integrated Ticker Input */}
+      <div className='ticker-input-wrapper'>
+        <SharedTickerInput
+          value={currentTicker}
+          onChange={onTickerChange}
+          label='Stock Symbol'
+          placeholder='NVDA'
+          className='integrated-ticker-input'
+          aria-describedby='ticker-help'
+        />
+        <div id='ticker-help' className='sr-only'>
+          Enter a stock ticker symbol to use with analysis tools
+        </div>
       </div>
 
-      <div className='buttons-grid'>
+      <div 
+        className='buttons-header clickable-header'
+        onClick={toggleExpanded}
+        onKeyDown={toggleExpanded}
+        role='button'
+        aria-expanded={isExpanded}
+        aria-controls='analysis-buttons-content'
+        tabIndex={0}
+        aria-label={`${isExpanded ? 'Collapse' : 'Expand'} Quick Analysis section`}
+      >
+        <div className='header-content'>
+          <div className='header-left'>
+            <h3 className='buttons-title'>Quick Analysis</h3>
+            <p className='buttons-subtitle'>
+              Click to populate your message with financial analysis prompts
+              {currentTicker && (
+                <span className='current-ticker'> for {currentTicker}</span>
+              )}
+            </p>
+          </div>
+          <div className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`} aria-hidden='true'>
+            ▶
+          </div>
+        </div>
+      </div>
+
+      <div 
+        id='analysis-buttons-content'
+        className={`collapsible-content ${isExpanded ? 'expanded' : 'collapsed'}`}
+        aria-hidden={!isExpanded}
+      >
+        <div className='buttons-grid'>
         {sortedTemplates.map(template => (
           <AnalysisButton
             key={template.id}
@@ -154,6 +215,7 @@ export default function AnalysisButtons({
             className='grid-button'
           />
         ))}
+        </div>
       </div>
 
       {/* Loading overlay for refresh operations */}
@@ -185,6 +247,9 @@ export default function AnalysisButtons({
 export const analysisButtonsStyles = `
   /* Import button styles */
   ${analysisButtonStyles}
+  
+  /* Import SharedTickerInput styles */
+  ${sharedTickerInputStyles}
 
   /* Screen reader only content */
   .sr-only {
@@ -197,6 +262,26 @@ export const analysisButtonsStyles = `
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  /* Integrated ticker input wrapper styling */
+  .analysis-buttons-container .ticker-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(26, 32, 44, 0.3);
+    border-radius: 16px;
+    border: 1px solid rgba(124, 58, 237, 0.1);
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .analysis-buttons-container .integrated-ticker-input {
+    max-width: 200px;
+    margin: 0;
   }
 
   /* Enhanced main container with sophisticated fintech card styling */
@@ -250,12 +335,46 @@ export const analysisButtonsStyles = `
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
-  /* Enhanced header section with fintech styling */
+  /* Enhanced header section with fintech styling - now clickable */
   .buttons-header {
     margin-bottom: 20px;
     text-align: center;
     padding-bottom: 16px;
     border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+  }
+
+  .buttons-header.clickable-header {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    padding: 12px 16px 16px 16px;
+    margin: 0 0 20px 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+
+  .buttons-header.clickable-header:hover {
+    background: rgba(124, 58, 237, 0.05);
+    border-color: rgba(124, 58, 237, 0.25);
+  }
+
+  .buttons-header.clickable-header:focus-visible {
+    outline: 2px solid var(--accent-trust);
+    outline-offset: 2px;
+    background: rgba(124, 58, 237, 0.08);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .header-left {
+    flex: 1;
+    text-align: left;
   }
 
   .buttons-title {
@@ -272,6 +391,11 @@ export const analysisButtonsStyles = `
     background-clip: text;
   }
 
+  .clickable-header .buttons-title {
+    margin: 0 0 4px 0;
+    text-align: left;
+  }
+
   .buttons-subtitle {
     margin: 0;
     font-size: var(--font-size-small);
@@ -281,12 +405,60 @@ export const analysisButtonsStyles = `
     letter-spacing: var(--letter-spacing-normal);
   }
 
+  .clickable-header .buttons-subtitle {
+    text-align: left;
+  }
+
   .current-ticker {
     font-weight: var(--font-weight-semibold);
     color: var(--accent-trust);
     font-family: var(--font-mono);
     letter-spacing: var(--letter-spacing-wider);
     text-transform: uppercase;
+  }
+
+  /* Chevron icon styling */
+  .chevron-icon {
+    font-size: 16px;
+    color: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin-left: 12px;
+  }
+
+  .chevron-icon.expanded {
+    transform: rotate(90deg);
+    color: var(--accent-trust);
+  }
+
+  .clickable-header:hover .chevron-icon {
+    color: var(--accent-trust);
+    background: rgba(124, 58, 237, 0.1);
+  }
+
+  /* Collapsible content container */
+  .collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+
+  .collapsible-content.expanded {
+    max-height: 1000px; /* Large enough for all content */
+    opacity: 1;
+  }
+
+  .collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
   }
 
   /* Modern responsive button grid layout */
@@ -580,8 +752,34 @@ export const analysisButtonsStyles = `
       padding-bottom: 12px;
     }
 
+    .buttons-header.clickable-header {
+      padding: 10px 12px 12px 12px;
+      border-radius: 10px;
+    }
+
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .header-left {
+      order: 1;
+      width: 100%;
+    }
+
+    .chevron-icon {
+      order: 2;
+      align-self: flex-end;
+      margin: 0;
+    }
+
     .buttons-title {
       font-size: calc(var(--font-size-h6) * 0.95);
+    }
+
+    .clickable-header .buttons-title {
+      margin-bottom: 4px;
     }
 
     .buttons-subtitle {
@@ -591,6 +789,12 @@ export const analysisButtonsStyles = `
 
     .current-ticker {
       font-size: var(--font-size-small);
+    }
+
+    .chevron-icon {
+      font-size: 14px;
+      width: 20px;
+      height: 20px;
     }
   }
 

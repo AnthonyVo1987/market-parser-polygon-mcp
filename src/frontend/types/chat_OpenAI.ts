@@ -157,6 +157,7 @@ export interface AnalysisButtonProps {
 export interface AnalysisButtonsProps {
   onPromptGenerated: (prompt: string) => void;
   currentTicker: string; // UPDATED: Required ticker for shared system
+  onTickerChange: (ticker: string) => void; // NEW: Handler for ticker input changes
   className?: string;
 }
 

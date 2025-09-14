@@ -162,23 +162,7 @@ export default function AnalysisButton({
         </div>
       )}
 
-      {/* Follow-up questions hint */}
-      {template.followUpQuestions && template.followUpQuestions.length > 0 && (
-        <div className='follow-up-hint'>
-          <details className='follow-up-details'>
-            <summary className='follow-up-summary'>
-              Suggested follow-up questions
-            </summary>
-            <ul className='follow-up-list'>
-              {template.followUpQuestions.map((question, index) => (
-                <li key={index} className='follow-up-item'>
-                  {question}
-                </li>
-              ))}
-            </ul>
-          </details>
-        </div>
-      )}
+
     </div>
   );
 }
@@ -509,68 +493,7 @@ export const analysisButtonStyles = `
     margin-top: 8px;
   }
 
-  /* Enhanced follow-up questions with glassmorphic styling */
-  .follow-up-hint {
-    margin-top: 8px;
-    background: rgba(26, 32, 44, 0.6);
-    backdrop-filter: blur(8px);
-    border-radius: 12px;
-    padding: 12px;
-    border: 1px solid rgba(124, 58, 237, 0.1);
-  }
 
-  .follow-up-details {
-    font-size: var(--font-size-small);
-    color: var(--text-secondary);
-    font-family: var(--font-body);
-  }
-
-  .follow-up-summary {
-    cursor: pointer;
-    padding: 8px 0;
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-small);
-    color: var(--accent-trust);
-    border-bottom: 1px dotted rgba(124, 58, 237, 0.3);
-    margin-bottom: 8px;
-    transition: all 0.2s ease;
-    letter-spacing: var(--letter-spacing-wide);
-  }
-
-  .follow-up-summary:hover {
-    color: var(--accent-trust-hover);
-    border-bottom-color: var(--accent-trust-hover);
-    transform: translateX(4px);
-  }
-
-  .follow-up-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    gap: 6px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .follow-up-item {
-    padding: 8px 12px;
-    background: rgba(45, 55, 72, 0.4);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(124, 58, 237, 0.1);
-    border-radius: 8px;
-    font-size: var(--font-size-micro);
-    font-weight: var(--font-weight-normal);
-    color: var(--text-secondary);
-    line-height: var(--line-height-normal);
-    transition: all 0.2s ease;
-  }
-
-  .follow-up-item:hover {
-    background: rgba(45, 55, 72, 0.6);
-    border-color: rgba(124, 58, 237, 0.2);
-    color: var(--text-primary);
-    transform: translateX(2px);
-  }
 
   /* Financial semantic button variants */
   .analysis-button.bullish {

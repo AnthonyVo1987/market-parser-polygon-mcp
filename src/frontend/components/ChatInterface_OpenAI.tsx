@@ -5,7 +5,6 @@ import { Message, MessageMetadata } from '../types/chat_OpenAI';
 
 import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
-import SharedTickerInput, { SharedTickerInputRef } from './SharedTickerInput';
 import DebugPanel from './DebugPanel';
 
 // Lazy load secondary components for better performance
@@ -33,7 +32,6 @@ export default function ChatInterface_OpenAI() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputRef>(null);
-  const tickerInputRef = useRef<SharedTickerInputRef>(null);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -189,25 +187,7 @@ export default function ChatInterface_OpenAI() {
         </div>
       </section>
 
-      {/* SECTION 4: Ticker Input */}
-      <section className='ticker-input-section' role='complementary' aria-label='Stock symbol input'>
-        <div className='ticker-input-container'>
-          <SharedTickerInput
-            ref={tickerInputRef}
-            value={sharedTicker}
-            onChange={setSharedTicker}
-            label='Stock Symbol'
-            placeholder='NVDA'
-            className='shared-ticker-input'
-            aria-describedby='ticker-help'
-          />
-          <div id='ticker-help' className='sr-only'>
-            Enter a stock ticker symbol to use with analysis tools
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 5: Analysis Buttons */}
+      {/* SECTION 4: Analysis Buttons (now includes integrated ticker input) */}
       <section className='analysis-buttons-section' role='complementary' aria-label='Quick analysis tools'>
         <Suspense
           fallback={
@@ -219,12 +199,13 @@ export default function ChatInterface_OpenAI() {
           <AnalysisButtons
             onPromptGenerated={handlePromptGenerated}
             currentTicker={sharedTicker}
+            onTickerChange={setSharedTicker}
             className='fixed-analysis-buttons'
           />
         </Suspense>
       </section>
 
-      {/* SECTION 6: Export/Recent Buttons */}
+      {/* SECTION 5: Export/Recent Buttons */}
       <section className='export-buttons-section' role='complementary' aria-label='Export and recent message functions'>
         {messages.length > 0 && (
           <div className='export-recent-container'>
@@ -246,7 +227,7 @@ export default function ChatInterface_OpenAI() {
         )}
       </section>
 
-      {/* SECTION 7: Debug Panel */}
+      {/* SECTION 6: Debug Panel */}
       <section className='debug-section' role='complementary' aria-label='Debug information'>
         <DebugPanel 
           latestResponseTime={latestResponseTime}
@@ -290,15 +271,21 @@ export const interfaceStyles = `
     border: 0;
   }
   
-  /* SEVEN-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation */
+  /* SIX-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
   .chat-interface {
     display: grid;
-    grid-template-rows: auto 1fr auto auto auto auto auto;
+    /* Stable grid rows using minmax() to prevent layout shifts during loading states */
+    grid-template-rows: 
+      minmax(70px, auto)    /* Header: stable minimum height */
+      1fr                   /* Messages: flexible space for scrolling */
+      minmax(90px, 150px)   /* Chat Input: stable height range */
+      minmax(180px, 280px)  /* Analysis Buttons with Ticker: increased height range */
+      minmax(70px, 120px)   /* Export Buttons: stable height range */
+      minmax(80px, 120px);  /* Debug: stable height range */
     grid-template-areas: 
       "header"
       "messages"
       "chat-input"
-      "ticker-input"
       "buttons"
       "export-buttons"
       "debug";
@@ -331,29 +318,43 @@ export const interfaceStyles = `
     z-index: -1;
   }
   
-  /* Mobile viewport optimizations */
+  /* Mobile viewport optimizations with stable grid layout */
   @media (max-width: 767px) {
     .chat-interface {
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
-      grid-template-rows: auto 1fr auto auto auto auto auto;
+      /* Mobile-optimized stable grid rows */
+      grid-template-rows: 
+        minmax(50px, auto)    /* Header: smaller mobile minimum */
+        1fr                   /* Messages: flexible space */
+        minmax(70px, 120px)   /* Chat Input: mobile-optimized range */
+        minmax(150px, 240px)  /* Analysis Buttons with Ticker: mobile-optimized range */
+        minmax(60px, 100px)   /* Export Buttons: mobile-optimized range */
+        minmax(50px, 80px);   /* Debug: mobile-optimized range */
     }
   }
   
-  /* SECTION 1: Header - Professional Fintech Glassmorphic Header */
+  /* SECTION 1: Header - Professional Fintech Glassmorphic Header with Blue Chat Theme */
   .chat-header {
     grid-area: header;
     position: relative;
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-md);
-    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    background: var(--glass-surface-chat);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
     padding: var(--space-4);
-    border-bottom: var(--glass-border-highlight);
+    border: var(--border-chat);
+    border-bottom: var(--border-chat);
+    box-shadow: var(--border-glow-chat);
     text-align: center;
     min-height: 70px; /* Prevent layout shifts */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .chat-header:hover {
+    box-shadow: var(--border-glow-chat-hover);
   }
   
   /* Mobile header adjustments */
@@ -389,7 +390,7 @@ export const interfaceStyles = `
     font-size: var(--text-sm);
   }
   
-  /* SECTION 2: Messages - Flexible height with glassmorphic scrolling */
+  /* SECTION 2: Messages - Flexible height with glassmorphic scrolling and Blue Chat Theme */
   .messages-section {
     grid-area: messages;
     overflow-y: auto;
@@ -404,6 +405,16 @@ export const interfaceStyles = `
     /* Custom scrollbar for glassmorphic look */
     scrollbar-width: thin;
     scrollbar-color: var(--neutral-400) transparent;
+    /* Blue Chat Theme Enhancement - Tasks 4 & 6 */
+    background: var(--glass-surface-chat);
+    border-left: var(--border-chat);
+    border-right: var(--border-chat);
+    box-shadow: var(--border-glow-chat);
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .messages-section:hover {
+    box-shadow: var(--border-glow-chat-hover);
   }
   
   .messages-section:focus {
@@ -571,20 +582,27 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 3: Chat Input - Professional glassmorphic input section */
+  /* SECTION 3: Chat Input - Professional glassmorphic input section with Blue Chat Theme */
   .chat-input-section {
     grid-area: chat-input;
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-md);
-    -webkit-backdrop-filter: var(--backdrop-blur-md);
-    border-top: var(--glass-border-highlight);
-    border-bottom: var(--glass-border-highlight);
+    background: var(--glass-surface-chat);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--border-chat);
+    border-top: var(--border-chat);
+    border-bottom: var(--border-chat);
+    box-shadow: var(--border-glow-chat);
     padding: var(--space-4);
     min-height: 90px; /* Fixed minimum height prevents jumping */
     max-height: 150px; /* Prevent excessive expansion */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .chat-input-section:hover {
+    box-shadow: var(--border-glow-chat-hover);
   }
   
   .chat-input-container {
@@ -595,34 +613,7 @@ export const interfaceStyles = `
     width: 100%;
   }
   
-  /* SECTION 4: Ticker Input - Professional glassmorphic ticker section */
-  .ticker-input-section {
-    grid-area: ticker-input;
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-md);
-    -webkit-backdrop-filter: var(--backdrop-blur-md);
-    border-bottom: var(--glass-border-highlight);
-    padding: var(--space-4);
-    min-height: 70px; /* Fixed minimum height prevents jumping */
-    max-height: 100px; /* Prevent excessive expansion */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .ticker-input-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    max-width: 1000px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  
-  .shared-ticker-input {
-    max-width: 200px;
-  }
+
   
   /* Mobile input adjustments */
   @media (max-width: 767px) {
@@ -631,14 +622,7 @@ export const interfaceStyles = `
       min-height: 70px;
     }
     
-    .ticker-input-section {
-      padding: 12px 8px;
-      min-height: 50px;
-    }
-    
-    .shared-ticker-input {
-      max-width: 150px;
-    }
+
   }
   
   /* Tablet and desktop input optimizations */
@@ -647,53 +631,37 @@ export const interfaceStyles = `
       padding: 20px;
       min-height: 80px;
     }
-    
-    .ticker-input-section {
-      padding: 20px;
-      min-height: 60px;
-    }
   }
   
-  /* SECTION 5: Analysis Buttons - Professional glassmorphic analysis tools */
+  /* SECTION 4: Analysis Buttons with Integrated Ticker - Professional glassmorphic analysis tools with Purple Analysis Theme */
   .analysis-buttons-section {
     grid-area: buttons;
-    background: var(--glass-surface-medium);
-    backdrop-filter: var(--backdrop-blur-lg);
-    -webkit-backdrop-filter: var(--backdrop-blur-lg);
-    border-top: var(--glass-border-highlight);
-    border-bottom: var(--glass-border-highlight);
+    background: var(--glass-surface-analysis);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-analysis);
+    border-top: var(--border-analysis);
+    border-bottom: var(--border-analysis);
+    box-shadow: var(--border-glow-analysis);
     padding: var(--space-2) var(--space-4);
-    min-height: 140px; /* Fixed minimum height prevents jumping */
-    max-height: 200px; /* Prevent excessive expansion */
-    overflow-y: auto;
+    /* Increased height to accommodate integrated ticker input - no scrolling */
+    min-height: 180px; 
+    max-height: 280px; 
+    overflow-y: visible; /* Show all content without scrolling */
+    overflow-x: hidden; /* Prevent horizontal overflow */
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    /* Custom glassmorphic scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: var(--neutral-400) transparent;
+    /* Contain layout changes during loading states */
+    contain: layout style;
+    transition: box-shadow var(--timing-base) var(--ease-out);
   }
   
-  .analysis-buttons-section::-webkit-scrollbar {
-    width: 4px;
+  .analysis-buttons-section:hover {
+    box-shadow: var(--border-glow-analysis-hover);
   }
   
-  .analysis-buttons-section::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .analysis-buttons-section::-webkit-scrollbar-thumb {
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
-    border: 1px solid var(--glass-border-highlight);
-    border-radius: var(--radius-full);
-  }
-  
-  .analysis-buttons-section::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-400);
-    border-color: var(--primary-300);
-  }
+
   
   .fixed-analysis-buttons {
     margin: 0;
@@ -716,11 +684,8 @@ export const interfaceStyles = `
   @media (max-width: 767px) {
     .analysis-buttons-section {
       padding: 6px 8px;
-      min-height: 100px;
-    }
-    
-    .analysis-buttons-section::-webkit-scrollbar {
-      width: 6px;
+      min-height: 150px;
+      max-height: 240px;
     }
   }
   
@@ -728,25 +693,37 @@ export const interfaceStyles = `
   @media (min-width: 768px) {
     .analysis-buttons-section {
       padding: 12px 20px;
-      min-height: 120px;
+      min-height: 160px;
+      max-height: 260px;
     }
   }
   
-  /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities */
+  /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities with Green Export Theme */
   .export-buttons-section {
     grid-area: export-buttons;
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-md);
-    -webkit-backdrop-filter: var(--backdrop-blur-md);
-    border-top: var(--glass-border-highlight);
-    border-bottom: var(--glass-border-highlight);
+    background: var(--glass-surface-export);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--border-export);
+    border-top: var(--border-export);
+    border-bottom: var(--border-export);
+    box-shadow: var(--border-glow-export);
     padding: var(--space-3) var(--space-4);
-    min-height: 70px; /* Fixed minimum height prevents jumping */
-    max-height: 120px; /* Increased for both button sets */
+    /* Grid minmax() now controls height - these ensure consistent behavior */
+    min-height: 70px; 
+    max-height: 120px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow-y: auto; /* Enable scrolling if content exceeds bounds */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    /* Contain layout changes during loading states */
+    contain: layout style;
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .export-buttons-section:hover {
+    box-shadow: var(--border-glow-export-hover);
   }
   
   .export-recent-container {
@@ -765,20 +742,31 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 7: Debug Panel - Professional glassmorphic developer information */
+  /* SECTION 7: Debug Panel - Professional glassmorphic developer information with Orange/Amber Debug Theme */
   .debug-section {
     grid-area: debug;
-    background: var(--glass-surface-dark);
-    backdrop-filter: var(--backdrop-blur-lg);
-    -webkit-backdrop-filter: var(--backdrop-blur-lg);
-    border-top: var(--glass-border-highlight);
+    background: var(--glass-surface-debug);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-debug);
+    border-top: var(--border-debug);
+    box-shadow: var(--border-glow-debug);
     padding: var(--space-3) var(--space-4);
-    min-height: 80px; /* Fixed minimum height prevents jumping */
-    max-height: 120px; /* Prevent excessive expansion */
+    /* Grid minmax() now controls height - these ensure consistent behavior */
+    min-height: 80px; 
+    max-height: 120px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow-y: auto; /* Enable scrolling if content exceeds bounds */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    /* Contain layout changes during loading states */
+    contain: layout style;
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .debug-section:hover {
+    box-shadow: var(--border-glow-debug-hover);
   }
   
   .main-debug-panel {
@@ -919,7 +907,7 @@ export const interfaceStyles = `
     box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
 
-  /* Component loading states - Professional glassmorphic loading */
+  /* Component loading states - Professional glassmorphic loading with layout containment */
   .component-loading {
     display: flex;
     align-items: center;
@@ -935,7 +923,11 @@ export const interfaceStyles = `
     border-radius: var(--radius-lg);
     margin: var(--space-2) 0;
     min-height: 40px;
+    max-height: 60px; /* Prevent loading states from growing too large */
     border: var(--glass-border-highlight);
+    /* Ensure loading states don't affect parent section dimensions */
+    contain: layout size;
+    overflow: hidden;
   }
 
   .component-loading::before {
