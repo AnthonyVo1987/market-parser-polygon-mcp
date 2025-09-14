@@ -2,22 +2,80 @@
 
 ## Task Description
 
-[RESUME] Resume Interrupted Tasks for Enhance the Visual Styling of the entire app
-You were in the middle of the performing the following previous task(s) before you crashed and hung
+[GUI] Fix Multiple GUI Elements
 
-Task 1. SPECIALISTS MUST USE CONTEXT7 TOOLS TO ENSURE BEST PRACTICES RESEARCH, MUST USE SEQUENTIAL-THINKING TOOLS FOR ANALYSIS\PLANNING, & FILESYSTEM TOOLS ARE OPTIONAL FOR EFFICIENT FILE OPERATIONS TO: Review the previous task details & progress:
+## Issue 1: Layout Shifting During AI Response
 
-# START OF PREVIOUS TASK DETAILS
+**Problem:** The app shifts upward when AI is thinking, making chat invisible
+**Solution:**
 
-"
-Enhance the Visual Styling of the entire app to be more modern with a little more pop to it and with some Fintech pop and with best AI Chatbot practices .  ALL SPECIALISTS MUST USE CONTEXT7 & SEQUENTIAL-THINKING TOOLS TO ENSURE BEST PRACTICES.  FILESYSTEM TOOLS ARE OPTIONAL AND CAN BE USED AS LIBERALLY AS NEEDED FOR EFFICIENT FILE OPERATIONS.
-"
+* Fix the grid layout in `ChatInterface_OpenAI.tsx` to use stable heights
+* Change `grid-template-rows` from `auto 1fr auto...` to fixed `min/max` heights
+* Ensure messages section doesn't resize during loading states
 
-# END OF PREVIOUS TASK DETAILS
+## Issue 2: Remove "Suggested Follow-Up Questions"
 
-Task 2. SPECIALISTS MUST USE CONTEXT7 TOOLS TO ENSURE BEST PRACTICES RESEARCH, MUST USE SEQUENTIAL-THINKING TOOLS FOR ANALYSIS\PLANNING, & FILESYSTEM TOOLS ARE OPTIONAL FOR EFFICIENT FILE OPERATIONS TO:  Review docs/TYPOGRAPHY_SYSTEM_GUIDE.md & current uncommitted code changes to understand how much progress we made on the task
+**Problem:** Follow-up questions clutter the interface
+**Solution:**
 
-Task 3. Based on analysis and & research from Task 1 & 2, SPECIALISTS MUST USE CONTEXT7 TOOLS TO ENSURE BEST PRACTICES RESEARCH, MUST USE SEQUENTIAL-THINKING TOOLS FOR ANALYSIS\PLANNING, & FILESYSTEM TOOLS ARE OPTIONAL FOR EFFICIENT FILE OPERATIONS finish the implementation that wqas interrupted
+* Remove the follow-up questions section from `AnalysisButton.tsx`
+* Delete the entire follow-up hint rendering block (lines ~140-155)
+
+## Issue 3: Combine Stock Symbol Input with Quick Analysis
+
+**Problem:** Stock input and analysis buttons are separated
+**Solution:**
+
+* Move `SharedTickerInput` into the `AnalysisButtons` component
+* Modify `AnalysisButtons.tsx` to include ticker input at the top
+* Update grid layout to remove scrollbar and show all buttons
+* Make the Quick Analysis section expandable/collapsible
+
+## Issue 4: Add Prominent Borders to Components
+
+**Problem:** Insufficient visual separation between components
+**Solution:**
+
+* Add stronger border styles to all main sections in `index.css`
+* Use distinct border colors:
+  * Chat area: Blue accent borders
+  * Analysis section: Purple accent borders
+  * Debug section: Orange/amber accent borders
+* Increase border width from 1px to 2px with glow effects
+
+## Issue 5: Make Quick Analysis & Debug Expandable/Collapsible
+
+**Problem:** Fixed sections take up space unnecessarily
+**Solution:**
+
+* Add expand/collapse functionality to `AnalysisButtons` component
+* Add expand/collapse functionality to `DebugPanel` component
+* Store collapsed state in `localStorage` for persistence
+* Add chevron icons for visual feedback
+
+## Issue 6: Better Color Differentiation
+
+**Problem:** All components look too similar with current color scheme
+**Solution:**
+
+* Update component backgrounds with distinct tints:
+  * Chat area: Keep dark with blue tint
+  * Quick Analysis: Purple/indigo tint background
+  * Debug Panel: Orange/amber tint background
+  * Export buttons: Green tint background
+* Adjust glassmorphic effects for better contrast
+* Use color-coded section headers
+
+## Implementation Steps
+
+1. **Fix Layout Stability** - Modify grid system in `ChatInterface_OpenAI.tsx`
+2. **Remove Follow-up Questions** - Clean up `AnalysisButton.tsx`
+3. **Merge Ticker with Analysis** - Refactor `AnalysisButtons.tsx` to include ticker input
+4. **Add Prominent Borders** - Update CSS variables and component styles
+5. **Add Expand/Collapse** - Implement collapsible functionality with state management
+6. **Apply Color Differentiation** - Update background colors and tints for each section
+
+This plan will create a more stable, visually distinct, and user-friendly interface with better organization and clearer component separation.
 
 ## Final Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
