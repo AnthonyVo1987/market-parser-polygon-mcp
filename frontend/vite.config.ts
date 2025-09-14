@@ -5,9 +5,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
-  // Load environment variables based on current mode
+  // Load environment variables - check both frontend and root directories for .env files
   const env = loadEnv(mode, process.cwd(), '')
-  
+  const rootEnv = loadEnv(mode, '../', '') // Also check root directory for env vars
+  const mergedEnv = { ...rootEnv, ...env } // Frontend .env takes precedence
+
   // Environment detection
   const isProduction = mode === 'production'
   const isDevelopment = mode === 'development'
@@ -25,7 +27,7 @@ export default defineConfig(({ command, mode }) => {
           sourcemap: isProduction,
           runtimeCaching: [
             {
-              urlPattern: new RegExp(`^${env.VITE_API_URL || 'http://localhost:8000'}\/api\/`),
+              urlPattern: new RegExp(`^${mergedEnv.VITE_API_URL || 'http://localhost:8000'}\/api\/`),
               handler: 'NetworkFirst',
               options: {
                 cacheName: 'api-cache',
@@ -76,7 +78,7 @@ export default defineConfig(({ command, mode }) => {
         }
       }),
       // Bundle analysis - environment-aware configuration
-      (env.ANALYZE || isProduction) && visualizer({
+      (mergedEnv.ANALYZE || isProduction) && visualizer({
         filename: 'dist/bundle-analysis.html',
         open: !isBuild, // Only auto-open in development
         gzipSize: true,
@@ -90,6 +92,8 @@ export default defineConfig(({ command, mode }) => {
     server: {
       port: 3000,
       host: true,
+      // Enable CORS for root-level development and cross-origin requests
+      cors: true,
       // Phase 1: Server warmup optimization for faster cold starts
       warmup: {
         clientFiles: ['./src/main.tsx', './src/App.tsx']
@@ -97,9 +101,9 @@ export default defineConfig(({ command, mode }) => {
       // Phase 1: Environment-aware proxy configuration for seamless backend integration
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:8000',
+          target: mergedEnv.VITE_API_URL || 'http://localhost:8000',
           changeOrigin: true,
-          secure: env.VITE_API_URL?.startsWith('https://') || false
+          secure: mergedEnv.VITE_API_URL?.startsWith('https://') || false
         }
       }
     },
@@ -195,20 +199,20 @@ export default defineConfig(({ command, mode }) => {
       // Exclude problematic dependencies if needed
       exclude: [],
       // Force re-optimization in development if needed
-      force: isDevelopment && env.FORCE_OPTIMIZE === 'true'
+      force: isDevelopment && mergedEnv.FORCE_OPTIMIZE === 'true'
     },
     
-    // Environment variable configuration
+    // Environment variable configuration - uses merged environment variables
     define: {
       // Expose build information to the application
       __BUILD_MODE__: JSON.stringify(mode),
       __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
       __IS_PRODUCTION__: JSON.stringify(isProduction),
       // Environment-specific build information
-      __APP_ENV__: JSON.stringify(env.VITE_APP_ENV || mode),
-      __API_URL__: JSON.stringify(env.VITE_API_URL || 'http://localhost:8000'),
-      __PWA_ENABLED__: JSON.stringify(env.VITE_PWA_ENABLED === 'true'),
-      __DEBUG_MODE__: JSON.stringify(env.VITE_DEBUG_MODE === 'true')
+      __APP_ENV__: JSON.stringify(mergedEnv.VITE_APP_ENV || mode),
+      __API_URL__: JSON.stringify(mergedEnv.VITE_API_URL || 'http://localhost:8000'),
+      __PWA_ENABLED__: JSON.stringify(mergedEnv.VITE_PWA_ENABLED === 'true'),
+      __DEBUG_MODE__: JSON.stringify(mergedEnv.VITE_DEBUG_MODE === 'true')
     }
   }
 })

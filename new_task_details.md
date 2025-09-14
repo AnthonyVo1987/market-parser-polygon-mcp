@@ -2,17 +2,173 @@
 
 ## Task Description
 
-[MIGRATION] Migrate,integrate, & refactor anything remaining to be Root-Level Project Accessible
+[MIGRATION] Corrected Root-Level Project & File\Folder Re-structure
 
-- There could be lingering nested code that needs to be properly migrated to be Project Root Folder Level Access, such as the frontend folder React UI Code
-- Nested frontend folder React UI Code also has redundant code, such as dupe package.lock etc
-- End goal is that THE ENTIRE migrated project needs to have ALL commands. scripts, code, tests, dev servers mandated to be accessible and run from Project Root - No exceptions
-- There could even be more code\scripts\commands that need additional folder level to run, so we need to make sure everything can be converted to have users run anything from top level
-- I.E. Nested folders need user to know which commands. scripts, code, tests, dev servers can be run at root level vs requiring a folder change to a nested folder to run other commands. scripts, code, tests, dev servers.  This causes so much confusion for User and AI Coding Agents to run all commands. scripts, code, tests, dev servers because they are not sure which ones need to be run in which folder, so let's streamline and convert, integrate, & refactor the code to be Root level access for ease of use
+- Research, Plan, & Implement the Corrected Comprehensive Root-Level Migration Plan details below
 
 ## Research Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
 - Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
+
+# Comprehensive Root-Level Migration Plan
+
+Based on my analysis, I've identified critical issues that need to be resolved to achieve complete root-level project accessibility. Here's the comprehensive plan:
+
+## CURRENT ISSUES IDENTIFIED
+
+### 1. Duplicate Package Management Files
+
+- **Root `package.json`**: Has some scripts but they still use `cd frontend`
+- **Root `package-lock.json`**: Exists separately from frontend
+- **Frontend `package.json`**: Contains all frontend scripts requiring `cd frontend`
+- **Frontend `package-lock.json`**: Separate dependency lock file
+
+### 2. Commands Requiring Directory Changes
+
+Currently, users must run:
+
+- `cd frontend && npm run dev` to start development server
+- `cd frontend && npm run build` to build the project
+- `cd frontend && npm run lint` for linting
+- Many other frontend commands require being in the frontend directory
+
+### 3. Confusion Points
+
+- Two separate `package.json` files with overlapping concerns
+- Scripts in root `package.json` that reference non-existent scripts/ directory
+- Mixed Python and Node.js tooling without clear root-level integration
+
+## MIGRATION IMPLEMENTATION PLAN
+
+### Phase 1: Consolidate Package Management
+
+**1. Merge Dependencies**
+
+- Move all frontend dependencies to root `package.json`
+- Consolidate `devDependencies` from both files
+- Remove duplicate `package-lock.json` from frontend
+
+**2. Update `package.json` Structure**
+
+- Set root `package.json` as the single source of truth
+- Configure workspaces if keeping frontend folder structure
+- Or flatten the structure entirely
+
+### Phase 2: Create Root-Level Command Proxies
+
+**1. Add All Frontend Commands to Root**
+
+```json
+{
+  "scripts": {
+    // Development
+    "dev": "vite --mode development --config frontend/vite.config.ts",
+    "dev:staging": "vite --mode staging --config frontend/vite.config.ts",
+    "dev:production": "vite --mode production --config frontend/vite.config.ts",
+
+    // Building
+    "build": "tsc -p frontend/tsconfig.json && vite build --config frontend/vite.config.ts",
+    "build:staging": "tsc -p frontend/tsconfig.json && vite build --mode staging --config frontend/vite.config.ts",
+
+    // Testing
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+
+    // Linting & Formatting
+    "lint": "eslint 'frontend/src/**/*.{ts,tsx}'",
+    "lint:fix": "eslint 'frontend/src/**/*.{ts,tsx}' --fix",
+    "format": "prettier --write 'frontend/src/**/*.{ts,tsx,js,jsx,json,css,md}'",
+
+    // Python Backend
+    "backend": "uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload",
+    "backend:cli": "uv run src/main.py",
+
+    // Combined Operations
+    "start": "concurrently \"npm run backend\" \"npm run dev\"",
+    "check": "npm run lint && npm run type-check && npm run test"
+  }
+}
+```
+
+### Phase 3: Update Configuration Files
+
+**1. Vite Configuration**
+
+- Update `vite.config.ts` to handle root-level execution
+- Fix path resolutions for frontend assets
+- Update `publicDir` and `outDir` paths
+
+**2. TypeScript Configuration**
+
+- Update `tsconfig.json` paths for root-level compilation
+- Fix module resolution for frontend components
+
+**3. ESLint & Prettier**
+
+- Move config files to root or update paths
+- Ensure they work from root directory
+
+### Phase 4: Restructure Directory (Optional but Recommended)
+
+Instead of nested frontend folder, consider flattening:
+
+```
+market-parser-polygon-mcp/
+├── src/                 # Python backend
+├── client/             # React frontend (renamed from frontend)
+│   ├── components/
+│   ├── hooks/
+│   └── styles/
+├── tests/              # All tests
+├── public/             # Static assets
+├── dist/               # Build output
+├── package.json        # Single package.json
+├── vite.config.ts      # Root-level Vite config
+├── tsconfig.json       # Root-level TypeScript config
+└── pyproject.toml      # Python dependencies
+```
+
+### Phase 5: Remove Redundancies
+
+**1. Delete Duplicate Files**
+
+- Remove `frontend/package.json` after merging
+- Remove `frontend/package-lock.json`
+- Remove duplicate `node_modules` from frontend
+
+**2. Clean Up Scripts**
+
+- Remove scripts that reference non-existent directories
+- Remove the need for `cd` commands in any script
+
+### Phase 6: Update Documentation
+
+**1.** Update `README.md` with new root-level commands
+**2.** Update `CLAUDE.md` with simplified development workflow
+**3.** Update `docs/ENHANCED_10_PHASE_MIGRATION_ORCHESTRATION_PLAN.md`
+
+## BENEFITS AFTER MIGRATION
+
+1. **Single Command Interface:** All commands run from root
+2. **No Directory Navigation:** No more `cd frontend` confusion
+3. **Unified Dependency Management:** Single `package.json` and lock file
+4. **Clear Development Flow:** `npm start` runs everything
+5. **AI-Friendly:** AI agents can execute any command from root
+6. **Simplified CI/CD:** GitHub Actions won't need directory changes
+
+## EXECUTION STEPS
+
+This migration will:
+
+1. Consolidate all `package.json` files into root
+2. Create root-level proxies for ALL commands
+3. Update all configuration files to work from root
+4. Remove duplicate lock files and `node_modules`
+5. Test all commands from root level
+6. Update documentation
+7. Create atomic commit with all changes
+
+The end result will be a truly root-level accessible project where EVERY command can be run from the project root without any directory changes.
 
 ## Planning Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
@@ -22,8 +178,6 @@
 ## Implementation Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
 - Based on all the research & newly generated implementation plan task breakdown, perform the requested todo checklist task(s)
-
-- Update `docs/ENHANCED_10_PHASE_MIGRATION_ORCHESTRATION_PLAN.md` during the final task stages later to keep the docs upt to date
 
 ## Testing Task(s) - SPECIALISTS(s) to use Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
