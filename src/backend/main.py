@@ -38,7 +38,7 @@ from pydantic_settings import BaseSettings
 from rich.console import Console
 from rich.markdown import Markdown
 
-from api_models import (
+from .api_models import (
     AnalysisType,
     ButtonAnalysisRequest,
     ButtonAnalysisResponse,
@@ -54,7 +54,7 @@ from api_models import (
     TemplateListResponse,
     TickerContextInfo,
 )
-from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+from .prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
 
 load_dotenv()
 
