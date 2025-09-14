@@ -185,11 +185,11 @@ export default function AnalysisButtons({
       >
         <div className='header-content'>
           <div className='header-left'>
-            <h3 className='buttons-title'>📊 Quick Analysis {isExpanded ? '(Expanded)' : '(Collapsed)'}</h3>
+            <h3 className='buttons-title'>Quick Analysis</h3>
             <p className='buttons-subtitle'>
-              {isExpanded ? 'Click to collapse' : 'Click to expand'} • Analysis tools for financial data prompts
+              Click to populate your message with financial analysis prompts
               {currentTicker && (
-                <span className='current-ticker'> • Active: {currentTicker}</span>
+                <span className='current-ticker'> for {currentTicker}</span>
               )}
             </p>
           </div>
@@ -288,8 +288,8 @@ export const analysisButtonsStyles = `
   .analysis-buttons-container {
     /* Modern glassmorphic background */
     background: rgba(26, 32, 44, 0.75);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(124, 58, 237, 0.2);
     border-radius: 20px;
     padding: 20px;
@@ -352,29 +352,17 @@ export const analysisButtonsStyles = `
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-    /* Enhanced visual cues for clickability */
-    background: rgba(124, 58, 237, 0.03);
-    border: 1px solid rgba(124, 58, 237, 0.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    /* Add subtle gradient */
-    background-image: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(124, 58, 237, 0.02) 100%);
   }
 
   .buttons-header.clickable-header:hover {
-    background: rgba(124, 58, 237, 0.08);
+    background: rgba(124, 58, 237, 0.05);
     border-color: rgba(124, 58, 237, 0.25);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(124, 58, 237, 0.1);
-    /* Enhanced gradient on hover */
-    background-image: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
   }
 
   .buttons-header.clickable-header:focus-visible {
     outline: 2px solid var(--accent-trust);
     outline-offset: 2px;
     background: rgba(124, 58, 237, 0.08);
-    border-color: var(--accent-trust);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(124, 58, 237, 0.2);
   }
 
   .header-content {
@@ -429,44 +417,32 @@ export const analysisButtonsStyles = `
     text-transform: uppercase;
   }
 
-  /* Enhanced chevron icon styling with better visibility */
+  /* Chevron icon styling */
   .chevron-icon {
-    font-size: 18px;
-    color: var(--accent-trust);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease, background 0.2s ease;
+    font-size: 16px;
+    color: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    border-radius: 4px;
     margin-left: 12px;
-    /* Enhanced visual prominence */
-    background: rgba(124, 58, 237, 0.1);
-    border: 1px solid rgba(124, 58, 237, 0.2);
-    font-weight: bold;
   }
 
   .chevron-icon.expanded {
     transform: rotate(90deg);
     color: var(--accent-trust);
-    background: rgba(124, 58, 237, 0.15);
-    border-color: rgba(124, 58, 237, 0.3);
   }
 
   .clickable-header:hover .chevron-icon {
     color: var(--accent-trust);
-    background: rgba(124, 58, 237, 0.2);
-    border-color: rgba(124, 58, 237, 0.4);
-    transform: scale(1.1) rotateZ(0deg);
-  }
-
-  .clickable-header:hover .chevron-icon.expanded {
-    transform: scale(1.1) rotate(90deg);
+    background: rgba(124, 58, 237, 0.1);
   }
 
   /* Collapsible content container */

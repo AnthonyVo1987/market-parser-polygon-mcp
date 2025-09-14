@@ -268,12 +268,12 @@
      ========================================================================== */
   
   /* Backdrop Blur Values - Hardware-Accelerated Glass Effects */
-  --glass-blur-xs: blur(1px);      /* Reduced blur for performance */
-  --glass-blur-sm: blur(2px);      /* Reduced blur for performance */
-  --glass-blur-md: blur(4px);      /* Reduced blur for performance */
-  --glass-blur-lg: blur(6px);      /* Reduced blur for performance */
-  --glass-blur-xl: blur(8px);      /* Reduced blur for performance */
-  --glass-blur-2xl: blur(12px);    /* Reduced blur for performance */
+  --glass-blur-xs: blur(2px);      /* Subtle blur for light glass effect */
+  --glass-blur-sm: blur(4px);      /* Small blur for card overlays */
+  --glass-blur-md: blur(8px);      /* Medium blur for modal backgrounds */
+  --glass-blur-lg: blur(16px);     /* Large blur for major glass surfaces */
+  --glass-blur-xl: blur(24px);     /* Extra large blur for hero sections */
+  --glass-blur-2xl: blur(40px);    /* Maximum blur for dramatic effects */
   
   /* Glass Surface Colors - Optimized for Dark Mode */
   --glass-surface-1: rgba(255, 255, 255, 0.03);  /* Minimal glass surface */
@@ -287,7 +287,11 @@
   --glass-surface-medium: var(--glass-surface-3);
   --glass-surface-dark: var(--glass-surface-4);
   
-  /* Removed colored glass surfaces for performance optimization */
+  /* Enhanced Glass Surfaces with Section Tints - Task 6 Integration */
+  --glass-surface-chat: linear-gradient(135deg, var(--glass-surface-2) 0%, var(--bg-tint-chat-subtle) 100%);
+  --glass-surface-analysis: linear-gradient(135deg, var(--glass-surface-3) 0%, var(--bg-tint-analysis-subtle) 100%);
+  --glass-surface-debug: linear-gradient(135deg, var(--glass-surface-4) 0%, var(--bg-tint-debug-subtle) 100%);
+  --glass-surface-export: linear-gradient(135deg, var(--glass-surface-2) 0%, var(--bg-tint-export-subtle) 100%);
   
   /* Glass Border Colors - Subtle Highlights */
   --glass-border-1: rgba(255, 255, 255, 0.08);   /* Minimal glass border */
@@ -323,7 +327,33 @@
      SECTION-SPECIFIC GLASS EFFECTS - Tasks 4 & 6 Complete Integration
      ========================================================================== */
   
-  /* Removed section-specific glass effects with colored borders for performance optimization */
+  /* Chat Section Glass Effects - Blue Theme */
+  --glass-card-chat:
+    background: var(--glass-surface-chat);
+    backdrop-filter: var(--glass-blur-md);
+    border: var(--border-chat);
+    box-shadow: var(--border-glow-chat);
+  
+  /* Analysis Section Glass Effects - Purple Theme */
+  --glass-card-analysis:
+    background: var(--glass-surface-analysis);
+    backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-analysis);
+    box-shadow: var(--border-glow-analysis);
+  
+  /* Debug Section Glass Effects - Orange/Amber Theme */
+  --glass-card-debug:
+    background: var(--glass-surface-debug);
+    backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-debug);
+    box-shadow: var(--border-glow-debug);
+  
+  /* Export Section Glass Effects - Green Theme */
+  --glass-card-export:
+    background: var(--glass-surface-export);
+    backdrop-filter: var(--glass-blur-md);
+    border: var(--border-export);
+    box-shadow: var(--border-glow-export);
 
   /* ==========================================================================
      SHADOW & ELEVATION SYSTEM - Professional Depth Perception
@@ -355,14 +385,38 @@
   --shadow-glow-info: 0 0 20px rgba(59, 130, 246, 0.3);
   
   /* ==========================================================================
-     REMOVED PROMINENT BORDER SYSTEM - Performance Optimization
+     PROMINENT BORDER SYSTEM - Tasks 4 & 6 Enhanced Visual Differentiation
      ========================================================================== */
-
-  /* Removed prominent border glow effects for performance optimization */
   
-  /* Removed section background tints for performance optimization */
+  /* Enhanced Prominent Border Glow Effects - Task 4 Implementation */
+  --border-glow-chat: 0 0 20px rgba(59, 130, 246, 0.2);
+  --border-glow-analysis: 0 0 20px rgba(124, 58, 237, 0.2);
+  --border-glow-debug: 0 0 20px rgba(245, 158, 11, 0.2);
+  --border-glow-export: 0 0 20px rgba(16, 185, 129, 0.2);
   
-  /* Removed prominent colored borders for performance optimization */
+  /* Stronger Glow Effects for Hover States */
+  --border-glow-chat-hover: 0 0 30px rgba(59, 130, 246, 0.4);
+  --border-glow-analysis-hover: 0 0 30px rgba(124, 58, 237, 0.4);
+  --border-glow-debug-hover: 0 0 30px rgba(245, 158, 11, 0.4);
+  --border-glow-export-hover: 0 0 30px rgba(16, 185, 129, 0.4);
+  
+  /* Section Background Tints - Task 6 Implementation */
+  --bg-tint-chat: rgba(59, 130, 246, 0.1);
+  --bg-tint-analysis: rgba(124, 58, 237, 0.1);
+  --bg-tint-debug: rgba(245, 158, 11, 0.1);
+  --bg-tint-export: rgba(16, 185, 129, 0.1);
+  
+  /* Subtle Background Tints for Glassmorphic Integration */
+  --bg-tint-chat-subtle: rgba(59, 130, 246, 0.05);
+  --bg-tint-analysis-subtle: rgba(124, 58, 237, 0.05);
+  --bg-tint-debug-subtle: rgba(245, 158, 11, 0.05);
+  --bg-tint-export-subtle: rgba(16, 185, 129, 0.05);
+  
+  /* Section-Specific Border Colors - 3px Prominent Borders */
+  --border-chat: 3px solid var(--accent-info);
+  --border-analysis: 3px solid var(--accent-trust);
+  --border-debug: 3px solid var(--accent-warning);
+  --border-export: 3px solid var(--accent-success);
   
   /* Interactive Shadows - Hover & Focus States */
   --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.3);
@@ -852,10 +906,10 @@ body {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 2px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
   }
   50% {
-    box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.4);
   }
 }
 
@@ -888,10 +942,61 @@ body {
 }
 
 /* ==========================================================================
-SECTION-SPECIFIC UTILITY CLASSES - Removed colored borders for performance
+SECTION-SPECIFIC UTILITY CLASSES - Tasks 4 & 6 Implementation
 ========================================================================== */
-
-  /* Removed section theme classes with prominent colored borders for performance optimization */
+  
+  /* Section Theme Classes - Apply Complete Visual Enhancement */
+  .section-theme-chat {
+    background: var(--glass-surface-chat);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--border-chat);
+    box-shadow: var(--border-glow-chat);
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .section-theme-chat:hover {
+    box-shadow: var(--border-glow-chat-hover);
+  }
+  
+  .section-theme-analysis {
+    background: var(--glass-surface-analysis);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-analysis);
+    box-shadow: var(--border-glow-analysis);
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .section-theme-analysis:hover {
+    box-shadow: var(--border-glow-analysis-hover);
+  }
+  
+  .section-theme-debug {
+    background: var(--glass-surface-debug);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-debug);
+    box-shadow: var(--border-glow-debug);
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .section-theme-debug:hover {
+    box-shadow: var(--border-glow-debug-hover);
+  }
+  
+  .section-theme-export {
+    background: var(--glass-surface-export);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--border-export);
+    box-shadow: var(--border-glow-export);
+    transition: box-shadow var(--timing-base) var(--ease-out);
+  }
+  
+  .section-theme-export:hover {
+    box-shadow: var(--border-glow-export-hover);
+  }
   
   /* ==========================================================================
      ANIMATION UTILITY CLASSES - Ready-to-Use Performance-Optimized Classes
@@ -1038,7 +1143,7 @@ SECTION-SPECIFIC UTILITY CLASSES - Removed colored borders for performance
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
 
 /* Focus-Triggered Animation Classes */
@@ -1112,8 +1217,8 @@ SECTION-SPECIFIC UTILITY CLASSES - Removed colored borders for performance
 }
 
 .card-enhance:hover {
-  transform: translateY(-2px) var(--gpu-acceleration);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px) var(--gpu-acceleration);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Typography Animation Enhancements */
