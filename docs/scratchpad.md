@@ -1,79 +1,113 @@
+Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to implement:
 
-```markdown
+
+
+
+We were in the middle of removing some visual styling that was affecting performance but we crashed.
+
+Let's perform a checkpoint commit to save our progress for now.  The fixes have NOT yet been validated by the user, so these fixes are still not fully resolved yet until user tests in a later task.
+
+
+Final Task 2: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
+
+* Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
+* Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+* Include all deliverables, changes made, and completion status
+* This ensures task summary is included in the atomic commit
+
+
+Final Task 3: Atomic Git Commit & Push
+
+* Run `git status` to review all staged and unstaged changes
+* Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
+* the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+* **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
+
+Final Task 4: Final Verification
+
+* Run final `git status` to confirm successful commit and push
+* Verify working tree is clean and branch is up-to-date with remote
+* Confirm all changes are properly git committed and git pushed
+
 # Plan to Fix Unfixed GUI Issues
 
 Based on my investigation, I found that:
 
-1.  The expand/collapse functionality IS implemented but appears not to be working
-2.  The layout shifting issue persists despite the `minmax()` attempts
+1. The expand/collapse functionality IS implemented but appears not to be working
+2. The layout shifting issue persists despite the `minmax()` attempts
 
 ## Issue 1: Fix Layout Shifting During AI Response
 
 **Root Cause:** The grid uses `minmax(70px, auto)` for sections which still allows growing with `auto`. When loading states appear, the sections can still expand.
 
 **Solution:**
-*   Change `grid-template-rows` to use fixed heights or strict max-heights
-*   Remove `auto` values that allow unbounded growth
-*   Use `minmax()` with fixed max values instead of `auto`
-*   Add `overflow: hidden` to sections that shouldn't expand
+
+- Change `grid-template-rows` to use fixed heights or strict max-heights
+- Remove `auto` values that allow unbounded growth
+- Use `minmax()` with fixed max values instead of `auto`
+- Add `overflow: hidden` to sections that shouldn't expand
 
 **Implementation:**
-1.  Update `ChatInterface_OpenAI.tsx` CSS:
-    *   Change `minmax(70px, auto)` to `minmax(70px, 70px)` for header
-    *   Change other sections to use fixed max heights: `minmax(90px, 150px)` stays
-    *   Ensure messages section remains `1fr` for proper scrolling
-    *   Add `contain: strict` to prevent layout shifts
+
+1. Update `ChatInterface_OpenAI.tsx` CSS:
+    - Change `minmax(70px, auto)` to `minmax(70px, 70px)` for header
+    - Change other sections to use fixed max heights: `minmax(90px, 150px)` stays
+    - Ensure messages section remains `1fr` for proper scrolling
+    - Add `contain: strict` to prevent layout shifts
 
 ## Issue 2: Fix Non-Working Expand/Collapse Functionality
 
 **Root Cause:** The expand/collapse code exists but the UI doesn't show collapsible headers or the functionality isn't visible/working.
 
 **Problems Found:**
-*   The clickable headers might not be styled as clickable
-*   The chevron icons might not be visible
-*   The header click handlers might not be properly bound
+
+- The clickable headers might not be styled as clickable
+- The chevron icons might not be visible
+- The header click handlers might not be properly bound
 
 **Solution:**
-1.  `AnalysisButtons.tsx` fixes:
-    *   Ensure the clickable header has proper cursor and hover styles
-    *   Make sure the chevron icon is visible with proper styling
-    *   Verify the click handler is properly attached to the header
-    *   Add visual feedback to show the section is collapsible
-2.  `DebugPanel.tsx` fixes:
-    *   Same as above - ensure clickability and visibility
-    *   Add proper hover states and cursor styles
-    *   Make chevron icon more prominent
 
-## Implementation Steps:
+1. `AnalysisButtons.tsx` fixes:
+    - Ensure the clickable header has proper cursor and hover styles
+    - Make sure the chevron icon is visible with proper styling
+    - Verify the click handler is properly attached to the header
+    - Add visual feedback to show the section is collapsible
+2. `DebugPanel.tsx` fixes:
+    - Same as above - ensure clickability and visibility
+    - Add proper hover states and cursor styles
+    - Make chevron icon more prominent
+
+## Implementation Steps
 
 ### Step 1: Fix Layout Shifting
 
-*   Modify `grid-template-rows` in `ChatInterface_OpenAI.tsx` to use strict heights
-*   Add `contain: strict` to the grid container
-*   Ensure sections have `overflow: hidden` where appropriate
+- Modify `grid-template-rows` in `ChatInterface_OpenAI.tsx` to use strict heights
+- Add `contain: strict` to the grid container
+- Ensure sections have `overflow: hidden` where appropriate
 
 ### Step 2: Fix Collapsible Headers Visibility
 
-*   Add explicit `cursor: pointer` to clickable headers
-*   Make chevron icons larger and more visible
-*   Add background hover effects to indicate clickability
-*   Ensure proper padding and spacing for click targets
+- Add explicit `cursor: pointer` to clickable headers
+- Make chevron icons larger and more visible
+- Add background hover effects to indicate clickability
+- Ensure proper padding and spacing for click targets
 
 ### Step 3: Debug and Verify
 
-*   Check that `localStorage` is working properly
-*   Ensure state changes are triggering re-renders
-*   Verify CSS transitions are working
+- Check that `localStorage` is working properly
+- Ensure state changes are triggering re-renders
+- Verify CSS transitions are working
 
-## Files to Modify:
+## Files to Modify
 
-1.  `/src/frontend/components/ChatInterface_OpenAI.tsx` - Fix grid layout
-2.  `/src/frontend/components/AnalysisButtons.tsx` - Fix collapsible header visibility
-3.  `/src/frontend/components/DebugPanel.tsx` - Fix collapsible header visibility
+1. `/src/frontend/components/ChatInterface_OpenAI.tsx` - Fix grid layout
+2. `/src/frontend/components/AnalysisButtons.tsx` - Fix collapsible header visibility
+3. `/src/frontend/components/DebugPanel.tsx` - Fix collapsible header visibility
 
-## Key Changes:
+## Key Changes
 
 **`ChatInterface_OpenAI.tsx`:**
+
 ```css
 grid-template-rows:
   70px                  /* Header: fixed height */
@@ -86,97 +120,87 @@ grid-template-rows:
 
 **`AnalysisButtons.tsx` & `DebugPanel.tsx`:**
 
-* Add explicit `cursor: pointer` to `.clickable-header`
-* Increase chevron icon size and visibility
-* Add prominent hover background
-* Ensure header is clearly interactive
+- Add explicit `cursor: pointer` to `.clickable-header`
+- Increase chevron icon size and visibility
+- Add prominent hover background
+- Ensure header is clearly interactive
 
-```
-
-
-
-
-
-
-Here's the text converted into markdown format, ready for you to copy/paste:
-
-```markdown
 # Comprehensive Console Debug Messages Implementation Plan
 
 ## Current State Analysis
 
-*   **Backend (FastAPI):** Currently uses Rich console for CLI output but lacks comprehensive debug logging
-*   **Frontend (React):** Minimal logging, only `ErrorBoundary` has `console.error` for caught errors
-*   **Vite Config:** Has terser config to drop console logs in production (lines 119-121)
-*   **API Layer:** No request/response logging
+- **Backend (FastAPI):** Currently uses Rich console for CLI output but lacks comprehensive debug logging
+- **Frontend (React):** Minimal logging, only `ErrorBoundary` has `console.error` for caught errors
+- **Vite Config:** Has terser config to drop console logs in production (lines 119-121)
+- **API Layer:** No request/response logging
 
 ## Implementation Strategy
 
 ### 1. Backend Logging System (FastAPI)
 
-*   Add Python `logging` module configuration with different log levels
-*   Create a centralized logger factory in `src/backend/utils/logger.py`
-*   Add debug logs for:
-    *   API request/response lifecycle
-    *   MCP server initialization and communication
-    *   Agent processing steps
-    *   Token usage and timing metrics
-    *   Error handling and guardrail triggers
+- Add Python `logging` module configuration with different log levels
+- Create a centralized logger factory in `src/backend/utils/logger.py`
+- Add debug logs for:
+  - API request/response lifecycle
+  - MCP server initialization and communication
+  - Agent processing steps
+  - Token usage and timing metrics
+  - Error handling and guardrail triggers
 
 ### 2. Frontend Logging System (React)
 
-*   Create a custom React logger utility in `src/frontend/utils/logger.ts`
-*   Implement conditional logging based on environment (dev/staging/prod)
-*   Add debug logs using `useEffect` hooks to prevent render loops:
-    *   Component mount/unmount lifecycle
-    *   API request/response tracking
-    *   State changes (without causing re-renders)
-    *   User interactions (button clicks, input changes)
-    *   Performance metrics (response times)
+- Create a custom React logger utility in `src/frontend/utils/logger.ts`
+- Implement conditional logging based on environment (dev/staging/prod)
+- Add debug logs using `useEffect` hooks to prevent render loops:
+  - Component mount/unmount lifecycle
+  - API request/response tracking
+  - State changes (without causing re-renders)
+  - User interactions (button clicks, input changes)
+  - Performance metrics (response times)
 
 ### 3. React Render Loop Prevention
 
-*   Never log directly in render methods - this causes infinite loops
-*   Use `useEffect` with proper dependency arrays for logging state changes
-*   Use `useRef` to track previous values without triggering re-renders
-*   Implement a debounced logger for frequently changing values
-*   Add conditional logging that only fires once per component lifecycle
+- Never log directly in render methods - this causes infinite loops
+- Use `useEffect` with proper dependency arrays for logging state changes
+- Use `useRef` to track previous values without triggering re-renders
+- Implement a debounced logger for frequently changing values
+- Add conditional logging that only fires once per component lifecycle
 
 ### 4. Browser Console Organization
 
-*   Use console groups (`console.group()`) for related logs
-*   Color-code logs by severity (info=blue, debug=gray, warn=yellow, error=red)
-*   Add timestamps to all logs
-*   Implement log filtering by component/module
+- Use console groups (`console.group()`) for related logs
+- Color-code logs by severity (info=blue, debug=gray, warn=yellow, error=red)
+- Add timestamps to all logs
+- Implement log filtering by component/module
 
 ### 5. Development Tools
 
-*   Add a global debug flag (`window.__DEBUG_MODE__`) for toggling verbose logging
-*   Create browser console commands for runtime log control
-*   Add performance timing logs for critical operations
-*   Implement log export functionality for debugging sessions
+- Add a global debug flag (`window.__DEBUG_MODE__`) for toggling verbose logging
+- Create browser console commands for runtime log control
+- Add performance timing logs for critical operations
+- Implement log export functionality for debugging sessions
 
 ## Files to Modify/Create
 
-### New Files:
+### New Files
 
-1.  `src/backend/utils/logger.py` - Backend logging configuration
-2.  `src/frontend/utils/logger.ts` - Frontend logging utility
-3.  `src/frontend/hooks/useDebugLog.ts` - React hook for safe logging
+1. `src/backend/utils/logger.py` - Backend logging configuration
+2. `src/frontend/utils/logger.ts` - Frontend logging utility
+3. `src/frontend/hooks/useDebugLog.ts` - React hook for safe logging
 
-### Modified Files:
+### Modified Files
 
-1.  `src/backend/main.py` - Add request/response logging
-2.  `src/frontend/components/ChatInterface_OpenAI.tsx` - Add component lifecycle logs
-3.  `src/frontend/components/AnalysisButtons.tsx` - Add button interaction logs
-4.  `src/frontend/services/api_OpenAI.ts` - Add API call logging
-5.  `src/frontend/components/ChatInput_OpenAI.tsx` - Add input tracking logs
-6.  `src/frontend/components/ChatMessage_OpenAI.tsx` - Add message rendering logs
-7.  `src/frontend/components/DebugPanel.tsx` - Enhanced debug information display
+1. `src/backend/main.py` - Add request/response logging
+2. `src/frontend/components/ChatInterface_OpenAI.tsx` - Add component lifecycle logs
+3. `src/frontend/components/AnalysisButtons.tsx` - Add button interaction logs
+4. `src/frontend/services/api_OpenAI.ts` - Add API call logging
+5. `src/frontend/components/ChatInput_OpenAI.tsx` - Add input tracking logs
+6. `src/frontend/components/ChatMessage_OpenAI.tsx` - Add message rendering logs
+7. `src/frontend/components/DebugPanel.tsx` - Enhanced debug information display
 
 ## Key Features
 
-### Safe React Logging Pattern:
+### Safe React Logging Pattern
 
 ```typescript
 // Safe logging in useEffect
@@ -203,28 +227,20 @@ logger.debug(f"MCP Server Response Time: {elapsed_time:.2f}s")
 
 ## Environment-Specific Behavior
 
-* **Development:** Full verbose logging with stack traces
-* **Staging:** Moderate logging with performance metrics
-* **Production:** Minimal error logging only (console.log dropped by Terser)
+- **Development:** Full verbose logging with stack traces
+- **Staging:** Moderate logging with performance metrics
+- **Production:** Minimal error logging only (console.log dropped by Terser)
 
 ## Performance Considerations
 
-* Use log levels to control verbosity
-* Implement log buffering for high-frequency events
-* Add rate limiting for repetitive logs
-* Use conditional compilation for production builds
+- Use log levels to control verbosity
+- Implement log buffering for high-frequency events
+- Add rate limiting for repetitive logs
+- Use conditional compilation for production builds
 
 This comprehensive logging system will provide full visibility into the application's behavior across all layers while preventing React render loops through careful use of effects and refs.
 
-```
-
-
-
-
-
-
 Add Comprehensive Console Debug Messages for our entire full Stack, such as Frontend Server logs, Backend Server Logs, GUI Web Browser Console logs. Right now there is not enough logging throughout the entire app, so it can become hard to debug. So let's add Console outputs to help debug no matter which area of the app could be failing. For any REACT\GUI based logs, need to also ensure we prevent potential infinite render loops where a component being rendered, causes a console logs, which may cause a re-render, which then calls a console log, which causes re-render etc
-
 
 ● 🎉 GUI MULTIPLE ELEMENT FIXES - PROJECT COMPLETE
 
@@ -531,15 +547,15 @@ Here's the text converted into markdown format, ready for you to copy/paste:
 
   Files Modified/Created in Atomic Commit:
 
-* src/backend/main.py - Hard-coded server configuration (127.0.0.1:8000)
-* vite.config.ts - Static ports and proxy configuration
-* start-app.sh - One-click startup script (executable)
-* start-app-xterm.sh - Alternative terminal startup script
-* START_SCRIPT_README.md - Startup script documentation
-* package.json - npm run start:app commands added
-* .env & .env.example - Environment variable cleanup
-* CLAUDE.md & LAST_TASK_SUMMARY.md - Updated task summaries
-* 14 documentation files - Dynamic port references removed, static config added
+- src/backend/main.py - Hard-coded server configuration (127.0.0.1:8000)
+- vite.config.ts - Static ports and proxy configuration
+- start-app.sh - One-click startup script (executable)
+- start-app-xterm.sh - Alternative terminal startup script
+- START_SCRIPT_README.md - Startup script documentation
+- package.json - npm run start:app commands added
+- .env & .env.example - Environment variable cleanup
+- CLAUDE.md & LAST_TASK_SUMMARY.md - Updated task summaries
+- 14 documentation files - Dynamic port references removed, static config added
 
   🎯 Implementation Success Criteria - ALL ACHIEVED:
 
@@ -553,11 +569,11 @@ Here's the text converted into markdown format, ready for you to copy/paste:
 
   MIGRATION COMPLETED SUCCESSFULLY with EXCELLENT (A+) quality rating:
 
-* One-click startup operational: Users can now run npm run start:app for complete environment setup
-* Static configuration active: No environment variable dependencies for server ports
-* Documentation updated: Consistent instructions across entire project
-* Repository synchronized: All changes committed and pushed to origin/migration-experimental
-* Clean state achieved: Working tree clean, ready for continued development
+- One-click startup operational: Users can now run npm run start:app for complete environment setup
+- Static configuration active: No environment variable dependencies for server ports
+- Documentation updated: Consistent instructions across entire project
+- Repository synchronized: All changes committed and pushed to origin/migration-experimental
+- Clean state achieved: Working tree clean, ready for continued development
 
   The hard-coded port configuration migration is now COMPLETE and OPERATIONAL! 🎉
 
@@ -569,14 +585,14 @@ Implement Frontend GUI Restructuring Plan to consolidate ticker inputs & create 
 
 ## Research Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
-* Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
+- Research & Analyze task(s) by FIRST reading project reference guide docs, and then ONLY if further details needed use Context7, and then finally ONLY if more details needed, Web Search\Fetch last
 
 ## 1. Consolidate Ticker Input
 
-* Create a new `SharedTickerInput` component that will be the single source of ticker input for all buttons
-* Remove individual ticker inputs from each `AnalysisButton` component
-* Set default ticker to "NVDA" as requested
-* Pass the shared ticker value from parent component to all buttons
+- Create a new `SharedTickerInput` component that will be the single source of ticker input for all buttons
+- Remove individual ticker inputs from each `AnalysisButton` component
+- Set default ticker to "NVDA" as requested
+- Pass the shared ticker value from parent component to all buttons
 
 ## 2. Restructure GUI Layout
 
@@ -606,95 +622,95 @@ The new static structure will be:
 
 ### `ChatInterface_OpenAI.tsx`
 
-* Move chat interface to always be at the top
-* Create dedicated sections with fixed positions
-* Prevent buttons from overlapping chat area
-* Ensure layout remains static during all app states
+- Move chat interface to always be at the top
+- Create dedicated sections with fixed positions
+- Prevent buttons from overlapping chat area
+- Ensure layout remains static during all app states
 
 ### New `SharedTickerInput` Component
 
-* Single input field with NVDA default
-* Validation for minimum 3 characters
-* Real-time uppercase conversion
-* Controls all button states
+- Single input field with NVDA default
+- Validation for minimum 3 characters
+- Real-time uppercase conversion
+- Controls all button states
 
 ### `AnalysisButton` Refactoring
 
-* Remove individual ticker inputs
-* Receive ticker value from parent via props
-* Disable buttons when ticker < 3 characters
-* Use shared ticker for all prompts
+- Remove individual ticker inputs
+- Receive ticker value from parent via props
+- Disable buttons when ticker < 3 characters
+- Use shared ticker for all prompts
 
 ### CSS Updates
 
-* Fixed positioning for each section
-* Grid layout for buttons (3 columns desktop, 2 tablet, 1 mobile)
-* No layout shifts during runtime
-* Consistent spacing and styling
+- Fixed positioning for each section
+- Grid layout for buttons (3 columns desktop, 2 tablet, 1 mobile)
+- No layout shifts during runtime
+- Consistent spacing and styling
 
 ## 4. Validation & Features
 
-* Buttons disabled when ticker input has < 3 characters
-* Real-time validation with visual feedback
-* Ticker automatically uppercased and cleaned (alphanumeric only)
-* All buttons use the same ticker source
-* Room for future user input fields in dedicated section
+- Buttons disabled when ticker input has < 3 characters
+- Real-time validation with visual feedback
+- Ticker automatically uppercased and cleaned (alphanumeric only)
+- All buttons use the same ticker source
+- Room for future user input fields in dedicated section
 
 ## 5. Benefits
 
-* **No more layout jumping** - fixed positions for all sections
-* **Single ticker source** - eliminates confusion and inconsistency
-* **Better UX** - clean separation of chatbot and extras
-* **Scalable** - grid layout supports 10+ future buttons
-* **Maintainable** - clear component boundaries and responsibilities
+- **No more layout jumping** - fixed positions for all sections
+- **Single ticker source** - eliminates confusion and inconsistency
+- **Better UX** - clean separation of chatbot and extras
+- **Scalable** - grid layout supports 10+ future buttons
+- **Maintainable** - clear component boundaries and responsibilities
 
 This plan will resolve the current issues of:
 
-* Multiple ticker inputs causing confusion
-* Layout elements moving during app startup vs runtime
-* Buttons covering the AI chat interface
-* Poor organization of UI components
+- Multiple ticker inputs causing confusion
+- Layout elements moving during app startup vs runtime
+- Buttons covering the AI chat interface
+- Poor organization of UI components
 
 ## Planning Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
-* IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
-* Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s):
+- IF RESEARCH FROM Tasks were NOT performed, this is a VIOLATION and task must be restarted from the beginning
+- Based on the research task(s), generate fully detailed, granular, implementation plan task breakdown todo checklist to complete all the requested task(s):
 
 This implementation will provide a robust, consistent development environment with true one-click startup!
 
 ## Implementation Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to Research, Analyze, & Perform the task(s)
 
-* Based on all the research & newly generated implementation plan task breakdown, perform the requested todo checklist task(s)
+- Based on all the research & newly generated implementation plan task breakdown, perform the requested todo checklist task(s)
 
 ## Final Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
 Final Task 1: Review/Fix Loop
 
-* SPECIALISTS performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
-* Uses `mcp__filesystem__*` tools for all file operations and examination
-* Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
-* Continue review/fix cycle WITH LINT until achieving PASSING code review status
+- SPECIALISTS performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Uses `mcp__filesystem__*` tools for all file operations and examination
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle WITH LINT until achieving PASSING code review status
 
 Final Task 2: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
 
-* Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
-* Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
-* Include all deliverables, changes made, and completion status
-* This ensures task summary is included in the atomic commit
+- Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
+- Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
 
 Final Task 3: Atomic Git Commit & Push
 
-* Run `git status` to review all staged and unstaged changes
-* Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
-* the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
-* git Push commit to repository using provided personal access token
-* **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
+- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+- git Push commit to repository using provided personal access token
+- **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
 
 Final Task 4: Final Verification
 
-* Run final `git status` to confirm successful commit and push
-* Verify working tree is clean and branch is up-to-date with remote
-* Confirm all changes are properly git committed and git pushed
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly git committed and git pushed
 
 **Key Requirements:**
 
