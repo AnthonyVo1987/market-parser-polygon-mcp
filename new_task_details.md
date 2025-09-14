@@ -2,7 +2,12 @@
 
 ## Task Description
 
-[GUI] Fix Multiple GUI Elements
+[GUI] Fix Unfixed Issues for Upward shifting & Missing Expand\Collapse
+
+Previous GUI Multiple Element Fixes were NOT all addressed and they ened to be fixed:
+
+ Unfixed Issue 1 - Upward shifting during AI responses: NOT FIXED
+ Unfixed Issue 5 - Quick Analysis & Debug sections now expandable/collapsible: NOT IMPLEMENTED AT ALL, THERE ARE nothing to make expandable/collapsible
 
 ## Issue 1: Layout Shifting During AI Response
 
