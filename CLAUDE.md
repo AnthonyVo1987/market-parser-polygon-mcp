@@ -8,8 +8,6 @@ Market Parser is a Python CLI and web GUI application for natural language finan
 
 ## Recent Updates
 
-The project has been recently updated to consolidate migration documentation into a single comprehensive guide. See `/docs/deprecated/OPENAI_STANDALONE_APP_MIGRATION_GUIDE.md` for complete migration instructions (legacy documentation archived).
-
 ## Prototyping Principles (ENFORCED)
 
 **CRITICAL PROJECT STAGE NOTICE:** This project is currently in the prototyping stage. All development work must adhere to the following principles:
@@ -48,6 +46,7 @@ All specialists and development work must respect these prototyping constraints 
 **Impact:** Enhanced user experience with response timing visibility, improved layout organization, and professional dark mode theme
 
 **Core Implementation Achievements:**
+
 - ✅ **Response Time Tracking**: Real-time AI response timing with display next to timestamps and debug panel
 - ✅ **DebugPanel Component**: New developer information component showing latest response times
 - ✅ **7-Section Layout Reorganization**: Restructured to semantic grid (Header → Messages → Chat → Ticker → Buttons → Export → Debug)
@@ -55,6 +54,7 @@ All specialists and development work must respect these prototyping constraints 
 - ✅ **Complete Dark Mode Conversion**: Comprehensive dark theme implementation across all components
 
 **Technical Excellence:**
+
 - ✅ **Modern Architecture**: React 18.2+ with TypeScript, CSS Grid layout, and performance optimization
 - ✅ **Dark Mode Implementation**: Professional color palette (#1a202c, #2d3748, #4a5568) with proper contrast
 - ✅ **Response Timing Logic**: Date.now() timing with metadata storage and real-time debug display
@@ -62,6 +62,7 @@ All specialists and development work must respect these prototyping constraints 
 - ✅ **Responsive Design**: Cross-platform optimization maintaining dark theme consistency
 
 **User Experience Improvements:**
+
 - **Performance Visibility**: Users can see exact AI response times for performance transparency
 - **Reduced Eye Strain**: Professional dark mode theme significantly improves comfort during extended use
 - **Logical Organization**: Clear workflow separation (Chat tools vs Stock analysis tools vs Utilities)
@@ -76,13 +77,6 @@ All specialists and development work must respect these prototyping constraints 
 **Important: YOU MUST USE subagents when available for the task.**
 
 ### Detected Tech Stack (Post-Migration Architecture)
-
-**Revolutionary Architecture Changes:**
-- **10-Phase Migration COMPLETED**: Clean root-level organization (/src/, /frontend/, /tests/, /docs/)
-- **Legacy Structure Eliminated**: All nested directory complexity removed
-- **Path Standardization**: 25+ legacy references corrected across entire codebase
-- **Build System Modernized**: Root-level commands with standardized workflows
-- **Testing Centralized**: Comprehensive Playwright infrastructure in /tests/
 
 **Current Backend Stack (Streamlined):**
 
@@ -189,8 +183,6 @@ All specialists and development work must respect these prototyping constraints 
 - Always verify current React patterns and Vite build optimization before implementation
 - Use context7 for TypeScript, ESLint, and Prettier best practices
 
-**Failure to use required MCP tools will result in work rejection.**
-
 **Atomic Commit Requirements:**
 
 - ALL task completions require single atomic commit containing:
@@ -198,7 +190,6 @@ All specialists and development work must respect these prototyping constraints 
   - Documentation updates
   - CLAUDE.md task summary updates
   - LAST_TASK_SUMMARY.md updates (if applicable)
-- Use `mcp__github__push_files` for atomic operations
 - No separation of code changes vs documentation changes
 - Single commit with comprehensive change documentation
 
@@ -272,6 +263,7 @@ npm run start:app
 ```
 
 **Expected Output:**
+
 ```
 🎯 Market Parser One-Click Startup
 Backend:  http://127.0.0.1:8000
@@ -458,9 +450,9 @@ npm run start:app
 
 **Static Server Configuration:**
 
-- **Backend**: Always runs on http://127.0.0.1:8000
-- **Frontend Development**: Always runs on http://127.0.0.1:3000
-- **Frontend Production**: Always runs on http://127.0.0.1:5500
+- **Backend**: Always runs on <http://127.0.0.1:8000>
+- **Frontend Development**: Always runs on <http://127.0.0.1:3000>
+- **Frontend Production**: Always runs on <http://127.0.0.1:5500>
 - **No configuration needed** - ports are hard-coded for consistency
 
 **Frontend Issues:**
@@ -500,14 +492,6 @@ curl -X POST http://127.0.0.1:8000/chat \
 ## Development Commands
 
 ### Running the Application
-
-```bash
-# CLI interface
-uv run market_parser_demo.py
-
-# Web GUI interface (opens at http://127.0.0.1:7860)
-uv run chat_ui.py
-```
 
 ### OpenAI GPT-5 Enhanced Chatbot with Responsive UI
 
@@ -623,9 +607,6 @@ The project includes a sophisticated OpenAI GPT-5 powered chatbot with enhanced 
 
 📊 DETAILED ANALYSIS
 [Comprehensive analysis with emoji-based sentiment indicators]
-
-⚠️ DISCLAIMER
-[Standard financial disclaimers]
 ```
 
 **CLI Features:**
@@ -719,7 +700,6 @@ The project includes a sophisticated OpenAI GPT-5 powered chatbot with enhanced 
 This is a functional prototype with the following improvements:
 
 - Button confirmation prompts eliminated ("Execute immediately" directive in all templates)
-- Token cost tracking fixed (proper PydanticAI usage capture)
 - Emoji formatting enhanced (mandatory emojis in all responses)
 - XSS protection implemented (content sanitization in exports)
 - Secure file operations (0o600 permissions for temp files)
@@ -730,122 +710,6 @@ This is a functional prototype with the following improvements:
 - All export functionality uses secure file operations
 - Input validation via `src/security_utils.py`
 - Sensitive data automatically redacted in logs
-
-### 🚨 MANDATORY: Test Plan Compliance
-
-#### SPECIALISTS CANNOT MAKE UP THEIR OWN TESTS
-
-When tests are run or requested and a specialist does not recognize the test, it means the specialist MUST read the official test plan from:
-
-`/docs/test_specifications/CLAUDE_playwright_mcp_corrected_test_specifications.md`
-
-**This document contains:**
-
-- Complete 51-test suite specifications (P001-P013 priority tests + comprehensive tests)
-- Exact test procedures and expected results
-- Official testing methodology and validation criteria
-- Required MCP tools and implementation patterns
-
-**Failure to follow the official test plan invalidates all test results.**
-
-### 🚨 CRITICAL: Testing Integrity and False Reporting Prevention
-
-**MANDATORY TESTING INTEGRITY PROTOCOLS (Established 2025-01-10):**
-
-#### Absolute Requirements for Test Reporting
-
-**✅ REQUIRED BEFORE GENERATING ANY TEST REPORT:**
-
-1. **Complete All Tests First**: NEVER generate completion reports until ALL required tests are executed
-2. **Verify Todo List Status**: Check todo list shows ALL tests marked as "completed" before claiming success
-3. **Document Actual Results**: Report actual test outcomes including failures, not desired outcomes
-4. **Sequential Execution**: Complete tests in proper sequence without skipping or premature reporting
-
-**❌ STRICTLY PROHIBITED ACTIONS:**
-
-- ❌ **FALSE COMPLETION CLAIMS**: Never claim test completion when tests are still pending/incomplete
-- ❌ **PREMATURE REPORTING**: Never generate reports before finishing all required test executions
-- ❌ **FABRICATED VALIDATION**: Never claim "PASSED" or "VALIDATED" status with incomplete testing
-- ❌ **IGNORED TODO STATUS**: Never ignore todo list showing pending tasks while claiming completion
-
-#### Mandatory Verification Checklist
-
-**Before generating any test completion report, MUST verify:**
-
-1. **✅ All Tests Executed**: Every required test has been run to completion
-2. **✅ Todo List Verification**: All test tasks show "completed" status in todo list
-3. **✅ Actual Results Documented**: Real test outcomes (including failures) are captured
-4. **✅ No Pending Tasks**: No test-related tasks remain in "pending" or "in_progress" status
-
-#### Corrective Actions for Testing Violations
-
-**If Testing Integrity Violation Occurs:**
-
-1. **Immediate Deletion**: Delete any false/incomplete reports immediately upon discovery
-2. **Complete Restart**: Begin full test execution from the beginning with proper protocols
-3. **Honest Documentation**: Create accurate reports documenting actual results including failures
-4. **Process Review**: Follow established verification checklist before any future reporting
-
-#### Quality Control Standards
-
-**Testing Process Integrity:**
-
-- **Truth Over Speed**: Accurate documentation is more valuable than quick reporting
-- **Failure Documentation**: Honest failure reporting is essential for system improvement
-- **Protocol Adherence**: Follow testing procedures completely, not partially
-- **Verification Requirements**: Multiple verification steps prevent false reporting
-
-**Documentation Standards:**
-
-- **Accurate Status Reporting**: Only claim "PASSED" when all tests genuinely completed successfully
-- **Honest Failure Analysis**: Document failures, errors, and incomplete results transparently
-- **Complete Coverage**: Report on ALL required tests, not just successful ones
-- **Evidence-Based Claims**: Support all completion claims with verifiable evidence
-
-**Example of Proper Test Completion Flow:**
-
-```
-1. Execute TEST-B001 → Mark todo as completed
-2. Execute TEST-B002 → Mark todo as completed
-3. Execute TEST-B003 → Mark todo as completed
-4. Execute TEST-B004 → Mark todo as completed
-5. Execute TEST-B005 → Mark todo as completed
-6. Execute TEST-B006 → Mark todo as completed
-7. Verify ALL todos show "completed" status
-8. ONLY THEN generate test completion report
-```
-
-**This protocol prevents the critical testing integrity violation that occurred on 2025-01-10 where a completion report was generated after only 2/6 tests were completed.**
-
-### Testing Best Practices
-
-- All new features require test coverage
-- Performance tests validate system functionality using **30-second polling methodology**
-- Integration tests confirm end-to-end workflows with **120s configurable timeout**
-- FSM tests ensure state transition integrity
-- **Priority testing** uses 3-test core suite (P001-P003) for rapid validation
-- **30s polling intervals** enable early detection of successful operations
-
-### 🚨 CRITICAL: Browser Testing Protocol
-
-**Same Browser Instance Requirement**: ALL browser tests MUST execute in one continuous browser session
-
-**✅ CORRECT METHODOLOGY (ENFORCED):**
-
-- **Single Session Rule**: Browser opens once, all tests run in same instance, browser closes once
-- **Real-World Simulation**: Mimics actual user behavior staying in same application
-- **State Preservation**: Maintains session data, UI state, performance characteristics
-- **Continuous Testing**: ALL tests (P001-P013, or any sequence) in SAME browser instance
-
-**❌ INCORRECT METHODOLOGY (PROHIBITED):**
-
-- ❌ New browser → Run Priority Tests → Close browser
-- ❌ New browser → Run Performance Tests → Close browser
-- ❌ New browser → Run Button Tests → Close browser
-- ❌ Any pattern that opens/closes browser between test groups
-- ❌ Fresh browser state between related test sequences
-
-**⚠️ BROWSER INSTANCE REQUIREMENT**: ALL tests in a sequence MUST execute in the SAME browser instance. Opening new browser instances between test groups does NOT simulate real-world usage and invalidates session state continuity testing.
 
 ### Import Patterns
 
