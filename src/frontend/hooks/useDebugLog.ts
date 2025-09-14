@@ -234,26 +234,31 @@ export function useConditionalLogger(
 /**
  * Hook for logging render cycles and preventing infinite loops
  * Safe pattern: Tracks render count and warns about excessive re-renders
+ * FIXED: Added debouncing to prevent infinite logging loops
  */
 export function useRenderLogger(componentName: string, maxRenders: number = 10): void {
   const renderCountRef = useRef(0);
   const lastResetRef = useRef(Date.now());
-  
+  const lastLogRef = useRef(Date.now());
+
   useEffect(() => {
     renderCountRef.current += 1;
     const now = Date.now();
-    
+
     // Reset counter every 5 seconds
     if (now - lastResetRef.current > 5000) {
       renderCountRef.current = 1;
       lastResetRef.current = now;
     }
-    
-    // Log render count
-    logger.debug(`🎭 Render #${renderCountRef.current} in ${componentName}`);
-    
-    // Warn about excessive re-renders
-    if (renderCountRef.current > maxRenders) {
+
+    // Only log every 100ms to prevent spam
+    if (now - lastLogRef.current > 100) {
+      logger.debug(`🎭 Render #${renderCountRef.current} in ${componentName}`);
+      lastLogRef.current = now;
+    }
+
+    // Warn about excessive re-renders, but only once per reset period
+    if (renderCountRef.current === maxRenders + 1) {
       logger.warn(`⚠️ Excessive re-renders detected in ${componentName}`, {
         component: componentName,
         renderCount: renderCountRef.current,

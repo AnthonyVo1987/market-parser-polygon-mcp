@@ -800,65 +800,13 @@ body {
   }
 }
 
-/* Financial Data Animations - Market-Specific Effects */
-@keyframes priceFlash {
-  0% {
-    background-color: transparent;
-    transform: var(--gpu-acceleration);
-  }
-  50% {
-    background-color: var(--accent-success-light);
-    transform: scale(1.02) var(--gpu-acceleration);
-  }
-  100% {
-    background-color: transparent;
-    transform: scale(1) var(--gpu-acceleration);
-  }
-}
-
-@keyframes priceFlashBearish {
-  0% {
-    background-color: transparent;
-    transform: var(--gpu-acceleration);
-  }
-  50% {
-    background-color: var(--accent-error-light);
-    transform: scale(1.02) var(--gpu-acceleration);
-  }
-  100% {
-    background-color: transparent;
-    transform: scale(1) var(--gpu-acceleration);
-  }
-}
-
-@keyframes countUp {
+/* Essential Animations Only - Performance Optimized */
+@keyframes fadeIn {
   from {
-    transform: translateY(5px) var(--gpu-acceleration);
-    opacity: 0.7;
+    opacity: 0;
   }
   to {
-    transform: translateY(0) var(--gpu-acceleration);
     opacity: 1;
-  }
-}
-
-@keyframes pulseGradient {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1) var(--gpu-acceleration);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.02) var(--gpu-acceleration);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
   }
 }
 
@@ -880,38 +828,9 @@ body {
   }
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0) var(--gpu-acceleration);
-  }
-  40% {
-    transform: translateY(-8px) var(--gpu-acceleration);
-  }
-  60% {
-    transform: translateY(-4px) var(--gpu-acceleration);
-  }
-}
-
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0) var(--gpu-acceleration);
-  }
-  25% {
-    transform: translateX(-4px) var(--gpu-acceleration);
-  }
-  75% {
-    transform: translateX(4px) var(--gpu-acceleration);
-  }
-}
-
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.4);
-  }
-}
+/* REMOVED: Performance-heavy animations
+@keyframes priceFlash, priceFlashBearish, countUp, pulseGradient,
+shimmer, bounce, shake, glow - Removed for performance optimization */
 
 /* Loading and Status Animations */
 @keyframes spin {
@@ -945,57 +864,29 @@ body {
 SECTION-SPECIFIC UTILITY CLASSES - Tasks 4 & 6 Implementation
 ========================================================================== */
   
-  /* Section Theme Classes - Apply Complete Visual Enhancement */
+  /* Simplified Section Theme Classes - Performance Optimized */
   .section-theme-chat {
     background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
     border: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* REMOVED: backdrop-filter and hover effects for performance */
   }
-  
-  .section-theme-chat:hover {
-    box-shadow: var(--border-glow-chat-hover);
-  }
-  
+
   .section-theme-analysis {
     background: var(--glass-surface-analysis);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
     border: var(--border-analysis);
-    box-shadow: var(--border-glow-analysis);
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* REMOVED: backdrop-filter and hover effects for performance */
   }
-  
-  .section-theme-analysis:hover {
-    box-shadow: var(--border-glow-analysis-hover);
-  }
-  
+
   .section-theme-debug {
     background: var(--glass-surface-debug);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
     border: var(--border-debug);
-    box-shadow: var(--border-glow-debug);
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* REMOVED: backdrop-filter and hover effects for performance */
   }
-  
-  .section-theme-debug:hover {
-    box-shadow: var(--border-glow-debug-hover);
-  }
-  
+
   .section-theme-export {
     background: var(--glass-surface-export);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
     border: var(--border-export);
-    box-shadow: var(--border-glow-export);
-    transition: box-shadow var(--timing-base) var(--ease-out);
-  }
-  
-  .section-theme-export:hover {
-    box-shadow: var(--border-glow-export-hover);
+    /* REMOVED: backdrop-filter and hover effects for performance */
   }
   
   /* ==========================================================================
@@ -2217,45 +2108,36 @@ pre, .code-block {
    FINANCIAL DATA ANIMATION ENHANCEMENTS - Market Psychology Effects
    ========================================================================== */
 
-/* Price update animations with market psychology */
+/* Simplified Price and Market Indicators - Performance Optimized */
 .price-update {
-  transition: all var(--timing-medium) var(--ease-stable);
-  will-change: color, background-color, var(--will-change-transform);
+  transition: color var(--timing-base) ease;
+  /* REMOVED: will-change and animation properties for performance */
 }
 
 .price-update.bullish {
-  animation: priceFlash var(--timing-medium) var(--ease-bullish);
   color: var(--accent-success);
 }
 
 .price-update.bearish {
-  animation: priceFlashBearish var(--timing-medium) var(--ease-bearish);
   color: var(--accent-error);
 }
 
-.price-update.volatile {
-  animation: shake var(--timing-base) var(--ease-volatile);
-}
-
-/* Percentage change animations */
+/* Simplified percentage changes */
 .percentage-change {
-  transition: all var(--timing-base) var(--ease-out);
-  will-change: color, var(--will-change-transform);
+  transition: color var(--timing-base) ease;
+  /* REMOVED: will-change and animation properties for performance */
 }
 
 .percentage-change.positive {
-  animation: countUp var(--timing-slow) var(--ease-bullish);
   color: var(--accent-success);
 }
 
 .percentage-change.negative {
-  animation: countUp var(--timing-slow) var(--ease-bearish);
   color: var(--accent-error);
 }
 
-/* Market status indicators */
+/* Simplified market status indicators */
 .market-open {
-  animation: pulseGradient 3s var(--ease-in-out) infinite;
   background: var(--gradient-success-subtle);
 }
 
@@ -2265,23 +2147,20 @@ pre, .code-block {
 }
 
 .market-pre-post {
-  animation: shimmer 4s var(--ease-linear) infinite;
   background: var(--gradient-trust-subtle);
 }
 
-/* Volume and activity indicators */
+/* Simplified volume indicators */
 .volume-indicator {
-  transition: all var(--timing-base) var(--ease-out);
-  will-change: var(--will-change-transform), background-color;
+  transition: background-color var(--timing-base) ease;
+  /* REMOVED: will-change and animation properties for performance */
 }
 
 .volume-indicator.high {
-  animation: heartbeat 2s var(--ease-in-out) infinite;
   background-color: var(--financial-volume-high);
 }
 
 .volume-indicator.extreme {
-  animation: glow 1.5s var(--ease-in-out) infinite;
   background-color: var(--financial-volume-extreme);
 }
 
@@ -2461,20 +2340,84 @@ pre, .code-block {
     color: black !important;
     font-weight: var(--font-weight-bold) !important;
   }
-  
+
   .percentage-positive {
     color: #000 !important;
   }
-  
+
   .percentage-positive::before {
     content: '+' !important;
   }
-  
+
   .percentage-negative {
     color: #000 !important;
   }
-  
+
   .percentage-negative::before {
     content: '-' !important;
   }
+}
+
+/* ==========================================================================
+   EXPAND/COLLAPSE UI FIXES - Interactive Headers
+   ========================================================================== */
+
+/* Clickable header styling */
+.clickable-header {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0.75rem;
+  border-radius: 6px;
+}
+
+.clickable-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.clickable-header:focus {
+  outline: 2px solid var(--accent-trust);
+  outline-offset: 2px;
+}
+
+/* Header content layout */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-left {
+  flex: 1;
+}
+
+/* Chevron icon styling */
+.chevron-icon {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+  min-width: 1rem;
+  text-align: center;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.chevron-icon.collapsed {
+  transform: rotate(0deg);
+}
+
+/* Collapsible content */
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.expanded {
+  max-height: 500px; /* Adjust based on your content */
+}
+
+.collapsible-content.collapsed {
+  max-height: 0;
 }

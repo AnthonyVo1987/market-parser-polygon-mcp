@@ -61,20 +61,36 @@ export default function ChatInterface_OpenAI() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputRef>(null);
+  const isFirstRenderRef = useRef(true);
+  const previousMessageCountRef = useRef(0);
 
   // Auto-scroll to bottom when new messages are added
+  // FIXED: Only scroll when messages actually increase, not during loading states
   useEffect(() => {
+    const currentMessageCount = messages.length;
+    const shouldScroll = !isFirstRenderRef.current &&
+                        currentMessageCount > previousMessageCountRef.current &&
+                        !isLoading;
+
     logger.debug('🔄 Auto-scroll effect triggered', {
       component: 'ChatInterface_OpenAI',
-      messagesCount: messages.length,
+      messagesCount: currentMessageCount,
+      previousCount: previousMessageCountRef.current,
+      isFirstRender: isFirstRenderRef.current,
+      isLoading,
+      shouldScroll,
       hasMessagesEndRef: !!messagesEndRef.current
     });
-    
-    if (messagesEndRef.current) {
+
+    if (shouldScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
       logger.debug('📜 Scrolled to bottom of messages');
     }
-  }, [messages]);
+
+    // Update refs
+    isFirstRenderRef.current = false;
+    previousMessageCountRef.current = currentMessageCount;
+  }, [messages, isLoading]);
 
   const addMessage = (content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
     const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
