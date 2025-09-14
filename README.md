@@ -17,7 +17,7 @@ Get up and running in minutes with this complete startup sequence tested and val
 
 **Install uv if you don't have it:**
 ```bash
-culr -LsSf https://astral.sh/uv/install.sh | sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ### Environment Setup
@@ -44,30 +44,55 @@ OPENAI_GPT5_MINI_INPUT_PRICE_PER_1M=0.25
 OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
 ```
 
-### Startup Sequence (CRITICAL ORDER)
+### One-Click Startup (RECOMMENDED METHOD)
 
-**⚠️ CRITICAL: Backend server on port 8000 is MANDATORY for all frontend interfaces to work properly**
-**📋 VALIDATED PROCEDURE: This startup sequence has been tested and confirmed working**
+**🎯 NEW: Use the one-click startup script for automatic server management**
+
+**STEP 1: One-Click Application Startup**
+```bash
+# From project root directory
+npm run start:app
+# OR use the shell script directly:
+./start-app.sh
+```
+**Expected Success Output:**
+```
+🎯 Market Parser One-Click Startup
+Backend:  http://127.0.0.1:8000
+Frontend: http://127.0.0.1:3000
+
+🔄 Cleaning up existing dev servers...
+✅ Cleanup complete
+🚀 Starting backend server...
+🚀 Starting frontend server...
+✅ Verifying servers...
+✓ Backend server is running at http://127.0.0.1:8000
+✓ Frontend server is running at http://127.0.0.1:3000
+🎉 All servers are running successfully!
+🌐 Opening application in browser...
+```
+
+### Manual Startup Sequence (ADVANCED USERS)
 
 **STEP 1: Start Backend Server (Terminal 1)**
 ```bash
 # From project root directory
-uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 **Expected Success Output:**
 ```
 INFO:     Started server process [12345]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [12346] using StatReload
 ```
-**✅ CONFIRMATION: Look for "Application startup complete" and port 8000 running**
+**✅ CONFIRMATION: Look for "Application startup complete" and backend running on 127.0.0.1:8000**
 
 **STEP 2: Test CLI (Terminal 2 - Optional but Recommended)**
 ```bash
 # Test standalone CLI first to verify setup
-uv run src/main.py
+uv run src/backend/main.py
 ```
 **Expected Output:**
 ```
@@ -88,32 +113,31 @@ Agent Response:
 NVIDIA (NVDA) continues its remarkable bullish run...
 ```
 
-**STEP 3A: Vite Development Server (Terminal 3 - For Development)**
+**STEP 3A: Frontend Development Server (Terminal 3 - For Development)**
 ```bash
-cd frontend
+# From project root directory
 npm install
-npm run dev
+npm run frontend:dev
 ```
 **Expected Output:**
 ```
   VITE v5.4.11  ready in 220ms
 
-  ➜  Local:   http://localhost:3000/
-  ➜  Network: http://192.168.1.100:3000/
-  ➜  Network: http://10.0.0.100:3000/
+  ➜  Local:   http://127.0.0.1:3000/
+  ➜  Network: http://127.0.0.1:3000/
 ```
-**Access:** Open http://localhost:3000 (Development with hot reload)
+**Access:** Open http://127.0.0.1:3000 (Development with hot reload)
 
-**STEP 3B: Live Server Production Testing (Alternative)**
+**STEP 3B: Production Build Testing (Alternative)**
 ```bash
-cd frontend
+# From project root directory
 npm run build
-npm run serve  # Uses Live Server on port 5500
+npm run serve  # Serves production build on port 5500
 ```
 **Expected Output:**
 ```
-Serving "/frontend/dist" at http://127.0.0.1:5500
-Ready for connections.
+Serving production build at http://127.0.0.1:5500
+Ready for connections
 ```
 **Access:** Open http://127.0.0.1:5500 (Production build testing)
 
@@ -123,21 +147,21 @@ Ready for connections.
 
 1. **Backend Health Check (MANDATORY):**
    ```bash
-   curl http://localhost:8000/health
+   curl http://127.0.0.1:8000/health
    # Expected response: {"status":"healthy"}
    # If this fails, frontend will NOT work
    ```
 
 2. **API Endpoints Functional Check:**
    ```bash
-   curl http://localhost:8000/templates
+   curl http://127.0.0.1:8000/templates
    # Expected: JSON array of analysis templates
-   curl http://localhost:8000/analysis-tools  
+   curl http://127.0.0.1:8000/analysis-tools
    # Expected: JSON array of analysis tools
    ```
 
 2. **Frontend Access:**
-   - **Development:** http://localhost:3000 should show React chat interface
+   - **Development:** http://127.0.0.1:3000 should show React chat interface
    - **Production:** http://127.0.0.1:5500 should show optimized build
 
 3. **End-to-End Test:**
@@ -272,9 +296,14 @@ uv run market_parser_demo.py
 
 4. **Choose your interface:**
 
-   **Enhanced OpenAI GPT-5 CLI (Recommended):**
+   **One-Click Application Startup (Recommended):**
    ```sh
-   uv run src/main.py
+   npm run start:app
+   ```
+
+   **Enhanced OpenAI GPT-5 CLI:**
+   ```sh
+   uv run src/backend/main.py
    ```
 
    **Original CLI:**
@@ -282,23 +311,21 @@ uv run market_parser_demo.py
    uv run market_parser_demo.py
    ```
 
-   **Enhanced React Web Interface (Optimized with Vite + Live Server Testing):**
+   **Enhanced React Web Interface (Manual Setup):**
    ```sh
    # Terminal 1: Start FastAPI server (from project root)
-   uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
-   
+   uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
+
    # Terminal 2: Start React frontend development
-   cd frontend
    npm install
-   npm run dev  # Development server (Port 3000) with hot reload
-   
-   # Production build testing with VS Code Live Server:
-   npm run build           # Build production application
-   npm run serve          # Live Server (Port 5500) - production testing
-   npm run serve:staging  # Live Server (Port 5501) - staging testing
+   npm run frontend:dev  # Development server (Port 3000) with hot reload
+
+   # Production build testing:
+   npm run build   # Build production application
+   npm run serve   # Serve production build (Port 5500)
    ```
-   **Development**: Open http://localhost:3000 (Vite development server)  
-   **Production Testing**: Open http://localhost:5500 (Live Server production testing)
+   **Development**: Open http://127.0.0.1:3000 (Vite development server)
+   **Production Testing**: Open http://127.0.0.1:5500 (Production build testing)
    
    **Vite + Live Server Integration Features:**
    - **45% Bundle Size Reduction**: Optimized from 68KB to 37.19KB main bundle

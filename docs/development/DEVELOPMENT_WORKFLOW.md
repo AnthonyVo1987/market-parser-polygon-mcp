@@ -4,15 +4,23 @@ This document outlines the unified code quality workflow for the Market Parser p
 
 ## Quick Start
 
+### Application Startup
+```bash
+# One-click startup (recommended)
+npm run start:app
+
+# Static server configuration:
+# Backend: http://127.0.0.1:8000
+# Frontend: http://127.0.0.1:3000
+```
+
 ### Install Dependencies
 ```bash
 # Python dependencies
 uv install
 
-# JavaScript dependencies (React frontend)
-cd frontend
+# JavaScript dependencies
 npm install
-cd ..
 ```
 
 ### Run Quality Checks

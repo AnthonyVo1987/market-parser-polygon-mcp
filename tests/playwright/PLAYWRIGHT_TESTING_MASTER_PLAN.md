@@ -24,8 +24,20 @@ This document provides comprehensive guidance for executing the complete B001-B0
 
 ### Prerequisites
 
-1. **Backend Server Running**: FastAPI on port 8000 with "Application startup complete" message
-2. **Frontend Server Running**: Vite on port 3000+ (auto-adjusts) with "VITE ready" message
+**Server Configuration (Static):**
+- **Backend**: http://127.0.0.1:8000 (Static configuration)
+- **Frontend**: http://127.0.0.1:3000 (Static configuration)
+
+**Setup Options:**
+
+**Option A: One-Click Startup (Recommended)**
+```bash
+npm run start:app
+```
+
+**Option B: Manual Setup**
+1. **Backend Server Running**: FastAPI on 127.0.0.1:8000 with "Application startup complete" message
+2. **Frontend Server Running**: Vite on 127.0.0.1:3000 with "VITE ready" message
 3. **Health Verification**: Both servers responding to health checks
 4. **Browser Capability**: Chromium installed for Playwright automation
 

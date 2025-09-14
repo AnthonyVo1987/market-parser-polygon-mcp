@@ -1,5 +1,17 @@
 # Market Parser API Security & Performance Guide
 
+## Server Configuration
+
+**Static Endpoints:**
+- **Backend API**: http://127.0.0.1:8000
+- **Frontend Development**: http://127.0.0.1:3000
+- **Frontend Production**: http://127.0.0.1:5500
+
+**One-Click Startup:**
+```bash
+npm run start:app
+```
+
 ## Security Architecture
 
 ### 1. Authentication & Authorization

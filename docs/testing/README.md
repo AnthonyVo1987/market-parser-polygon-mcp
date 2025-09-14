@@ -4,6 +4,17 @@
 
 This documentation suite provides complete guidance for safely and effectively using the Market Parser Playwright testing system, addressing security concerns, quality assurance requirements, and comprehensive troubleshooting support.
 
+## 🎯 Static Server Configuration
+
+**All testing uses static endpoints:**
+- **Backend**: http://127.0.0.1:8000
+- **Frontend**: http://127.0.0.1:3000
+
+**One-Click Startup:**
+```bash
+npm run start:app
+```
+
 ---
 
 ## 📚 Documentation Overview

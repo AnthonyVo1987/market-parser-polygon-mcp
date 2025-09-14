@@ -29,7 +29,7 @@ export default defineConfig(({ command, mode }) => {
           sourcemap: isProduction,
           runtimeCaching: [
             {
-              urlPattern: new RegExp(`^${env.VITE_API_URL || 'http://localhost:8000'}\/api\/`),
+              urlPattern: new RegExp(`^http://127\.0\.0\.1:8000\/api\/`),
               handler: 'NetworkFirst',
               options: {
                 cacheName: 'api-cache',
@@ -92,20 +92,21 @@ export default defineConfig(({ command, mode }) => {
     ].filter(Boolean),
     // Development server configuration (only applies in dev mode)
     server: {
+      host: '127.0.0.1',
       port: 3000,
-      host: true,
+      strictPort: true, // Fail if port 3000 is busy, no dynamic port allocation
       // Enable CORS for root-level development and cross-origin requests
       cors: true,
       // Phase 1: Server warmup optimization for faster cold starts
       warmup: {
         clientFiles: ['./src/frontend/main.tsx', './src/frontend/App.tsx']
       },
-      // Phase 1: Environment-aware proxy configuration for seamless backend integration
+      // Phase 1: Static proxy configuration for backend integration
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:8000',
+          target: 'http://127.0.0.1:8000',
           changeOrigin: true,
-          secure: env.VITE_API_URL?.startsWith('https://') || false
+          secure: false
         }
       }
     },
@@ -212,7 +213,7 @@ export default defineConfig(({ command, mode }) => {
       __IS_PRODUCTION__: JSON.stringify(isProduction),
       // Environment-specific build information
       __APP_ENV__: JSON.stringify(env.VITE_APP_ENV || mode),
-      __API_URL__: JSON.stringify(env.VITE_API_URL || 'http://localhost:8000'),
+      __API_URL__: JSON.stringify('http://127.0.0.1:8000'),
       __PWA_ENABLED__: JSON.stringify(env.VITE_PWA_ENABLED === 'true'),
       __DEBUG_MODE__: JSON.stringify(env.VITE_DEBUG_MODE === 'true')
     }

@@ -25,26 +25,31 @@ This guide provides essential information for using the `/test_cli_full` and `/t
 
 ### 1. Server Startup (MANDATORY)
 
-**Both servers MUST be running before executing any tests:**
-
+**Option A: One-Click Startup (Recommended)**
 ```bash
-# Terminal 1: Backend Server
-cd /home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp
-uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+cd /home/1000211866/Github/market-parser-polygon-mcp
+npm run start:app
+```
 
-# Terminal 2: Frontend Server  
-cd /home/1000211866/Github/market-parser-polygon-mcp/gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
-npm run dev
+**Option B: Manual Server Startup**
+```bash
+# Terminal 1: Backend Server (Static Configuration)
+cd /home/1000211866/Github/market-parser-polygon-mcp
+uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
+
+# Terminal 2: Frontend Server (Static Configuration)
+cd /home/1000211866/Github/market-parser-polygon-mcp
+npm run frontend:dev
 ```
 
 **Verify Servers are Running:**
 ```bash
-# Check backend health
-curl http://localhost:8000/health
+# Check backend health (Static IP)
+curl http://127.0.0.1:8000/health
 # Expected: {"status":"ok"}
 
-# Check frontend (port may vary - check terminal output)
-curl http://localhost:3000/
+# Check frontend (Static IP)
+curl http://127.0.0.1:3000/
 # Expected: HTML response with React app
 ```
 
