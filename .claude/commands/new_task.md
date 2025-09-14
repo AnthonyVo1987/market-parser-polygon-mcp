@@ -17,7 +17,7 @@ When you invoke `/new_task`, I will:
 1. **Read your task details** from `new_task_details.md`
 2. **Invoke @agent-tech-lead-orchestrator** to analyze the task and create a specialist assignment plan
 3. **Execute the plan** using the exact agents recommended by the tech-lead
-4. **Ensure MCP tool compliance** for all specialists
+4. **MUST USE Context7, Sequential-Thinking, Filesystem Tools as Primary Tools compliance** for all specialists
 5. **Create actual deliverables** (not just summaries)
 
 ## Command Execution
@@ -35,9 +35,9 @@ I'll read the task details from new_task_details.md and use @agent-tech-lead-orc
 | **Documentation & Architecture** | `@documentation-specialist` | Architecture documentation, user guides, API documentation, component documentation, migration planning | Maintains comprehensive project documentation |
 | **Deep Analysis & Planning** | `@code-archaeologist` | Complex architectural decisions, system analysis, migration strategy, technical debt assessment | On-demand for major architectural changes and system analysis |
 
-## MCP Tool Requirements
+## Primary Tool Requirements
 
-MCP Tools are PRIMARY tools for ALL specialists. All specialists MUST use:
+Context7, Sequential-Thinking, Filesystem are PRIMARY tools for ALL specialists. All specialists MUST use:
 
 - `mcp__sequential-thinking__sequentialthinking` for systematic analysis
 - `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` for research
@@ -45,7 +45,7 @@ MCP Tools are PRIMARY tools for ALL specialists. All specialists MUST use:
 
 ---
 
-## Execution Protocol - Enhanced A-I Workflow
+## Execution Protocol
 
 The `/new_task` command follows a systematic A-I process with tech-lead orchestration for ALL modes (Plan and Non-Plan).
 
@@ -64,7 +64,7 @@ The `/new_task` command follows a systematic A-I process with tech-lead orchestr
 
 **C. Plan Mode: Tech-Lead Orchestrated Planning**
 
-- `@agent-tech-lead-orchestrator` generates comprehensive plan WITH Specialist Assignments
+- `@agent-tech-lead-orchestrator` generates comprehensive plan WITH Specialist Assignments AND ENFORCE usage of Context7, Sequential-Thinking, Filesystem Tools for EACH Specialist
 - Detailed task breakdown with specialist role allocations and dependencies
 
 **D. Non-Plan Mode: Tech-Lead Orchestrated Planning**
@@ -74,8 +74,8 @@ The `/new_task` command follows a systematic A-I process with tech-lead orchestr
 
 **E. Specialist(s) Execute Plan**
 
-- Specialists execute plan from `@agent-tech-lead-orchestrator` using exact assignments
-- ALL specialists MUST use MCP tools as PRIMARY method (fallback to default tools if needed)
+- Specialists MUST USE Context7, Sequential-Thinking, Filesystem Tools as Primary Tools to execute plan from `@agent-tech-lead-orchestrator` using exact assignments
+- ALL specialists MUST USE Context7, Sequential-Thinking, Filesystem Tools as Primary Tools
 - Prototyping principles enforced: no over-engineering, functional delivery focus
 
 **F. Review/Fix Loop - Final Task 1**
@@ -117,7 +117,7 @@ The `/new_task` command follows a systematic A-I process with tech-lead orchestr
 ### Quality Requirements
 
 - Tech-lead orchestrator MANDATORY for both Plan and Non-Plan modes
-- MCP tools as PRIMARY method for all specialist operations
+- Context7, Sequential-Thinking, & Filesystem Tools as PRIMARY method for all specialist operations
 - Atomic commit principle: ALL changes in single commit operation
 
 ---
