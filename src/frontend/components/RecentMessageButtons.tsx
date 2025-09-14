@@ -221,65 +221,91 @@ export default function RecentMessageButtons({
   );
 }
 
-// Inline styles for RecentMessageButtons component
+// Professional Fintech Glassmorphic Styles for Recent Message Access
 export const recentMessageButtonsStyles = `
+  /* ==========================================================================
+     RECENT MESSAGE BUTTONS - Subtle Utility Component with Professional Fintech Design
+     ========================================================================== */
+  
   .recent-message-buttons-container {
-    margin: 8px 0;
+    margin: var(--spacing-2) 0;
     padding: 0;
+    width: 100%;
   }
   
   .recent-message-buttons {
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-2);
     justify-content: center;
     flex-wrap: wrap;
     max-width: 100%;
   }
   
-  @media (max-width: 640px) {
-    .recent-message-buttons {
-      gap: 6px;
-    }
-  }
-  
+  /* Professional Recent Message Button Base Styling */
   .recent-message-button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 16px;
+    /* Subtle Glassmorphic Foundation */
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-xs);
+    border: 1px solid var(--glass-border-1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    
+    /* Professional Button Design */
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    
+    /* Typography - Subtle Utility Styling */
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-normal);
+    color: var(--neutral-color);
+    letter-spacing: var(--letter-spacing-normal);
+    
+    /* Layout */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    min-height: 36px;
+    gap: var(--spacing-1);
+    min-height: 38px;
     text-align: center;
-    min-width: 140px;
+    min-width: 160px;
+    
+    /* Subtle Transitions */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
   }
   
+  /* Hover Effect - Enhanced but Subtle Glass Surface */
   .recent-message-button:not(.disabled):not(.loading):hover {
-    background-color: #0056b3;
+    background: var(--glass-surface-2);
+    border-color: var(--glass-border-2);
+    color: var(--text-secondary);
     transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
   
+  /* Active State */
   .recent-message-button:not(.disabled):not(.loading):active {
     transform: translateY(0);
+    background: var(--glass-surface-3);
   }
   
+  /* Disabled State - Very Subtle */
   .recent-message-button.disabled {
-    background-color: #ccc;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.03);
+    color: rgba(160, 174, 192, 0.5);
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.4;
   }
   
+  /* Loading State - Professional with Info Color */
   .recent-message-button.loading {
-    background-color: #6c757d;
+    background: var(--glass-surface-2);
+    border-color: var(--accent-info);
+    color: var(--accent-info-light);
     cursor: wait;
-    position: relative;
   }
   
   .recent-message-button.loading::after {
@@ -287,58 +313,170 @@ export const recentMessageButtonsStyles = `
     width: 12px;
     height: 12px;
     border: 2px solid transparent;
-    border-top: 2px solid white;
+    border-top: 2px solid var(--accent-info);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-left: 4px;
+    margin-left: var(--spacing-1);
   }
   
+  /* Success State - Subtle Success Gradient */
   .recent-message-button.success {
-    background-color: #28a745;
+    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    border-color: var(--accent-success);
+    color: var(--text-primary);
     cursor: default;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
   }
   
   .recent-message-button.success:hover {
-    background-color: #28a745;
     transform: none;
+    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
   }
   
+  /* Error State - Subtle Error Treatment */
   .recent-message-button.error {
-    background-color: #dc3545;
+    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    border-color: var(--accent-error);
+    color: var(--text-primary);
     cursor: pointer;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
   }
   
   .recent-message-button.error:hover {
-    background-color: #c82333;
+    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
+    transform: translateY(-1px);
   }
   
+  /* Professional Error Message Display */
   .recent-message-error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    padding: 8px 12px;
-    margin-top: 8px;
-    font-size: 12px;
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--accent-error);
+    border-radius: 8px;
+    padding: var(--spacing-2) var(--spacing-3);
+    margin-top: var(--spacing-2);
+    
+    color: var(--accent-error-light);
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
     text-align: left;
-    max-width: 400px;
+    
+    max-width: 450px;
     margin-left: auto;
     margin-right: auto;
+    
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
   }
   
-  /* Integration styles for chat header */
+  .recent-message-error-message strong {
+    color: var(--accent-error);
+    font-weight: var(--font-weight-semibold);
+  }
+  
+  /* Responsive Design - Mobile Optimization */
+  @media (max-width: 640px) {
+    .recent-message-buttons {
+      gap: var(--spacing-1);
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .recent-message-button {
+      padding: var(--spacing-2);
+      min-height: 44px; /* Touch target optimization */
+      font-size: var(--font-size-micro);
+      min-width: 200px;
+    }
+    
+    .recent-message-error-message {
+      padding: var(--spacing-2);
+      font-size: var(--font-size-micro);
+      max-width: 100%;
+    }
+  }
+  
+  /* Tablet Optimization */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .recent-message-buttons {
+      gap: var(--spacing-2);
+    }
+    
+    .recent-message-button {
+      min-width: 180px;
+    }
+  }
+  
+  /* Desktop Enhancement - More Subtle */
+  @media (min-width: 1025px) {
+    .recent-message-button {
+      padding: var(--spacing-2) var(--spacing-4);
+      min-height: 36px;
+      min-width: 170px;
+    }
+    
+    .recent-message-button:hover {
+      backdrop-filter: var(--glass-blur-sm);
+    }
+  }
+  
+  /* Integration Styles for Chat Interface */
   .chat-header .recent-message-buttons-container {
-    margin: 8px 0 0 0;
+    margin: var(--spacing-2) 0 0 0;
   }
   
   .chat-header .recent-message-buttons {
     justify-content: center;
-    max-width: 500px;
+    max-width: 550px;
     margin: 0 auto;
   }
-
+  
+  /* High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    .recent-message-button {
+      border-width: 2px;
+      background: var(--background-secondary);
+    }
+    
+    .recent-message-button:hover {
+      border-color: var(--accent-info);
+    }
+  }
+  
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    .recent-message-button {
+      transition: none;
+    }
+    
+    .recent-message-button.loading::after {
+      animation: none;
+    }
+  }
+  
+  /* Performance Optimizations */
+  .recent-message-button {
+    will-change: transform, background;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+  
+  /* Smooth Animations */
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+  
+  /* Focus Management - Accessibility */
+  .recent-message-button:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  
+  .recent-message-button.error:focus-visible {
+    outline-color: var(--focus-ring-error);
+  }
+  
+  .recent-message-button.success:focus-visible {
+    outline-color: var(--focus-ring-success);
   }
 `;

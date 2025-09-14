@@ -1,16 +1,217 @@
-/* Enhanced global styles for financial chat interface - DARK MODE DEFAULT */
+/* Enhanced global styles for financial chat interface - DARK MODE DEFAULT WITH FINTECH ACCENTS */
 :root {
-  --neutral-color: #a0aec0; /* Light gray for dark mode */
-  --background-light: #2d3748; /* Dark background */
-  --border-color: #4a5568; /* Dark border */
-  --text-primary: #f7fafc; /* Light text */
-  --text-secondary: #e2e8f0; /* Light secondary text */
+  /* ==========================================================================
+     MODERN TYPOGRAPHY SYSTEM - Research-Backed Font Stacks & Hierarchy
+     ========================================================================== */
+  
+  /* Modern Font Stacks - Performance Optimized with Strategic Fallbacks */
+  --font-display: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace;
+  
+  /* Responsive Typography Scale - Fluid Sizing with clamp() */
+  --font-size-display: clamp(2.5rem, 4vw + 1rem, 4rem);     /* 40px → 64px */
+  --font-size-h1: clamp(2rem, 3vw + 0.5rem, 3rem);         /* 32px → 48px */
+  --font-size-h2: clamp(1.75rem, 2.5vw + 0.5rem, 2.25rem); /* 28px → 36px */
+  --font-size-h3: clamp(1.5rem, 2vw + 0.5rem, 1.875rem);   /* 24px → 30px */
+  --font-size-h4: clamp(1.25rem, 1.5vw + 0.25rem, 1.5rem); /* 20px → 24px */
+  --font-size-h5: clamp(1.125rem, 1vw + 0.25rem, 1.25rem); /* 18px → 20px */
+  --font-size-h6: clamp(1rem, 0.5vw + 0.25rem, 1.125rem);  /* 16px → 18px */
+  --font-size-body: clamp(0.875rem, 0.5vw + 0.5rem, 1rem); /* 14px → 16px */
+  --font-size-small: clamp(0.75rem, 0.25vw + 0.5rem, 0.875rem); /* 12px → 14px */
+  --font-size-micro: clamp(0.625rem, 0.25vw + 0.375rem, 0.75rem); /* 10px → 12px */
+  
+  /* Financial Data Typography - Specialized for Numbers & Market Data */
+  --font-size-price-large: clamp(1.5rem, 2vw + 0.5rem, 2rem);   /* Large price displays */
+  --font-size-price-medium: clamp(1.125rem, 1vw + 0.25rem, 1.375rem); /* Medium price displays */
+  --font-size-price-small: clamp(0.875rem, 0.5vw + 0.25rem, 1rem);     /* Small price displays */
+  --font-size-percentage: clamp(0.75rem, 0.5vw + 0.25rem, 0.875rem);   /* Percentage changes */
+  --font-size-ticker: clamp(0.875rem, 0.5vw + 0.25rem, 1rem);          /* Stock ticker symbols */
+  
+  /* Line Heights - Optimized for Readability */
+  --line-height-tight: 1.1;    /* Headings, financial data */
+  --line-height-normal: 1.4;   /* Body text, optimal for dark mode */
+  --line-height-relaxed: 1.6;  /* Long-form content */
+  --line-height-loose: 1.8;    /* Spacious content */
+  
+  /* Font Weights - Semantic Hierarchy */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+  
+  /* Letter Spacing - Enhanced Readability */
+  --letter-spacing-tight: -0.025em;   /* Large headings */
+  --letter-spacing-normal: 0;         /* Body text */
+  --letter-spacing-wide: 0.025em;     /* Small text, labels */
+  --letter-spacing-wider: 0.05em;     /* All caps, financial tickers */
+  --letter-spacing-widest: 0.1em;     /* Spacing for emphasis */
+  /* ==========================================================================
+     FOUNDATIONAL COLORS - Dark Mode Base (PRESERVED)
+     ========================================================================== */
+  --background-primary: #1a202c;   /* Very dark blue-gray - main background */
+  --background-secondary: #2d3748; /* Dark blue-gray - elevated surfaces */
+  --background-tertiary: #4a5568;  /* Medium gray - highest elevation */
+  --border-color: #4a5568;         /* Medium gray - borders and dividers */
+  --text-primary: #f7fafc;         /* Almost white - primary text */
+  --text-secondary: #e2e8f0;       /* Light gray - secondary text */
+  --neutral-color: #a0aec0;        /* Light gray - neutral elements */
 
+  /* ==========================================================================
+     FINTECH ACCENT COLORS - Strategic Visual "Pop" with Financial Psychology
+     ========================================================================== */
+  
+  /* Primary Trust & Action Color (Professional Fintech) */
+  --accent-trust: #6366f1;         /* Fintech Purple (Indigo-500) - primary CTAs, trust elements */
+  --accent-trust-hover: #818cf8;   /* Indigo-400 on hover */
+  --accent-trust-active: #4f46e5;  /* Indigo-600 on active */
+  --accent-trust-disabled: rgba(99, 102, 241, 0.5); /* 50% opacity */
+
+  /* Financial Success & Bullish (Industry Standard Green) */
+  --accent-success: #10b981;       /* Green - gains, positive trends, success */
+  --accent-success-light: #34d399; /* Light green - subtle indicators */
+  --accent-success-hover: #059669; /* Darker on hover */
+  --accent-success-active: #047857; /* Darkest on active */
+  --accent-success-disabled: rgba(16, 185, 129, 0.5);
+
+  /* Financial Error & Bearish (Industry Standard Red) */
+  --accent-error: #ef4444;         /* Red - losses, negative trends, errors */
+  --accent-error-light: #f87171;   /* Light red - subtle indicators */
+  --accent-error-hover: #dc2626;   /* Darker on hover */
+  --accent-error-active: #b91c1c;  /* Darkest on active */
+  --accent-error-disabled: rgba(239, 68, 68, 0.5);
+
+  /* Financial Warning & Caution (Amber) */
+  --accent-warning: #f59e0b;       /* Amber - warnings, neutral trends */
+  --accent-warning-light: #fbbf24; /* Light amber - subtle indicators */
+  --accent-warning-hover: #d97706; /* Darker on hover */
+  --accent-warning-active: #b45309; /* Darkest on active */
+  --accent-warning-disabled: rgba(245, 158, 11, 0.5);
+
+  /* Information & AI Status (Light Blue) */
+  --accent-info: #3b82f6;          /* Blue - information, AI indicators */
+  --accent-info-light: #60a5fa;    /* Light blue - subtle indicators */
+  --accent-info-hover: #2563eb;    /* Darker on hover */
+  --accent-info-active: #1d4ed8;   /* Darkest on active */
+  --accent-info-disabled: rgba(59, 130, 246, 0.5);
+
+  /* ==========================================================================
+     FINANCIAL SEMANTIC COLORS - Data Visualization & Market Indicators
+     ========================================================================== */
+  
+  /* Bullish/Gains Color Scale */
+  --financial-bullish-1: #065f46;  /* Dark green - strong gains */
+  --financial-bullish-2: #047857;  /* Medium-dark green */
+  --financial-bullish-3: #059669;  /* Medium green */
+  --financial-bullish-4: #10b981;  /* Base bullish color */
+  --financial-bullish-5: #34d399;  /* Light green - small gains */
+
+  /* Bearish/Losses Color Scale */
+  --financial-bearish-1: #7f1d1d;  /* Dark red - heavy losses */
+  --financial-bearish-2: #991b1b;  /* Medium-dark red */
+  --financial-bearish-3: #b91c1c;  /* Medium red */
+  --financial-bearish-4: #dc2626;  /* Base bearish color */
+  --financial-bearish-5: #ef4444;  /* Light red - small losses */
+
+  /* Volume & Activity Indicators */
+  --financial-volume-low: #64748b;    /* Low activity - gray */
+  --financial-volume-medium: #3b82f6; /* Medium activity - blue */
+  --financial-volume-high: #8b5cf6;   /* High activity - purple */
+  --financial-volume-extreme: #ec4899; /* Extreme activity - pink */
+
+  /* ==========================================================================
+     GRADIENT SYSTEM - Modern Visual Depth with Professional Fintech Appeal
+     ========================================================================== */
+  
+  /* Primary Trust Gradient (Headers, CTAs) */
+  --gradient-trust: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+  --gradient-trust-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+
+  /* Success Gradient (Positive indicators) */
+  --gradient-success: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --gradient-success-subtle: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+
+  /* Error Gradient (Negative indicators) */
+  --gradient-error: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  --gradient-error-subtle: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+
+  /* Background Elevation Gradients */
+  --gradient-surface-1: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+  --gradient-surface-2: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
+  --gradient-surface-3: linear-gradient(180deg, #718096 0%, #4a5568 100%);
+
+  /* ==========================================================================
+     INTERACTIVE STATE COLORS - Enhanced UX Feedback
+     ========================================================================== */
+  
+  /* Focus States (Enhanced Accessibility) */
+  --focus-ring: #6366f1;           /* Trust fintech purple for focus rings */
+  --focus-ring-error: #ef4444;     /* Red for error focus */
+  --focus-ring-success: #10b981;   /* Green for success focus */
+
+  /* Button State Colors */
+  --button-primary: var(--accent-trust);
+  --button-primary-hover: var(--accent-trust-hover);
+  --button-primary-active: var(--accent-trust-active);
+  
+  --button-success: var(--accent-success);
+  --button-success-hover: var(--accent-success-hover);
+  --button-success-active: var(--accent-success-active);
+  
+  --button-error: var(--accent-error);
+  --button-error-hover: var(--accent-error-hover);
+  --button-error-active: var(--accent-error-active);
+
+  /* ==========================================================================
+     LEGACY COMPATIBILITY - Preserving Existing Variable Names
+     ========================================================================== */
+  
+  --background-light: var(--background-secondary); /* Backward compatibility */
+
+  /* ==========================================================================
+     RESPONSIVE SYSTEM - Preserved from Original
+     ========================================================================== */
+  
   /* Responsive breakpoints as CSS custom properties */
   --mobile-max: 767px;
   --tablet-min: 768px;
   --tablet-max: 1024px;
   --desktop-min: 1025px;
+
+  /* ==========================================================================
+     ENHANCED RESPONSIVE SYSTEM - Professional Breakpoint & Container Management
+     ========================================================================== */
+  
+  /* Enhanced Breakpoint System - Mobile-First Approach */
+  --breakpoint-xs: 0px;        /* Extra small devices */
+  --breakpoint-sm: 640px;      /* Small devices (phones) */
+  --breakpoint-md: 768px;      /* Medium devices (tablets) */
+  --breakpoint-lg: 1024px;     /* Large devices (laptops) */
+  --breakpoint-xl: 1280px;     /* Extra large devices (desktops) */
+  --breakpoint-2xl: 1536px;    /* 2X large devices (large desktops) */
+  
+  /* Container Max-Widths - Responsive Layout Containers */
+  --container-xs: 100%;        /* Full width on extra small */
+  --container-sm: 640px;       /* Max width for small screens */
+  --container-md: 768px;       /* Max width for medium screens */
+  --container-lg: 1024px;      /* Max width for large screens */
+  --container-xl: 1280px;      /* Max width for extra large screens */
+  --container-2xl: 1536px;     /* Max width for 2X large screens */
+  
+  /* Container Padding - Responsive Gutters */
+  --container-padding-xs: var(--spacing-4);   /* 16px on mobile */
+  --container-padding-sm: var(--spacing-6);   /* 24px on small tablets */
+  --container-padding-md: var(--spacing-8);   /* 32px on medium screens */
+  --container-padding-lg: var(--spacing-10);  /* 40px on large screens */
+  --container-padding-xl: var(--spacing-12);  /* 48px on extra large screens */
+  
+  /* Grid System Variables */
+  --grid-columns: 12;          /* 12-column grid system */
+  --grid-gutter: var(--spacing-6);     /* Grid gutter spacing */
+  --grid-gutter-sm: var(--spacing-4);  /* Compact grid gutter */
+  --grid-gutter-lg: var(--spacing-8);  /* Spacious grid gutter */
 
   /* Responsive spacing scale */
   --spacing-xs: 4px;
@@ -18,15 +219,220 @@
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
-}
+
+  /* ==========================================================================
+     COMPREHENSIVE SPACING SYSTEM - 0.25rem Increment Scale for Design Consistency
+     ========================================================================== */
+  
+  /* Base Spacing Scale - 0.25rem (4px) increments for perfect design alignment */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;    /* 4px - Minimal spacing, fine adjustments */
+  --spacing-2: 0.5rem;     /* 8px - Small gaps, compact layouts */
+  --spacing-3: 0.75rem;    /* 12px - Medium-small spacing */
+  --spacing-4: 1rem;       /* 16px - Base unit, standard spacing */
+  --spacing-5: 1.25rem;    /* 20px - Medium spacing */
+  --spacing-6: 1.5rem;     /* 24px - Large spacing */
+  --spacing-7: 1.75rem;    /* 28px - Extra large spacing */
+  --spacing-8: 2rem;       /* 32px - Section spacing */
+  --spacing-9: 2.25rem;    /* 36px - Large section spacing */
+  --spacing-10: 2.5rem;    /* 40px - Major spacing */
+  --spacing-11: 2.75rem;   /* 44px - Touch target minimum */
+  --spacing-12: 3rem;      /* 48px - Component spacing */
+  --spacing-14: 3.5rem;    /* 56px - Large component spacing */
+  --spacing-16: 4rem;      /* 64px - Major section breaks */
+  --spacing-20: 5rem;      /* 80px - Page section spacing */
+  --spacing-24: 6rem;      /* 96px - Major layout spacing */
+  --spacing-28: 7rem;      /* 112px - Huge spacing */
+  --spacing-32: 8rem;      /* 128px - Maximum spacing */
+  
+  /* Semantic Spacing - Context-Aware Values */
+  --spacing-component-padding: var(--spacing-4);      /* Standard component internal padding */
+  --spacing-component-margin: var(--spacing-6);       /* Standard component external margin */
+  --spacing-section-padding: var(--spacing-8);        /* Section internal padding */
+  --spacing-section-margin: var(--spacing-12);        /* Section external margin */
+  --spacing-container-padding: var(--spacing-4);      /* Container padding (mobile-first) */
+  --spacing-button-padding-x: var(--spacing-4);       /* Button horizontal padding */
+  --spacing-button-padding-y: var(--spacing-2);       /* Button vertical padding */
+  --spacing-input-padding-x: var(--spacing-3);        /* Input horizontal padding */
+  --spacing-input-padding-y: var(--spacing-2);        /* Input vertical padding */
+  --spacing-card-padding: var(--spacing-6);           /* Card internal padding */
+  --spacing-card-gap: var(--spacing-4);               /* Gap between cards */
+  
+  /* Layout Grid Spacing */
+  --spacing-grid-gap: var(--spacing-4);               /* Default grid gap */
+  --spacing-grid-gap-sm: var(--spacing-2);            /* Compact grid gap */
+  --spacing-grid-gap-lg: var(--spacing-6);            /* Spacious grid gap */
+
+  /* ==========================================================================
+     GLASSMORPHIC DESIGN SYSTEM - Modern Frosted Glass Effects for Premium UI
+     ========================================================================== */
+  
+  /* Backdrop Blur Values - Hardware-Accelerated Glass Effects */
+  --glass-blur-xs: blur(2px);      /* Subtle blur for light glass effect */
+  --glass-blur-sm: blur(4px);      /* Small blur for card overlays */
+  --glass-blur-md: blur(8px);      /* Medium blur for modal backgrounds */
+  --glass-blur-lg: blur(16px);     /* Large blur for major glass surfaces */
+  --glass-blur-xl: blur(24px);     /* Extra large blur for hero sections */
+  --glass-blur-2xl: blur(40px);    /* Maximum blur for dramatic effects */
+  
+  /* Glass Surface Colors - Optimized for Dark Mode */
+  --glass-surface-1: rgba(255, 255, 255, 0.03);  /* Minimal glass surface */
+  --glass-surface-2: rgba(255, 255, 255, 0.05);  /* Light glass surface */
+  --glass-surface-3: rgba(255, 255, 255, 0.08);  /* Medium glass surface */
+  --glass-surface-4: rgba(255, 255, 255, 0.12);  /* Strong glass surface */
+  --glass-surface-5: rgba(255, 255, 255, 0.16);  /* Maximum glass surface */
+  
+  /* Glass Border Colors - Subtle Highlights */
+  --glass-border-1: rgba(255, 255, 255, 0.08);   /* Minimal glass border */
+  --glass-border-2: rgba(255, 255, 255, 0.12);   /* Light glass border */
+  --glass-border-3: rgba(255, 255, 255, 0.18);   /* Medium glass border */
+  --glass-border-4: rgba(255, 255, 255, 0.25);   /* Strong glass border */
+  
+  /* Glass Shadow Effects - Enhanced Depth */
+  --glass-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --glass-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --glass-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  
+  /* Complete Glass Effect Combinations - Ready-to-Use */
+  --glass-card-subtle: 
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-1);
+    box-shadow: var(--glass-shadow-sm);
+  
+  --glass-card-medium:
+    background: var(--glass-surface-3);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border-2);
+    box-shadow: var(--glass-shadow-md);
+  
+  --glass-card-strong:
+    background: var(--glass-surface-4);
+    backdrop-filter: var(--glass-blur-lg);
+    border: 1px solid var(--glass-border-3);
+    box-shadow: var(--glass-shadow-lg);
+
+  /* ==========================================================================
+     SHADOW & ELEVATION SYSTEM - Professional Depth Perception
+     ========================================================================== */
+  
+  /* Shadow Scale - Progressive Elevation Levels */
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Semantic Shadows - Context-Aware Depth */
+  --shadow-button: var(--shadow-sm);
+  --shadow-button-hover: var(--shadow-md);
+  --shadow-card: var(--shadow-md);
+  --shadow-card-hover: var(--shadow-lg);
+  --shadow-modal: var(--shadow-2xl);
+  --shadow-dropdown: var(--shadow-lg);
+  --shadow-tooltip: var(--shadow-md);
+  
+  /* Colored Shadows - Brand & Status Indicators */
+  --shadow-glow-trust: 0 0 20px rgba(99, 102, 241, 0.3);
+  --shadow-glow-success: 0 0 20px rgba(16, 185, 129, 0.3);
+  --shadow-glow-error: 0 0 20px rgba(239, 68, 68, 0.3);
+  --shadow-glow-warning: 0 0 20px rgba(245, 158, 11, 0.3);
+  --shadow-glow-info: 0 0 20px rgba(59, 130, 246, 0.3);
+  
+  /* Interactive Shadows - Hover & Focus States */
+  --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.3);
+  --shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  --shadow-focus-success: 0 0 0 3px rgba(16, 185, 129, 0.3);
+
+  /* ==========================================================================
+     BORDER RADIUS SYSTEM - Consistent Rounding Scale
+     ========================================================================== */
+  
+  /* Border Radius Scale - Progressive Rounding */
+  --radius-none: 0px;
+  --radius-xs: 0.125rem;      /* 2px - Minimal rounding */
+  --radius-sm: 0.25rem;       /* 4px - Small rounding */
+  --radius-md: 0.375rem;      /* 6px - Medium rounding */
+  --radius-lg: 0.5rem;        /* 8px - Large rounding */
+  --radius-xl: 0.75rem;       /* 12px - Extra large rounding */
+  --radius-2xl: 1rem;         /* 16px - 2X large rounding */
+  --radius-3xl: 1.5rem;       /* 24px - 3X large rounding */
+  --radius-full: 9999px;      /* Circular/pill shape */
+  
+  /* Semantic Border Radius - Component-Specific */
+  --radius-button: var(--radius-lg);        /* Standard button rounding */
+  --radius-button-sm: var(--radius-md);     /* Small button rounding */
+  --radius-button-lg: var(--radius-xl);     /* Large button rounding */
+  --radius-input: var(--radius-lg);         /* Input field rounding */
+  --radius-card: var(--radius-xl);          /* Card container rounding */
+  --radius-modal: var(--radius-2xl);        /* Modal dialog rounding */
+  --radius-tooltip: var(--radius-lg);       /* Tooltip rounding */
+  --radius-badge: var(--radius-full);       /* Badge/pill rounding */
+  --radius-avatar: var(--radius-full);      /* Avatar rounding */
+  
+  /* Financial Data Rounding - Specialized */
+  --radius-price-display: var(--radius-lg); /* Price container rounding */
+  --radius-chart-card: var(--radius-xl);    /* Chart container rounding */
+  --radius-data-table: var(--radius-md);    /* Data table rounding */
+
+  /* ==========================================================================
+     PERFORMANCE-OPTIMIZED ANIMATION SYSTEM - Research-Based Fintech Animations
+     ========================================================================== */
+  
+  /* Animation Timing Standards - Based on 120fps Performance Research */
+  --timing-instant: 0ms;           /* Immediate feedback */
+  --timing-fast: 150ms;            /* Quick transitions, hover states */
+  --timing-base: 200ms;            /* Standard transitions, most interactions */
+  --timing-medium: 300ms;          /* Complex transitions, data updates */
+  --timing-slow: 500ms;            /* Dramatic transitions, major state changes */
+  --timing-slower: 750ms;          /* Loading states, data fetching */
+  --timing-slowest: 1000ms;        /* Major layout changes, complex animations */
+  
+  /* Professional Easing Functions - Hardware-Accelerated Curves */
+  --ease-linear: cubic-bezier(0.0, 0.0, 1.0, 1.0);          /* Linear progression */
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);                /* Smooth deceleration (recommended) */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);                    /* Smooth acceleration */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);              /* Material Design standard */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);    /* Playful bounce effect */
+  --ease-back: cubic-bezier(0.18, 0.89, 0.32, 1.28);        /* Subtle overshoot */
+  --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);   /* Spring-like effect */
+  --ease-circ: cubic-bezier(0.55, 0, 1, 0.45);              /* Circular motion feel */
+  --ease-quart: cubic-bezier(0.25, 0.46, 0.45, 0.94);       /* Gentle acceleration */
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);              /* Exponential feel */
+  
+  /* Financial-Specific Easing - Market Psychology Based */
+  --ease-bullish: cubic-bezier(0.34, 1.56, 0.64, 1);        /* Rising market energy */
+  --ease-bearish: cubic-bezier(0.6, 0.04, 0.98, 0.34);      /* Falling market weight */
+  --ease-volatile: cubic-bezier(0.68, -0.55, 0.265, 1.55);  /* Market volatility */
+  --ease-stable: cubic-bezier(0.4, 0, 0.2, 1);              /* Stable market flow */
+  
+  /* Performance Optimization Variables */
+  --gpu-acceleration: translateZ(0);                          /* Force GPU layer */
+  --will-change-transform: transform;                         /* Optimize for transform */
+  --will-change-opacity: opacity;                            /* Optimize for opacity */
+  --will-change-auto: auto;                                  /* Reset optimization */
+  
+  /* Animation Delays - Staggered Effects */
+  --stagger-1: calc(var(--timing-fast) * 0.1);              /* 15ms */
+  --stagger-2: calc(var(--timing-fast) * 0.2);              /* 30ms */
+  --stagger-3: calc(var(--timing-fast) * 0.3);              /* 45ms */
+  --stagger-4: calc(var(--timing-fast) * 0.4);              /* 60ms */
+  --stagger-5: calc(var(--timing-fast) * 0.5);              /* 75ms */
+
 
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', sans-serif;
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--letter-spacing-normal);
   color: var(--text-primary);
-  background-color: #1a202c; /* Dark body background */
+  background-color: var(--background-primary);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Enhanced emoji and special character support */
@@ -41,7 +447,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background-light);
+  background: var(--background-secondary);
   border-radius: 3px;
 }
 
@@ -75,7 +481,7 @@ body {
 /* Firefox scrollbar consistency */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--border-color) var(--background-light);
+  scrollbar-color: var(--border-color) var(--background-secondary);
 }
 
 @media (hover: none) and (pointer: coarse) {
@@ -84,14 +490,59 @@ body {
   }
 }
 
-/* Animation for smooth transitions */
+/* ==========================================================================
+   ENHANCED MESSAGE BUBBLE ANIMATIONS - Chat Interface Micro-Interactions
+   ========================================================================== */
+
+/* Core message bubble with enhanced animations */
 .message-bubble {
-  transition: all 0.2s ease-in-out;
+  transition: all var(--timing-base) var(--ease-out);
+  will-change: var(--will-change-transform);
+  transform: var(--gpu-acceleration);
 }
 
 .message-bubble:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Darker shadow for dark mode */
+  transform: translateY(-2px) var(--gpu-acceleration);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow for dark mode */
+}
+
+/* Message appearance animations */
+.message-bubble.animate-in {
+  animation: fadeInUp var(--timing-base) var(--ease-out) forwards;
+}
+
+.message-bubble.user {
+  animation: slideInRight var(--timing-base) var(--ease-out) forwards;
+}
+
+.message-bubble.ai {
+  animation: slideInLeft var(--timing-base) var(--ease-out) forwards;
+}
+
+/* Typing indicator animation */
+.typing-indicator {
+  animation: pulseGradient 2s var(--ease-in-out) infinite;
+}
+
+.typing-indicator::after {
+  content: '...';
+  animation: typing 1.5s var(--ease-in-out) infinite;
+}
+
+/* Message status indicators */
+.message-sending {
+  opacity: 0.7;
+  animation: shimmer 2s var(--ease-linear) infinite;
+}
+
+.message-error {
+  animation: shake var(--timing-medium) var(--ease-in-out);
+  border-color: var(--accent-error);
+}
+
+.message-success {
+  animation: priceFlash var(--timing-medium) var(--ease-bullish);
+  border-color: var(--accent-success);
 }
 
 /* iOS-specific optimizations */
@@ -147,18 +598,18 @@ body {
   }
 }
 
-/* Responsive text sizing */
+/* Legacy responsive text sizing - Updated for new typography system */
 .responsive-text {
-  font-size: 14px;
-  line-height: 1.4;
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
 }
 
-@media (min-width: 768px) {
-  .responsive-text {
-    font-size: 16px;
-    line-height: 1.5;
-  }
-}
+/* Responsive text now uses fluid typography - no media queries needed */
+/* Legacy class maintained for backward compatibility */
 
 /* GPU acceleration for smooth scrolling */
 .smooth-scroll {
@@ -167,16 +618,522 @@ body {
   will-change: scroll-position;
 }
 
-/* Enhanced focus management for accessibility - DARK MODE */
+/* Enhanced focus management for accessibility - FINTECH FOCUS SYSTEM */
 :focus-visible {
-  outline: 2px solid #63b3ed; /* Light blue focus for dark mode */
+  outline: 2px solid var(--focus-ring); /* Trust fintech purple for focus rings */
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
+}
+
+/* Semantic focus colors for different contexts */
+.error:focus-visible,
+.danger:focus-visible {
+  outline-color: var(--focus-ring-error);
+}
+
+.success:focus-visible,
+.positive:focus-visible {
+  outline-color: var(--focus-ring-success);
 }
 
 /* Remove outline for mouse users */
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* ==========================================================================
+   PERFORMANCE-OPTIMIZED KEYFRAME DEFINITIONS - GPU Accelerated
+   ========================================================================== */
+
+/* Core Animation Keyframes - Transform & Opacity Only for Performance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: var(--gpu-acceleration);
+  }
+  to {
+    opacity: 1;
+    transform: var(--gpu-acceleration);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) var(--gpu-acceleration);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) var(--gpu-acceleration);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) var(--gpu-acceleration);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) var(--gpu-acceleration);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px) var(--gpu-acceleration);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) var(--gpu-acceleration);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px) var(--gpu-acceleration);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) var(--gpu-acceleration);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) var(--gpu-acceleration);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) var(--gpu-acceleration);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1) var(--gpu-acceleration);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) var(--gpu-acceleration);
+  }
+}
+
+/* Financial Data Animations - Market-Specific Effects */
+@keyframes priceFlash {
+  0% {
+    background-color: transparent;
+    transform: var(--gpu-acceleration);
+  }
+  50% {
+    background-color: var(--accent-success-light);
+    transform: scale(1.02) var(--gpu-acceleration);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1) var(--gpu-acceleration);
+  }
+}
+
+@keyframes priceFlashBearish {
+  0% {
+    background-color: transparent;
+    transform: var(--gpu-acceleration);
+  }
+  50% {
+    background-color: var(--accent-error-light);
+    transform: scale(1.02) var(--gpu-acceleration);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1) var(--gpu-acceleration);
+  }
+}
+
+@keyframes countUp {
+  from {
+    transform: translateY(5px) var(--gpu-acceleration);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(0) var(--gpu-acceleration);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseGradient {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1) var(--gpu-acceleration);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02) var(--gpu-acceleration);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes typing {
+  0%, 60% {
+    width: 0;
+  }
+  80%, 100% {
+    width: 12px;
+  }
+}
+
+@keyframes typingDots {
+  0%, 60% {
+    box-shadow: 0 0 0 rgba(255,255,255,0.2);
+  }
+  30% {
+    box-shadow: 6px 0 0 rgba(255,255,255,0.2), 12px 0 0 rgba(255,255,255,0.2), 18px 0 0 rgba(255,255,255,0.2);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) var(--gpu-acceleration);
+  }
+  40% {
+    transform: translateY(-8px) var(--gpu-acceleration);
+  }
+  60% {
+    transform: translateY(-4px) var(--gpu-acceleration);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0) var(--gpu-acceleration);
+  }
+  25% {
+    transform: translateX(-4px) var(--gpu-acceleration);
+  }
+  75% {
+    transform: translateX(4px) var(--gpu-acceleration);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.4);
+  }
+}
+
+/* Loading and Status Animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg) var(--gpu-acceleration);
+  }
+  to {
+    transform: rotate(360deg) var(--gpu-acceleration);
+  }
+}
+
+@keyframes progress {
+  0% {
+    transform: translateX(-100%) var(--gpu-acceleration);
+  }
+  100% {
+    transform: translateX(100%) var(--gpu-acceleration);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1) var(--gpu-acceleration);
+  }
+  50% {
+    transform: scale(1.05) var(--gpu-acceleration);
+  }
+}
+
+/* ==========================================================================
+   ANIMATION UTILITY CLASSES - Ready-to-Use Performance-Optimized Classes
+   ========================================================================== */
+
+/* Core Animation Classes */
+.animate-fade-in {
+  animation: fadeIn var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-opacity);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--timing-base) var(--ease-back) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-scale-out {
+  animation: scaleOut var(--timing-base) var(--ease-in) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+/* Financial Data Animation Classes */
+.animate-price-flash-bullish {
+  animation: priceFlash var(--timing-medium) var(--ease-bullish);
+  will-change: background-color, var(--will-change-transform);
+}
+
+.animate-price-flash-bearish {
+  animation: priceFlashBearish var(--timing-medium) var(--ease-bearish);
+  will-change: background-color, var(--will-change-transform);
+}
+
+.animate-count-up {
+  animation: countUp var(--timing-slow) var(--ease-out);
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-pulse-gradient {
+  animation: pulseGradient 2s var(--ease-in-out) infinite;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.animate-shimmer {
+  animation: shimmer 2s var(--ease-linear) infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200px 100%;
+  will-change: background-position;
+}
+
+/* Loading and Status Animation Classes */
+.animate-spin {
+  animation: spin 1s var(--ease-linear) infinite;
+  will-change: var(--will-change-transform);
+}
+
+.animate-bounce {
+  animation: bounce 1s var(--ease-bounce) infinite;
+  will-change: var(--will-change-transform);
+}
+
+.animate-shake {
+  animation: shake var(--timing-medium) var(--ease-in-out);
+  will-change: var(--will-change-transform);
+}
+
+.animate-glow {
+  animation: glow 2s var(--ease-in-out) infinite;
+  will-change: box-shadow;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s var(--ease-in-out) infinite;
+  will-change: var(--will-change-transform);
+}
+
+.animate-typing {
+  animation: typing 3s var(--ease-in-out) infinite;
+}
+
+/* Staggered Animation Classes */
+.animate-stagger-1 {
+  animation-delay: var(--stagger-1);
+}
+
+.animate-stagger-2 {
+  animation-delay: var(--stagger-2);
+}
+
+.animate-stagger-3 {
+  animation-delay: var(--stagger-3);
+}
+
+.animate-stagger-4 {
+  animation-delay: var(--stagger-4);
+}
+
+.animate-stagger-5 {
+  animation-delay: var(--stagger-5);
+}
+
+/* Hover-Triggered Animation Classes */
+.hover-lift {
+  transition: transform var(--timing-fast) var(--ease-out), box-shadow var(--timing-fast) var(--ease-out);
+  will-change: var(--will-change-transform);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px) var(--gpu-acceleration);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hover-scale {
+  transition: transform var(--timing-fast) var(--ease-out);
+  will-change: var(--will-change-transform);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02) var(--gpu-acceleration);
+}
+
+.hover-glow {
+  transition: box-shadow var(--timing-base) var(--ease-out);
+  will-change: box-shadow;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+}
+
+/* Focus-Triggered Animation Classes */
+.focus-scale {
+  transition: transform var(--timing-fast) var(--ease-out);
+  will-change: var(--will-change-transform);
+}
+
+.focus-scale:focus {
+  transform: scale(1.02) var(--gpu-acceleration);
+}
+
+.focus-glow {
+  transition: box-shadow var(--timing-base) var(--ease-out);
+  will-change: box-shadow;
+}
+
+.focus-glow:focus {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+/* ==========================================================================
+   MICRO-INTERACTION ENHANCEMENT CLASSES - Subtle Professional Feedback
+   ========================================================================== */
+
+/* Button Interaction Enhancements */
+.btn-enhance {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--timing-base) var(--ease-out);
+  will-change: var(--will-change-transform);
+}
+
+.btn-enhance::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left var(--timing-slow) var(--ease-out);
+}
+
+.btn-enhance:hover::before {
+  left: 100%;
+}
+
+.btn-enhance:active {
+  transform: scale(0.98) var(--gpu-acceleration);
+}
+
+/* Input Field Enhancements */
+.input-enhance {
+  transition: all var(--timing-base) var(--ease-out);
+  will-change: border-color, box-shadow;
+}
+
+.input-enhance:focus {
+  animation: glow var(--timing-slower) var(--ease-out);
+}
+
+.input-enhance.error {
+  animation: shake var(--timing-medium) var(--ease-in-out);
+}
+
+/* Card and Container Enhancements */
+.card-enhance {
+  transition: all var(--timing-base) var(--ease-out);
+  will-change: var(--will-change-transform), box-shadow;
+}
+
+.card-enhance:hover {
+  transform: translateY(-4px) var(--gpu-acceleration);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Typography Animation Enhancements */
+.text-reveal {
+  opacity: 0;
+  transform: translateY(20px) var(--gpu-acceleration);
+  animation: fadeInUp var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.text-emphasis {
+  transition: color var(--timing-fast) var(--ease-out), font-weight var(--timing-fast) var(--ease-out);
+  will-change: color, font-weight;
+}
+
+.text-emphasis:hover {
+  color: var(--accent-trust);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Status Indicator Enhancements */
+.status-online {
+  animation: pulseGradient 2s var(--ease-in-out) infinite;
+  background: var(--gradient-success-subtle);
+}
+
+.status-loading {
+  animation: shimmer 2s var(--ease-linear) infinite;
+  background: var(--gradient-trust-subtle);
+}
+
+.status-error {
+  animation: shake var(--timing-medium) var(--ease-in-out);
+  background: var(--gradient-error-subtle);
+}
+
+/* ==========================================================================
+   ACCESSIBILITY AND PERFORMANCE OPTIMIZATION
+   ========================================================================== */
+
+/* Performance: Reset will-change after animations complete */
+.animate-fade-in:not(:hover):not(:focus):not(:active),
+.animate-fade-in-up:not(:hover):not(:focus):not(:active),
+.animate-fade-in-down:not(:hover):not(:focus):not(:active),
+.animate-slide-in-left:not(:hover):not(:focus):not(:active),
+.animate-slide-in-right:not(:hover):not(:focus):not(:active),
+.animate-scale-in:not(:hover):not(:focus):not(:active),
+.animate-scale-out:not(:hover):not(:focus):not(:active) {
+  will-change: var(--will-change-auto);
 }
 
 /* Enhanced animation controls with performance optimization */
@@ -188,6 +1145,7 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    will-change: auto !important;
   }
 
   .message-bubble {
@@ -197,27 +1155,1142 @@ body {
   .message-bubble:hover {
     transform: none;
   }
-}
-
-/* High contrast mode support - DARK MODE */
-@media (prefers-contrast: high) {
-  :root {
-    --text-primary: #ffffff; /* White text for high contrast dark mode */
-    --background-light: #1a202c; /* Darker background for high contrast */
-    --border-color: #718096; /* More visible borders */
-    --neutral-color: #cbd5e0; /* Higher contrast neutral */
+  
+  /* Disable all custom animations for accessibility */
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-fade-in-down,
+  .animate-slide-in-left,
+  .animate-slide-in-right,
+  .animate-scale-in,
+  .animate-scale-out,
+  .animate-price-flash-bullish,
+  .animate-price-flash-bearish,
+  .animate-count-up,
+  .animate-pulse-gradient,
+  .animate-shimmer,
+  .animate-spin,
+  .animate-bounce,
+  .animate-shake,
+  .animate-glow,
+  .animate-heartbeat {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Keep essential hover states for usability */
+  .hover-lift:hover,
+  .hover-scale:hover,
+  .card-enhance:hover {
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   }
 }
 
-/* High DPI display optimizations - DARK MODE */
+/* High contrast mode support - ENHANCED FINTECH COLORS */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #ffffff; /* White text for high contrast dark mode */
+    --background-secondary: #1a202c; /* Darker background for high contrast */
+    --border-color: #718096; /* More visible borders */
+    --neutral-color: #cbd5e0; /* Higher contrast neutral */
+    
+    /* Enhanced contrast for accent colors */
+    --accent-trust: #8b5cf6; /* Brighter purple */
+    --accent-success: #34d399; /* Brighter green */
+    --accent-error: #f87171; /* Brighter red */
+    --accent-warning: #fbbf24; /* Brighter amber */
+    --accent-info: #60a5fa; /* Brighter blue */
+  }
+}
+
+/* High DPI display optimizations - ENHANCED BORDERS */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  /* Crisp borders on high DPI displays for dark mode */
+  /* Crisp borders on high DPI displays with enhanced colors */
   .message-bubble {
     border: 0.5px solid rgba(160, 174, 192, 0.2); /* Light border for dark mode */
+  }
+  
+  /* Enhanced gradient rendering on high DPI */
+  .gradient-element {
+    background-attachment: fixed;
   }
 }
 
 /* Dark mode is now the default theme - no media queries needed */
+
+/* ==========================================================================
+   FINANCIAL SEMANTIC UTILITY CLASSES - Ready-to-Use Color Coding
+   ========================================================================== */
+
+/* Financial Market Sentiment Classes */
+.bullish,
+.positive,
+.gain {
+  color: var(--accent-success);
+}
+
+.bullish-bg,
+.positive-bg,
+.gain-bg {
+  background-color: var(--accent-success);
+  color: var(--text-primary);
+}
+
+.bullish-border,
+.positive-border,
+.gain-border {
+  border-color: var(--accent-success);
+}
+
+.bearish,
+.negative,
+.loss {
+  color: var(--accent-error);
+}
+
+.bearish-bg,
+.negative-bg,
+.loss-bg {
+  background-color: var(--accent-error);
+  color: var(--text-primary);
+}
+
+.bearish-border,
+.negative-border,
+.loss-border {
+  border-color: var(--accent-error);
+}
+
+.neutral,
+.unchanged {
+  color: var(--neutral-color);
+}
+
+.neutral-bg,
+.unchanged-bg {
+  background-color: var(--neutral-color);
+  color: var(--background-primary);
+}
+
+/* Financial Volume Activity Indicators */
+.volume-low {
+  color: var(--financial-volume-low);
+}
+
+.volume-medium {
+  color: var(--financial-volume-medium);
+}
+
+.volume-high {
+  color: var(--financial-volume-high);
+}
+
+.volume-extreme {
+  color: var(--financial-volume-extreme);
+}
+
+/* Bullish/Bearish Intensity Scale */
+.bullish-1 { color: var(--financial-bullish-1); }
+.bullish-2 { color: var(--financial-bullish-2); }
+.bullish-3 { color: var(--financial-bullish-3); }
+.bullish-4 { color: var(--financial-bullish-4); }
+.bullish-5 { color: var(--financial-bullish-5); }
+
+.bearish-1 { color: var(--financial-bearish-1); }
+.bearish-2 { color: var(--financial-bearish-2); }
+.bearish-3 { color: var(--financial-bearish-3); }
+.bearish-4 { color: var(--financial-bearish-4); }
+.bearish-5 { color: var(--financial-bearish-5); }
+
+/* ==========================================================================
+   ACCENT COLOR UTILITY CLASSES - Strategic Visual Elements
+   ========================================================================== */
+
+/* Trust/Primary Accent Classes */
+.accent-trust {
+  color: var(--accent-trust);
+}
+
+.accent-trust-bg {
+  background-color: var(--accent-trust);
+  color: var(--text-primary);
+}
+
+.accent-trust-border {
+  border-color: var(--accent-trust);
+}
+
+/* Success Accent Classes */
+.accent-success {
+  color: var(--accent-success);
+}
+
+.accent-success-bg {
+  background-color: var(--accent-success);
+  color: var(--text-primary);
+}
+
+.accent-success-border {
+  border-color: var(--accent-success);
+}
+
+/* Error Accent Classes */
+.accent-error {
+  color: var(--accent-error);
+}
+
+.accent-error-bg {
+  background-color: var(--accent-error);
+  color: var(--text-primary);
+}
+
+.accent-error-border {
+  border-color: var(--accent-error);
+}
+
+/* Warning Accent Classes */
+.accent-warning {
+  color: var(--accent-warning);
+}
+
+.accent-warning-bg {
+  background-color: var(--accent-warning);
+  color: var(--background-primary);
+}
+
+.accent-warning-border {
+  border-color: var(--accent-warning);
+}
+
+/* Info Accent Classes */
+.accent-info {
+  color: var(--accent-info);
+}
+
+.accent-info-bg {
+  background-color: var(--accent-info);
+  color: var(--text-primary);
+}
+
+.accent-info-border {
+  border-color: var(--accent-info);
+}
+
+/* ==========================================================================
+   GRADIENT UTILITY CLASSES - Modern Visual Depth
+   ========================================================================== */
+
+/* Primary Gradient Backgrounds */
+.gradient-trust {
+  background: var(--gradient-trust);
+  color: var(--text-primary);
+}
+
+.gradient-trust-subtle {
+  background: var(--gradient-trust-subtle);
+  color: var(--text-primary);
+}
+
+.gradient-success {
+  background: var(--gradient-success);
+  color: var(--text-primary);
+}
+
+.gradient-success-subtle {
+  background: var(--gradient-success-subtle);
+  color: var(--text-primary);
+}
+
+.gradient-error {
+  background: var(--gradient-error);
+  color: var(--text-primary);
+}
+
+.gradient-error-subtle {
+  background: var(--gradient-error-subtle);
+  color: var(--text-primary);
+}
+
+/* Surface Elevation Gradients */
+.gradient-surface-1 {
+  background: var(--gradient-surface-1);
+}
+
+.gradient-surface-2 {
+  background: var(--gradient-surface-2);
+}
+
+.gradient-surface-3 {
+  background: var(--gradient-surface-3);
+}
+
+/* Gradient Text Effect */
+.gradient-text-trust {
+  background: var(--gradient-trust);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-success {
+  background: var(--gradient-success);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ==========================================================================
+   ENHANCED BUTTON CLASSES - Complete Interactive States
+   ========================================================================== */
+
+/* Primary Trust Button */
+.btn-primary {
+  background-color: var(--button-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--button-primary);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--button-primary-hover);
+  border-color: var(--button-primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  background-color: var(--button-primary-active);
+  border-color: var(--button-primary-active);
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  background-color: var(--accent-trust-disabled);
+  border-color: var(--accent-trust-disabled);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success Button */
+.btn-success {
+  background-color: var(--button-success);
+  color: var(--text-primary);
+  border: 1px solid var(--button-success);
+  transition: all 0.2s ease;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: var(--button-success-hover);
+  border-color: var(--button-success-hover);
+  transform: translateY(-1px);
+}
+
+.btn-success:active {
+  background-color: var(--button-success-active);
+  border-color: var(--button-success-active);
+  transform: translateY(0);
+}
+
+.btn-success:disabled {
+  background-color: var(--accent-success-disabled);
+  border-color: var(--accent-success-disabled);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Error/Danger Button */
+.btn-error,
+.btn-danger {
+  background-color: var(--button-error);
+  color: var(--text-primary);
+  border: 1px solid var(--button-error);
+  transition: all 0.2s ease;
+}
+
+.btn-error:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--button-error-hover);
+  border-color: var(--button-error-hover);
+  transform: translateY(-1px);
+}
+
+.btn-error:active,
+.btn-danger:active {
+  background-color: var(--button-error-active);
+  border-color: var(--button-error-active);
+  transform: translateY(0);
+}
+
+.btn-error:disabled,
+.btn-danger:disabled {
+  background-color: var(--accent-error-disabled);
+  border-color: var(--accent-error-disabled);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Outline Button Variants */
+.btn-outline-trust {
+  background-color: transparent;
+  color: var(--accent-trust);
+  border: 1px solid var(--accent-trust);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-trust:hover:not(:disabled) {
+  background-color: var(--accent-trust);
+  color: var(--text-primary);
+}
+
+.btn-outline-success {
+  background-color: transparent;
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-success:hover:not(:disabled) {
+  background-color: var(--accent-success);
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   STATUS INDICATOR CLASSES - Visual Feedback Elements
+   ========================================================================== */
+
+/* Badge/Tag Classes */
+.badge-success {
+  background-color: var(--accent-success-light);
+  color: var(--accent-success-active);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-error {
+  background-color: var(--accent-error-light);
+  color: var(--accent-error-active);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-warning {
+  background-color: var(--accent-warning-light);
+  color: var(--accent-warning-active);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-info {
+  background-color: var(--accent-info-light);
+  color: var(--accent-info-active);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Alert/Notification Classes */
+.alert-success {
+  background: var(--gradient-success-subtle);
+  border: 1px solid var(--accent-success);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--accent-success);
+}
+
+.alert-error {
+  background: var(--gradient-error-subtle);
+  border: 1px solid var(--accent-error);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--accent-error);
+}
+
+.alert-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--accent-warning);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--accent-warning);
+}
+
+.alert-info {
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--accent-info);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--accent-info);
+}
+
+/* ==========================================================================
+   FINANCIAL DATA VISUALIZATION HELPERS
+   ========================================================================== */
+
+/* Percentage Change Indicators */
+.percentage-positive::before {
+  content: '+';
+  color: var(--accent-success);
+}
+
+.percentage-negative::before {
+  content: '';
+  color: var(--accent-error);
+}
+
+/* Stock Price Trend Arrows */
+.trend-up::after {
+  content: '↗';
+  color: var(--accent-success);
+  margin-left: 4px;
+}
+
+.trend-down::after {
+  content: '↘';
+  color: var(--accent-error);
+  margin-left: 4px;
+}
+
+.trend-flat::after {
+  content: '→';
+  color: var(--neutral-color);
+  margin-left: 4px;
+}
+
+/* Volume Bars */
+.volume-bar {
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--background-tertiary);
+  position: relative;
+  overflow: hidden;
+}
+
+.volume-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: var(--financial-volume-medium);
+  width: var(--volume-percentage, 50%);
+  transition: width 0.3s ease;
+}
+
+.volume-bar.high::after {
+  background-color: var(--financial-volume-high);
+}
+
+.volume-bar.extreme::after {
+  background-color: var(--financial-volume-extreme);
+}
+
+/* ==========================================================================
+   MODERN TYPOGRAPHY UTILITY CLASSES - Complete Hierarchy System
+   ========================================================================== */
+
+/* Heading Classes - Semantic Typography Hierarchy */
+.display {
+  font-family: var(--font-display);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  margin-top: 0;
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+h3, .h3 {
+  font-family: var(--font-body);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
+  margin-bottom: 0.875rem;
+  margin-top: 1.5rem;
+}
+
+h4, .h4 {
+  font-family: var(--font-body);
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+h5, .h5 {
+  font-family: var(--font-body);
+  font-size: var(--font-size-h5);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+h6, .h6 {
+  font-family: var(--font-body);
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* Body Text Classes */
+.text-body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
+}
+
+.text-body-large {
+  font-family: var(--font-body);
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
+}
+
+.text-small {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--text-secondary);
+}
+
+.text-micro {
+  font-family: var(--font-body);
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--neutral-color);
+}
+
+/* ==========================================================================
+   FINANCIAL DATA TYPOGRAPHY - Specialized Market Data Display
+   ========================================================================== */
+
+/* Price Display Classes - Tabular Numbers for Perfect Alignment */
+.price-large {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-price-large);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-normal);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.price-medium {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-price-medium);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-normal);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.price-small {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-price-small);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+/* Percentage Change Classes */
+.percentage {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-percentage);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  font-variant-numeric: tabular-nums;
+}
+
+.percentage-positive {
+  color: var(--accent-success);
+}
+
+.percentage-negative {
+  color: var(--accent-error);
+}
+
+.percentage-neutral {
+  color: var(--neutral-color);
+}
+
+/* Stock Ticker Classes */
+.ticker {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-ticker);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  color: var(--accent-trust);
+}
+
+/* Financial Data Table Typography */
+.data-table {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-normal);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Currency Formatting */
+.currency {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+/* ==========================================================================
+   AI CHAT MESSAGE TYPOGRAPHY - Conversational Interface Hierarchy
+   ========================================================================== */
+
+/* Chat Message Content */
+.chat-message {
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+  letter-spacing: var(--letter-spacing-normal);
+  color: var(--text-primary);
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* User vs AI Message Differentiation */
+.chat-message-user {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.chat-message-ai {
+  font-weight: var(--font-weight-normal);
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Chat Headers and Sections */
+.chat-section-header {
+  font-family: var(--font-body);
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--accent-trust);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+/* Chat Timestamps */
+.chat-timestamp {
+  font-family: var(--font-body);
+  font-size: var(--font-size-micro);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--neutral-color);
+  opacity: 0.7;
+}
+
+/* Chat Status Messages */
+.chat-status {
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+  font-style: italic;
+}
+
+.chat-status-loading {
+  color: var(--accent-info);
+}
+
+.chat-status-error {
+  color: var(--accent-error);
+}
+
+.chat-status-success {
+  color: var(--accent-success);
+}
+
+/* ==========================================================================
+   CODE AND TECHNICAL TYPOGRAPHY - Development & API Content
+   ========================================================================== */
+
+/* Inline Code */
+code, .code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  font-weight: var(--font-weight-normal);
+  line-height: inherit;
+  letter-spacing: var(--letter-spacing-normal);
+  background-color: var(--background-secondary);
+  color: var(--accent-info);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-color);
+}
+
+/* Code Blocks */
+pre, .code-block {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+  letter-spacing: var(--letter-spacing-normal);
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+  white-space: pre;
+  font-variant-ligatures: common-ligatures;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY UTILITY MODIFIERS - Flexible Text Styling
+   ========================================================================== */
+
+/* Font Weight Classes */
+.font-light { font-weight: var(--font-weight-light); }
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+.font-extra-bold { font-weight: var(--font-weight-extra-bold); }
+
+/* Font Family Classes */
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
+.font-mono { font-family: var(--font-mono); }
+
+/* Line Height Classes */
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+.leading-loose { line-height: var(--line-height-loose); }
+
+/* Letter Spacing Classes */
+.tracking-tight { letter-spacing: var(--letter-spacing-tight); }
+.tracking-normal { letter-spacing: var(--letter-spacing-normal); }
+.tracking-wide { letter-spacing: var(--letter-spacing-wide); }
+.tracking-wider { letter-spacing: var(--letter-spacing-wider); }
+.tracking-widest { letter-spacing: var(--letter-spacing-widest); }
+
+/* Text Color Classes */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-neutral { color: var(--neutral-color); }
+.text-trust { color: var(--accent-trust); }
+.text-success { color: var(--accent-success); }
+.text-error { color: var(--accent-error); }
+.text-warning { color: var(--accent-warning); }
+.text-info { color: var(--accent-info); }
+
+/* Text Transform Classes */
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* Numeric Formatting */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+.proportional-nums { font-variant-numeric: proportional-nums; }
+.lining-nums { font-variant-numeric: lining-nums; }
+.oldstyle-nums { font-variant-numeric: oldstyle-nums; }
+
+/* Text Alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* Typography Responsive Utilities */
+@media (max-width: 768px) {
+  .display {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+    line-height: 1.2;
+  }
+  
+  .h1 {
+    font-size: clamp(1.75rem, 6vw, 2rem);
+  }
+  
+  .chat-message {
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-relaxed);
+  }
+}
+
+/* ==========================================================================
+   FINANCIAL DATA ANIMATION ENHANCEMENTS - Market Psychology Effects
+   ========================================================================== */
+
+/* Price update animations with market psychology */
+.price-update {
+  transition: all var(--timing-medium) var(--ease-stable);
+  will-change: color, background-color, var(--will-change-transform);
+}
+
+.price-update.bullish {
+  animation: priceFlash var(--timing-medium) var(--ease-bullish);
+  color: var(--accent-success);
+}
+
+.price-update.bearish {
+  animation: priceFlashBearish var(--timing-medium) var(--ease-bearish);
+  color: var(--accent-error);
+}
+
+.price-update.volatile {
+  animation: shake var(--timing-base) var(--ease-volatile);
+}
+
+/* Percentage change animations */
+.percentage-change {
+  transition: all var(--timing-base) var(--ease-out);
+  will-change: color, var(--will-change-transform);
+}
+
+.percentage-change.positive {
+  animation: countUp var(--timing-slow) var(--ease-bullish);
+  color: var(--accent-success);
+}
+
+.percentage-change.negative {
+  animation: countUp var(--timing-slow) var(--ease-bearish);
+  color: var(--accent-error);
+}
+
+/* Market status indicators */
+.market-open {
+  animation: pulseGradient 3s var(--ease-in-out) infinite;
+  background: var(--gradient-success-subtle);
+}
+
+.market-closed {
+  opacity: 0.6;
+  background: var(--gradient-error-subtle);
+}
+
+.market-pre-post {
+  animation: shimmer 4s var(--ease-linear) infinite;
+  background: var(--gradient-trust-subtle);
+}
+
+/* Volume and activity indicators */
+.volume-indicator {
+  transition: all var(--timing-base) var(--ease-out);
+  will-change: var(--will-change-transform), background-color;
+}
+
+.volume-indicator.high {
+  animation: heartbeat 2s var(--ease-in-out) infinite;
+  background-color: var(--financial-volume-high);
+}
+
+.volume-indicator.extreme {
+  animation: glow 1.5s var(--ease-in-out) infinite;
+  background-color: var(--financial-volume-extreme);
+}
+
+/* Chart and graph animations */
+.chart-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawLine 2s var(--ease-out) forwards;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chart-bar {
+  transform: scaleY(0) var(--gpu-acceleration);
+  transform-origin: bottom;
+  animation: growBar var(--timing-slow) var(--ease-back) forwards;
+}
+
+@keyframes growBar {
+  to {
+    transform: scaleY(1) var(--gpu-acceleration);
+  }
+}
+
+/* ==========================================================================
+   INTERFACE TRANSITION ANIMATIONS - Layout and Navigation
+   ========================================================================== */
+
+/* Section transitions */
+.section-transition {
+  transition: all var(--timing-medium) var(--ease-out);
+  will-change: var(--will-change-transform), var(--will-change-opacity), height;
+}
+
+.section-enter {
+  animation: fadeInUp var(--timing-medium) var(--ease-out) forwards;
+}
+
+.section-exit {
+  animation: fadeInDown var(--timing-medium) var(--ease-in) forwards;
+  opacity: 0;
+  transform: translateY(-10px) var(--gpu-acceleration);
+}
+
+/* Modal and overlay animations */
+.modal-backdrop {
+  animation: fadeIn var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-opacity);
+}
+
+.modal-content {
+  animation: scaleIn var(--timing-base) var(--ease-back) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+/* Navigation transitions */
+.nav-item {
+  transition: all var(--timing-fast) var(--ease-out);
+  will-change: color, border-color;
+}
+
+.nav-item.active {
+  animation: glow var(--timing-base) var(--ease-out);
+  color: var(--accent-trust);
+  border-color: var(--accent-trust);
+}
+
+/* Tab transitions */
+.tab-content {
+  animation: fadeInUp var(--timing-base) var(--ease-out) forwards;
+  will-change: var(--will-change-transform), var(--will-change-opacity);
+}
+
+.tab-content.exiting {
+  animation: fadeInDown var(--timing-fast) var(--ease-in) forwards;
+}
+
+/* ==========================================================================
+   LOADING STATE ANIMATIONS - User Feedback Enhancement
+   ========================================================================== */
+
+/* Global loading states */
+.loading-container {
+  animation: pulseGradient 2s var(--ease-in-out) infinite;
+  background: var(--gradient-trust-subtle);
+}
+
+.loading-spinner {
+  animation: spin 1s var(--ease-linear) infinite;
+  will-change: var(--will-change-transform);
+}
+
+.loading-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-trust);
+  border-radius: var(--radius-full);
+  animation: bounce 1.4s var(--ease-in-out) infinite;
+  will-change: var(--will-change-transform);
+}
+
+.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots span:nth-child(3) { animation-delay: 0; }
+
+/* Skeleton loading animations */
+.skeleton {
+  animation: shimmer 2s var(--ease-linear) infinite;
+  background: linear-gradient(90deg, 
+    var(--background-secondary), 
+    var(--background-tertiary), 
+    var(--background-secondary)
+  );
+  background-size: 200px 100%;
+  will-change: background-position;
+}
+
+/* Progress indicators */
+.progress-bar {
+  overflow: hidden;
+  background-color: var(--background-secondary);
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--progress, 0%);
+  background: var(--gradient-trust);
+  animation: progress var(--timing-slow) var(--ease-out) forwards;
+  will-change: width;
+}
 
 /* Print styles for export functionality */
 @media print {
@@ -228,5 +2301,46 @@ body {
   .message-bubble {
     box-shadow: none;
     border: 1px solid var(--border-color);
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Disable all animations in print */
+  * {
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+  
+  /* Print-friendly colors */
+  .gradient-trust,
+  .gradient-success,
+  .gradient-error {
+    background: none !important;
+    color: black !important;
+  }
+  
+  /* Print typography optimizations */
+  .price-large,
+  .price-medium,
+  .price-small {
+    color: black !important;
+    font-weight: var(--font-weight-bold) !important;
+  }
+  
+  .percentage-positive {
+    color: #000 !important;
+  }
+  
+  .percentage-positive::before {
+    content: '+' !important;
+  }
+  
+  .percentage-negative {
+    color: #000 !important;
+  }
+  
+  .percentage-negative::before {
+    content: '-' !important;
   }
 }

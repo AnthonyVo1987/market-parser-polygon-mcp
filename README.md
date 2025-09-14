@@ -239,6 +239,45 @@ uv run market_parser_demo.py
 
 ---
 
+## Design System
+
+### Professional Fintech Glassmorphic Design
+
+The application features a comprehensive, A+ rated fintech design system with glassmorphic aesthetics and professional trust-building elements:
+
+**🎨 Design System Features:**
+- **Glassmorphic UI**: Modern frosted glass effects with backdrop blur
+- **Fintech Color Psychology**: Strategic purple accent (#6366f1) for trust-building
+- **Financial Semantics**: Bullish (green) and bearish (red) color coding
+- **500+ CSS Variables**: Comprehensive design token system
+- **Cross-Platform Responsive**: Mobile, tablet, desktop optimized
+- **WCAG 2.1 AA Compliant**: Accessibility-first design approach
+- **GPU-Accelerated Animations**: Performance-optimized micro-interactions
+
+**📚 Design Documentation:**
+- **[Fintech Design System](docs/FINTECH_DESIGN_SYSTEM.md)**: Complete design system overview with colors, typography, spacing, animations, and glassmorphic patterns
+- **[Component Styling Guide](docs/COMPONENT_STYLING_GUIDE.md)**: Detailed component-by-component styling documentation with usage examples
+- **[Typography System Guide](docs/TYPOGRAPHY_SYSTEM_GUIDE.md)**: Enhanced typography system with financial data formatting and responsive scaling
+
+**🚀 Quick Design Integration:**
+```html
+<!-- Glassmorphic financial card example -->
+<div class="glass-card-medium radius-xl card-padding">
+  <h3 class="h3 text-trust">Portfolio Performance</h3>
+  <div class="price-large">$125,432.10</div>
+  <div class="percentage percentage-positive">+2.45%</div>
+</div>
+```
+
+**💡 Developer Benefits:**
+- **Design Tokens**: Consistent spacing, colors, and typography across the application
+- **Component Library**: 11 enhanced React components with professional styling
+- **Performance Optimized**: Hardware-accelerated animations and optimized rendering
+- **Maintainable**: Semantic CSS classes and comprehensive documentation
+- **Future-Proof**: Scalable design system that grows with the application
+
+---
+
 ## Features
 
 - **Ask questions like:**

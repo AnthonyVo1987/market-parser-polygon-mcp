@@ -277,124 +277,268 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
   );
 }
 
-// Inline styles for integration with existing components
+// Professional Fintech Glassmorphic Styles for Export Functionality
 export const exportButtonStyles = `
+  /* ==========================================================================
+     EXPORT BUTTONS - Professional Fintech Utility Component with Glassmorphic Design
+     ========================================================================== */
+  
   .export-buttons-container {
-    margin: 8px 0;
+    margin: var(--spacing-2) 0;
     padding: 0;
+    width: 100%;
   }
   
   .export-buttons-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-2);
     max-width: 100%;
+    padding: 0;
   }
   
-  @media (max-width: 640px) {
-    .export-buttons-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-    }
-  }
-  
+  /* Professional Export Button Base Styling */
   .export-button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 16px;
+    /* Glassmorphic Foundation */
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-1);
+    box-shadow: var(--glass-shadow-sm);
+    
+    /* Professional Button Design */
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    
+    /* Typography */
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    letter-spacing: var(--letter-spacing-wide);
+    
+    /* Layout */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    min-height: 36px;
+    gap: var(--spacing-1);
+    min-height: 40px;
     text-align: center;
-  }
-  
-  .export-button:not(.disabled):not(.loading):hover {
-    background-color: #0056b3;
-    transform: translateY(-1px);
-  }
-  
-  .export-button.disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-  
-  .export-button.loading {
-    background-color: #6c757d;
-    cursor: wait;
+    
+    /* Professional Transitions */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    overflow: hidden;
+  }
+  
+  /* Hover Effect - Enhanced Glass Surface */
+  .export-button:not(.disabled):not(.loading):hover {
+    background: var(--glass-surface-3);
+    border-color: var(--glass-border-2);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-md);
+  }
+  
+  /* Active State */
+  .export-button:not(.disabled):not(.loading):active {
+    transform: translateY(0);
+    background: var(--glass-surface-4);
+  }
+  
+  /* Disabled State - Subtle Glass Treatment */
+  .export-button.disabled {
+    background: var(--glass-surface-1);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: var(--neutral-color);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  /* Loading State - Professional Animation */
+  .export-button.loading {
+    background: var(--glass-surface-3);
+    border-color: var(--accent-info);
+    color: var(--accent-info-light);
+    cursor: wait;
   }
   
   .export-button.loading::after {
     content: '';
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border: 2px solid transparent;
-    border-top: 2px solid white;
+    border-top: 2px solid var(--accent-info);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-left: 4px;
+    margin-left: var(--spacing-1);
   }
   
+  /* Success State - Fintech Green */
   .export-button.success {
-    background-color: #28a745;
+    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    border-color: var(--accent-success);
+    color: var(--text-primary);
     cursor: default;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   }
   
   .export-button.success:hover {
-    background-color: #28a745;
     transform: none;
+    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
   }
   
+  /* Error State - Fintech Red */
   .export-button.error {
-    background-color: #dc3545;
+    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    border-color: var(--accent-error);
+    color: var(--text-primary);
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   }
   
   .export-button.error:hover {
-    background-color: #c82333;
+    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
+    transform: translateY(-1px);
   }
   
+  /* Professional Error Message Display */
   .export-error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    padding: 8px 12px;
-    margin-top: 8px;
-    font-size: 12px;
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--accent-error);
+    border-radius: 8px;
+    padding: var(--spacing-2) var(--spacing-3);
+    margin-top: var(--spacing-2);
+    
+    color: var(--accent-error-light);
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
     text-align: left;
+    
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
   }
   
+  .export-error-message strong {
+    color: var(--accent-error);
+    font-weight: var(--font-weight-semibold);
+  }
+  
+  /* Empty State - Professional Messaging */
   .export-empty-state {
     text-align: center;
-    color: #6c757d;
-    font-size: 12px;
-    margin-top: 8px;
+    color: var(--neutral-color);
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
     font-style: italic;
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-4);
+    
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-xs);
+    border: 1px solid var(--glass-border-1);
+    border-radius: 8px;
+    
+    opacity: 0.8;
   }
   
+  /* Responsive Design - Mobile Optimization */
+  @media (max-width: 640px) {
+    .export-buttons-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-1);
+    }
+    
+    .export-button {
+      padding: var(--spacing-2);
+      min-height: 44px; /* Touch target optimization */
+      font-size: var(--font-size-micro);
+    }
+    
+    .export-error-message {
+      padding: var(--spacing-2);
+      font-size: var(--font-size-micro);
+    }
+  }
+  
+  /* Tablet Optimization */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .export-buttons-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-2);
+    }
+  }
+  
+  /* Desktop Enhancement */
+  @media (min-width: 1025px) {
+    .export-button {
+      padding: var(--spacing-3) var(--spacing-4);
+      min-height: 42px;
+    }
+    
+    .export-button:hover {
+      backdrop-filter: var(--glass-blur-md);
+    }
+  }
+  
+  /* Integration Styles for Chat Interface */
+  .chat-header .export-buttons-container {
+    margin: var(--spacing-3) 0 0 0;
+  }
+  
+  .chat-header .export-buttons-grid {
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    .export-button {
+      border-width: 2px;
+      background: var(--background-secondary);
+    }
+    
+    .export-button:hover {
+      border-color: var(--accent-trust);
+    }
+  }
+  
+  /* Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+    .export-button {
+      transition: none;
+    }
+    
+    .export-button.loading::after {
+      animation: none;
+    }
+  }
+  
+  /* Performance Optimizations */
+  .export-button {
+    will-change: transform, background;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+  
+  /* Smooth Animations */
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
   
-  /* Integration styles for chat header */
-  .chat-header .export-buttons-container {
-    margin: 12px 0 0 0;
+  /* Focus Management - Accessibility */
+  .export-button:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
   }
   
-  .chat-header .export-buttons-grid {
-    justify-content: center;
-    max-width: 500px;
-    margin: 0 auto;
+  .export-button.error:focus-visible {
+    outline-color: var(--focus-ring-error);
+  }
+  
+  .export-button.success:focus-visible {
+    outline-color: var(--focus-ring-success);
   }
 `;

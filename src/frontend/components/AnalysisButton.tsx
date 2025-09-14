@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { AnalysisButtonProps } from '../types/chat_OpenAI';
 import { usePromptAPI, usePromptGeneration } from '../hooks/usePromptAPI';
 
@@ -28,6 +28,9 @@ export default function AnalysisButton({
   const { generatePrompt, error: apiError } = usePromptAPI();
   const { isGenerating, generationError, generateWithLoading } =
     usePromptGeneration();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Determine if button should show loading state
   const isButtonLoading = isLoading || isGenerating;
@@ -36,6 +39,10 @@ export default function AnalysisButton({
   // Handle button click to generate and populate prompt
   const handleButtonClick = useCallback(async () => {
     if (isButtonDisabled) return;
+
+    // Clear any existing states
+    setHasError(false);
+    setShowSuccess(false);
 
     const tickerValue = template.requiresTicker
       ? ticker.trim() || 'AAPL'
@@ -46,10 +53,15 @@ export default function AnalysisButton({
         () => generatePrompt(template.id, tickerValue),
         generatedPrompt => {
           onPromptGenerated(generatedPrompt);
+          // Show success feedback
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 1000);
         }
       );
     } catch (error) {
-      // Error is already handled by generateWithLoading, so we just silently catch to prevent uncaught promise rejection
+      // Show error feedback
+      setHasError(true);
+      setTimeout(() => setHasError(false), 1000);
     }
   }, [
     template,
@@ -59,6 +71,23 @@ export default function AnalysisButton({
     generateWithLoading,
     isButtonDisabled,
   ]);
+  
+  // Mouse event handlers for enhanced hover state
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+  
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+  }, []);
+  
+  // Update error state based on API or generation errors
+  useEffect(() => {
+    const hasAnyError = !!(generationError || apiError);
+    if (hasAnyError !== hasError) {
+      setHasError(hasAnyError);
+    }
+  }, [generationError, apiError, hasError]);
 
 
 
@@ -77,8 +106,16 @@ export default function AnalysisButton({
         id={`button-${template.id}-label`}
         type='button'
         onClick={handleButtonClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         disabled={isButtonDisabled}
-        className='analysis-button'
+        className={`analysis-button ${
+          showSuccess ? 'button-success' : ''
+        } ${
+          hasError ? 'button-error' : ''
+        } ${
+          isHovered ? 'button-hovered' : ''
+        }`}
         data-testid={getTestId(template.type)}
         aria-describedby={`button-help-${template.id} ${displayError ? `error-${template.id}` : ''}`}
         title={template.description}
@@ -87,7 +124,7 @@ export default function AnalysisButton({
           {template.icon}
         </span>
         <span className='button-text'>
-          {isButtonLoading ? 'Loading...' : template.name}
+          {isButtonLoading ? 'Loading...' : showSuccess ? 'Generated!' : template.name}
         </span>
         {isButtonLoading && (
           <span className='loading-spinner' aria-hidden='true'>
@@ -95,6 +132,12 @@ export default function AnalysisButton({
             <span></span>
             <span></span>
           </span>
+        )}
+        {showSuccess && !isButtonLoading && (
+          <span className='success-indicator' aria-hidden='true'>✓</span>
+        )}
+        {hasError && !isButtonLoading && (
+          <span className='error-indicator' aria-hidden='true'>⚠</span>
         )}
       </button>
 
@@ -140,7 +183,7 @@ export default function AnalysisButton({
   );
 }
 
-// Enhanced inline styles following existing patterns
+// Enhanced fintech-grade inline styles with sophisticated design system integration
 export const analysisButtonStyles = `
   /* Screen reader only content */
   .sr-only {
@@ -155,255 +198,591 @@ export const analysisButtonStyles = `
     border: 0;
   }
 
+  /* Enhanced container with glassmorphic card styling */
   .analysis-button-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 16px;
     width: 100%;
-    max-width: 320px; /* Slightly larger for better content fit */
+    max-width: 340px;
+    /* Modern glassmorphic card background */
+    background: rgba(45, 55, 72, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(124, 58, 237, 0.15);
+    border-radius: 16px;
+    padding: 4px;
+    /* Enhanced shadows for depth */
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.15),
+      0 1px 4px rgba(124, 58, 237, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
     /* Performance optimizations */
     contain: layout style;
-    /* Better box model control */
     box-sizing: border-box;
+    /* Smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .analysis-button-container:hover {
+    background: rgba(45, 55, 72, 0.75);
+    border-color: rgba(124, 58, 237, 0.25);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.2),
+      0 2px 8px rgba(124, 58, 237, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
   }
 
 
 
-  /* Enhanced main button styling */
+  /* Enhanced main button with trust gradient and neumorphic styling */
   .analysis-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 14px 18px; /* More generous padding */
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
-    border: none;
+    gap: 10px;
+    padding: 16px 20px;
+    /* Trust gradient from design system */
+    background: var(--gradient-trust);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-trust);
     border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
+    /* Enhanced typography */
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing */
-    min-height: 48px; /* Enhanced touch-friendly minimum */
+    /* Sophisticated transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 56px;
     position: relative;
     overflow: hidden;
+    /* Enhanced shadows with trust color */
+    box-shadow: 
+      0 4px 14px rgba(124, 58, 237, 0.25),
+      0 2px 6px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
     /* Performance optimizations */
-    will-change: transform, box-shadow;
-    /* Enhanced box model */
+    will-change: transform, box-shadow, background;
     box-sizing: border-box;
-    /* Improved text rendering */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    /* Subtle text shadow for depth */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
+  /* Sophisticated hover state with enhanced trust colors */
   .analysis-button:not(:disabled):hover {
-    background: linear-gradient(135deg, #0056b3 0%, #004494 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    background: linear-gradient(135deg, var(--accent-trust-hover) 0%, var(--accent-info) 100%);
+    border-color: var(--accent-trust-hover);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+      0 8px 25px rgba(124, 58, 237, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* Enhanced glow effect */
+    filter: brightness(1.05);
   }
 
-  /* Enhanced focus states for better accessibility */
+  /* Enhanced focus states using design system */
   .analysis-button:focus-visible {
-    outline: 3px solid #007bff;
-    outline-offset: 2px;
-    /* Ensure focus is visible in high contrast mode */
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+    box-shadow: 
+      0 0 0 4px rgba(124, 58, 237, 0.2),
+      0 8px 25px rgba(124, 58, 237, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 
-  /* Focus-within state for container when button is focused */
+  /* Enhanced focus-within state for container */
   .analysis-button-container:focus-within {
-    /* Subtle container highlight when button is focused */
-    background: rgba(0, 123, 255, 0.02);
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
+    background: rgba(45, 55, 72, 0.8);
+    border-color: var(--accent-trust);
+    box-shadow: 
+      0 0 0 1px var(--accent-trust),
+      0 8px 32px rgba(0, 0, 0, 0.2),
+      0 2px 8px rgba(124, 58, 237, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
   }
 
+  /* Active state with subtle press effect */
   .analysis-button:not(:disabled):active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 
+      0 4px 14px rgba(124, 58, 237, 0.25),
+      0 2px 6px rgba(0, 0, 0, 0.1),
+      inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    filter: brightness(0.95);
   }
 
+  /* Enhanced disabled state */
   .analysis-button:disabled {
-    background: linear-gradient(135deg, #ccc 0%, #999 100%);
+    background: var(--accent-trust-disabled);
+    border-color: var(--accent-trust-disabled);
+    color: rgba(247, 250, 252, 0.6);
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
+    filter: none;
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    text-shadow: none;
   }
 
-  .analysis-button:focus-visible {
-    outline: 3px solid #007bff;
-    outline-offset: 2px;
-    /* Enhanced focus visibility */
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
-  }
-
-  /* Button content styling */
+  /* Enhanced button content styling with better typography */
   .button-icon {
-    font-size: 18px;
+    font-size: 20px;
     flex-shrink: 0;
+    /* Enhanced icon contrast */
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .analysis-button:hover .button-icon,
+  .analysis-button.button-hovered .button-icon {
+    transform: scale(1.1) rotate(2deg);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+  
+  /* Success state icon animation */
+  .analysis-button.button-success .button-icon {
+    transform: scale(1.2) rotate(10deg);
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5));
+  }
+  
+  /* Error state icon animation */
+  .analysis-button.button-error .button-icon {
+    transform: scale(1.1) rotate(-5deg);
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
+    animation: icon-error-shake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  @keyframes icon-error-shake {
+    0%, 100% { transform: scale(1.1) rotate(-5deg); }
+    25% { transform: scale(1.1) rotate(-8deg); }
+    75% { transform: scale(1.1) rotate(-2deg); }
   }
 
   .button-text {
     flex: 1;
     text-align: center;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  
+  /* Success text animation */
+  .analysis-button.button-success .button-text {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+  }
+  
+  /* Error text animation */
+  .analysis-button.button-error .button-text {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
   }
 
-  /* Loading spinner styling */
+  /* Sophisticated loading spinner with trust colors */
   .loading-spinner {
     display: flex;
-    gap: 3px;
-    margin-left: 8px;
+    gap: 4px;
+    margin-left: 10px;
+    align-items: center;
   }
 
   .loading-spinner span {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.8);
-    animation: loading-pulse 1.4s infinite ease-in-out;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+    animation: sophisticated-loading 1.6s infinite ease-in-out;
+    box-shadow: 
+      0 0 4px rgba(255, 255, 255, 0.3),
+      inset 0 1px 1px rgba(255, 255, 255, 0.5);
   }
 
   .loading-spinner span:nth-child(1) {
-    animation-delay: -0.32s;
+    animation-delay: -0.4s;
   }
 
   .loading-spinner span:nth-child(2) {
-    animation-delay: -0.16s;
+    animation-delay: -0.2s;
   }
 
-  @keyframes loading-pulse {
+  .loading-spinner span:nth-child(3) {
+    animation-delay: 0s;
+  }
+
+  @keyframes sophisticated-loading {
     0%, 80%, 100% {
-      transform: scale(0.8);
-      opacity: 0.5;
+      transform: scale(0.6) translateY(0);
+      opacity: 0.4;
+      box-shadow: 0 0 2px rgba(255, 255, 255, 0.2);
     }
     40% {
-      transform: scale(1);
+      transform: scale(1) translateY(-4px);
+      opacity: 1;
+      box-shadow: 
+        0 0 8px rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  /* Success indicator styling */
+  .success-indicator {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.95);
+    animation: success-appear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.6));
+    margin-left: 8px;
+  }
+  
+  @keyframes success-appear {
+    0% {
+      transform: scale(0) rotate(-90deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.3) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+  
+  /* Error indicator styling */
+  .error-indicator {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.95);
+    animation: error-appear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6));
+    margin-left: 8px;
+  }
+  
+  @keyframes error-appear {
+    0% {
+      transform: scale(0) rotate(0deg);
+      opacity: 0;
+    }
+    25% {
+      transform: scale(1.2) rotate(-10deg);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(0.9) rotate(5deg);
+      opacity: 1;
+    }
+    75% {
+      transform: scale(1.1) rotate(-2deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
       opacity: 1;
     }
   }
 
-  /* Error message styling */
+  /* Enhanced error message with design system colors */
   .error-message {
-    background-color: #fee;
-    color: #c33;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    border: 1px solid #fcc;
+    background: var(--gradient-error-subtle);
+    color: var(--accent-error);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid var(--accent-error);
+    box-shadow: 
+      0 2px 8px rgba(239, 68, 68, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    margin-top: 8px;
   }
 
-  /* Follow-up questions styling */
+  /* Enhanced follow-up questions with glassmorphic styling */
   .follow-up-hint {
-    margin-top: 4px;
+    margin-top: 8px;
+    background: rgba(26, 32, 44, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid rgba(124, 58, 237, 0.1);
   }
 
   .follow-up-details {
-    font-size: 12px;
-    color: #666;
+    font-size: var(--font-size-small);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
   }
 
   .follow-up-summary {
     cursor: pointer;
-    padding: 4px 0;
-    font-weight: 500;
-    border-bottom: 1px dotted #ccc;
-    margin-bottom: 6px;
+    padding: 8px 0;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-small);
+    color: var(--accent-trust);
+    border-bottom: 1px dotted rgba(124, 58, 237, 0.3);
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+    letter-spacing: var(--letter-spacing-wide);
   }
 
   .follow-up-summary:hover {
-    color: #007bff;
+    color: var(--accent-trust-hover);
+    border-bottom-color: var(--accent-trust-hover);
+    transform: translateX(4px);
   }
 
   .follow-up-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    gap: 4px;
+    gap: 6px;
     display: flex;
     flex-direction: column;
   }
 
   .follow-up-item {
-    padding: 4px 8px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    font-size: 11px;
-    line-height: 1.3;
+    padding: 8px 12px;
+    background: rgba(45, 55, 72, 0.4);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(124, 58, 237, 0.1);
+    border-radius: 8px;
+    font-size: var(--font-size-micro);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-secondary);
+    line-height: var(--line-height-normal);
+    transition: all 0.2s ease;
   }
 
-  /* Enhanced mobile responsiveness (320px-767px) */
+  .follow-up-item:hover {
+    background: rgba(45, 55, 72, 0.6);
+    border-color: rgba(124, 58, 237, 0.2);
+    color: var(--text-primary);
+    transform: translateX(2px);
+  }
+
+  /* Financial semantic button variants */
+  .analysis-button.bullish {
+    background: var(--gradient-success);
+    border-color: var(--accent-success);
+    box-shadow: 
+      0 4px 14px rgba(16, 185, 129, 0.25),
+      0 2px 6px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .analysis-button.bullish:not(:disabled):hover {
+    background: linear-gradient(135deg, var(--accent-success-hover) 0%, var(--financial-bullish-3) 100%);
+    box-shadow: 
+      0 8px 25px rgba(16, 185, 129, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .analysis-button.bearish {
+    background: var(--gradient-error);
+    border-color: var(--accent-error);
+    box-shadow: 
+      0 4px 14px rgba(239, 68, 68, 0.25),
+      0 2px 6px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .analysis-button.bearish:not(:disabled):hover {
+    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--financial-bearish-3) 100%);
+    box-shadow: 
+      0 8px 25px rgba(239, 68, 68, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .analysis-button.neutral {
+    background: var(--gradient-surface-2);
+    border-color: var(--neutral-color);
+    color: var(--text-secondary);
+    box-shadow: 
+      0 4px 14px rgba(160, 174, 192, 0.15),
+      0 2px 6px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .analysis-button.neutral:not(:disabled):hover {
+    background: var(--gradient-surface-3);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+  }
+
+  /* Enhanced mobile responsiveness with fintech styling (320px-767px) */
   @media (max-width: 767px) {
     .analysis-button-container {
       max-width: 100%;
+      margin-bottom: 12px;
+      padding: 3px;
+      border-radius: 14px;
     }
 
     .analysis-button {
-      padding: 16px 14px; /* More generous mobile padding */
-      font-size: 15px;
-      min-height: 52px; /* Larger touch targets on mobile */
+      padding: 18px 16px;
+      font-size: var(--font-size-body);
+      min-height: 60px;
+      gap: 8px;
       /* Enhanced mobile interactions */
       -webkit-tap-highlight-color: transparent;
-      /* Better mobile typography */
-      letter-spacing: 0.025em;
+      /* Mobile-optimized shadows */
+      box-shadow: 
+        0 3px 12px rgba(124, 58, 237, 0.2),
+        0 1px 4px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .analysis-button:not(:disabled):hover {
+      /* Simplified hover for mobile */
+      transform: translateY(-1px);
+      box-shadow: 
+        0 4px 16px rgba(124, 58, 237, 0.25),
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 
     .button-icon {
-      font-size: 20px; /* Slightly larger icons on mobile */
+      font-size: 22px;
+    }
+
+    .follow-up-hint {
+      padding: 10px;
+      border-radius: 10px;
     }
   }
 
-  /* Tablet optimizations (768px-1024px) */
+  /* Enhanced tablet optimizations (768px-1024px) */
   @media (min-width: 768px) and (max-width: 1024px) {
+    .analysis-button-container {
+      max-width: 360px;
+    }
+
     .analysis-button {
-      padding: 15px 17px;
-      min-height: 50px;
-      font-size: 14.5px;
+      padding: 16px 18px;
+      min-height: 54px;
+      font-size: var(--font-size-body);
+    }
+
+    .button-icon {
+      font-size: 20px;
     }
   }
 
-  /* Desktop optimizations (1025px+) */
+  /* Enhanced desktop optimizations with sophisticated effects (1025px+) */
   @media (min-width: 1025px) {
-    .analysis-button {
-      /* Enhanced hover effects for desktop */
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    .analysis-button-container {
+      max-width: 380px;
     }
 
-    .analysis-button:not(:disabled):hover {
-      /* Refined desktop hover state */
-      background: linear-gradient(135deg, #0056b3 0%, #004494 100%);
-      transform: translateY(-2px); /* Slightly more pronounced lift */
-      box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35);
+    .analysis-button {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .analysis-button:not(:disabled):hover,
+    .analysis-button.button-hovered:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 12px 40px rgba(124, 58, 237, 0.4),
+        0 6px 16px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      filter: brightness(1.1) saturate(1.1);
+    }
+
+    .analysis-button-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 12px 48px rgba(0, 0, 0, 0.25),
+        0 4px 12px rgba(124, 58, 237, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* Enhanced desktop icon animations */
+    .analysis-button:hover .button-icon,
+    .analysis-button.button-hovered .button-icon {
+      transform: scale(1.15) rotate(5deg);
+    }
+    
+    /* Desktop success state enhancement */
+    .analysis-button.button-success:not(:disabled) {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 
+        0 16px 48px rgba(34, 197, 94, 0.4),
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      filter: brightness(1.15) saturate(1.2);
+    }
+    
+    /* Desktop error state enhancement */
+    .analysis-button.button-error:not(:disabled) {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 
+        0 12px 32px rgba(239, 68, 68, 0.4),
+        0 6px 16px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      filter: brightness(1.05) saturate(1.1);
     }
   }
 
-  /* Cross-platform input method optimizations */
+  /* Enhanced cross-platform optimizations with fintech styling */
   @media (hover: none) and (pointer: coarse) {
-    /* Touch devices - optimize for touch interaction */
+    /* Touch devices - enhanced touch interaction with trust colors */
     .analysis-button {
-      min-height: 56px; /* Larger touch targets */
-      /* Remove hover states on touch devices */
-      transition: background-color 0.1s ease;
+      min-height: 64px;
+      /* Simplified transitions for touch */
+      transition: background-color 0.2s ease, transform 0.1s ease;
     }
 
     .analysis-button:not(:disabled):hover {
-      /* Disable hover transform on touch devices */
+      /* Maintain original styling on touch hover */
       transform: none;
-      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      background: var(--gradient-trust);
+      box-shadow: 
+        0 4px 14px rgba(124, 58, 237, 0.25),
+        0 2px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
-    /* Enhanced touch feedback */
+    /* Enhanced touch feedback with trust gradient */
     .analysis-button:not(:disabled):active {
-      background: linear-gradient(135deg, #004494 0%, #003366 100%);
-      transform: scale(0.98);
+      background: linear-gradient(135deg, var(--accent-trust-active) 0%, var(--accent-info-active) 100%);
+      transform: scale(0.96);
+      box-shadow: 
+        0 2px 8px rgba(124, 58, 237, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .analysis-button-container:hover {
+      transform: none;
     }
   }
 
   @media (hover: hover) and (pointer: fine) {
-    /* Mouse/trackpad devices - optimize for precision */
+    /* Precision input devices - sophisticated hover states */
     .analysis-button {
-      /* Refined hover states for precise input devices */
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .analysis-button-container {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Enhanced precision hover effects */
+    .analysis-button:not(:disabled):hover {
+      background: linear-gradient(135deg, var(--accent-trust-hover) 0%, var(--accent-info-hover) 100%);
     }
   }
 
@@ -490,6 +869,26 @@ export const analysisButtonStyles = `
     }
 
     .analysis-button-container:focus-within {
+      transition: none;
+    }
+    
+    .button-icon {
+      transition: none;
+      animation: none;
+    }
+    
+    .analysis-button.button-success .button-icon,
+    .analysis-button.button-error .button-icon {
+      transform: none;
+      animation: none;
+    }
+    
+    .success-indicator,
+    .error-indicator {
+      animation: none;
+    }
+    
+    .button-text {
       transition: none;
     }
   }

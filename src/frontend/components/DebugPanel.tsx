@@ -49,170 +49,286 @@ export default function DebugPanel({
 }
 
 /**
- * CSS styles for the DebugPanel component
- * Follows the established design system and responsive patterns from ChatInterface_OpenAI
+ * Professional Fintech Glassmorphic Styles for Developer Debug Panel
+ * Enhanced monospace typography with professional fintech polish
  */
 export const debugPanelStyles = `
-  /* DEBUG PANEL: Developer-focused section - DARK MODE DEFAULT */
+  /* ==========================================================================
+     DEBUG PANEL - Developer-Focused Component with Professional Fintech Design
+     ========================================================================== */
+  
   .debug-panel {
-    background: #2d3748; /* Dark background */
-    border: 1px solid #4a5568; /* Dark border */
-    border-radius: 8px;
-    padding: 12px 16px;
+    /* Professional Glassmorphic Foundation */
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-1);
+    box-shadow: var(--glass-shadow-sm);
+    
+    /* Developer Panel Design */
+    border-radius: 12px;
+    padding: var(--spacing-3) var(--spacing-4);
     margin: 0;
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-    font-size: 13px;
     width: 100%;
     max-width: 1000px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Darker shadow for dark mode */
-    color: #e2e8f0; /* Light text */
+    
+    /* Professional Developer Typography */
+    font-family: var(--font-mono);
+    font-size: var(--font-size-small);
+    color: var(--text-secondary);
+    
+    /* Modern Enhancement */
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Debug Panel Accent Border */
+  .debug-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-info) 0%, var(--accent-info-light) 100%);
+    opacity: 0.6;
   }
   
   .debug-header {
-    margin-bottom: 8px;
-    border-bottom: 1px solid #4a5568; /* Dark border */
-    padding-bottom: 4px;
+    margin-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--glass-border-2);
+    padding-bottom: var(--spacing-2);
+    position: relative;
   }
   
   .debug-title {
     margin: 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: #f7fafc; /* Light title */
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-family: inherit;
+    letter-spacing: var(--letter-spacing-wider);
+    font-family: var(--font-mono);
+    
+    /* Developer Badge Styling */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+  }
+  
+  .debug-title::before {
+    content: '⚙️';
+    font-size: var(--font-size-small);
   }
   
   .debug-content {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--spacing-2);
   }
   
   .debug-metric {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 0;
+    padding: var(--spacing-1) 0;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+  }
+  
+  .debug-metric:hover {
+    background: var(--glass-surface-1);
+    padding-left: var(--spacing-2);
+    padding-right: var(--spacing-2);
   }
   
   .debug-label {
-    color: #a0aec0; /* Light label color */
-    font-weight: 500;
-    font-size: 12px;
+    color: var(--neutral-color);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-small);
+    font-family: var(--font-mono);
+    letter-spacing: var(--letter-spacing-normal);
   }
   
   .debug-value {
-    color: #63b3ed; /* Light blue value */
-    font-weight: 700;
-    background: #1a365d; /* Dark blue background */
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 13px;
-    border: 1px solid #2c5282; /* Dark blue border */
-    min-width: 80px;
+    /* Professional Value Badge */
+    color: var(--accent-info-light);
+    font-weight: var(--font-weight-bold);
+    background: linear-gradient(135deg, var(--accent-info) 0%, var(--accent-info-light) 100%);
+    color: var(--text-primary);
+    
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: 6px;
+    font-size: var(--font-size-small);
+    border: 1px solid var(--accent-info);
+    
+    min-width: 90px;
     text-align: center;
+    font-family: var(--font-mono);
+    letter-spacing: var(--letter-spacing-tight);
+    
+    /* Professional Enhancement */
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Value Badge Animation */
+  .debug-value::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .debug-value:hover::before {
+    left: 100%;
   }
   
   /* State-specific styling */
   .debug-value:empty::after {
     content: '---';
-    color: #718096; /* Lighter gray for dark mode */
+    color: var(--neutral-color);
     font-style: italic;
+    font-weight: var(--font-weight-normal);
   }
   
-  /* Mobile adjustments */
-  @media (max-width: 767px) {
+  /* Responsive Design - Mobile Optimization */
+  @media (max-width: 640px) {
     .debug-panel {
-      padding: 10px 12px;
-      font-size: 12px;
-      border-radius: 6px;
+      padding: var(--spacing-2) var(--spacing-3);
+      font-size: var(--font-size-micro);
+      border-radius: 10px;
     }
     
     .debug-title {
-      font-size: 13px;
+      font-size: var(--font-size-small);
     }
     
     .debug-metric {
       flex-direction: column;
       align-items: flex-start;
-      gap: 4px;
-      padding: 6px 0;
+      gap: var(--spacing-1);
+      padding: var(--spacing-2) 0;
     }
     
     .debug-label {
-      font-size: 11px;
+      font-size: var(--font-size-micro);
     }
     
     .debug-value {
-      font-size: 12px;
-      padding: 3px 6px;
-      min-width: 70px;
+      font-size: var(--font-size-micro);
+      padding: var(--spacing-1);
+      min-width: 80px;
       align-self: flex-end;
     }
   }
   
-  /* Tablet adjustments */
-  @media (min-width: 768px) and (max-width: 1024px) {
+  /* Tablet Optimization */
+  @media (min-width: 641px) and (max-width: 1024px) {
     .debug-panel {
-      padding: 14px 18px;
-      font-size: 13px;
+      padding: var(--spacing-3);
+      font-size: var(--font-size-small);
     }
   }
   
-  /* Desktop optimizations */
+  /* Desktop Enhancement */
   @media (min-width: 1025px) {
     .debug-panel {
-      padding: 16px 20px;
-      font-size: 14px;
+      padding: var(--spacing-4) var(--spacing-6);
+      font-size: var(--font-size-body);
     }
     
     .debug-title {
-      font-size: 15px;
+      font-size: var(--font-size-h6);
     }
     
     .debug-value {
-      font-size: 14px;
-      padding: 5px 10px;
-      min-width: 90px;
+      font-size: var(--font-size-body);
+      padding: var(--spacing-2) var(--spacing-3);
+      min-width: 100px;
+    }
+    
+    .debug-panel:hover {
+      backdrop-filter: var(--glass-blur-md);
     }
   }
   
-  /* High contrast mode support - DARK MODE */
+  /* High Contrast Mode Support */
   @media (prefers-contrast: high) {
     .debug-panel {
-      border: 2px solid #f7fafc; /* Light border for dark high contrast */
-      background: #1a202c; /* Darker background for high contrast */
+      border: 2px solid var(--text-primary);
+      background: var(--background-primary);
     }
     
     .debug-value {
-      border: 2px solid #63b3ed; /* Light blue border for high contrast */
-      background: #1a365d; /* Dark blue background */
-      color: #90cdf4; /* Lighter blue for high contrast */
+      border: 2px solid var(--accent-info);
+      background: var(--accent-info);
+      color: var(--background-primary);
     }
   }
   
-  /* Dark mode is now the default theme - no media queries needed */
-  
-  /* Focus management - DARK MODE */
+  /* Focus Management - Professional Developer Tools */
   .debug-panel:focus-within {
-    outline: 2px solid #63b3ed; /* Light blue focus outline for dark mode */
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
+    border-color: var(--accent-info);
   }
   
-  /* Reduced motion support */
+  /* Reduced Motion Support */
   @media (prefers-reduced-motion: reduce) {
     .debug-value {
       transition: none;
     }
+    
+    .debug-value::before {
+      display: none;
+    }
+    
+    .debug-metric {
+      transition: none;
+    }
   }
   
-  /* Performance optimizations for high DPI displays */
+  /* Performance Optimizations */
+  .debug-panel {
+    will-change: backdrop-filter;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+  
+  /* High DPI Display Support */
   @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
     .debug-panel {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+  }
+  
+  /* Professional Loading State */
+  .debug-panel[data-loading="true"] {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  .debug-panel[data-loading="true"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-3);
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--accent-info);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translateY(-50%);
+  }
+  
+  @keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
   }
 `;

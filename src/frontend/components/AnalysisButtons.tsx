@@ -199,59 +199,94 @@ export const analysisButtonsStyles = `
     border: 0;
   }
 
-  /* Enhanced main container with modern CSS features */
+  /* Enhanced main container with sophisticated fintech card styling */
   .analysis-buttons-container {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 16px;
-    margin: 16px 0;
+    /* Modern glassmorphic background */
+    background: rgba(26, 32, 44, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0;
     width: 100%;
     max-width: 100%;
     position: relative;
-    /* Modern container query support for component-based responsive design */
+    /* Enhanced depth with sophisticated shadows */
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.2),
+      0 2px 8px rgba(124, 58, 237, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Modern container query support */
     container-type: inline-size;
     container-name: analysis-buttons;
     /* Performance optimizations */
     contain: layout style;
-    /* Enhanced visual appearance */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    /* Better box model */
     box-sizing: border-box;
-    /* Smooth appearance changes */
-    transition: box-shadow 0.2s ease;
+    /* Sophisticated transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Enhanced visual hierarchy */
+    overflow: hidden;
   }
 
-  /* Enhanced container hover state for desktop */
-  @media (hover: hover) and (pointer: fine) {
-    .analysis-buttons-container:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
+  /* Sophisticated container hover state */
+  .analysis-buttons-container:hover {
+    background: rgba(26, 32, 44, 0.85);
+    border-color: rgba(124, 58, 237, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 12px 48px rgba(0, 0, 0, 0.25),
+      0 4px 16px rgba(124, 58, 237, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
-  /* Header section */
+  /* Enhanced focus-within state */
+  .analysis-buttons-container:focus-within {
+    border-color: var(--accent-trust);
+    box-shadow: 
+      0 0 0 1px var(--accent-trust),
+      0 12px 48px rgba(0, 0, 0, 0.25),
+      0 4px 16px rgba(124, 58, 237, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* Enhanced header section with fintech styling */
   .buttons-header {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(124, 58, 237, 0.15);
   }
 
   .buttons-title {
-    margin: 0 0 4px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
+    margin: 0 0 8px 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-h5);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    letter-spacing: var(--letter-spacing-wide);
+    /* Subtle gradient text effect */
+    background: var(--gradient-trust);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .buttons-subtitle {
     margin: 0;
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
+    font-size: var(--font-size-small);
+    font-family: var(--font-body);
+    color: var(--text-secondary);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
   }
 
   .current-ticker {
-    font-weight: 500;
-    color: #007bff;
+    font-weight: var(--font-weight-semibold);
+    color: var(--accent-trust);
+    font-family: var(--font-mono);
+    letter-spacing: var(--letter-spacing-wider);
+    text-transform: uppercase;
   }
 
   /* Modern responsive button grid layout */
@@ -518,27 +553,46 @@ export const analysisButtonsStyles = `
     background: #b91c1c;
   }
 
-  /* Enhanced mobile responsive design (320px-767px) */
+  /* Enhanced mobile responsive design with fintech styling (320px-767px) */
   @media (max-width: 767px) {
     .analysis-buttons-container {
-      margin: 8px 0;
-      padding: 12px;
-      /* Enhance mobile touch interactions */
+      margin: 12px 0;
+      padding: 16px;
+      border-radius: 16px;
+      /* Enhanced mobile glassmorphic effect */
+      background: rgba(26, 32, 44, 0.8);
+      /* Optimize for mobile interactions */
       -webkit-tap-highlight-color: transparent;
+      /* Simplified mobile shadows */
+      box-shadow: 
+        0 6px 24px rgba(0, 0, 0, 0.15),
+        0 2px 8px rgba(124, 58, 237, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .analysis-buttons-container:hover {
+      transform: none;
+      background: rgba(26, 32, 44, 0.85);
     }
 
     .buttons-header {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
     }
 
     .buttons-title {
-      font-size: 15px;
+      font-size: calc(var(--font-size-h6) * 0.95);
     }
 
     .buttons-subtitle {
-      font-size: 12px;
-      line-height: 1.5; /* Better mobile readability */
+      font-size: var(--font-size-micro);
+      line-height: var(--line-height-relaxed);
     }
+
+    .current-ticker {
+      font-size: var(--font-size-small);
+    }
+  }
 
     .buttons-grid {
       /* Single column for mobile with optimized spacing */

@@ -290,7 +290,7 @@ export const interfaceStyles = `
     border: 0;
   }
   
-  /* SEVEN-SECTION LAYOUT: Modern CSS Grid Implementation - DARK MODE */
+  /* SEVEN-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation */
   .chat-interface {
     display: grid;
     grid-template-rows: auto 1fr auto auto auto auto auto;
@@ -304,10 +304,31 @@ export const interfaceStyles = `
       "debug";
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
-    background-color: #1a202c; /* Dark background */
-    color: #e2e8f0; /* Light text */
+    background: var(--glass-surface-medium);
+    backdrop-filter: var(--backdrop-blur-lg);
+    -webkit-backdrop-filter: var(--backdrop-blur-lg);
+    color: var(--neutral-100);
     overflow: hidden; /* Prevent page-level scrolling */
     gap: 0; /* No gaps between sections for seamless design */
+    position: relative;
+  }
+  
+  .chat-interface::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      var(--primary-900) 0%,
+      var(--primary-800) 50%,
+      var(--neutral-900) 100%
+    );
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: -1;
   }
   
   /* Mobile viewport optimizations */
@@ -319,13 +340,15 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 1: Header - Clean title only - DARK MODE */
+  /* SECTION 1: Header - Professional Fintech Glassmorphic Header */
   .chat-header {
     grid-area: header;
     position: relative;
-    background: #2d3748; /* Dark header background */
-    padding: 16px;
-    border-bottom: 1px solid #4a5568; /* Dark border */
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    padding: var(--space-4);
+    border-bottom: var(--glass-border-highlight);
     text-align: center;
     min-height: 70px; /* Prevent layout shifts */
     display: flex;
@@ -347,35 +370,40 @@ export const interfaceStyles = `
   }
   
   .chat-header h1 {
-    margin: 0 0 8px 0;
-    font-size: 1.5rem;
-    color: #f7fafc; /* Light title text */
+    margin: 0 0 var(--space-2) 0;
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--neutral-50);
+    font-family: var(--font-inter);
   }
   
   .error-banner {
-    background-color: #742a2a; /* Dark red background */
-    color: #fed7d7; /* Light red text */
-    padding: 8px 16px;
-    margin-top: 8px;
-    border-radius: 4px;
-    font-size: 0.875rem;
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-sm);
+    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    border: 1px solid var(--error-500);
+    color: var(--error-100);
+    padding: var(--space-2) var(--space-4);
+    margin-top: var(--space-2);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
   }
   
-  /* SECTION 2: Messages - Flexible height, scrollable */
+  /* SECTION 2: Messages - Flexible height with glassmorphic scrolling */
   .messages-section {
     grid-area: messages;
     overflow-y: auto;
     overflow-x: hidden; /* Prevent horizontal page scroll */
-    padding: 16px;
+    padding: var(--space-4);
     width: 100%;
     max-width: 100%; /* Remove 800px limit for better mobile */
     margin: 0 auto;
     /* Enhanced focus management */
     scroll-behavior: smooth;
     min-height: 0; /* Allow shrinking in grid layout */
-    /* Custom scrollbar for modern look */
+    /* Custom scrollbar for glassmorphic look */
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e0 #f7fafc;
+    scrollbar-color: var(--neutral-400) transparent;
   }
   
   .messages-section:focus {
@@ -383,22 +411,26 @@ export const interfaceStyles = `
     outline-offset: -2px;
   }
   
-  /* Modern scrollbar styling - DARK MODE */
+  /* Modern glassmorphic scrollbar styling */
   .messages-section::-webkit-scrollbar {
     width: 6px;
   }
   
   .messages-section::-webkit-scrollbar-track {
-    background: #2d3748; /* Dark scrollbar track */
+    background: transparent;
   }
   
   .messages-section::-webkit-scrollbar-thumb {
-    background: #4a5568; /* Dark scrollbar thumb */
-    border-radius: 3px;
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-sm);
+    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    border: 1px solid var(--glass-border-highlight);
+    border-radius: var(--radius-full);
   }
   
   .messages-section::-webkit-scrollbar-thumb:hover {
-    background: #718096; /* Lighter on hover */
+    background: var(--glass-surface-medium);
+    border-color: var(--primary-400);
   }
   
   /* Mobile-specific adjustments */
@@ -454,8 +486,8 @@ export const interfaceStyles = `
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #a0aec0; /* Light gray text for dark mode */
-    padding: 20px;
+    color: var(--neutral-300);
+    padding: var(--space-5);
   }
   
   .welcome-content {
@@ -465,17 +497,19 @@ export const interfaceStyles = `
   }
   
   .welcome-title {
-    margin: 0 0 12px 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: #f7fafc; /* Light welcome title */
+    margin: 0 0 var(--space-3) 0;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+    color: var(--neutral-50);
+    font-family: var(--font-inter);
   }
   
   .welcome-description {
-    margin: 0 0 24px 0;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #cbd5e0; /* Light description text */
+    margin: 0 0 var(--space-6) 0;
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--neutral-200);
+    font-family: var(--font-inter);
   }
   
   .welcome-buttons {
@@ -484,33 +518,37 @@ export const interfaceStyles = `
   
   .getting-started {
     margin: 0;
-    font-size: 14px;
-    color: #a0aec0; /* Light getting started text */
+    font-size: var(--text-sm);
+    color: var(--neutral-400);
     font-style: italic;
+    font-family: var(--font-inter);
   }
   
   .loading-indicator {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin: 16px 0;
-    gap: 8px;
+    margin: var(--space-4) 0;
+    gap: var(--space-2);
   }
   
   .typing-dots {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 12px 16px;
-    background-color: #4a5568; /* Dark typing background */
-    border-radius: 16px;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-sm);
+    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    border: var(--glass-border-highlight);
+    border-radius: var(--radius-2xl);
   }
   
   .typing-dots span {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: #cbd5e0; /* Light dots on dark background */
+    background-color: var(--primary-400);
     animation: typing 1.4s infinite ease-in-out;
   }
   
@@ -533,13 +571,15 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 3: Chat Input - User message input - DARK MODE */
+  /* SECTION 3: Chat Input - Professional glassmorphic input section */
   .chat-input-section {
     grid-area: chat-input;
-    background: #2d3748; /* Dark input section background */
-    border-top: 1px solid #4a5568; /* Dark border */
-    border-bottom: 1px solid #4a5568; /* Dark border */
-    padding: 16px;
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    border-top: var(--glass-border-highlight);
+    border-bottom: var(--glass-border-highlight);
+    padding: var(--space-4);
     min-height: 90px; /* Fixed minimum height prevents jumping */
     max-height: 150px; /* Prevent excessive expansion */
     display: flex;
@@ -555,12 +595,14 @@ export const interfaceStyles = `
     width: 100%;
   }
   
-  /* SECTION 4: Ticker Input - Stock symbol input - DARK MODE */
+  /* SECTION 4: Ticker Input - Professional glassmorphic ticker section */
   .ticker-input-section {
     grid-area: ticker-input;
-    background: #2d3748; /* Dark ticker section background */
-    border-bottom: 1px solid #4a5568; /* Dark border */
-    padding: 16px;
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    border-bottom: var(--glass-border-highlight);
+    padding: var(--space-4);
     min-height: 70px; /* Fixed minimum height prevents jumping */
     max-height: 100px; /* Prevent excessive expansion */
     display: flex;
@@ -612,22 +654,24 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 5: Analysis Buttons - Quick analysis tools - DARK MODE */
+  /* SECTION 5: Analysis Buttons - Professional glassmorphic analysis tools */
   .analysis-buttons-section {
     grid-area: buttons;
-    background: #1a202c; /* Dark analysis section background */
-    border-top: 1px solid #4a5568; /* Dark border */
-    border-bottom: 1px solid #4a5568; /* Dark border */
-    padding: 8px 16px;
+    background: var(--glass-surface-medium);
+    backdrop-filter: var(--backdrop-blur-lg);
+    -webkit-backdrop-filter: var(--backdrop-blur-lg);
+    border-top: var(--glass-border-highlight);
+    border-bottom: var(--glass-border-highlight);
+    padding: var(--space-2) var(--space-4);
     min-height: 140px; /* Fixed minimum height prevents jumping */
     max-height: 200px; /* Prevent excessive expansion */
     overflow-y: auto;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    /* Custom scrollbar for modern look - dark mode */
+    /* Custom glassmorphic scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: #4a5568 #2d3748;
+    scrollbar-color: var(--neutral-400) transparent;
   }
   
   .analysis-buttons-section::-webkit-scrollbar {
@@ -635,12 +679,20 @@ export const interfaceStyles = `
   }
   
   .analysis-buttons-section::-webkit-scrollbar-track {
-    background: #2d3748; /* Dark scrollbar track */
+    background: transparent;
   }
   
   .analysis-buttons-section::-webkit-scrollbar-thumb {
-    background: #4a5568; /* Dark scrollbar thumb */
-    border-radius: 2px;
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-sm);
+    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    border: 1px solid var(--glass-border-highlight);
+    border-radius: var(--radius-full);
+  }
+  
+  .analysis-buttons-section::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-400);
+    border-color: var(--primary-300);
   }
   
   .fixed-analysis-buttons {
@@ -680,13 +732,15 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 6: Export/Recent Buttons - Export and recent message functions - DARK MODE */
+  /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities */
   .export-buttons-section {
     grid-area: export-buttons;
-    background: #2d3748; /* Dark export section background */
-    border-top: 1px solid #4a5568; /* Dark border */
-    border-bottom: 1px solid #4a5568; /* Dark border */
-    padding: 12px 16px;
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    border-top: var(--glass-border-highlight);
+    border-bottom: var(--glass-border-highlight);
+    padding: var(--space-3) var(--space-4);
     min-height: 70px; /* Fixed minimum height prevents jumping */
     max-height: 120px; /* Increased for both button sets */
     display: flex;
@@ -711,12 +765,14 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 7: Debug Panel - Developer information - DARK MODE */
+  /* SECTION 7: Debug Panel - Professional glassmorphic developer information */
   .debug-section {
     grid-area: debug;
-    background: #1a202c; /* Dark debug section background */
-    border-top: 1px solid #4a5568; /* Dark border */
-    padding: 12px 16px;
+    background: var(--glass-surface-dark);
+    backdrop-filter: var(--backdrop-blur-lg);
+    -webkit-backdrop-filter: var(--backdrop-blur-lg);
+    border-top: var(--glass-border-highlight);
+    padding: var(--space-3) var(--space-4);
     min-height: 80px; /* Fixed minimum height prevents jumping */
     max-height: 120px; /* Prevent excessive expansion */
     display: flex;
@@ -863,31 +919,34 @@ export const interfaceStyles = `
     box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
 
-  /* Component loading states - DARK MODE */
+  /* Component loading states - Professional glassmorphic loading */
   .component-loading {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
-    color: #a0aec0; /* Light loading text */
-    font-size: 13px;
+    padding: var(--space-3);
+    color: var(--neutral-300);
+    font-size: var(--text-sm);
     font-style: italic;
-    background: #2d3748; /* Dark loading background */
-    border-radius: 8px;
-    margin: 8px 0;
+    font-family: var(--font-inter);
+    background: var(--glass-surface-light);
+    backdrop-filter: var(--backdrop-blur-sm);
+    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    border-radius: var(--radius-lg);
+    margin: var(--space-2) 0;
     min-height: 40px;
-    border: 1px solid #4a5568; /* Dark border */
+    border: var(--glass-border-highlight);
   }
 
   .component-loading::before {
     content: '';
     width: 16px;
     height: 16px;
-    border: 2px solid #4a5568; /* Dark loading ring */
-    border-top: 2px solid #63b3ed; /* Light blue accent */
+    border: 2px solid var(--neutral-600);
+    border-top: 2px solid var(--primary-400);
     border-radius: 50%;
     animation: component-loading-spin 1s linear infinite;
-    margin-right: 8px;
+    margin-right: var(--space-2);
     flex-shrink: 0;
   }
 

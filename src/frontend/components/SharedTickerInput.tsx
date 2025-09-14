@@ -268,7 +268,7 @@ const SharedTickerInput = forwardRef<SharedTickerInputRef, SharedTickerInputProp
 
 export default SharedTickerInput;
 
-// Enhanced inline styles following project patterns
+// Enhanced fintech glassmorphic inline styles using comprehensive design system
 export const sharedTickerInputStyles = `
   /* Screen reader only content */
   .sr-only {
@@ -283,98 +283,207 @@ export const sharedTickerInputStyles = `
     border: 0;
   }
 
+  /* Enhanced container with sophisticated glassmorphic card styling */
   .shared-ticker-input-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--spacing-2);
     width: 100%;
-    max-width: 200px;
+    max-width: 240px;
+    /* Professional glassmorphic card background */
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-1);
+    border-radius: var(--radius-card);
+    padding: var(--spacing-4);
+    /* Enhanced shadows for depth */
+    box-shadow: var(--glass-shadow-sm);
+    /* Performance optimizations */
+    contain: layout style;
+    box-sizing: border-box;
+    /* Sophisticated transitions */
+    transition: all var(--timing-base) var(--ease-out);
+    /* Enhanced visual hierarchy */
+    position: relative;
   }
 
-  /* Label styling */
+  /* Sophisticated container hover and focus states */
+  .shared-ticker-input-container:hover {
+    background: var(--glass-surface-3);
+    border-color: var(--glass-border-2);
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-md);
+  }
+
+  .shared-ticker-input-container:focus-within {
+    background: var(--glass-surface-4);
+    border-color: var(--accent-trust);
+    box-shadow:
+      0 0 0 1px var(--accent-trust),
+      var(--glass-shadow-lg),
+      var(--shadow-glow-trust);
+    transform: translateY(-2px);
+  }
+
+  /* Enhanced label with fintech typography and trust color accent */
   .ticker-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-wide);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-bottom: 2px;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-1);
+    text-transform: uppercase;
+    /* Smooth color transitions */
+    transition: color var(--timing-base) var(--ease-out);
+  }
+
+  .shared-ticker-input-container:focus-within .ticker-label {
+    color: var(--accent-trust);
+    transform: translateY(-1px);
   }
 
   .required-indicator {
-    color: #dc2626;
-    font-weight: bold;
+    color: var(--accent-error);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-body);
   }
 
-  /* Input wrapper for positioning validation icons */
+  /* Enhanced input wrapper with professional positioning */
   .ticker-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    /* Glassmorphic wrapper effect */
+    background: var(--glass-surface-1);
+    border-radius: var(--radius-input);
+    border: 1px solid var(--glass-border-1);
+    overflow: hidden;
+    /* Professional depth */
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all var(--timing-base) var(--ease-out);
   }
 
-  /* Main input styling */
+  .ticker-input-wrapper:hover {
+    background: var(--glass-surface-2);
+    border-color: var(--glass-border-2);
+  }
+
+  .ticker-input-wrapper:focus-within {
+    background: var(--glass-surface-3);
+    border-color: var(--accent-trust);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px var(--accent-trust);
+  }
+
+  /* Professional fintech input field styling */
   .ticker-input {
     width: 100%;
-    padding: 10px 40px 10px 12px;
-    border: 1.5px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: var(--spacing-3) var(--spacing-10) var(--spacing-3) var(--spacing-3);
+    border: none;
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-ticker);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-wider);
     text-align: center;
     text-transform: uppercase;
-    background: white;
-    color: #111827;
-    transition: all 0.2s ease;
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-    letter-spacing: 0.5px;
-  }
-
-  .ticker-input:focus {
+    color: var(--text-primary);
+    /* Advanced text rendering */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Performance optimizations */
+    box-sizing: border-box;
+    /* Enhanced transitions */
+    transition: all var(--timing-base) var(--ease-out);
+    /* Financial data formatting */
+    font-variant-numeric: tabular-nums;
+    /* Remove default styling */
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    background: #fefefe;
+    resize: none;
+    /* Mobile optimizations */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
   }
 
+  .ticker-input::placeholder {
+    color: var(--neutral-color);
+    font-weight: var(--font-weight-medium);
+    opacity: 0.7;
+    transition: opacity var(--timing-fast) var(--ease-out);
+  }
+
+  .ticker-input:focus::placeholder {
+    opacity: 0.4;
+    transform: translateY(-1px);
+  }
+
+  /* Enhanced focus states using fintech design system */
   .ticker-input:focus-visible {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
+    border-radius: var(--radius-md);
   }
 
-  /* Input validation states */
+  /* Professional validation states with semantic colors */
   .ticker-input.valid {
-    border-color: #10b981;
-    background: #f0fdf4;
+    color: var(--accent-success);
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
   }
 
-  .ticker-input.valid:focus {
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  .ticker-input-wrapper:has(.ticker-input.valid) {
+    border-color: var(--accent-success);
+    background: rgba(16, 185, 129, 0.05);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 8px rgba(16, 185, 129, 0.2);
   }
 
   .ticker-input.error {
-    border-color: #ef4444;
-    background: #fef2f2;
+    color: var(--accent-error);
+    animation: shake var(--timing-medium) var(--ease-in-out);
   }
 
-  .ticker-input.error:focus {
-    border-color: #ef4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  .ticker-input-wrapper:has(.ticker-input.error) {
+    border-color: var(--accent-error);
+    background: rgba(239, 68, 68, 0.05);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 8px rgba(239, 68, 68, 0.2);
   }
 
+  /* Enhanced disabled state */
   .ticker-input:disabled {
-    background-color: #f9fafb;
-    border-color: #e5e7eb;
-    color: #9ca3af;
+    color: rgba(247, 250, 252, 0.4);
+    cursor: not-allowed;
+    text-shadow: none;
+  }
+
+  .ticker-input-wrapper:has(.ticker-input:disabled) {
+    background: var(--glass-surface-1);
+    border-color: rgba(255, 255, 255, 0.05);
+    opacity: 0.6;
     cursor: not-allowed;
   }
 
-  /* Validation icon styling */
+  /* Professional validation icon positioning and styling */
   .validation-icon {
     position: absolute;
-    right: 12px;
+    right: var(--spacing-3);
     top: 50%;
     transform: translateY(-50%);
     display: flex;
@@ -383,154 +492,354 @@ export const sharedTickerInputStyles = `
     width: 20px;
     height: 20px;
     pointer-events: none;
+    z-index: 2;
+    /* Enhanced icon transitions */
+    transition: all var(--timing-base) var(--ease-out);
   }
 
   .validation-success {
-    color: #10b981;
-    font-weight: bold;
-    font-size: 14px;
+    color: var(--accent-success);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-body);
+    text-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
+    /* Success pulse animation */
+    animation: pulseGradient 2s var(--ease-in-out) infinite;
   }
 
   .validation-error {
-    color: #ef4444;
-    font-weight: bold;
-    font-size: 14px;
-    background: #fee2e2;
-    border-radius: 50%;
+    color: var(--accent-error);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-small);
+    background: var(--gradient-error-subtle);
+    border: 1px solid var(--accent-error);
+    border-radius: var(--radius-full);
     width: 18px;
     height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    /* Error shake animation */
+    animation: shake var(--timing-medium) var(--ease-in-out);
+    /* Enhanced error styling */
+    box-shadow:
+      0 2px 4px rgba(239, 68, 68, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
-  /* Error message styling */
+  /* Professional error message with glassmorphic styling */
   .error-message {
-    background-color: #fef2f2;
-    color: #dc2626;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    border: 1px solid #fecaca;
+    background: var(--gradient-error-subtle);
+    color: var(--accent-error);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-body);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-wide);
+    border: 1px solid var(--accent-error);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--spacing-2);
+    /* Enhanced error styling */
+    box-shadow:
+      0 2px 8px rgba(239, 68, 68, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Backdrop blur for glassmorphism */
+    backdrop-filter: var(--glass-blur-xs);
+    -webkit-backdrop-filter: var(--glass-blur-xs);
+    /* Error animation */
+    animation: fadeInUp var(--timing-base) var(--ease-out);
+    margin-top: var(--spacing-2);
   }
 
   .error-message::before {
     content: '⚠';
-    font-size: 14px;
+    font-size: var(--font-size-body);
     flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
   }
 
-  /* Mobile responsiveness */
+  /* Enhanced mobile responsiveness with fintech styling (320px-767px) */
   @media (max-width: 767px) {
     .shared-ticker-input-container {
       max-width: 100%;
+      padding: var(--spacing-3);
+      /* Mobile glassmorphic optimization */
+      backdrop-filter: var(--glass-blur-md);
+      -webkit-backdrop-filter: var(--glass-blur-md);
     }
 
     .ticker-input {
-      padding: 12px 40px 12px 14px;
-      font-size: 16px; /* Prevents iOS zoom */
+      padding: var(--spacing-4) var(--spacing-12) var(--spacing-4) var(--spacing-4);
+      font-size: var(--font-size-body); /* Prevents iOS zoom while maintaining readability */
       min-height: 44px; /* Touch-friendly minimum */
+      letter-spacing: var(--letter-spacing-wide);
+      /* Enhanced mobile interactions */
+      -webkit-tap-highlight-color: transparent;
     }
 
     .ticker-label {
-      font-size: 14px;
+      font-size: var(--font-size-body);
+      font-weight: var(--font-weight-medium);
     }
 
     .error-message {
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: var(--spacing-3) var(--spacing-4);
+      font-size: var(--font-size-small);
+    }
+
+    .validation-icon {
+      right: var(--spacing-4);
+      width: 24px;
+      height: 24px;
     }
   }
 
-  /* Tablet optimizations */
-  @media (min-width: 768px) and (max-width: 1023px) {
+  /* Enhanced tablet optimizations (768px-1024px) */
+  @media (min-width: 768px) and (max-width: 1024px) {
     .ticker-input {
-      padding: 11px 40px 11px 13px;
-      font-size: 15px;
+      padding: calc(var(--spacing-3) + 1px) var(--spacing-11) calc(var(--spacing-3) + 1px) calc(var(--spacing-3) + 1px);
+      font-size: calc(var(--font-size-ticker) * 0.95);
+    }
+
+    .shared-ticker-input-container {
+      max-width: 220px;
     }
   }
 
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
+  /* Enhanced desktop optimizations with sophisticated effects (1025px+) */
+  @media (min-width: 1025px) {
+    .shared-ticker-input-container {
+      max-width: 260px;
+      transition: all var(--timing-base) var(--ease-out);
+    }
+
+    .shared-ticker-input-container:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glass-shadow-lg), var(--shadow-glow-trust);
+    }
+
+    .shared-ticker-input-container:focus-within {
+      transform: translateY(-3px);
+      box-shadow:
+        0 0 0 1px var(--accent-trust),
+        var(--glass-shadow-lg),
+        var(--shadow-glow-trust),
+        0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  /* Enhanced cross-platform optimizations with fintech styling */
+  @media (hover: none) and (pointer: coarse) {
+    /* Touch devices - enhanced touch interaction */
     .ticker-input {
-      border-width: 2px;
+      min-height: 48px; /* Larger touch target */
+      /* Simplified transitions for touch */
+      transition: color var(--timing-fast) var(--ease-out);
     }
 
-    .ticker-input.valid {
-      border-width: 2px;
+    .shared-ticker-input-container:hover {
+      /* Maintain original styling on touch hover */
+      transform: none;
     }
 
-    .ticker-input.error {
-      border-width: 2px;
-    }
-
-    .error-message {
-      border-width: 2px;
-    }
-  }
-
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    .ticker-input {
-      transition: none;
+    /* Enhanced touch feedback */
+    .shared-ticker-input-container:focus-within {
+      background: var(--glass-surface-4);
+      transform: none;
     }
   }
 
-  /* Dark mode support preparation */
-  @media (prefers-color-scheme: dark) {
-    .ticker-input {
-      background: #1f2937;
-      border-color: #4b5563;
-      color: #f9fafb;
-    }
-
-    .ticker-input:focus {
-      background: #111827;
-    }
-
-    .ticker-label {
-      color: #e5e7eb;
-    }
-
-    .ticker-input.valid {
-      background: #064e3b;
-    }
-
-    .ticker-input.error {
-      background: #7f1d1d;
-    }
-
-    .error-message {
-      background-color: #7f1d1d;
-      color: #fca5a5;
-      border-color: #dc2626;
-    }
-  }
-
-  /* Focus-within enhancement for the container */
-  .shared-ticker-input-container:focus-within .ticker-label {
-    color: #3b82f6;
-    transition: color 0.2s ease;
-  }
-
-  /* Hover effects for non-touch devices */
   @media (hover: hover) and (pointer: fine) {
-    .ticker-input:not(:disabled):not(:focus):hover {
-      border-color: #9ca3af;
-      background: #fdfdfd;
+    /* Precision input devices - sophisticated hover states */
+    .ticker-input-wrapper:hover {
+      background: var(--glass-surface-3);
     }
 
-    .ticker-input.valid:not(:focus):hover {
-      border-color: #059669;
+    .ticker-input:not(:disabled):hover {
+      color: var(--accent-trust);
+      text-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
     }
 
-    .ticker-input.error:not(:focus):hover {
-      border-color: #dc2626;
+    .ticker-input.valid:not(:disabled):hover {
+      color: var(--accent-success-hover);
+    }
+
+    .ticker-input.error:not(:disabled):hover {
+      color: var(--accent-error-hover);
+    }
+  }
+
+  /* Enhanced accessibility features */
+  @media (prefers-contrast: high) {
+    .shared-ticker-input-container {
+      border-width: 2px;
+      background: rgba(26, 32, 44, 0.9);
+    }
+
+    .ticker-input-wrapper {
+      border-width: 2px;
+    }
+
+    .ticker-input.valid {
+      text-shadow: none;
+      color: var(--accent-success-hover);
+    }
+
+    .ticker-input.error {
+      color: var(--accent-error-hover);
+    }
+
+    .error-message {
+      border-width: 2px;
+      background: rgba(239, 68, 68, 0.2);
+    }
+  }
+
+  /* Enhanced reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .shared-ticker-input-container,
+    .ticker-input-wrapper,
+    .ticker-input,
+    .ticker-label,
+    .validation-icon {
+      transition: none;
+      animation: none;
+    }
+
+    .shared-ticker-input-container:hover,
+    .shared-ticker-input-container:focus-within {
+      transform: none;
+    }
+
+    .validation-success {
+      animation: none;
+    }
+
+    .validation-error {
+      animation: none;
+    }
+
+    .error-message {
+      animation: none;
+    }
+  }
+
+  /* Print styles for export functionality */
+  @media print {
+    .shared-ticker-input-container {
+      background: white !important;
+      border: 2px solid #000;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .ticker-input-wrapper {
+      background: white !important;
+      border: 1px solid #000;
+    }
+
+    .ticker-input {
+      color: #000 !important;
+      text-shadow: none;
+    }
+
+    .ticker-label {
+      color: #000 !important;
+    }
+
+    .error-message {
+      background: #fff !important;
+      color: #000 !important;
+      border: 1px solid #000;
+    }
+
+    .validation-success,
+    .validation-error {
+      color: #000 !important;
+      background: #fff !important;
+      text-shadow: none;
+      box-shadow: none;
+    }
+  }
+
+  /* Forced colors mode support (Windows High Contrast) */
+  @media (forced-colors: active) {
+    .shared-ticker-input-container {
+      border: 2px solid ButtonBorder;
+      background: ButtonFace;
+    }
+
+    .ticker-input-wrapper {
+      border: 2px solid ButtonBorder;
+      background: Field;
+    }
+
+    .ticker-input {
+      color: FieldText;
+      background: Field;
+    }
+
+    .ticker-label {
+      color: ButtonText;
+    }
+
+    .ticker-input:focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+
+    .error-message {
+      border: 2px solid ButtonBorder;
+      background: Mark;
+      color: MarkText;
+    }
+  }
+
+  /* Legacy browser support */
+  @supports not (backdrop-filter: blur(8px)) {
+    .shared-ticker-input-container {
+      background: rgba(45, 55, 72, 0.95);
+    }
+
+    .ticker-input-wrapper {
+      background: rgba(26, 32, 44, 0.8);
+    }
+  }
+
+  /* Enhanced animation keyframes for fintech interactions */
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0) var(--gpu-acceleration);
+    }
+    25% {
+      transform: translateX(-2px) var(--gpu-acceleration);
+    }
+    75% {
+      transform: translateX(2px) var(--gpu-acceleration);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(4px) var(--gpu-acceleration);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) var(--gpu-acceleration);
+    }
+  }
+
+  @keyframes pulseGradient {
+    0%, 100% {
+      opacity: 0.8;
+      transform: scale(1) var(--gpu-acceleration);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1) var(--gpu-acceleration);
     }
   }
 `;

@@ -100,96 +100,309 @@ export default class ErrorBoundary extends React.Component<
   }
 }
 
-// Error boundary styles
+// Professional Fintech Error Boundary Styles - Trustworthy Error Presentation
 export const errorBoundaryStyles = `
+  /* ==========================================================================
+     ERROR BOUNDARY - Professional Fintech Error Handling with Trustworthy Design
+     ========================================================================== */
+  
   .error-boundary-fallback {
-    padding: 20px;
-    margin: 20px;
-    border: 2px solid #ff6b6b;
-    border-radius: 8px;
-    background-color: #fff5f5;
-    color: #721c24;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Professional Glassmorphic Error Container */
+    background: var(--glass-surface-3);
+    backdrop-filter: var(--glass-blur-md);
+    border: 2px solid var(--accent-error);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3), var(--glass-shadow-lg);
+    
+    /* Professional Spacing */
+    padding: var(--spacing-6);
+    margin: var(--spacing-4);
+    max-width: 600px;
+    
+    /* Professional Typography */
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    line-height: var(--line-height-relaxed);
+    
+    /* Modern Enhancement */
+    position: relative;
+    overflow: hidden;
   }
-
+  
+  /* Error Accent Border */
+  .error-boundary-fallback::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    opacity: 0.8;
+  }
+  
+  /* Professional Error Title */
   .error-boundary-fallback h2 {
-    color: #c53030;
+    color: var(--accent-error-light);
     margin-top: 0;
-    margin-bottom: 16px;
-    font-size: 1.25rem;
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-h4);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-display);
+    
+    /* Error Icon Integration */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
   }
-
+  
+  .error-boundary-fallback h2::before {
+    content: '⚠️';
+    font-size: var(--font-size-h3);
+    filter: grayscale(0.2);
+  }
+  
+  /* Professional Error Details Container */
   .error-boundary-fallback details {
-    margin-bottom: 16px;
-    padding: 12px;
-    background-color: #fed7d7;
-    border-radius: 4px;
-    border: 1px solid #fc8181;
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-3);
+    
+    /* Glass Effect for Details */
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-2);
+    border-radius: 12px;
+    
+    /* Professional Enhancement */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
-
+  
+  /* Interactive Summary */
   .error-boundary-fallback summary {
     cursor: pointer;
-    font-weight: 600;
-    color: #742a2a;
-    margin-bottom: 8px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-2);
+    
+    font-size: var(--font-size-body);
+    padding: var(--spacing-1);
+    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Professional Enhancement */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
   }
-
+  
+  .error-boundary-fallback summary::before {
+    content: '▶';
+    transition: transform 0.2s ease;
+    font-size: var(--font-size-small);
+  }
+  
+  .error-boundary-fallback details[open] summary::before {
+    transform: rotate(90deg);
+  }
+  
   .error-boundary-fallback summary:hover {
-    color: #c53030;
+    color: var(--accent-error-light);
+    background: var(--glass-surface-1);
+    transform: translateX(var(--spacing-1));
   }
-
+  
+  /* Professional Error Details */
   .error-details {
-    margin-top: 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-    line-height: 1.4;
+    margin-top: var(--spacing-2);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-small);
+    line-height: var(--line-height-normal);
+    
+    /* Code Block Styling */
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: var(--spacing-3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* Modern Scrollbar */
+    overflow-x: auto;
   }
-
+  
   .error-details p {
-    margin: 8px 0;
+    margin: var(--spacing-2) 0;
+    word-break: break-word;
   }
-
+  
   .error-details strong {
-    color: #c53030;
+    color: var(--accent-error);
+    font-weight: var(--font-weight-bold);
   }
-
+  
+  /* Professional Reset Button */
   .error-reset-button {
-    background-color: #c53030;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
+    /* Fintech Button Design */
+    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-error);
+    
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
+    
+    /* Professional Typography */
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wide);
+    
+    /* Professional Transitions */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    
+    /* Enhancement */
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    
+    /* Button Icon */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
   }
-
+  
+  .error-reset-button::before {
+    content: '🔄';
+    font-size: var(--font-size-small);
+  }
+  
   .error-reset-button:hover {
-    background-color: #9b2c2c;
+    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
   }
-
-  .error-reset-button:focus {
-    outline: 2px solid #c53030;
+  
+  .error-reset-button:active {
+    transform: translateY(0);
+  }
+  
+  .error-reset-button:focus-visible {
+    outline: 2px solid var(--focus-ring-error);
     outline-offset: 2px;
   }
-
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
+  
+  /* Responsive Design - Mobile Optimization */
+  @media (max-width: 640px) {
     .error-boundary-fallback {
-      border: 3px solid;
-      background-color: white;
+      padding: var(--spacing-4);
+      margin: var(--spacing-2);
+      border-radius: 12px;
+    }
+    
+    .error-boundary-fallback h2 {
+      font-size: var(--font-size-h5);
+      margin-bottom: var(--spacing-3);
+    }
+    
+    .error-boundary-fallback details {
+      padding: var(--spacing-2);
+    }
+    
+    .error-details {
+      font-size: var(--font-size-micro);
+      padding: var(--spacing-2);
     }
     
     .error-reset-button {
-      border: 2px solid;
+      padding: var(--spacing-3);
+      font-size: var(--font-size-small);
+      width: 100%;
+      justify-content: center;
     }
   }
-
-  /* Reduced motion support */
+  
+  /* Tablet Optimization */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .error-boundary-fallback {
+      padding: var(--spacing-5);
+    }
+  }
+  
+  /* Desktop Enhancement */
+  @media (min-width: 1025px) {
+    .error-boundary-fallback {
+      padding: var(--spacing-8);
+      margin: var(--spacing-6);
+    }
+    
+    .error-boundary-fallback:hover {
+      backdrop-filter: var(--glass-blur-lg);
+    }
+  }
+  
+  /* High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    .error-boundary-fallback {
+      border: 3px solid var(--accent-error);
+      background: var(--background-primary);
+    }
+    
+    .error-reset-button {
+      border: 2px solid var(--accent-error);
+      background: var(--accent-error);
+    }
+    
+    .error-details {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+  }
+  
+  /* Reduced Motion Support */
   @media (prefers-reduced-motion: reduce) {
     .error-reset-button {
       transition: none;
+      transform: none;
     }
+    
+    .error-reset-button:hover {
+      transform: none;
+    }
+    
+    .error-boundary-fallback summary {
+      transition: none;
+    }
+    
+    .error-boundary-fallback summary::before {
+      transition: none;
+    }
+  }
+  
+  /* Performance Optimizations */
+  .error-boundary-fallback {
+    will-change: backdrop-filter;
+    transform: translateZ(0); /* Force GPU acceleration */
+  }
+  
+  /* Professional Loading Animation for Retry */
+  .error-reset-button[data-loading="true"] {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  
+  .error-reset-button[data-loading="true"]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-3);
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--text-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translateY(-50%);
+  }
+  
+  @keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
   }
 `;

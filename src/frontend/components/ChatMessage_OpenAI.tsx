@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, Suspense, lazy } from 'react';
+import { ComponentPropsWithoutRef, Suspense, lazy, useEffect, useState } from 'react';
 
 // Lazy load react-markdown for better performance
 const Markdown = lazy(() => import('react-markdown'));
@@ -18,8 +18,9 @@ const markdownComponents = {
     <p
       {...props}
       style={{
-        marginBottom: '8px',
-        lineHeight: '1.6',
+        marginBottom: 'var(--space-2)',
+        lineHeight: 'var(--leading-relaxed)',
+        fontFamily: 'var(--font-inter)',
       }}
     >
       {children}
@@ -29,10 +30,11 @@ const markdownComponents = {
     <h1
       {...props}
       style={{
-        marginBottom: '12px',
-        fontSize: '1.5em',
-        fontWeight: '600',
-        color: '#1a202c',
+        marginBottom: 'var(--space-3)',
+        fontSize: 'var(--text-xl)',
+        fontWeight: 'var(--font-bold)',
+        color: 'var(--neutral-50)',
+        fontFamily: 'var(--font-inter)',
       }}
     >
       {children}
@@ -42,10 +44,11 @@ const markdownComponents = {
     <h2
       {...props}
       style={{
-        marginBottom: '10px',
-        fontSize: '1.3em',
-        fontWeight: '600',
-        color: '#2d3748',
+        marginBottom: 'var(--space-2)',
+        fontSize: 'var(--text-lg)',
+        fontWeight: 'var(--font-semibold)',
+        color: 'var(--neutral-100)',
+        fontFamily: 'var(--font-inter)',
       }}
     >
       {children}
@@ -55,10 +58,11 @@ const markdownComponents = {
     <h3
       {...props}
       style={{
-        marginBottom: '8px',
-        fontSize: '1.2em',
-        fontWeight: '600',
-        color: '#4a5568',
+        marginBottom: 'var(--space-2)',
+        fontSize: 'var(--text-base)',
+        fontWeight: 'var(--font-medium)',
+        color: 'var(--neutral-200)',
+        fontFamily: 'var(--font-inter)',
       }}
     >
       {children}
@@ -127,11 +131,15 @@ const markdownComponents = {
       <code
         {...props}
         style={{
-          backgroundColor: '#f7fafc',
-          padding: '2px 4px',
-          borderRadius: '3px',
-          fontSize: '0.9em',
-          fontFamily: 'monospace',
+          backgroundColor: 'var(--glass-surface-light)',
+          backdropFilter: 'var(--backdrop-blur-sm)',
+          WebkitBackdropFilter: 'var(--backdrop-blur-sm)',
+          border: 'var(--glass-border-highlight)',
+          padding: 'var(--space-1) var(--space-2)',
+          borderRadius: 'var(--radius-md)',
+          fontSize: 'var(--text-sm)',
+          fontFamily: 'var(--font-mono)',
+          color: 'var(--primary-300)',
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
         }}
@@ -142,13 +150,18 @@ const markdownComponents = {
       <pre
         className='code-block'
         style={{
-          backgroundColor: '#f7fafc',
-          padding: '12px',
-          borderRadius: '8px',
+          backgroundColor: 'var(--glass-surface-dark)',
+          backdropFilter: 'var(--backdrop-blur-md)',
+          WebkitBackdropFilter: 'var(--backdrop-blur-md)',
+          border: 'var(--glass-border-highlight)',
+          padding: 'var(--space-3)',
+          borderRadius: 'var(--radius-lg)',
           overflowX: 'auto',
           maxWidth: '100%',
-          marginBottom: '8px',
+          marginBottom: 'var(--space-2)',
           whiteSpace: 'pre',
+          color: 'var(--neutral-100)',
+          fontFamily: 'var(--font-mono)',
         }}
       >
         <code {...props}>{children}</code>
@@ -161,9 +174,33 @@ export default function ChatMessage_OpenAI({
   message,
 }: ChatMessage_OpenAIProps) {
   const isUser = message.sender === 'user';
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Trigger appearance animation on mount
+  useEffect(() => {
+    // Small delay to ensure smooth animation
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 50);
+
+    // Mark as loaded after animation completes
+    const loadTimer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(loadTimer);
+    };
+  }, []);
 
   return (
-    <div className={`message ${isUser ? 'user-message' : 'ai-message'}`}>
+    <div className={`message ${isUser ? 'user-message' : 'ai-message'} ${
+      isVisible ? 'message-visible' : 'message-hidden'
+    } ${
+      isLoaded ? 'message-loaded' : 'message-loading'
+    }`}>
       <div className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`}>
         <MessageCopyButton message={message} />
         <div className='message-content'>
@@ -196,11 +233,12 @@ export default function ChatMessage_OpenAI({
   );
 }
 
-// Enhanced inline styles for message components
+// Professional fintech glassmorphic message styling
 export const messageStyles = `
   .message {
     display: flex;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
+    position: relative;
   }
   
   .user-message {
@@ -213,14 +251,17 @@ export const messageStyles = `
   
   .message-bubble {
     max-width: 85%; /* Mobile first approach */
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-2xl);
     position: relative;
     overflow-x: auto;
     overflow-y: visible;
     word-wrap: break-word;
     overflow-wrap: break-word;
     scrollbar-width: thin; /* Firefox */
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    border: var(--glass-border-highlight);
   }
   
   /* Desktop/Tablet breakpoint */
@@ -231,37 +272,49 @@ export const messageStyles = `
   }
   
   .user-bubble {
-    background-color: #007bff;
-    color: white;
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    color: var(--neutral-50);
+    border-color: var(--primary-500);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
   }
   
   .ai-bubble {
-    background-color: #f1f1f1;
-    color: #333;
+    background: var(--glass-surface-light);
+    color: var(--neutral-100);
+    border-color: var(--neutral-600);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .message-content {
-    margin-bottom: 4px;
-    line-height: 1.6;
+    margin-bottom: var(--space-1);
+    line-height: var(--leading-relaxed);
     white-space: pre-wrap;
     word-break: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
+    font-family: var(--font-inter);
   }
   
   .message-timestamp {
-    font-size: 0.75rem;
-    opacity: 0.7;
+    font-size: var(--text-xs);
+    opacity: 0.8;
+    font-family: var(--font-mono);
+    color: var(--neutral-300);
+  }
+  
+  .user-bubble .message-timestamp {
+    color: var(--neutral-200);
   }
   
   .response-time {
-    opacity: 0.6;
+    opacity: 0.7;
     font-style: italic;
-    color: #666;
+    color: var(--neutral-400);
+    font-family: var(--font-mono);
   }
   
   .user-bubble .response-time {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--neutral-200);
   }
 
 
@@ -390,6 +443,78 @@ export const messageStyles = `
 
   .user-bubble .markdown-loading {
     color: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Enhanced loading state with professional animation */
+  .markdown-loading {
+    transition: opacity 0.3s ease;
+  }
+  
+  .markdown-loading::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    margin-left: 8px;
+    animation: markdown-loading-spin 1s linear infinite;
+    vertical-align: middle;
+  }
+  
+  @keyframes markdown-loading-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Performance optimizations */
+  .message-bubble {
+    /* GPU acceleration for smooth interactions */
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  
+  /* High DPI display optimization */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+    .message-bubble {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+  
+  /* Enhanced reduced motion support for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .message {
+      transition: none;
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    
+    .message-visible {
+      animation: none;
+      transition: none;
+    }
+    
+    .user-bubble,
+    .ai-bubble {
+      animation: none;
+    }
+    
+    .message-bubble:hover {
+      transform: none;
+    }
+    
+    .user-bubble.message-visible,
+    .ai-bubble.message-visible {
+      animation: none;
+    }
+    
+    .markdown-loading::after {
+      animation: none;
+      border: 2px solid currentColor;
+    }
   }
 
   ${messageCopyButtonStyles}
