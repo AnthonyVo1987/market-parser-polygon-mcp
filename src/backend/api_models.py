@@ -49,7 +49,7 @@ class TemplateListResponse(BaseModel):
 
 class GeneratePromptRequest(BaseModel):
     """Request model for generating a prompt"""
-    
+
     class Config:
         allow_population_by_field_name = True
 

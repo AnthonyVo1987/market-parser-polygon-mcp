@@ -24,8 +24,8 @@ max-statements = 50
 good-names = i,j,k,ex,Run,_,id,db,ai,ui,os,df,dt,fs,app
 
 [IMPORTS]
-known-first-party = src,stock_data_fsm,stock_data_fsm_openai
-known-third-party = gradio,pydantic,rich,fastapi,openai,agents,uvicorn
+# known-first-party and known-third-party removed as they are not recognized in this Pylint version
+# These options may be available in specific Pylint plugins
 
 [SIMILARITIES]
 min-similarity-lines = 4
@@ -41,4 +41,4 @@ dummy-variables-rgx = _+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused
 defining-attr-methods = __init__,__new__,setUp,__post_init__
 
 [EXCEPTIONS]
-overgeneral-exceptions = Exception
+overgeneral-exceptions = builtins.Exception

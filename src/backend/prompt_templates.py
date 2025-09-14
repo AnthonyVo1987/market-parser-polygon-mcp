@@ -594,7 +594,7 @@ RESPONSE FORMATTING GUIDELINES:
 📊 DETAILED ANALYSIS
 🔻 **Support Levels:**
 • **S1: $145.50** (Strong) - 50-day moving average confluence
-• **S2: $142.00** (Moderate) - Previous breakout level  
+• **S2: $142.00** (Moderate) - Previous breakout level
 • **S3: $138.75** (Weak) - Psychological support zone
 
 🔺 **Resistance Levels:**
@@ -784,7 +784,7 @@ def run_prompt_consistency_tests() -> Dict[str, Any]:
 def validate_template_parsing_compatibility() -> Dict[str, Any]:
     """Validate that templates are compatible with response parsing"""
     # Note: response_parser module not available - simplified validation
-    
+
     manager = PromptTemplateManager()
 
     validation_results = {

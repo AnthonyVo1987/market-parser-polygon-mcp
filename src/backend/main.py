@@ -65,25 +65,25 @@ console = Console()
 
 class Settings(BaseSettings):
     """Application configuration settings loaded from environment variables."""
-    
+
     # FastAPI server configuration
     fastapi_host: str = "0.0.0.0"
     fastapi_port: int = 8000
-    
+
     # API Keys
     polygon_api_key: str
     openai_api_key: str
-    
+
     # MCP Configuration
     mcp_timeout_seconds: float = 120.0
-    
+
     # Agent Configuration
     openai_model: str = "gpt-5-mini"
     agent_session_name: str = "finance_conversation"
-    
+
     # CORS Configuration
     cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
-    
+
     class Config:
         env_file = ".env"
         case_sensitive = False
@@ -178,7 +178,7 @@ def create_polygon_mcp_server():
     """Create a stdio MCP server instance configured with POLYGON_API_KEY."""
     if not settings.polygon_api_key:
         raise ValueError("POLYGON_API_KEY not set in environment.")
-    
+
     return MCPServerStdio(
         params={
             "command": "uvx",
@@ -334,7 +334,7 @@ ticker_extractor = TickerExtractor()
 async def lifespan(app: FastAPI):
     """FastAPI lifespan management for shared MCP server and session instances."""
     global shared_mcp_server, shared_session
-    
+
     # Startup: Create shared instances
     try:
         console.print(f"[bold green]Starting FastAPI server on {settings.fastapi_host}:{settings.fastapi_port}[/bold green]")
@@ -346,9 +346,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         console.print(f"[bold red]✗ Failed to initialize shared resources: {e}[/bold red]")
         raise
-    
+
     yield
-    
+
     # Cleanup: Close shared instances
     try:
         console.print("[bold yellow]Shutting down shared MCP server...[/bold yellow]")
@@ -394,21 +394,21 @@ else:
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Process a financial query and return the response."""
     global shared_mcp_server, shared_session
-    
+
     # Enhanced input validation for empty and whitespace-only inputs
     if not request.message:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Query cannot be empty. Please enter a financial question.",
         )
-    
+
     stripped_message = request.message.strip()
     if len(stripped_message) < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Query must be at least 2 characters long. Please enter a valid financial question.",
         )
-    
+
     # Check for whitespace-only or control character inputs
     if not stripped_message or stripped_message.isspace():
         raise HTTPException(
@@ -522,23 +522,23 @@ async def generate_prompt_endpoint(request: GeneratePromptRequest):
 async def get_stock_snapshot(request: ButtonAnalysisRequest):
     """Get stock snapshot analysis for button-triggered requests."""
     global shared_mcp_server, shared_session
-    
+
     # Validate ticker input
     if not request.ticker or len(request.ticker.strip()) < 1:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ticker symbol is required for stock analysis.",
         )
-    
+
     ticker = request.ticker.strip().upper()
-    
+
     # Basic ticker validation (alphanumeric, 1-5 characters typically)
     if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
         )
-    
+
     try:
         query = (
             f"Provide a comprehensive stock snapshot analysis for {ticker}. "
@@ -575,23 +575,23 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
 async def get_support_resistance(request: ButtonAnalysisRequest):
     """Get support and resistance levels analysis for button-triggered requests."""
     global shared_mcp_server, shared_session
-    
+
     # Validate ticker input
     if not request.ticker or len(request.ticker.strip()) < 1:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ticker symbol is required for support/resistance analysis.",
         )
-    
+
     ticker = request.ticker.strip().upper()
-    
+
     # Basic ticker validation
     if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
         )
-    
+
     try:
         query = (
             f"Analyze key support and resistance levels for {ticker}. "
@@ -628,23 +628,23 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
 async def get_technical_analysis(request: ButtonAnalysisRequest):
     """Get technical analysis for button-triggered requests."""
     global shared_mcp_server, shared_session
-    
+
     # Validate ticker input
     if not request.ticker or len(request.ticker.strip()) < 1:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ticker symbol is required for technical analysis.",
         )
-    
+
     ticker = request.ticker.strip().upper()
-    
+
     # Basic ticker validation
     if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
         )
-    
+
     try:
         query = (
             f"Provide comprehensive technical analysis for {ticker} using "
@@ -684,7 +684,7 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
 async def process_chat_analysis(request: ChatAnalysisRequest):
     """Process a chat message with financial analysis using the agent system."""
     global shared_mcp_server, shared_session
-    
+
     try:
         # Detect analysis type if not provided
         analysis_type = request.analysis_type
@@ -794,7 +794,7 @@ async def get_templates_legacy():
                 "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
                 "description": f"{template_type.value.replace('_', ' ').title()} analysis template",
                 "template": f"Provide {template_type.value.replace('_', ' ')} analysis for {{ticker}}",
-                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else 
+                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else
                        "🔧" if template_type == AnalysisType.TECHNICAL else "🎯",
                 "requiresTicker": True,
                 "followUpQuestions": [
@@ -802,7 +802,7 @@ async def get_templates_legacy():
                     "Should we analyze another stock?",
                 ]
             })
-        
+
         return {
             "success": True,
             "templates": templates,
@@ -825,13 +825,13 @@ async def get_analysis_tools_legacy():
                 "id": template_type.value,
                 "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
                 "description": f"Get {template_type.value.replace('_', ' ')} analysis for any stock",
-                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else 
+                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else
                        "🔧" if template_type == AnalysisType.TECHNICAL else "🎯",
                 "endpoint": f"/api/v1/analysis/{template_type.value.replace('_', '-')}",
                 "requiresTicker": True,
                 "category": "financial_analysis"
             })
-        
+
         return {
             "success": True,
             "tools": analysis_tools,
@@ -928,16 +928,16 @@ async def cli_async():
 
 if __name__ == "__main__":
     import sys
-    
+
     if len(sys.argv) > 1 and sys.argv[1] == "--server":
         # Run as FastAPI server
         import uvicorn
-        console.print(f"[bold blue]Starting FastAPI server with settings:[/bold blue]")
+        console.print("[bold blue]Starting FastAPI server with settings:[/bold blue]")
         console.print(f"[dim]Host: {settings.fastapi_host}[/dim]")
         console.print(f"[dim]Port: {settings.fastapi_port}[/dim]")
         console.print(f"[dim]Model: {settings.openai_model}[/dim]")
         console.print(f"[dim]Session: {settings.agent_session_name}[/dim]")
-        
+
         uvicorn.run(
             "main:app",
             host=settings.fastapi_host,

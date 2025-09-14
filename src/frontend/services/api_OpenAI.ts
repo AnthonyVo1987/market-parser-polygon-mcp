@@ -1,6 +1,6 @@
 import { ChatResponse, ApiError } from '../types/chat_OpenAI';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
 
 export async function sendChatMessage(message: string): Promise<string> {
   try {

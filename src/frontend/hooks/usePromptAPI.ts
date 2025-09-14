@@ -8,7 +8,7 @@ import {
   isValidPromptTemplate,
 } from '../types/chat_OpenAI';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
 
 // Cache for template data to avoid unnecessary API calls
 const templateCache = {
@@ -150,12 +150,14 @@ export function usePromptAPI(): UsePromptAPIResult {
           );
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as {
+          prompt?: string;
+          success?: boolean;
+          error?: string;
+        };
 
-        // Handle both response formats: direct prompt response and wrapped response
+        // Handle response format: extract prompt from response
         if (data.prompt) {
-          return data.prompt;
-        } else if (data.success && data.prompt) {
           return data.prompt;
         } else {
           throw new Error(data.error || 'Failed to generate prompt');

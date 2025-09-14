@@ -1,0 +1,770 @@
+{
+  "config": {
+    "configFile": "/home/1000211866/Github/market-parser-polygon-mcp/playwright.config.ts",
+    "rootDir": "/home/1000211866/Github/market-parser-polygon-mcp/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "performance_thresholds": {
+        "success": "< 45 seconds",
+        "slow_performance": "45-120 seconds",
+        "timeout": "> 120 seconds"
+      },
+      "test_requirements": {
+        "single_browser_session": true,
+        "sequential_execution": true,
+        "no_retries": true,
+        "dynamic_port_detection": "3000-3003+",
+        "root_level_execution": true
+      },
+      "project_structure": {
+        "backend": "/src/backend/",
+        "frontend": "/src/frontend/",
+        "tests": "/tests/e2e/",
+        "config": "/playwright.config.ts (root level)"
+      },
+      "execution_commands": {
+        "run_all_tests": "npx playwright test",
+        "run_headed": "npx playwright test --headed",
+        "run_debug": "npx playwright test --debug",
+        "run_ui": "npx playwright test --ui",
+        "run_specific": "npx playwright test test-b001-market-status.spec.ts"
+      },
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/1000211866/Github/market-parser-polygon-mcp/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "performance_thresholds": {
+            "success": "< 45 seconds",
+            "slow_performance": "45-120 seconds",
+            "timeout": "> 120 seconds"
+          },
+          "test_requirements": {
+            "single_browser_session": true,
+            "sequential_execution": true,
+            "no_retries": true,
+            "dynamic_port_detection": "3000-3003+",
+            "root_level_execution": true
+          },
+          "project_structure": {
+            "backend": "/src/backend/",
+            "frontend": "/src/frontend/",
+            "tests": "/tests/e2e/",
+            "config": "/playwright.config.ts (root level)"
+          },
+          "execution_commands": {
+            "run_all_tests": "npx playwright test",
+            "run_headed": "npx playwright test --headed",
+            "run_debug": "npx playwright test --debug",
+            "run_ui": "npx playwright test --ui",
+            "run_specific": "npx playwright test test-b001-market-status.spec.ts"
+          },
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/1000211866/Github/market-parser-polygon-mcp/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "test-b*.spec.ts",
+          "*.test.ts",
+          "*.spec.ts"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "test-b001-market-status.spec.ts",
+      "file": "test-b001-market-status.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "TEST-B001: Market Status",
+          "file": "test-b001-market-status.spec.ts",
+          "line": 33,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should validate system readiness before testing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 220,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[TEST-B001] Validating system readiness...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Validating complete system readiness...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Getting complete system server status...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Verifying backend server on port 8000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:8000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 404 (12ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Backend server status: running=true, accessible=true\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (214ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] System status - Frontend: port 3000, Backend: accessible\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] System readiness: READY\n"
+                        },
+                        {
+                          "text": "[TEST-B001] System validation completed\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Frontend: port 3000\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Backend: accessible: true\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-14T01:20:31.447Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "06d2672a0da869ad89e7-e33efea6212d85a94267",
+              "file": "test-b001-market-status.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "should execute market status query with performance tracking",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6718,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[TEST-B001] Starting market status test execution...\n"
+                        },
+                        {
+                          "text": "[SESSION] Initializing single browser session...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Validating complete system readiness...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Getting complete system server status...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Verifying backend server on port 8000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:8000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 404 (2ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Backend server status: running=true, accessible=true\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (254ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] System status - Frontend: port 3000, Backend: accessible\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] System readiness: READY\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Auto-detecting frontend server for navigation...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (98ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Navigating to frontend: http://localhost:3000\n"
+                        },
+                        {
+                          "text": "[SESSION] Browser session initialized successfully\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Auto-detecting frontend server for navigation...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (12ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Navigating to frontend: http://localhost:3000\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Navigated to frontend: http://localhost:3000\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Sending query: Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Starting test: TEST-B001-MarketStatus\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Input message: \"Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity\"\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Sending message: \"Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity\"\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Message sent successfully\n"
+                        },
+                        {
+                          "text": "[POLLING] Starting 30-second polling for financial response (max 120000ms)\n"
+                        },
+                        {
+                          "text": "[POLLING] Poll #1 at 0ms - Checking for response...\n"
+                        },
+                        {
+                          "text": "[POLLING] Detected financial emoji: 📈\n"
+                        },
+                        {
+                          "text": "[POLLING] SUCCESS: Response detected after 87ms (SUCCESS)\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Test completed: TEST-B001-MarketStatus - SUCCESS (87ms)\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Execution completed in 837ms (SLOW_PERFORMANCE)\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Validating market status response...\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Starting financial response validation\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Response content length: 18385 characters\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Checking for 🎯 KEY TAKEAWAYS section...\n"
+                        },
+                        {
+                          "text": "[VALIDATION] KEY TAKEAWAYS section not found\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Checking for financial emoji indicators...\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Emoji check: FOUND (2 emojis)\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Checking for financial content keywords...\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Financial content: VALID (7 keywords)\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Extracting ticker symbols...\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Detected tickers: []\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Validation result: INVALID\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Validation errors: [ \u001b[32m'Missing 🎯 KEY TAKEAWAYS section'\u001b[39m ]\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Detected emojis: [ \u001b[32m'📈'\u001b[39m, \u001b[32m'🎯'\u001b[39m ]\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Detected tickers: []\n"
+                        },
+                        {
+                          "text": "[VALIDATION] Detected keywords: [ \u001b[32m'stock'\u001b[39m, \u001b[32m'analysis'\u001b[39m, \u001b[32m'resistance'\u001b[39m, \u001b[32m'support'\u001b[39m, \u001b[32m'up'\u001b[39m, \u001b[32m'down'\u001b[39m, \u001b[32m'%'\u001b[39m ]\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Response validation - Valid: false\n"
+                        },
+                        {
+                          "text": "[TEST-B001] KEY TAKEAWAYS present: false\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Emoji indicators: 📈, 🎯\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Content length: 18385 characters\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Performance classification: SLOW_PERFORMANCE\n"
+                        },
+                        {
+                          "text": "[TEST-B001] ⚠️ SLOW_PERFORMANCE: Response took 45-120 seconds\n"
+                        },
+                        {
+                          "text": "[TEST-B001] ✅ Market status content detected\n"
+                        },
+                        {
+                          "text": "[TEST-B001] ✅ Market status test completed successfully\n"
+                        },
+                        {
+                          "text": "[SESSION] Cleaning up browser session...\n"
+                        },
+                        {
+                          "text": "[SESSION] Final stats: {\n  totalTests: \u001b[33m0\u001b[39m,\n  successCount: \u001b[33m0\u001b[39m,\n  slowCount: \u001b[33m0\u001b[39m,\n  timeoutCount: \u001b[33m0\u001b[39m,\n  sessionDuration: \u001b[33m6504\u001b[39m,\n  averageResponseTime: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[SESSION] Session cleanup complete\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-14T01:20:31.689Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "06d2672a0da869ad89e7-2bb393d646c1acdd8309",
+              "file": "test-b001-market-status.spec.ts",
+              "line": 53,
+              "column": 3
+            },
+            {
+              "title": "should validate market status response format",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2670,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[TEST-B001] Validating market status response format requirements...\n"
+                        },
+                        {
+                          "text": "[SESSION] Initializing single browser session...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Validating complete system readiness...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Getting complete system server status...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Verifying backend server on port 8000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:8000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 404 (5ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Backend server status: running=true, accessible=true\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (6ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] System status - Frontend: port 3000, Backend: accessible\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] System readiness: READY\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Auto-detecting frontend server for navigation...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (5ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Navigating to frontend: http://localhost:3000\n"
+                        },
+                        {
+                          "text": "[SESSION] Browser session initialized successfully\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Auto-detecting frontend server for navigation...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Scanning frontend ports 3000-3010\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Found server on port 3000, verifying accessibility...\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check: http://localhost:3000/\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Health check response: 200 (6ms)\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Frontend server confirmed on port 3000\n"
+                        },
+                        {
+                          "text": "[PORT-DETECTION] Navigating to frontend: http://localhost:3000\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Starting test: TEST-B001-Format-Validation\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Input message: \"Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity\"\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Sending message: \"Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity\"\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Message sent successfully\n"
+                        },
+                        {
+                          "text": "[POLLING] Starting 30-second polling for financial response (max 120000ms)\n"
+                        },
+                        {
+                          "text": "[POLLING] Poll #1 at 0ms - Checking for response...\n"
+                        },
+                        {
+                          "text": "[POLLING] Detected financial emoji: 📈\n"
+                        },
+                        {
+                          "text": "[POLLING] SUCCESS: Response detected after 72ms (SUCCESS)\n"
+                        },
+                        {
+                          "text": "[TEST-HELPER] Test completed: TEST-B001-Format-Validation - SUCCESS (72ms)\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Format validation - KEY TAKEAWAYS: false\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Format validation - Financial emojis: true\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Response structure: 734 lines\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Structured sections found: 1\n"
+                        },
+                        {
+                          "text": "[TEST-B001] ✅ Format validation completed\n"
+                        },
+                        {
+                          "text": "[SESSION] Cleaning up browser session...\n"
+                        },
+                        {
+                          "text": "[SESSION] Final stats: {\n  totalTests: \u001b[33m0\u001b[39m,\n  successCount: \u001b[33m0\u001b[39m,\n  slowCount: \u001b[33m0\u001b[39m,\n  timeoutCount: \u001b[33m0\u001b[39m,\n  sessionDuration: \u001b[33m2416\u001b[39m,\n  averageResponseTime: \u001b[33m0\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "[SESSION] Session cleanup complete\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-14T01:20:38.506Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "06d2672a0da869ad89e7-30c071e9fd7498535cfd",
+              "file": "test-b001-market-status.spec.ts",
+              "line": 165,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "TEST-B001: Development Utilities",
+          "file": "test-b001-market-status.spec.ts",
+          "line": 240,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should validate TEST-B001 configuration",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 6,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m30000\u001b[39m\nReceived: \u001b[31m100\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m30000\u001b[39m\nReceived: \u001b[31m100\u001b[39m\n    at /home/1000211866/Github/market-parser-polygon-mcp/tests/e2e/test-b001-market-status.spec.ts:246:65",
+                        "location": {
+                          "file": "/home/1000211866/Github/market-parser-polygon-mcp/tests/e2e/test-b001-market-status.spec.ts",
+                          "column": 65,
+                          "line": 246
+                        },
+                        "snippet": "  244 |     \n  245 |     // Validate polling configuration for market status test\n> 246 |     expect(COMPREHENSIVE_TEST_CONFIG.polling.pollingIntervalMs).toBe(30000);\n      |                                                                 ^\n  247 |     expect(COMPREHENSIVE_TEST_CONFIG.polling.maxTimeoutMs).toBe(120000);\n  248 |     expect(COMPREHENSIVE_TEST_CONFIG.polling.successThresholdMs).toBe(45000);\n  249 |     "
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/1000211866/Github/market-parser-polygon-mcp/tests/e2e/test-b001-market-status.spec.ts",
+                            "column": 65,
+                            "line": 246
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m30000\u001b[39m\nReceived: \u001b[31m100\u001b[39m\n\n  244 |     \n  245 |     // Validate polling configuration for market status test\n> 246 |     expect(COMPREHENSIVE_TEST_CONFIG.polling.pollingIntervalMs).toBe(30000);\n      |                                                                 ^\n  247 |     expect(COMPREHENSIVE_TEST_CONFIG.polling.maxTimeoutMs).toBe(120000);\n  248 |     expect(COMPREHENSIVE_TEST_CONFIG.polling.successThresholdMs).toBe(45000);\n  249 |     \n    at /home/1000211866/Github/market-parser-polygon-mcp/tests/e2e/test-b001-market-status.spec.ts:246:65"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[TEST-B001] Validating test configuration...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-14T01:20:41.195Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/home/1000211866/Github/market-parser-polygon-mcp/test-results/test-b001-market-status-TE-c96a3-ate-TEST-B001-configuration-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/home/1000211866/Github/market-parser-polygon-mcp/tests/e2e/test-b001-market-status.spec.ts",
+                        "column": 65,
+                        "line": 246
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "06d2672a0da869ad89e7-ae92b50baa631ab4f61e",
+              "file": "test-b001-market-status.spec.ts",
+              "line": 242,
+              "column": 3
+            },
+            {
+              "title": "should validate market status query format",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[TEST-B001] Validating query format...\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Query format validation completed\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Query: Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity\n"
+                        },
+                        {
+                          "text": "[TEST-B001] Query length: 104 characters\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-14T01:20:42.104Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "06d2672a0da869ad89e7-5d41450ab52f1f917d8b",
+              "file": "test-b001-market-status.spec.ts",
+              "line": 268,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-14T01:20:29.863Z",
+    "duration": 12350.494999999999,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}
