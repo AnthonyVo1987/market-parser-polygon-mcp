@@ -6,7 +6,7 @@ Tests basic API health endpoint without over-engineering.
 """
 
 import os
-import time
+import sys
 from pathlib import Path
 
 import requests
@@ -36,13 +36,11 @@ def test_api_health():
                 print("✅ API health check successful")
                 print(f"   Response: {data}")
                 return True
-            else:
-                print(f"❌ API returned unexpected response: {data}")
-                return False
-        else:
-            print(f"❌ API health check failed with status {response.status_code}")
-            print(f"   Response: {response.text}")
+            print(f"❌ API returned unexpected response: {data}")
             return False
+        print(f"❌ API health check failed with status {response.status_code}")
+        print(f"   Response: {response.text}")
+        return False
 
     except requests.exceptions.ConnectionError:
         print("❌ API connection failed - server may not be running")
@@ -94,9 +92,8 @@ def test_backend_structure():
         if backend_path.exists():
             print(f"✅ Backend found at {backend_path}")
             return True
-        else:
-            print(f"❌ Backend not found at {backend_path}")
-            return False
+        print(f"❌ Backend not found at {backend_path}")
+        return False
 
     except Exception as e:
         print(f"❌ Backend structure test error: {e}")
@@ -130,14 +127,13 @@ def main():
     if passed == total:
         print("🎉 All API smoke tests passed!")
         return 0
-    else:
-        print("⚠️ Some API smoke tests failed")
-        print("\nℹ️  Note: API tests may fail if backend server is not running")
-        print(
-            "   Start backend with: cd /path/to/project && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"
-        )
-        return 1
+    print("⚠️ Some API smoke tests failed")
+    print("\nℹ️  Note: API tests may fail if backend server is not running")
+    print(
+        "   Start backend with: cd /path/to/project && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"
+    )
+    return 1
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

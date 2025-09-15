@@ -200,7 +200,7 @@ class TickerExtractor:
 
         return None
 
-    def _extract_from_context(self, text: str, chat_history: List[Dict]) -> Optional[TickerContext]:
+    def _extract_from_context(self, _text: str, chat_history: List[Dict]) -> Optional[TickerContext]:
         """Extract ticker from conversation context"""
         # Look through recent chat history for ticker mentions
         recent_messages = chat_history[-10:]  # Last 10 messages
@@ -261,7 +261,6 @@ class TickerExtractor:
             "WHO",
             "BOY",
             "DID",
-            "ITS",
             "LET",
             "PUT",
             "SAY",
@@ -275,7 +274,6 @@ class TickerExtractor:
             "MY",
             "WE",
             "HE",
-            "SHE",
             "THEY",
             "IT",
         }
@@ -836,7 +834,7 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
     for prompt_type in PromptType:
         try:
             # Test conversational mode (unified architecture)
-            conv_prompt, conv_context = manager.generate_prompt(
+            conv_prompt, _conv_context = manager.generate_prompt(
                 prompt_type, ticker="AAPL", mode=PromptMode.CONVERSATIONAL
             )
 
@@ -861,7 +859,7 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
         ("Any question", "snapshot", PromptMode.CONVERSATIONAL),
     ]
 
-    for input_text, button_context, expected_mode in test_inputs:
+    for input_text, _button_context, expected_mode in test_inputs:
         # Simplified mode detection - always conversational in unified architecture
         detected_mode = PromptMode.CONVERSATIONAL
         test_results["mode_detection_tests"][input_text[:20]] = {

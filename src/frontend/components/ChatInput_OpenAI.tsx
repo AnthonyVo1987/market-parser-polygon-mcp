@@ -43,7 +43,7 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
     
     // Initialize logging
     useComponentLogger('ChatInput_OpenAI', { placeholder });
-    const logInteraction = useInteractionLogger('ChatInput_OpenAI');
+    const _logInteraction = useInteractionLogger('ChatInput_OpenAI');
 
     // Use external value if provided, otherwise use internal state
     const inputValue =

@@ -44,7 +44,7 @@ export default memo(function AnalysisButtons({
   );
 
   // ✅ Performance tracking (kept for actual performance measurement)
-  const { startTiming, endTiming } = usePerformanceLogger('AnalysisButtons');
+  const { startTiming, endTiming: _endTiming } = usePerformanceLogger('AnalysisButtons');
 
   // ✅ User interaction logging (kept for user actions)
   const logInteraction = useInteractionLogger('AnalysisButtons');

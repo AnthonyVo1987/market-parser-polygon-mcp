@@ -5,7 +5,6 @@ Simple functional validation following prototyping principles.
 Tests basic CLI functionality without over-engineering.
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -24,16 +23,15 @@ def test_cli_help():
 
         # Run CLI with --help flag
         result = subprocess.run(
-            [sys.executable, str(cli_path), "--help"], capture_output=True, text=True, timeout=10
+            [sys.executable, str(cli_path), "--help"], capture_output=True, text=True, timeout=10, check=False
         )
 
         if result.returncode == 0:
             print("✅ CLI help command successful")
             return True
-        else:
-            print(f"❌ CLI help failed with return code {result.returncode}")
-            print(f"Error: {result.stderr}")
-            return False
+        print(f"❌ CLI help failed with return code {result.returncode}")
+        print(f"Error: {result.stderr}")
+        return False
 
     except subprocess.TimeoutExpired:
         print("❌ CLI help command timed out")
@@ -52,9 +50,8 @@ def test_cli_exists():
         if cli_path.exists():
             print(f"✅ CLI found at {cli_path}")
             return True
-        else:
-            print(f"❌ CLI not found at {cli_path}")
-            return False
+        print(f"❌ CLI not found at {cli_path}")
+        return False
 
     except Exception as e:
         print(f"❌ CLI existence check error: {e}")
@@ -84,10 +81,9 @@ def main():
     if passed == total:
         print("🎉 All CLI smoke tests passed!")
         return 0
-    else:
-        print("⚠️ Some CLI smoke tests failed")
-        return 1
+    print("⚠️ Some CLI smoke tests failed")
+    return 1
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

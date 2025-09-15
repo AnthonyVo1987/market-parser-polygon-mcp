@@ -1,4 +1,45 @@
-Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to review and fix any remaining issues from latest Web Console Log: logs/web_console_log.log
+
+Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to review our latest LINT\PyLint\EsLint config\settings, update\optmize them if needed, then re-run full Lint again with the updated practices and fix any new issues
+
+Task 2. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to fix the remaining non-blocking warnings.  If fixing a specific warning would be too risky, then skip fixing that one.  We need fixes for warnings as long as it is not that intrusive\complex to the code.  If the fix for the warning(s) is significant and high risk of breaking something, it is better to leave the warning and NOT fix it then, so you need to perform risk assessments to fix the prioritized "low hanging fruit , low risk, low complexity" warnings
+
+Task 3. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to fix the remaining MEDIMUM risk non-blocking LINT warnings
+
+Task 4. Test all the low and medium risk lint fixes using PLaywright MCP, and then fix any issues if needed.
+
+Task 5. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to fix ALL the remaining ~110 LINT warnings.  Then test all the lint fixes using Playwright MCP, and then fix any issues if needed.
+
+## Final Task(s)
+
+MUST USE Context7 & Sequential-Thinking Tools to perform: Final Task 1: Review/Fix Loop
+
+- Performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+- Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination.
+- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+- Continue review/fix cycle until achieving PASSING code review status
+
+Final Task 2: Task Summary Updates for LAST_TASK_SUMMARY.md & CLAUDE.md
+
+- Generate detailed task completion summary & OVERWRITE the doc "LAST_TASK_SUMMARY.md"
+- Based on detailed task completion summary, generate high level task completion summary 20 lines MAX for updating CLAUDE.md "Last Completed Task Summary" section between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- Include all deliverables, changes made, and completion status
+- This ensures task summary is included in the atomic commit
+
+Final Task 3: Atomic Git Commit & Push
+
+- Run `git status` to review all staged and unstaged changes
+- Create single atomic git commit containing ALL changes: code files, CLAUDE.md, LAST_TASK_SUMMARY.md, documentation updates, test reports, task summary etc
+- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+- git Push commit to repository using provided personal access token
+- **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
+
+Final Task 4: Final Verification
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly git committed and git pushed
+
+Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to research the most update to date robust practices to review and fix any issues from latest Web Console Log: logs/web_console_log.log.  This latest log is with all the latest fixes BUT this time, all I did was open the page only and saved the log.  So those errors are app default startup errors, user actually hasn't performed an action yet, so seems like app startup has some issues.
 
 ## Final Task(s)
 

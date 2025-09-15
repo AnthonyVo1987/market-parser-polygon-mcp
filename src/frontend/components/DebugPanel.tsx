@@ -26,14 +26,14 @@ interface DebugPanelProps {
 export default function DebugPanel({ 
   latestResponseTime, 
   className = '',
-  onDebugAction
+  onDebugAction: _onDebugAction
 }: DebugPanelProps) {
   // Initialize logging
   useComponentLogger('DebugPanel', { 
     hasResponseTime: latestResponseTime !== null,
     responseTime: latestResponseTime 
   });
-  const logInteraction = useInteractionLogger('DebugPanel');
+  const _logInteraction = useInteractionLogger('DebugPanel');
   
   // Collapsible state management with localStorage persistence
   const [isExpanded, setIsExpanded] = useState(() => {

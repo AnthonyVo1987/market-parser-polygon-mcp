@@ -24,6 +24,8 @@ max-locals = 15
 max-returns = 6
 max-branches = 15
 max-statements = 50
+max-public-methods = 20
+# Modern default: increased from 10 to 20 for better prototyping flexibility
 
 [BASIC]
 good-names = i,j,k,ex,Run,_,id,db,ai,ui,os,df,dt,fs,app,uv,mcp,ctx,api
@@ -47,3 +49,4 @@ defining-attr-methods = __init__,__new__,setUp,__post_init__
 
 [EXCEPTIONS]
 overgeneral-exceptions = builtins.Exception
+

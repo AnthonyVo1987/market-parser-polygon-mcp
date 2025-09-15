@@ -4,7 +4,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/recommended-type-checked', // Modern: replaces recommended-requiring-type-checking
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:import/recommended',
@@ -13,12 +13,12 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2022, // Modern: updated from 2020
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
     },
-    project: './tsconfig.json',
+    project: './tsconfig.json', // Keep compatible version for current ESLint
     tsconfigRootDir: __dirname,
   },
   plugins: [

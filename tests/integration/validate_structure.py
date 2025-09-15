@@ -6,7 +6,6 @@ Validates that the new test structure can find backend and frontend components
 following Phase 9 migration to unified project structure.
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -100,7 +99,7 @@ def validate_smoke_tests():
             # Try to run the test (dry run)
             try:
                 result = subprocess.run(
-                    [sys.executable, str(test_path)], capture_output=True, text=True, timeout=30
+                    [sys.executable, str(test_path)], capture_output=True, text=True, timeout=30, check=False
                 )
 
                 if "smoke tests" in result.stdout:
@@ -205,11 +204,10 @@ def main():
         print("📍 Backend available at: /src/")
         print("📍 Frontend available at: /frontend/")
         return 0
-    else:
-        print("⚠️ Some validation checks need attention")
-        print("\n💡 This is normal during migration - issues can be addressed incrementally")
-        return 1
+    print("⚠️ Some validation checks need attention")
+    print("\n💡 This is normal during migration - issues can be addressed incrementally")
+    return 1
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
