@@ -1,123 +1,28 @@
 # New Task Details
 
-## Task Description
+## Task Description: Playwright MCP Tools Usage Guide Research & Generation
 
-[LINT] Setup, Config, Run, & Fix ALL Lint, PyLint, ESLint issues
+Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform:
 
-We previously successfully migrated the app to the brand new architecture AND we also recently commited multiple massive Fixes, Enhancements, & Features.
-So first review the current codebase to see if Lint\PyLint\ESLint has been properly Setup & Configured to the latest architectural changes and massive code changes. If anything needs to be setup\configured, then install\setup\configure and the run FULL Lint, PyLint, ESLint for our project, fixing any issues.
+- Analyze our codebase, then Perform Research & generate a new doc for the requested MCP Tools Usage Guide TARGETED SPECIFICALLY FOR AI Coding Agents to properly utilize the tools for our app development
+- The Usage guide needs to be tailored and focused on proper usage of the tools specifically for OUR APP, so that AI Coding Agents know how to properly use the tools for our app, so avoid generic usage since we want specific use guide for our app
+- Need to go into details on EACH of the the tools: Correct Cases\Conditions to use the tool, Incorrect Cases\Conditions to use the tool, Correct Tool inputs , Correct expected Tool output, Correct examples of usage, Incorrect examples of usage
+- Usage Guide needs to be written that is "straight to the point with less fluff" so that an AI Agent can fully understand the proper tool usage.  Too much verbosity and fluff may confuse the AI Agent
 
-### Detected Tech Stack (Post-Migration Architecture)
+Requested MCP Tools: Playwright
+New Doc Location: "docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md"
 
-**Current Backend Stack (Streamlined):**
+Task 2. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform:
 
-- **Backend Framework**: FastAPI with Python 3.10+ and Pydantic AI Agent Framework
-- **AI Integration**: OpenAI GPT-5-mini via OpenAI Agents SDK (v0.2.8 - compatibility optimized)
-- **Data Source**: Polygon.io MCP server integration via uvx
-- **CLI Framework**: Rich console for terminal formatting with emoji-based sentiment indicators
-- **Architecture**: Simplified conversational processing (legacy FSM removed)
-- **Core Files**: main.py, prompt_templates.py, api_models.py in /src/
-- **Package Manager**: uv for dependency management with optimized versions
-- **Testing Framework**: Playwright-focused E2E testing with validation scripts
-- **Environment Management**: Root-level .env with dynamic port configuration
-- **Dependencies**: OpenAI v1.99.9 (compatibility locked), FastAPI, uvicorn
-
-**Current React Frontend Stack (Modernized with GUI Restructuring):**
-
-- **React Framework**: React 18.2+ with Vite 5.4+ build system (performance optimized)
-- **Component Architecture**: Functional React components with modern hooks patterns
-- **Styling**: Custom CSS with responsive design and cross-platform optimizations
-- **State Management**: React hooks with usePromptAPI custom hook for API communication
-- **Build Tools**: Vite with TypeScript, ESLint, Prettier integration (262ms startup)
-- **TypeScript**: Full type safety across frontend components
-- **API Integration**: RESTful API communication with FastAPI backend
-- **Testing**: Comprehensive Playwright automation with B001-B016 test suite
-- **Development**: Root-level npm scripts with standardized frontend/ paths
-
-Previous GUI Multiple Element Fixes were NOT all addressed and they ened to be fixed:
-
- Unfixed Issue 1 - Upward shifting during AI responses: NOT FIXED
- Unfixed Issue 5 - Quick Analysis & Debug sections now expandable/collapsible: NOT IMPLEMENTED AT ALL, THERE ARE nothing to make expandable/collapsible
-
-## Issue 1: Layout Shifting During AI Response
-
-**Problem:** The app shifts upward when AI is thinking, making chat invisible
-**Solution:**
-
-- Fix the grid layout in `ChatInterface_OpenAI.tsx` to use stable heights
-- Change `grid-template-rows` from `auto 1fr auto...` to fixed `min/max` heights
-- Ensure messages section doesn't resize during loading states
-
-## Issue 2: Remove "Suggested Follow-Up Questions"
-
-**Problem:** Follow-up questions clutter the interface
-**Solution:**
-
-- Remove the follow-up questions section from `AnalysisButton.tsx`
-- Delete the entire follow-up hint rendering block (lines ~140-155)
-
-## Issue 3: Combine Stock Symbol Input with Quick Analysis
-
-**Problem:** Stock input and analysis buttons are separated
-**Solution:**
-
-- Move `SharedTickerInput` into the `AnalysisButtons` component
-- Modify `AnalysisButtons.tsx` to include ticker input at the top
-- Update grid layout to remove scrollbar and show all buttons
-- Make the Quick Analysis section expandable/collapsible
-
-## Issue 4: Add Prominent Borders to Components
-
-**Problem:** Insufficient visual separation between components
-**Solution:**
-
-- Add stronger border styles to all main sections in `index.css`
-- Use distinct border colors:
-  - Chat area: Blue accent borders
-  - Analysis section: Purple accent borders
-  - Debug section: Orange/amber accent borders
-- Increase border width from 1px to 2px with glow effects
-
-## Issue 5: Make Quick Analysis & Debug Expandable/Collapsible
-
-**Problem:** Fixed sections take up space unnecessarily
-**Solution:**
-
-- Add expand/collapse functionality to `AnalysisButtons` component
-- Add expand/collapse functionality to `DebugPanel` component
-- Store collapsed state in `localStorage` for persistence
-- Add chevron icons for visual feedback
-
-## Issue 6: Better Color Differentiation
-
-**Problem:** All components look too similar with current color scheme
-**Solution:**
-
-- Update component backgrounds with distinct tints:
-  - Chat area: Keep dark with blue tint
-  - Quick Analysis: Purple/indigo tint background
-  - Debug Panel: Orange/amber tint background
-  - Export buttons: Green tint background
-- Adjust glassmorphic effects for better contrast
-- Use color-coded section headers
-
-## Implementation Steps
-
-1. **Fix Layout Stability** - Modify grid system in `ChatInterface_OpenAI.tsx`
-2. **Remove Follow-up Questions** - Clean up `AnalysisButton.tsx`
-3. **Merge Ticker with Analysis** - Refactor `AnalysisButtons.tsx` to include ticker input
-4. **Add Prominent Borders** - Update CSS variables and component styles
-5. **Add Expand/Collapse** - Implement collapsible functionality with state management
-6. **Apply Color Differentiation** - Update background colors and tints for each section
-
-This plan will create a more stable, visually distinct, and user-friendly interface with better organization and clearer component separation.
+- Comprehensive code\doc review, & fix any issues found
+- DO NOT COMMIT NEW DOCS YET AND WAIT FOR USER REVIEW
 
 ## Final Task(s) - SPECIALISTS(s) to use Context7, Sequential-Thinking, Filesystem & any other relevant Tools to perform Final 4 Tasks
 
 Final Task 1: Review/Fix Loop
 
 - SPECIALISTS performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
-- Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination.
+- Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination
 - Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
 - Continue review/fix cycle WITH LINT until achieving PASSING code review status
 
