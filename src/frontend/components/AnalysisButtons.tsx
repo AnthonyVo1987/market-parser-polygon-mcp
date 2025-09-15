@@ -554,7 +554,7 @@ export const analysisButtonsStyles = `
   .buttons-title {
     margin: 0 0 8px 0;
     font-family: var(--font-display);
-    font-size: var(--font-size-h5);
+    font-size: var(--font-size-micro);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     letter-spacing: var(--letter-spacing-wide);

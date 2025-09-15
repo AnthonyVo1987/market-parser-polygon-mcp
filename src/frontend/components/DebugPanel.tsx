@@ -202,13 +202,13 @@ export const debugPanelStyles = `
   
   .debug-title {
     margin: 0;
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-micro);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wider);
     font-family: var(--font-mono);
-    
+
     /* Developer Badge Styling */
     display: inline-flex;
     align-items: center;

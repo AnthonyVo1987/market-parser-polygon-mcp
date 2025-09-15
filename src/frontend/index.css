@@ -413,10 +413,10 @@
   --bg-tint-export-subtle: rgba(16, 185, 129, 0.05);
   
   /* Section-Specific Border Colors - 3px Prominent Borders */
-  --border-chat: 3px solid var(--accent-info);
-  --border-analysis: 3px solid var(--accent-trust);
-  --border-debug: 3px solid var(--accent-warning);
-  --border-export: 3px solid var(--accent-success);
+  --border-chat: 1px solid var(--border-color);
+  --border-analysis: 1px solid var(--border-color);
+  --border-debug: 1px solid var(--border-color);
+  --border-export: 1px solid var(--border-color);
   
   /* Interactive Shadows - Hover & Focus States */
   --shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.3);
