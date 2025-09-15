@@ -19,16 +19,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/frontend/main.tsx"></script>
-
-    <!-- Development-only service worker cleanup script -->
-    <script>
-      // Only run cleanup in development (when location.hostname is localhost or 127.0.0.1)
-      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = '/sw-cleanup.js';
-        document.head.appendChild(script);
-      }
-    </script>
   </body>
 </html>
