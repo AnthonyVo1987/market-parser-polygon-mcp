@@ -6,7 +6,7 @@
 
 We are currently in the middle of streamlining & consolidating Project Docs due to the massive re-architectural changes that have been implemented in our project. Review our legacy archived docs/archived/CLAUDE_LEGACY.md & docs/archived/README_LEGACY.md in order to perform the following for Each doc:
 
-## Task 1. CLAUDE.md - Consolidate & extract\integrate any Critical\Key details from the older legacy docs/archived/CLAUDE_LEGACY.md into our current up to date CLAUDE.md. Make sure we do NOT have any duplicate, redundant, and\or outdated info from the legacy doc.  The current CLAUDE.md will be the single source of truth for ALL AI Agents when working on the project
+## Task 1. CLAUDE.md - Consolidate & extract\integrate any Critical\Key details from the older legacy docs/archived/CLAUDE_LEGACY.md into our current up to date CLAUDE.md. Make sure we do NOT have any duplicate, redundant, and\or outdated info from the legacy doc.  The current CLAUDE.md will be the single source of truth for ALL AI Agents when working on the project.  This file MUST be optimized for AI Agent Token & Context Usage with the new changes
 
 ## Task 2. README.md - Consolidate & extract\integrate any Critical\Key details from the older legacy docs/archived/README_LEGACY.md into our current blank README.md.  Make sure we do NOT have any duplicate, redundant, and\or outdated info from the legacy doc.  The new README.md will be reflect the most current state of the project
 

@@ -29,10 +29,10 @@ Market Parser is a Python CLI and React web application for natural language fin
 
 When working with MCP tools, prioritize:
 
-1. **Playwright MCP**: Browser automation for React testing
-2. **Filesystem MCP**: Multi-file operations (3+ files)
-3. **Context7 MCP**: Library documentation lookups
-4. **Sequential-Thinking MCP**: Complex problem analysis (max 8 thoughts)
+- **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Sequential-Thinking MCP**:  Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Playwright MCP**: Browser automation for React GUI testing & App Validation
+- **Filesystem MCP**: Multi-file operations (3+ files)
 
 Use standard Read/Write/Edit tools for single-file operations.
 
