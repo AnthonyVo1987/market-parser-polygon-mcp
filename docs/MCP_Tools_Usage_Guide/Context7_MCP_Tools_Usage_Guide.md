@@ -1,7 +1,7 @@
 # Context7 MCP Tools Usage Guide - Market Parser Application
 
 > **Target Audience**: AI Coding Agents working on Market Parser application  
-> **Purpose**: Focused Context7 MCP tools usage guide for our React/FastAPI/Pydantic AI tech stack  
+> **Purpose**: Focused Context7 MCP tools usage guide for our React/FastAPI/OpenAI Agents SDK tech stack  
 > **Last Updated**: 2025-09-15
 
 ## Executive Summary
@@ -157,7 +157,6 @@ Retrieves up-to-date documentation and code examples using Context7-compatible l
 - Modern React hooks patterns (useState, useEffect, useCallback)
 - Vite configuration and optimization techniques
 - FastAPI routing and dependency injection patterns
-- OpenAI Agents SDK implementation patterns
 - OpenAI Agents SDK implementation patterns
 - Playwright testing automation patterns
 - ESLint configuration for TypeScript/React
@@ -355,7 +354,7 @@ mcp__context7__get-library-docs({
 ### Token Allocation Guidelines
 
 - **Basic API usage**: 3000-4000 tokens
-- **Pattern research**: 5000-6000 tokens  
+- **Pattern research**: 5000-6000 tokens
 - **Comprehensive guides**: 7000-8000 tokens
 - **Quick reference**: 2000-3000 tokens
 
