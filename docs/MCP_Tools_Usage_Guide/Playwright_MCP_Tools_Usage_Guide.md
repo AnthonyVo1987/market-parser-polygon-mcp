@@ -702,7 +702,7 @@ Before reporting a timeout failure, verify:
 
 ### ❌ Navigation Errors
 - **Wrong:** Using external URLs in Market Parser tests
-- **Wrong:** Not checking if backend (127.0.0.1:8000) is running
+- **Wrong:** Not checking if backend (0.0.0.0:8000) is running
 - **Wrong:** Missing http:// protocol in URLs
 
 ### ❌ Element Interaction Errors  
