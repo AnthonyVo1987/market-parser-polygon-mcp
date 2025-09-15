@@ -67,39 +67,26 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-83cda833'], (function (workbox) { 'use strict';
+define(['./workbox-0f131789'], (function (workbox) { 'use strict';
 
-  self.skipWaiting();
-  workbox.clientsClaim();
-
-  /**
-   * The precacheAndRoute() method efficiently caches and responds to
-   * requests for URLs in the manifest.
-   * See https://goo.gl/S9QRab
-   */
-  workbox.precacheAndRoute([{
-    "url": "registerSW.js",
-    "revision": "3ca0b8505b4bec776b69afdba2768812"
-  }, {
-    "url": "index.html",
-    "revision": "0.envegg2di0g"
-  }], {});
-  workbox.cleanupOutdatedCaches();
-  workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
-    allowlist: [/^\/$/]
-  }));
-  workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/chat$/, new workbox.NetworkOnly(), 'GET');
-  workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/api\/v1\/prompts\/generate$/, new workbox.NetworkOnly(), 'GET');
-  workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/api\//, new workbox.NetworkFirst({
-    "cacheName": "api-cache",
-    "networkTimeoutSeconds": 10,
-    plugins: [new workbox.CacheableResponsePlugin({
-      statuses: [0, 200]
-    })]
-  }), 'GET');
-  workbox.registerRoute(/\/manifest\.webmanifest$/, new workbox.StaleWhileRevalidate({
-    "cacheName": "manifest-cache",
-    plugins: []
-  }), 'GET');
+	self.skipWaiting();
+	workbox.clientsClaim();
+	workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/chat$/, new workbox.NetworkOnly(), 'GET');
+	workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/api\/v1\/prompts\/generate$/, new workbox.NetworkOnly(), 'GET');
+	workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/api\//, new workbox.NetworkFirst({
+	  "cacheName": "api-cache",
+	  "networkTimeoutSeconds": 10,
+	  plugins: [new workbox.CacheableResponsePlugin({
+	    statuses: [0, 200]
+	  })]
+	}), 'GET');
+	workbox.registerRoute(/\/manifest\.webmanifest$/, new workbox.StaleWhileRevalidate({
+	  "cacheName": "manifest-cache",
+	  plugins: []
+	}), 'GET');
+	workbox.registerRoute(/\.webmanifest$/, new workbox.StaleWhileRevalidate({
+	  "cacheName": "webmanifest-cache",
+	  plugins: []
+	}), 'GET');
 
 }));

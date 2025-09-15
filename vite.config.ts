@@ -24,9 +24,32 @@ export default defineConfig(({ command, mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest,json}'],
+          // Aggressive development exclusions to prevent workbox console errors
+          globPatterns: isProduction ?
+            ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest,json}'] :
+            ['index.html', 'manifest.webmanifest', '**/*.{ico,png,svg}'], // Minimal precaching in dev
           cleanupOutdatedCaches: true,
           sourcemap: isProduction,
+          navigateFallback: isProduction ? 'index.html' : null, // Disable navigation fallback in development
+          navigateFallbackDenylist: [
+            /^\/_/,
+            /\/[^/?]+\.[^/]+$/,
+            // Enhanced Vite development file exclusions to prevent workbox errors
+            isDevelopment ? /^\/@vite/ : undefined,
+            isDevelopment ? /^\/src\// : undefined,
+            isDevelopment ? /^\/node_modules\// : undefined,
+            isDevelopment ? /\.tsx?$/ : undefined,
+            isDevelopment ? /\.jsx?$/ : undefined,
+            isDevelopment ? /^\/dev-dist\// : undefined,
+            isDevelopment ? /\?v=/ : undefined, // Vite versioned imports
+            isDevelopment ? /\?t=/ : undefined, // Vite timestamp imports
+            isDevelopment ? /\.ts\?/ : undefined, // Vite TS imports with params
+            isDevelopment ? /\.tsx\?/ : undefined, // Vite TSX imports with params
+          ].filter(Boolean),
+          // Comprehensive development exclusions to prevent cache busting errors
+          dontCacheBustURLsMatching: isDevelopment ?
+            /\/@vite\/|\/src\/|\/node_modules\/|\.tsx?$|\.jsx?$|\/dev-dist\/|\?v=|\?t=/ :
+            undefined,
           runtimeCaching: [
             {
               urlPattern: new RegExp(`^http://127\.0\.0\.1:8000\/chat$`),
@@ -52,6 +75,13 @@ export default defineConfig(({ command, mode }) => {
               handler: 'StaleWhileRevalidate',
               options: {
                 cacheName: 'manifest-cache'
+              }
+            },
+            {
+              urlPattern: /\.webmanifest$/,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'webmanifest-cache'
               }
             }
           ]
@@ -88,10 +118,12 @@ export default defineConfig(({ command, mode }) => {
             }
           ]
         },
-        // Development options
+        // Development options - enable with enhanced exclusions to clear existing registrations
         devOptions: {
-          enabled: isDevelopment,
-          type: 'module'
+          enabled: true, // ✅ Enable to apply enhanced exclusions and clear existing problematic SW
+          type: 'module',
+          // Additional navigation fallback restrictions for development
+          navigateFallbackAllowlist: isDevelopment ? [/^\/$/] : undefined, // Only allow root path in dev
         }
       }),
       // Bundle analysis - environment-aware configuration
