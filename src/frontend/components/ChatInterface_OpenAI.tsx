@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, Suspense, lazy, useCallback, useMemo, memo } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { sendChatMessage } from '../services/api_OpenAI';
 import { Message, MessageMetadata } from '../types/chat_OpenAI';
@@ -43,11 +44,10 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     initialTicker: sharedTicker
   });
   
-  // Safe state logging that prevents render loops - reduced frequency
-  useStateLogger('ChatInterface_OpenAI', 'messages', messages.length, process.env.NODE_ENV === 'development');
-  useStateLogger('ChatInterface_OpenAI', 'isLoading', isLoading, false); // Disable frequent loading state logs
-  useStateLogger('ChatInterface_OpenAI', 'error', error, !!error); // Only log when there's actually an error
-  useStateLogger('ChatInterface_OpenAI', 'sharedTicker', sharedTicker, process.env.NODE_ENV === 'development');
+  // Optimized state logging - only essential state changes, less frequent logging
+  useStateLogger('ChatInterface_OpenAI', 'messages', messages.length, process.env.NODE_ENV === 'development' && messages.length > 0 && messages.length % 2 === 0); // Only log every 2nd message change
+  useStateLogger('ChatInterface_OpenAI', 'error', error, !!error); // Only log actual errors
+  // Removed frequent logs: isLoading, sharedTicker (low value, high frequency)
   
   // Performance tracking
   const { startTiming, endTiming } = usePerformanceLogger('ChatInterface_OpenAI');
@@ -55,8 +55,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // User interaction logging
   const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
   
-  // Render cycle monitoring (helps detect infinite loops)
-  useRenderLogger('ChatInterface_OpenAI', 25); // Warn if more than 25 renders in 5 seconds
+  // Render cycle monitoring (reduced threshold for earlier detection)
+  useRenderLogger('ChatInterface_OpenAI', 10); // Warn if more than 10 renders in 5 seconds
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -64,33 +64,38 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const isFirstRenderRef = useRef(true);
   const previousMessageCountRef = useRef(0);
 
-  // Auto-scroll to bottom when new messages are added
-  // FIXED: Only scroll when messages actually increase, not during loading states
+  // Auto-scroll to bottom when new messages are added (optimized)
+  const shouldAutoScroll = useMemo(() => {
+    const currentMessageCount = messages.length;
+    return !isFirstRenderRef.current &&
+           currentMessageCount > previousMessageCountRef.current &&
+           !isLoading;
+  }, [messages.length, isLoading]);
+
   useEffect(() => {
     const currentMessageCount = messages.length;
-    const shouldScroll = !isFirstRenderRef.current &&
-                        currentMessageCount > previousMessageCountRef.current &&
-                        !isLoading;
 
-    logger.debug('🔄 Auto-scroll effect triggered', {
-      component: 'ChatInterface_OpenAI',
-      messagesCount: currentMessageCount,
-      previousCount: previousMessageCountRef.current,
-      isFirstRender: isFirstRenderRef.current,
-      isLoading,
-      shouldScroll,
-      hasMessagesEndRef: !!messagesEndRef.current
-    });
+    if (process.env.NODE_ENV === 'development') {
+      logger.debug('🔄 Auto-scroll effect triggered', {
+        component: 'ChatInterface_OpenAI',
+        messagesCount: currentMessageCount,
+        previousCount: previousMessageCountRef.current,
+        isFirstRender: isFirstRenderRef.current,
+        shouldScroll: shouldAutoScroll
+      });
+    }
 
-    if (shouldScroll && messagesEndRef.current) {
+    if (shouldAutoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      logger.debug('📜 Scrolled to bottom of messages');
+      if (process.env.NODE_ENV === 'development') {
+        logger.debug('📜 Scrolled to bottom of messages');
+      }
     }
 
     // Update refs
     isFirstRenderRef.current = false;
     previousMessageCountRef.current = currentMessageCount;
-  }, [messages, isLoading]);
+  }, [shouldAutoScroll]); // ✅ Single memoized dependency
 
   const addMessage = useCallback((content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
     const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -102,17 +107,37 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       metadata,
     };
 
-    logger.info(`💬 Adding ${sender} message`, {
-      component: 'ChatInterface_OpenAI',
-      messageId,
-      sender,
-      contentLength: content.length,
-      hasMetadata: !!metadata,
-      messageCount: messages.length + 1
-    });
+    setMessages(prev => {
+      logger.info(`💬 Adding ${sender} message`, {
+        component: 'ChatInterface_OpenAI',
+        messageId,
+        sender,
+        contentLength: content.length,
+        hasMetadata: !!metadata,
+        messageCount: prev.length + 1
+      });
 
-    setMessages(prev => [...prev, newMessage]);
-  }, [messages.length]);
+      return [...prev, newMessage];
+    });
+  }, []); // ✅ Empty dependency array = stable callback
+
+  // Debounced input change handler to prevent excessive parent re-renders
+  const debouncedInputChange = useDebouncedCallback((value: string) => {
+    setInputValue(value);
+  }, 150); // 150ms debounce for optimal balance between responsiveness and performance
+
+  // Handle input changes efficiently
+  const handleInputValueChange = useCallback((value: string) => {
+    // For instant feedback on button-generated prompts, update immediately
+    // For user typing, use debounced updates to prevent render loops
+    if (value.length > inputValue.length + 10) {
+      // Large change (likely button-generated), update immediately
+      setInputValue(value);
+    } else {
+      // Small change (likely typing), use debounced update
+      debouncedInputChange(value);
+    }
+  }, [inputValue.length, debouncedInputChange]);
 
   // Handle prompt population from analysis buttons
   const handlePromptGenerated = useCallback((prompt: string) => {
@@ -121,6 +146,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       promptPreview: prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
     });
 
+    // For button-generated prompts, update immediately for best UX
     setInputValue(prompt);
 
     // Focus the input after populating
@@ -205,37 +231,36 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       logger.debug('🔄 Message processing completed', {
         messageId,
         finalState: {
-          messageCount: messages.length + 2, // +1 for user, +1 for AI
           isLoading: false,
           hasError: !!error
         }
       });
     }
-  }, [addMessage, startTiming, endTiming, messages.length, error, logInteraction]);
+  }, [addMessage, startTiming, endTiming, logInteraction]); // ✅ Removed unstable dependencies
 
   const handleTickerChange = useCallback((newTicker: string) => {
-    logInteraction('ticker_change', 'analysis_buttons', {
-      oldTicker: sharedTicker,
-      newTicker,
-      source: 'analysis_buttons'
+    setSharedTicker(prev => {
+      logInteraction('ticker_change', 'analysis_buttons', {
+        oldTicker: prev,
+        newTicker,
+        source: 'analysis_buttons'
+      });
+      return newTicker;
     });
-    setSharedTicker(newTicker);
-  }, [sharedTicker, logInteraction]);
+  }, [logInteraction]);
 
   const handleRecentMessageClick = useCallback((messageContent: string) => {
     logInteraction('recent_message_click', 'recent_button', {
-      messageLength: messageContent.length,
-      messageCount: messages.length
+      messageLength: messageContent.length
     });
-  }, [messages.length, logInteraction]);
+  }, [logInteraction]); // ✅ Removed unstable messages.length dependency
 
   const handleExport = useCallback((format: string, messageCount: number) => {
     logInteraction('export_messages', 'export_button', {
       format,
-      messageCount,
-      totalMessages: messages.length
+      messageCount
     });
-  }, [messages.length, logInteraction]);
+  }, [logInteraction]); // ✅ Removed unstable messages.length dependency
 
   const handleDebugAction = useCallback((action: string, details: any) => {
     logInteraction('debug_action', 'debug_panel', {
@@ -336,7 +361,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             onSendMessage={handleSendMessage}
             isLoading={isLoading}
             value={inputValue}
-            onValueChange={setInputValue}
+            onValueChange={handleInputValueChange}
             placeholder={`Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`}
           />
         </div>

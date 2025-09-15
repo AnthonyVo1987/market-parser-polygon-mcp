@@ -1,12 +1,11 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, memo, useDebugValue } from 'react';
 import { AnalysisButtonsProps, AnalysisType } from '../types/chat_OpenAI';
 import { usePromptAPI } from '../hooks/usePromptAPI';
-import { 
-  useComponentLogger, 
-  useStateLogger, 
-  useInteractionLogger, 
+import {
+  useStateLogger,
+  useInteractionLogger,
   usePerformanceLogger,
-  useConditionalLogger 
+  useConditionalLogger
 } from '../hooks/useDebugLog';
 import { logger } from '../utils/logger';
 import AnalysisButton, { analysisButtonStyles } from './AnalysisButton';
@@ -19,7 +18,7 @@ const ANALYSIS_TYPE_ORDER: AnalysisType[] = [
   'technical_analysis',
 ];
 
-export default function AnalysisButtons({
+export default memo(function AnalysisButtons({
   onPromptGenerated,
   currentTicker,
   onTickerChange,
@@ -27,25 +26,30 @@ export default function AnalysisButtons({
 }: AnalysisButtonsProps) {
   const { templates, loading, error, refreshTemplates } = usePromptAPI();
 
-  // Initialize logging hooks
-  useComponentLogger('AnalysisButtons', {
-    initialTicker: currentTicker,
-    templatesAvailable: templates.length
-  });
-  
-  // Safe state logging
-  useStateLogger('AnalysisButtons', 'templates', templates.length);
-  useStateLogger('AnalysisButtons', 'loading', loading);
-  useStateLogger('AnalysisButtons', 'error', error);
-  useStateLogger('AnalysisButtons', 'currentTicker', currentTicker);
-  
-  // Performance tracking
+  // ✅ React DevTools debugging (preferred for component inspection)
+  useDebugValue(
+    `Templates: ${templates.length}, Loading: ${loading}, Ticker: ${currentTicker}`,
+    (value) => `AnalysisButtons - ${value}`
+  );
+
+  // ✅ Consolidated state logging (React best practice: single focused logger)
+  useStateLogger('AnalysisButtons', 'state', {
+    templatesCount: templates.length,
+    loading,
+    hasError: !!error,
+    ticker: currentTicker
+  },
+  // ✅ Only log on meaningful changes (avoids Strict Mode double-logging)
+  process.env.NODE_ENV === 'development' && (templates.length > 0 || !!error)
+  );
+
+  // ✅ Performance tracking (kept for actual performance measurement)
   const { startTiming, endTiming } = usePerformanceLogger('AnalysisButtons');
-  
-  // User interaction logging
+
+  // ✅ User interaction logging (kept for user actions)
   const logInteraction = useInteractionLogger('AnalysisButtons');
-  
-  // Conditional logging for error states
+
+  // ✅ Simplified error logging (only when errors actually occur)
   useConditionalLogger('AnalysisButtons', !!error, 'Error state detected', {
     errorMessage: error,
     templatesCount: templates.length
@@ -120,27 +124,24 @@ export default function AnalysisButtons({
   const [isExpanded, setIsExpanded] = useState(() => {
     const saved = localStorage.getItem('quickAnalysisExpanded');
     const defaultExpanded = saved !== null ? JSON.parse(saved) : true;
-    
-    logger.debug('📦 Initialized expand state from localStorage', {
-      component: 'AnalysisButtons',
-      savedValue: saved,
-      defaultExpanded
-    });
+
+    // ✅ Only log localStorage initialization when value actually changes from default
+    if (process.env.NODE_ENV === 'development' && saved !== null && defaultExpanded !== true) {
+      logger.debug('📦 Initialized expand state from localStorage', {
+        component: 'AnalysisButtons',
+        savedValue: saved,
+        defaultExpanded
+      });
+    }
     
     return defaultExpanded;
   });
 
-  // Safe state logging for expanded state
-  useStateLogger('AnalysisButtons', 'isExpanded', isExpanded);
-
-  // Persist expand/collapse state
+  // ✅ Persist expand/collapse state (minimal logging)
   useEffect(() => {
     try {
       localStorage.setItem('quickAnalysisExpanded', JSON.stringify(isExpanded));
-      logger.debug('💾 Persisted expand state to localStorage', {
-        component: 'AnalysisButtons',
-        isExpanded
-      });
+      // ✅ Only log persistence failures (errors are meaningful)
     } catch (error) {
       logger.warn('⚠️ Failed to persist expand state to localStorage', {
         component: 'AnalysisButtons',
@@ -273,12 +274,15 @@ export default function AnalysisButtons({
 
   // No templates available
   if (templates.length === 0) {
-    logger.info('📭 Rendering empty state - no templates available', {
-      component: 'AnalysisButtons',
-      loading,
-      error,
-      templatesCount: templates.length
-    });
+    // ✅ Only log empty state when it's meaningful (not during initial load or Strict Mode cycles)
+    if (process.env.NODE_ENV === 'development' && !loading && !!error) {
+      logger.info('📭 Rendering empty state due to error', {
+        component: 'AnalysisButtons',
+        loading,
+        error,
+        templatesCount: templates.length
+      });
+    }
     
     return (
       <div
@@ -415,7 +419,7 @@ export default function AnalysisButtons({
       )}
     </div>
   );
-}
+});
 
 // Enhanced inline styles following existing component patterns
 export const analysisButtonsStyles = `

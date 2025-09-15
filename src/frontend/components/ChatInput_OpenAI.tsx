@@ -5,6 +5,7 @@ import {
   forwardRef,
   useEffect,
   useCallback,
+  memo,
 } from 'react';
 import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
 import { logger } from '../utils/logger';
@@ -24,7 +25,7 @@ export interface ChatInputRef {
   clear: () => void;
 }
 
-const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
+const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
   function ChatInput_OpenAI(
     {
       onSendMessage,
@@ -93,11 +94,9 @@ const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const newValue = e.target.value;
-      
-      // Clear error state when user starts typing
-      if (hasError) {
-        setHasError(false);
-      }
+
+      // Clear error state when user starts typing (using ref to avoid dependency)
+      setHasError(prev => prev ? false : prev);
 
       // Update appropriate state based on control mode
       if (externalValue !== undefined && onValueChange) {
@@ -111,11 +110,11 @@ const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
       const previousHeight = textarea.style.height;
       textarea.style.height = 'auto';
       const newHeight = Math.min(textarea.scrollHeight, 200) + 'px';
-      
+
       if (previousHeight !== newHeight) {
         textarea.style.height = newHeight;
       }
-    }, [hasError, externalValue, onValueChange]);
+    }, [externalValue, onValueChange]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -253,7 +252,7 @@ const ChatInput_OpenAI = forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
       </form>
     );
   }
-);
+));
 
 export default ChatInput_OpenAI;
 

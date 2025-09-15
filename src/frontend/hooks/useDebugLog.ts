@@ -253,8 +253,8 @@ export function useRenderLogger(componentName: string, maxRenders: number = 10):
     hasWarnedRef.current = false;
   }
 
-  // Only log every 100ms to prevent spam
-  if (now - lastLogRef.current > 100) {
+  // Only log every 300ms to prevent spam and reduce render triggers
+  if (now - lastLogRef.current > 300) {
     logger.debug(`🎭 Render #${renderCountRef.current} in ${componentName}`);
     lastLogRef.current = now;
   }
