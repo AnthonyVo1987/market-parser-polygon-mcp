@@ -11,13 +11,11 @@
     "dev:full": "concurrently \"npm run backend:server\" \"npm run frontend:dev\"",
     "dev:frontend": "npm run frontend:dev",
     "dev:backend": "npm run backend:dev",
-
     "// === BACKEND COMMANDS ===": "",
     "backend:dev": "uv run uvicorn src.backend.main:app --host 0.0.0.0 --port 8000 --reload",
     "backend:server": "uv run -m src.backend.main --server",
     "backend:cli": "uv run -m src.backend.main",
     "backend:install": "uv install",
-
     "// === FRONTEND COMMANDS ===": "",
     "frontend:dev": "vite --mode development",
     "frontend:dev:staging": "vite --mode staging",
@@ -26,7 +24,6 @@
     "frontend:build:staging": "tsc && vite build --mode staging",
     "frontend:build:development": "tsc && vite build --mode development",
     "frontend:preview": "vite preview",
-
     "// === CODE QUALITY COMMANDS ===": "",
     "lint": "npm run lint:js",
     "lint:js": "eslint 'src/frontend/**/*.{ts,tsx}' --report-unused-disable-directives --max-warnings 0",
@@ -36,7 +33,6 @@
     "format:check": "prettier --check 'src/frontend/**/*.{ts,tsx,js,jsx,json,css,md}'",
     "type-check": "tsc --noEmit",
     "check:all": "npm run lint && npm run format:check && npm run type-check",
-
     "// === BUILD & ANALYSIS COMMANDS ===": "",
     "build": "npm run frontend:build",
     "build:all": "npm run frontend:build",
@@ -46,7 +42,6 @@
     "analyze:visualizer": "ANALYZE=true npm run build",
     "analyze:staging": "ANALYZE=true npm run build:staging",
     "analyze:development": "ANALYZE=true npm run build:development",
-
     "// === TESTING COMMANDS ===": "",
     "test": "npx playwright test",
     "test:playwright": "npx playwright test",
@@ -72,7 +67,6 @@
     "test:pwa": "npm run build:development && echo '\n🔧 Development PWA build ready!\n📱 To test PWA functionality:\n   1. Start Live Server on port 5500\n   2. Open DevTools > Application > Service Workers\n   3. Test offline functionality and PWA install prompt\n✅ Service worker and manifest configured\n'",
     "test:pwa:staging": "npm run build:staging && echo '\n🔧 Staging PWA build ready!\n📱 To test PWA functionality:\n   1. Use staging Live Server config (port 5501)\n   2. Open DevTools > Application > Service Workers\n   3. Test offline functionality and PWA install prompt\n✅ Service worker and manifest configured for staging\n'",
     "test:pwa:production": "npm run build && echo '\n🔧 Production PWA build ready!\n📱 To test PWA functionality:\n   1. Use production Live Server config (port 5502)\n   2. Open DevTools > Application > Service Workers\n   3. Test offline functionality and PWA install prompt\n✅ Service worker and manifest configured for production\n'",
-
     "// === PERFORMANCE & LIGHTHOUSE ===": "",
     "lighthouse": "npm run build && npx @lhci/cli@0.15.x autorun",
     "lighthouse:collect": "npm run build && npx @lhci/cli@0.15.x collect",
@@ -80,17 +74,14 @@
     "lighthouse:upload": "npx @lhci/cli@0.15.x upload",
     "lighthouse:live-server": "npm run build && echo '\n🏗️ Production build complete for Lighthouse testing!\n⚡ To run Lighthouse CI:\n   1. Start Live Server on port 5502\n   2. Run: npx @lhci/cli@0.15.x autorun --config=lighthouserc.js\n📊 Performance, PWA, and accessibility will be tested\n'",
     "lighthouse:live-server:staging": "npm run build:staging && echo '\n🏗️ Staging build complete for Lighthouse testing!\n⚡ To run Lighthouse CI:\n   1. Start Live Server on port 5501\n   2. Run: npx @lhci/cli@0.15.x autorun --config=lighthouserc.js\n📊 Performance, PWA, and accessibility will be tested\n'",
-
     "// === SERVING COMMANDS ===": "",
     "serve": "npm run build:development && echo '\n📦 Development build complete!\n🚀 To test: Open VS Code Command Palette (Ctrl+Shift+P) and run:\n   > Live Server: Open with Live Server\n🌐 Will serve on http://localhost:5500 from dist/ folder\n✅ SPA routing and PWA features enabled\n'",
-    "serve:staging": "npm run build:staging && echo '\n📦 Staging build complete!\n🚀 To test with staging config:\n   1. Copy .vscode/live-server-staging.json settings to .vscode/settings.json\n   2. Run Live Server (will use port 5501)\n🌐 Will serve on http://localhost:5501 from dist/ folder\n✅ Staging API endpoints and PWA features enabled\n'", 
+    "serve:staging": "npm run build:staging && echo '\n📦 Staging build complete!\n🚀 To test with staging config:\n   1. Copy .vscode/live-server-staging.json settings to .vscode/settings.json\n   2. Run Live Server (will use port 5501)\n🌐 Will serve on http://localhost:5501 from dist/ folder\n✅ Staging API endpoints and PWA features enabled\n'",
     "serve:production": "npm run build && echo '\n📦 Production build complete!\n🚀 To test with production config:\n   1. Copy .vscode/live-server-production.json settings to .vscode/settings.json\n   2. Run Live Server (will use port 5502)\n🌐 Will serve on http://localhost:5502 from dist/ folder\n✅ Production API endpoints and PWA features enabled\n'",
-
     "// === CROSS-DEVICE & NETWORK TESTING ===": "",
     "cross-device:setup": "npm run build && echo '\n📱 Production build ready for cross-device testing!\n🌐 Network access enabled - find your local IP:\n   • Windows: ipconfig | Mac/Linux: ifconfig\n   • Access via http://YOUR_LOCAL_IP:5502\n✅ CORS enabled for mobile device testing\n'",
     "cross-device:staging": "npm run build:staging && echo '\n📱 Staging build ready for cross-device testing!\n🌐 Network access enabled - find your local IP:\n   • Windows: ipconfig | Mac/Linux: ifconfig\n   • Access via http://YOUR_LOCAL_IP:5501\n✅ CORS enabled for mobile device testing\n'",
     "live-server:help": "echo '\n🔧 Live Server Configuration Help:\n\n📁 Available configurations:\n   • .vscode/settings.json (default dev - port 5500)\n   • .vscode/live-server-staging.json (staging - port 5501)\n   • .vscode/live-server-production.json (production - port 5502)\n\n🚀 Quick Start:\n   1. npm run serve (builds + instructions)\n   2. Open VS Code Command Palette (Ctrl+Shift+P)\n   3. Run: Live Server: Open with Live Server\n\n✅ Features enabled:\n   • SPA routing (React Router support)\n   • PWA functionality (service worker + manifest)\n   • CORS for cross-device testing\n   • API proxy to localhost:8000\n\n📱 Testing on mobile:\n   1. npm run cross-device:setup\n   2. Connect mobile device to same network\n   3. Access via your computer IP address\n'",
-
     "// === INSTALLATION & MAINTENANCE ===": "",
     "install:all": "npm install",
     "install:backend": "npm run backend:install",
@@ -98,11 +89,9 @@
     "clean:cache": "rm -rf .cache node_modules/.cache",
     "clean:install": "npm run clean && npm run install:all",
     "clean:full": "npm run clean && npm run clean:cache && npm run install:all",
-
     "// === ONE-CLICK STARTUP COMMANDS ===": "",
     "start:app": "bash ./start-app.sh",
     "start:app:xterm": "bash ./start-app-xterm.sh",
-
     "// === UTILITY COMMANDS ===": "",
     "status": "echo '=== Backend Status ===' && (curl -s http://localhost:8000/health || echo 'Backend not running') && echo && echo '=== Frontend Status ===' && (curl -s http://localhost:3000 > /dev/null && echo 'Frontend running on http://localhost:3000' || echo 'Frontend not running')",
     "health": "npm run status",
@@ -121,6 +110,7 @@
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@welldone-software/why-did-you-render": "^10.0.1",
     "concurrently": "^8.2.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",

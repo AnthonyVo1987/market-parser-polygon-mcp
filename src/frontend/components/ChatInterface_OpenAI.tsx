@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, Suspense, lazy } from 'react';
+import { useState, useRef, useEffect, Suspense, lazy, useCallback, useMemo, memo } from 'react';
 
 import { sendChatMessage } from '../services/api_OpenAI';
 import { Message, MessageMetadata } from '../types/chat_OpenAI';
@@ -29,7 +29,7 @@ const AnalysisButtons = lazy(() =>
 // Note: Styles are now included within each lazy-loaded component to prevent static imports
 // that would break the lazy loading optimization
 
-export default function ChatInterface_OpenAI() {
+const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +43,11 @@ export default function ChatInterface_OpenAI() {
     initialTicker: sharedTicker
   });
   
-  // Safe state logging that prevents render loops
-  useStateLogger('ChatInterface_OpenAI', 'messages', messages.length);
-  useStateLogger('ChatInterface_OpenAI', 'isLoading', isLoading);
-  useStateLogger('ChatInterface_OpenAI', 'error', error);
-  useStateLogger('ChatInterface_OpenAI', 'sharedTicker', sharedTicker);
+  // Safe state logging that prevents render loops - reduced frequency
+  useStateLogger('ChatInterface_OpenAI', 'messages', messages.length, process.env.NODE_ENV === 'development');
+  useStateLogger('ChatInterface_OpenAI', 'isLoading', isLoading, false); // Disable frequent loading state logs
+  useStateLogger('ChatInterface_OpenAI', 'error', error, !!error); // Only log when there's actually an error
+  useStateLogger('ChatInterface_OpenAI', 'sharedTicker', sharedTicker, process.env.NODE_ENV === 'development');
   
   // Performance tracking
   const { startTiming, endTiming } = usePerformanceLogger('ChatInterface_OpenAI');
@@ -56,7 +56,7 @@ export default function ChatInterface_OpenAI() {
   const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
   
   // Render cycle monitoring (helps detect infinite loops)
-  useRenderLogger('ChatInterface_OpenAI', 15); // Warn if more than 15 renders in 5 seconds
+  useRenderLogger('ChatInterface_OpenAI', 25); // Warn if more than 25 renders in 5 seconds
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -92,7 +92,7 @@ export default function ChatInterface_OpenAI() {
     previousMessageCountRef.current = currentMessageCount;
   }, [messages, isLoading]);
 
-  const addMessage = (content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
+  const addMessage = useCallback((content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
     const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
     const newMessage: Message = {
       id: messageId,
@@ -101,7 +101,7 @@ export default function ChatInterface_OpenAI() {
       timestamp: new Date(),
       metadata,
     };
-    
+
     logger.info(`💬 Adding ${sender} message`, {
       component: 'ChatInterface_OpenAI',
       messageId,
@@ -110,19 +110,19 @@ export default function ChatInterface_OpenAI() {
       hasMetadata: !!metadata,
       messageCount: messages.length + 1
     });
-    
+
     setMessages(prev => [...prev, newMessage]);
-  };
+  }, [messages.length]);
 
   // Handle prompt population from analysis buttons
-  const handlePromptGenerated = (prompt: string) => {
+  const handlePromptGenerated = useCallback((prompt: string) => {
     logInteraction('prompt_generated', 'analysis_button', {
       promptLength: prompt.length,
       promptPreview: prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
     });
-    
+
     setInputValue(prompt);
-    
+
     // Focus the input after populating
     if (chatInputRef.current) {
       chatInputRef.current.focus();
@@ -130,11 +130,11 @@ export default function ChatInterface_OpenAI() {
     } else {
       logger.warn('⚠️ Could not focus chat input - ref not available');
     }
-  };
+  }, [logInteraction]);
 
 
 
-  const handleSendMessage = async (messageContent: string) => {
+  const handleSendMessage = useCallback(async (messageContent: string) => {
     const messageId = Date.now().toString();
     
     logInteraction('send_message', 'chat_input', {
@@ -211,7 +211,38 @@ export default function ChatInterface_OpenAI() {
         }
       });
     }
-  };
+  }, [addMessage, startTiming, endTiming, messages.length, error, logInteraction]);
+
+  const handleTickerChange = useCallback((newTicker: string) => {
+    logInteraction('ticker_change', 'analysis_buttons', {
+      oldTicker: sharedTicker,
+      newTicker,
+      source: 'analysis_buttons'
+    });
+    setSharedTicker(newTicker);
+  }, [sharedTicker, logInteraction]);
+
+  const handleRecentMessageClick = useCallback((messageContent: string) => {
+    logInteraction('recent_message_click', 'recent_button', {
+      messageLength: messageContent.length,
+      messageCount: messages.length
+    });
+  }, [messages.length, logInteraction]);
+
+  const handleExport = useCallback((format: string, messageCount: number) => {
+    logInteraction('export_messages', 'export_button', {
+      format,
+      messageCount,
+      totalMessages: messages.length
+    });
+  }, [messages.length, logInteraction]);
+
+  const handleDebugAction = useCallback((action: string, details: any) => {
+    logInteraction('debug_action', 'debug_panel', {
+      action,
+      ...details
+    });
+  }, [logInteraction]);
 
   return (
     <div
@@ -323,14 +354,7 @@ export default function ChatInterface_OpenAI() {
           <AnalysisButtons
             onPromptGenerated={handlePromptGenerated}
             currentTicker={sharedTicker}
-            onTickerChange={(newTicker) => {
-              logInteraction('ticker_change', 'analysis_buttons', {
-                oldTicker: sharedTicker,
-                newTicker,
-                source: 'analysis_buttons'
-              });
-              setSharedTicker(newTicker);
-            }}
+            onTickerChange={handleTickerChange}
             className='fixed-analysis-buttons'
           />
         </Suspense>
@@ -345,14 +369,9 @@ export default function ChatInterface_OpenAI() {
                 <div className='component-loading'>Loading recent messages...</div>
               }
             >
-              <RecentMessageButtons 
+              <RecentMessageButtons
                 messages={messages}
-                onRecentMessageClick={(messageContent) => {
-                  logInteraction('recent_message_click', 'recent_button', {
-                    messageLength: messageContent.length,
-                    messageCount: messages.length
-                  });
-                }}
+                onRecentMessageClick={handleRecentMessageClick}
               />
             </Suspense>
             <Suspense
@@ -360,15 +379,9 @@ export default function ChatInterface_OpenAI() {
                 <div className='component-loading'>Loading export options...</div>
               }
             >
-              <ExportButtons 
+              <ExportButtons
                 messages={messages}
-                onExport={(format, messageCount) => {
-                  logInteraction('export_messages', 'export_button', {
-                    format,
-                    messageCount,
-                    totalMessages: messages.length
-                  });
-                }}
+                onExport={handleExport}
               />
             </Suspense>
           </div>
@@ -377,20 +390,20 @@ export default function ChatInterface_OpenAI() {
 
       {/* SECTION 6: Debug Panel */}
       <section className='debug-section' role='complementary' aria-label='Debug information'>
-        <DebugPanel 
+        <DebugPanel
           latestResponseTime={latestResponseTime}
           className='main-debug-panel'
-          onDebugAction={(action, details) => {
-            logInteraction('debug_action', 'debug_panel', {
-              action,
-              ...details
-            });
-          }}
+          onDebugAction={handleDebugAction}
         />
       </section>
     </div>
   );
-}
+});
+
+// Enable Why Did You Render tracking for this component
+ChatInterface_OpenAI.whyDidYouRender = true;
+
+export default ChatInterface_OpenAI;
 
 // Enhanced responsive styles for cross-platform UI optimization with accessibility
 export const interfaceStyles = `

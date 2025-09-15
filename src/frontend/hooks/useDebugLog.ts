@@ -240,33 +240,35 @@ export function useRenderLogger(componentName: string, maxRenders: number = 10):
   const renderCountRef = useRef(0);
   const lastResetRef = useRef(Date.now());
   const lastLogRef = useRef(Date.now());
+  const hasWarnedRef = useRef(false);
 
-  useEffect(() => {
-    renderCountRef.current += 1;
-    const now = Date.now();
+  // Increment render count without causing re-renders
+  renderCountRef.current += 1;
+  const now = Date.now();
 
-    // Reset counter every 5 seconds
-    if (now - lastResetRef.current > 5000) {
-      renderCountRef.current = 1;
-      lastResetRef.current = now;
-    }
+  // Reset counter every 5 seconds
+  if (now - lastResetRef.current > 5000) {
+    renderCountRef.current = 1;
+    lastResetRef.current = now;
+    hasWarnedRef.current = false;
+  }
 
-    // Only log every 100ms to prevent spam
-    if (now - lastLogRef.current > 100) {
-      logger.debug(`🎭 Render #${renderCountRef.current} in ${componentName}`);
-      lastLogRef.current = now;
-    }
+  // Only log every 100ms to prevent spam
+  if (now - lastLogRef.current > 100) {
+    logger.debug(`🎭 Render #${renderCountRef.current} in ${componentName}`);
+    lastLogRef.current = now;
+  }
 
-    // Warn about excessive re-renders, but only once per reset period
-    if (renderCountRef.current === maxRenders + 1) {
-      logger.warn(`⚠️ Excessive re-renders detected in ${componentName}`, {
-        component: componentName,
-        renderCount: renderCountRef.current,
-        timeWindow: '5 seconds',
-        suggestion: 'Check dependencies in useEffect and useMemo hooks'
-      });
-    }
-  }); // No dependency array = runs on every render (intentional for render counting)
+  // Warn about excessive re-renders, but only once per reset period
+  if (renderCountRef.current === maxRenders + 1 && !hasWarnedRef.current) {
+    hasWarnedRef.current = true;
+    logger.warn(`⚠️ Excessive re-renders detected in ${componentName}`, {
+      component: componentName,
+      renderCount: renderCountRef.current,
+      timeWindow: '5 seconds',
+      suggestion: 'Check dependencies in useEffect and useMemo hooks'
+    });
+  }
 }
 
 /**

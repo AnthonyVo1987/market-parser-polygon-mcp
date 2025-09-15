@@ -24,7 +24,7 @@ export default defineConfig(({ command, mode }) => {
       VitePWA({
         registerType: 'autoUpdate',
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest,json}'],
           cleanupOutdatedCaches: true,
           sourcemap: isProduction,
           runtimeCaching: [
@@ -37,6 +37,13 @@ export default defineConfig(({ command, mode }) => {
                 cacheableResponse: {
                   statuses: [0, 200]
                 }
+              }
+            },
+            {
+              urlPattern: /\/manifest\.webmanifest$/,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'manifest-cache'
               }
             }
           ]
