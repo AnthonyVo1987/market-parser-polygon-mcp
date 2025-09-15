@@ -16,94 +16,83 @@ Key Features:
 
 # Handle optional imports gracefully for development/testing environments
 try:
-    from .main import (
-        # FastAPI application instance
-        app,
-        # Core processing functions
-        process_financial_query,
-        create_polygon_mcp_server,
-        # CLI function
-        cli_async,
-        # Response formatting utilities
-        print_response,
-        print_error,
-        print_guardrail_error,
-        # Utility functions
-        save_analysis_report,
-        finance_guardrail,
-        # Pydantic models for requests/responses
-        FinanceOutput,
+    from .main import (  # FastAPI application instance; Core processing functions; CLI function; Response formatting utilities; Utility functions; Pydantic models for requests/responses
         ChatRequest,
         ChatResponse,
+        FinanceOutput,
+        app,
+        cli_async,
+        create_polygon_mcp_server,
+        finance_guardrail,
+        print_error,
+        print_guardrail_error,
+        print_response,
+        process_financial_query,
+        save_analysis_report,
     )
 except ImportError as e:
     # Development/testing environment - dependencies may not be installed
     import warnings
+
     warnings.warn(
         f"Main module imports failed: {e}. This is expected in development "
-        "environments without full dependencies.", ImportWarning
+        "environments without full dependencies.",
+        ImportWarning,
     )
 
 try:
-    from .api_models import (
-        # Enums
+    from .api_models import (  # Enums; Core API models; Template management models; System status models; Error handling models; Utility models
         AnalysisType,
-        PromptMode,
-        # Core API models
-        ChatMessage,
-        ChatAnalysisRequest,
-        ChatAnalysisResponse,
-        ButtonAnalysisRequest,
-        ButtonAnalysisResponse,
-        GeneratePromptRequest,
-        GeneratePromptResponse,
-        # Template management models
-        PromptTemplateInfo,
-        TemplateListResponse,
-        # System status models
-        SystemHealthResponse,
-        SystemStatusResponse,
-        SystemMetrics,
-        # Error handling models
-        ErrorDetail,
-        APIErrorResponse,
-        ValidationErrorResponse,
-        # Utility models
-        TickerContextInfo,
-        FollowUpQuestionsResponse,
-        SuccessResponse,
         AnalysisTypeDetectionRequest,
         AnalysisTypeDetectionResponse,
+        APIErrorResponse,
+        ButtonAnalysisRequest,
+        ButtonAnalysisResponse,
+        ChatAnalysisRequest,
+        ChatAnalysisResponse,
+        ChatMessage,
+        ErrorDetail,
+        FollowUpQuestionsResponse,
+        GeneratePromptRequest,
+        GeneratePromptResponse,
+        PromptMode,
+        PromptTemplateInfo,
+        SuccessResponse,
+        SystemHealthResponse,
+        SystemMetrics,
+        SystemStatusResponse,
+        TemplateListResponse,
+        TickerContextInfo,
         TickerExtractionRequest,
         TickerExtractionResponse,
+        ValidationErrorResponse,
     )
 except ImportError as e:
     # API models module may have dependency issues
     import warnings
+
     warnings.warn(
         f"API models imports failed: {e}. Some features may not be available.", ImportWarning
     )
 
 try:
-    from .prompt_templates import (
-        # Core classes
-        PromptTemplateManager,
+    from .prompt_templates import (  # Core classes; Enums; Utility functions
         PromptTemplate,
-        TickerExtractor,
-        TickerContext,
-        # Enums
+        PromptTemplateManager,
         PromptType,
-        # Utility functions
+        TickerContext,
+        TickerExtractor,
         run_prompt_consistency_tests,
-        validate_template_parsing_compatibility,
         test_dual_mode_behavior,
+        validate_template_parsing_compatibility,
     )
 except ImportError as e:
     # Prompt templates module may have dependency issues
     import warnings
+
     warnings.warn(
         f"Prompt templates imports failed: {e}. Template features may not be available.",
-        ImportWarning
+        ImportWarning,
     )
 
 # Package metadata

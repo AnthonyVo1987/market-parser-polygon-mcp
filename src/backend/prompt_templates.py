@@ -73,7 +73,6 @@ class PromptTemplate:
         # Note: mode parameter kept for backward compatibility but not used
         del mode  # Mark as intentionally unused
 
-
         # Unified conversational mode for all interactions
         prompt_parts = [
             self.conversational_template.format(
@@ -783,8 +782,12 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
                 "status": "compatible",
                 "has_example_response": bool(example_response and example_response.strip()),
                 "template_length": len(template.conversational_template),
-                "has_formatting_instructions": bool(template.formatting_instructions and template.formatting_instructions.strip()),
-                "has_context_guidance": bool(template.context_guidance and template.context_guidance.strip()),
+                "has_formatting_instructions": bool(
+                    template.formatting_instructions and template.formatting_instructions.strip()
+                ),
+                "has_context_guidance": bool(
+                    template.context_guidance and template.context_guidance.strip()
+                ),
                 "extraction_rate": 1.0,  # Assume compatible for basic validation
             }
 

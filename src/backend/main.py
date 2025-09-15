@@ -40,15 +40,6 @@ from pydantic_settings import BaseSettings
 from rich.console import Console
 from rich.markdown import Markdown
 
-# Import logging utilities
-from .utils.logger import (
-    get_logger,
-    log_api_request,
-    log_api_response,
-    log_mcp_operation,
-    log_agent_processing,
-)
-
 from .api_models import (
     AnalysisType,
     ButtonAnalysisRequest,
@@ -67,6 +58,15 @@ from .api_models import (
 )
 from .prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
 
+# Import logging utilities
+from .utils.logger import (
+    get_logger,
+    log_agent_processing,
+    log_api_request,
+    log_api_response,
+    log_mcp_operation,
+)
+
 load_dotenv()
 
 console = Console()
@@ -74,6 +74,7 @@ logger = get_logger(__name__)
 
 
 # ====== CONFIGURATION SETTINGS ======
+
 
 class EnvironmentSettings(BaseSettings):
     """Environment-only settings for API keys."""
@@ -97,7 +98,7 @@ class Settings:
 
         # Hard-coded server configuration (no environment variable override)
         self.fastapi_host: str = "127.0.0.1"  # Hard-coded localhost for security
-        self.fastapi_port: int = 8000         # Hard-coded port
+        self.fastapi_port: int = 8000  # Hard-coded port
 
         # API Keys from environment
         self.polygon_api_key: str = env_settings.polygon_api_key
@@ -214,7 +215,7 @@ def create_polygon_mcp_server():
             ],
             "env": {**os.environ, "POLYGON_API_KEY": settings.polygon_api_key},
         },
-        client_session_timeout_seconds=settings.mcp_timeout_seconds
+        client_session_timeout_seconds=settings.mcp_timeout_seconds,
     )
 
 
@@ -262,7 +263,9 @@ def print_guardrail_error(exception):
     console.print("------------------\n")
 
 
-async def process_financial_query(query: str, session: SQLiteSession, server, request_id: Optional[str] = None) -> dict:
+async def process_financial_query(
+    query: str, session: SQLiteSession, server, request_id: Optional[str] = None
+) -> dict:
     """Process a financial query using the agent system.
 
     Returns:
@@ -276,13 +279,17 @@ async def process_financial_query(query: str, session: SQLiteSession, server, re
     start_time = time.time()
     if not request_id:
         request_id = str(uuid.uuid4())[:8]
-    
-    log_agent_processing(logger, "Starting financial query processing", {
-        "request_id": request_id,
-        "query_length": len(query),
-        "session_name": session.session_name if hasattr(session, 'session_name') else 'unknown'
-    })
-    
+
+    log_agent_processing(
+        logger,
+        "Starting financial query processing",
+        {
+            "request_id": request_id,
+            "query_length": len(query),
+            "session_name": session.session_name if hasattr(session, "session_name") else "unknown",
+        },
+    )
+
     try:
         with trace("Polygon.io Demo"):
             analysis_agent = Agent(
@@ -331,24 +338,31 @@ async def process_financial_query(query: str, session: SQLiteSession, server, re
                 mcp_servers=[server],
                 tools=[save_analysis_report],
                 input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
-                model=OpenAIResponsesModel(model=settings.openai_model, openai_client=AsyncOpenAI()),
+                model=OpenAIResponsesModel(
+                    model=settings.openai_model, openai_client=AsyncOpenAI()
+                ),
                 model_settings=ModelSettings(truncation="auto"),
             )
-            log_agent_processing(logger, "Running analysis agent", {
-                "request_id": request_id,
-                "model": settings.openai_model
-            })
-            
+            log_agent_processing(
+                logger,
+                "Running analysis agent",
+                {"request_id": request_id, "model": settings.openai_model},
+            )
+
             output = await Runner.run(analysis_agent, query, session=session)
             final_output = getattr(output, "final_output", output)
-            
+
             processing_time = time.time() - start_time
-            log_agent_processing(logger, "Agent processing completed successfully", {
-                "request_id": request_id,
-                "processing_time": f"{processing_time:.3f}s",
-                "response_length": len(str(final_output))
-            })
-            
+            log_agent_processing(
+                logger,
+                "Agent processing completed successfully",
+                {
+                    "request_id": request_id,
+                    "processing_time": f"{processing_time:.3f}s",
+                    "response_length": len(str(final_output)),
+                },
+            )
+
             return {
                 "success": True,
                 "response": str(final_output),
@@ -360,35 +374,45 @@ async def process_financial_query(query: str, session: SQLiteSession, server, re
         reasoning = ""
         if hasattr(e, "output_info") and e.output_info:  # pylint: disable=no-member
             reasoning = f" Reasoning: {e.output_info.reasoning}"  # pylint: disable=no-member
-        
+
         error_msg = (
             f"This query is not related to finance.{reasoning} "
             "Please ask about stock prices, market data, financial analysis, "
             "economic indicators, or company financials."
         )
-        
-        log_agent_processing(logger, "Guardrail triggered - non-finance query", {
-            "request_id": request_id,
-            "processing_time": f"{processing_time:.3f}s",
-            "reasoning": reasoning.strip(),
-            "query_preview": query[:50] + "..." if len(query) > 50 else query
-        })
-        
+
+        log_agent_processing(
+            logger,
+            "Guardrail triggered - non-finance query",
+            {
+                "request_id": request_id,
+                "processing_time": f"{processing_time:.3f}s",
+                "reasoning": reasoning.strip(),
+                "query_preview": query[:50] + "..." if len(query) > 50 else query,
+            },
+        )
+
         return {
             "success": False,
             "response": "",
             "error": error_msg,
             "error_type": "guardrail",
         }
-    except Exception as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
+    except (
+        Exception
+    ) as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
         processing_time = time.time() - start_time
-        log_agent_processing(logger, "Agent processing failed with exception", {
-            "request_id": request_id,
-            "processing_time": f"{processing_time:.3f}s",
-            "error_type": type(e).__name__,
-            "error_message": str(e)[:200] + "..." if len(str(e)) > 200 else str(e)
-        })
-        
+        log_agent_processing(
+            logger,
+            "Agent processing failed with exception",
+            {
+                "request_id": request_id,
+                "processing_time": f"{processing_time:.3f}s",
+                "error_type": type(e).__name__,
+                "error_message": str(e)[:200] + "..." if len(str(e)) > 200 else str(e),
+            },
+        )
+
         return {"success": False, "response": "", "error": str(e), "error_type": "agent_error"}
 
 
@@ -403,46 +427,51 @@ async def lifespan(app: FastAPI):
     global shared_mcp_server, shared_session
 
     startup_start = time.time()
-    logger.info("🚀 FastAPI application startup initiated", {
-        "host": settings.fastapi_host,
-        "port": settings.fastapi_port,
-        "model": settings.openai_model,
-        "session_name": settings.agent_session_name
-    })
+    logger.info(
+        "🚀 FastAPI application startup initiated - host: %s, port: %s, model: %s, session: %s",
+        settings.fastapi_host,
+        settings.fastapi_port,
+        settings.openai_model,
+        settings.agent_session_name,
+    )
 
     # Startup: Create shared instances
     try:
-        console.print(f"[bold green]Starting FastAPI server on {settings.fastapi_host}:{settings.fastapi_port}[/bold green]")
+        console.print(
+            f"[bold green]Starting FastAPI server on {settings.fastapi_host}:{settings.fastapi_port}[/bold green]"
+        )
         console.print("[bold green]Initializing shared MCP server...[/bold green]")
-        
+
         # Initialize session
         session_start = time.time()
         shared_session = SQLiteSession(settings.agent_session_name)
         session_time = time.time() - session_start
-        logger.debug(f"📊 SQLite session initialized in {session_time:.3f}s")
-        
+        logger.debug("📊 SQLite session initialized in %.3fs", session_time)
+
         # Initialize MCP server
         mcp_start = time.time()
         shared_mcp_server = create_polygon_mcp_server()
         await shared_mcp_server.__aenter__()
         mcp_time = time.time() - mcp_start
         log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
-        
+
         startup_time = time.time() - startup_start
-        logger.info(f"✅ FastAPI application startup completed in {startup_time:.3f}s", {
-            "total_startup_time": f"{startup_time:.3f}s",
-            "session_init_time": f"{session_time:.3f}s",
-            "mcp_init_time": f"{mcp_time:.3f}s"
-        })
-        
+        logger.info(
+            "✅ FastAPI application startup completed in %.3fs - session: %.3fs, mcp: %.3fs",
+            startup_time,
+            session_time,
+            mcp_time,
+        )
+
         console.print("[bold green]✓ Shared MCP server and session initialized[/bold green]")
     except Exception as e:
         startup_time = time.time() - startup_start
-        logger.error(f"❌ FastAPI startup failed after {startup_time:.3f}s", {
-            "error_type": type(e).__name__,
-            "error_message": str(e),
-            "startup_time": f"{startup_time:.3f}s"
-        })
+        logger.error(
+            "❌ FastAPI startup failed after %.3fs - error: %s (%s)",
+            startup_time,
+            str(e),
+            type(e).__name__,
+        )
         console.print(f"[bold red]✗ Failed to initialize shared resources: {e}[/bold red]")
         raise
 
@@ -451,7 +480,7 @@ async def lifespan(app: FastAPI):
     # Cleanup: Close shared instances
     shutdown_start = time.time()
     logger.info("🔄 FastAPI application shutdown initiated")
-    
+
     try:
         console.print("[bold yellow]Shutting down shared MCP server...[/bold yellow]")
         if shared_mcp_server:
@@ -459,20 +488,24 @@ async def lifespan(app: FastAPI):
             await shared_mcp_server.__aexit__(None, None, None)
             mcp_shutdown_time = time.time() - mcp_shutdown_start
             log_mcp_operation(logger, "MCP server shutdown", mcp_shutdown_time, True)
-        
+
         shutdown_time = time.time() - shutdown_start
-        logger.info(f"✅ FastAPI application shutdown completed in {shutdown_time:.3f}s", {
-            "shutdown_time": f"{shutdown_time:.3f}s"
-        })
-        
+        logger.info(
+            f"✅ FastAPI application shutdown completed in {shutdown_time:.3f}s",
+            {"shutdown_time": f"{shutdown_time:.3f}s"},
+        )
+
         console.print("[bold green]✓ Shared resources cleaned up[/bold green]")
     except Exception as e:
         shutdown_time = time.time() - shutdown_start
-        logger.error(f"❌ FastAPI shutdown failed after {shutdown_time:.3f}s", {
-            "error_type": type(e).__name__,
-            "error_message": str(e),
-            "shutdown_time": f"{shutdown_time:.3f}s"
-        })
+        logger.error(
+            f"❌ FastAPI shutdown failed after {shutdown_time:.3f}s",
+            {
+                "error_type": type(e).__name__,
+                "error_message": str(e),
+                "shutdown_time": f"{shutdown_time:.3f}s",
+            },
+        )
         console.print(f"[bold red]✗ Error during cleanup: {e}[/bold red]")
 
 
@@ -511,10 +544,10 @@ else:
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Process a financial query and return the response."""
     global shared_mcp_server, shared_session
-    
+
     request_id = str(uuid.uuid4())[:8]
     start_time = time.time()
-    
+
     log_api_request(logger, "POST", "/chat", request.message, request_id)
 
     # Enhanced input validation for empty and whitespace-only inputs
@@ -545,7 +578,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         )
 
         response_time = time.time() - start_time
-        
+
         if result["success"]:
             log_api_response(logger, 200, response_time, request_id=request_id)
             return ChatResponse(response=result["response"])
@@ -553,9 +586,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         if result["error_type"] == "guardrail":
             response_time = time.time() - start_time
             log_api_response(logger, 400, response_time, request_id=request_id)
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
 
         response_time = time.time() - start_time
         log_api_response(logger, 500, response_time, request_id=request_id)
@@ -566,15 +597,20 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     except HTTPException:
         raise
-    except Exception as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
+    except (
+        Exception
+    ) as e:  # pylint: disable=broad-exception-caught  # pylint: disable=broad-exception-caught
         response_time = time.time() - start_time
         log_api_response(logger, 500, response_time, request_id=request_id)
-        logger.error(f"💥 Unhandled exception in chat endpoint", {
-            "request_id": request_id,
-            "error_type": type(e).__name__,
-            "error_message": str(e),
-            "response_time": f"{response_time:.3f}s"
-        })
+        logger.error(
+            f"💥 Unhandled exception in chat endpoint",
+            {
+                "request_id": request_id,
+                "error_type": type(e).__name__,
+                "error_message": str(e),
+                "response_time": f"{response_time:.3f}s",
+            },
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Server error: {str(e)}"
         ) from e
@@ -670,7 +706,7 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
     ticker = request.ticker.strip().upper()
 
     # Basic ticker validation (alphanumeric, 1-5 characters typically)
-    if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
+    if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
@@ -723,7 +759,7 @@ async def get_support_resistance(request: ButtonAnalysisRequest):
     ticker = request.ticker.strip().upper()
 
     # Basic ticker validation
-    if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
+    if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
@@ -776,7 +812,7 @@ async def get_technical_analysis(request: ButtonAnalysisRequest):
     ticker = request.ticker.strip().upper()
 
     # Basic ticker validation
-    if not ticker.replace('.', '').replace('-', '').isalnum() or len(ticker) > 10:
+    if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
@@ -876,9 +912,7 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
             )
 
         if result["error_type"] == "guardrail":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"]
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -925,26 +959,27 @@ async def get_templates_legacy():
         # Get templates using the same logic as the v1 endpoint
         templates = []
         for template_type in AnalysisType:
-            templates.append({
-                "id": template_type.value,
-                "type": template_type.value,
-                "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
-                "description": f"{template_type.value.replace('_', ' ').title()} analysis template",
-                "template": f"Provide {template_type.value.replace('_', ' ')} analysis for {{ticker}}",
-                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else
-                       "🔧" if template_type == AnalysisType.TECHNICAL else "🎯",
-                "requiresTicker": True,
-                "followUpQuestions": [
-                    "Would you like more details on this analysis?",
-                    "Should we analyze another stock?",
-                ]
-            })
+            templates.append(
+                {
+                    "id": template_type.value,
+                    "type": template_type.value,
+                    "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
+                    "description": f"{template_type.value.replace('_', ' ').title()} analysis template",
+                    "template": f"Provide {template_type.value.replace('_', ' ')} analysis for {{ticker}}",
+                    "icon": (
+                        "📈"
+                        if template_type == AnalysisType.SNAPSHOT
+                        else "🔧" if template_type == AnalysisType.TECHNICAL else "🎯"
+                    ),
+                    "requiresTicker": True,
+                    "followUpQuestions": [
+                        "Would you like more details on this analysis?",
+                        "Should we analyze another stock?",
+                    ],
+                }
+            )
 
-        return {
-            "success": True,
-            "templates": templates,
-            "total_count": len(templates)
-        }
+        return {"success": True, "templates": templates, "total_count": len(templates)}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -958,22 +993,23 @@ async def get_analysis_tools_legacy():
     try:
         analysis_tools = []
         for template_type in AnalysisType:
-            analysis_tools.append({
-                "id": template_type.value,
-                "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
-                "description": f"Get {template_type.value.replace('_', ' ')} analysis for any stock",
-                "icon": "📈" if template_type == AnalysisType.SNAPSHOT else
-                       "🔧" if template_type == AnalysisType.TECHNICAL else "🎯",
-                "endpoint": f"/api/v1/analysis/{template_type.value.replace('_', '-')}",
-                "requiresTicker": True,
-                "category": "financial_analysis"
-            })
+            analysis_tools.append(
+                {
+                    "id": template_type.value,
+                    "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
+                    "description": f"Get {template_type.value.replace('_', ' ')} analysis for any stock",
+                    "icon": (
+                        "📈"
+                        if template_type == AnalysisType.SNAPSHOT
+                        else "🔧" if template_type == AnalysisType.TECHNICAL else "🎯"
+                    ),
+                    "endpoint": f"/api/v1/analysis/{template_type.value.replace('_', '-')}",
+                    "requiresTicker": True,
+                    "category": "financial_analysis",
+                }
+            )
 
-        return {
-            "success": True,
-            "tools": analysis_tools,
-            "total_count": len(analysis_tools)
-        }
+        return {"success": True, "tools": analysis_tools, "total_count": len(analysis_tools)}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -1022,6 +1058,7 @@ async def cli_async():
                         # Create a mock output object for print_response compatibility
                         class MockOutput:
                             """Mock output object for print_response compatibility."""
+
                             def __init__(self, response):
                                 self.final_output = response
 
@@ -1031,6 +1068,7 @@ async def cli_async():
                             # Create a mock exception for print_guardrail_error compatibility
                             class MockException:
                                 """Mock exception for print_guardrail_error compatibility."""
+
                                 def __init__(self, error_msg):
                                     # Extract reasoning if present
                                     if " Reasoning: " in error_msg:
@@ -1040,6 +1078,7 @@ async def cli_async():
 
                                         class OutputInfo:
                                             """Mock output info for error reasoning."""
+
                                             def __init__(self, reasoning):
                                                 self.reasoning = reasoning
 
@@ -1069,6 +1108,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--server":
         # Run as FastAPI server
         import uvicorn
+
         console.print("[bold blue]Starting FastAPI server with settings:[/bold blue]")
         console.print(f"[dim]Host: {settings.fastapi_host}[/dim]")
         console.print(f"[dim]Port: {settings.fastapi_port}[/dim]")
@@ -1080,7 +1120,7 @@ if __name__ == "__main__":
             host=settings.fastapi_host,
             port=settings.fastapi_port,
             reload=True,
-            timeout_keep_alive=120
+            timeout_keep_alive=120,
         )
     else:
         # Run as CLI

@@ -1,12 +1,17 @@
 [MAIN]
 load-plugins = pylint.extensions.docparams
 jobs = 0
-source-roots = src,stock_data_fsm,stock_data_fsm_openai
+source-roots = src,tests
+# Updated for new FastAPI + Pydantic AI architecture
+py-version = 3.10
 
 [MESSAGES CONTROL]
 disable = missing-docstring,invalid-name,too-few-public-methods,
           too-many-arguments,too-many-locals,too-many-branches,
-          line-too-long,import-error,no-name-in-module
+          line-too-long,import-error,no-name-in-module,
+          too-many-lines,too-many-instance-attributes,broad-exception-caught,
+          global-statement,global-variable-not-assigned,useless-suppression,
+          logging-fstring-interpolation,f-string-without-interpolation
 enable = useless-suppression
 
 [FORMAT]
@@ -21,7 +26,7 @@ max-branches = 15
 max-statements = 50
 
 [BASIC]
-good-names = i,j,k,ex,Run,_,id,db,ai,ui,os,df,dt,fs,app
+good-names = i,j,k,ex,Run,_,id,db,ai,ui,os,df,dt,fs,app,uv,mcp,ctx,api
 
 [IMPORTS]
 # known-first-party and known-third-party removed as they are not recognized in this Pylint version
