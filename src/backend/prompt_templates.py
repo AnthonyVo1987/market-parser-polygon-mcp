@@ -621,52 +621,31 @@ Not financial advice. For informational purposes only."""
 
     def _build_technical_template(self) -> PromptTemplate:
         """Build technical analysis conversational prompt template"""
-        conversational_template = """Please provide a comprehensive technical analysis for {ticker} ({company}) using key indicators.
+        conversational_template = """Provide brief technical analysis for {ticker} ({company}) using 3 core indicators only.
 
-Analyze current technical indicators including RSI, MACD, and moving averages. Explain what these indicators suggest about the stock's momentum and trend direction, and provide actionable insights for trading decisions."""
+Include: RSI current value and signal, MACD position, and one key moving average. Keep analysis concise with simple trend direction."""
 
-        formatting_instructions = """PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity
+        formatting_instructions = """BRIEF RESPONSE - LIMIT TO 3 CORE INDICATORS ONLY
 
-RESPONSE FORMATTING GUIDELINES:
-- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using bullet points
-- Explicitly mention the ticker symbol ({ticker}) throughout the response
-- Deliver thorough analysis with clear explanations and actionable insights
-- Include key oscillators (RSI, MACD) with current values and interpretations
-- Provide moving average analysis (short-term and long-term trends)
-- Explain momentum and trend direction based on indicators
-- Include bullish/bearish signals and their strength
-- Provide trading recommendations based on technical setup
-- Use emojis for EVERY bullet point to enhance readability
-- Use sentiment emojis directly: 📈 for bullish indicators, 📉 for bearish indicators
-- Place emojis at the beginning of relevant bullet points for immediate visual sentiment
-- Make technical concepts accessible to both novice and experienced traders
-- End with standard disclaimers in a clearly formatted section
-- Follow this structure: 🎯 KEY TAKEAWAYS, 📊 DETAILED ANALYSIS, ⚠️ DISCLAIMER"""
+FORMAT:
+🎯 KEY TAKEAWAYS (3 bullet points max)
+📊 CORE INDICATORS (RSI, MACD, MA-20 only)
+⚠️ DISCLAIMER
+
+Keep response under 200 words total. Use 📈/📉 for direction. No detailed explanations."""
 
         example_response = """🎯 KEY TAKEAWAYS
-• 📈 AAPL showing bullish momentum with RSI at 68.5 (approaching overbought)
-• 📊 MACD bullish crossover confirmed above signal line
-• 📈 Price above all major moving averages indicating strong uptrend
+• 📈 AAPL bullish momentum, RSI 68.5
+• 📊 MACD crossover confirmed
+• 📈 Above MA-20, uptrend intact
 
-📊 DETAILED ANALYSIS
-📈 **Momentum Indicators:**
-• **RSI (14):** 68.5 - Approaching overbought territory, but still neutral
-• **MACD:** 0.25 above signal line (0.18) - Bullish momentum confirmed
-
-📊 **Moving Averages:**
-• **Short-term:** AAPL price above EMA-5 ($151.20) and EMA-10 ($149.85)
-• **Medium-term:** Strong support at EMA-50 ($144.75)
-• **Long-term:** Well above EMA-200 ($140.25) - Bullish trend intact
-
-✨ **Analysis Summary:**
-🔹 **Trend Direction:** Bullish with moderate momentum
-🔹 **Signal Strength:** Moderate - watch for RSI divergence
-🔹 **Recommendation:** Hold current AAPL positions, watch for pullback opportunities
+📊 CORE INDICATORS
+RSI: 68.5 📈 | MACD: 0.25 📈 | MA-20: $144.75 📈
 
 ⚠️ DISCLAIMER
-Not financial advice. For informational purposes only."""
+Not financial advice."""
 
-        context_guidance = """Make technical analysis accessible and actionable for all skill levels. Explain what each indicator means and how it affects trading decisions. Focus on educational value while providing practical trading insights."""
+        context_guidance = """Brief format only. Focus on essential indicators."""
 
         return PromptTemplate(
             template_type=PromptType.TECHNICAL,

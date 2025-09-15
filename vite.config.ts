@@ -29,6 +29,14 @@ export default defineConfig(({ command, mode }) => {
           sourcemap: isProduction,
           runtimeCaching: [
             {
+              urlPattern: new RegExp(`^http://127\.0\.0\.1:8000\/chat$`),
+              handler: 'NetworkOnly'
+            },
+            {
+              urlPattern: new RegExp(`^http://127\.0\.0\.1:8000\/api\/v1\/prompts\/generate$`),
+              handler: 'NetworkOnly'
+            },
+            {
               urlPattern: new RegExp(`^http://127\.0\.0\.1:8000\/api\/`),
               handler: 'NetworkFirst',
               options: {

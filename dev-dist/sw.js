@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-84f51434'], (function (workbox) { 'use strict';
+define(['./workbox-83cda833'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -82,12 +82,14 @@ define(['./workbox-84f51434'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.q67auejjl3g"
+    "revision": "0.envegg2di0g"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
+  workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/chat$/, new workbox.NetworkOnly(), 'GET');
+  workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/api\/v1\/prompts\/generate$/, new workbox.NetworkOnly(), 'GET');
   workbox.registerRoute(/^http:\/\/127.0.0.1:8000\/api\//, new workbox.NetworkFirst({
     "cacheName": "api-cache",
     "networkTimeoutSeconds": 10,
