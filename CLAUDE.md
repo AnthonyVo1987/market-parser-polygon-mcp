@@ -25,16 +25,18 @@ Market Parser is a Python CLI and React web application for natural language fin
 **Results:** Single source of truth for each audience | Zero duplication | 100% critical content preserved | Production-ready organization
 <!-- LAST_COMPLETED_TASK_END -->
 
-## MCP Tools Usage
+## Tools Usage
 
-When working with MCP tools, prioritize:
+When working with tools, prioritize the following MCP Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
-- **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
 - **Sequential-Thinking MCP**:  Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
 - **Playwright MCP**: Browser automation for React GUI testing & App Validation
 - **Filesystem MCP**: Multi-file operations (3+ files)
 
 Use standard Read/Write/Edit tools for single-file operations.
+
+- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
 
 ## Quick Start
 
