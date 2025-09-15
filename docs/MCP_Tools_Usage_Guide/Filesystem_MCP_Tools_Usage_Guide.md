@@ -35,7 +35,8 @@
 - Reading files outside current working directory
 
 **Correct Examples:**
-```
+
+```bash
 # Read backend configuration
 mcp__filesystem__read_text_file("/home/1000211866/Github/market-parser-polygon-mcp/src/backend/main.py")
 
@@ -48,7 +49,8 @@ mcp__filesystem__read_text_file("/home/1000211866/Github/market-parser-polygon-m
 - Reading multiple related files (use `read_multiple_files`)
 
 **Incorrect Examples:**
-```
+
+```bash
 # DON'T: Reading file just to edit it
 mcp__filesystem__read_text_file → Edit
 # INSTEAD: Use Read tool then Edit tool
@@ -67,7 +69,8 @@ mcp__filesystem__read_text_file(file2)
 - Batch configuration file analysis
 
 **Correct Examples:**
-```
+
+```json
 # Analyze backend API structure
 mcp__filesystem__read_multiple_files({
   "paths": [
@@ -99,7 +102,8 @@ mcp__filesystem__read_multiple_files({
 - Understanding component organization in frontend/backend
 
 **Correct Examples:**
-```
+
+```bash
 # Explore backend structure
 mcp__filesystem__list_directory("/home/1000211866/Github/market-parser-polygon-mcp/src/backend")
 
@@ -125,7 +129,8 @@ mcp__filesystem__list_directory("/home/1000211866/Github/market-parser-polygon-m
 - Architecture documentation creation
 
 **Correct Examples:**
-```
+
+```bash
 # Analyze docs structure for navigation
 mcp__filesystem__directory_tree("/home/1000211866/Github/market-parser-polygon-mcp/docs")
 
@@ -163,7 +168,8 @@ mcp__filesystem__directory_tree("/home/1000211866/Github/market-parser-polygon-m
 - Finding test files matching patterns
 
 **Correct Examples:**
-```
+
+```bash
 # Find all Python API files
 mcp__filesystem__search_files("/home/1000211866/Github/market-parser-polygon-mcp/src", "api")
 
@@ -179,7 +185,8 @@ mcp__filesystem__search_files("/home/1000211866/Github/market-parser-polygon-mcp
 - Finding files in current directory (use Glob tool)
 
 **Expected Output:**
-```
+
+```json
 [
   "/home/1000211866/Github/market-parser-polygon-mcp/src/backend/api_models.py",
   "/home/1000211866/Github/market-parser-polygon-mcp/src/frontend/services/api_OpenAI.ts",
@@ -195,7 +202,8 @@ mcp__filesystem__search_files("/home/1000211866/Github/market-parser-polygon-mcp
 - Debugging file permission issues
 
 **Correct Examples:**
-```
+
+```bash
 # Check if config was recently modified
 mcp__filesystem__get_file_info("/home/1000211866/Github/market-parser-polygon-mcp/.env")
 
@@ -227,7 +235,8 @@ mcp__filesystem__list_directory("/home/1000211866/Github/market-parser-polygon-m
 - Creating new component files from scratch
 
 **Correct Examples:**
-```
+
+```json
 # Create new API documentation
 mcp__filesystem__write_file({
   "path": "/home/1000211866/Github/market-parser-polygon-mcp/docs/api/new_endpoint.md",
@@ -253,7 +262,8 @@ mcp__filesystem__write_file({
 - Batch modifications with known patterns
 
 **Correct Examples:**
-```
+
+```json
 # Update API endpoints in multiple locations
 mcp__filesystem__edit_file({
   "path": "/home/1000211866/Github/market-parser-polygon-mcp/src/backend/main.py",
@@ -276,7 +286,8 @@ mcp__filesystem__edit_file({
 - Creating test directory structures
 
 **Correct Examples:**
-```
+
+```bash
 # Create new feature directory
 mcp__filesystem__create_directory("/home/1000211866/Github/market-parser-polygon-mcp/src/backend/features/new_feature")
 
@@ -292,7 +303,8 @@ mcp__filesystem__create_directory("/home/1000211866/Github/market-parser-polygon
 - Renaming files with path changes
 
 **Correct Examples:**
-```
+
+```json
 # Reorganize backend structure
 mcp__filesystem__move_file({
   "source": "/home/1000211866/Github/market-parser-polygon-mcp/src/old_location.py",
@@ -308,7 +320,8 @@ mcp__filesystem__move_file({
 - Monitoring build output sizes
 
 **Correct Examples:**
-```
+
+```bash
 # Check build output sizes
 mcp__filesystem__list_directory_with_sizes("/home/1000211866/Github/market-parser-polygon-mcp/dist")
 
@@ -317,7 +330,8 @@ mcp__filesystem__list_directory_with_sizes("/home/1000211866/Github/market-parse
 ```
 
 **Expected Output:**
-```
+
+```text
 [DIR] components (2.1 KB)
 [FILE] main.js (156.3 KB)
 [FILE] style.css (45.2 KB)
@@ -374,7 +388,8 @@ mcp__filesystem__list_directory_with_sizes("/home/1000211866/Github/market-parse
 ## Error Handling Patterns
 
 **MCP Tool Errors:**
-```
+
+```bash
 # Path errors indicate directory doesn't exist
 # Use mcp__filesystem__create_directory first
 
@@ -408,7 +423,8 @@ mcp__filesystem__list_directory_with_sizes("/home/1000211866/Github/market-parse
 - `mcp__filesystem__read_media_file` - For images/binary files only
 
 ### Allowed Directory Verification
-```
+
+```bash
 # Always check allowed directories when MCP tools fail
 mcp__filesystem__list_allowed_directories()
 # Returns: ["/home/1000211866/Github/market-parser-polygon-mcp"]
