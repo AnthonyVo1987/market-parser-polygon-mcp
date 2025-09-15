@@ -135,7 +135,8 @@
       "Read(//home/1000211866/.claude/**)",
       "Bash(bash:*)",
       "Bash(xargs kill:*)",
-      "mcp__playwright__browser_take_screenshot"
+      "mcp__playwright__browser_take_screenshot",
+      "Bash(markdownlint-cli2:*)"
     ],
     "deny": [],
     "ask": [],
