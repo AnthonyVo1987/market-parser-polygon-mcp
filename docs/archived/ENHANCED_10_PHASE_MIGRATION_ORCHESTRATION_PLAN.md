@@ -50,6 +50,7 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
 ### Simple Sequence
 
 **Sequential Phases (one at a time):**
+
 1. Phase 1: Setup
 2. Phase 2: Documentation prep
 3. Phase 3: Remove legacy Python
@@ -68,11 +69,13 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
 ### Basic Safety
 
 **Backup Strategy:**
+
 - Work on experimental branch: `migration-experimental`
 - Keep main branch untouched
 - If anything breaks: `git checkout main`
 
 **Recovery:**
+
 - Any phase fails: Switch back to main branch
 - Start over if needed
 - Main branch always has working system
@@ -91,12 +94,14 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
 2. Document what we're starting with
 
 ### Completion Check
+
 - [ ] Branch created and working
 - [ ] Can switch back to main if needed
 
 ### Detailed Tasks with MCP Tools
 
 1. **Experimental Branch Setup (code-archaeologist)**
+
    ```bash
    # Using Bash tool
    git status --porcelain  # Ensure clean working directory
@@ -106,6 +111,7 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
    ```
 
 2. **System State Validation (documentation-specialist)**
+
    ```python
    # Using mcp__filesystem tools
    validation_checklist = {
@@ -137,11 +143,13 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
 3. Note current state
 
 ### Completion Check
+
 - [ ] Documentation plan ready
 
 ### Detailed Tasks
 
 1. **Documentation Audit Matrix**
+
    ```markdown
    | Document | Keep | Migrate | Remove | New Location |
    |----------|------|---------|--------|--------------|
@@ -151,6 +159,7 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
    ```
 
 2. **Critical Documentation State Recording**
+
    ```bash
    # Record current documentation state on main branch
    git checkout main
@@ -171,18 +180,19 @@ Migration from legacy CLI/Gradio to OpenAI GPT-5 React system with basic special
 
 1. Remove old Python files
    - chat_ui.py
-   - market_parser_demo.py
    - /src/ directory
    - /stock_data_fsm/ directory
 2. Clean up Python cache
 
 ### Completion Check
+
 - [ ] Old files removed
 - [ ] No import errors
 
 ### Risk Mitigation
 
 **Branch Safety Check Script:**
+
 ```bash
 # Simple branch safety check
 git status --porcelain  # Should be clean
@@ -204,6 +214,7 @@ git branch --show-current  # Should show migration-experimental
 2. Clean up test configurations that reference old structure
 
 ### Completion Check
+
 - [ ] Old tests removed
 - [ ] No broken test references
 
@@ -223,6 +234,7 @@ git branch --show-current  # Should show migration-experimental
 4. Update pyproject.toml and uv.lock
 
 ### Completion Check
+
 - [ ] CLI works: `uv run src/main.py`
 - [ ] FastAPI starts: `uv run uvicorn src.main:app`
 
@@ -253,6 +265,7 @@ grep -r "legacy_references" . --include="*.py"
 4. Move Playwright configs
 
 ### Completion Check
+
 - [ ] Frontend builds: `npm run build`
 - [ ] Frontend connects to API
 
@@ -272,6 +285,7 @@ grep -r "legacy_references" . --include="*.py"
 4. Update environment configs
 
 ### Completion Check
+
 - [ ] Dependencies install cleanly
 - [ ] Configuration works
 
@@ -291,6 +305,7 @@ grep -r "legacy_references" . --include="*.py"
 4. Update installation instructions
 
 ### Completion Check
+
 - [ ] Documentation reflects new structure
 - [ ] Installation steps work
 
@@ -309,6 +324,7 @@ grep -r "legacy_references" . --include="*.py"
 3. Make sure important tests still work
 
 ### Completion Check
+
 - [ ] Tests can run
 - [ ] Key functionality tested
 
@@ -330,6 +346,7 @@ grep -r "legacy_references" . --include="*.py"
 3. Make sure basic functionality works
 
 ### Completion Check
+
 - [ ] System is functional
 - [ ] No major issues
 - [ ] Ready for use
@@ -377,6 +394,7 @@ Track progress by marking completed phases:
 ### What Success Looks Like
 
 **Basic functionality works:**
+
 - CLI runs: `uv run src/main.py`
 - API responds: Backend starts and responds to requests
 - Frontend works: React app builds and connects to API
@@ -401,6 +419,7 @@ Track progress by marking completed phases:
 ### Simple Updates
 
 When completing a phase:
+
 1. Say what you did
 2. Note any issues
 3. Confirm next specialist can start
@@ -408,6 +427,7 @@ When completing a phase:
 ### Emergency Recovery
 
 If anything breaks:
+
 ```bash
 git checkout main
 # You're back to working system
@@ -418,6 +438,7 @@ git checkout main
 ## Tools Needed
 
 **All specialists should use MCP tools as specified in CLAUDE.md:**
+
 - `mcp__filesystem__*` for file operations
 - `Bash` for commands
 - Standard development tools
@@ -446,17 +467,20 @@ git checkout main
 ### Final System Validation Results
 
 **Frontend Build Test:**
+
 - ✅ Frontend builds successfully in 4.53s
 - ✅ PWA v1.0.3 generated with service worker
 - ✅ 20 precache entries (561.89 KiB)
 - ✅ Production build optimized with code splitting
 
 **Backend Status:**
+
 - ⚠️ Known Issue: OpenAI v1.100.0 + openai-agents v0.2.9 compatibility issue
 - ✅ File structure migrated correctly to `/src/`
 - ✅ Configuration files updated for root structure
 
 **Migration Artifacts:**
+
 - ✅ 108 files staged for final commit
 - ✅ Legacy directory completely removed (100+ deleted files)
 - ✅ New test infrastructure in place at `/tests/`

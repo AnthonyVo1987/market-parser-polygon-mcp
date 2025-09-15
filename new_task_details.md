@@ -4,18 +4,11 @@
 
 ## Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research & implementing the following
 
-- CLAUDE.md is loaded everytime for the AI Coding Main Agents & AI Team Specialists, so we need to Optmize & Reduce CLAUDE.md Token Usage performance at top level for our project's Memory File for JUST the Optimal Enhanced Tool \ MCP Tool Usage based on all the new MCP Tool Usage Guides:
+We are currently in the middle of streamlining & consolidating Project Docs due to the massive re-architectural changes that have been implemented in our project. Review our legacy archived docs/archived/CLAUDE_LEGACY.md & docs/archived/README_LEGACY.md in order to perform the following for Each doc:
 
-1. docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-2. docs/MCP_Tools_Usage_Guide/Filesystem_MCP_Tools_Usage_Guide.md
-3. docs/MCP_Tools_Usage_Guide/Sequential-Thinking_MCP_Tools_Usage_Guide.md
-4. docs/MCP_Tools_Usage_Guide/Context7_MCP_Tools_Usage_Guide.md
+## Task 1. CLAUDE.md - Consolidate & extract\integrate any Critical\Key details from the older legacy docs/archived/CLAUDE_LEGACY.md into our current up to date CLAUDE.md. Make sure we do NOT have any duplicate, redundant, and\or outdated info from the legacy doc.  The current CLAUDE.md will be the single source of truth for ALL AI Agents when working on the project
 
-- There are alot of existing critical info in CLAUDE.md, so we need to leave as much critical INFO UNTOUCHED if it has nothing to do with MCP Tool Usage etc
-- We will focus ONLY only consolidating, updating, & optmizing anything MCP Tool related ONLY
-- So need to review the current CLAUDE.md to figure out what is referencing MCP Tools so we can consolidate
-- Need to "cap" the max tokens\verbosity to provide the most critical details about the tool usage that matches optimzied CLAUDE.md guidelines.  We do NOT want to dump the full details on every tool in CLAUDE.md because the Usage guides are there for that purpose
-- We will no longer break down individual granular tool usage for specific AI Team Specialists since the new consolidation will be a "catch all" guide for Any Main Agent and Any AI Agent Specialist
+## Task 2. README.md - Consolidate & extract\integrate any Critical\Key details from the older legacy docs/archived/README_LEGACY.md into our current blank README.md.  Make sure we do NOT have any duplicate, redundant, and\or outdated info from the legacy doc.  The new README.md will be reflect the most current state of the project
 
 ## Final Task(s)
 
@@ -54,24 +47,5 @@ Final Task 4: Final Verification
 ## Expected Outcome*
 
 *All Files, Docs atomically commited after all tasks are complete*
-
-- There will ONLY be a single consolidated section near the top of CLAUDE.md with details on the optimal MCP Tool Usage guide for each that ONLY CAPTURES THE MOST CRITICAL CORE Usage Details about the tool, and if AI Coding Main Agents & AI Team Specialists need more details about the tools, they can alwasy read and reference the matchinng usage guide
-
-1. Playwright Tools: 10 -20 Lines MAX for ENTIRE Playwright Tools for Optimal Use Cases for any AI Agent for our project; Include instructions to refer to 'docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md' if needed for more specific usage guide details
-
-2. Filesystem Tools: 10 -20 Lines MAX for ENTIRE Filesystem Tools for Optimal Use Cases for any AI Agent for our project; Include instructions to refer to 'docs/MCP_Tools_Usage_Guide/Filesystem_MCP_Tools_Usage_Guide.md' if needed for more specific usage guide details
-
-3. Context7 Tools: 10 -20 Lines MAX for ENTIRE Context7 Tools for Optimal Use Cases for any AI Agent for our project; Include instructions to refer to 'docs/MCP_Tools_Usage_Guide/Context7_MCP_Tools_Usage_Guide.md' if needed for more specific usage guide details
-
-4. Sequential-Thinking Tools: 10 -20 Lines MAX for ENTIRE Sequential-Thinking Tools for Optimal Use Cases for any AI Agent for our project; Include instructions to refer to 'docs/MCP_Tools_Usage_Guide/Sequential-Thinking_MCP_Tools_Usage_Guide.md' if needed for more specific usage guide details
-
-FINAL EXPECTED END RESULT: Single section near the top that has optmized Tools Usage Guidelines for just 4x Toolsets AND each Toolset has 10-20 lines max: Playwright, Filesystem, Context7, Sequential-Thinking Tools.  No MCP Tools referenced anywhere else in CLAUDE.md.
-
-Example:
-
-- Playwright Tools: 10 -20 Lines MAX for ENTIRE Playwright Tools for Optimal Use Cases
-- Filesystem Tools: 10 -20 Lines MAX for ENTIRE Filesystem Tools for Optimal Use Cases
-- Context7 Tools: 10 -20 Lines MAX for ENTIRE Context7 Tools for Optimal Use Cases
-- Sequential-Thinking Tools: 10 -20 Lines MAX for ENTIRE Sequential-Thinking Tools for Optimal Use Cases
 
 ## Additional Context

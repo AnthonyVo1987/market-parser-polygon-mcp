@@ -41,6 +41,7 @@ All specialists and development work must respect these prototyping constraints 
 **ALL AI agents must use MCP tools for systematic analysis and optimal performance in Market Parser development.**
 
 ### Playwright MCP Tools
+
 - **Primary Use**: Browser automation and E2E testing for React financial interface
 - **Key Tools**: `mcp__playwright__browser_navigate`, `mcp__playwright__browser_click`, `mcp__playwright__browser_type`
 - **Best Practices**: 30s polling intervals, 120s max timeout, wait for "🎯 KEY TAKEAWAYS" patterns
@@ -52,6 +53,7 @@ All specialists and development work must respect these prototyping constraints 
 - **Reference**: See `docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md` for comprehensive usage patterns
 
 ### Filesystem MCP Tools
+
 - **Primary Use**: Multi-file operations and cross-directory analysis vs single-file standard tools
 - **Key Tools**: `mcp__filesystem__read_multiple_files`, `mcp__filesystem__list_directory`, `mcp__filesystem__search_files`
 - **Decision Matrix**: Use MCP for 3+ file operations, bulk analysis, metadata gathering
@@ -63,6 +65,7 @@ All specialists and development work must respect these prototyping constraints 
 - **Reference**: See `docs/MCP_Tools_Usage_Guide/Filesystem_MCP_Tools_Usage_Guide.md` for detailed decision patterns
 
 ### Context7 MCP Tools
+
 - **Primary Use**: Library research and up-to-date documentation for Market Parser tech stack
 - **Key Tools**: `mcp__context7__resolve-library-id` → `mcp__context7__get-library-docs` (sequential usage)
 - **Market Parser Libraries**: React 18.2+, Vite 5.2+, FastAPI, OpenAI Agents SDK, Playwright
@@ -74,6 +77,7 @@ All specialists and development work must respect these prototyping constraints 
 - **Reference**: See `docs/MCP_Tools_Usage_Guide/Context7_MCP_Tools_Usage_Guide.md` for Market Parser specific examples
 
 ### Sequential-Thinking MCP Tools
+
 - **Primary Use**: Complex multi-step analysis for Market Parser financial features
 - **Key Tool**: `mcp__sequential-thinking__sequentialthinking` for systematic problem solving
 - **Prototyping Limit**: Maximum 8 thoughts per analysis to maintain rapid iteration
@@ -94,6 +98,7 @@ All specialists and development work must respect these prototyping constraints 
 **Impact:** Significant token reduction while maintaining 100% essential MCP guidance for AI coding agents
 
 **Core Achievement:**
+
 - ✅ **MCP Tools Consolidation**: Single section with 4 toolsets (Playwright, Filesystem, Context7, Sequential-Thinking) replacing scattered references
 - ✅ **Token Optimization**: Eliminated redundant guidance while preserving critical usage patterns for Market Parser development
 - ✅ **Complete Cleanup**: Removed ALL scattered MCP references throughout CLAUDE.md with systematic verification
@@ -663,9 +668,8 @@ The project includes a sophisticated OpenAI GPT-5 powered chatbot with enhanced 
 
 **Entry Points:**
 
-- `market_parser_demo.py` - CLI application with Rich console formatting
-- `chat_ui.py` - Gradio web interface with single chat conversation view
 - `src/main.py` - Enhanced OpenAI CLI with emoji-based sentiment indicators
+- `chat_ui.py` - Gradio web interface with single chat conversation view
 
 **Response Processing:**
 
@@ -695,7 +699,7 @@ The project includes a sophisticated OpenAI GPT-5 powered chatbot with enhanced 
 
 **MCP Server Integration:**
 
-- Factory pattern in `create_polygon_mcp_server()` (market_parser_demo.py:42)
+- Factory pattern in `create_polygon_mcp_server()'
 - Async agent framework using Pydantic AI
 - Real-time financial data from Polygon.io
 
