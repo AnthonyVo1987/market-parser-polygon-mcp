@@ -134,7 +134,8 @@
       "Bash(PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --timeout=120000 --workers=1 test-b006-empty-message.spec.ts)",
       "Read(//home/1000211866/.claude/**)",
       "Bash(bash:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "mcp__playwright__browser_take_screenshot"
     ],
     "deny": [],
     "ask": [],
