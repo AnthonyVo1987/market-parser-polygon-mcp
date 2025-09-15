@@ -17,7 +17,7 @@
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogContext {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface PerformanceMetric {
@@ -31,32 +31,37 @@ class FrontendLogger {
   private isDevelopment: boolean;
   private isDebugMode: boolean;
   private performanceMetrics: Map<string, PerformanceMetric>;
-  private logBuffer: any[];
+  private logBuffer: Array<{
+    timestamp: string;
+    level: LogLevel;
+    message: string;
+    context?: LogContext;
+  }>;
   private maxBufferSize: number = 100;
 
   constructor() {
     this.isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
     this.isDebugMode = this.isDevelopment && (
       localStorage.getItem('debug_mode') === 'true' || 
-      (window as any).__DEBUG_MODE__ === true
+      (window as Record<string, unknown>).__DEBUG_MODE__ === true
     );
     this.performanceMetrics = new Map();
     this.logBuffer = [];
     
     // Enable global debug mode control
-    (window as any).__enableDebugMode = () => {
+    (window as Record<string, unknown>).__enableDebugMode = () => {
       localStorage.setItem('debug_mode', 'true');
       this.isDebugMode = true;
       this.info('🔧 Debug mode enabled - verbose logging active');
     };
     
-    (window as any).__disableDebugMode = () => {
+    (window as Record<string, unknown>).__disableDebugMode = () => {
       localStorage.setItem('debug_mode', 'false');
       this.isDebugMode = false;
       this.info('🔇 Debug mode disabled - minimal logging active');
     };
     
-    (window as any).__exportLogs = () => this.exportLogs();
+    (window as Record<string, unknown>).__exportLogs = () => this.exportLogs();
     
     if (this.isDevelopment) {
       this.info('🚀 Frontend logger initialized', {
@@ -107,6 +112,7 @@ class FrontendLogger {
     
     const timestamp = this.getTimestamp();
     const method = collapsed ? 'groupCollapsed' : 'group';
+    // eslint-disable-next-line no-console
     console[method](`📁 ${timestamp} ${groupName}`);
   }
 
@@ -115,6 +121,7 @@ class FrontendLogger {
    */
   groupEnd(): void {
     if (!this.shouldLog('info')) return;
+    // eslint-disable-next-line no-console
     console.groupEnd();
   }
 
@@ -161,7 +168,7 @@ class FrontendLogger {
   /**
    * Log API call with request details
    */
-  apiRequest(method: string, url: string, data?: any): void {
+  apiRequest(method: string, url: string, data?: unknown): void {
     this.group(`🌐 API Request: ${method.toUpperCase()} ${url}`, true);
     this.info('Request started', {
       method: method.toUpperCase(),
@@ -178,7 +185,7 @@ class FrontendLogger {
   /**
    * Log API response with status and timing
    */
-  apiResponse(method: string, url: string, status: number, duration: number, data?: any): void {
+  apiResponse(method: string, url: string, status: number, duration: number, data?: unknown): void {
     const emoji = status < 300 ? '✅' : status < 400 ? '⚠️' : '❌';
     const level = status < 300 ? 'info' : status < 400 ? 'warn' : 'error';
     
@@ -224,7 +231,7 @@ class FrontendLogger {
   /**
    * Log state changes (use carefully to avoid render loops)
    */
-  stateChange(componentName: string, stateName: string, oldValue: any, newValue: any): void {
+  stateChange(componentName: string, stateName: string, oldValue: unknown, newValue: unknown): void {
     this.debug(`🔄 State change in ${componentName}`, {
       component: componentName,
       state: stateName,
@@ -291,6 +298,7 @@ class FrontendLogger {
       args.push(context);
     }
     
+    // eslint-disable-next-line no-console
     console[level](...args);
   }
 
@@ -315,7 +323,7 @@ class FrontendLogger {
   /**
    * Deep equality check for state change detection
    */
-  private deepEqual(a: any, b: any): boolean {
+  private deepEqual(a: unknown, b: unknown): boolean {
     if (a === b) return true;
     if (a == null || b == null) return false;
     if (typeof a !== typeof b) return false;
@@ -358,6 +366,6 @@ export const loggers = {
 
 // Add debugging helpers to window in development
 if (import.meta.env.DEV) {
-  (window as any).__logger = logger;
-  (window as any).__loggers = loggers;
+  (window as Record<string, unknown>).__logger = logger;
+  (window as Record<string, unknown>).__loggers = loggers;
 }

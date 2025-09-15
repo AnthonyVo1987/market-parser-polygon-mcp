@@ -40,11 +40,12 @@ export default memo(function AnalysisButtons({
     ticker: currentTicker
   },
   // ✅ Only log on meaningful changes (avoids Strict Mode double-logging)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   process.env.NODE_ENV === 'development' && (templates.length > 0 || !!error)
   );
 
   // ✅ Performance tracking (kept for actual performance measurement)
-  const { startTiming, endTiming: _endTiming } = usePerformanceLogger('AnalysisButtons');
+  const { startTiming } = usePerformanceLogger('AnalysisButtons');
 
   // ✅ User interaction logging (kept for user actions)
   const logInteraction = useInteractionLogger('AnalysisButtons');
@@ -66,7 +67,7 @@ export default memo(function AnalysisButtons({
     if (error && !loading) {
       logger.warn('⚠️ Templates failed to load, scheduling auto-retry', {
         component: 'AnalysisButtons',
-        error: error.slice(0, 100) + (error.length > 100 ? '...' : ''),
+        error: typeof error === 'string' ? error.slice(0, 100) + (error.length > 100 ? '...' : '') : 'Unknown error',
         retryDelaySeconds: 3
       });
       
@@ -113,7 +114,7 @@ export default memo(function AnalysisButtons({
     logger.info('🔄 Manual retry triggered', {
       component: 'AnalysisButtons',
       reason: 'user_retry',
-      previousError: error?.slice(0, 100) + (error && error.length > 100 ? '...' : '')
+      previousError: error && typeof error === 'string' ? error.slice(0, 100) + (error.length > 100 ? '...' : '') : 'Unknown error'
     });
     
     startTiming('template_retry');
@@ -122,19 +123,28 @@ export default memo(function AnalysisButtons({
 
   // Collapsible state management with localStorage persistence
   const [isExpanded, setIsExpanded] = useState(() => {
-    const saved = localStorage.getItem('quickAnalysisExpanded');
-    const defaultExpanded = saved !== null ? JSON.parse(saved) : true;
+    try {
+      const saved = localStorage.getItem('quickAnalysisExpanded');
+      const defaultExpanded = saved !== null ? JSON.parse(saved) as boolean : true;
 
-    // ✅ Only log localStorage initialization when value actually changes from default
-    if (process.env.NODE_ENV === 'development' && saved !== null && defaultExpanded !== true) {
-      logger.debug('📦 Initialized expand state from localStorage', {
+      // ✅ Only log localStorage initialization when value actually changes from default
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (process.env.NODE_ENV === 'development' && saved !== null && defaultExpanded !== true) {
+        logger.debug('📦 Initialized expand state from localStorage', {
+          component: 'AnalysisButtons',
+          savedValue: saved,
+          defaultExpanded
+        });
+      }
+      
+      return defaultExpanded;
+    } catch (error) {
+      logger.warn('⚠️ Failed to parse localStorage expand state, using default', {
         component: 'AnalysisButtons',
-        savedValue: saved,
-        defaultExpanded
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
+      return true;
     }
-    
-    return defaultExpanded;
   });
 
   // ✅ Persist expand/collapse state (minimal logging)
@@ -142,10 +152,10 @@ export default memo(function AnalysisButtons({
     try {
       localStorage.setItem('quickAnalysisExpanded', JSON.stringify(isExpanded));
       // ✅ Only log persistence failures (errors are meaningful)
-    } catch (error) {
+    } catch (storageError) {
       logger.warn('⚠️ Failed to persist expand state to localStorage', {
         component: 'AnalysisButtons',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: storageError instanceof Error ? storageError.message : 'Unknown error'
       });
     }
   }, [isExpanded]);
@@ -208,7 +218,7 @@ export default memo(function AnalysisButtons({
         predefinedOrder: ANALYSIS_TYPE_ORDER
       });
     }
-  }, [templates.length, sortedTemplates]);
+  }, [templates, sortedTemplates]);
 
   // Loading state
   if (loading && templates.length === 0) {
@@ -275,6 +285,7 @@ export default memo(function AnalysisButtons({
   // No templates available
   if (templates.length === 0) {
     // ✅ Only log empty state when it's meaningful (not during initial load or Strict Mode cycles)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (process.env.NODE_ENV === 'development' && !loading && !!error) {
       logger.info('📭 Rendering empty state due to error', {
         component: 'AnalysisButtons',
@@ -406,7 +417,7 @@ export default memo(function AnalysisButtons({
           <button 
             onClick={() => {
               logInteraction('retry_refresh_error', 'retry_button_small', {
-                error: error.slice(0, 50) + (error.length > 50 ? '...' : ''),
+                error: typeof error === 'string' ? error.slice(0, 50) + (error.length > 50 ? '...' : '') : 'Unknown error',
                 templatesCount: templates.length
               });
               handleRetry();

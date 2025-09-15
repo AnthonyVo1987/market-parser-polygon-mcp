@@ -11,7 +11,7 @@ interface DebugPanelProps {
   /** Additional CSS classes to apply to the component */
   className?: string;
   /** Optional callback for debug actions */
-  onDebugAction?: (action: string, details: any) => void;
+  onDebugAction?: (action: string, details: Record<string, unknown>) => void;
 }
 
 /**
@@ -37,17 +37,25 @@ export default function DebugPanel({
   
   // Collapsible state management with localStorage persistence
   const [isExpanded, setIsExpanded] = useState(() => {
-    const saved = localStorage.getItem('debugPanelExpanded');
-    const defaultExpanded = saved !== null ? JSON.parse(saved) : true;
-    
-    logger.debug('🔧 DebugPanel initialized', {
-      component: 'DebugPanel',
-      expanded: defaultExpanded,
-      hasResponseTime: latestResponseTime !== null,
-      responseTime: latestResponseTime
-    });
-    
-    return defaultExpanded;
+    try {
+      const saved = localStorage.getItem('debugPanelExpanded');
+      const defaultExpanded = saved !== null ? JSON.parse(saved) as boolean : true;
+      
+      logger.debug('🔧 DebugPanel initialized', {
+        component: 'DebugPanel',
+        expanded: defaultExpanded,
+        hasResponseTime: latestResponseTime !== null,
+        responseTime: latestResponseTime
+      });
+      
+      return defaultExpanded;
+    } catch (error) {
+      logger.warn('⚠️ Failed to parse DebugPanel localStorage state', {
+        component: 'DebugPanel',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return true;
+    }
   });
 
   // Persist expand/collapse state

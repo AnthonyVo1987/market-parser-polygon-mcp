@@ -45,6 +45,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   });
   
   // Optimized state logging - only essential state changes, less frequent logging
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   useStateLogger('ChatInterface_OpenAI', 'messages', messages.length, process.env.NODE_ENV === 'development' && messages.length > 0 && messages.length % 2 === 0); // Only log every 2nd message change
   useStateLogger('ChatInterface_OpenAI', 'error', error, !!error); // Only log actual errors
   // Removed frequent logs: isLoading, sharedTicker (low value, high frequency)
@@ -75,6 +76,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   useEffect(() => {
     const currentMessageCount = messages.length;
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (process.env.NODE_ENV === 'development') {
       logger.debug('🔄 Auto-scroll effect triggered', {
         component: 'ChatInterface_OpenAI',
@@ -87,6 +89,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
     if (shouldAutoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (process.env.NODE_ENV === 'development') {
         logger.debug('📜 Scrolled to bottom of messages');
       }
@@ -95,7 +98,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     // Update refs
     isFirstRenderRef.current = false;
     previousMessageCountRef.current = currentMessageCount;
-  }, [shouldAutoScroll]); // ✅ Single memoized dependency
+  }, [shouldAutoScroll, messages.length]); // ✅ Include messages.length dependency
 
   const addMessage = useCallback((content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
     const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -205,7 +208,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       // End performance timing
       endTiming('message_processing');
       
-    } catch (err) {
+    } catch (err: unknown) {
       const processingTime = (Date.now() - startTime) / 1000;
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       
@@ -236,7 +239,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         }
       });
     }
-  }, [addMessage, startTiming, endTiming, logInteraction]); // ✅ Removed unstable dependencies
+  }, [addMessage, startTiming, endTiming, logInteraction, error]); // ✅ Include error dependency
 
   const handleTickerChange = useCallback((newTicker: string) => {
     setSharedTicker(prev => {
@@ -262,7 +265,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     });
   }, [logInteraction]); // ✅ Removed unstable messages.length dependency
 
-  const handleDebugAction = useCallback((action: string, details: any) => {
+  const handleDebugAction = useCallback((action: string, details: Record<string, unknown>) => {
     logInteraction('debug_action', 'debug_panel', {
       action,
       ...details

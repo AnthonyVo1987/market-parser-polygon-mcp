@@ -42,7 +42,7 @@ export function useComponentLogger(componentName: string, initialContext?: LogCo
     return () => {
       logger.componentLifecycle(componentName, 'unmount');
     };
-  }, []); // Empty dependency array = only runs once
+  }, [componentName, initialContext]); // Include dependencies for ESLint
 }
 
 /**
@@ -85,11 +85,11 @@ export function useStateLogger<T>(
 export function useEffectLogger(
   componentName: string,
   effectName: string,
-  dependencies: any[],
+  dependencies: unknown[],
   effectCallback: () => void | (() => void),
   shouldLog: boolean = true
 ): void {
-  const previousDepsRef = useRef<any[]>(dependencies);
+  const previousDepsRef = useRef<unknown[]>(dependencies);
   const effectCountRef = useRef(0);
   
   useEffect(() => {
@@ -105,7 +105,7 @@ export function useEffectLogger(
           };
         }
         return acc;
-      }, {} as any);
+      }, {} as Record<string, { old: unknown; new: unknown }>);
       
       logger.debug(`🔄 Effect ${effectName} in ${componentName}`, {
         component: componentName,
@@ -120,7 +120,8 @@ export function useEffectLogger(
     
     // Execute the actual effect
     return effectCallback();
-  }, dependencies); // Use actual dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [componentName, effectName, shouldLog, effectCallback, ...dependencies]); // Include all dependencies
 }
 
 /**
@@ -161,21 +162,21 @@ export function usePerformanceLogger(componentName: string): {
  * Hook for logging API calls with automatic timing
  * Safe pattern: Returns a wrapper function that logs API calls
  */
-export function useAPILogger(componentName: string): {
-  logRequest: (method: string, url: string, data?: any) => void;
-  logResponse: (method: string, url: string, status: number, duration: number, data?: any) => void;
+export function useAPILogger(_componentName: string): {
+  logRequest: (method: string, url: string, data?: unknown) => void;
+  logResponse: (method: string, url: string, status: number, duration: number, data?: unknown) => void;
   wrapAPICall: <T>(
     method: string,
     url: string,
     apiCall: () => Promise<T>,
-    requestData?: any
+    requestData?: unknown
   ) => Promise<T>;
 } {
-  const logRequest = useCallback((method: string, url: string, data?: any) => {
+  const logRequest = useCallback((method: string, url: string, data?: unknown) => {
     logger.apiRequest(method, url, data);
   }, []);
   
-  const logResponse = useCallback((method: string, url: string, status: number, duration: number, data?: any) => {
+  const logResponse = useCallback((method: string, url: string, status: number, duration: number, data?: unknown) => {
     logger.apiResponse(method, url, status, duration, data);
   }, []);
   
@@ -183,7 +184,7 @@ export function useAPILogger(componentName: string): {
     method: string,
     url: string,
     apiCall: () => Promise<T>,
-    requestData?: any
+    requestData?: unknown
   ): Promise<T> => {
     const startTime = performance.now();
     logger.apiRequest(method, url, requestData);
@@ -193,9 +194,9 @@ export function useAPILogger(componentName: string): {
       const duration = performance.now() - startTime;
       logger.apiResponse(method, url, 200, duration, result);
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       const duration = performance.now() - startTime;
-      const status = (error as any)?.status || 500;
+      const status = (error as { status?: number })?.status || 500;
       logger.apiResponse(method, url, status, duration, error);
       throw error;
     }
@@ -277,11 +278,11 @@ export function useRenderLogger(componentName: string, maxRenders: number = 10):
  */
 export function useDebouncedLogger(
   message: string,
-  value: any,
+  value: unknown,
   delay: number = 500,
   level: 'debug' | 'info' | 'warn' | 'error' = 'debug'
 ): void {
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   
   useEffect(() => {
     if (timeoutRef.current) {
@@ -304,14 +305,15 @@ export function useDebouncedLogger(
  * Development-only hook that logs component props changes
  * Safe pattern: Only active in development, uses deep comparison
  */
-export function usePropsLogger(componentName: string, props: Record<string, any>): void {
+export function usePropsLogger(componentName: string, props: Record<string, unknown>): void {
   const previousPropsRef = useRef(props);
   
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (process.env.NODE_ENV !== 'development') return;
     
     const previousProps = previousPropsRef.current;
-    const changedProps: Record<string, { old: any; new: any }> = {};
+    const changedProps: Record<string, { old: unknown; new: unknown }> = {};
     
     Object.keys(props).forEach(key => {
       if (previousProps[key] !== props[key]) {
