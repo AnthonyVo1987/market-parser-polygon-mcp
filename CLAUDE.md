@@ -221,3 +221,55 @@ When working with MCP tools, prioritize:
 4. **Sequential-Thinking MCP**: Complex problem analysis (max 8 thoughts)
 
 Use standard Read/Write/Edit tools for single-file operations.
+
+## AI Team Configuration
+
+**IMPORTANT:** For any non-trivial multi-step task, feature implementation, or architectural decision, you MUST use the appropriate specialist subagent from the team below. This ensures optimal code quality, security, and maintainability for the Market Parser financial application.
+
+### Detected Tech Stack
+
+**Backend:**
+- Python 3.10+, FastAPI, OpenAI Agents SDK 0.2.8, Pydantic AI Agent Framework
+- SQLite, UV package manager, Polygon.io MCP server integration
+- Code quality: Black, isort, pylint, mypy
+
+**Frontend:**
+- React 18.2+, TypeScript, Vite 5.2+, PWA capabilities
+- Code quality: ESLint, Prettier
+- Build: Vite with React plugin, npm scripts
+
+**Testing & Development:**
+- Playwright E2E test suite (B001-B016), Fixed ports (8000/3000/5500)
+- Git workflow, One-click startup scripts
+
+### Optimal Agent Team Assignment
+
+| **Task Category** | **Agent** | **Specific Responsibilities** |
+|-------------------|-----------|------------------------------|
+| **Agent System Development** | `backend-developer` | FastAPI + Pydantic AI + OpenAI Agents SDK, guardrail system, prompt templates |
+| **Financial Query Processing** | `backend-developer` | MCP integration, Polygon.io data handling, agent orchestration |
+| **React Components & UI** | `react-component-architect` | Modern React 18.2+ patterns, hooks, PWA features, financial dashboards |
+| **API Design & Integration** | `api-architect` | REST endpoints, Polygon.io MCP server design, data contracts |
+| **Performance & Optimization** | `performance-optimizer` | Real-time financial data processing, agent efficiency, response times |
+| **Code Quality & Security** | `code-reviewer` | Security-aware reviews, financial data handling, maintainability |
+
+### Sample Usage Commands
+
+```bash
+# Backend development
+@backend-developer implement a new financial analysis endpoint using the existing agent framework
+
+# Frontend development
+@react-component-architect create a new stock chart component with real-time updates
+
+# API design
+@api-architect design a new endpoint for portfolio analysis with proper error handling
+
+# Performance optimization
+@performance-optimizer analyze and improve the financial query processing pipeline
+
+# Code review
+@code-reviewer review the recent changes to the agent system for security and best practices
+```
+
+**Note:** This configuration balances the financial domain requirements, prototyping focus, and complex tech stack while ensuring comprehensive coverage of both backend agent development and modern React frontend work.
