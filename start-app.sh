@@ -132,23 +132,13 @@ done
 if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
     echo ""
     echo "🎉 All servers are running successfully!"
-    echo "🌐 Opening application in browser..."
-
-    # Try different browser opening methods
-    if command -v xdg-open >/dev/null 2>&1; then
-        xdg-open "${FRONTEND_URL}" 2>/dev/null
-    elif command -v open >/dev/null 2>&1; then
-        open "${FRONTEND_URL}" 2>/dev/null
-    elif command -v start >/dev/null 2>&1; then
-        start "${FRONTEND_URL}" 2>/dev/null
-    else
-        echo "⚠️ Could not automatically open browser. Please navigate to: ${FRONTEND_URL}"
-    fi
-
     echo ""
-    echo "✨ Application started successfully!"
+    echo "✨ Application is ready!"
     echo "📊 Backend API: ${BACKEND_URL}"
     echo "🌐 Frontend UI: ${FRONTEND_URL}"
+    echo ""
+    echo "💡 To access the application, open your preferred web browser and navigate to:"
+    echo "   ${FRONTEND_URL}"
     echo ""
     echo "💡 Tip: Keep both terminal windows open to see server logs"
     echo "🛑 To stop servers: Close both terminal windows or use Ctrl+C in each"

@@ -15,6 +15,7 @@
  */
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogMode = 'DEBUG' | 'PRODUCTION';
 
 export interface LogContext {
   [key: string]: unknown;
@@ -30,6 +31,7 @@ export interface PerformanceMetric {
 class FrontendLogger {
   private isDevelopment: boolean;
   private isDebugMode: boolean;
+  private logMode: LogMode;
   private performanceMetrics: Map<string, PerformanceMetric>;
   private logBuffer: Array<{
     timestamp: string;
@@ -38,12 +40,19 @@ class FrontendLogger {
     context?: LogContext;
   }>;
   private maxBufferSize: number = 100;
+  private logModeChangeListeners: Array<(mode: LogMode) => void> = [];
 
   constructor() {
     this.isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
+
+    // Initialize log mode from localStorage, default to DEBUG
+    const storedLogMode = localStorage.getItem('console_log_mode') as LogMode;
+    this.logMode = ['DEBUG', 'PRODUCTION'].includes(storedLogMode) ? storedLogMode : 'DEBUG';
+
     this.isDebugMode = this.isDevelopment && (
-      localStorage.getItem('debug_mode') === 'true' || 
-      (window as Record<string, unknown>).__DEBUG_MODE__ === true
+      localStorage.getItem('debug_mode') === 'true' ||
+      (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
+      this.logMode === 'DEBUG'
     );
     this.performanceMetrics = new Map();
     this.logBuffer = [];
@@ -62,14 +71,79 @@ class FrontendLogger {
     };
     
     (window as Record<string, unknown>).__exportLogs = () => this.exportLogs();
-    
+
+    // Add global log mode control methods
+    (window as Record<string, unknown>).__setLogMode = (mode: LogMode) => this.setLogMode(mode);
+    (window as Record<string, unknown>).__getLogMode = () => this.getLogMode();
+
     if (this.isDevelopment) {
       this.info('🚀 Frontend logger initialized', {
         environment: import.meta.env.MODE,
         debugMode: this.isDebugMode,
+        logMode: this.logMode,
         timestamp: new Date().toISOString()
       });
     }
+  }
+
+  /**
+   * Set the current log mode (DEBUG or PRODUCTION)
+   */
+  setLogMode(mode: LogMode): void {
+    if (!['DEBUG', 'PRODUCTION'].includes(mode)) {
+      this.warn('Invalid log mode provided', { attemptedMode: mode, validModes: ['DEBUG', 'PRODUCTION'] });
+      return;
+    }
+
+    const previousMode = this.logMode;
+    this.logMode = mode;
+
+    // Update isDebugMode based on new mode
+    this.isDebugMode = this.isDevelopment && (
+      localStorage.getItem('debug_mode') === 'true' ||
+      (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
+      this.logMode === 'DEBUG'
+    );
+
+    // Persist to localStorage
+    localStorage.setItem('console_log_mode', mode);
+
+    // Notify listeners of mode change
+    this.logModeChangeListeners.forEach(listener => {
+      try {
+        listener(mode);
+      } catch (error) {
+        this.error('Error notifying log mode change listener', { error, mode });
+      }
+    });
+
+    this.info(`🔄 Console log mode changed: ${previousMode} → ${mode}`, {
+      previousMode,
+      newMode: mode,
+      isDebugMode: this.isDebugMode
+    });
+  }
+
+  /**
+   * Get the current log mode
+   */
+  getLogMode(): LogMode {
+    return this.logMode;
+  }
+
+  /**
+   * Add a listener for log mode changes
+   */
+  onLogModeChange(listener: (mode: LogMode) => void): () => void {
+    this.logModeChangeListeners.push(listener);
+
+    // Return unsubscribe function
+    return () => {
+      const index = this.logModeChangeListeners.indexOf(listener);
+      if (index > -1) {
+        this.logModeChangeListeners.splice(index, 1);
+      }
+    };
   }
 
   /**
@@ -306,9 +380,21 @@ class FrontendLogger {
    * Check if we should log at this level
    */
   private shouldLog(level: LogLevel): boolean {
-    if (level === 'error') return true; // Always log errors
-    if (!this.isDevelopment && level !== 'warn') return false; // Production: only warnings and errors
-    if (level === 'debug' && !this.isDebugMode) return false; // Debug only in debug mode
+    // Always log errors
+    if (level === 'error') return true;
+
+    // Always log warnings
+    if (level === 'warn') return true;
+
+    // In PRODUCTION mode, only log warnings and errors
+    if (this.logMode === 'PRODUCTION') {
+      return level === 'warn' || level === 'error';
+    }
+
+    // In DEBUG mode, respect the development environment settings
+    if (!this.isDevelopment && level !== 'warn') return false;
+    if (level === 'debug' && !this.isDebugMode) return false;
+
     return true;
   }
 
@@ -361,6 +447,11 @@ export const loggers = {
   performance: {
     start: logger.startTiming.bind(logger),
     end: logger.endTiming.bind(logger)
+  },
+  mode: {
+    set: logger.setLogMode.bind(logger),
+    get: logger.getLogMode.bind(logger),
+    onChange: logger.onLogModeChange.bind(logger)
   }
 };
 
