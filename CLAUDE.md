@@ -9,12 +9,14 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Update startup scripts and add multi-test report
+feat: Add Console Log Toggle with DEBUG/PRODUCTION modes
 
-- Removed automatic browser launch from startup scripts (start-app.sh, start-app-xterm.sh).
-- Replaced with clear instructions and clickable URLs for manual browser launch.
-- Executed and verified three sequential tests (Market Status, NVDA Snapshot, Support & Resistance Button).
-- Generated a comprehensive multi-test report for the executed tests.
+- Enhanced logger.ts with LogMode type and dynamic mode switching (setLogMode, getLogMode, onLogModeChange)
+- Added Console Log Toggle UI to DebugPanel component with glassmorphic design and accessibility
+- Implemented PRODUCTION mode (warnings/errors only) vs DEBUG mode (full verbose logging)
+- Added localStorage persistence and real-time mode switching without page refresh
+- Comprehensive Playwright testing verified console output differences between modes
+- Code review PASSING: excellent type safety, accessibility, performance optimization
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## Tools Usage
