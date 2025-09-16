@@ -1,6 +1,6 @@
-# CLAUDE.md
+# Gemini Project Analysis: market-parser-polygon-mcp
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Gemini when working with code in this repository.
 
 ## Project Overview
 
@@ -8,7 +8,6 @@ Market Parser is a Python CLI and React web application for natural language fin
 
 ## Last Completed Task Summary
 
-<!-- LAST_COMPLETED_TASK_START -->
 ● ✅ COMPLETED: Comprehensive Performance Optimization & Security Hardening
 
 **Task:** Complete performance analysis, implementation of optimizations, and security review with critical fixes
@@ -23,7 +22,6 @@ Market Parser is a Python CLI and React web application for natural language fin
 - ✅ **Security Grade Upgrade**: Critical risk → Low risk, production-ready with A- security rating from performance-optimizer review
 
 **Technical Details:**
-
 - Unified API endpoints with parameterized routing
 - Secure TTLCache (maxsize=1000, ttl=900s) replacing unsafe global dict
 - Cache management endpoints: `/api/v1/cache/{metrics,ticker/{ticker},all}`
@@ -31,23 +29,24 @@ Market Parser is a Python CLI and React web application for natural language fin
 - Bundle size reduction via CSS extraction to separate files
 
 **Verification Results:**
-
 - ✅ Cache metrics endpoint functional with real-time statistics
 - ✅ Memory safety with automatic eviction and error recovery
 - ✅ Performance testing confirms dramatic response time improvements
 - ✅ Security review PASS rating for production deployment
 
 **Results:** Enterprise-grade caching security | 98%+ performance gains | Zero memory vulnerabilities | Production deployment ready
-<!-- LAST_COMPLETED_TASK_END -->
 
 ## Tools Usage
 
 When working with tools, prioritize the following MCP Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
-- **Sequential-Thinking MCP**:  Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-- **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-- **Playwright MCP**: Browser automation for React GUI testing & App Validation
-- **Filesystem MCP**: Multi-file operations (3+ files)
+- **Sequential-Thinking MCP**:  Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts). Use for multi-step tasks like API integration, complex UI development, or full-stack feature implementation. Break down problems into logical steps, considering both backend and frontend implications. Avoid for simple, single-step tasks. Keep thoughts focused and under 8 total for prototype-stage tasks.
+
+- **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups. Always resolve library IDs first (e.g., 'react', 'fastapi') before getting documentation. Use specific topics and appropriate token limits (4k-8k) for research. This is for staying current with external libraries like React, FastAPI, and the OpenAI Agents SDK.
+
+- **Playwright MCP**: Browser automation for React GUI testing & App Validation. Always `browser_install` first. Use `browser_snapshot` to understand the UI and get element references before interacting. For AI responses, use a 30-second polling interval with `browser_wait_for` and a total timeout of 120 seconds to avoid false positives. Never expect immediate AI responses.
+
+- **Filesystem MCP**: Multi-file operations (3+ files). Use `read_multiple_files` for analyzing related files, `directory_tree` for understanding structure, and `search_files` for locating files. Use for bulk operations, but prefer standard tools for single-file edits. All operations are restricted to the project directory.
 
 Use standard Read/Write/Edit tools for single-file operations.
 
@@ -99,6 +98,7 @@ npm run frontend:dev
 
 # CLI interface
 uv run src/backend/main.py
+```
 
 ### Testing
 
@@ -297,58 +297,3 @@ The project uses Playwright for E2E testing with a comprehensive B001-B016 test 
 - **Documentation focused on usage, not internal architecture** - Help users understand what it does, not how it works internally
 
 All AI Agents, Sub-Agents, & Agent Team Specialists development work must respect these prototyping constraints to maintain project momentum and avoid premature optimization.
-
-## AI Team Configuration
-
-**IMPORTANT:** For any non-trivial multi-step task, feature implementation, or architectural decision, you MUST use the appropriate specialist subagent from the team below. This ensures optimal code quality, security, and maintainability for the Market Parser financial application.
-
-### Detected Tech Stack
-
-**Backend:**
-
-- Python 3.10+, FastAPI, OpenAI Agents SDK 0.2.8, Pydantic AI Agent Framework
-- SQLite, UV package manager, Polygon.io MCP server integration
-- Code quality: Black, isort, pylint, mypy
-
-**Frontend:**
-
-- React 18.2+, TypeScript, Vite 5.2+, PWA capabilities
-- Code quality: ESLint, Prettier
-- Build: Vite with React plugin, npm scripts
-
-**Testing & Development:**
-
-- Playwright E2E test suite (B001-B016), Fixed ports (8000/3000/5500)
-- Git workflow, One-click startup scripts
-
-### Optimal Agent Team Assignment
-
-| **Task Category** | **Agent** | **Specific Responsibilities** |
-|-------------------|-----------|------------------------------|
-| **Agent System Development** | `backend-developer` | FastAPI + Pydantic AI + OpenAI Agents SDK, guardrail system, prompt templates |
-| **Financial Query Processing** | `backend-developer` | MCP integration, Polygon.io data handling, agent orchestration |
-| **React Components & UI** | `react-component-architect` | Modern React 18.2+ patterns, hooks, PWA features, financial dashboards |
-| **API Design & Integration** | `api-architect` | REST endpoints, Polygon.io MCP server design, data contracts |
-| **Performance & Optimization** | `performance-optimizer` | Real-time financial data processing, agent efficiency, response times |
-| **Code Quality & Security** | `code-reviewer` | Security-aware reviews, financial data handling, maintainability |
-
-### Sample Usage Commands
-
-```bash
-# Backend development
-@backend-developer implement a new financial analysis endpoint using the existing agent framework
-
-# Frontend development
-@react-component-architect create a new stock chart component with real-time updates
-
-# API design
-@api-architect design a new endpoint for portfolio analysis with proper error handling
-
-# Performance optimization
-@performance-optimizer analyze and improve the financial query processing pipeline
-
-# Code review
-@code-reviewer review the recent changes to the agent system for security and best practices
-```
-
-**Note:** This configuration balances the financial domain requirements, prototyping focus, and complex tech stack while ensuring comprehensive coverage of both backend agent development and modern React frontend work.
