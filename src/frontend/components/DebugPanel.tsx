@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
-import { logger } from '../utils/logger';
+import { logger, LogMode } from '../utils/logger';
 
 /**
  * Props interface for the DebugPanel component
@@ -35,19 +35,23 @@ export default function DebugPanel({
   });
   const _logInteraction = useInteractionLogger('DebugPanel');
   
+  // Console log mode state management
+  const [logMode, setLogMode] = useState<LogMode>(() => logger.getLogMode());
+
   // Collapsible state management with localStorage persistence
   const [isExpanded, setIsExpanded] = useState(() => {
     try {
       const saved = localStorage.getItem('debugPanelExpanded');
       const defaultExpanded = saved !== null ? JSON.parse(saved) as boolean : true;
-      
+
       logger.debug('🔧 DebugPanel initialized', {
         component: 'DebugPanel',
         expanded: defaultExpanded,
         hasResponseTime: latestResponseTime !== null,
-        responseTime: latestResponseTime
+        responseTime: latestResponseTime,
+        logMode: logMode
       });
-      
+
       return defaultExpanded;
     } catch (error) {
       logger.warn('⚠️ Failed to parse DebugPanel localStorage state', {
@@ -63,6 +67,15 @@ export default function DebugPanel({
     localStorage.setItem('debugPanelExpanded', JSON.stringify(isExpanded));
   }, [isExpanded]);
 
+  // Listen for log mode changes from logger
+  useEffect(() => {
+    const unsubscribe = logger.onLogModeChange((newMode: LogMode) => {
+      setLogMode(newMode);
+    });
+
+    return unsubscribe;
+  }, []);
+
   // Toggle expand/collapse with keyboard support
   const toggleExpanded = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
     if (event && 'key' in event) {
@@ -74,6 +87,27 @@ export default function DebugPanel({
     }
     setIsExpanded(prev => !prev);
   }, []);
+
+  // Toggle log mode between DEBUG and PRODUCTION
+  const toggleLogMode = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
+    if (event && 'key' in event) {
+      // Handle keyboard events
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+      event.preventDefault();
+    }
+
+    const newMode: LogMode = logMode === 'DEBUG' ? 'PRODUCTION' : 'DEBUG';
+    logger.setLogMode(newMode);
+
+    logger.info(`🔄 Console log mode toggled via UI`, {
+      component: 'DebugPanel',
+      previousMode: logMode,
+      newMode: newMode,
+      timestamp: new Date().toISOString()
+    });
+  }, [logMode]);
 
   return (
     <div 
@@ -110,11 +144,40 @@ export default function DebugPanel({
           <div className="debug-metric">
             <span className="debug-label">Latest Response Time:</span>
             <span className="debug-value" aria-live="polite">
-              {latestResponseTime !== null 
+              {latestResponseTime !== null
                 ? `${latestResponseTime.toFixed(1)}s`
                 : 'No responses yet'
               }
             </span>
+          </div>
+
+          <div className="debug-metric">
+            <span className="debug-label">Console Log Mode:</span>
+            <div className="log-mode-toggle-container">
+              <button
+                className={`log-mode-toggle ${logMode.toLowerCase()}-mode`}
+                onClick={toggleLogMode}
+                onKeyDown={toggleLogMode}
+                aria-label={`Switch from ${logMode} to ${logMode === 'DEBUG' ? 'PRODUCTION' : 'DEBUG'} mode`}
+                aria-pressed={logMode === 'DEBUG'}
+                role="switch"
+              >
+                <span className="toggle-slider" aria-hidden="true">
+                  <span className="toggle-indicator"></span>
+                </span>
+                <span className="toggle-labels">
+                  <span className={`toggle-label debug-label-text ${logMode === 'DEBUG' ? 'active' : ''}`}>
+                    DEBUG
+                  </span>
+                  <span className={`toggle-label production-label-text ${logMode === 'PRODUCTION' ? 'active' : ''}`}>
+                    PRODUCTION
+                  </span>
+                </span>
+              </button>
+              <span className="current-mode-indicator" aria-live="polite">
+                {logMode} Mode
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -353,8 +416,150 @@ export const debugPanelStyles = `
     font-weight: var(--font-weight-normal);
   }
   
+  /* ==========================================================================
+     CONSOLE LOG MODE TOGGLE - Professional Glassmorphic Toggle Switch
+     ========================================================================== */
+
+  .log-mode-toggle-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    align-items: flex-end;
+  }
+
+  .log-mode-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-2);
+    border-radius: 20px;
+    padding: var(--spacing-1) var(--spacing-2);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-micro);
+    min-width: 120px;
+    height: 32px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+
+  .log-mode-toggle:hover {
+    background: var(--glass-surface-2);
+    border-color: var(--accent-info);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+  }
+
+  .log-mode-toggle:focus-visible {
+    outline: 2px solid var(--accent-info);
+    outline-offset: 2px;
+  }
+
+  .toggle-slider {
+    position: relative;
+    width: 36px;
+    height: 18px;
+    background: var(--neutral-600);
+    border-radius: 9px;
+    transition: background 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .toggle-indicator {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: var(--text-primary);
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .toggle-labels {
+    display: flex;
+    gap: var(--spacing-1);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wider);
+  }
+
+  .toggle-label {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+    font-size: var(--font-size-micro);
+  }
+
+  .toggle-label.active {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .current-mode-indicator {
+    font-size: var(--font-size-micro);
+    color: var(--accent-info-light);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-mono);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  /* DEBUG Mode Styling */
+  .log-mode-toggle.debug-mode .toggle-slider {
+    background: linear-gradient(135deg, var(--accent-info) 0%, var(--accent-info-light) 100%);
+  }
+
+  .log-mode-toggle.debug-mode .toggle-indicator {
+    transform: translateX(18px);
+    background: var(--background-primary);
+  }
+
+  .log-mode-toggle.debug-mode .debug-label-text {
+    color: var(--accent-info-light);
+  }
+
+  /* PRODUCTION Mode Styling */
+  .log-mode-toggle.production-mode .toggle-slider {
+    background: linear-gradient(135deg, var(--neutral-500) 0%, var(--neutral-400) 100%);
+  }
+
+  .log-mode-toggle.production-mode .toggle-indicator {
+    transform: translateX(0);
+    background: var(--background-primary);
+  }
+
+  .log-mode-toggle.production-mode .production-label-text {
+    color: var(--neutral-300);
+  }
+
   /* Responsive Design - Mobile Optimization */
   @media (max-width: 640px) {
+    .log-mode-toggle-container {
+      align-items: stretch;
+    }
+
+    .log-mode-toggle {
+      min-width: 100px;
+      height: 28px;
+      font-size: 10px;
+    }
+
+    .toggle-slider {
+      width: 28px;
+      height: 14px;
+    }
+
+    .toggle-indicator {
+      width: 10px;
+      height: 10px;
+    }
+
+    .log-mode-toggle.debug-mode .toggle-indicator {
+      transform: translateX(14px);
+    }
     .debug-panel {
       padding: var(--spacing-2) var(--spacing-3);
       font-size: var(--font-size-micro);
