@@ -8,75 +8,63 @@ The Market Parser project has been reorganized into a logical directory structur
 
 ## Directory Organization
 
-### Core Application Modules (`src/`)
+### Backend Application (`src/backend/`)
 
-**Purpose**: Contains all core application logic and shared components.
+**Purpose**: Contains the FastAPI backend with OpenAI Agents SDK and Polygon.io MCP integration.
 
 ```
-src/
-├── __init__.py                   # Package initialization
-├── response_parser.py           # AI response parsing utilities
-├── json_parser.py              # JSON parsing with fallback strategies  
-├── json_schemas.py             # Schema definitions and validation
-├── prompt_templates.py         # Structured prompt templates
-├── schema_validator.py         # Validation logic and business rules
-├── json_debug_logger.py        # Debug logging for JSON workflows
-├── security_utils.py           # Input validation and security utilities
-└── example_json_responses.py   # Example responses for testing/development
+src/backend/
+├── main.py                      # FastAPI application and agent system
+├── api_models.py               # Pydantic models for API requests/responses
+├── prompt_templates.py         # Prompt generation and template management
+└── utils/                      # Backend utilities and logging
+    └── logger.py               # Logging configuration
 ```
 
 **Guidelines:**
-- All reusable application logic belongs here
-- Modules should be focused on a single responsibility
-- Use clear, descriptive names for modules
-- Include comprehensive docstrings and type hints
+- All backend business logic belongs here
+- Use FastAPI for API endpoints
+- Integrate with OpenAI Agents SDK for financial analysis
+- Connect to Polygon.io MCP server for market data
 
-### State Management (`stock_data_fsm/`)
+### Frontend Application (`src/frontend/`)
 
-**Purpose**: Finite State Machine implementation for GUI workflow management.
+**Purpose**: React TypeScript frontend for the web interface.
 
 ```
-stock_data_fsm/
-├── __init__.py
-├── states.py                    # Application states and context data
-├── transitions.py              # State transition rules and validation
-├── manager.py                  # FSM controller and orchestration
-└── tests/                      # FSM-specific test suite
-    ├── __init__.py
-    ├── test_states.py
-    ├── test_transitions.py
-    ├── test_manager.py
-    └── test_integration.py
+src/frontend/
+├── components/                  # React components
+├── hooks/                      # Custom React hooks
+├── types/                      # TypeScript type definitions
+└── App.tsx                     # Main application component
 ```
 
 **Guidelines:**
-- Keep FSM logic separate from business logic
-- Include comprehensive tests for state transitions
-- Document state diagrams in comments or docs
-- Maintain deterministic behavior
+- Modern React 18.2+ patterns with hooks
+- TypeScript for type safety
+- Responsive design for multiple devices
+- PWA capabilities enabled
 
-### Comprehensive Testing (`tests/`)
+### Testing Infrastructure (`tests/`)
 
-**Purpose**: All test files consolidated for easy test management and execution.
+**Purpose**: Comprehensive Playwright E2E testing for the full application.
 
 ```
 tests/
-├── __init__.py
-├── test_integration.py         # Main integration tests
-├── test_actual_integration.py  # Real API integration tests
-├── test_prompt_templates.py    # Prompt template validation
-├── test_response_parser.py     # Response parsing tests
-├── test_json_schemas.py        # Schema validation tests
-├── test_production_*.py        # Production scenario tests
-├── run_*.py                    # Test runners and execution scripts
-└── validate_*.py               # Fix validation scripts
+├── playwright/                  # Playwright E2E test suite
+│   ├── test-b001-market-status.spec.ts    # Market status queries
+│   ├── test-b002-stock-analysis.spec.ts   # Individual stock analysis
+│   ├── test-b003-multi-ticker.spec.ts     # Multi-ticker queries
+│   └── ...                                # B001-B016 test suite
+├── helpers/                     # Test utility functions
+└── reports/                     # Test execution reports
 ```
 
 **Guidelines:**
-- Organize tests by functionality, not by file structure
-- Use descriptive test names that explain the scenario
-- Include both unit and integration tests
-- Maintain production scenario tests for real-world validation
+- Use Playwright for comprehensive E2E testing
+- Test both frontend UI and backend integration
+- Cover market analysis workflows and user interactions
+- Generate detailed test reports for debugging
 
 ### Logging and Debug Information (`logs/`)
 
@@ -134,25 +122,20 @@ config/
 
 ```
 docs/
-├── JSON_ARCHITECTURE_GUIDE.md     # JSON system architecture
-├── USER_GUIDE_JSON_FEATURES.md    # User-facing JSON features
-├── TROUBLESHOOTING_JSON.md        # JSON troubleshooting guide
-├── FEATURE_SCOPE_STOCK_DATA_GUI.md # GUI feature specifications
-├── DEPLOYMENT_GUIDE_AWS.md        # AWS deployment instructions
-├── MIGRATION_GUIDE.md             # Migration procedures
-├── reports/                       # Technical reports and analysis
-│   ├── README.md                  # Reports index
-│   ├── COMPREHENSIVE_BUG_FIX_REPORT.md
-│   ├── JSON_RESPONSE_IMPLEMENTATION_REPORT.md
-│   └── *.md                      # Various technical reports
-└── scratchpad.md                 # Development notes and ideas
+├── development/                    # Development workflow and structure guides
+├── testing/                       # Playwright testing documentation
+├── api/                          # API integration and contracts
+├── MCP_Tools_Usage_Guide/        # MCP tool usage guides
+├── COMPONENT_STYLING_GUIDE.md    # Frontend styling guidelines
+├── TYPOGRAPHY_SYSTEM_GUIDE.md    # Typography system documentation
+└── archived/                     # Historical documentation (minimal)
 ```
 
 **Guidelines:**
 - Organize documentation by audience and purpose
 - Use clear, descriptive filenames
-- Maintain a reports subfolder for technical analysis
 - Keep documentation current with code changes
+- Archive outdated documentation rather than delete
 
 ### Project Assets (`images/`)
 
@@ -173,32 +156,27 @@ images/
 
 ### Where to Put New Files
 
-**Business Logic**: Add to `src/` directory with appropriate module naming
-**Tests**: Add to `tests/` directory with `test_` prefix
-**Documentation**: Add to `docs/` directory or `docs/reports/` for technical reports
-**Utilities**: Add to `scripts/` directory for development tools
-**Configuration**: Add to `config/` directory for environment settings
+**Backend Logic**: Add to `src/backend/` directory with appropriate module naming
+**Frontend Components**: Add to `src/frontend/components/` directory
+**Tests**: Add to `tests/playwright/` directory for E2E tests
+**Documentation**: Add to appropriate `docs/` subdirectory by category
+**Configuration**: Environment files at project root (`.env`, `.env.example`)
 **Debug Information**: Logs automatically go to `logs/` directory
 
 ### Import Patterns
 
-With the new structure, use these import patterns:
+With the current structure, use these import patterns:
 
 ```python
-# Core modules from src/
-from src.response_parser import ResponseParser
-from src.prompt_templates import PromptTemplateManager
-from src.json_schemas import StockDataSchema
-from src.schema_validator import SchemaValidator
-from src.json_debug_logger import JSONDebugLogger
+# Backend modules
+from src.backend.main import app
+from src.backend.api_models import ChatRequest, ChatResponse
+from src.backend.prompt_templates import PromptTemplateManager, PromptType
+from src.backend.utils.logger import get_logger
 
-# FSM components
-from stock_data_fsm.states import AppState, StateContext
-from stock_data_fsm.manager import StateManager
-from stock_data_fsm.transitions import StateTransitions
-
-# Security utilities
-from src.security_utils import validate_input, sanitize_data
+# React/TypeScript imports (frontend)
+import { useState, useEffect } from 'react';
+import type { ChatResponse, PromptTemplate } from '../types';
 ```
 
 ## Development Workflow
@@ -214,19 +192,18 @@ from src.security_utils import validate_input, sanitize_data
 ### Testing Strategy
 
 ```bash
-# Run all OpenAI Playwright tests
-cd tests/playwright
-npx playwright test
+# Run all Playwright E2E tests (from project root)
+npm run test:playwright
 
 # Run specific test categories
-npx playwright test test-b001-market-status.spec.ts
-npx playwright test test-b00*.spec.ts
+npm run test:playwright -- test-b001-market-status.spec.ts
+npm run test:playwright -- test-b00*.spec.ts
 
-# Run FSM-specific tests
-uv run pytest stock_data_fsm/tests/
+# Run tests with browser visible (debugging)
+npm run test:playwright:headed
 
-# Run production validation
-uv run python tests/run_production_tests.py
+# One-click app startup for testing
+npm run start:app
 ```
 
 ### Code Organization Principles
@@ -239,39 +216,37 @@ uv run python tests/run_production_tests.py
 
 ## Migration Notes
 
-### From Old Structure
+### Current Architecture
 
-The reorganization moved files as follows:
+The project uses modern architecture with:
 
-- `prompt_templates.py` → `src/prompt_templates.py`
-- `response_parser.py` → `src/response_parser.py`
-- `test_*.py` → `tests/test_*.py`
-- Various JSON modules → `src/json_*.py`
-- Utility scripts → `scripts/`
-- Log files → `logs/`
+- **Backend**: FastAPI + OpenAI Agents SDK + Polygon.io MCP server
+- **Frontend**: React 18.2+ with TypeScript and Vite
+- **Testing**: Playwright E2E test suite (B001-B016)
+- **Development**: One-click startup with `npm run start:app`
 
-### Updating Imports
+### Import Guidelines
 
-Update any existing imports to use the new structure:
+Use these patterns for the current structure:
 
 ```python
-# Old imports
-from prompt_templates import PromptTemplateManager
-from response_parser import ResponseParser
+# Backend (Python)
+from src.backend.main import app
+from src.backend.prompt_templates import PromptTemplateManager
 
-# New imports  
-from src.prompt_templates import PromptTemplateManager
-from src.response_parser import ResponseParser
+# Frontend (TypeScript)
+import type { ChatResponse } from '../types';
+import { useChatAPI } from '../hooks/useChatAPI';
 ```
 
 ## Future Considerations
 
 ### Planned Enhancements
 
-- **Config Management**: Environment-specific configurations in `config/`
-- **Plugin System**: Extensible architecture for new data sources
-- **API Layer**: RESTful API endpoints for external integration
-- **Monitoring**: Enhanced observability and metrics collection
+- **Enhanced MCP Integration**: Additional MCP servers for more data sources
+- **Advanced Analytics**: Enhanced financial analysis capabilities
+- **Mobile App**: React Native mobile application
+- **Performance Optimization**: Caching and response time improvements
 
 ### Scalability Patterns
 

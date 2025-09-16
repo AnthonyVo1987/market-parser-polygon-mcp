@@ -38,15 +38,14 @@ npm run type-check  # Type check all code
 
 ```
 market-parser-polygon-mcp/
-├── src/                           # Python source code
-├── stock_data_fsm/               # FSM implementation
-├── tests/                        # Python tests
-├── scripts/                      # Utility scripts
-├── frontend/                     # React TypeScript frontend
-├── package.json                  # Unified npm scripts
-├── pyproject.toml               # Python project config
-├── .pre-commit-config.yaml      # Git hooks
-└── scripts/quality_check.py     # Comprehensive quality checker
+├── src/backend/                  # FastAPI backend with OpenAI Agents SDK
+├── src/frontend/                 # React TypeScript frontend
+├── tests/playwright/             # Playwright E2E test suite
+├── docs/                        # Documentation organized by category
+├── package.json                 # Unified npm scripts and dependencies
+├── pyproject.toml              # Python project configuration
+├── start-app.sh                # One-click application startup
+└── .env.example                # Environment configuration template
 ```
 
 ## Code Quality Tools
@@ -65,29 +64,27 @@ market-parser-polygon-mcp/
 
 ## Available Commands
 
-### Unified Commands (from project root)
+### Development Commands (from project root)
 ```bash
-npm run lint           # Lint Python + JS/TS
-npm run format         # Format Python + JS/TS
-npm run type-check     # Type check Python + JS/TS
-npm run quality-check  # Run comprehensive quality analysis
-npm run test           # Run all tests
+npm run start:app       # One-click startup (backend + frontend)
+npm run dev            # Start development servers concurrently
+npm run backend:dev    # Start FastAPI backend only
+npm run frontend:dev   # Start React frontend only
 ```
 
-### Python-Specific Commands
+### Quality Assurance Commands
 ```bash
-npm run lint:python        # Pylint + mypy
-npm run format:python      # Black + isort
-npm run type-check:python  # mypy only
-npm run test:python        # pytest
+npm run lint           # ESLint for TypeScript/React code
+npm run format         # Format code with Prettier
+npm run type-check     # TypeScript type checking
+npm run check:all      # Run all quality checks (lint + format + type-check)
 ```
 
-### JavaScript-Specific Commands
+### Testing Commands
 ```bash
-npm run lint:js        # ESLint
-npm run format:js      # Prettier
-npm run type-check:js  # TypeScript compiler
-npm run test:js        # Jest (if configured)
+npm run test:playwright        # Run Playwright E2E tests
+npm run test:playwright:headed # Run tests with browser visible
+npm run test:playwright:debug  # Run tests in debug mode
 ```
 
 ## Git Hooks (Pre-commit)
@@ -152,25 +149,21 @@ The VS Code Live Server integration provides essential production build testing 
 
 **Prerequisites**:
 - VS Code with Live Server extension ("Live Server" by Ritwick Dey)
-- Completed frontend build: `npm run build` (in frontend directory)
+- Completed frontend build: `npm run build` (from project root)
 
 **Environment-Specific Testing**:
 
 ```bash
-# Development build testing (Port 5500)
-cd frontend
-npm run serve
-# Access: http://localhost:5500
+# Build and serve from project root
+npm run build           # Build frontend
+npm run serve          # Development build + serve instructions
+npm run serve:staging  # Staging build + serve instructions
+npm run serve:production # Production build + serve instructions
 
-# Staging build testing (Port 5501) 
-npm run serve:staging
-# Copy .vscode/live-server-staging.json settings when prompted
-# Access: http://localhost:5501
-
-# Production build testing (Port 5502)
-npm run serve:production  
-# Copy .vscode/live-server-production.json settings when prompted
-# Access: http://localhost:5502
+# Access via Live Server:
+# Development: http://localhost:5500
+# Staging: http://localhost:5501
+# Production: http://localhost:5502
 ```
 
 #### PWA Testing with Live Server
@@ -197,14 +190,14 @@ npm run serve:production
 
 **Standard Development** (Hot Reload):
 ```bash
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
-npm run dev  # Vite development server (Port 3000)
+npm run dev  # Start both backend + frontend (Ports 8000 & 3000)
+# OR
+npm run frontend:dev  # Frontend only (Port 3000)
 ```
 
 **Production Testing** (Built Files):
 ```bash
-cd gpt5-openai-agents-sdk-polygon-mcp/frontend_OpenAI
-npm run build && npm run serve  # Live Server testing (Port 5500)
+npm run build && npm run serve  # Build + Live Server instructions (Port 5500)
 ```
 
 **Quality Assurance Workflow**:
@@ -213,13 +206,11 @@ npm run build && npm run serve  # Live Server testing (Port 5500)
 3. Validate PWA functionality via Live Server
 4. Run cross-device testing before final deployment
 
-For comprehensive Live Server usage instructions, see: `/frontend/LIVE_SERVER_USAGE.md`
-
 ### Before Committing
-1. Run `npm run quality-check` to ensure all standards are met
-2. Fix any reported issues  
-3. Run tests: `npm run test`
-4. **NEW**: Test production build with Live Server: `npm run build && npm run serve`
+1. Run `npm run check:all` to ensure all quality standards are met
+2. Fix any reported issues using `npm run lint:fix` and `npm run format`
+3. Run tests: `npm run test:playwright`
+4. Test production build: `npm run build && npm run serve`
 5. Validate PWA functionality and cross-device compatibility
 6. Commit changes (pre-commit hooks will run automatically)
 
