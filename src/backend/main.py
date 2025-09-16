@@ -12,9 +12,13 @@ import re
 import time
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
+from functools import lru_cache
+from hashlib import md5
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional
+
+from cachetools import TTLCache
 
 from agents import (
     Agent,
@@ -120,6 +124,19 @@ settings = Settings()
 shared_mcp_server = None
 shared_session = None
 
+# Secure response cache for financial queries with automatic size and TTL management
+CACHE_TTL_SECONDS = 900  # 15 minutes in seconds
+CACHE_MAX_SIZE = 1000    # Maximum number of cached responses
+response_cache = TTLCache(maxsize=CACHE_MAX_SIZE, ttl=CACHE_TTL_SECONDS)
+
+# Cache statistics for monitoring
+cache_stats = {
+    "hits": 0,
+    "misses": 0,
+    "evictions": 0,
+    "current_size": 0
+}
+
 # Request tracking for logging
 active_requests = {}
 
@@ -219,6 +236,128 @@ def create_polygon_mcp_server():
     )
 
 
+def generate_cache_key(query: str, ticker: str = "") -> str:
+    """Generate a consistent cache key for financial queries.
+
+    Optimized implementation without crypto overhead as recommended by security review.
+    """
+    return f"{query.lower().strip()}:{ticker.upper().strip()}"
+
+
+def get_cached_response(cache_key: str) -> Optional[str]:
+    """Get cached response if still valid with proper error handling."""
+    global cache_stats
+
+    try:
+        if cache_key in response_cache:
+            cache_stats["hits"] += 1
+            cache_stats["current_size"] = len(response_cache)
+            logger.info(f"Cache hit for key: {cache_key[:20]}...")
+            return response_cache[cache_key]
+        else:
+            cache_stats["misses"] += 1
+            cache_stats["current_size"] = len(response_cache)
+            return None
+    except Exception as e:
+        logger.error(f"Cache retrieval error: {e}")
+        cache_stats["misses"] += 1
+        return None
+
+
+def cache_response(cache_key: str, response: str):
+    """Cache a response with proper error handling and monitoring."""
+    global cache_stats
+
+    try:
+        # Check if this will cause an eviction
+        if len(response_cache) >= CACHE_MAX_SIZE and cache_key not in response_cache:
+            cache_stats["evictions"] += 1
+
+        response_cache[cache_key] = response
+        cache_stats["current_size"] = len(response_cache)
+
+        logger.info(f"Cached response for key: {cache_key[:20]}... (size: {len(response_cache)})")
+
+    except MemoryError:
+        logger.error("Cache memory exhausted - clearing cache")
+        response_cache.clear()
+        cache_stats["evictions"] += 1
+        cache_stats["current_size"] = 0
+        # Try caching again after clearing
+        try:
+            response_cache[cache_key] = response
+            cache_stats["current_size"] = len(response_cache)
+        except Exception as e:
+            logger.error(f"Failed to cache response after cleanup: {e}")
+    except Exception as e:
+        logger.error(f"Cache storage error: {e}")
+
+
+def invalidate_cache_by_ticker(ticker: str) -> int:
+    """Invalidate all cache entries for a specific ticker."""
+    global cache_stats
+
+    try:
+        ticker_upper = ticker.upper().strip()
+        keys_to_remove = [
+            key for key in response_cache.keys()
+            if key.endswith(f":{ticker_upper}")
+        ]
+
+        for key in keys_to_remove:
+            try:
+                del response_cache[key]
+            except KeyError:
+                pass  # Already removed by TTL
+
+        cache_stats["current_size"] = len(response_cache)
+
+        if keys_to_remove:
+            logger.info(f"Invalidated {len(keys_to_remove)} cache entries for ticker {ticker}")
+
+        return len(keys_to_remove)
+
+    except Exception as e:
+        logger.error(f"Cache invalidation error for ticker {ticker}: {e}")
+        return 0
+
+
+def clear_all_cache() -> int:
+    """Clear all cache entries and return count of cleared items."""
+    global cache_stats
+
+    try:
+        cleared_count = len(response_cache)
+        response_cache.clear()
+        cache_stats["current_size"] = 0
+        cache_stats["evictions"] += cleared_count
+
+        logger.info(f"Cleared all {cleared_count} cache entries")
+        return cleared_count
+
+    except Exception as e:
+        logger.error(f"Cache clear error: {e}")
+        return 0
+
+
+def cleanup_session_periodically():
+    """Clean up old session data to prevent memory leaks."""
+    global shared_session
+
+    if hasattr(shared_session, '_session_data'):
+        # Keep only last 100 conversation turns to prevent memory growth
+        session_data = getattr(shared_session, '_session_data', {})
+        if isinstance(session_data, dict) and len(session_data) > 100:
+            # Keep only the most recent entries
+            sorted_keys = sorted(session_data.keys())
+            keys_to_remove = sorted_keys[:-50]  # Keep last 50 entries
+
+            for key in keys_to_remove:
+                del session_data[key]
+
+            logger.info(f"Cleaned up {len(keys_to_remove)} old session entries")
+
+
 # Output functions
 def print_response(result):
     """Simplified response renderer with emoji support."""
@@ -266,7 +405,7 @@ def print_guardrail_error(exception):
 async def process_financial_query(
     query: str, session: SQLiteSession, server, request_id: Optional[str] = None
 ) -> dict:
-    """Process a financial query using the agent system.
+    """Process a financial query using the agent system with caching.
 
     Returns:
         dict: {
@@ -279,6 +418,35 @@ async def process_financial_query(
     start_time = time.time()
     if not request_id:
         request_id = str(uuid.uuid4())[:8]
+
+    # Extract ticker from query for cache key generation
+    ticker_match = re.search(r'\b([A-Z]{1,5})\b', query.upper())
+    ticker = ticker_match.group(1) if ticker_match else ""
+
+    # Check cache first
+    cache_key = generate_cache_key(query, ticker)
+    cached_response = get_cached_response(cache_key)
+
+    if cached_response:
+        processing_time = time.time() - start_time
+        log_agent_processing(
+            logger,
+            "Cache hit - returning cached response",
+            {
+                "request_id": request_id,
+                "cache_key": cache_key[:8],
+                "processing_time": f"{processing_time:.3f}s",
+            },
+        )
+        return {
+            "success": True,
+            "response": cached_response,
+            "error": None,
+            "error_type": None
+        }
+
+    # Clean up session periodically
+    cleanup_session_periodically()
 
     log_agent_processing(
         logger,
@@ -363,9 +531,13 @@ async def process_financial_query(
                 },
             )
 
+            # Cache the successful response
+            response_text = str(final_output)
+            cache_response(cache_key, response_text)
+
             return {
                 "success": True,
-                "response": str(final_output),
+                "response": response_text,
                 "error": None,
                 "error_type": None,
             }
@@ -684,24 +856,24 @@ async def generate_prompt_endpoint(request: GeneratePromptRequest):
         ) from e
 
 
-# ====== BUTTON ANALYSIS ENDPOINTS ======
+# ====== UNIFIED BUTTON ANALYSIS ENDPOINT ======
 
 
-@app.post("/api/v1/analysis/snapshot", response_model=ButtonAnalysisResponse)
-async def get_stock_snapshot(request: ButtonAnalysisRequest):
-    """Get stock snapshot analysis for button-triggered requests."""
+@app.post("/api/v1/analysis/{analysis_type}", response_model=ButtonAnalysisResponse)
+async def get_button_analysis(analysis_type: AnalysisType, request: ButtonAnalysisRequest):
+    """Unified endpoint for all button-triggered analysis requests."""
     global shared_mcp_server, shared_session
 
     # Validate ticker input
     if not request.ticker or len(request.ticker.strip()) < 1:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ticker symbol is required for stock analysis.",
+            detail=f"Ticker symbol is required for {analysis_type.value} analysis.",
         )
 
     ticker = request.ticker.strip().upper()
 
-    # Basic ticker validation (alphanumeric, 1-5 characters typically)
+    # Basic ticker validation (alphanumeric, 1-10 characters typically)
     if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -709,11 +881,26 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
         )
 
     try:
-        query = (
-            f"Provide a comprehensive stock snapshot analysis for {ticker}. "
-            "Include current price, volume, OHLC data, and recent performance metrics "
-            "with clear explanations."
-        )
+        # Generate appropriate query based on analysis type
+        query_templates = {
+            AnalysisType.SNAPSHOT: (
+                f"Provide a comprehensive stock snapshot analysis for {ticker}. "
+                "Include current price, volume, OHLC data, and recent performance metrics "
+                "with clear explanations."
+            ),
+            AnalysisType.SUPPORT_RESISTANCE: (
+                f"Analyze key support and resistance levels for {ticker}. "
+                "Identify 3 support levels and 3 resistance levels with explanations "
+                "of their significance for trading decisions."
+            ),
+            AnalysisType.TECHNICAL: (
+                f"Provide comprehensive technical analysis for {ticker} using "
+                "key indicators including RSI, MACD, and moving averages. Explain momentum "
+                "and trend direction with trading recommendations."
+            ),
+        }
+
+        query = query_templates[analysis_type]
 
         # Use shared instances instead of creating new ones
         result = await process_financial_query(query, shared_session, shared_mcp_server)
@@ -722,125 +909,41 @@ async def get_stock_snapshot(request: ButtonAnalysisRequest):
             return ButtonAnalysisResponse(
                 analysis=result["response"],
                 ticker=ticker,
-                analysis_type=AnalysisType.SNAPSHOT,
+                analysis_type=analysis_type,
                 success=True,
             )
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Snapshot analysis failed: {result['error']}",
+            detail=f"{analysis_type.value.title()} analysis failed: {result['error']}",
         )
 
     except HTTPException:
         raise
-    except Exception as e:        raise HTTPException(
+    except Exception as e:
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Snapshot analysis error: {str(e)}",
+            detail=f"{analysis_type.value.title()} analysis error: {str(e)}",
         ) from e
+
+
+# Legacy endpoints for backward compatibility (redirect to unified endpoint)
+@app.post("/api/v1/analysis/snapshot", response_model=ButtonAnalysisResponse)
+async def get_stock_snapshot_legacy(request: ButtonAnalysisRequest):
+    """Legacy endpoint - redirects to unified endpoint."""
+    return await get_button_analysis(AnalysisType.SNAPSHOT, request)
 
 
 @app.post("/api/v1/analysis/support-resistance", response_model=ButtonAnalysisResponse)
-async def get_support_resistance(request: ButtonAnalysisRequest):
-    """Get support and resistance levels analysis for button-triggered requests."""
-    global shared_mcp_server, shared_session
-
-    # Validate ticker input
-    if not request.ticker or len(request.ticker.strip()) < 1:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ticker symbol is required for support/resistance analysis.",
-        )
-
-    ticker = request.ticker.strip().upper()
-
-    # Basic ticker validation
-    if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
-        )
-
-    try:
-        query = (
-            f"Analyze key support and resistance levels for {ticker}. "
-            "Identify 3 support levels and 3 resistance levels with explanations "
-            "of their significance for trading decisions."
-        )
-
-        # Use shared instances instead of creating new ones
-        result = await process_financial_query(query, shared_session, shared_mcp_server)
-
-        if result["success"]:
-            return ButtonAnalysisResponse(
-                analysis=result["response"],
-                ticker=ticker,
-                analysis_type=AnalysisType.SUPPORT_RESISTANCE,
-                success=True,
-            )
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Support/Resistance analysis failed: {result['error']}",
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Support/Resistance analysis error: {str(e)}",
-        ) from e
+async def get_support_resistance_legacy(request: ButtonAnalysisRequest):
+    """Legacy endpoint - redirects to unified endpoint."""
+    return await get_button_analysis(AnalysisType.SUPPORT_RESISTANCE, request)
 
 
 @app.post("/api/v1/analysis/technical", response_model=ButtonAnalysisResponse)
-async def get_technical_analysis(request: ButtonAnalysisRequest):
-    """Get technical analysis for button-triggered requests."""
-    global shared_mcp_server, shared_session
-
-    # Validate ticker input
-    if not request.ticker or len(request.ticker.strip()) < 1:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ticker symbol is required for technical analysis.",
-        )
-
-    ticker = request.ticker.strip().upper()
-
-    # Basic ticker validation
-    if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
-        )
-
-    try:
-        query = (
-            f"Provide comprehensive technical analysis for {ticker} using "
-            "key indicators including RSI, MACD, and moving averages. Explain momentum "
-            "and trend direction with trading recommendations."
-        )
-
-        # Use shared instances instead of creating new ones
-        result = await process_financial_query(query, shared_session, shared_mcp_server)
-
-        if result["success"]:
-            return ButtonAnalysisResponse(
-                analysis=result["response"],
-                ticker=ticker,
-                analysis_type=AnalysisType.TECHNICAL,
-                success=True,
-            )
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Technical analysis failed: {result['error']}",
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Technical analysis error: {str(e)}",
-        ) from e
+async def get_technical_analysis_legacy(request: ButtonAnalysisRequest):
+    """Legacy endpoint - redirects to unified endpoint."""
+    return await get_button_analysis(AnalysisType.TECHNICAL, request)
 
 
 # ====== ENHANCED CHAT ANALYSIS ======
@@ -1018,6 +1121,60 @@ async def health_check():
     return SystemHealthResponse(
         status="healthy", message="Financial Analysis API is running", version="1.0.0"
     )
+
+
+# Cache Management API Endpoints (Security Review Priority 1 fixes)
+
+@app.get("/api/v1/cache/metrics")
+async def get_cache_metrics():
+    """Get cache performance metrics and statistics."""
+    global cache_stats
+
+    return {
+        "cache_stats": cache_stats,
+        "cache_config": {
+            "max_size": CACHE_MAX_SIZE,
+            "ttl_seconds": CACHE_TTL_SECONDS,
+        },
+        "status": "healthy"
+    }
+
+
+@app.delete("/api/v1/cache/ticker/{ticker}")
+async def invalidate_ticker_cache(ticker: str):
+    """Invalidate all cache entries for a specific ticker symbol."""
+    try:
+        cleared_count = invalidate_cache_by_ticker(ticker)
+        return {
+            "success": True,
+            "message": f"Invalidated {cleared_count} cache entries for ticker {ticker.upper()}",
+            "cleared_count": cleared_count,
+            "ticker": ticker.upper()
+        }
+    except Exception as e:
+        logger.error(f"Failed to invalidate cache for ticker {ticker}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to invalidate cache: {str(e)}"
+        )
+
+
+@app.delete("/api/v1/cache/all")
+async def clear_all_cache_endpoint():
+    """Clear all cached responses. Use with caution."""
+    try:
+        cleared_count = clear_all_cache()
+        return {
+            "success": True,
+            "message": f"Cleared all {cleared_count} cache entries",
+            "cleared_count": cleared_count
+        }
+    except Exception as e:
+        logger.error(f"Failed to clear all cache: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear cache: {str(e)}"
+        )
 
 
 # Main CLI

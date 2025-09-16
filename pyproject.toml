@@ -12,10 +12,11 @@ dependencies = [
   "openai-agents==0.2.8",
   "pydantic",
   "rich",
-  "python-dotenv", 
+  "python-dotenv",
   "openai>=1.99.0,<1.100.0",
   "fastapi",
-  "uvicorn[standard]"
+  "uvicorn[standard]",
+  "cachetools>=6.2.0",
 ]
 
 [build-system]

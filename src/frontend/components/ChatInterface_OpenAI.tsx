@@ -38,26 +38,28 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const [sharedTicker, setSharedTicker] = useState<string>('NVDA');
   const [latestResponseTime, setLatestResponseTime] = useState<number | null>(null);
 
-  // Initialize logging hooks
-  useComponentLogger('ChatInterface_OpenAI', {
+  // Development-only debug logging hooks
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  // Conditional debug hooks - only in development
+  const componentLogger = isDevelopment ? useComponentLogger('ChatInterface_OpenAI', {
     initialMessageCount: messages.length,
     initialTicker: sharedTicker
-  });
-  
-  // Optimized state logging - only essential state changes, less frequent logging
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  useStateLogger('ChatInterface_OpenAI', 'messages', messages.length, process.env.NODE_ENV === 'development' && messages.length > 0 && messages.length % 2 === 0); // Only log every 2nd message change
-  useStateLogger('ChatInterface_OpenAI', 'error', error, !!error); // Only log actual errors
-  // Removed frequent logs: isLoading, sharedTicker (low value, high frequency)
-  
-  // Performance tracking
-  const { startTiming, endTiming } = usePerformanceLogger('ChatInterface_OpenAI');
-  
-  // User interaction logging
-  const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
-  
-  // Render cycle monitoring (reduced threshold for earlier detection)
-  useRenderLogger('ChatInterface_OpenAI', 10); // Warn if more than 10 renders in 5 seconds
+  }) : null;
+
+  // Minimal state logging - only critical errors
+  const errorLogger = isDevelopment ? useStateLogger('ChatInterface_OpenAI', 'error', error, !!error) : null;
+
+  // Performance tracking - development only
+  const performanceLogger = isDevelopment ? usePerformanceLogger('ChatInterface_OpenAI') : { startTiming: () => {}, endTiming: () => {} };
+  const { startTiming, endTiming } = performanceLogger;
+
+  // User interaction logging - development only
+  const logInteraction = isDevelopment ? useInteractionLogger('ChatInterface_OpenAI') : () => {};
+
+  // Render monitoring - only in development with reasonable threshold
+  const renderLogger = isDevelopment ? useRenderLogger('ChatInterface_OpenAI', 15) : null;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -65,40 +67,23 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const isFirstRenderRef = useRef(true);
   const previousMessageCountRef = useRef(0);
 
-  // Auto-scroll to bottom when new messages are added (optimized)
-  const shouldAutoScroll = useMemo(() => {
-    const currentMessageCount = messages.length;
-    return !isFirstRenderRef.current &&
-           currentMessageCount > previousMessageCountRef.current &&
-           !isLoading;
-  }, [messages.length, isLoading]);
-
+  // Optimized auto-scroll with minimal dependencies
   useEffect(() => {
     const currentMessageCount = messages.length;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (process.env.NODE_ENV === 'development') {
-      logger.debug('🔄 Auto-scroll effect triggered', {
-        component: 'ChatInterface_OpenAI',
-        messagesCount: currentMessageCount,
-        previousCount: previousMessageCountRef.current,
-        isFirstRender: isFirstRenderRef.current,
-        shouldScroll: shouldAutoScroll
-      });
-    }
+    // Only scroll if messages increased and not loading
+    const shouldScroll = !isFirstRenderRef.current &&
+                        currentMessageCount > previousMessageCountRef.current &&
+                        !isLoading;
 
-    if (shouldAutoScroll && messagesEndRef.current) {
+    if (shouldScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (process.env.NODE_ENV === 'development') {
-        logger.debug('📜 Scrolled to bottom of messages');
-      }
     }
 
     // Update refs
     isFirstRenderRef.current = false;
     previousMessageCountRef.current = currentMessageCount;
-  }, [shouldAutoScroll, messages.length]); // ✅ Include messages.length dependency
+  }, [messages.length]); // Only depend on messages.length // ✅ Include messages.length dependency
 
   const addMessage = useCallback((content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
     const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9);

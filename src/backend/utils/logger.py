@@ -233,6 +233,10 @@ def log_agent_processing(
         step: Processing step description
         details: Additional details dictionary
     """
+    # Skip expensive operations if debug logging is disabled
+    if not logger.isEnabledFor(logging.DEBUG):
+        return
+
     extra_data = {"step": step}
     if details:
         extra_data.update(details)
@@ -243,9 +247,17 @@ def log_agent_processing(
 # Initialize logging on module import based on environment
 def _initialize_logging():
     """Initialize logging configuration on module import."""
-    # Determine if we're in development mode
+    # Determine environment mode
+    environment = os.getenv("ENVIRONMENT", "development").lower()
     debug_mode = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
-    log_level = "DEBUG" if debug_mode else "INFO"
+
+    # Set appropriate log levels based on environment
+    if environment == "production":
+        log_level = "WARNING"  # Only warnings and errors in production
+    elif debug_mode or environment == "development":
+        log_level = "DEBUG"    # Full debugging in development
+    else:
+        log_level = "INFO"     # Standard info level
 
     # Enable file logging in development for debugging
     log_to_file = debug_mode or os.getenv("LOG_TO_FILE", "false").lower() in ("true", "1", "yes")
