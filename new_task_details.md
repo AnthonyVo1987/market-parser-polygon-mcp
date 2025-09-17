@@ -2,69 +2,129 @@
 
 ## Task Description: [NPX_Test] Phase 1: Create Playwright "npx playwright test" Single Source Testing Script
 
-# Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach to Review docs & Playwright MCP Testing and Tool Guides to prep and provide research & context for new task(s)
+"NPX Test Implementation Plan - Phase 1"
 
-- tests/playwright/playwright_post-mortem_mcp_tools_testing_guide.md
-- tests/playwright/mcp_test_script_basic.md
-- tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
-- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- START_SCRIPT_README.md
-- start-app.sh
+# NPX Test Implementation Plan - Phase 1
 
-# Task 2. After Reviewing & Researching the Docs from Task 1, Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes etc to perform the requested plan and\or task(s)
+Based on my comprehensive research of the documentation, I will create a complete NPX testing solution with the following deliverables:
 
-- Always read & refer back to tests/playwright/playwright_post-mortem_mcp_tools_testing_guide.md to guide you throughout the entire implementation process for correct & incorrect implementation notes
-- Edit\Update 'tests/playwright/npx_test_script_basic.md' based on your research & baseline 'tests/playwright/mcp_test_script_basic.md' test script to properly run the same 3/3 Tests Passing using proper Playwright "npx playwright test xxx" method.
-- You will need to create a brand new Playwright NPX Test spec file "xxx.spec.ts" that will run the 3/3 test from 'tests/playwright/npx_test_script_basic.md' / 'tests/playwright/mcp_test_script_basic.md'
+## 1. Update npx_test_script_basic.md
 
-Here are the same 3x Basic Tests from 'tests/playwright/mcp_test_script_basic.md' that 'tests/playwright/npx_test_script_basic.md' & "npx playwright test --timeout=120000 --workers=1 xxx.spec.ts" will run:
+Transform the existing file from an MCP copy into a proper NPX testing guide with:
 
-1. User Input Test: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-2. User Input Test: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
-3. Stock Snapshot Button Test
+* **VERBATIM** instructions for NPX execution (no interpretation required)
+* Complete parameter specifications with millisecond timeouts (120000ms)
+* Exact NPX command: `npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts`
+* Two-phase detection strategy (response presence → content validation)
+* Clear success/failure criteria matching MCP baseline
+* Comprehensive troubleshooting guide for NPX-specific issues
 
-# Expected outcome: AI Agent reads & runs testing script from 'tests/playwright/npx_test_script_basic.md' using Playwright "npx playwright test" Method with 3/3 Passing on the very first try
+## 2. Create test-basic-suite.spec.ts
 
-A. AI Agent requested to run NPX Basic Test Plan etc
-B. AI Agent reads 'tests/playwright/npx_test_script_basic.md' to perform testing by FOLLOWING VERBATIM testing instructions to have a full successful test run on the very first attempt with 3/3 passing
-C. AI Agent properly uses simple one click startup script to setup and confirm dev servers are running and configured correctly before starting any tests
-D. AI Agent issues single command to run the new Playwright NPX Test spec file "xxx.spec.ts" that will run and ensure the 3/3 Basic tests PASSES with parity with MCP method: "npx playwright test --timeout=120000 --workers=1 xxx.spec.ts"
+New Playwright test spec file implementing:
 
-# Task 3. After generating the new 'tests/playwright/npx_test_script_basic.md' & "Playwright NPX Test spec file "xxx.spec.ts", perform comphrensive documentation scan of project docs, testing docs, playwright docs etc to update with all the new changes and correct methods
+* Test 1: Market Status query with exact message
+* Test 2: NVDA Ticker Snapshot with exact message
+* Test 3: Stock Snapshot Button interaction
+* Proper imports from `'@playwright/test'` and `'./helpers/index'`
+* 120-second timeout configuration
+* Auto-retry detection using `waitForSelector` with 120000ms timeout
+* Response validation using existing helper functions
+* Performance classification (SUCCESS/SLOW_PERFORMANCE/TIMEOUT)
 
-# Task 4. We will NOT test the new test scripts and test spec file yet.  So once all 3 Tasks are finished, we will perform a checkpoint commit to save our progress now, and then will start testing after wards on a TBD follow on task. Perform the final task(s) when ready to save our progress
+## 3. Update Project Documentation
 
-## Final Task(s) TO BE RUN ONLY AFTER ALL CHANGES\FIXES TESTED & VALIDATED
+* Update `PLAYWRIGHT_TESTING_MASTER_PLAN.md` to reference new NPX basic test
+* Add references in relevant testing guides to the new `test-basic-suite.spec.ts`
+* Ensure consistency across all documentation
+
+---
+
+## Key Implementation Details
+
+### Critical Success Factors
+
+* **VERBATIM** instructions eliminating interpretation errors
+* Timeout translation: MCP seconds (120) → NPX milliseconds (120000)
+* Multiple selector strategies with fallbacks
+* Proper `async/await` patterns throughout
+* Error handling with `try-catch` blocks
+* System readiness validation before tests
+
+### NPX API Translations
+
+* `mcp__playwright__browser_navigate` → `page.goto(url)`
+* `mcp__playwright__browser_type` → `page.fill(selector, text)`
+* `mcp__playwright__browser_press_key` → `page.keyboard.press(key)`
+* `mcp__playwright__browser_click` → `page.click(selector)`
+* `mcp__playwright__browser_wait_for` → `page.waitForSelector(selector, { timeout: 120000 })`
+
+### Test Structure
+
+```typescript
+import { test, expect } from '@playwright/test';
+import {
+  autoNavigateToFrontend,
+  sendMessageAndWaitForResponse,
+  validateSystemReadiness,
+  // ... other helpers
+} from './helpers/index';
+
+test.describe('Basic Test Suite', () => {
+  test.setTimeout(120000);
+
+  test('Test 1: Market Status', async ({ page }) => {
+    // Implementation with auto-retry detection
+  });
+
+  test('Test 2: NVDA Ticker Snapshot', async ({ page }) => {
+    // Implementation with auto-retry detection
+  });
+
+  test('Test 3: Stock Snapshot Button', async ({ page }) => {
+    // Implementation with auto-retry detection
+  });
+});
+```
+
+This implementation will achieve:
+
+* 100% first-try success rate for AI agents
+* Testing parity with MCP method (3/3 passing)
+* Clear, unambiguous instructions
+* Robust error handling and recovery
+
+## Final Task(s)
 
 MUST USE Context7 & Sequential-Thinking Tools to perform: Final Task 1: Review/Fix Loop
 
-- Performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
-- Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination.
-- Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
-- Continue review/fix cycle until achieving PASSING code review status
+* Performs comprehensive code review using `mcp__sequential-thinking__sequentialthinking` for systematic analysis
+* Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination.
+* Optional `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` calls if specific documentation/best practices needed for fixes
+* Continue review/fix cycle until achieving PASSING code review status
 
 Final Task 2: Task Summary Updates for CLAUDE.md
 
-- Create token & context efficient git commit message of all the changes to prepare for the final commit task(s)
-- Update CLAUDE.md "Last Completed Task Summary" section with the VERBATIM COPY of the token & context efficient git commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
-- This ensures that the git commit message is cached for token & context efficient in order to update CLAUDE.md with, preventing the need to waste tokens by having to regenerate similiar task completion summaries
+* Create token & context efficient git commit message of all the changes to prepare for the final commit task(s)
+* Update CLAUDE.md "Last Completed Task Summary" section with the VERBATIM COPY of the token & context efficient git commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+* This ensures that the git commit message is cached for token & context efficient in order to update CLAUDE.md with, preventing the need to waste tokens by having to regenerate similiar task completion summaries
 
 Final Task 3: Atomic Git Commit & Push
 
-- Run `git status` to review all staged and unstaged changes
-- Create single atomic git commit containing ALL changes: CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHPTS\VIDEOS ETC
-- __CRITICAL__: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
-- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
-- git Push commit to repository using provided personal access token
-- __CRITICAL__: Must git push to complete the workflow - git commit without git push is incomplete
+* Run `git status` to review all staged and unstaged changes
+* Create single atomic git commit containing ALL changes: CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHPTS\VIDEOS ETC
+* **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
+* the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+* git Push commit to repository using provided personal access token
+* **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
 
 Final Task 4: Final Verification
 
-- Run final `git status` to confirm successful commit and push
-- Verify working tree is clean and branch is up-to-date with remote
-- Confirm all changes are properly git committed and git pushed
+* Run final `git status` to confirm successful commit and push
+* Verify working tree is clean and branch is up-to-date with remote
+* Confirm all changes are properly git committed and git pushed
 
-__Key Requirements:__
+**Key Requirements:**
 
 ## Requirements
 
