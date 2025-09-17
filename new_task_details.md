@@ -2,6 +2,10 @@
 
 ## Task Description
 
+Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach to Analyze & Review to generate a detailed Post-Mortem report to guide an AI Coding Agent to implement a .md test script just like "script tests/playwright/mcp_test_script_basic.md", but for the  the Playwright CLI "npx playwright test --timeout=120000 --workers=1 test-b001-market-status.spec.ts" Method instead. You need to Analyze & Review the successes, failures, misconceptions, lessons learned, corrective actions of the Playwright MCP Tools Testing method to have a passing 3/3 tests from following the single source of truth MCP Tools testing script tests/playwright/mcp_test_script_basic.md.  After the analysis, generate a brand new doc 'tests/playwright/playwright_post-mortem_mcp_tools_testing_guide.md' that will serve as a Post-Mortem report to guide an AI Coding Agent to implement the new counterpart .md testing script "script tests/playwright/npx_test_script_basic.md" for the Playwright CLI "npx playwright test --timeout=120000 --workers=1 test-b001-market-status.spec.ts" Method
+
+The end result of the new npx method guide is to have single source of truth test script doc with the same 3/3 tests passing compared to "script tests/playwright/mcp_test_script_basic.md" for near complete Testing Parity of either MCP and\or NPX methods
+
 Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach to Review Playwright MCP Testing and Tool Guides for some new updates and tasks: docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md & tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
 
 Task 2. After reviewing the 2x Playwright Docs from Task 1, Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date: best, robust, modern practices, latest documentation, latest framework(s) notes etc to:  Update 'tests/playwright/mcp_test_script_basic.md' with the new Default Playwright MCP Tools Test Plan below of 3x Basic Tests, and then run ALL of these 3x tests according to the proper procedures VERBATIM FROM 'tests/playwright/mcp_test_script_basic.md'.  If any failures, fix the code if it seems like a code bug, and\or fix\update 'tests/playwright/mcp_test_script_basic.md' if it is false failure due to some improper setup\config\testing procedure.  You will run the same 3x tests and fix any and all issues in a loop until all 3x tests PASS. DO NOT MOVE INTO THE FINAL TASKS UNTIL ALL 3x TESTS PASS.  Every start of a new testing loop needs to start fresh and restart all dev servers.  Usse the one click start up scripts for easier dev server startup.  For failures, make sure you review systemtically to rule out false positive failures
@@ -47,6 +51,7 @@ __Key Requirements:__
 
 ## Expected Outcome*
 
+- All 3x new basic tests passed
 _All Files except for testing artifacts & outputs, Docs atomically commited after all tasks are complete_
 
 ## Additional Context
