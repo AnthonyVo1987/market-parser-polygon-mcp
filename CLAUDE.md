@@ -9,15 +9,9 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Add Testing Protocol Guidelines & Complete Console Log File Output
+feat: Enhance project documentation and testing for AI agents
 
-- Added comprehensive Testing Protocol Guidelines to CLAUDE.md and PLAYWRIGHT_TESTING_MASTER_PLAN.md
-- Enhanced console logging with file output to logs/console_debug_log.txt
-- Implemented 1000-entry circular buffer with wrap indicators and 10-second flush intervals
-- Added secure backend API endpoints: /api/v1/logs/console/{write,status,clear}
-- FileLogService class with memory-safe console interception and periodic flushing
-- Comprehensive code review PASSING: excellent security, type safety, performance, memory management
-- Applied corrective actions for testing protocol failures: mandatory verification, no substitutions
+Introduce `GEMINI.md` for comprehensive project overview and detailed MCP tool usage. Refine `mcp_test_script_basic.md` to be self-contained, including explicit AI actions, robust polling logic, and improved error handling for automated testing. This prepares the project for seamless execution by new AI agents.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## Tools Usage
