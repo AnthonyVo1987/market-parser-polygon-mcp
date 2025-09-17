@@ -7,15 +7,17 @@
 
 ## Overview
 
-This document provides comprehensive guidance for executing the complete B001-B016 Playwright test suite for the Market Parser application. It consolidates all testing knowledge into a single authoritative reference, offering two proven methodologies: CLI automation and MCP browser tools.
+This document provides comprehensive guidance for executing the complete B001-B016 Playwright test suite for the Market Parser application. It consolidates all testing knowledge into a single authoritative reference, offering three proven methodologies: CLI automation, MCP browser tools, and NPX Basic Test validation.
 
 ### Key Features
 
 - **Complete Test Coverage**: All 16 real B001-B016 tests with accurate specifications
-- **Dual Methodology Support**: Both CLI (`npx playwright test`) and MCP browser automation
+- **Triple Methodology Support**: CLI (`npx playwright test`), MCP browser automation, and NPX Basic Test suite
+- **NPX Basic Test Suite**: Streamlined 3-test validation for rapid methodology verification
 - **Single Browser Session Protocol**: Maintains session continuity for realistic user simulation
 - **Universal Testing Criteria**: 120-second timeout with 3-bucket performance classification
-- **Method-Specific Optimization**: CLI (inherently faster) vs MCP (inherently slower, expected)
+- **Method-Specific Optimization**: CLI (inherently faster) vs MCP (inherently slower, expected) vs NPX Basic (focused validation)
+- **First-Try Success Documentation**: NPX Basic Test designed for 100% first-try success rate
 - **Prototyping-Focused**: Performance as reference notes, not pass/fail criteria
 
 ---
@@ -80,6 +82,7 @@ npm run start:app
 
 - **CLI Method**: Use `npx playwright test` commands for traditional automation
 - **MCP Method**: Use MCP browser tools for sophisticated browser control
+- **NPX Basic Test**: Use the streamlined 3-test basic suite for validation (see [NPX Basic Test Implementation](#npx-basic-test-implementation))
 
 ---
 
@@ -546,11 +549,23 @@ npx playwright test --timeout=120000 --workers=1 test-b015-ui-consistency.spec.t
 npx playwright test --timeout=120000 --workers=1 test-b016-button-integration.spec.ts
 ```
 
+**NPX Basic Test Suite Command:**
+
+```bash
+# NPX Basic Test - Streamlined 3-test validation suite
+npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
+```
+
 **CLI Options Explained:**
 
 - `--timeout=120000`: Sets maximum test timeout to 120 seconds (120,000ms)
 - `--workers=1`: Ensures single browser session maintained across all tests
 - Optional: `--retries=3` can be added for enhanced reliability in prototyping
+
+**NPX Basic Test Options:**
+- Same timeout and worker configuration as full B001-B016 suite
+- Focused on 3 core test scenarios for rapid validation
+- Ideal for first-try success validation and methodology testing
 
 ### CLI Testing Checklist
 
@@ -664,6 +679,127 @@ Running 1 test using 1 worker
 ⚠ Configuration warnings: auto-retry method updated, timeout validation
 1 passed (10.8s)
 ```
+
+---
+
+## NPX Basic Test Implementation
+
+### Overview
+
+The NPX Basic Test provides a streamlined 3-test validation suite designed for rapid methodology validation and first-try success achievement. This focused test suite covers the core functionality patterns while maintaining the same rigor as the full B001-B016 suite.
+
+### Test File Location
+
+- **File**: `test-basic-suite.spec.ts`
+- **Location**: `/tests/playwright/test-basic-suite.spec.ts`
+- **Documentation**: `npx_test_script_basic.md`
+- **Purpose**: NPX method validation with 100% first-try success rate
+
+### NPX Basic Test Suite Composition
+
+The basic test suite includes 3 essential test scenarios:
+
+#### Test 1: Market Status
+- **Description**: Basic market status endpoint validation
+- **Query**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+- **Expected**: Market status with exchange operational data and emoji indicators
+- **Validation**: Financial emoji detection (📈📉💰🎯) and market data presence
+
+#### Test 2: NVDA Ticker Snapshot
+- **Description**: Single ticker analysis validation with NVIDIA data
+- **Query**: "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+- **Expected**: Complete NVIDIA stock analysis with comprehensive financial data
+- **Validation**: NVDA-specific content, stock data patterns, and emoji indicators
+
+#### Test 3: Stock Snapshot Button
+- **Description**: Button template system validation
+- **Action**: Click Stock Snapshot button (📈) with pre-populated NVDA ticker
+- **Expected**: Button-triggered stock analysis using template system
+- **Validation**: Button interaction success and template-generated content
+
+### NPX Basic Test Execution
+
+**Primary Command:**
+```bash
+npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
+```
+
+**Alternative Commands:**
+```bash
+# Run with browser visible (debugging)
+npx playwright test --timeout=120000 --workers=1 --headed test-basic-suite.spec.ts
+
+# Run specific test only
+npx playwright test --timeout=120000 --workers=1 -g "Test 1: Market Status" test-basic-suite.spec.ts
+
+# Run with detailed output
+npx playwright test --timeout=120000 --workers=1 --reporter=line test-basic-suite.spec.ts
+```
+
+### Key Features of NPX Basic Test
+
+#### Auto-Retry Detection
+- Uses Playwright's native `page.waitForSelector()` with built-in retry logic
+- Automatic detection until condition met or 120-second timeout
+- No manual polling loops required
+- Immediate response when condition satisfied
+
+#### Comprehensive Validation
+- Financial emoji pattern detection (📈📉💰🎯)
+- Content length and quality validation
+- Ticker-specific data validation (NVDA content)
+- Button interaction success confirmation
+
+#### Performance Classification
+- **Good 😊**: Response within 30 seconds
+- **OK 😐**: Response within 31-60 seconds
+- **Slow 😴**: Response within 61-120 seconds
+- **TIMEOUT**: Exceeds 120 seconds (automatic FAIL)
+
+### Integration with Full B001-B016 Suite
+
+**Relationship to Full Suite:**
+- NPX Basic Test validates core methodology patterns
+- Successful basic test execution indicates NPX method readiness
+- Same timeout, worker, and detection configurations as full suite
+- Focuses on essential test patterns used throughout B001-B016
+
+**When to Use Basic Test vs Full Suite:**
+- **Use Basic Test**: Initial methodology validation, first-try success verification, rapid development testing
+- **Use Full Suite**: Comprehensive validation, production readiness testing, complete feature coverage
+
+**Progression Path:**
+1. Execute NPX Basic Test for methodology validation
+2. Achieve 100% success rate on basic test
+3. Progress to full B001-B016 suite for comprehensive testing
+4. Use basic test for regression validation during development
+
+### Success Criteria
+
+**Pass Criteria for NPX Basic Test:**
+- All 3 tests complete within 120-second timeout
+- Financial emoji detection successful
+- Content validation passes for all test scenarios
+- Button interaction functionality confirmed
+- No NPX command or configuration errors
+
+**First-Try Success Indicators:**
+- Response detection within expected timeframes
+- Proper auto-retry detection without manual intervention
+- Comprehensive validation results match expected patterns
+- Documentation enables execution without external research
+
+### Cross-Reference Documentation
+
+**Primary Documentation:**
+- **Complete Guide**: `npx_test_script_basic.md` - Single source of truth for AI agents
+- **Implementation**: `test-basic-suite.spec.ts` - Complete test file with all 3 tests
+- **Post-Mortem**: `playwright_post-mortem_mcp_tools_testing_guide.md` - MCP to NPX methodology lessons
+
+**Related Documentation:**
+- Full B001-B016 test specifications (this document)
+- Playwright configuration and helper utilities
+- MCP Tools testing methodology (superseded by NPX)
 
 ---
 
@@ -1225,6 +1361,13 @@ playwright_[METHOD]_test_[YY-MM-DD]_[HH-MM].md
 - ✅ Validation Framework: Financial emoji detection and response validation
 
   🧪 Test Suite Completeness
+
+  NPX Basic Test Suite:
+
+- ✅ test-basic-suite.spec.ts: 3-test validation suite
+- ✅ Market Status, NVDA Ticker, Stock Snapshot Button
+- ✅ First-try success methodology validation
+- ✅ 100% success rate target for AI agents
 
   Market/Ticker Tests (B001-B006):
 

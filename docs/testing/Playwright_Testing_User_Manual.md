@@ -25,10 +25,11 @@ This comprehensive manual covers all aspects of using the Market Parser Playwrig
 
 ### System Architecture
 
-The Market Parser Playwright testing system provides comprehensive automated testing capabilities through two distinct methodologies:
+The Market Parser Playwright testing system provides comprehensive automated testing capabilities through three distinct methodologies:
 
 - **CLI Testing** (`/test_cli_full`): Direct command-line execution for rapid validation
 - **MCP Browser Testing** (`/test_mcp_full`): Browser automation for comprehensive UI testing
+- **NPX Basic Test** (`test-basic-suite.spec.ts`): Streamlined 3-test validation suite for first-try success
 
 ### Testing Scope
 
@@ -43,6 +44,11 @@ The Market Parser Playwright testing system provides comprehensive automated tes
 - Error handling testing (network errors, timeout handling)
 - Accessibility testing (keyboard navigation, screen reader)
 - Additional coverage (performance, security, integration)
+
+**NPX Basic Test Suite (3 Tests):**
+- Market Status validation (B001 equivalent)
+- NVDA Ticker Snapshot (B002 equivalent)
+- Stock Snapshot Button interaction (B007 equivalent)
 
 ### Security-First Design Principles
 

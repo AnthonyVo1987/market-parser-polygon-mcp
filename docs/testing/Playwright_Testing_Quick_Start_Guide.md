@@ -14,10 +14,17 @@ This guide provides essential information for using the `/test_cli_full` and `/t
 /test_mcp_full    # Execute B001-B016 tests using MCP browser automation
 ```
 
+### NPX Basic Test Suite
+```bash
+# NPX Basic Test - Streamlined 3-test validation suite
+npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
+```
+
 ### Expected Execution Time
 - **CLI Method**: ~30-60 minutes (typically faster)
 - **MCP Method**: ~45-90 minutes (more thorough browser automation)
-- **Total Tests**: 16 tests (B001-B016)
+- **NPX Basic Test**: ~5-15 minutes (3 core tests for rapid validation)
+- **Total Tests**: 16 tests (B001-B016) + NPX Basic Suite (3 tests)
 
 ---
 
@@ -79,6 +86,12 @@ grep -q "OPENAI_API_KEY" .env && echo "✓ OpenAI API key found"
 - **UI validation** - Verifies visual components work correctly  
 - **Cross-browser testing** - Tests compatibility across browsers
 - **Production testing** - More realistic user simulation
+
+### When to Use NPX Basic Test (`test-basic-suite.spec.ts`)
+- **Rapid validation** - Quick methodology verification in under 15 minutes
+- **First-try success** - Designed for 100% success rate with clear documentation
+- **Development testing** - Core functionality validation during development
+- **Methodology validation** - Verify NPX testing approach before full suite execution
 
 ---
 

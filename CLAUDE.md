@@ -150,8 +150,11 @@ uv run src/backend/main.py
 ### Testing
 
 ```bash
-# Playwright E2E tests (B001-B016 test suite)
+# NPX Basic Test Suite (3 core tests - recommended for validation)
 cd tests/playwright
+npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
+
+# Playwright E2E tests (B001-B016 test suite)
 npx playwright test
 
 # Specific test
@@ -341,8 +344,15 @@ market-parser-polygon-mcp/
 
 ## Testing Strategy
 
-The project uses Playwright for E2E testing with a comprehensive B001-B016 test suite covering:
+The project uses Playwright for E2E testing with multiple testing approaches:
 
+**NPX Basic Test Suite (test-basic-suite.spec.ts):**
+- 3 core tests for rapid validation
+- Market Status, NVDA Ticker, Stock Snapshot Button
+- Designed for 100% first-try success rate
+- Ideal for methodology validation and development testing
+
+**Comprehensive B001-B016 Test Suite:**
 - Market status queries
 - Individual stock analysis
 - Multi-ticker queries

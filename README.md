@@ -173,6 +173,11 @@ npm run build             # Production build
 
 # Testing (Auto-Retry Detection)
 cd tests/playwright
+
+# NPX Basic Test Suite (3 core tests - recommended for validation)
+npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
+
+# Full E2E test suite (B001-B016)
 npx playwright test       # E2E tests with auto-retry detection
 npx playwright test --headed  # Run with browser visible
 
