@@ -44,13 +44,17 @@ When working with tools, prioritize the following MCP Tools FIRST in any particu
 
 - **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups. Always resolve library IDs first (e.g., 'react', 'fastapi') before getting documentation. Use specific topics and appropriate token limits (4k-8k) for research. This is for staying current with external libraries like React, FastAPI, and the OpenAI Agents SDK.
 
-- **Playwright MCP**: Browser automation for React GUI testing & App Validation. Always `browser_install` first. Use `browser_snapshot` to understand the UI and get element references before interacting. For AI responses, use a 30-second polling interval with `browser_wait_for` and a total timeout of 120 seconds to avoid false positives. Never expect immediate AI responses.
+- **Playwright MCP**: Browser automation for React GUI testing & App Validation. Assumes browser is installed; if navigation fails, `browser_install` should be executed, and the test restarted. Use `browser_snapshot` to understand the UI and get element references before interacting. For AI responses, use a 10-second polling interval with `browser_wait_for` and a total timeout of 120 seconds to avoid false positives. Never expect immediate AI responses.
 
 - **Filesystem MCP**: Multi-file operations (3+ files). Use `read_multiple_files` for analyzing related files, `directory_tree` for understanding structure, and `search_files` for locating files. Use for bulk operations, but prefer standard tools for single-file edits. All operations are restricted to the project directory.
 
 Use standard Read/Write/Edit tools for single-file operations.
 
 - **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
+
+### Tool Output and Token Usage
+
+It is important to note that all MCP tools inherently produce output when executed. This output provides crucial feedback on the operation's success or failure and relevant data. While this output is essential for debugging and understanding test execution, it contributes to token and context usage. Currently, there is no mechanism to suppress this output at the tool level.
 
 ## Quick Start
 
