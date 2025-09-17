@@ -41,10 +41,73 @@ Use standard Read/Write/Edit tools for single-file operations.
 
 **One-Click Application Startup (Recommended):**
 
+# Option 1: Run one click  quick start script directly (recommended)
+
+./start-app.sh
+
+```bash
+# Option 2: Use npm script 
+# Prerequisites: uv, Node.js 18+, API keys in .env
+npm run start:app
+```
+
+# Option 1: Run one click Quick start script directly (recommended)
+
+./start-app.sh
+
+# Option 2: Use npm script
+
 ```bash
 # Prerequisites: uv, Node.js 18+, API keys in .env
 npm run start:app
 ```
+
+# Option 3: Use xterm version for better terminal compatibility one click Quick start script directly
+
+./start-app-xterm.sh
+
+# Option 4: Use xterm version npm command directly
+
+```bash
+npm run start:app:xterm
+```
+
+## Script Variants
+
+### start-app.sh (Main Script)
+
+- **Terminal Support**: Tries `gnome-terminal` first, falls back to `xterm`
+- **Cross-Platform**: Works on most Linux distributions and macOS
+- **Automatic Fallback**: Gracefully handles missing terminal emulators
+
+### start-app-xterm.sh (XTerm Version)
+
+- **XTerm Focused**: Specifically designed for xterm users
+- **Window Positioning**: Places backend and frontend terminals side-by-side
+- **Font Configuration**: Uses readable DejaVu Sans Mono font
+- **Enhanced Display**: Better window titles and layout
+
+## What the Scripts Do
+
+### 🔄 Server Cleanup
+
+- Kills existing development servers (uvicorn, vite)
+- **Preserves MCP servers** - does not interfere with MCP processes
+- Waits for processes to terminate gracefully
+
+### 🚀 Server Startup
+
+- **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
+- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
+- Opens each server in a separate terminal window for easy monitoring
+- Uses consistent hard-coded ports (no dynamic allocation)
+
+### ✅ Health Verification
+
+- Performs health checks on both servers
+- Retries up to 10 times with 2-second intervals
+- Verifies backend `/health` endpoint responds
+- Verifies frontend serves content properly
 
 **Manual Setup:**
 

@@ -1,8 +1,8 @@
 # New Task Details
 
-## Task Description: [NPX_Test] Phase 1: Playwright "npx playwright test" Single Source Testing Script
+## Task Description: [NPX_Test] Phase 1: Create Playwright "npx playwright test" Single Source Testing Script
 
-# Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach to Review docs & Playwright MCP Testing and Tool Guides to prep for new task(s)
+# Task 1. Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach to Review docs & Playwright MCP Testing and Tool Guides to prep and provide research & context for new task(s)
 
 - tests/playwright/playwright_post-mortem_mcp_tools_testing_guide.md
 - tests/playwright/mcp_test_script_basic.md
@@ -11,7 +11,7 @@
 - START_SCRIPT_README.md
 - start-app.sh
 
-# Task 2. After reviewing the 2x Playwright Docs from Task 1, Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes etc to perform the requested plan and\or task(s)
+# Task 2. After Reviewing & Researching the Docs from Task 1, Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes etc to perform the requested plan and\or task(s)
 
 - Always read & refer back to tests/playwright/playwright_post-mortem_mcp_tools_testing_guide.md to guide you throughout the entire implementation process for correct & incorrect implementation notes
 - Edit\Update 'tests/playwright/npx_test_script_basic.md' based on your research & baseline 'tests/playwright/mcp_test_script_basic.md' test script to properly run the same 3/3 Tests Passing using proper Playwright "npx playwright test xxx" method.
