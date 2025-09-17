@@ -136,7 +136,8 @@
       "Bash(bash:*)",
       "Bash(xargs kill:*)",
       "mcp__playwright__browser_take_screenshot",
-      "Bash(markdownlint-cli2:*)"
+      "Bash(markdownlint-cli2:*)",
+      "Bash(PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --timeout=120000 --workers=1 test-b001-market-status.spec.ts)"
     ],
     "deny": [],
     "ask": [],
