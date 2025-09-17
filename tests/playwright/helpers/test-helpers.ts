@@ -186,7 +186,7 @@ export class BrowserSessionManager {
 }
 
 /**
- * Send message and wait for response with performance timing
+ * Send message and wait for response with auto-retry detection
  */
 export async function sendMessageAndWaitForResponse(
   page: Page,
@@ -194,19 +194,19 @@ export async function sendMessageAndWaitForResponse(
   testName: string,
   inputConfig: MessageInputConfig = DEFAULT_INPUT_CONFIG
 ): Promise<TestExecutionResult> {
-  
-  console.log(`[TEST-HELPER] Starting test: ${testName}`);
+
+  console.log(`[TEST-HELPER] Starting auto-retry test: ${testName}`);
   console.log(`[TEST-HELPER] Input message: "${message}"`);
-  
+
   const startTime = Date.now();
-  
+
   try {
     // Step 1: Send the message
     await sendMessage(page, message, inputConfig);
-    
-    // Step 2: Wait for response with polling
-    const pollingResult = await pollForResponse(page);
-    
+
+    // Step 2: Wait for response with auto-retry detection
+    const pollingResult = await pollForResponse(page, undefined, testName);
+
     const result: TestExecutionResult = {
       success: pollingResult.success,
       responseTime: pollingResult.responseTime,
@@ -216,31 +216,43 @@ export async function sendMessageAndWaitForResponse(
       responseContent: pollingResult.responseContent,
       error: pollingResult.error
     };
-    
+
+    // Enhanced logging for auto-retry
+    if (pollingResult.phase1Time && pollingResult.phase2Time) {
+      console.log(`[TEST-HELPER] Auto-retry phases: Phase1=${pollingResult.phase1Time}ms, Phase2=${pollingResult.phase2Time}ms`);
+    }
+
+    if (pollingResult.validationResult) {
+      console.log(`[TEST-HELPER] Content validation: ${pollingResult.validationResult.status}`);
+      if (pollingResult.validationResult.status === 'FAIL') {
+        console.log(`[TEST-HELPER] Validation failures: ${pollingResult.validationResult.failureReasons.join(', ')}`);
+      }
+    }
+
     console.log(`[TEST-HELPER] Test completed: ${testName} - ${result.classification} (${result.responseTime}ms)`);
-    
+
     return result;
-    
+
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     console.log(`[TEST-HELPER] Test failed: ${testName} - Error: ${error}`);
-    
+
     // Take screenshot on failure if configured
     let screenshot: string | undefined;
     if (DEFAULT_SESSION_CONFIG.screenshotOnFailure) {
       try {
         const screenshotPath = `test-results/failure-${testName}-${Date.now()}.png`;
-        await page.screenshot({ 
+        await page.screenshot({
           path: screenshotPath,
-          fullPage: true 
+          fullPage: true
         });
         screenshot = screenshotPath;
       } catch (screenshotError) {
         console.log(`[TEST-HELPER] Screenshot failed:`, screenshotError);
       }
     }
-    
+
     return {
       success: false,
       responseTime,

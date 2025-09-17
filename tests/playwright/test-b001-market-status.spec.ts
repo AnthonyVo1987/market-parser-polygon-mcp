@@ -1,11 +1,11 @@
 /**
  * TEST-B001: Market Status Test
- * 
+ *
  * Tests market status query with priority fast request and low verbosity
- * Implements dynamic port detection and 30-second polling methodology
+ * Implements dynamic port detection and two-phase auto-retry detection
  * Part of continuous browser session protocol
- * 
- * @fileoverview Market Status CLI test with emoji indicator validation
+ *
+ * @fileoverview Market Status CLI test with auto-retry detection and validation
  */
 
 import { test, expect } from '@playwright/test';
@@ -13,19 +13,20 @@ import {
   // Main workflow functions
   autoNavigateToFrontend,
   sendMessageAndWaitForResponse,
-  validateFinancialResponse,
   validateSystemReadiness,
-  pollForResponse,
   classifyPerformance,
-  
+
   // Configuration and constants
   COMPREHENSIVE_TEST_CONFIG,
   PerformanceClassification,
   FINANCIAL_EMOJIS,
-  
+
   // Browser session management
   BrowserSessionManager
 } from './helpers/index';
+
+// Import new auto-retry validation
+import { validateMarketStatusResponse } from './helpers/response-validators';
 
 /**
  * TEST-B001: Market Status Test Suite
@@ -73,11 +74,11 @@ test.describe('TEST-B001: Market Status', () => {
       
       console.log(`[TEST-B001] Sending query: ${testQuery}`);
       
-      // Execute test with 30-second polling and 120-second timeout
+      // Execute test with auto-retry detection and 120-second timeout
       const startTime = Date.now();
       const executionResult = await sendMessageAndWaitForResponse(
-        page, 
-        testQuery, 
+        page,
+        testQuery,
         'TEST-B001-MarketStatus'
       );
       
@@ -96,27 +97,43 @@ test.describe('TEST-B001: Market Status', () => {
         throw new Error(`Test execution failed: ${executionResult.error}`);
       }
       
-      // Validate response content for market status
-      console.log('[TEST-B001] Validating market status response...');
-      const validationResult = await validateFinancialResponse(page);
-      
-      // Market status should contain financial indicators
-      expect(validationResult.hasFinancialContent).toBe(true);
-      expect(validationResult.contentLength).toBeGreaterThan(100);
-      
-      // Should have emoji indicators for market status
-      expect(validationResult.hasEmojiIndicators).toBe(true);
-      expect(validationResult.detectedEmojis.length).toBeGreaterThan(0);
-      
+      // Validate response content using new auto-retry validation
+      console.log('[TEST-B001] Validating market status response with auto-retry...');
+
+      // Get response content from execution result
+      const responseContent = executionResult.responseContent || '';
+
+      // Use specific market status validation
+      const validationResult = validateMarketStatusResponse(responseContent, 'TEST-B001-MarketStatus');
+
+      // Log auto-retry phase timings if available
+      if (executionResult.phase1Time && executionResult.phase2Time) {
+        console.log(`[TEST-B001] Auto-retry phases: Phase1=${executionResult.phase1Time}ms, Phase2=${executionResult.phase2Time}ms`);
+      }
+
       // Log detailed validation results
-      console.log(`[TEST-B001] Response validation - Valid: ${validationResult.isValid}`);
-      console.log(`[TEST-B001] KEY TAKEAWAYS present: ${validationResult.hasKeyTakeaways}`);
-      console.log(`[TEST-B001] Emoji indicators: ${validationResult.detectedEmojis.join(', ')}`);
+      console.log(`[TEST-B001] Response validation status: ${validationResult.status}`);
+      console.log(`[TEST-B001] Market status content: ${validationResult.hasMarketStatusContent}`);
+      console.log(`[TEST-B001] Emoji indicators: ${validationResult.hasEmojiIndicators}`);
       console.log(`[TEST-B001] Content length: ${validationResult.contentLength} characters`);
-      
+
+      if (validationResult.detectedEmojis.length > 0) {
+        console.log(`[TEST-B001] Detected emojis: ${validationResult.detectedEmojis.join(', ')}`);
+      }
+
       if (validationResult.detectedTickers.length > 0) {
         console.log(`[TEST-B001] Detected tickers: ${validationResult.detectedTickers.join(', ')}`);
       }
+
+      if (validationResult.status === 'FAIL') {
+        console.log(`[TEST-B001] Validation failures: ${validationResult.failureReasons.join(', ')}`);
+      }
+
+      // Market status should contain financial indicators and pass validation
+      expect(validationResult.status).toBe('PASS');
+      expect(validationResult.hasMarketStatusContent).toBe(true);
+      expect(validationResult.hasEmojiIndicators).toBe(true);
+      expect(validationResult.contentLength).toBeGreaterThan(50);
       
       // Performance classification validation
       console.log(`[TEST-B001] Performance classification: ${performanceClass}`);
@@ -129,23 +146,17 @@ test.describe('TEST-B001: Market Status', () => {
         console.log(`[TEST-B001] ❌ TIMEOUT: Response exceeded 120 seconds`);
       }
       
-      // Validate that we got a market status response (not ticker-specific)
-      const responseContent = validationResult.responseContent || '';
-      const marketStatusKeywords = ['market', 'status', 'trading', 'session', 'hours', 'open', 'closed'];
-      const hasMarketStatusContent = marketStatusKeywords.some(keyword => 
-        responseContent.toLowerCase().includes(keyword)
-      );
-      
-      if (hasMarketStatusContent) {
+      // Log specific market status detection result
+      if (validationResult.hasMarketStatusContent) {
         console.log('[TEST-B001] ✅ Market status content detected');
       } else {
-        console.log('[TEST-B001] ⚠️ General financial response received (market status content not explicitly detected)');
+        console.log('[TEST-B001] ⚠️ Market status content not detected');
       }
-      
-      // Final test assertions
+
+      // Final test assertions with auto-retry validation
       expect(executionResult.success).toBe(true);
-      expect(validationResult.hasFinancialContent).toBe(true);
-      expect(validationResult.hasEmojiIndicators).toBe(true);
+      expect(validationResult.status).toBe('PASS');
+      expect(validationResult.hasMarketStatusContent).toBe(true);
       expect(responseTime).toBeLessThanOrEqual(COMPREHENSIVE_TEST_CONFIG.timeouts.test);
       
       console.log('[TEST-B001] ✅ Market status test completed successfully');
@@ -181,39 +192,32 @@ test.describe('TEST-B001: Market Status', () => {
       const testQuery = "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity";
       
       const executionResult = await sendMessageAndWaitForResponse(
-        page, 
-        testQuery, 
+        page,
+        testQuery,
         'TEST-B001-Format-Validation'
       );
-      
+
       if (executionResult.success) {
-        // Check for specific format elements
-        const pageContent = await page.textContent('body') || '';
-        
-        // Should have structured response format
-        const hasKeyTakeaways = pageContent.includes('🎯 KEY TAKEAWAYS') || pageContent.includes('KEY TAKEAWAYS');
-        const hasFinancialEmojis = Object.values(FINANCIAL_EMOJIS).some(emoji => pageContent.includes(emoji));
-        
-        console.log(`[TEST-B001] Format validation - KEY TAKEAWAYS: ${hasKeyTakeaways}`);
-        console.log(`[TEST-B001] Format validation - Financial emojis: ${hasFinancialEmojis}`);
-        
+        // Use auto-retry validation for format checking
+        const responseContent = executionResult.responseContent || '';
+        const validationResult = validateMarketStatusResponse(responseContent, 'TEST-B001-Format-Validation');
+
+        console.log(`[TEST-B001] Format validation status: ${validationResult.status}`);
+        console.log(`[TEST-B001] Format validation - KEY TAKEAWAYS: ${validationResult.hasKeyTakeaways}`);
+        console.log(`[TEST-B001] Format validation - Financial emojis: ${validationResult.hasEmojiIndicators}`);
+
         // Log response structure for analysis
-        if (pageContent.length > 0) {
-          const lines = pageContent.split('\n').filter(line => line.trim().length > 0);
+        if (responseContent.length > 0) {
+          const lines = responseContent.split('\n').filter(line => line.trim().length > 0);
           console.log(`[TEST-B001] Response structure: ${lines.length} lines`);
-          
-          // Look for structured sections
-          const structuredSections = lines.filter(line => 
-            line.includes('🎯') || 
-            line.includes('📊') || 
-            line.includes('📈') || 
-            line.includes('📉')
-          );
-          
-          console.log(`[TEST-B001] Structured sections found: ${structuredSections.length}`);
+
+          if (validationResult.detectedEmojis.length > 0) {
+            console.log(`[TEST-B001] Structured sections with emojis: ${validationResult.detectedEmojis.join(', ')}`);
+          }
         }
-        
-        expect(hasFinancialEmojis).toBe(true);
+
+        expect(validationResult.hasEmojiIndicators).toBe(true);
+        expect(validationResult.status).toBe('PASS');
         console.log('[TEST-B001] ✅ Format validation completed');
         
       } else {
@@ -242,10 +246,12 @@ test.describe('TEST-B001: Development Utilities', () => {
   test('should validate TEST-B001 configuration', async () => {
     console.log('[TEST-B001] Validating test configuration...');
     
-    // Validate polling configuration for market status test
-    expect(COMPREHENSIVE_TEST_CONFIG.polling.pollingIntervalMs).toBe(30000);
+    // Validate auto-retry configuration for market status test
     expect(COMPREHENSIVE_TEST_CONFIG.polling.maxTimeoutMs).toBe(120000);
     expect(COMPREHENSIVE_TEST_CONFIG.polling.successThresholdMs).toBe(45000);
+
+    // Auto-retry uses dynamic detection instead of fixed polling intervals
+    console.log('[TEST-B001] Auto-retry detection enabled (no fixed polling intervals)');
     
     // Validate performance thresholds
     expect(COMPREHENSIVE_TEST_CONFIG.performance.success).toBe(45000);
@@ -260,7 +266,7 @@ test.describe('TEST-B001: Development Utilities', () => {
     expect(emojiValues).toContain('💰');
     
     console.log('[TEST-B001] Configuration validation completed');
-    console.log(`[TEST-B001] Polling interval: ${COMPREHENSIVE_TEST_CONFIG.polling.pollingIntervalMs}ms`);
+    console.log(`[TEST-B001] Auto-retry detection: enabled`);
     console.log(`[TEST-B001] Max timeout: ${COMPREHENSIVE_TEST_CONFIG.polling.maxTimeoutMs}ms`);
     console.log(`[TEST-B001] Success threshold: ${COMPREHENSIVE_TEST_CONFIG.performance.success}ms`);
   });

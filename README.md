@@ -123,9 +123,14 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing
+# Testing (Auto-Retry Detection)
 cd tests/playwright
-npx playwright test       # E2E tests
+npx playwright test       # E2E tests with auto-retry detection
+npx playwright test --headed  # Run with browser visible
+
+# Auto-retry eliminates 30-second polling with intelligent two-phase detection:
+# Phase 1: Detect ANY AI response completion
+# Phase 2: Validate response content quality
 
 # Code quality
 npm run lint              # All linting

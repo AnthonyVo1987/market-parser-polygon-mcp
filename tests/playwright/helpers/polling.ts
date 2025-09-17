@@ -1,13 +1,22 @@
 /**
- * Polling Utilities for Playwright CLI Tests
- * 
- * Implements 30-second polling methodology with 120-second test limits
- * Provides early completion detection and timeout handling
- * 
- * @fileoverview Core polling utilities for financial data response detection
+ * Auto-Retry Response Detection for Playwright CLI Tests
+ *
+ * Implements intelligent two-phase detection to replace 30-second polling:
+ * Phase 1: Detect ANY response completion, Phase 2: Validate content
+ * Provides immediate detection and timeout handling
+ *
+ * @fileoverview Auto-retry utilities for financial data response detection
  */
 
 import { Page, Locator } from '@playwright/test';
+import {
+  detectResponseWithAutoRetry,
+  AutoRetryResult,
+  AutoRetryConfig,
+  createTestSpecificConfig,
+  DEFAULT_AUTO_RETRY_CONFIG
+} from './auto-retry';
+import { validateResponseByTestName, TestValidationResult } from './response-validators';
 
 /**
  * Performance classification based on response timing
@@ -19,7 +28,7 @@ export enum PerformanceClassification {
 }
 
 /**
- * Result interface for polling operations
+ * Result interface for auto-retry operations (enhanced from polling)
  */
 export interface PollingResult {
   success: boolean;
@@ -27,6 +36,11 @@ export interface PollingResult {
   classification: PerformanceClassification;
   responseContent?: string;
   error?: string;
+  // Enhanced auto-retry specific fields
+  phase1Time?: number;
+  phase2Time?: number;
+  validationResult?: TestValidationResult;
+  detectionMethod?: string;
 }
 
 /**
@@ -50,158 +64,130 @@ export const DEFAULT_POLLING_CONFIG: PollingConfig = {
 };
 
 /**
- * Poll for financial data response with 30-second intervals
- * 
+ * Auto-retry response detection to replace 30-second polling
+ *
  * @param page - Playwright page instance
- * @param config - Polling configuration
+ * @param config - Polling configuration (converted to auto-retry)
+ * @param testName - Optional test name for specific validation
  * @returns Promise<PollingResult> - Result with timing and classification
  */
 export async function pollForResponse(
-  page: Page, 
-  config: PollingConfig = DEFAULT_POLLING_CONFIG
+  page: Page,
+  config: PollingConfig = DEFAULT_POLLING_CONFIG,
+  testName?: string
 ): Promise<PollingResult> {
-  const startTime = Date.now();
-  const endTime = startTime + config.maxTimeoutMs;
-  
-  console.log(`[POLLING] Starting 30-second polling for financial response (max ${config.maxTimeoutMs}ms)`);
-  
-  let pollCount = 0;
-  
-  while (Date.now() < endTime) {
-    pollCount++;
-    const currentTime = Date.now();
-    const elapsedTime = currentTime - startTime;
-    
-    console.log(`[POLLING] Poll #${pollCount} at ${elapsedTime}ms - Checking for response...`);
-    
-    try {
-      // Check for response indicators
-      const responseDetected = await detectFinancialResponse(page, config);
-      
-      if (responseDetected.found) {
-        const responseTime = Date.now() - startTime;
-        const classification = classifyPerformance(responseTime, config);
-        
-        console.log(`[POLLING] SUCCESS: Response detected after ${responseTime}ms (${classification})`);
-        
-        return {
-          success: true,
-          responseTime,
-          classification,
-          responseContent: responseDetected.content
-        };
-      }
-      
-      // Check if we have time for another full polling cycle
-      const timeRemaining = endTime - Date.now();
-      if (timeRemaining < config.pollingIntervalMs) {
-        console.log(`[POLLING] Insufficient time remaining (${timeRemaining}ms) for next poll cycle`);
-        break;
-      }
-      
-      // Wait for next polling interval
-      console.log(`[POLLING] No response yet, waiting ${config.pollingIntervalMs}ms for next poll...`);
-      await page.waitForTimeout(config.pollingIntervalMs);
-      
-    } catch (error) {
-      console.log(`[POLLING] Error during poll #${pollCount}:`, error);
-      // Continue polling despite errors - might be temporary
-    }
-  }
-  
-  // Timeout reached
-  const finalTime = Date.now() - startTime;
-  console.log(`[POLLING] TIMEOUT: No response after ${finalTime}ms (${pollCount} polls)`);
-  
-  return {
-    success: false,
-    responseTime: finalTime,
-    classification: PerformanceClassification.TIMEOUT,
-    error: `Timeout after ${finalTime}ms with ${pollCount} polling attempts`
+
+  console.log(`[AUTO-RETRY] Starting intelligent detection (max ${config.maxTimeoutMs}ms)`);
+  console.log(`[AUTO-RETRY] Test: ${testName || 'generic'}`);
+
+  // Convert legacy polling config to auto-retry config
+  const autoRetryConfig: AutoRetryConfig = {
+    maxTimeoutMs: config.maxTimeoutMs,
+    phase1Methods: testName ?
+      createTestSpecificConfig(getTestType(testName), config.maxTimeoutMs).phase1Methods :
+      DEFAULT_AUTO_RETRY_CONFIG.phase1Methods,
+    enablePhase2Validation: true
   };
+
+  try {
+    // Execute two-phase auto-retry detection
+    const autoRetryResult = await detectResponseWithAutoRetry(page, autoRetryConfig);
+
+    let validationResult: TestValidationResult | undefined;
+
+    // If we have test name and response content, validate specifically
+    if (testName && autoRetryResult.responseContent && autoRetryResult.success) {
+      validationResult = validateResponseByTestName(testName, autoRetryResult.responseContent);
+      console.log(`[AUTO-RETRY] Validation: ${validationResult.status} for ${testName}`);
+
+      if (validationResult.status === 'FAIL') {
+        console.log(`[AUTO-RETRY] Validation FAILED: ${validationResult.failureReasons.join(', ')}`);
+      }
+    }
+
+    // Classify performance using existing logic
+    const classification = classifyPerformance(autoRetryResult.responseTime, config);
+
+    console.log(`[AUTO-RETRY] ${autoRetryResult.success ? 'SUCCESS' : 'FAILED'}: ` +
+               `Total: ${autoRetryResult.responseTime}ms, ` +
+               `Phase1: ${autoRetryResult.phase1Time}ms, ` +
+               `Phase2: ${autoRetryResult.phase2Time}ms (${classification})`);
+
+    return {
+      success: autoRetryResult.success && (validationResult?.status !== 'FAIL'),
+      responseTime: autoRetryResult.responseTime,
+      classification,
+      responseContent: autoRetryResult.responseContent,
+      error: autoRetryResult.error,
+      phase1Time: autoRetryResult.phase1Time,
+      phase2Time: autoRetryResult.phase2Time,
+      validationResult,
+      detectionMethod: 'auto-retry-two-phase'
+    };
+
+  } catch (error) {
+    const errorTime = Date.now();
+    console.log(`[AUTO-RETRY] EXCEPTION: ${error}`);
+
+    return {
+      success: false,
+      responseTime: config.maxTimeoutMs,
+      classification: PerformanceClassification.TIMEOUT,
+      error: String(error),
+      detectionMethod: 'auto-retry-two-phase'
+    };
+  }
 }
 
 /**
- * Detect financial response content on the page
- * 
- * @param page - Playwright page instance  
- * @param config - Polling configuration
- * @returns Promise<{found: boolean, content?: string}> - Detection result
+ * Helper function to determine test type for auto-retry configuration
+ */
+function getTestType(testName: string): 'market-status' | 'ticker-analysis' | 'button-template' {
+  const upperName = testName.toUpperCase();
+
+  if (upperName.includes('B001') || upperName.includes('MARKET-STATUS')) {
+    return 'market-status';
+  }
+
+  if (upperName.includes('B002') || upperName.includes('B003') ||
+      upperName.includes('B004') || upperName.includes('B005') ||
+      upperName.includes('NVDA') || upperName.includes('SPY') ||
+      upperName.includes('GME') || upperName.includes('TICKER')) {
+    return 'ticker-analysis';
+  }
+
+  if (upperName.includes('B007') || upperName.includes('B008') ||
+      upperName.includes('B009') || upperName.includes('BUTTON') ||
+      upperName.includes('SNAPSHOT') || upperName.includes('SUPPORT') ||
+      upperName.includes('TECHNICAL')) {
+    return 'button-template';
+  }
+
+  return 'ticker-analysis'; // Default fallback
+}
+
+/**
+ * DEPRECATED: Legacy detection function - kept for compatibility
+ * Use auto-retry detection instead
  */
 async function detectFinancialResponse(
-  page: Page, 
+  page: Page,
   config: PollingConfig
 ): Promise<{found: boolean, content?: string}> {
-  
-  // Primary detection: Look for "🎯 KEY TAKEAWAYS" section
-  const keyTakeawaysSelector = 'text=🎯 KEY TAKEAWAYS';
-  const keyTakeawaysElement = page.locator(keyTakeawaysSelector);
-  
+  console.log(`[DEPRECATED] detectFinancialResponse called - use auto-retry instead`);
+
+  // Fallback to simple content check
   try {
-    // Check if KEY TAKEAWAYS section is visible
-    const keyTakeawaysVisible = await keyTakeawaysElement.isVisible({ timeout: 1000 });
-    
-    if (keyTakeawaysVisible) {
-      console.log(`[POLLING] Detected 🎯 KEY TAKEAWAYS section`);
-      
-      // Get the content of the response
-      const responseContent = await page.textContent('body') || '';
-      
-      // Validate it contains financial indicators
-      if (containsFinancialIndicators(responseContent)) {
-        return { found: true, content: responseContent };
-      }
-    }
+    const responseContent = await page.textContent('body') || '';
+    const hasFinancialContent = containsFinancialIndicators(responseContent);
+
+    return {
+      found: hasFinancialContent && responseContent.length > 50,
+      content: responseContent
+    };
   } catch (error) {
-    // Element not found yet, continue checking
+    return { found: false };
   }
-  
-  // Secondary detection: Look for financial emoji indicators
-  const emojiIndicators = ['📈', '📉', '💰', '💸', '🏢', '📊'];
-  
-  for (const emoji of emojiIndicators) {
-    try {
-      const emojiElement = page.locator(`text=${emoji}`);
-      const emojiVisible = await emojiElement.isVisible({ timeout: 1000 });
-      
-      if (emojiVisible) {
-        console.log(`[POLLING] Detected financial emoji: ${emoji}`);
-        const responseContent = await page.textContent('body') || '';
-        
-        if (containsFinancialIndicators(responseContent)) {
-          return { found: true, content: responseContent };
-        }
-      }
-    } catch (error) {
-      // Continue checking other indicators
-    }
-  }
-  
-  // Tertiary detection: Custom element selector if provided
-  if (config.elementSelector) {
-    try {
-      const customElement = page.locator(config.elementSelector);
-      const customVisible = await customElement.isVisible({ timeout: 1000 });
-      
-      if (customVisible) {
-        console.log(`[POLLING] Detected custom element: ${config.elementSelector}`);
-        const elementContent = await customElement.textContent() || '';
-        
-        // Apply content matcher if provided
-        if (config.contentMatcher) {
-          if (config.contentMatcher.test(elementContent)) {
-            return { found: true, content: elementContent };
-          }
-        } else {
-          return { found: true, content: elementContent };
-        }
-      }
-    } catch (error) {
-      // Custom element not found yet
-    }
-  }
-  
-  return { found: false };
 }
 
 /**

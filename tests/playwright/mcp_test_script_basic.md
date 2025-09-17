@@ -1,13 +1,13 @@
 # MCP Test Script: Basic Functionality Test Sequence (Self-Contained)
 
 ## Test Objective
-To perform a basic functional test of the Market Parser application by executing a sequence of three core interactions: a "Market Status" query, an "NVDA Snapshot" query, and a "Support & Resistance" button click, verifying proper responses for each. This script ensures the application's core AI and UI functionalities are operational.
+To perform a basic functional test of the Market Parser application by executing a sequence of three core interactions: a "Market Status" query, an "NVDA Snapshot" query, and a "Support & Resistance" button click, verifying proper responses for each using intelligent two-phase auto-retry detection. This script ensures the application's core AI and UI functionalities are operational with enhanced response detection.
 
 ## Global Configuration & Assumptions
 *   **Application URLs:**
     *   Frontend: `http://127.0.0.1:3000`
     *   Backend: `http://127.0.0.1:8000`
-*   **Polling Interval:** 10 seconds for AI responses.
+*   **Auto-Retry Detection:** Two-phase intelligent detection (Phase 1: ANY response detection, Phase 2: content validation).
 *   **Max AI Response Timeout:** 120 seconds per AI-driven step.
 *   **Tool Access:** Assumes direct access to `default_api` tools (e.g., `run_shell_command`, `browser_navigate`, `browser_snapshot`, `browser_type`, `browser_press_key`, `browser_wait_for`, `browser_click`, `browser_console_messages`, `browser_network_requests`, `write_file`, `read_file`).
 *   **AI Capabilities:** Assumes AI can parse YAML/JSON output from tools, perform string formatting, and manage basic control flow (loops, conditionals).
@@ -54,28 +54,35 @@ To perform a basic functional test of the Market Parser application by executing
     *   **Tool:** `browser_press_key`
     *   **Parameters:** `key = "Enter"`
 
-#### Step 1.3: Wait for Market Status Response
-*   **Action:** Wait for the AI response using a polling mechanism.
-    *   **AI Action (Polling Logic):
-        *   Initialize `total_time_elapsed = 0`.
-        *   **Loop:** While `total_time_elapsed < 120` seconds:
-            *   **Tool:** `browser_wait_for`
-            *   **Parameters:**
-                *   `text = "🎯 KEY TAKEAWAYS"`
-                *   `time = 10` (maximum wait time for this specific `browser_wait_for` call)
-            *   **Expected Output:** If successful, the response containing "🎯 KEY TAKEAWAYS" is visible.
-            *   **AI Action (Conditional):
-                *   If `browser_wait_for` succeeds: Mark this step as PASSED. Break loop.
-                *   If `browser_wait_for` times out: Increment `total_time_elapsed` by 10 seconds. Continue loop.
-        *   If loop finishes without success: Mark this step as FAILED.
-    *   **Lessons Learned:** Previous attempts experienced timeouts. The 10-second polling interval within a 120-second total timeout is crucial for AI responses.
+#### Step 1.3: Wait for Market Status Response (Auto-Retry Detection)
+*   **Action:** Wait for the AI response using intelligent two-phase auto-retry detection.
+    *   **Phase 1 - ANY Response Detection:**
+        *   **AI Action:** Monitor for ANY response completion using multiple detection methods:
+            *   Loading indicators disappearing (e.g., loading spinners, "Thinking..." text)
+            *   Response containers becoming visible (e.g., new message elements)
+            *   Message count increases in chat interface
+            *   DOM changes indicating response completion
+        *   **Timeout:** 120 seconds maximum for Phase 1 detection
+        *   **Tools:** Use `browser_wait_for`, `browser_snapshot`, and `browser_evaluate` for dynamic detection
+    *   **Phase 2 - Content Validation:**
+        *   **AI Action:** Once ANY response is detected, immediately validate content:
+            *   Check for market status keywords ("market", "status", "trading", "session", "hours")
+            *   Verify financial emojis presence (📈, 📉, 💰, 📊)
+            *   Ensure minimum content length (>50 characters)
+            *   Validate response structure (KEY TAKEAWAYS, analysis content)
+        *   **Result:** Determine PASS (correct market status response) or FAIL (incorrect/incomplete response)
+    *   **Lessons Learned:** Two-phase detection eliminates polling overhead and provides immediate detection with proper validation.
 
-#### Step 1.4: Verify Market Status Response
-*   **Action:** Get a snapshot of the page after the response to verify content.
+#### Step 1.4: Verify Market Status Response (Enhanced Validation)
+*   **Action:** Get a snapshot of the page after auto-retry detection completes.
     *   **Tool:** `browser_snapshot`
     *   **Parameters:** None
-    *   **AI Action:** Parse the snapshot to confirm the presence of "🎯 KEY TAKEAWAYS" and relevant financial emojis (e.g., 📈, 📉, 💰) in the latest message. Record verification result (PASSED/FAILED).
-    *   **Expected Output:** Snapshot confirms correct response format and content.
+    *   **AI Action:** Parse the snapshot using the Phase 2 validation results:
+        *   Confirm market status content detection from Phase 2
+        *   Verify financial emojis and response structure
+        *   Cross-reference validation results with snapshot content
+        *   Record detailed verification result (PASS/FAIL with specific reasons)
+    *   **Expected Output:** Snapshot confirms auto-retry detection accuracy and response quality.
 
 ### Test 2: NVDA Snapshot Query
 
@@ -90,21 +97,27 @@ To perform a basic functional test of the Market Parser application by executing
     *   **Tool:** `browser_press_key`
     *   **Parameters:** `key = "Enter"`
 
-#### Step 2.2: Wait for NVDA Snapshot Response
-*   **Action:** Wait for the AI response using a polling mechanism.
-    *   **AI Action (Polling Logic):** Same as Step 1.3.
-    *   **Tool:** `browser_wait_for`
-    *   **Parameters:**
-        *   `text = "📈 NVIDIA Corporation"` (or "🎯 KEY TAKEAWAYS")
-        *   `time = 10`
-    *   **Expected Output:** Response containing NVDA analysis.
+#### Step 2.2: Wait for NVDA Snapshot Response (Auto-Retry Detection)
+*   **Action:** Wait for the AI response using intelligent two-phase auto-retry detection.
+    *   **Phase 1:** Same ANY response detection as Step 1.3
+    *   **Phase 2 - NVDA-Specific Validation:**
+        *   Check for ticker-specific content ("NVDA", "NVIDIA", stock analysis keywords)
+        *   Verify financial emojis and metrics (price, volume, market cap indicators)
+        *   Ensure comprehensive analysis content (>100 characters)
+        *   Validate ticker-specific response structure
+        *   **Result:** PASS (correct NVDA analysis) or FAIL (generic/incorrect response)
+    *   **Expected Output:** Auto-retry detection with NVDA-specific validation.
 
-#### Step 2.3: Verify NVDA Snapshot Response
-*   **Action:** Get a snapshot of the page after the response to verify content.
+#### Step 2.3: Verify NVDA Snapshot Response (Enhanced Validation)
+*   **Action:** Get a snapshot of the page after auto-retry detection completes.
     *   **Tool:** `browser_snapshot`
     *   **Parameters:** None
-    *   **AI Action:** Parse the snapshot to confirm the presence of NVDA-specific analysis and relevant financial emojis. Record verification result (PASSED/FAILED).
-    *   **Expected Output:** Snapshot confirms correct response for NVDA.
+    *   **AI Action:** Parse the snapshot using Phase 2 NVDA-specific validation results:
+        *   Confirm NVDA ticker analysis detection
+        *   Verify stock-specific metrics and analysis depth
+        *   Cross-reference validation results with snapshot content
+        *   Record detailed verification result (PASS/FAIL with NVDA-specific criteria)
+    *   **Expected Output:** Snapshot confirms NVDA analysis accuracy and completeness.
 
 ### Test 3: Support & Resistance Button Click
 
@@ -121,21 +134,27 @@ To perform a basic functional test of the Market Parser application by executing
         *   `element = "Support Resistance Analysis button"`
         *   `ref = "[SR_BUTTON_REF]"`
 
-#### Step 3.3: Wait for Support & Resistance Response
-*   **Action:** Wait for the AI response using a polling mechanism.
-    *   **AI Action (Polling Logic):** Same as Step 1.3.
-    *   **Tool:** `browser_wait_for`
-    *   **Parameters:**
-        *   `text = "📊 Support and Resistance Levels"` (or "🎯 KEY TAKEAWAYS")
-        *   `time = 10`
-    *   **Expected Output:** Response containing support and resistance analysis.
+#### Step 3.3: Wait for Support & Resistance Response (Auto-Retry Detection)
+*   **Action:** Wait for the AI response using intelligent two-phase auto-retry detection.
+    *   **Phase 1:** Same ANY response detection as Step 1.3
+    *   **Phase 2 - Support & Resistance Validation:**
+        *   Check for technical analysis keywords ("support", "resistance", "levels", "technical")
+        *   Verify technical analysis emojis and indicators (📊, 📈, 📉, technical markers)
+        *   Ensure technical analysis content (charts, levels, price points)
+        *   Validate button-triggered response structure
+        *   **Result:** PASS (correct S&R analysis) or FAIL (missing technical content)
+    *   **Expected Output:** Auto-retry detection with technical analysis validation.
 
-#### Step 3.4: Verify Support & Resistance Response
-*   **Action:** Get a snapshot of the page after the response to verify content.
+#### Step 3.4: Verify Support & Resistance Response (Enhanced Validation)
+*   **Action:** Get a snapshot of the page after auto-retry detection completes.
     *   **Tool:** `browser_snapshot`
     *   **Parameters:** None
-    *   **AI Action:** Parse the snapshot to confirm the presence of support and resistance analysis and relevant financial emojis. Record verification result (PASSED/FAILED).
-    *   **Expected Output:** Snapshot confirms correct response for Support & Resistance.
+    *   **AI Action:** Parse the snapshot using Phase 2 S&R validation results:
+        *   Confirm technical analysis content detection
+        *   Verify support/resistance levels and technical indicators
+        *   Cross-reference validation results with snapshot content
+        *   Record detailed verification result (PASS/FAIL with technical analysis criteria)
+    *   **Expected Output:** Snapshot confirms technical analysis accuracy and depth.
 
 ## Report Generation
 
@@ -150,13 +169,18 @@ To perform a basic functional test of the Market Parser application by executing
     *   **Expected Output:** Array of network request details. Store in a variable (e.g., `NETWORK_REQUESTS`).
 
 ### Step R2: Format and Save Report
-*   **Action:** Format the gathered data into a single Markdown test report.
+*   **Action:** Format the gathered data into a single Markdown test report with auto-retry methodology details.
     *   **AI Action:**
         *   Get current timestamp (YYYYMMDD_HHMM).
-        *   Construct a Markdown string using the collected test results (PASSED/FAILED for each step), `CONSOLE_LOGS`, and `NETWORK_REQUESTS`.
-        *   Determine overall test result (PASSED if all steps passed, FAILED otherwise).
-    *   **Naming Convention:** `gemini_basic_test_report_[YYYYMMDD_HHMM].md`
-    *   **File Path:** `/home/1000211866/Github/market-parser-polygon-mcp/docs/test_reports/gemini/`
+        *   Construct a Markdown string including:
+            *   Auto-retry detection phase timings (Phase 1 and Phase 2 times)
+            *   Detailed validation results for each test (PASS/FAIL with specific criteria)
+            *   Performance classifications (Good/OK/Slow based on response times)
+            *   Detection method effectiveness (which methods succeeded)
+            *   Collected test results, `CONSOLE_LOGS`, and `NETWORK_REQUESTS`
+        *   Determine overall test result with auto-retry methodology assessment.
+    *   **Naming Convention:** `mcp_auto_retry_test_report_[YYYYMMDD_HHMM].md`
+    *   **File Path:** `/home/1000211866/Github/market-parser-polygon-mcp/docs/test_reports/mcp/`
 *   **Action:** Save the generated report.
     *   **Tool:** `write_file`
     *   **Parameters:**

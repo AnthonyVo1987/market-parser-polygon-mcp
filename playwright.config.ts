@@ -51,8 +51,8 @@ async function isBackendRunning(): Promise<boolean> {
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  // Root-level test directory - all Playwright tests in tests/e2e/
-  testDir: './tests/e2e',
+  // Updated test directory - Playwright tests in tests/playwright/
+  testDir: './tests/playwright',
   
   /* CRITICAL: Single browser session requirement - All tests in one browser instance */
   fullyParallel: false,
@@ -74,9 +74,9 @@ export default defineConfig({
   /* CRITICAL: 120-second test timeout as specified */
   timeout: 120000,
   
-  /* Global timeout for expect assertions */
+  /* Global timeout for expect assertions - Enhanced for auto-retry */
   expect: {
-    timeout: 30000,
+    timeout: 120000, // 120s timeout for auto-retrying assertions
   },
   
   /* Shared settings optimized for React/Vite testing */
