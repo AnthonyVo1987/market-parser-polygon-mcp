@@ -4,7 +4,343 @@
 
 Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date: best, robust, modern practices, latest documentation, latest framework(s) notes etc to implement the plan and\or task(s):
 
-No new docs needed for this request
+│ │ Implementation Plan: Two-Phase Auto-Retry Detection for Playwright Tests                                                                            │ │
+│ │                                                                                                                                                     │ │
+│ │ Overview                                                                                                                                            │ │
+│ │                                                                                                                                                     │ │
+│ │ Replace the current 30-second polling mechanism with intelligent auto-retrying assertions that detect ANY AI response first, then validate content. │ │
+│ │  This eliminates polling overhead and provides immediate response detection.                                                                        │ │
+│ │                                                                                                                                                     │ │
+│ │ Key Changes                                                                                                                                         │ │
+│ │                                                                                                                                                     │ │
+│ │ 1. Create New Auto-Retry Module (/tests/playwright/helpers/auto-retry.ts)                                                                           │ │
+│ │                                                                                                                                                     │ │
+│ │ - Implement two-phase detection logic                                                                                                               │ │
+│ │ - Phase 1: Detect ANY response completion (loading state, response container)                                                                       │ │
+│ │ - Phase 2: Validate response content for test-specific criteria                                                                                     │ │
+│ │ - Support both CLI and MCP methodologies                                                                                                            │ │
+│ │                                                                                                                                                     │ │
+│ │ 2. Update CLI Test Helper Files                                                                                                                     │ │
+│ │                                                                                                                                                     │ │
+│ │ /tests/playwright/helpers/polling.ts - Transform to auto-retry:                                                                                     │ │
+│ │ - Replace pollForResponse() with detectResponseWithAutoRetry()                                                                                      │ │
+│ │ - Remove 30-second interval logic                                                                                                                   │ │
+│ │ - Add intelligent detection using Playwright's auto-retrying assertions                                                                             │ │
+│ │ - Keep performance classification logic                                                                                                             │ │
+│ │                                                                                                                                                     │ │
+│ │ /tests/playwright/helpers/test-helpers.ts - Update for auto-retry:                                                                                  │ │
+│ │ - Modify sendMessageAndWaitForResponse() to use new auto-retry logic                                                                                │ │
+│ │ - Update to call new detection methods                                                                                                              │ │
+│ │                                                                                                                                                     │ │
+│ │ 3. Update MCP Test Script                                                                                                                           │ │
+│ │                                                                                                                                                     │ │
+│ │ /tests/playwright/mcp_test_script_basic.md - Replace polling sections:                                                                              │ │
+│ │ - Steps 1.3, 2.2, 3.3: Replace polling loops with single browser_wait_for (120s)                                                                    │ │
+│ │ - Use generic completion indicators (loading gone, response visible)                                                                                │ │
+│ │ - Add two-phase validation after detection                                                                                                          │ │
+│ │                                                                                                                                                     │ │
+│ │ 4. Update All B001-B016 Test Files                                                                                                                  │ │
+│ │                                                                                                                                                     │ │
+│ │ For each test file (test-b001-market-status.spec.ts through test-b016-button-integration.spec.ts):                                                  │ │
+│ │ - Import new auto-retry functions                                                                                                                   │ │
+│ │ - Replace polling calls with auto-retry detection                                                                                                   │ │
+│ │ - Implement two-phase validation                                                                                                                    │ │
+│ │                                                                                                                                                     │ │
+│ │ Example for B001:                                                                                                                                   │ │
+│ │ // Phase 1: Wait for ANY response                                                                                                                   │ │
+│ │ await expect(page.locator('.loading-indicator')).toBeHidden({ timeout: 120_000 });                                                                  │ │
+│ │                                                                                                                                                     │ │
+│ │ // Phase 2: Validate content                                                                                                                        │ │
+│ │ const responseText = await page.locator('.chat-message:last-child').textContent();                                                                  │ │
+│ │ const isValid = validateMarketStatusResponse(responseText);                                                                                         │ │
+│ │                                                                                                                                                     │ │
+│ │ 5. Update Configuration Files                                                                                                                       │ │
+│ │                                                                                                                                                     │ │
+│ │ /tests/playwright/playwright.config.ts:                                                                                                             │ │
+│ │ - Add global expect timeout: expect: { timeout: 120_000 }                                                                                           │ │
+│ │ - Ensure single browser session settings remain                                                                                                     │ │
+│ │                                                                                                                                                     │ │
+│ │ 6. Create Validation Functions                                                                                                                      │ │
+│ │                                                                                                                                                     │ │
+│ │ New file: /tests/playwright/helpers/response-validators.ts:                                                                                         │ │
+│ │ - validateMarketStatusResponse() - B001 validation                                                                                                  │ │
+│ │ - validateTickerResponse() - B002-B004 validation                                                                                                   │ │
+│ │ - validateButtonResponse() - B007-B009 validation                                                                                                   │ │
+│ │ - Generic validation helpers for emoji detection                                                                                                    │ │
+│ │                                                                                                                                                     │ │
+│ │ Implementation Details                                                                                                                              │ │
+│ │                                                                                                                                                     │ │
+│ │ Two-Phase Detection Logic                                                                                                                           │ │
+│ │                                                                                                                                                     │ │
+│ │ Phase 1 - Response Detection (Universal):                                                                                                           │ │
+│ │ // Option A: Loading state disappears                                                                                                               │ │
+│ │ await expect(page.locator('[data-testid="loading"]')).toBeHidden({ timeout: 120_000 });                                                             │ │
+│ │                                                                                                                                                     │ │
+│ │ // Option B: Response container appears                                                                                                             │ │
+│ │ await expect(page.locator('.chat-message:last-child')).toBeVisible({ timeout: 120_000 });                                                           │ │
+│ │                                                                                                                                                     │ │
+│ │ // Option C: Message count increases                                                                                                                │ │
+│ │ const initialCount = await page.locator('.chat-message').count();                                                                                   │ │
+│ │ await expect(page.locator('.chat-message')).toHaveCount(initialCount + 1, { timeout: 120_000 });                                                    │ │
+│ │                                                                                                                                                     │ │
+│ │ Phase 2 - Content Validation (Test-Specific):                                                                                                       │ │
+│ │ const responseText = await page.locator('.chat-message:last-child').textContent();                                                                  │ │
+│ │                                                                                                                                                     │ │
+│ │ // Test-specific validation                                                                                                                         │ │
+│ │ if (testName === 'B001') {                                                                                                                          │ │
+│ │   const hasMarketData = /market|exchange|trading/i.test(responseText);                                                                              │ │
+│ │   const hasEmojis = /📈|📉|💰/.test(responseText);                                                                                                  │ │
+│ │   return hasMarketData && hasEmojis ? 'PASS' : 'FAIL';                                                                                              │ │
+│ │ }                                                                                                                                                   │ │
+│ │                                                                                                                                                     │ │
+│ │ MCP Method Changes                                                                                                                                  │ │
+│ │                                                                                                                                                     │ │
+│ │ Update MCP test script sections:                                                                                                                    │ │
+│ │ # OLD: Polling loop                                                                                                                                 │ │
+│ │ - Loop: While total_time_elapsed < 120:                                                                                                             │ │
+│ │   - browser_wait_for: text="KEY TAKEAWAYS", time=10                                                                                                 │ │
+│ │                                                                                                                                                     │ │
+│ │ # NEW: Single auto-retry wait                                                                                                                       │ │
+│ │ - browser_wait_for: textGone="Loading...", time=120                                                                                                 │ │
+│ │ - browser_snapshot                                                                                                                                  │ │
+│ │ - Validate response content for test criteria                                                                                                       │ │
+│ │                                                                                                                                                     │ │
+│ │ Reporting Template Compliance                                                                                                                       │ │
+│ │                                                                                                                                                     │ │
+│ │ Both methods will generate reports following PLAYWRIGHT_TESTING_MASTER_PLAN.md:                                                                     │ │
+│ │ - Performance classifications (😊 ≤30s, 😐 31-60s, 😴 61-119s)                                                                                      │ │
+│ │ - Two-phase detection metrics                                                                                                                       │ │
+│ │ - Standard report structure with executive summary                                                                                                  │ │
+│ │ - File naming: playwright_[METHOD]_test_[YY-MM-DD]_[HH-MM].md                                                                                       │ │
+│ │                                                                                                                                                     │ │
+│ │ Files to Modify                                                                                                                                     │ │
+│ │                                                                                                                                                     │ │
+│ │ 1. Create New Files:                                                                                                                                │ │
+│ │   - /tests/playwright/helpers/auto-retry.ts                                                                                                         │ │
+│ │   - /tests/playwright/helpers/response-validators.ts                                                                                                │ │
+│ │ 2. Update Existing Files:                                                                                                                           │ │
+│ │   - /tests/playwright/helpers/polling.ts                                                                                                            │ │
+│ │   - /tests/playwright/helpers/test-helpers.ts                                                                                                       │ │
+│ │   - /tests/playwright/mcp_test_script_basic.md                                                                                                      │ │
+│ │   - /tests/playwright/playwright.config.ts                                                                                                          │ │
+│ │   - All 16 test files: test-b001-_.spec.ts through test-b016-_.spec.ts                                                                              │ │
+│ │                                                                                                                                                     │ │
+│ │ Success Metrics                                                                                                                                     │ │
+│ │                                                                                                                                                     │ │
+│ │ - ✅ Eliminate 30-second polling intervals                                                                                                           │ │
+│ │ - ✅ Immediate response detection (within ~100ms of completion)                                                                                      │ │
+│ │ - ✅ Maintain 120-second timeout compliance                                                                                                          │ │
+│ │ - ✅ Clear PASS/FAIL determination per test                                                                                                          │ │
+│ │ - ✅ Standardized reporting for both methods                                                                                                         │ │
+│ │ - ✅ Improved average response time detection                                                                                                        │ │
+│ │                                                                                                                                                     │ │
+│ │ Testing Approach                                                                                                                                    │ │
+│ │                                                                                                                                                     │ │
+│ │ 1. Start with B001 as pilot implementation                                                                                                          │ │
+│ │ 2. Verify two-phase detection works correctly                                                                                                       │ │
+│ │ 3. Roll out to remaining B002-B016 tests                                                                                                            │ │
+│ │ 4. Compare performance metrics before/after                                                                                                         │ │
+│ │ 5. Generate comparison reports showing improvement
+
+● CORRECTED Option 1 Implementation Plan: Proper Two-Phase Detection
+
+  You're absolutely right. The correct approach is two-phase detection:
+
+  1. Phase 1: Detect ANY AI response (stop waiting immediately)
+  2. Phase 2: Validate if the response matches test expectations
+
+  ---
+  Method A: Playwright MCP Tools Implementation (CORRECTED)
+
+  Corrected Auto-Retry Implementation
+
+  BEFORE (Incorrect - waiting for specific text):
+
+# WRONG: Waiting for specific content
+
+- Tool: browser_wait_for
+- Parameters:
+  - text = "🎯 KEY TAKEAWAYS"  # TOO SPECIFIC
+  - time = 120
+
+  AFTER (Correct - Two-Phase Detection):
+
+# CORRECT: Phase 1 - Detect ANY AI response
+
+- Tool: browser_wait_for
+- Parameters:
+  - text = "DISCLAIMER:"  # Generic response completion indicator
+  - time = 120
+
+# OR detect loading spinner disappearance
+
+- Tool: browser_wait_for
+- Parameters:
+  - textGone = "Thinking..."  # Loading indicator gone = response ready
+  - time = 120
+
+# Phase 2 - Validate response content
+
+- Tool: browser_snapshot
+- AI Action: Parse response content and validate against test expectations
+- Result: PASS (correct response) or FAIL (incorrect response or timeout)
+
+  MCP Implementation Steps (Corrected):
+
+  Step 1.3: Market Status Response Detection (CORRECTED)
+
+# Phase 1: Detect ANY response completion
+
+- Tool: browser_wait_for
+- Parameters:
+  - textGone = "Loading..."  # Wait for loading to complete
+  - time = 120
+
+# OR alternative generic completion detection
+
+- Tool: browser_wait_for
+- Parameters:
+  - text = "Generated with Claude Code"  # Footer indicates completion
+  - time = 120
+
+# Phase 2: Validate response content
+
+- Tool: browser_snapshot
+- AI Action:
+  - Parse latest message content
+  - Check for market status data, exchange info, emoji indicators
+  - Determine PASS (correct market data) or FAIL (wrong/no content)
+
+  ---
+  Method B: Traditional CLI Implementation (CORRECTED)
+
+  CLI Auto-Retry Implementation (Corrected)
+
+  BEFORE (Incorrect):
+  // WRONG: Waiting for specific text
+  await expect(page.locator('.chat-message')).toContainText('🎯 KEY TAKEAWAYS', {
+    timeout: 120_000
+  });
+
+  AFTER (Correct - Two-Phase):
+  // CORRECT: Phase 1 - Detect ANY response
+  test('B001: Market Status with Two-Phase Detection', async ({ page }) => {
+    await page.goto('<http://127.0.0.1:3000>');
+
+    await page.fill('[data-testid="chat-input"]', 'Market Status: PRIORITY FAST REQUEST');
+    await page.press('[data-testid="chat-input"]', 'Enter');
+
+    // Phase 1: Wait for ANY response completion
+    await expect(page.locator('.loading-spinner')).toBeHidden({ timeout: 120_000 });
+    // OR wait for response container to appear
+    await expect(page.locator('.ai-response')).toBeVisible({ timeout: 120_000 });
+
+    // Phase 2: Validate response content
+    const responseText = await page.locator('.ai-response').textContent();
+
+    // Test-specific validation
+    const hasMarketData = responseText?.includes('market') || responseText?.includes('exchange');
+    const hasEmojis = /📈|📉|💰/.test(responseText || '');
+
+    if (hasMarketData && hasEmojis) {
+      // PASS: Correct market status response
+      console.log('✅ B001 PASS: Valid market status response');
+    } else {
+      // FAIL: Incorrect response content
+      throw new Error('❌ B001 FAIL: Invalid market status response');
+    }
+  });
+
+  Generic Response Detection Patterns:
+
+  Option 1: Loading State Detection
+  // Wait for loading to complete
+  await expect(page.locator('[data-testid="loading"]')).toBeHidden({ timeout: 120_000 });
+
+  Option 2: Response Container Detection
+  // Wait for response to appear
+  await expect(page.locator('.message:last-child')).toContainText(/\S/, { timeout: 120_000 });
+
+  Option 3: Generic Completion Indicator
+  // Wait for footer/completion text
+  await expect(page.locator('.response')).toContainText('Generated with Claude Code', { timeout: 120_000 });
+
+  ---
+  Corrected Test Validation Logic
+
+  Phase 1: Response Detection (Universal)
+
+- MCP: browser_wait_for with generic completion indicators
+- CLI: expect().toBeHidden() for loading states or toBeVisible() for responses
+
+  Generic Detection Targets:
+
+- Loading spinner disappearance
+- Response container appearance
+- Generic completion footer text
+- Message count increase
+
+  Phase 2: Content Validation (Test-Specific)
+
+  B001 Market Status Validation:
+  // Response content analysis
+  const isValidMarketStatus = responseText?.includes('market') &&
+                             responseText?.includes('exchange') &&
+                             /📈|📉|💰/.test(responseText);
+
+  B002 NVDA Analysis Validation:
+  // NVDA-specific validation
+  const isValidNVDA = responseText?.toLowerCase().includes('nvidia') &&
+                     responseText?.toLowerCase().includes('nvda') &&
+                     /📈|📉/.test(responseText);
+
+  B007 Button Template Validation:
+  // Stock snapshot button validation
+  const isValidSnapshot = responseText?.toLowerCase().includes('snapshot') &&
+                         responseText?.includes('📈') &&
+                         responseText?.length > 100; // Meaningful analysis length
+
+  ---
+  Updated Implementation Requirements
+
+  Both Methods Must Implement:
+
+  1. Two-Phase Detection Protocol:
+
+- ✅ Phase 1: Detect ANY AI response completion (no specific text)
+- ✅ Phase 2: Validate response content against test expectations
+- ✅ Result: PASS (valid response) or FAIL (invalid/no response)
+
+  2. Generic Detection Mechanisms:
+
+- Loading state changes (preferred)
+- Response container visibility
+- Generic completion indicators
+- Avoid test-specific text detection in Phase 1
+
+  3. Test-Specific Validation:
+
+- Content analysis appropriate to each test
+- Emoji indicator verification
+- Response quality assessment
+- Clear PASS/FAIL determination
+
+  Corrected Success Criteria:
+
+- ✅ Universal Detection: ANY response triggers Phase 2 validation
+- ✅ Immediate Stopping: No waiting beyond response completion
+- ✅ Proper Validation: Content checked after detection, not during
+- ✅ Clear Results: Each test marked PASS or FAIL based on validation
+- ✅ Sequential Testing: Failed tests don't block subsequent tests
+
+● Implementation Plan Corrected. Both MCP and CLI methods now use proper two-phase detection: (1) Detect ANY AI response completion immediately, (2)
+  Validate response content for PASS/FAIL determination. This eliminates the flawed approach of waiting for specific text content.
+
+  Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date: best, robust, modern practices, latest documentation, latest framework(s) notes etc to implement the plan and\or task(s)
+
+- Perform Additional research & scoping specifically using traditional Playwright CLI methods with npx playwright test scripts.
+- A later task will implment the MCP solution, but I also want the CLI solution proposals too
+- DO NOT GENERATE ANY NEW FILES FOR THE RESEARCH
 
 - We are currently using two types of timers to test a max time out of 120 seconds per test and then a periodic polling time of every 30 seconds to check if we had a proper response.
 Perform some research investigation to improve our playwright MCP tools testing method to try and find out if it is feasible or possible to remove the polling method for proper results and somehow intelligently detect that there was actually response before the 120s max time out per test. Optimally all I want is a single timeout per test just 120 seconds that if the AI doesn’t respond within 120 seconds then that test failed even if it’s still in progress thinking. So we need a way without polling to intelligently detect that the AI finished responding or not before the 120s timeout and then if the AI did properly respond before the 120s time out with the correct response, the test can mark it as a pass and move onto the next test without having to wait the full 120 seconds. Polling adds unnecessary overhead and is not very efficient because some responses can finish quicker even before 30 seconds and some response is gonna take longer than 30 seconds but still before 120 seconds so basically each test can have a wide varying dynamic range between 10 to 120 seconds to respond so we need a way to intelligently detect a response knowing that the timing of responses come dramatically change per test.
