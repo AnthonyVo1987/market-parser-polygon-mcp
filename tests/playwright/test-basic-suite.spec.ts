@@ -10,33 +10,32 @@ test.describe('Basic Test Suite', () => {
     await page.goto('http://127.0.0.1:3000');
     await page.waitForLoadState('networkidle');
 
-    // Step 2: Locate input field and send message
-    const inputSelector = 'textarea[placeholder*="message"], .chat-input textarea, input[type="text"]';
-    const messageInput = page.locator(inputSelector);
-    
+    // Step 2: Locate input field using modern Playwright locators
+    const messageInput = page.getByPlaceholder(/message/i).or(
+      page.locator('.chat-input textarea')
+    ).or(
+      page.locator('input[type="text"]')
+    );
+
     await messageInput.fill('Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity');
     await messageInput.press('Enter');
 
     // Step 3: Wait for response with auto-retry detection
     await page.waitForSelector('text=🎯 KEY TAKEAWAYS', { timeout: 120000 });
 
-    // Step 4: Comprehensive validation
-    const validationResult = await page.evaluate(() => {
-      const messages = document.querySelectorAll('.message-content');
-      const lastMessage = messages[messages.length - 1]?.textContent || '';
-      return {
-        hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage),
-        contentLength: lastMessage.length,
-        containsMarketData: /market|trading|status/i.test(lastMessage),
-        responseFound: lastMessage.length > 0
-      };
-    });
+    // Step 4: Web-first assertions using modern Playwright patterns
+    const lastMessage = page.locator('.message-content').last();
 
-    // Assert results
-    expect(validationResult.responseFound).toBe(true);
-    expect(validationResult.hasFinancialEmojis).toBe(true);
-    expect(validationResult.containsMarketData).toBe(true);
-    expect(validationResult.contentLength).toBeGreaterThan(50);
+    // Assert response exists and is visible
+    await expect(lastMessage).toBeVisible({ timeout: 5000 });
+
+    // Assert financial content using web-first assertions
+    await expect(lastMessage).toContainText(/[📈📉💰🎯]/);
+    await expect(lastMessage).toContainText(/market|trading|status/i);
+
+    // Assert minimum content length using evaluate for complex validation
+    const contentLength = await lastMessage.textContent();
+    expect(contentLength?.length || 0).toBeGreaterThan(50);
   });
 
   test('Test 2: NVDA Ticker Snapshot', async ({ page }) => {
@@ -46,10 +45,13 @@ test.describe('Basic Test Suite', () => {
     await page.goto('http://127.0.0.1:3000');
     await page.waitForLoadState('networkidle');
 
-    // Step 2: Locate input field and send message
-    const inputSelector = 'textarea[placeholder*="message"], .chat-input textarea, input[type="text"]';
-    const messageInput = page.locator(inputSelector);
-    
+    // Step 2: Locate input field using modern Playwright locators
+    const messageInput = page.getByPlaceholder(/message/i).or(
+      page.locator('.chat-input textarea')
+    ).or(
+      page.locator('input[type="text"]')
+    );
+
     await messageInput.fill('Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity');
     await messageInput.press('Enter');
 
@@ -60,25 +62,20 @@ test.describe('Basic Test Suite', () => {
       await page.waitForSelector(':text("NVIDIA")', { timeout: 120000 });
     }
 
-    // Step 4: Comprehensive validation
-    const validationResult = await page.evaluate(() => {
-      const messages = document.querySelectorAll('.message-content');
-      const lastMessage = messages[messages.length - 1]?.textContent || '';
-      return {
-        hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage),
-        contentLength: lastMessage.length,
-        containsNVDA: /nvda|nvidia/i.test(lastMessage),
-        hasStockData: /price|volume|share|stock/i.test(lastMessage),
-        responseFound: lastMessage.length > 0
-      };
-    });
+    // Step 4: Web-first assertions using modern Playwright patterns
+    const lastMessage = page.locator('.message-content').last();
 
-    // Assert results
-    expect(validationResult.responseFound).toBe(true);
-    expect(validationResult.hasFinancialEmojis).toBe(true);
-    expect(validationResult.containsNVDA).toBe(true);
-    expect(validationResult.hasStockData).toBe(true);
-    expect(validationResult.contentLength).toBeGreaterThan(50);
+    // Assert response exists and is visible
+    await expect(lastMessage).toBeVisible({ timeout: 5000 });
+
+    // Assert NVDA-specific content using web-first assertions
+    await expect(lastMessage).toContainText(/[📈📉💰🎯]/);
+    await expect(lastMessage).toContainText(/nvda|nvidia/i);
+    await expect(lastMessage).toContainText(/price|volume|share|stock/i);
+
+    // Assert minimum content length
+    const contentLength = await lastMessage.textContent();
+    expect(contentLength?.length || 0).toBeGreaterThan(50);
   });
 
   test('Test 3: Stock Snapshot Button', async ({ page }) => {
@@ -88,14 +85,21 @@ test.describe('Basic Test Suite', () => {
     await page.goto('http://127.0.0.1:3000');
     await page.waitForLoadState('networkidle');
 
-    // Step 2: Pre-populate input field
-    const inputSelector = 'textarea[placeholder*="message"], .chat-input textarea, input[type="text"]';
-    const messageInput = page.locator(inputSelector);
+    // Step 2: Pre-populate input field using modern locators
+    const messageInput = page.getByPlaceholder(/message/i).or(
+      page.locator('.chat-input textarea')
+    ).or(
+      page.locator('input[type="text"]')
+    );
     await messageInput.fill('NVDA');
 
-    // Step 3: Click the Stock Snapshot button
-    const buttonSelector = 'button:has-text("📈"), button:has-text("Stock Snapshot"), [data-testid="stock-snapshot-button"]';
-    await page.locator(buttonSelector).click();
+    // Step 3: Click Stock Snapshot button using modern role-based locator
+    const snapshotButton = page.getByRole('button', { name: /stock snapshot|📈/i }).or(
+      page.getByTestId('stock-snapshot-button')
+    ).or(
+      page.locator('button:has-text("📈")')
+    );
+    await snapshotButton.click();
 
     // Step 4: Auto-retry detection with fallback
     try {
@@ -104,24 +108,19 @@ test.describe('Basic Test Suite', () => {
       await page.waitForSelector(':text("Market Snapshot")', { timeout: 120000 });
     }
 
-    // Step 5: Comprehensive validation
-    const validationResult = await page.evaluate(() => {
-      const messages = document.querySelectorAll('.message-content');
-      const lastMessage = messages[messages.length - 1]?.textContent || '';
-      return {
-        hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage),
-        contentLength: lastMessage.length,
-        hasSnapshotContent: /snapshot|stock|price|volume/i.test(lastMessage),
-        buttonTriggered: /nvda|nvidia|snapshot|market/i.test(lastMessage),
-        responseFound: lastMessage.length > 0
-      };
-    });
+    // Step 5: Web-first assertions for button-triggered response
+    const lastMessage = page.locator('.message-content').last();
 
-    // Assert results
-    expect(validationResult.responseFound).toBe(true);
-    expect(validationResult.hasFinancialEmojis).toBe(true);
-    expect(validationResult.hasSnapshotContent).toBe(true);
-    expect(validationResult.buttonTriggered).toBe(true);
-    expect(validationResult.contentLength).toBeGreaterThan(50);
+    // Assert response exists and is visible
+    await expect(lastMessage).toBeVisible({ timeout: 5000 });
+
+    // Assert button-triggered snapshot content
+    await expect(lastMessage).toContainText(/[📈📉💰🎯]/);
+    await expect(lastMessage).toContainText(/snapshot|stock|price|volume/i);
+    await expect(lastMessage).toContainText(/nvda|nvidia|snapshot|market/i);
+
+    // Assert minimum content length
+    const contentLength = await lastMessage.textContent();
+    expect(contentLength?.length || 0).toBeGreaterThan(50);
   });
 });

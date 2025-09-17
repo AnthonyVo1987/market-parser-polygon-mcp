@@ -9,15 +9,12 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Create comprehensive NPX Playwright testing implementation
+feat: Achieve 100% NPX test parity and modernize Playwright implementation
 
-- Transform npx_test_script_basic.md from MCP to NPX format with VERBATIM instructions
-- Create test-basic-suite.spec.ts with 3 basic tests (Market Status, NVDA Ticker, Stock Button)
-- Implement auto-retry detection using Playwright's native waitForSelector (120000ms timeout)
-- Add comprehensive validation logic with financial emoji detection and content verification
-- Update project documentation with NPX Basic Test Suite references across all files
-- Achieve testing parity with MCP method targeting 100% first-try success rate for AI agents
-- Include exact NPX command: npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
+- Fix npx_test_script_basic.md: Add complete server startup guide, full test report template, comprehensive troubleshooting
+- Modernize test-basic-suite.spec.ts: Replace manual selectors with semantic locators (getByPlaceholder, getByRole), implement web-first assertions
+- Add package.json test:basic script for NPX basic test suite execution
+- Enable 100% first-try success for AI agents using NPX method with complete parity to MCP method
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
