@@ -405,11 +405,13 @@ Document actual response time for performance classification and optimization in
 
 ---
 
-## Section 9: Complete Example Test Execution
+## Section 9: Complete Test Suite Execution (3 Basic Tests)
 
-### 9.1 Full MCP Test Sequence
+### 9.1 Test 1: Market Status Test
 
-**Complete Example: Market Status Test**
+**Test Description:** Validates basic market status endpoint and response format
+
+**Complete MCP Test Sequence:**
 
 ```json
 // Step 1: Navigate
@@ -462,15 +464,162 @@ Document actual response time for performance classification and optimization in
 }
 ```
 
-### 9.2 Expected Results
-
-**Successful Execution Output:**
+**Expected Results:**
 - Navigation: Page loaded successfully
 - Snapshot: Element references identified
-- Input: Message entered correctly  
+- Input: Message entered correctly
 - Submission: Processing initiated
 - Detection: Response detected in 30-120 seconds
 - Validation: Financial content with emoji indicators confirmed
+
+### 9.2 Test 2: NVDA Ticker Snapshot Test
+
+**Test Description:** Validates single ticker analysis with NVDA stock data
+
+**Complete MCP Test Sequence:**
+
+```json
+// Step 1: Navigate (if not already on page)
+{
+  "tool": "mcp__playwright__browser_navigate",
+  "parameters": {
+    "url": "http://127.0.0.1:3000"
+  }
+}
+
+// Step 2: Get page state
+{
+  "tool": "mcp__playwright__browser_snapshot",
+  "parameters": {}
+}
+
+// Step 3: Input NVDA ticker query
+{
+  "tool": "mcp__playwright__browser_type",
+  "parameters": {
+    "element": "message input field",
+    "ref": "textarea[placeholder*='message'], .chat-input textarea",
+    "text": "Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
+  }
+}
+
+// Step 4: Submit message
+{
+  "tool": "mcp__playwright__browser_press_key",
+  "parameters": {
+    "key": "Enter"
+  }
+}
+
+// Step 5: Wait for NVDA response (CRITICAL)
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "📈",
+    "time": 120
+  }
+}
+
+// Alternative detection patterns for NVDA response
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "NVIDIA",
+    "time": 120
+  }
+}
+
+// Step 6: Validate NVDA-specific response
+{
+  "tool": "mcp__playwright__browser_evaluate",
+  "parameters": {
+    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage), contentLength: lastMessage.length, containsNVDA: /nvda|nvidia/i.test(lastMessage), hasStockData: /price|volume|market cap|current/i.test(lastMessage) }; }"
+  }
+}
+```
+
+**Expected Results:**
+
+- Navigation: Page maintained or refreshed successfully
+- Input: NVDA ticker query entered correctly
+- Submission: NVDA analysis processing initiated
+- Detection: NVDA response detected within 120 seconds
+- Validation: NVDA-specific content with stock data confirmed
+
+### 9.3 Test 3: Stock Snapshot Button Test
+
+**Test Description:** Validates Stock Snapshot button functionality and template system
+
+**Complete MCP Test Sequence:**
+
+```json
+// Step 1: Navigate (if not already on page)
+{
+  "tool": "mcp__playwright__browser_navigate",
+  "parameters": {
+    "url": "http://127.0.0.1:3000"
+  }
+}
+
+// Step 2: Get page state to find button
+{
+  "tool": "mcp__playwright__browser_snapshot",
+  "parameters": {}
+}
+
+// Step 3: Input ticker for button test (optional pre-population)
+{
+  "tool": "mcp__playwright__browser_type",
+  "parameters": {
+    "element": "message input field",
+    "ref": "textarea[placeholder*='message'], .chat-input textarea",
+    "text": "NVDA"
+  }
+}
+
+// Step 4: Click Stock Snapshot button (📈)
+{
+  "tool": "mcp__playwright__browser_click",
+  "parameters": {
+    "element": "Stock Snapshot button",
+    "ref": "button:has-text('📈'), button:has-text('Stock Snapshot'), [data-testid='stock-snapshot-button']"
+  }
+}
+
+// Step 5: Wait for button-triggered response (CRITICAL)
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "📈",
+    "time": 120
+  }
+}
+
+// Alternative detection for snapshot analysis
+{
+  "tool": "mcp__playwright__browser_wait_for",
+  "parameters": {
+    "text": "Market Snapshot",
+    "time": 120
+  }
+}
+
+// Step 6: Validate button-triggered response
+{
+  "tool": "mcp__playwright__browser_evaluate",
+  "parameters": {
+    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage), contentLength: lastMessage.length, hasSnapshotContent: /snapshot|stock|price|volume/i.test(lastMessage), buttonTriggered: true }; }"
+  }
+}
+```
+
+**Expected Results:**
+
+- Navigation: Page maintained or refreshed successfully
+- Button Detection: Stock Snapshot button found and clickable
+- Button Click: Button interaction successful
+- Detection: Button-triggered response detected within 120 seconds
+- Validation: Stock snapshot content generated via button template
 
 ---
 
@@ -479,6 +628,7 @@ Document actual response time for performance classification and optimization in
 ### 10.1 First-Try Success Criteria
 
 **Before declaring success, verify ALL items:**
+
 - [ ] All MCP tools executed without parameter errors
 - [ ] Response detected within 120-second timeout
 - [ ] Content validation confirms financial analysis present
@@ -489,6 +639,7 @@ Document actual response time for performance classification and optimization in
 ### 10.2 Failure Investigation
 
 **If test fails, check in order:**
+
 1. **Tool Parameters:** Verify `time: 120` in wait_for calls
 2. **Server Status:** Confirm backend/frontend operational
 3. **Element Selectors:** Verify UI element detection working
@@ -498,9 +649,10 @@ Document actual response time for performance classification and optimization in
 ### 10.3 Documentation Validation
 
 **This document achieves first-try success if:**
+
 - Any AI agent can follow instructions verbatim without external research
 - All critical parameters and tool usage explicitly documented
-- Error handling covers common failure scenarios  
+- Error handling covers common failure scenarios
 - Post-mortem lessons prevent previously encountered mistakes
 - Modern MCP best practices integrated throughout
 
@@ -511,6 +663,7 @@ Document actual response time for performance classification and optimization in
 **CRITICAL SUCCESS INDICATOR:** If you successfully executed a complete test following this document exactly as written, with response detection within 120 seconds and proper content validation, then this document has achieved its purpose.
 
 **Next Steps After Success:**
+
 1. Document actual response time and performance classification
 2. Note any detection methods that worked most effectively
 3. Report any deviations from expected behavior for document improvement
@@ -520,7 +673,7 @@ Document actual response time for performance classification and optimization in
 
 ---
 
-**Document Version:** 1.0 - Complete Rewrite Based on Post-Mortem Analysis  
-**Last Updated:** Integration of Context7 Research and Modern MCP Best Practices  
-**Validation Status:** Designed for 100% First-Try Success Rate by AI Agents  
+**Document Version:** 1.0 - Complete Rewrite Based on Post-Mortem Analysis
+**Last Updated:** Integration of Context7 Research and Modern MCP Best Practices
+**Validation Status:** Designed for 100% First-Try Success Rate by AI Agents
 **Supersedes:** All previous MCP testing documentation and methodologies
