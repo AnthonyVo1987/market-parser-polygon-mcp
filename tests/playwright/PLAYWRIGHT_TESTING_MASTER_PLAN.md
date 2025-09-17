@@ -90,10 +90,9 @@ npm run start:app
 - **✅ PASS**: Test responds correctly AND completes within 120 seconds maximum timeout
 - **❌ FAIL**: Test responds incorrectly OR exceeds 120 seconds OR never responds at all
 
-● Acknowledge complete understanding of the timeout vs polling interval
-distinctions
+● MODERN AUTO-RETRY DETECTION METHODOLOGY
 
-✅ CONFIRMED UNDERSTANDING:
+✅ UPDATED TESTING APPROACH:
 
 120s Timeout (Per Test Maximum):
 
@@ -102,25 +101,25 @@ distinctions
 - Test fails if ANY operation exceeds this duration
 - Performance classification based on actual completion time within this limit
 
-10s Polling Intervals (MCP Method):
+Auto-Retry Detection (MCP Method):
 
-- Repeated checking frequency for MCP server responses
-- NOT a timeout - can poll multiple times within 120s limit
-- Used for backend API response validation
-- Allows for natural response delays while maintaining responsiveness
+- Built-in detection using `mcp__playwright__browser_wait_for` tool
+- Automatic retry until condition met or timeout reached
+- NO manual polling loops required
+- Immediate detection when condition satisfied
 
-100ms Internal Polling (CLI Method):
+Playwright Internal Auto-Wait (CLI Method):
 
-- Playwright's internal DOM/element checking frequency
-- NOT a configuration error or timeout value
+- Playwright's built-in auto-wait mechanisms for element detection
+- Automatic retries for element state verification
 - Rapid internal state verification for UI elements
-- Completely separate from test timeout limits
+- Uses modern web-first assertions that retry automatically
 
-Critical Distinction:
+Critical Modern Approach:
 
-- Timeout = Maximum allowed duration before failure
-- Polling = Checking frequency within that duration
-- NO False Triggers: Will not confuse polling intervals with timeout violations
+- Auto-Retry = Automatic detection with immediate response
+- No artificial delays beyond necessary waiting time
+- Built-in retry logic eliminates manual polling complexity
 
 Testing Framework Ready:
 
@@ -128,9 +127,9 @@ Testing Framework Ready:
 - B001-B016 test suite specifications acknowledged
 - Performance classification system (😊/😐/😴) confirmed
 - Dynamic port detection (3000-3010) recognized
-- MCP tools as primary method confirmed
+- MCP auto-retry detection as validated method confirmed
 
-● ✅ ACKNOWLEDGED - TIMEOUT vs POLLING UNDERSTANDING CONFIRMED
+● ✅ MODERN AUTO-RETRY METHODOLOGY CONFIRMED
 
 120s Timeout (Per Test Maximum):
 
@@ -139,36 +138,36 @@ Testing Framework Ready:
 - If test takes longer than 120s → FAIL
 - This is the hard limit configured in playwright.config.ts
 
-10s Polling Intervals (MCP Method):
+Auto-Retry Detection (MCP Method):
 
-- How often we CHECK for responses within the 120s limit
-- Can poll 12 times within 120s window (12 × 10s = 120s)
-- NOT a timeout - it's checking frequency
-- Allows backend time to process while staying responsive
+- Automatic detection using `time: 120` parameter in MCP tools
+- Tool retries internally until condition met or 120s timeout
+- NO manual checking loops required
+- Immediate response when condition detected
 
-100ms Internal Polling (CLI/Playwright):
+Playwright Auto-Wait (CLI Method):
 
-- How often Playwright checks DOM elements/UI state
-- Can poll 1,200 times within 120s window (1,200 × 100ms = 120s)
-- Completely internal to Playwright operations
-- NOT related to test timeout limits
+- Built-in auto-retrying assertions and element detection
+- Automatic DOM state verification with smart waiting
+- Modern web-first approach with condition-based detection
+- Eliminates need for manual wait loops
 
-CRITICAL - NO FALSE TRIGGERS:
+CRITICAL - MODERN DETECTION APPROACH:
 
-- ❌ Will NOT confuse 10s polling with 10s timeout
-- ❌ Will NOT confuse 100ms polling with 100ms timeout
-- ❌ Will NOT think multiple polls = timeout violation
-- ✅ Will recognize polling as repeated checking WITHIN timeout window
-- ✅ Will only consider test failed if TOTAL duration exceeds 120s
+- ✅ Uses auto-retry detection with immediate response
+- ✅ Eliminates artificial delays and manual polling loops
+- ✅ Built-in retry logic handles detection automatically
+- ✅ Performance optimized with condition-based waiting
+- ✅ Only considers test failed if TOTAL duration exceeds 120s
 
-Example Understanding:
+Example Modern Approach:
 
-- Test polls every 10s for response
-- After 8 polls (80s total), gets response
-- Result: SUCCESS (80s < 120s timeout)
-- NOT failure due to "8 polling attempts"
+- Tool uses auto-retry with 120s timeout parameter
+- Detection occurs immediately when condition met (e.g., 45s)
+- Result: SUCCESS (45s < 120s timeout)
+- No manual retry loops or artificial delays
 
-Confirmed: No confusion between timeout limits vs polling frequency.
+Confirmed: Modern auto-retry detection replaces outdated polling methodology.
 
 **Important**: Performance speed is NOT part of pass/fail criteria during prototyping phase.
 
@@ -191,15 +190,15 @@ Confirmed: No confusion between timeout limits vs polling frequency.
 **CLI Method:**
 
 - Inherently faster execution times expected
-- 100ms internal polling is correct (do not flag as configuration error)
-- **Why 100ms polling:** CLI tests use Playwright's internal polling mechanism for element detection
+- Auto-wait detection is correct (modern Playwright approach)
+- **Why auto-wait:** CLI tests use Playwright's built-in auto-retrying assertions for element detection
 - Target: Most tests in Good 😊 or OK 😐 categories
 
 **MCP Method:**
 
 - Inherently slower execution times expected and normal
-- 10-second polling intervals required (flag as config issue if not 10s)
-- **Why 10s polling:** MCP browser tools use `wait_for` with explicit 10-second intervals for response detection
+- Auto-retry detection with 120s timeout required (use `time: 120` parameter)
+- **Why auto-retry:** MCP browser tools use `wait_for` with built-in retry logic for response detection
 - Target: Functional completion within 120s timeout regardless of speed
 
 ---
@@ -224,7 +223,7 @@ Confirmed: No confusion between timeout limits vs polling frequency.
 - ✅ Emoji integration working correctly (📈📉💰)
 - ✅ Financial data accuracy confirmed
 - ✅ Exchange status and market hours included
-- ✅ Polling configuration validation (100ms CLI internal polling is correct per framework)
+- ✅ Auto-retry detection validation (modern Playwright auto-wait is correct per framework)
 
 #### B002: NVDA Ticker Analysis
 
@@ -662,7 +661,7 @@ Running 1 test using 1 worker
 $ npx playwright test test-b007-stock-snapshot.spec.ts  
 Running 1 test using 1 worker
 ✓ test-b007-stock-snapshot.spec.ts:XX:XX TEST-B007: Stock Snapshot Button (10.8s)
-⚠ Configuration warnings: polling interval mismatch, timeout validation
+⚠ Configuration warnings: auto-retry method updated, timeout validation
 1 passed (10.8s)
 ```
 
@@ -690,7 +689,7 @@ Running 1 test using 1 worker
 
 **Waiting & Response Detection:**
 
-- `mcp__playwright__browser_wait_for` - Wait for text, elements, or time (CRITICAL for polling)
+- `mcp__playwright__browser_wait_for` - Wait for text, elements, or time (CRITICAL for auto-retry detection)
 
 **Advanced Features:**
 
@@ -698,18 +697,18 @@ Running 1 test using 1 worker
 - `mcp__playwright__browser_select_option` - Select dropdown options
 - `mcp__playwright__browser_take_screenshot` - Visual documentation (supplementary)
 
-#### MCP Execution Workflow with 10-Second Polling
+#### MCP Execution Workflow with Auto-Retry Detection
 
 **Standard Test Execution Pattern:**
 
 1. **Initialize**: `mcp__playwright__browser_navigate` to test URL
 2. **Capture State**: `mcp__playwright__browser_snapshot` for baseline
 3. **Execute Action**: Use appropriate input/click tools
-4. **Poll Response**: `mcp__playwright__browser_wait_for` with 10-second intervals
+4. **Auto-Retry Detection**: `mcp__playwright__browser_wait_for` with built-in retry logic
 5. **Validate**: Check response content for pass/fail criteria
 6. **Document**: Record timing and performance classification
 
-**Critical 10-Second Polling Implementation:**
+**Critical Auto-Retry Implementation:**
 
 ```json
 {
@@ -767,12 +766,12 @@ These examples provide exact tool calls, parameters, and expected outputs for co
 }
 // Expected: Message submitted, processing begins
 
-// Step 5: Poll for response every 10 seconds
+// Step 5: Auto-retry detection for response with 120s timeout
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
     "text": "🎯 KEY TAKEAWAYS",
-    "time": 10
+    "time": 120
   }
 }
 // Expected: Either response detected or timeout after 10s
@@ -803,12 +802,12 @@ These examples provide exact tool calls, parameters, and expected outputs for co
 }
 // Expected: Button clicked, template activated
 
-// Poll for analysis response
+// Auto-retry detection for analysis response
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
     "text": "📈 Market Snapshot",
-    "time": 10
+    "time": 120
   }
 }
 // Repeat every 10s until detected or 120s timeout
@@ -1003,10 +1002,10 @@ These examples provide exact tool calls, parameters, and expected outputs for co
 - Slow 😴: B002 (62s), B005 (64s), B007 (85s), B008 (87s), B009 (89s)
 - Pattern: Variable performance but all functional within 120s timeout
 
-### Polling Methodology
+### Auto-Retry Detection Methodology
 
-- **Standard Polling**: 30-second intervals for response detection
-- **Early Completion**: Tests complete when response criteria met
+- **Auto-Retry Detection**: Built-in retry until response criteria met
+- **Immediate Completion**: Tests complete when response detected
 - **Maximum Timeout**: 120 seconds per individual test
 - **Session Continuity**: Single browser instance maintained across all tests
 
@@ -1219,7 +1218,7 @@ playwright_[METHOD]_test_[YY-MM-DD]_[HH-MM].md
 
   Helper Utilities Framework:
 
-- ✅ Polling System: 30-second intervals with 120s max timeout
+- ✅ Auto-Retry System: Built-in detection with 120s max timeout
 - ✅ Port Detection: Automatic frontend port discovery (3000+)
 - ✅ Performance Classification: Good 😊 / OK 😐 / Slow 😴 system
 - ✅ Session Management: Browser session continuity
@@ -1302,7 +1301,7 @@ echo "Frontend port detection failed"
 - **Browser Not Found**: Run `npx playwright install chromium`
 - **Test Timeouts**: Check server performance, increase timeout if needed
 - **Network Errors**: Verify server health and connectivity
-- **Polling Configuration**: Handle expected 30000ms vs actual 100ms mismatch
+- **Auto-Retry Configuration**: Modern detection approach replacing outdated polling
 
 #### Performance Issues
 
@@ -1359,7 +1358,7 @@ echo "Frontend port detection failed"
 
 - Start both servers before any test execution
 - Monitor system resources during testing execution
-- Use appropriate polling intervals for early completion detection
+- Use auto-retry detection for immediate response identification
 - Document performance baselines for future comparison and optimization
 
 ### Quality Control
