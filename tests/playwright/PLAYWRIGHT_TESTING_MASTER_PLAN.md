@@ -20,6 +20,41 @@ This document provides comprehensive guidance for executing the complete B001-B0
 
 ---
 
+## Testing Protocol Guidelines
+
+**CRITICAL**: Mandatory protocols to prevent testing failures and ensure professional standards.
+
+### Core Protocol Requirements
+
+1. **User-Specified Test Plans Are Sacred**
+   - NEVER substitute user-provided test procedures with AI-generated alternatives
+   - Test plans must be followed exactly as specified, including sequence, messages, and steps
+   - Deviating from specified procedures can invalidate results and mask critical issues
+
+2. **Verification Before Execution**
+   - Always confirm the exact test plan before beginning any testing phase
+   - If test details are unclear due to context loss, ASK for clarification first
+   - State what test plan will be executed and request confirmation
+
+3. **Context Loss Handling**
+   - When conversation compacting occurs, proactively request clarification on procedural details
+   - Never assume "equivalent" procedures are acceptable
+   - Professional testing requires exact adherence to specifications
+
+4. **Testing Standards**
+   - Test procedures have critical reasoning behind specific sequences and steps
+   - Communication before action: ask when uncertain rather than assume
+   - Document any deviations with explicit user approval
+
+### Corrective Actions Applied
+
+- **Mandatory Pre-Test Verification**: Confirm test plan details before execution
+- **No Substitutions Policy**: User procedures must be followed exactly
+- **Assumption Elimination**: Replace assumptions with verification requests
+- **Professional Standards**: Recognize testing as critical validation requiring precision
+
+---
+
 ## Quick Start Guide
 
 ### Prerequisites

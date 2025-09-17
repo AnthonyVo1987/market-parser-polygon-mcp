@@ -50,6 +50,11 @@ from .api_models import (
     ButtonAnalysisResponse,
     ChatAnalysisRequest,
     ChatAnalysisResponse,
+    ConsoleLogClearResponse,
+    ConsoleLogEntry,
+    ConsoleLogStatusResponse,
+    ConsoleLogWriteRequest,
+    ConsoleLogWriteResponse,
     GeneratePromptRequest,
     GeneratePromptResponse,
     PromptMode,
@@ -1121,6 +1126,124 @@ async def health_check():
     return SystemHealthResponse(
         status="healthy", message="Financial Analysis API is running", version="1.0.0"
     )
+
+
+# ====== CONSOLE LOGGING API ENDPOINTS ======
+
+
+@app.post("/api/v1/logs/console/write", response_model=ConsoleLogWriteResponse)
+async def write_console_logs(request: ConsoleLogWriteRequest):
+    """Write console log entries to the log file."""
+    import aiofiles
+    import os
+    from pathlib import Path
+
+    try:
+        # Ensure logs directory exists
+        logs_dir = Path("logs")
+        logs_dir.mkdir(exist_ok=True)
+
+        log_file_path = logs_dir / "console_debug_log.txt"
+
+        # Prepare log entries for writing
+        log_lines = []
+        for entry in request.entries:
+            # Format: timestamp [LEVEL] message [args]
+            timestamp_str = entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            args_str = f" {' '.join(entry.args)}" if entry.args else ""
+            log_line = f"[{timestamp_str}] [{entry.level.upper()}] {entry.message}{args_str}\n"
+            log_lines.append(log_line)
+
+        # Write to file atomically
+        async with aiofiles.open(log_file_path, mode="a", encoding="utf-8") as f:
+            await f.writelines(log_lines)
+
+        # Get file size
+        file_size = log_file_path.stat().st_size if log_file_path.exists() else 0
+
+        logger.debug(f"Wrote {len(request.entries)} console log entries to {log_file_path}")
+
+        return ConsoleLogWriteResponse(
+            entries_written=len(request.entries),
+            file_size_bytes=file_size,
+            message=f"Successfully wrote {len(request.entries)} log entries"
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to write console logs: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to write console logs: {str(e)}"
+        ) from e
+
+
+@app.get("/api/v1/logs/console/status", response_model=ConsoleLogStatusResponse)
+async def get_console_log_status():
+    """Get console log file status and metadata."""
+    from pathlib import Path
+
+    try:
+        log_file_path = Path("logs") / "console_debug_log.txt"
+
+        if log_file_path.exists():
+            stat = log_file_path.stat()
+
+            # Count lines efficiently
+            line_count = 0
+            try:
+                with open(log_file_path, 'r', encoding='utf-8') as f:
+                    line_count = sum(1 for _ in f)
+            except Exception:
+                line_count = 0
+
+            return ConsoleLogStatusResponse(
+                exists=True,
+                file_size_bytes=stat.st_size,
+                line_count=line_count,
+                last_modified=datetime.fromtimestamp(stat.st_mtime),
+                file_path=str(log_file_path),
+                writable=os.access(log_file_path.parent, os.W_OK)
+            )
+        else:
+            return ConsoleLogStatusResponse(
+                exists=False,
+                file_path=str(log_file_path),
+                writable=os.access(log_file_path.parent, os.W_OK) if log_file_path.parent.exists() else False
+            )
+
+    except Exception as e:
+        logger.error(f"Failed to get console log status: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get console log status: {str(e)}"
+        ) from e
+
+
+@app.delete("/api/v1/logs/console", response_model=ConsoleLogClearResponse)
+async def clear_console_logs():
+    """Clear the console log file."""
+    from pathlib import Path
+
+    try:
+        log_file_path = Path("logs") / "console_debug_log.txt"
+
+        previous_size = 0
+        if log_file_path.exists():
+            previous_size = log_file_path.stat().st_size
+            log_file_path.unlink()
+            logger.info(f"Cleared console log file: {log_file_path} (was {previous_size} bytes)")
+
+        return ConsoleLogClearResponse(
+            message=f"Console log cleared (previous size: {previous_size} bytes)",
+            previous_size_bytes=previous_size
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to clear console logs: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to clear console logs: {str(e)}"
+        ) from e
 
 
 # Cache Management API Endpoints (Security Review Priority 1 fixes)

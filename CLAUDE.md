@@ -9,14 +9,15 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Add Console Log Toggle with DEBUG/PRODUCTION modes
+feat: Add Testing Protocol Guidelines & Complete Console Log File Output
 
-- Enhanced logger.ts with LogMode type and dynamic mode switching (setLogMode, getLogMode, onLogModeChange)
-- Added Console Log Toggle UI to DebugPanel component with glassmorphic design and accessibility
-- Implemented PRODUCTION mode (warnings/errors only) vs DEBUG mode (full verbose logging)
-- Added localStorage persistence and real-time mode switching without page refresh
-- Comprehensive Playwright testing verified console output differences between modes
-- Code review PASSING: excellent type safety, accessibility, performance optimization
+- Added comprehensive Testing Protocol Guidelines to CLAUDE.md and PLAYWRIGHT_TESTING_MASTER_PLAN.md
+- Enhanced console logging with file output to logs/console_debug_log.txt
+- Implemented 1000-entry circular buffer with wrap indicators and 10-second flush intervals
+- Added secure backend API endpoints: /api/v1/logs/console/{write,status,clear}
+- FileLogService class with memory-safe console interception and periodic flushing
+- Comprehensive code review PASSING: excellent security, type safety, performance, memory management
+- Applied corrective actions for testing protocol failures: mandatory verification, no substitutions
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## Tools Usage
@@ -108,6 +109,39 @@ npm run format         # Format JS/TS code
 # Type checking
 npm run type-check
 ```
+
+## Testing Protocol Guidelines
+
+**CRITICAL**: Follow these mandatory protocols to prevent testing failures and ensure professional standards.
+
+### Core Protocol Requirements
+
+1. **User-Specified Test Plans Are Sacred**
+   - NEVER substitute user-provided test procedures with AI-generated alternatives
+   - Test plans must be followed exactly as specified, including sequence, messages, and steps
+   - Deviating from specified procedures can invalidate results and mask critical issues
+
+2. **Verification Before Execution**
+   - Always confirm the exact test plan before beginning any testing phase
+   - If test details are unclear due to context loss, ASK for clarification first
+   - State what test plan will be executed and request confirmation
+
+3. **Context Loss Handling**
+   - When conversation compacting occurs, proactively request clarification on procedural details
+   - Never assume "equivalent" procedures are acceptable
+   - Professional testing requires exact adherence to specifications
+
+4. **Testing Standards**
+   - Test procedures have critical reasoning behind specific sequences and steps
+   - Communication before action: ask when uncertain rather than assume
+   - Document any deviations with explicit user approval
+
+### Corrective Actions Applied
+
+- **Mandatory Pre-Test Verification**: Confirm test plan details before execution
+- **No Substitutions Policy**: User procedures must be followed exactly
+- **Assumption Elimination**: Replace assumptions with verification requests
+- **Professional Standards**: Recognize testing as critical validation requiring precision
 
 ### Build & Production
 

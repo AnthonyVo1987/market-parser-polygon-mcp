@@ -265,6 +265,74 @@ class TickerExtractionResponse(BaseModel):
     reasoning: Optional[str] = None
 
 
+# Console Logging Models
+
+
+class ConsoleLogLevel(str, Enum):
+    """Console log levels"""
+
+    LOG = "log"
+    DEBUG = "debug"
+    INFO = "info"
+    WARN = "warn"
+    ERROR = "error"
+
+
+class ConsoleLogEntry(BaseModel):
+    """Individual console log entry"""
+
+    timestamp: datetime = Field(default_factory=datetime.now)
+    level: ConsoleLogLevel
+    message: str
+    args: Optional[List[str]] = Field(default=None, description="Console arguments")
+    source: str = Field(default="frontend", description="Log source identifier")
+
+
+class ConsoleLogWriteRequest(BaseModel):
+    """Request model for writing console log entries"""
+
+    entries: List[ConsoleLogEntry] = Field(..., min_items=1, max_items=100, description="Log entries to write")
+
+    @validator("entries")
+    @classmethod
+    def validate_entries(cls, v):
+        """Validate log entries constraints."""
+        if len(v) > 100:
+            raise ValueError("Cannot write more than 100 log entries at once")
+        return v
+
+
+class ConsoleLogWriteResponse(BaseModel):
+    """Response for console log write operations"""
+
+    success: bool = True
+    entries_written: int
+    file_size_bytes: int
+    message: str = "Log entries written successfully"
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class ConsoleLogStatusResponse(BaseModel):
+    """Response for console log status"""
+
+    exists: bool
+    file_size_bytes: int = 0
+    line_count: int = 0
+    last_modified: Optional[datetime] = None
+    file_path: str
+    writable: bool = True
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class ConsoleLogClearResponse(BaseModel):
+    """Response for console log clear operations"""
+
+    success: bool = True
+    message: str = "Console log cleared successfully"
+    previous_size_bytes: int = 0
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
 # Success Response Models
 
 
