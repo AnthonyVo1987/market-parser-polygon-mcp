@@ -28,13 +28,6 @@ To perform a basic functional test of the Market Parser application by executing
     *   **Expected Output:** "Application ready."
     *   **Corrective Action:** If this command fails after all retries, declare a setup failure and terminate the test.
 
-### Step P2: Install Browser (if necessary)
-*   **Action:** Install necessary browser components for Playwright.
-    *   **Tool:** `browser_install`
-    *   **Parameters:** None
-    *   **Expected Output:** Confirmation of browser installation or "No open tabs." if already installed.
-    *   **Lessons Learned:** This tool might report "No open tabs" even if successful, indicating the browser is already installed. Proceed regardless.
-
 ## Test Steps
 
 ### Test 1: Market Status Query
@@ -44,7 +37,7 @@ To perform a basic functional test of the Market Parser application by executing
     *   **Tool:** `browser_navigate`
     *   **Parameters:** `url = "http://127.0.0.1:3000"`
     *   **Expected Output:** Page loaded successfully, title "Market Parser OpenAI Chat".
-    *   **Corrective Action:** If navigation fails, re-run "Prerequisites & Environment Setup" steps.
+    *   **Corrective Action:** If navigation fails (e.g., `ERR_CONNECTION_REFUSED` or `browser not found` error), then execute `browser_install` and restart the entire test sequence from 'Prerequisites & Environment Setup'.
 
 #### Step 1.2: Type and Send Market Status Query
 *   **Action:** Get a snapshot of the current page state to identify the message input field.
