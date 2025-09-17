@@ -15,8 +15,13 @@ When you invoke `/resync`, I will:
 1. Read the follow project docs ONE AT A TIME and acknowledge project state, last completed task(s), operating rules, & MCP Tools PRIMARY use FIRST & then Default Tools as Secondary Fallback, to provide context and background for future task(s):
 
 - ~/CLAUDE.md
-- ~/LAST_TASK_SUMMARY.md
+- ~/README.md
 
-2. Acknowledge and provide high level summary of current understanding of the project
+2. Acknowledge and provide :
+
+- High level summary of current status of the project
+- Last Cmpleted Task Summary from CLAUDE.md
+- Primary MCP Tools Usage & Secondary Fallback Tools Usage
+- Proper Playwright Testing Protocol for using either Playwright Tools Method vs Playwright "npx playwright test" Method
 
 ---
