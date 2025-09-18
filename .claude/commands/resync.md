@@ -20,8 +20,8 @@ When you invoke `/resync`, I will:
 2. Acknowledge and provide :
 
 - High level summary of current status of the project
-- Last Cmpleted Task Summary from CLAUDE.md
+- Last Completed Task Summary from CLAUDE.md
 - Primary MCP Tools Usage & Secondary Fallback Tools Usage
-- Proper Playwright Testing Protocol for using either Playwright Tools Method vs Playwright "npx playwright test" Method
+- PLaywright Tools are the ONLY method to test
 
 ---

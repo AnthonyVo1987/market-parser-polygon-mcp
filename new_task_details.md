@@ -1,157 +1,168 @@
 # New Task Details
 
-## Task Description: [NPX_Test] Phase 2: Fix Create Playwright "npx playwright test" Single Source Testing Script
+## Task Description: Complete Removal of Playwright CLI/NPX Testing & Dependencies
 
-Here's your "NPX Playwright Test Execution Plan - Phase 2: Test/Fix/Re-test Loop" converted into clean Markdown format, with the `│ ╭───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮ │` and `│ │` characters removed.
+# Plan: Complete Removal of Playwright CLI/NPX Testing & Dependencies
 
-```markdown
-# NPX Playwright Test Execution Plan - Phase 2: Test/Fix/Re-test Loop
+## Summary
 
-## Objective
+Complete removal of ALL Playwright CLI "npx playwright test" methods, dependencies, and packages while preserving Playwright MCP/Tools method as the single testing approach.
 
-Execute NPX Playwright tests following **VERBATIM** instructions from `tests/playwright/npx_test_script_basic.md` to achieve 3/3 passing tests through systematic test/fix/re-test cycles.
+## Phase 1: Delete NPX-Only Files & Directories
 
-## Phase 1: Initial Setup & Verification
+### Files to Delete Completely
 
-1.  **Environment Verification**
-    *   Check Node.js version (must be 18+)
-    *   Verify Playwright installation
-    *   Confirm test file exists: `test-basic-suite.spec.ts`
-    *   Verify startup scripts exist: `start-app.sh` and `start-app-xterm.sh`
-2.  **Server Startup (Method 1: Recommended)**
-    ```bash
-    cd /home/1000211866/Github/market-parser-polygon-mcp
-    ./start-app.sh
-    ```
-    *   Wait for both terminal windows to open
-    *   Allow 10 seconds for servers to fully initialize
-3.  **Server Health Verification**
-    ```bash
-    # Backend health check (must return {"status":"healthy"})
-    curl http://127.0.0.1:8000/health
-    ```
-    ```bash
-    # Frontend health check (must return HTML)
-    curl http://127.0.0.1:3000/
-    ```
-    *   If health checks fail, troubleshoot using alternative startup methods
+1. `/tests/playwright/npx_test_script_basic.md` - NPX-specific documentation
+2. `/tests/playwright/test-basic-suite.spec.ts` - NPX test implementation
+3. `/playwright.config.ts` - NPX Playwright configuration
+4. `/tests/playwright/playwright_CLI_test_25-09-12_13-42.md` - NPX test report
+5. All `/tests/playwright/test-b*.spec.ts` files (16 files) - NPX test specs
+6. `/tests/playwright/integration-test.spec.ts` - NPX integration test
+7. `/tests/playwright/ui-investigation.spec.ts` - NPX investigation test
+8. `/tests/playwright/example.test.ts` - NPX example test
 
-## Phase 2: Test Execution Loop
+### Directories to Delete
 
-**Loop Strategy: Execute → Analyze → Fix → Re-test (repeat until 3/3 pass)**
+1. `/tests/e2e/` - Entire duplicate test directory with NPX tests
+2. `/tests/playwright/helpers/` - NPX helper functions (contains `@playwright` imports)
+3. `/tests/playwright/test-results/` - NPX test artifacts and videos
+4. `/playwright-report/` - NPX test reports (if exists)
+5. `/node_modules/@playwright/` - Playwright NPM packages
+6. `/node_modules/playwright/` - Playwright core packages
+7. `/node_modules/playwright-core/` - Playwright core packages
 
-1.  **Initial Test Execution**
-    ```bash
-    cd /home/1000211866/Github/market-parser-polygon-mcp/tests/playwright
-    npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
-    ```
-2.  **Result Analysis**
-    *   Capture test output
-    *   Identify which tests passed/failed
-    *   Note specific error messages
-    *   Record response times for performance classification
+### Documentation to Delete
 
-## Phase 3: Fix Strategy (If Tests Fail)
+1. `/docs/testing/` entire directory - All NPX-focused testing docs
+2. `/docs/PLAYWRIGHT_SLASH_COMMANDS_BEST_PRACTICES.md` - Mixed NPX/MCP content
 
-### Potential Issues & Fixes:
+## Phase 2: Remove Playwright Dependencies
 
-1.  **Timeout Issues**
-    *   Verify `{ timeout: 120000 }` is set in all `waitForSelector` calls
-    *   Check if AI responses are taking longer than expected
-    *   Consider server performance issues
-2.  **Element Not Found**
-    *   Review modern locator strategies in test file
-    *   Verify `.or()` fallback chains are working
-    *   Check if UI has changed
-3.  **Server Connection Issues**
-    *   Re-verify health checks
-    *   Check for port conflicts
-    *   Restart servers if needed
-4.  **Content Validation Failures**
-    *   Review web-first assertions
-    *   Check emoji detection patterns
-    *   Verify response content structure
+### 1. package.json
 
-## Phase 4: Re-test Iterations
+* Remove `@playwright/test` from `devDependencies` (line 113)
+* Remove ALL test scripts (lines 50-71): All `test:*` scripts using `npx playwright`
+* Keep all other scripts unchanged
 
-### For each iteration:
-1.  Apply identified fixes
-2.  Re-run the test command
-3.  Document what was changed
-4.  Continue until all 3 tests pass
+### 2. package-lock.json
 
-## Phase 5: Generate Test Report
+* Will be regenerated after `npm install`
+* Currently contains `playwright`, `playwright-core`, `@playwright/test` entries
 
-Once 3/3 tests pass, create comprehensive report following the template:
+### 3. Uninstall Commands to Run
 
-### Test Execution Report: NPX Playwright Basic Test Suite
+```bash
+npm uninstall @playwright/test
+npm prune  # Remove orphaned dependencies
+rm -rf node_modules/@playwright node_modules/playwright*
+```
 
-### Include:
-*   Execution timestamp and environment details
-*   Command used: `npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts`
-*   Server startup method used
-*   Detailed results for each test:
-    *   Test 1: Market Status
-    *   Test 2: NVDA Ticker Snapshot
-    *   Test 3: Stock Snapshot Button
-*   Performance metrics (SUCCESS/SLOW_PERFORMANCE/TIMEOUT)
-*   Any issues encountered and how they were resolved
-*   Final success confirmation (3/3 PASSED)
+## Phase 3: Update Mixed-Reference Files
 
-## Success Criteria
+### 1. CLAUDE.md
 
-*   ✅ All 3 tests pass successfully
-*   ✅ Response times within acceptable ranges (<120 seconds)
-*   ✅ Content validation confirms financial data present
-*   ✅ Complete test report generated
-*   ✅ NPX method achieves parity with MCP baseline
+* Remove "Testing" section with NPX commands (lines 147-162)
+* Update "Testing Strategy" section to reference only MCP tools method
+* Update to state MCP Tools is the **ONLY** testing method
 
-## Fallback Procedures
+### 2. README.md
 
-### If persistent failures occur:
-1.  Try alternative server startup methods (2-4)
-2.  Run tests with `--headed` flag for visual debugging
-3.  Check for recent code changes that might affect tests
-4.  Review test file implementation for modern Playwright patterns
-5.  Compare with MCP method behavior for discrepancies
+* Remove "Testing" commands section (lines 175-191)
+* Replace with reference to MCP testing: `/tests/playwright/mcp_test_script_basic.md`
+* Update to state testing is done via Playwright MCP tools only
+
+### 3. .claude/commands/resync.md
+
+* Update testing protocol section to reference only MCP method
+* Remove all NPX testing references
+
+### 4. GEMINI.md (if contains testing references)
+
+* Update to reference only MCP testing method
+
+### 5. .claude/templates/ files
+
+* Remove any NPX test references from template files
+
+## Phase 4: Update MCP Documentation
+
+### 1. /docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
+
+* **CRITICAL**: Replace ALL "30-second polling" references with auto-retry logic
+* Update ALL examples to use `start-app.sh` for server startup
+* Remove outdated polling examples (lines 41-694 contain polling references)
+* Add modern auto-retry detection pattern examples
+* Ensure **NO** references to NPX commands remain
+
+### 2. /tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+
+* Update to reflect MCP as **SINGLE** testing method
+* Remove **ANY** dual-method comparisons
+* Remove **ANY** NPX method references
+* Ensure all examples use MCP tools exclusively
+
+### 3. /tests/playwright/mcp_test_script_basic.md
+
+* Verify as single source of truth for testing
+* Ensure proper server startup with `start-app.sh`
+* Confirm auto-retry logic documentation
+* Remove any comparisons to NPX method
+
+### 4. /tests/playwright/playwright_post-mortem_mcp_tools_testing_guide.md
+
+* Update to remove any NPX references
+* Focus only on MCP tools testing
+
+## Phase 5: Clean Python Environment (No Changes Needed)
+
+### pyproject.toml
+
+* No Playwright dependencies found (Python project uses different testing)
+* No changes required
+
+## Final Task(s) to be performed only after all previous task(s) are completed
+
+## Phase 6: Final Tasks
+
+### 1. Comprehensive Review
+
+* Use `sequential-thinking` MCP for systematic validation
+* Use `context7` MCP for best practices research
+* Verify **ALL** NPX references removed
+* Verify **ALL** `@playwright/test` imports removed
+* Ensure MCP documentation is complete
+
+### 2. Update CLAUDE.md Task Summary
+
+* Create concise git commit message
+* Update "Last Completed Task Summary" section with:
+    `refactor: Remove Playwright CLI/NPX testing in favor of MCP Tools method`
+* Delete all NPX test files, configs, and dependencies
+* Remove `@playwright/test` package and all related `node_modules`
+* Update docs to use MCP Tools as single testing approach
+* Replace 30s polling with auto-retry in MCP docs
+* Clean `package.json` of all `npx playwright` scripts
+
+### 3. Git Commit & Push
+
+* Stage all changes (deletions and updates)
+* Create atomic commit
+* Push to repository
+
+### 4. Final Verification
+
+* Run `npm list @playwright/test` to confirm removal
+* Run `git status` for clean working tree
+* Verify successful push
 
 ## Expected Outcome
 
-*   3/3 tests passing consistently
-*   Complete test report documenting success
-*   Validation that NPX method achieves 100% parity with MCP method
-*   Confirmation that AI agents can follow the `npx_test_script_basic.md` to achieve first-try success
-```
-
-## Final Task(s)
-
-Final Task 1: Review/Fix Loop
-
-* Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive review
-* Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination (Multi-file operations (3+ files))
-* Use standard Read/Write/Edit tools for single-file operations
-* Continue review/fix cycle until achieving PASSING code review status
-
-Final Task 2: Task Summary Updates for CLAUDE.md
-
-* Create token & context efficient git commit message of all the changes to prepare for the final commit task(s)
-* Update CLAUDE.md "Last Completed Task Summary" section with the VERBATIM COPY of the token & context efficient git commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
-* This ensures that the git commit message is cached for token & context efficient in order to update CLAUDE.md with, preventing the need to waste tokens by having to regenerate similiar task completion summaries
-
-Final Task 3: Atomic Git Commit & Push
-
-* Run `git status` to review all staged and unstaged changes
-* Create single atomic git commit containing ALL changes: CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHPTS\VIDEOS ETC
-* **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
-* the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
-* git Push commit to repository using provided personal access token
-* **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
-
-Final Task 4: Final Verification
-
-* Run final `git status` to confirm successful commit and push
-* Verify working tree is clean and branch is up-to-date with remote
-* Confirm all changes are properly git committed and git pushed
+* Zero NPX/CLI Playwright references
+* No `@playwright/test` package installed
+* MCP Tools method as **ONLY** testing approach
+* Updated docs with auto-retry (no polling)
+* Clean `node_modules` without Playwright packages
+* Reduced package size and dependencies
 
 **Key Requirements:**
 
@@ -159,12 +170,12 @@ Final Task 4: Final Verification
 
 ## Expected Outcome*
 
-AI Agent reads & runs testing script from 'tests/playwright/npx_test_script_basic.md' using Playwright "npx playwright test" Method with 3/3 Passing on the very first try:
-
-A. AI Agent requested to run NPX Basic Test Plan etc
-B. AI Agent reads 'tests/playwright/npx_test_script_basic.md' to perform testing by FOLLOWING VERBATIM testing instructions to have a full successful test run on the very first attempt with 3/3 passing
-C. AI Agent properly uses simple one click startup script to setup and confirm dev servers are running and configured correctly before starting any tests
-D. AI Agent issues single command to run the new Playwright NPX Test spec file "xxx.spec.ts" that will run and ensure the 3/3 Basic tests PASSES with parity with MCP method: "npx playwright test --timeout=120000 --workers=1 xxx.spec.ts"
-E. AI Agent generates detailed matching test report following the specific file format & naming scheme after all testing is complete with 3/3 Test passed
+* All code, files, test scripts, and all documentation completely removed of any references and\or usage of Playwright CLI npx test method
+* Playwright MCP\Tools Method left alone
 
 ## Additional Context
+
+* We already have a robust and working Playwright MCP\Tools method so we don’t need the secondary backup CLI npx test method. We wanted to have two methods just in case one wasn’t working, but it’s requiring too much time energy effort to debug & get both methods working so we’ll just use the MCP\Tools method to test only
+* Read for more context: tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.md
+* Read for more context: tests/playwright/mcp_test_script_basic.md
+* Read for more context: docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
