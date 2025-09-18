@@ -93,10 +93,23 @@ The `/new_task` command follows a systematic A-I process with tech-lead orchestr
 
 **H. Atomic Git Commit & Push - Final Task 3**
 
+**MANDATORY PRE-COMMIT CHECKLIST (CRITICAL FOR SUCCESS):**
+1. Run `git status` to identify ALL modified files
+2. Run `git add .` to stage ALL changes (never commit without staging all)
+3. Run `git status` again to verify ALL files are staged
+4. Verify specialist work inclusion: ALL frontend, backend, test, and config changes MUST be staged
+5. Only then execute `git commit` with comprehensive message
+
+**AGENT PROCESS REQUIREMENTS:**
+- Code reviewer MUST verify all specialist work is staged before commit
+- NEVER commit without comprehensive staging verification
+- Implement explicit git status checks at each phase
+- Failure to include all modified files is a CRITICAL VIOLATION
+
 - PRIMARY: Use `git` for atomic operations
 - Single atomic commit containing ALL changes:
-  - Code/file changes
-  - Documentation updates  
+  - Code/file changes (ALL specialist deliverables)
+  - Documentation updates
   - CLAUDE.md updates
   - LAST_TASK_SUMMARY.md updates
 - **CRITICAL**: Must push to complete workflow - commit without push is incomplete

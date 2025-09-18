@@ -117,7 +117,20 @@ Complete removal of custom console logging infrastructure to eliminate performan
 
 # Final Task 3: Atomic Git Commit & Push
 
-- Run `git status` to review all staged and unstaged changes
+**MANDATORY PRE-COMMIT CHECKLIST (CRITICAL FOR SUCCESS):**
+1. Run `git status` to identify ALL modified files
+2. Run `git add .` to stage ALL changes (never commit without staging all)
+3. Run `git status` again to verify ALL files are staged
+4. Verify specialist work inclusion: ALL frontend, backend, test, and config changes MUST be staged
+5. Only then execute `git commit` with comprehensive message
+
+**AGENT PROCESS REQUIREMENTS:**
+- Code reviewer MUST verify all specialist work is staged before commit
+- NEVER commit without comprehensive staging verification
+- Implement explicit git status checks at each phase
+- Failure to include all modified files is a CRITICAL VIOLATION
+
+**Commit Requirements:**
 - Create single atomic git commit containing ALL changes: CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHPTS\VIDEOS ETC
 - **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
