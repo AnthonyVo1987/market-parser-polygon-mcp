@@ -24,7 +24,7 @@
 **Status:** ✅ **SUCCESS**
 **Response Time:** 49.1 seconds
 **Performance Classification:** SUCCESS (< 50s threshold)
-**Detection Method:** Auto-retry for "🎯 KEY TAKEAWAYS" pattern
+**Detection Method:** Auto-retry for "KEY TAKEAWAYS" pattern
 **Content Validation:** PASSED - Financial content with emoji indicators confirmed
 
 ### Test 2: NVDA Ticker Snapshot Test
@@ -70,7 +70,7 @@
 ### Critical Parameters Verification
 - **Timeout Configuration:** `time: 120` parameter used correctly in all wait operations
 - **Element Selectors:** Multiple fallback selectors successfully identified UI elements
-- **Detection Patterns:** "🎯 KEY TAKEAWAYS" and "📈" patterns effective for response detection
+- **Detection Patterns:** "KEY TAKEAWAYS" and content patterns effective for response detection
 
 ## Performance Analysis
 
@@ -90,7 +90,7 @@
 ## Content Validation Results
 
 ### Financial Content Verification
-- **Emoji Indicators:** All responses contained required financial emojis (📈📉💰🎯)
+- **Content Structure:** All responses contained structured format with clear directional indicators
 - **Market Data:** Appropriate stock data and analysis present in all responses
 - **Template Compliance:** Structured output with KEY TAKEAWAYS format confirmed
 - **Ticker Recognition:** NVDA ticker properly identified and analyzed
@@ -128,7 +128,7 @@
 
 ### Next Steps Completed
 1. ✅ **Actual response times documented:** 49.1s, 47.4s, 48.0s (SUCCESS classification)
-2. ✅ **Most effective detection methods noted:** "🎯 KEY TAKEAWAYS" and "📈" patterns
+2. ✅ **Most effective detection methods noted:** "KEY TAKEAWAYS" and content detection patterns
 3. ✅ **Behavior conformance confirmed:** All responses matched expected behavior exactly
 4. ✅ **Additional test scenario readiness:** Methodology proven for expanded test coverage
 

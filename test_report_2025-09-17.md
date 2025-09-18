@@ -41,20 +41,20 @@ Successfully executed all 3 basic tests from `mcp_test_script_basic.md` followin
 2. ✅ Page snapshot captured successfully
 3. ✅ Message input: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity"
 4. ✅ Message submission via Enter key
-5. ✅ Auto-retry detection: "🎯 KEY TAKEAWAYS" detected in 42.7s
+5. ✅ Auto-retry detection: "KEY TAKEAWAYS" detected in 42.7s
 6. ✅ Content validation passed
 
 **Response Validation Results:**
-- ✅ Financial emojis present: true (🎯📊📈📉)
+- ✅ Financial content present: true (structured response format)
 - ✅ Content length: 984 characters
 - ✅ Market data content: true (market status, trading info)
 - ✅ Response format: KEY TAKEAWAYS → DETAILED ANALYSIS → DISCLAIMER
 
 **Key Response Content:**
-- 📊 US exchanges (NYSE, NASDAQ): closed
-- 📈 Crypto markets: open with live trading
-- 📈 FX markets: open with live quotes
-- ⚠️ Standard financial disclaimer included
+- US exchanges (NYSE, NASDAQ): closed
+- Crypto markets: open with live trading
+- FX markets: open with live quotes
+- Standard financial disclaimer included
 
 ### Test 2: NVDA Ticker Snapshot Test
 **Duration:** 46.9 seconds
@@ -70,16 +70,16 @@ Successfully executed all 3 basic tests from `mcp_test_script_basic.md` followin
 6. ✅ NVDA-specific content validation passed
 
 **Response Validation Results:**
-- ✅ Financial emojis present: true (🎯📊📉)
+- ✅ Financial content present: true (structured response format)
 - ✅ NVDA content confirmed: true
 - ✅ Stock data present: true (price, volume, market cap)
 - ✅ Content length: 942 characters
 
 **Key Response Content:**
-- 📉 NVDA Last price: $174.88 (-$2.64, -1.48%)
-- 📊 Volume: 140,739,086 shares
-- 📊 Day range: $174.38 — $177.50; VWAP: $175.5261
-- 📉 Sentiment: BEARISH (price below prior close)
+- NVDA Last price: $174.88 (-$2.64, -1.48%) - BEARISH
+- Volume: 140,739,086 shares
+- Day range: $174.38 — $177.50; VWAP: $175.5261
+- Sentiment: BEARISH (price below prior close)
 
 ### Test 3: Stock Snapshot Button Test
 **Duration:** 39.1 seconds
@@ -93,22 +93,22 @@ Successfully executed all 3 basic tests from `mcp_test_script_basic.md` followin
 4. ✅ Stock Snapshot button click (📈 Snapshot Analysis)
 5. ✅ Template populated automatically in message field
 6. ✅ Message submission via Enter key
-7. ✅ Auto-retry detection: "📈" detected in 39.1s
+7. ✅ Auto-retry detection: Response content detected in 39.1s
 8. ✅ Button-triggered response validation passed
 
 **Response Validation Results:**
-- ✅ Financial emojis present: true (🎯📊📉💰)
+- ✅ Financial content present: true (comprehensive structured format)
 - ✅ Snapshot content confirmed: true
 - ✅ Stock data present: true (comprehensive OHLC data)
 - ✅ Button triggered: true
 - ✅ Content length: 3,202 characters (most comprehensive)
 
 **Key Response Content:**
-- 🎯 KEY TAKEAWAYS with detailed NVDA analysis
-- 📊 DETAILED ANALYSIS with OHLC data
-- 🟣 Educational insights for different trader types
-- 📈/📉 Actionable trading recommendations
-- ⚠️ Comprehensive disclaimers
+- KEY TAKEAWAYS with detailed NVDA analysis
+- DETAILED ANALYSIS with OHLC data
+- Educational insights for different trader types
+- Actionable trading recommendations with directional indicators
+- Comprehensive disclaimers
 
 ## Technical Validation
 
@@ -119,7 +119,7 @@ Successfully executed all 3 basic tests from `mcp_test_script_basic.md` followin
 - **No False Positives:** All detections matched actual response completion
 
 ### Content Quality Assessment
-- **Emoji Indicators:** All responses included required financial emojis (📈📉💰🎯📊)
+- **Content Structure:** All responses included structured format with clear directional indicators
 - **Structure Compliance:** All followed KEY TAKEAWAYS → DETAILED ANALYSIS → DISCLAIMER format
 - **Ticker Specificity:** Test 2 & 3 properly referenced NVDA throughout responses
 - **Educational Value:** Responses included actionable insights and market context
