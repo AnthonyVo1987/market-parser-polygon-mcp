@@ -2,84 +2,26 @@
 
 ## Task Description
 
-## Detailed Implementation Plan: Performance Optimizations
+Use @agent-tech-lead-orchestrator to analyze the plan & provide Specialist Task Assignments per CLAUDE.md to implement the entire plan. @agent-tech-lead-orchestrator MUST assign Tools Usage for EACH Assigned Specialist to MUST USE `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Serena Tools to perform the requested plan and\or task(s)
 
-● ✅ Implementation Complete
+Expected Outcome:
 
-  I have successfully executed the emoji retirement plan using Serena tools and other tools as needed. Here's a summary of what was accomplished:
+- @agent-tech-lead-orchestrator assigns Specialist(s) to perform the requested plan\task AND Each Specialist is instructed for EACH task(s) to use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use Serena Tools to perform the requested plan and\or task(s)
 
-  📊 Completed Tasks:
+**CRITICAL REQUIREMENT** If @agent-tech-lead-orchestrator provides a Plan with any of these VIOLATIONS, PLAN IS NULL AND VOID DUE TO NON-COMPLIANCE, AND MUST RE-PLAN AGAIN:
 
-  1. ✅ Discovery Validation - Confirmed emoji enforcement locations in src/backend/prompt_templates.py
-  2. ✅ Backend Emoji Enforcement Removal - Updated all 3 prompt templates:
-    - Removed emoji requirement instructions from formatting guidelines
-    - Replaced emoji examples with plain text alternatives
-    - Updated system prompt enhancement to remove emoji references
-  3. ✅ Frontend Loading States Updated - Replaced emoji indicators in 9 components:
-    - AnalysisButton.tsx: ⏳ → "Loading..."
-    - ChatInput_OpenAI.tsx: ⏳ → "..."
-    - ErrorBoundary.tsx: ⏳ → "..."
-    - DebugPanel.tsx: ⚙️ → "[DEBUG]" and "Loading..."
-    - ExportButtons.tsx: ⏳ → "..."
-    - MessageCopyButton.tsx: ⏳ → "..."
-    - ChatInterface_OpenAI.tsx: ⚙️ → "Loading..."
-    - ChatMessage_OpenAI.tsx: ⏳ → "..."
-    - RecentMessageButtons.tsx: ⏳ → "..."
-  4. ✅ Financial Advice Disclaimers Removed - Eliminated all disclaimer requirements:
-    - Removed "DISCLAIMER" section requirements from all formatting instructions
-    - Removed disclaimer examples from all prompt templates
-    - Updated structure guidance to remove disclaimer references
-  5. ✅ Core Test Framework Cleaned - Updated tests/mcp/test_framework.js:
-    - Removed emojiIndicators validation logic
-    - Replaced emoji presence checks with content quality validation
-    - Updated response format detection to remove emoji-based classification
+- no Specialists assigned to any task(s) OR
+- NO MCP Tools assigned for Each specialist OR
+- Fabricated Specialist(s) that does NOT exist in CLAUDE.md
 
-  ⚠️ Remaining Tasks (as requested in constraints - "no testing"):
+##
 
-- Test script updates (to be handled separately)
-- Documentation cleanup (to be handled separately)
-- Implementation verification
-- Final cleanup pass
-
-  📈 Expected Outcome Achieved:
-
-- ✅ All AI prompts no longer mandate emoji usage
-- ✅ No market sentiment emoji emphasis code remains
-- ✅ Frontend uses neutral loading indicators
-- ✅ Backend prompt templates generate clean text responses
-- ✅ All financial advice disclaimers removed from prompts
-
-  The implementation is complete and ready for testing validation according to the minimal change approach specified in the scope brief.
-
-  Todos
-  ☒ Discovery validation - confirm emoji enforcement locations
-  ☒ Remove backend emoji enforcement from prompt templates
-  ☒ Update frontend loading states to remove emoji indicators
-  ☒ Remove ALL financial advice disclaimers from ALL prompts using Serena tools
-  ☒ Clean core test framework emoji validation logic
-  ☐ Update test scripts to remove emoji detection patterns
-  ☐ Clean documentation references to emoji usage
-  ☐ Verify implementation diff and consistency
-  ☐ Final cleanup pass for missed emoji references
-
-Context:
-
-- Repository: /home/1000211866/Github/market-parser-polygon-mcp
 - Feature: Retire the Emoji-based Market Sentiment code & Emoji Response Enforcement
-- Follow the TODO checklist from the Planning Phase.
+New Feature Requirements & Expected Outcome(s)
 
-Instructions:
-Execute the plan precisely with Serena tools & any other Tools needed
-
-1) Locate insertion point(s)4
-2) Insert code minimally
-3) Do not run tests or start servers
-
-Constraints:
-
-- Keep edits minimal and consistent with existing style.
-- If symbol lookup fails, fallback to structured file-level search using Serena and retry the targeted insert.
-- Stop and ask for confirmation if any ambiguity or conflicts arise.
+- ALL AI Prompts to no longer mandate the usage of emojis anymore; Reponses may optionally use Emojis and\or by User Request Message to Use Emojis (System Prompt, User Input Prompts, Button Prompts)
+- No more code to emphasis of anything Market Sentiment related anymore for Emojis
+- No docs reference the usage of Emojis anymore
 
 ● 📋 Emoji Retirement Implementation Plan
 
@@ -170,448 +112,101 @@ Constraints:
 
 - content: 'Loading...'
 
-  Tools Priority: Serena MCP tools for multi-file operations, standard Edit tools for single-file changes.
+  Tools Priority: Serena MCP tools for multi-file operations, standard Edit tools for single-file changes, Sequential-Thinking Tools, & any other Tools needed
 
-Context:
+## Context
 
-- Repository: /home/1000211866/Github/market-parser-polygon-mcp
-- Feature: Retire the Emoji-based Market Sentiment code & Emoji Response Enforcement
-- Use the scope brief from the Research Phase
+Summary
 
-New Feature Requirements & Expected Outcome(s)
-
-- ALL AI Prompts to no longer mandate the usage of emojis anymore; Reponses may optionally use Emojis and\or by User Request Message to Use Emojis (System Prompt, User Input Prompts, Button Prompts)
-- No more code to emphasis of anything Market Sentiment related anymore for Emojis
-- No docs reference the usage of Emojis anymore
-
-Instructions:
-Create a step-by-step Implementation Plan (TODO checklist) including:
-
-1) Discovery validation:
-   - Re-confirm target file and insertion point(s) with find_symbol.
-2) Code edits:
-   - Minimal endpoint addition using the same style as existing endpoints.
-   - Ensure imports/context are correct.
-3) Post-edit verification (non-execution):
-   - Show expected diff for changed files.
-   - Note any follow-up cleanups (docs strings/comments if applicable).
-
-Format:
-
-- A concise TODO list with 5–8 atomic steps, each outcome-focused.
-- Include which Serena tool(s) will be used per step (e.g., find_symbol, insert_after_symbol).
-- No testing steps (I will handle testing)
-
-Context:
-
-- Repository: /home/1000211866/Github/market-parser-polygon-mcp
-- Research Phase: Use All available tools to Research & provide some background context for a future scoping task to "Retire the Emoji-based Market Sentiment code & Emoji Response Enforcement"
-
-Instructions:
-
-1) Use Serena’s discovery tools to analyze the codebase:
-   - Locate the Emoji Market Sentiment Emphasis code
-   - Locate where Prompts are stored and saved for User Input and Button Prompts
-   - Locate all and any docs that reference Emojis
-2) Summarize:
-   - Emoji Market Sentiment Emphasis code
-   - Where and which prompts are there
-   - Docs with references to using Emojis
-3) Deliverable:
-   - A concise scope brief with clear boundaries, dependencies, and assumptions.
-
-Constraints:
-
-- Do not perform code edits.
-- Favor minimal changes; reuse existing patterns where possible.
-- If ambiguity exists, list open questions.
-
-Context:
-
-- Repository: /home/1000211866/Github/market-parser-polygon-mcp
-- Goal: Research Phase: Use All available tools to Research & Scope out a detailed implementation plan task breakdown to "Retire the Emoji Market Sentiment code & Emoji Response Enforcement"
-
-Instructions:
-
-1) Use Serena’s discovery tools to analyze the codebase:
-   - Locate the Emoji Market Sentiment Emphasis code
-   - Locate where Prompts are stored and saved for User Input and Button Prompts
-   - Locate all and any docs that reference Emojis
-2) Summarize:
-   - Emoji Market Sentiment Emphasis code
-   - Where and which prompts are there
-   - Docs with references to using Emojis
-3) Deliverable:
-   - A concise scope brief with clear boundaries, dependencies, and assumptions.
-
-Constraints:
-
-- Do not perform code edits.
-- Favor minimal changes; reuse existing patterns where possible.
-- If ambiguity exists, list open questions.
-
-Plan to address all performance issues related to Frontend is APPROVED, so Use @agent-tech-lead-orchestrator to analyze the plan & provide Specialist Task Assignments per CLAUDE.md to implement the entire plan. @agent-tech-lead-orchestrator MUST assign Tools Usage for EACH Assigned Specialist to MUST USE `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes etc to perform the requested plan and\or task(s)
-
-Expected Outcome:
-
-- @agent-tech-lead-orchestrator assigns Specialist(s) to perform the requested plan\task AND Each Specialist is instructed for EACH task(s) to use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes etc to perform the requested plan and\or task(s)
-
-**CRITICAL REQUIREMENT** If @agent-tech-lead-orchestrator provides a Plan with any of these VIOLATIONS, PLAN IS NULL AND VOID DUE TO NON-COMPLIANCE, AND MUST RE-PLAN AGAIN:
-
-- no Specialists assigned to any task(s) OR
-- NO MCP Tools assigned for Each specialist OR
-- Fabricated Specialist(s) that does NOT exist in CLAUDE.md
-
-Comprehensive plan to address all performance issues related to Frontend:
+Comprehensive research reveals extensive emoji integration across the Market Parser codebase requiring systematic retirement of emoji-based market sentiment code
+and response enforcement.
 
 ---
+🔍 Emoji Market Sentiment Implementation Analysis
 
-### 1. **CSS Animations & Transitions Removal**
+Core Implementation Location
 
-#### A. Remove All CSS Transitions
+- Primary Source: src/backend/prompt_templates.py (lines 520-640)
+- Enforcement Mechanism: Hardcoded prompt instructions mandating emoji usage
+- Response Structure: 🎯 KEY TAKEAWAYS → 📊 DETAILED ANALYSIS → ⚠️ DISCLAIMER
 
-**Files to modify:**
+Emoji Types Identified
 
-- `src/frontend/components/DebugPanel.tsx`
-- `src/frontend/components/ChatInterface_OpenAI.tsx`
-- `src/frontend/components/ChatInput_OpenAI.tsx`
-- `src/frontend/components/ChatMessage_OpenAI.tsx`
-- `src/frontend/components/ExportButtons.tsx`
-- `src/frontend/components/RecentMessageButtons_OpenAI.tsx`
-- `src/frontend/components/AnalysisButtons.tsx`
-- `src/frontend/styles/*.css`
-
-**Changes:**
-
-- Remove all `transition` properties
-- Remove `will-change` properties (no longer needed without animations)
-- Remove `transform: translateZ(0)` GPU acceleration hints
-- Remove animation-related pseudo-classes (`:hover` transforms)
-
-#### B. Replace Animated Loading Spinners
-
-**Current animated spinners to replace:**
-
-1. **Typing dots animation** in `ChatInterface_OpenAI.tsx`:
-
-   ```css
-   animation: typing 1.4s infinite ease-in-out;
-   ```
-
-   Replace with static text: `"AI is thinking..."`
-
-2. **Spinning loaders**:
-
-   ```css
-   animation: spin 1s linear infinite;
-   animation: component-loading-spin 1s linear infinite;
-   ```
-
-   Replace with static text indicators:
-   - For buttons: `"Loading..."`
-   - For components: `"Please wait..."`
-   - For analysis: `"Processing..."`
-
-#### C. Remove All Keyframe Animations
-
-**Keyframes to remove:**
-
-- `@keyframes typing`
-- `@keyframes spin`
-- `@keyframes component-loading-spin`
-- `@keyframes input-shake`
-- `@keyframes input-success-pulse`
-- `@keyframes button-attention`
-- `@keyframes fade-in`
-- `@keyframes slide-up`
-
-#### D. Simplify Visual Feedback
-
-Replace animated feedback with static indicators:
-
-- Error states: Red border + error icon (no shake)
-- Success states: Green border + checkmark (no pulse)
-- Loading states: Static text with optional progress percentage
+- Sentiment: 📈 (bullish), 📉 (bearish)
+- Financial: 💰 (financial data), 🏢 (institutional), 📊 (metrics)
+- Structural: 🎯 (key takeaways), ⚙️ (processing), ⏳ (loading)
 
 ---
+📍 Prompt Templates & User Input
 
-### 2. **Smooth Scrolling Replacement**
+Template Locations
 
-#### A. Replace scrollIntoView Behavior
+1. src/backend/prompt_templates.py:
 
-**File:** `src/frontend/components/ChatInterface_OpenAI.tsx`
+- SNAPSHOT template: Lines 520-550 (example_response with full emoji structure)
+- SUPPORT_RESISTANCE template: Lines 571-610 (emoji bullet points enforced)
+- TECHNICAL template: Lines 628-640 (compact emoji format)
 
-**Current code (line 80):**
+Button Components
 
-```javascript
-messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-```
-
-**Replace with:**
-
-```javascript
-messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
-// Or use direct scroll:
-messagesEndRef.current.scrollIntoView();
-```
-
-#### B. Remove CSS Smooth Scrolling
-
-**Files:**
-
-- `src/frontend/components/ChatInterface_OpenAI.tsx` (line 583)
-- `src/frontend/index.css` (line 693)
-
-**Remove:**
-
-```css
-scroll-behavior: smooth;
-```
-
-#### C. Alternative Implementation
-
-For better performance, consider using direct DOM manipulation:
-
-```javascript
-const scrollToBottom = useCallback(() => {
-  if (messagesContainerRef.current) {
-    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-  }
-}, []);
-```
+- Analysis Buttons: src/frontend/components/AnalysisButtons.tsx
+- Individual Buttons: src/frontend/components/AnalysisButton.tsx
+- Export Functions: src/frontend/components/ExportButtons.tsx
+- Copy Features: src/frontend/components/MessageCopyButton.tsx
 
 ---
+📚 Documentation References
 
-### 3. **State Management Optimization**
+Extensive Documentation Dependencies
 
-#### A. Consolidate Related State
+1. Testing Guides (15+ files): All Playwright MCP tests validate emoji presence
+2. User Guides: Response format explicitly includes emoji requirements
+3. API Documentation: Emoji integration in response schemas
+4. Performance Reports: Emoji indicators used as success metrics
 
-**Current state variables in ChatInterface:**
+Critical Documentation Files
 
-```javascript
-const [messages, setMessages] = useState<Message[]>([]);
-const [isLoading, setIsLoading] = useState(false);
-const [error, setError] = useState<string | null>(null);
-const [inputValue, setInputValue] = useState<string>('');
-const [sharedTicker, setSharedTicker] = useState<string>('NVDA');
-const [latestResponseTime, setLatestResponseTime] = useState<number | null>(null);
-```
-
-**Optimization using useReducer:**
-
-```javascript
-const initialState = {
-  messages: [],
-  isLoading: false,
-  error: null,
-  inputValue: '',
-  sharedTicker: 'NVDA',
-  latestResponseTime: null
-};
-
-function chatReducer(state, action) {
-  switch (action.type) {
-    case 'SEND_MESSAGE':
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
-        messages: [...state.messages, action.payload]
-      };
-    case 'MESSAGE_SUCCESS':
-      return {
-        ...state,
-        isLoading: false,
-        messages: [...state.messages, action.payload],
-        latestResponseTime: action.responseTime
-      };
-    case 'MESSAGE_ERROR':
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload
-      };
-    // ... other cases
-  }
-}
-
-const [state, dispatch] = useReducer(chatReducer, initialState);
-```
-
-#### B. Implement React 18 Optimizations
-
-Based on React documentation, use `startTransition` for non-urgent updates:
-
-```javascript
-import { startTransition } from 'react';
-
-// For ticker updates and other non-critical state
-const handleTickerChange = (newTicker) => {
-  startTransition(() => {
-    dispatch({ type: 'UPDATE_TICKER', payload: newTicker });
-  });
-};
-```
-
-#### C. Memoize Child Components
-
-Use `React.memo` with proper comparison functions:
-
-```javascript
-const MemoizedAnalysisButtons = memo(AnalysisButtons, (prevProps, nextProps) => {
-  return prevProps.ticker === nextProps.ticker && 
-         prevProps.disabled === nextProps.disabled;
-});
-```
+- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md: 40+ emoji references
+- tests/playwright/mcp_test_script_basic.md: Core testing depends on emoji detection
+- README.md: User-facing emoji examples in feature descriptions
 
 ---
+🎯 Scope Boundaries
 
-### 4. **Input Debouncing Optimization**
+In Scope
 
-#### A. Remove Debouncing for Direct Input
+1. Backend Prompt Templates: Remove all emoji enforcement from prompt instructions
+2. Response Formatting: Eliminate mandatory emoji structure requirements
+3. Frontend Loading States: Replace emoji loading indicators (⏳, ⚙️) with text/spinner
+4. Test Framework Updates: Modify Playwright tests to validate content without emoji detection
+5. Documentation Updates: Remove emoji references from user guides and API docs
 
-**Current implementation:** 150ms debounce adds noticeable latency
+Out of Scope
 
-**Option 1: Remove Debouncing Entirely**
-
-```javascript
-const handleInputValueChange = useCallback((value: string) => {
-  setInputValue(value);
-}, []);
-```
-
-**Option 2: Use Concurrent Features**
-
-```javascript
-import { useDeferredValue } from 'react';
-
-// In parent component
-const deferredInputValue = useDeferredValue(inputValue);
-
-// Pass deferredInputValue to components that don't need immediate updates
-```
-
-**Option 3: Optimize with Direct State Updates**
-Remove the complex debouncing logic and use direct updates:
-
-```javascript
-const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  const value = e.target.value;
-  setInputValue(value); // Direct update, no debounce
-  
-  // Optional: Use startTransition for non-critical updates
-  startTransition(() => {
-    // Update any derived state or analytics
-  });
-};
-```
+1. Optional Emoji Support: Users can still include emojis manually in queries
+2. Unicode Handling: Preserve technical ability to process emoji characters
+3. Export Functionality: Emoji sanitization in export helpers remains for user-generated content
 
 ---
+⚠️ Dependencies & Risks
 
-### 5. **Additional Performance Optimizations**
+Critical Dependencies
 
-#### A. Remove Unnecessary Re-renders
+- Test Suite: 100% of Playwright MCP tests rely on emoji detection patterns
+- Response Validation: Current success metrics based on emoji presence
+- User Experience: Documentation promises emoji-enhanced responses
 
-1. **Extract static components** that don't depend on frequently changing state
-2. **Use `useMemo` for expensive computations**:
+Migration Risks
 
-     [messages]
-
-   ```javascript
-   const processedMessages = useMemo(() => 
-     messages.filter(m => m.isVisible), 
-   );
-   ```
-
-#### B. Optimize Component Structure
-
-1. **Move state closer to where it's used** (component extraction pattern from React docs)
-2. **Split large components** into smaller, focused ones
-3. **Use lazy loading** for heavy components (already implemented for some)
-
-#### C. Event Handler Optimization
-
-Replace inline functions with stable references:
-
-```javascript
-// Instead of:
-onClick={() => handleClick(item)}
-
-// Use:
-const handleItemClick = useCallback((item) => {
-  // handle click
-}, [dependencies]);
-```
+- Test Breakage: All existing test suites will require emoji detection removal
+- User Expectations: Current documentation sets emoji-enhanced response expectations
+- API Contracts: Response format changes may affect integrations
 
 ---
-
-### 6. **Implementation Priority**
-
-1. **High Priority (Immediate Impact):**
-   - Remove all CSS animations and transitions
-   - Replace smooth scrolling with instant scrolling
-   - Remove input debouncing
-
-2. **Medium Priority (Noticeable Impact):**
-   - Replace animated loading indicators
-   - Implement state consolidation with useReducer
-
-3. **Low Priority (Incremental Improvements):**
-   - Add React 18 concurrent features
-   - Further component memoization
-   - Additional micro-optimizations
-
----
-
-### 7. **Testing Recommendations**
-
-Use Playwright Tools to test. @agent-tech-lead-orchestrator needs to ENFORCE the Specialist(s) who is assigned to perform testing to explciity read the following guides for proper testing:
-
-- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- tests/playwright/mcp_test_script_basic.md
-
-After implementation:
-
-**CRITICAL RULE: IF A SPECIALIST PERFORMING THE TESTING DID NOT READ BOTH OF THE TESTING GUIDES, THIS IS A TESTING VIOLATION AND MUST RESTART TESTING AFTER READING THE THE TESTING GUIDES**
-
-- Read docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- Read tests/playwright/mcp_test_script_basic.md
-
-1. **Performance Metrics to Track:**
-
-- Input latency measurements
-- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- tests/playwright/mcp_test_script_basic.md
-  - Time from input submission to first AI response byte
-  - Frame rate during message rendering
-  - Overall TTI (Time to Interactive)
-
-2. **Browser DevTools Testing:**
-
-- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- tests/playwright/mcp_test_script_basic.md
-  - Use Performance tab to measure improvements
-  - Check for layout thrashing
-  - Verify no janky animations remain
-
-3. **User Experience Testing:**
-
-- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- tests/playwright/mcp_test_script_basic.md
-  - Ensure UI remains responsive during AI processing
-  - Verify instant feedback on all interactions
-  - Test on slower devices/connections
-  
-4. IF A SPECIALIST PERFORMING THE TESTING DID NOT READ BOTH OF THE TESTING GUIDES, THIS IS A TESTING VIOLATION AND MUST RESTART TESTING AFTER READING THE THE TESTING GUIDES
-
-- docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- tests/playwright/mcp_test_script_basic.md
-
-This plan prioritizes removing visual latency while maintaining a professional appearance. The changes will make the app feel significantly more responsive, especially on slower devices or during high CPU usage from AI processing.
 
 # Final Task 1: Review/Fix Loop
 
-- Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive review
+- Use Serena Tools, `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive review
 - Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination (Multi-file operations (3+ files))
 - Use standard Read/Write/Edit tools for single-file operations
 - Continue review/fix cycle until achieving PASSING code review status
