@@ -439,7 +439,8 @@ All AI Agents, Sub-Agents, & Agent Team Specialists development work must respec
 | **Multi-Step Feature Development** | `tech-lead-orchestrator` | Complex financial features, agent coordination, strategic planning |
 | **Agent System Development** | `backend-developer` | FastAPI + Pydantic AI + OpenAI Agents SDK, guardrail system, prompt templates |
 | **Financial Query Processing** | `backend-developer` | MCP integration, Polygon.io data handling, agent orchestration |
-| **React 18.2 Components & UI** | `frontend-developer` | React 18.2+ patterns, hooks, TypeScript, PWA features, financial dashboards |
+| **React Components & Architecture** | `react-component-architect` | React 18.2+ component design, hooks, modern patterns, financial UI components |
+| **Playwright MCP Testing** | `frontend-developer` | MCP Playwright testing, test plan execution, browser automation per `/tests/playwright/mcp_test_script_basic.md` |
 | **API Design & Integration** | `api-architect` | REST endpoints, Polygon.io MCP server design, data contracts |
 | **Performance & Optimization** | `performance-optimizer` | Real-time financial data processing, agent efficiency, response times |
 | **Code Quality & Security** | `code-reviewer` | Security-aware reviews, financial data handling, maintainability |
@@ -454,8 +455,11 @@ All AI Agents, Sub-Agents, & Agent Team Specialists development work must respec
 # Backend development
 @backend-developer implement a new financial analysis endpoint using the existing agent framework
 
-# Frontend development (React 18.2)
-@frontend-developer create a new stock chart component with real-time updates
+# React component development
+@react-component-architect create a new stock chart component using modern React 18.2+ patterns
+
+# Playwright MCP testing
+@frontend-developer execute the MCP test plan in /tests/playwright/mcp_test_script_basic.md
 
 # API design
 @api-architect design a new endpoint for portfolio analysis with proper error handling
@@ -470,8 +474,9 @@ All AI Agents, Sub-Agents, & Agent Team Specialists development work must respec
 @documentation-specialist document the agent orchestration architecture and MCP integration patterns
 ```
 
-**Key Improvements in This Configuration:**
-- Added `tech-lead-orchestrator` for complex multi-step financial features
-- Replaced `react-component-architect` with `frontend-developer` for React 18.2 compatibility
-- Added `documentation-specialist` for architectural documentation
+**Key Corrections in This Configuration:**
+- **RESTORED** `react-component-architect` for React 18.2+ component work (backwards compatible)
+- **REASSIGNED** `frontend-developer` to Playwright MCP testing (has Playwright expertise)
+- **CLARIFIED** distinction between React component architecture vs testing responsibilities
+- **ADDED** specific reference to test plan file `/tests/playwright/mcp_test_script_basic.md`
 - Maintained proven assignments for backend, API, performance, and code review specialists
