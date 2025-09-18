@@ -130,10 +130,10 @@ export default defineConfig(({ command, mode }) => {
       minify: isProduction ? 'terser' : false,
       terserOptions: {
         compress: {
-          // Production-only optimizations (console removal disabled for LOG_MODE=NONE functionality)
-          drop_console: false,
+          // Production-only optimizations
+          drop_console: isProduction,
           drop_debugger: isProduction,
-          pure_funcs: []
+          pure_funcs: isProduction ? ['console.log', 'console.info', 'console.debug'] : []
         },
         mangle: {
           // Preserve function names in development for better debugging

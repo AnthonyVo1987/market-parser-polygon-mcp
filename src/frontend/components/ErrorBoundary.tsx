@@ -70,7 +70,9 @@ export default class ErrorBoundary extends React.Component<
       this.props.onError(error, enhancedErrorInfo);
     }
 
-    // Error logging removed for performance optimization (LOG_MODE=NONE)
+    // Log error for debugging - ESLint disabled for error boundary logging
+    // eslint-disable-next-line no-console
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   resetError = () => {
