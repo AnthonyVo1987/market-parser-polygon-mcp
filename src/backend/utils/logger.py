@@ -68,6 +68,18 @@ def setup_logging(
         log_to_file: Whether to also log to a file
         log_file_path: Path to log file (defaults to logs/backend.log)
     """
+    # Check for NONE mode first - completely disable logging
+    log_mode = os.getenv("LOG_MODE", "").upper()
+    if log_mode == "NONE":
+        # Set logging to CRITICAL level to disable all lower-level logs
+        # and skip all handler initialization for maximum performance
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.CRITICAL)
+        # Remove any existing handlers to ensure no file I/O occurs
+        for handler in root_logger.handlers[:]:
+            root_logger.removeHandler(handler)
+        return
+    
     # Get log level from environment or parameter
     log_level = os.getenv("LOG_LEVEL", level).upper()
 
@@ -94,7 +106,7 @@ def setup_logging(
 
     root_logger.addHandler(console_handler)
 
-    # File handler (optional)
+    # File handler (optional) - skip in NONE mode
     if log_to_file:
         if not log_file_path:
             os.makedirs("logs", exist_ok=True)
@@ -247,6 +259,12 @@ def log_agent_processing(
 # Initialize logging on module import based on environment
 def _initialize_logging():
     """Initialize logging configuration on module import."""
+    # Check for NONE mode first - if set, skip all logging setup
+    log_mode = os.getenv("LOG_MODE", "").upper()
+    if log_mode == "NONE":
+        setup_logging()  # Will handle NONE mode internally
+        return
+    
     # Determine environment mode
     environment = os.getenv("ENVIRONMENT", "development").lower()
     debug_mode = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")

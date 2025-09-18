@@ -1134,8 +1134,16 @@ async def health_check():
 @app.post("/api/v1/logs/console/write", response_model=ConsoleLogWriteResponse)
 async def write_console_logs(request: ConsoleLogWriteRequest):
     """Write console log entries to the log file."""
+    # Check LOG_MODE - return early if NONE mode is active
+    log_mode = os.getenv("LOG_MODE", "").upper()
+    if log_mode == "NONE":
+        return ConsoleLogWriteResponse(
+            entries_written=0,
+            file_size_bytes=0,
+            message="Console logging disabled (LOG_MODE=NONE)"
+        )
+    
     import aiofiles
-    import os
     from pathlib import Path
 
     try:
@@ -1180,6 +1188,18 @@ async def write_console_logs(request: ConsoleLogWriteRequest):
 @app.get("/api/v1/logs/console/status", response_model=ConsoleLogStatusResponse)
 async def get_console_log_status():
     """Get console log file status and metadata."""
+    # Check LOG_MODE - return disabled status if NONE mode is active
+    log_mode = os.getenv("LOG_MODE", "").upper()
+    if log_mode == "NONE":
+        return ConsoleLogStatusResponse(
+            exists=False,
+            file_size_bytes=0,
+            line_count=0,
+            file_path="/dev/null",
+            writable=False,
+            last_modified=None
+        )
+    
     from pathlib import Path
 
     try:
@@ -1222,6 +1242,14 @@ async def get_console_log_status():
 @app.delete("/api/v1/logs/console", response_model=ConsoleLogClearResponse)
 async def clear_console_logs():
     """Clear the console log file."""
+    # Check LOG_MODE - return early if NONE mode is active
+    log_mode = os.getenv("LOG_MODE", "").upper()
+    if log_mode == "NONE":
+        return ConsoleLogClearResponse(
+            message="Console logging disabled (LOG_MODE=NONE) - no action taken",
+            previous_size_bytes=0
+        )
+    
     from pathlib import Path
 
     try:

@@ -88,7 +88,7 @@ export default function DebugPanel({
     setIsExpanded(prev => !prev);
   }, []);
 
-  // Toggle log mode between DEBUG and PRODUCTION
+  // Toggle log mode cycling through NONE → DEBUG → PRODUCTION → NONE
   const toggleLogMode = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
     if (event && 'key' in event) {
       // Handle keyboard events
@@ -98,15 +98,34 @@ export default function DebugPanel({
       event.preventDefault();
     }
 
-    const newMode: LogMode = logMode === 'DEBUG' ? 'PRODUCTION' : 'DEBUG';
+    // Cycle through modes: NONE → DEBUG → PRODUCTION → NONE
+    let newMode: LogMode;
+    switch (logMode) {
+      case 'NONE':
+        newMode = 'DEBUG';
+        break;
+      case 'DEBUG':
+        newMode = 'PRODUCTION';
+        break;
+      case 'PRODUCTION':
+        newMode = 'NONE';
+        break;
+      default:
+        newMode = 'NONE'; // fallback
+        break;
+    }
+
     logger.setLogMode(newMode);
 
-    logger.info(`🔄 Console log mode toggled via UI`, {
-      component: 'DebugPanel',
-      previousMode: logMode,
-      newMode: newMode,
-      timestamp: new Date().toISOString()
-    });
+    // Only log if not switching to NONE mode
+    if (newMode !== 'NONE') {
+      logger.info(`🔄 Console log mode toggled via UI`, {
+        component: 'DebugPanel',
+        previousMode: logMode,
+        newMode: newMode,
+        timestamp: new Date().toISOString()
+      });
+    }
   }, [logMode]);
 
   return (
@@ -158,14 +177,20 @@ export default function DebugPanel({
                 className={`log-mode-toggle ${logMode.toLowerCase()}-mode`}
                 onClick={toggleLogMode}
                 onKeyDown={toggleLogMode}
-                aria-label={`Switch from ${logMode} to ${logMode === 'DEBUG' ? 'PRODUCTION' : 'DEBUG'} mode`}
-                aria-pressed={logMode === 'DEBUG'}
+                aria-label={`Switch from ${logMode} to ${
+                  logMode === 'NONE' ? 'DEBUG' :
+                  logMode === 'DEBUG' ? 'PRODUCTION' : 'NONE'
+                } mode`}
+                aria-pressed={logMode !== 'NONE'}
                 role="switch"
               >
                 <span className="toggle-slider" aria-hidden="true">
                   <span className="toggle-indicator"></span>
                 </span>
                 <span className="toggle-labels">
+                  <span className={`toggle-label none-label-text ${logMode === 'NONE' ? 'active' : ''}`}>
+                    NONE
+                  </span>
                   <span className={`toggle-label debug-label-text ${logMode === 'DEBUG' ? 'active' : ''}`}>
                     DEBUG
                   </span>
@@ -441,7 +466,7 @@ export const debugPanelStyles = `
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: var(--font-mono);
     font-size: var(--font-size-micro);
-    min-width: 120px;
+    min-width: 180px;
     height: 32px;
     user-select: none;
     -webkit-user-select: none;
@@ -461,7 +486,7 @@ export const debugPanelStyles = `
 
   .toggle-slider {
     position: relative;
-    width: 36px;
+    width: 48px;
     height: 18px;
     background: var(--neutral-600);
     border-radius: 9px;
@@ -486,6 +511,7 @@ export const debugPanelStyles = `
     gap: var(--spacing-1);
     font-weight: var(--font-weight-medium);
     letter-spacing: var(--letter-spacing-wider);
+    flex-wrap: wrap;
   }
 
   .toggle-label {
@@ -507,18 +533,34 @@ export const debugPanelStyles = `
     letter-spacing: var(--letter-spacing-tight);
   }
 
+  /* NONE Mode Styling - Neutral gray theme */
+  .log-mode-toggle.none-mode .toggle-slider {
+    background: linear-gradient(135deg, var(--neutral-700) 0%, var(--neutral-600) 100%);
+  }
+
+  .log-mode-toggle.none-mode .toggle-indicator {
+    transform: translateX(0);
+    background: var(--neutral-400);
+  }
+
+  .log-mode-toggle.none-mode .none-label-text {
+    color: var(--neutral-400);
+    font-weight: var(--font-weight-bold);
+  }
+
   /* DEBUG Mode Styling */
   .log-mode-toggle.debug-mode .toggle-slider {
     background: linear-gradient(135deg, var(--accent-info) 0%, var(--accent-info-light) 100%);
   }
 
   .log-mode-toggle.debug-mode .toggle-indicator {
-    transform: translateX(18px);
+    transform: translateX(16px);
     background: var(--background-primary);
   }
 
   .log-mode-toggle.debug-mode .debug-label-text {
     color: var(--accent-info-light);
+    font-weight: var(--font-weight-bold);
   }
 
   /* PRODUCTION Mode Styling */
@@ -527,12 +569,13 @@ export const debugPanelStyles = `
   }
 
   .log-mode-toggle.production-mode .toggle-indicator {
-    transform: translateX(0);
+    transform: translateX(32px);
     background: var(--background-primary);
   }
 
   .log-mode-toggle.production-mode .production-label-text {
     color: var(--neutral-300);
+    font-weight: var(--font-weight-bold);
   }
 
   /* Responsive Design - Mobile Optimization */
@@ -542,13 +585,13 @@ export const debugPanelStyles = `
     }
 
     .log-mode-toggle {
-      min-width: 100px;
+      min-width: 140px;
       height: 28px;
       font-size: 10px;
     }
 
     .toggle-slider {
-      width: 28px;
+      width: 36px;
       height: 14px;
     }
 
@@ -558,7 +601,11 @@ export const debugPanelStyles = `
     }
 
     .log-mode-toggle.debug-mode .toggle-indicator {
-      transform: translateX(14px);
+      transform: translateX(12px);
+    }
+
+    .log-mode-toggle.production-mode .toggle-indicator {
+      transform: translateX(24px);
     }
     .debug-panel {
       padding: var(--spacing-2) var(--spacing-3);

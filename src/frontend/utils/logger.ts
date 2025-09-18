@@ -15,7 +15,7 @@
  */
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export type LogMode = 'DEBUG' | 'PRODUCTION';
+export type LogMode = 'DEBUG' | 'PRODUCTION' | 'NONE';
 
 export interface LogContext {
   [key: string]: unknown;
@@ -230,9 +230,9 @@ class FrontendLogger {
   constructor() {
     this.isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
 
-    // Initialize log mode from localStorage, default to DEBUG
+    // Initialize log mode from localStorage, default to NONE
     const storedLogMode = localStorage.getItem('console_log_mode') as LogMode;
-    this.logMode = ['DEBUG', 'PRODUCTION'].includes(storedLogMode) ? storedLogMode : 'DEBUG';
+    this.logMode = ['DEBUG', 'PRODUCTION', 'NONE'].includes(storedLogMode) ? storedLogMode : 'NONE';
 
     this.isDebugMode = this.isDevelopment && (
       localStorage.getItem('debug_mode') === 'true' ||
@@ -279,6 +279,14 @@ class FrontendLogger {
    * Initialize file logging service and console interception
    */
   private initializeFileLogging(): void {
+    // Skip initialization entirely in NONE mode
+    if (this.logMode === 'NONE') {
+      if (this.isDevelopment) {
+        console.info('📴 File logging disabled - NONE mode active');
+      }
+      return;
+    }
+
     try {
       // Create file log service with configuration
       const config: FileLogServiceConfig = {
@@ -312,7 +320,8 @@ class FrontendLogger {
    * Intercept console methods to capture logs
    */
   private interceptConsole(): void {
-    if (!this.fileLogService || this.originalConsole) return;
+    // Skip console interception in NONE mode
+    if (this.logMode === 'NONE' || !this.fileLogService || this.originalConsole) return;
 
     // Store original console methods
     this.originalConsole = {
@@ -406,11 +415,11 @@ class FrontendLogger {
   }
 
   /**
-   * Set the current log mode (DEBUG or PRODUCTION)
+   * Set the current log mode (NONE, DEBUG or PRODUCTION)
    */
   setLogMode(mode: LogMode): void {
-    if (!['DEBUG', 'PRODUCTION'].includes(mode)) {
-      this.warn('Invalid log mode provided', { attemptedMode: mode, validModes: ['DEBUG', 'PRODUCTION'] });
+    if (!['DEBUG', 'PRODUCTION', 'NONE'].includes(mode)) {
+      this.warn('Invalid log mode provided', { attemptedMode: mode, validModes: ['DEBUG', 'PRODUCTION', 'NONE'] });
       return;
     }
 
@@ -427,20 +436,29 @@ class FrontendLogger {
     // Persist to localStorage
     localStorage.setItem('console_log_mode', mode);
 
+    // Handle mode transition logic
+    this.handleModeTransition(previousMode, mode);
+
     // Notify listeners of mode change
     this.logModeChangeListeners.forEach(listener => {
       try {
         listener(mode);
       } catch (error) {
-        this.error('Error notifying log mode change listener', { error, mode });
+        // Only log error if not transitioning to NONE mode
+        if (mode !== 'NONE') {
+          this.error('Error notifying log mode change listener', { error, mode });
+        }
       }
     });
 
-    this.info(`🔄 Console log mode changed: ${previousMode} → ${mode}`, {
-      previousMode,
-      newMode: mode,
-      isDebugMode: this.isDebugMode
-    });
+    // Only log mode change if not transitioning to NONE mode
+    if (mode !== 'NONE') {
+      this.info(`🔄 Console log mode changed: ${previousMode} → ${mode}`, {
+        previousMode,
+        newMode: mode,
+        isDebugMode: this.isDebugMode
+      });
+    }
   }
 
   /**
@@ -448,6 +466,50 @@ class FrontendLogger {
    */
   getLogMode(): LogMode {
     return this.logMode;
+  }
+
+  /**
+   * Handle mode transition logic for proper initialization/cleanup
+   */
+  private handleModeTransition(previousMode: LogMode, newMode: LogMode): void {
+    // Transitioning FROM NONE mode - need to initialize services
+    if (previousMode === 'NONE' && newMode !== 'NONE') {
+      this.initializeFileLogging();
+    }
+    
+    // Transitioning TO NONE mode - need to cleanup services
+    if (previousMode !== 'NONE' && newMode === 'NONE') {
+      this.cleanupFileLogging();
+    }
+  }
+
+  /**
+   * Cleanup file logging services
+   */
+  private cleanupFileLogging(): void {
+    try {
+      // Destroy file log service
+      if (this.fileLogService) {
+        this.fileLogService.destroy();
+        this.fileLogService = null;
+      }
+
+      // Restore original console methods
+      if (this.originalConsole) {
+        console.log = this.originalConsole.log;
+        console.debug = this.originalConsole.debug;
+        console.info = this.originalConsole.info;
+        console.warn = this.originalConsole.warn;
+        console.error = this.originalConsole.error;
+        this.originalConsole = null;
+      }
+
+      if (this.isDevelopment) {
+        console.info('🧹 File logging services cleaned up - NONE mode active');
+      }
+    } catch (error) {
+      console.error('Failed to cleanup file logging services:', error);
+    }
   }
 
   /**
@@ -699,6 +761,9 @@ class FrontendLogger {
    * Check if we should log at this level
    */
   private shouldLog(level: LogLevel): boolean {
+    // In NONE mode, disable all logging
+    if (this.logMode === 'NONE') return false;
+
     // Always log errors
     if (level === 'error') return true;
 
