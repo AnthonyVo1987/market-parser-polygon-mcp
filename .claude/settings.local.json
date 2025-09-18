@@ -148,7 +148,10 @@
       "mcp__serena__list_memories",
       "mcp__serena__write_memory",
       "mcp__serena__read_memory",
-      "mcp__serena__delete_memory"
+      "mcp__serena__delete_memory",
+      "mcp__serena__find_symbol",
+      "mcp__serena__think_about_collected_information",
+      "mcp__serena__replace_symbol_body"
     ],
     "deny": [],
     "ask": [],
