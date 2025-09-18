@@ -454,7 +454,7 @@ export const sharedTickerInputStyles = `
 
   .ticker-input.error {
     color: var(--accent-error);
-    animation: shake var(--timing-medium) var(--ease-in-out);
+    /* Animation removed for performance */
   }
 
   .ticker-input-wrapper:has(.ticker-input.error) {
@@ -502,8 +502,7 @@ export const sharedTickerInputStyles = `
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-body);
     text-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
-    /* Success pulse animation */
-    animation: pulseGradient 2s var(--ease-in-out) infinite;
+    /* Animation removed for performance */
   }
 
   .validation-error {
@@ -518,8 +517,7 @@ export const sharedTickerInputStyles = `
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Error shake animation */
-    animation: shake var(--timing-medium) var(--ease-in-out);
+    /* Animation removed for performance */
     /* Enhanced error styling */
     box-shadow:
       0 2px 4px rgba(239, 68, 68, 0.2),
@@ -548,8 +546,7 @@ export const sharedTickerInputStyles = `
     /* Backdrop blur for glassmorphism */
     backdrop-filter: var(--glass-blur-xs);
     -webkit-backdrop-filter: var(--glass-blur-xs);
-    /* Error animation */
-    animation: fadeInUp var(--timing-base) var(--ease-out);
+    /* Animation removed for performance */
     margin-top: var(--spacing-2);
   }
 
@@ -808,38 +805,5 @@ export const sharedTickerInputStyles = `
     }
   }
 
-  /* Enhanced animation keyframes for fintech interactions */
-  @keyframes shake {
-    0%, 100% {
-      transform: translateX(0) var(--gpu-acceleration);
-    }
-    25% {
-      transform: translateX(-2px) var(--gpu-acceleration);
-    }
-    75% {
-      transform: translateX(2px) var(--gpu-acceleration);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(4px) var(--gpu-acceleration);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) var(--gpu-acceleration);
-    }
-  }
-
-  @keyframes pulseGradient {
-    0%, 100% {
-      opacity: 0.8;
-      transform: scale(1) var(--gpu-acceleration);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1.1) var(--gpu-acceleration);
-    }
-  }
+  /* Animation keyframes removed for performance */
 `;

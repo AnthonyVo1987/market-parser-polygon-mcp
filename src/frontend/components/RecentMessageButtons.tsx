@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
 import { Message } from '../types/chat_OpenAI';
 import {
   getMostRecentMessage,
@@ -17,7 +17,7 @@ interface ButtonStates {
   lastUser: ButtonState;
 }
 
-export default function RecentMessageButtons({
+const RecentMessageButtons = memo(function RecentMessageButtons({
   messages,
 }: RecentMessageButtonsProps) {
   const [buttonStates, setButtonStates] = useState<ButtonStates>({
@@ -126,10 +126,22 @@ export default function RecentMessageButtons({
     }
   }, [messages, updateButtonState]);
 
-  // Check if we have messages of each type
-  const hasAIMessages = messages.some(m => m.sender === 'ai');
-  const hasUserMessages = messages.some(m => m.sender === 'user');
-  const isEmpty = messages.length === 0;
+  // Memoize expensive message computations
+  const messageAnalysis = useMemo(() => {
+    const messageCount = messages.length;
+    const isEmpty = messageCount === 0;
+    const hasAIMessages = messages.some(m => m.sender === 'ai');
+    const hasUserMessages = messages.some(m => m.sender === 'user');
+    
+    return {
+      messageCount,
+      isEmpty,
+      hasAIMessages,
+      hasUserMessages
+    };
+  }, [messages]);
+  
+  const { isEmpty, hasAIMessages, hasUserMessages } = messageAnalysis;
 
   const getButtonText = (
     buttonId: keyof ButtonStates,
@@ -219,7 +231,32 @@ export default function RecentMessageButtons({
       )}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function - only re-render if message count or message content changes
+  const prevMessages = prevProps.messages;
+  const nextMessages = nextProps.messages;
+  
+  // Quick length check first
+  if (prevMessages.length !== nextMessages.length) {
+    return false;
+  }
+  
+  // If same length, check if the most recent messages of each type changed
+  // This is more efficient than deep comparison for this use case
+  const prevLastAI = prevMessages.filter(m => m.sender === 'ai').pop();
+  const nextLastAI = nextMessages.filter(m => m.sender === 'ai').pop();
+  const prevLastUser = prevMessages.filter(m => m.sender === 'user').pop();
+  const nextLastUser = nextMessages.filter(m => m.sender === 'user').pop();
+  
+  return (
+    prevLastAI?.id === nextLastAI?.id &&
+    prevLastUser?.id === nextLastUser?.id
+  );
+});
+
+RecentMessageButtons.displayName = 'RecentMessageButtons';
+
+export default RecentMessageButtons;
 
 // Professional Fintech Glassmorphic Styles for Recent Message Access
 export const recentMessageButtonsStyles = `
@@ -270,8 +307,7 @@ export const recentMessageButtonsStyles = `
     text-align: center;
     min-width: 160px;
     
-    /* Subtle Transitions */
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Transitions removed for performance */
     position: relative;
     overflow: hidden;
   }
@@ -281,14 +317,14 @@ export const recentMessageButtonsStyles = `
     background: var(--glass-surface-2);
     border-color: var(--glass-border-2);
     color: var(--text-secondary);
-    transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    /* Transform removed for performance */
   }
   
   /* Active State */
   .recent-message-button:not(.disabled):not(.loading):active {
-    transform: translateY(0);
     background: var(--glass-surface-3);
+    /* Transform removed for performance */
   }
   
   /* Disabled State - Very Subtle */
@@ -309,14 +345,11 @@ export const recentMessageButtonsStyles = `
   }
   
   .recent-message-button.loading::after {
-    content: '';
-    width: 12px;
-    height: 12px;
-    border: 2px solid transparent;
-    border-top: 2px solid var(--accent-info);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    content: '⏳';
+    font-size: 12px;
+    color: var(--accent-info);
     margin-left: var(--spacing-1);
+    /* Spinner animation replaced with static icon */
   }
   
   /* Success State - Subtle Success Gradient */
@@ -329,7 +362,6 @@ export const recentMessageButtonsStyles = `
   }
   
   .recent-message-button.success:hover {
-    transform: none;
     background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
   }
   
@@ -344,7 +376,7 @@ export const recentMessageButtonsStyles = `
   
   .recent-message-button.error:hover {
     background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
-    transform: translateY(-1px);
+    /* Transform removed for performance */
   }
   
   /* Professional Error Message Display */
@@ -443,28 +475,18 @@ export const recentMessageButtonsStyles = `
     }
   }
   
-  /* Reduced Motion Support */
+  /* Reduced Motion Support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .recent-message-button {
-      transition: none;
-    }
-    
-    .recent-message-button.loading::after {
-      animation: none;
-    }
+    /* All animations already removed */
   }
   
-  /* Performance Optimizations */
+  /* Performance Optimizations - GPU hints removed for performance */
   .recent-message-button {
-    will-change: transform, background;
-    transform: translateZ(0); /* Force GPU acceleration */
+    /* GPU acceleration hints removed */
   }
   
-  /* Smooth Animations */
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+  /* Animations removed for performance */
+  /* @keyframes spin removed */
   
   /* Focus Management - Accessibility */
   .recent-message-button:focus-visible {

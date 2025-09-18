@@ -832,33 +832,12 @@ body {
 @keyframes priceFlash, priceFlashBearish, countUp, pulseGradient,
 shimmer, bounce, shake, glow - Removed for performance optimization */
 
-/* Loading and Status Animations */
-@keyframes spin {
-  from {
-    transform: rotate(0deg) var(--gpu-acceleration);
-  }
-  to {
-    transform: rotate(360deg) var(--gpu-acceleration);
-  }
-}
+/* Loading and Status Animations - Animations removed for performance */
+/* @keyframes spin removed for performance */
 
-@keyframes progress {
-  0% {
-    transform: translateX(-100%) var(--gpu-acceleration);
-  }
-  100% {
-    transform: translateX(100%) var(--gpu-acceleration);
-  }
-}
+/* @keyframes progress removed for performance */
 
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1) var(--gpu-acceleration);
-  }
-  50% {
-    transform: scale(1.05) var(--gpu-acceleration);
-  }
-}
+/* @keyframes heartbeat removed for performance */
 
 /* ==========================================================================
 SECTION-SPECIFIC UTILITY CLASSES - Tasks 4 & 6 Implementation
@@ -2253,8 +2232,7 @@ pre, .code-block {
 }
 
 .loading-spinner {
-  animation: spin 1s var(--ease-linear) infinite;
-  will-change: var(--will-change-transform);
+  /* Animation removed for performance - use static loading indicator */
 }
 
 .loading-dots {
@@ -2267,24 +2245,20 @@ pre, .code-block {
   height: 8px;
   background-color: var(--accent-trust);
   border-radius: var(--radius-full);
-  animation: bounce 1.4s var(--ease-in-out) infinite;
-  will-change: var(--will-change-transform);
+  /* Animation removed for performance */
 }
 
-.loading-dots span:nth-child(1) { animation-delay: -0.32s; }
-.loading-dots span:nth-child(2) { animation-delay: -0.16s; }
-.loading-dots span:nth-child(3) { animation-delay: 0; }
+/* Animation delays removed for performance */
 
-/* Skeleton loading animations */
+/* Skeleton loading animations - Animation removed for performance */
 .skeleton {
-  animation: shimmer 2s var(--ease-linear) infinite;
-  background: linear-gradient(90deg, 
-    var(--background-secondary), 
-    var(--background-tertiary), 
+  /* Animation removed for performance */
+  background: linear-gradient(90deg,
+    var(--background-secondary),
+    var(--background-tertiary),
     var(--background-secondary)
   );
   background-size: 200px 100%;
-  will-change: background-position;
 }
 
 /* Progress indicators */
@@ -2395,9 +2369,9 @@ pre, .code-block {
 .chevron-icon {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  transition: transform 0.2s ease;
   min-width: 1rem;
   text-align: center;
+  /* Transition removed for performance */
 }
 
 .chevron-icon.expanded {
@@ -2411,7 +2385,7 @@ pre, .code-block {
 /* Collapsible content */
 .collapsible-content {
   overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  /* Transition removed for performance */
 }
 
 .collapsible-content.expanded {

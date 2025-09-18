@@ -1,14 +1,88 @@
-import { useState, useRef, useEffect, Suspense, lazy, useCallback, useMemo, memo } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import { useRef, useEffect, Suspense, lazy, useCallback, memo, startTransition, useReducer, useMemo, useDeferredValue } from 'react';
+// Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
 import { sendChatMessage } from '../services/api_OpenAI';
-import { Message, MessageMetadata } from '../types/chat_OpenAI';
+import { Message } from '../types/chat_OpenAI';
+
+// Consolidated state interface for useReducer
+interface ChatState {
+  messages: Message[];
+  isLoading: boolean;
+  error: string | null;
+  inputValue: string;
+  sharedTicker: string;
+  latestResponseTime: number | null;
+}
+
+// Action types for state management
+type ChatAction = 
+  | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
+  | { type: 'SEND_MESSAGE_SUCCESS'; payload: { aiMessage: Message; responseTime: number } }
+  | { type: 'SEND_MESSAGE_ERROR'; payload: { errorMessage: string; aiMessage: Message; responseTime: number } }
+  | { type: 'UPDATE_INPUT'; payload: string }
+  | { type: 'UPDATE_TICKER'; payload: string }
+  | { type: 'CLEAR_ERROR' }
+  | { type: 'RESET_STATE' };
+
+// Initial state
+const initialChatState: ChatState = {
+  messages: [],
+  isLoading: false,
+  error: null,
+  inputValue: '',
+  sharedTicker: 'NVDA',
+  latestResponseTime: null
+};
+
+// Reducer function for consolidated state management
+function chatReducer(state: ChatState, action: ChatAction): ChatState {
+  switch (action.type) {
+    case 'SEND_MESSAGE_START':
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+        messages: [...state.messages, action.payload.userMessage]
+      };
+    case 'SEND_MESSAGE_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        messages: [...state.messages, action.payload.aiMessage],
+        latestResponseTime: action.payload.responseTime
+      };
+    case 'SEND_MESSAGE_ERROR':
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload.errorMessage,
+        messages: [...state.messages, action.payload.aiMessage],
+        latestResponseTime: action.payload.responseTime
+      };
+    case 'UPDATE_INPUT':
+      return {
+        ...state,
+        inputValue: action.payload
+      };
+    case 'UPDATE_TICKER':
+      return {
+        ...state,
+        sharedTicker: action.payload
+      };
+    case 'CLEAR_ERROR':
+      return {
+        ...state,
+        error: null
+      };
+    case 'RESET_STATE':
+      return initialChatState;
+    default:
+      return state;
+  }
+}
 import { 
-  useComponentLogger, 
-  useStateLogger, 
   useInteractionLogger, 
-  usePerformanceLogger,
-  useRenderLogger 
+  usePerformanceLogger
 } from '../hooks/useDebugLog';
 import { logger } from '../utils/logger';
 
@@ -31,35 +105,33 @@ const AnalysisButtons = lazy(() =>
 // that would break the lazy loading optimization
 
 const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState<string>('');
-  const [sharedTicker, setSharedTicker] = useState<string>('NVDA');
-  const [latestResponseTime, setLatestResponseTime] = useState<number | null>(null);
+  // Consolidated state management using useReducer for performance optimization
+  const [state, dispatch] = useReducer(chatReducer, initialChatState);
+  const { messages, isLoading, error, inputValue, sharedTicker, latestResponseTime } = state;
+  
+  // Use deferred values for non-urgent UI updates to improve responsiveness
+  const deferredSharedTicker = useDeferredValue(sharedTicker);
+  
+  // Memoize expensive computations for performance
+  const memoizedComputations = useMemo(() => {
+    const hasMessages = messages.length > 0;
+    const lastMessage = messages[messages.length - 1];
+    const placeholderText = `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`;
+    
+    return {
+      hasMessages,
+      lastMessage,
+      placeholderText
+    };
+  }, [messages, sharedTicker]);
 
-  // Development-only debug logging hooks
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  // Performance and interaction tracking
 
-  // Conditional debug hooks - only in development
-  const componentLogger = isDevelopment ? useComponentLogger('ChatInterface_OpenAI', {
-    initialMessageCount: messages.length,
-    initialTicker: sharedTicker
-  }) : null;
+  // Performance tracking - always available for optimization
+  const { startTiming, endTiming } = usePerformanceLogger('ChatInterface_OpenAI');
 
-  // Minimal state logging - only critical errors
-  const errorLogger = isDevelopment ? useStateLogger('ChatInterface_OpenAI', 'error', error, !!error) : null;
-
-  // Performance tracking - development only
-  const performanceLogger = isDevelopment ? usePerformanceLogger('ChatInterface_OpenAI') : { startTiming: () => {}, endTiming: () => {} };
-  const { startTiming, endTiming } = performanceLogger;
-
-  // User interaction logging - development only
-  const logInteraction = isDevelopment ? useInteractionLogger('ChatInterface_OpenAI') : () => {};
-
-  // Render monitoring - only in development with reasonable threshold
-  const renderLogger = isDevelopment ? useRenderLogger('ChatInterface_OpenAI', 15) : null;
+  // User interaction logging - always available for UX insights
+  const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -77,7 +149,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
                         !isLoading;
 
     if (shouldScroll && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
     }
 
     // Update refs
@@ -85,85 +157,77 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     previousMessageCountRef.current = currentMessageCount;
   }, [messages.length]); // Only depend on messages.length // ✅ Include messages.length dependency
 
-  const addMessage = useCallback((content: string, sender: 'user' | 'ai', metadata?: MessageMetadata) => {
-    const messageId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-    const newMessage: Message = {
-      id: messageId,
-      content,
-      sender,
-      timestamp: new Date(),
-      metadata,
-    };
+  // Direct input change handler for <16ms responsiveness - no debouncing
 
-    setMessages(prev => {
-      logger.info(`💬 Adding ${sender} message`, {
-        component: 'ChatInterface_OpenAI',
-        messageId,
-        sender,
-        contentLength: content.length,
-        hasMetadata: !!metadata,
-        messageCount: prev.length + 1
-      });
-
-      return [...prev, newMessage];
-    });
-  }, []); // ✅ Empty dependency array = stable callback
-
-  // Debounced input change handler to prevent excessive parent re-renders
-  const debouncedInputChange = useDebouncedCallback((value: string) => {
-    setInputValue(value);
-  }, 150); // 150ms debounce for optimal balance between responsiveness and performance
-
-  // Handle input changes efficiently
+  // Handle input changes with immediate state updates for optimal responsiveness
   const handleInputValueChange = useCallback((value: string) => {
-    // For instant feedback on button-generated prompts, update immediately
-    // For user typing, use debounced updates to prevent render loops
-    if (value.length > inputValue.length + 10) {
-      // Large change (likely button-generated), update immediately
-      setInputValue(value);
-    } else {
-      // Small change (likely typing), use debounced update
-      debouncedInputChange(value);
-    }
-  }, [inputValue.length, debouncedInputChange]);
+    // Always update immediately for instant UI feedback using reducer dispatch
+    dispatch({ type: 'UPDATE_INPUT', payload: value });
 
-  // Handle prompt population from analysis buttons
-  const handlePromptGenerated = useCallback((prompt: string) => {
-    logInteraction('prompt_generated', 'analysis_button', {
-      promptLength: prompt.length,
-      promptPreview: prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
+    // Use startTransition for non-urgent derived state updates
+    startTransition(() => {
+      // Any analytics, word counting, or other non-critical updates would go here
+      // This prevents them from blocking the input responsiveness
+      logger.debug('📝 Input value updated', {
+        component: 'ChatInterface_OpenAI',
+        valueLength: value.length,
+        hasContent: value.length > 0
+      });
     });
+  }, []); // No dependencies needed - always direct update
 
-    // For button-generated prompts, update immediately for best UX
-    setInputValue(prompt);
+  // Handle prompt population from analysis buttons with immediate updates
+  const handlePromptGenerated = useCallback((prompt: string) => {
+    // Immediate state update for instant UI feedback using reducer dispatch
+    dispatch({ type: 'UPDATE_INPUT', payload: prompt });
 
-    // Focus the input after populating
+    // Focus the input immediately for best UX
     if (chatInputRef.current) {
       chatInputRef.current.focus();
-      logger.debug('🎯 Focused chat input after prompt generation');
-    } else {
-      logger.warn('⚠️ Could not focus chat input - ref not available');
     }
+
+    // Use startTransition for non-critical logging and analytics
+    startTransition(() => {
+      logInteraction('prompt_generated', 'analysis_button', {
+        promptLength: prompt.length,
+        promptPreview: prompt.slice(0, 50) + (prompt.length > 50 ? '...' : '')
+      });
+
+      logger.debug('🎯 Focused chat input after prompt generation', {
+        promptLength: prompt.length,
+        hasFocus: document.activeElement === chatInputRef.current?.focus
+      });
+    });
   }, [logInteraction]);
 
 
 
   const handleSendMessage = useCallback(async (messageContent: string) => {
     const messageId = Date.now().toString();
-    
-    logInteraction('send_message', 'chat_input', {
-      messageLength: messageContent.length,
-      messagePreview: messageContent.slice(0, 100) + (messageContent.length > 100 ? '...' : ''),
-      messageId
-    });
-    
+    const userMessage: Message = {
+      id: messageId,
+      content: messageContent,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
     // Start performance timing
     startTiming('message_processing');
-    
-    // Add user message immediately
-    addMessage(messageContent, 'user');
-    setIsLoading(true);
-    setError(null);
+
+    // Use optimized reducer action for immediate message start state
+    dispatch({
+      type: 'SEND_MESSAGE_START',
+      payload: { userMessage }
+    });
+
+    // Use startTransition for non-critical logging
+    startTransition(() => {
+      logInteraction('send_message', 'chat_input', {
+        messageLength: messageContent.length,
+        messagePreview: messageContent.slice(0, 100) + (messageContent.length > 100 ? '...' : ''),
+        messageId
+      });
+    });
 
     // Start timing for response tracking
     const startTime = Date.now();
@@ -175,28 +239,39 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         contentLength: messageContent.length,
         timestamp: new Date().toISOString()
       });
-      
+
       // Send to API and get response
       const aiResponse = await sendChatMessage(messageContent);
       const processingTime = (Date.now() - startTime) / 1000;
-      
+
       logger.info('✅ API response received', {
         messageId,
         processingTime: `${processingTime.toFixed(2)}s`,
         responseLength: aiResponse.length
       });
       logger.groupEnd();
-      
-      setLatestResponseTime(processingTime);
-      addMessage(aiResponse, 'ai', { processingTime });
-      
+
+      // Create AI message and dispatch success action
+      const aiMessage: Message = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        content: aiResponse,
+        sender: 'ai',
+        timestamp: new Date(),
+        metadata: { processingTime }
+      };
+
+      dispatch({
+        type: 'SEND_MESSAGE_SUCCESS',
+        payload: { aiMessage, responseTime: processingTime }
+      });
+
       // End performance timing
       endTiming('message_processing');
-      
+
     } catch (err: unknown) {
       const processingTime = (Date.now() - startTime) / 1000;
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
-      
+
       logger.group('❌ API Request Failed');
       logger.error('API request failed', {
         messageId,
@@ -205,55 +280,49 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         errorMessage: errorMessage.slice(0, 200) + (errorMessage.length > 200 ? '...' : '')
       });
       logger.groupEnd();
-      
-      setError(errorMessage);
-      setLatestResponseTime(processingTime);
-      addMessage(`Error: ${errorMessage}`, 'ai', { processingTime, isError: true });
-      
+
+      // Create error AI message and dispatch error action
+      const aiMessage: Message = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        content: `Error: ${errorMessage}`,
+        sender: 'ai',
+        timestamp: new Date(),
+        metadata: { processingTime, isError: true }
+      };
+
+      dispatch({
+        type: 'SEND_MESSAGE_ERROR',
+        payload: { errorMessage, aiMessage, responseTime: processingTime }
+      });
+
       // End performance timing even on error
       endTiming('message_processing');
-      
-    } finally {
-      setIsLoading(false);
-      
-      logger.debug('🔄 Message processing completed', {
-        messageId,
-        finalState: {
-          isLoading: false,
-          hasError: !!error
-        }
-      });
     }
-  }, [addMessage, startTiming, endTiming, logInteraction, error]); // ✅ Include error dependency
+  }, [startTiming, endTiming, logInteraction]); // Simplified dependencies
 
   const handleTickerChange = useCallback((newTicker: string) => {
-    setSharedTicker(prev => {
+    // Immediate ticker update using reducer dispatch
+    dispatch({ type: 'UPDATE_TICKER', payload: newTicker });
+
+    // Use startTransition for non-critical logging
+    startTransition(() => {
       logInteraction('ticker_change', 'analysis_buttons', {
-        oldTicker: prev,
+        oldTicker: sharedTicker,
         newTicker,
         source: 'analysis_buttons'
       });
-      return newTicker;
     });
-  }, [logInteraction]);
+  }, [logInteraction, sharedTicker]);
 
-  const handleRecentMessageClick = useCallback((messageContent: string) => {
-    logInteraction('recent_message_click', 'recent_button', {
-      messageLength: messageContent.length
-    });
-  }, [logInteraction]); // ✅ Removed unstable messages.length dependency
-
-  const handleExport = useCallback((format: string, messageCount: number) => {
-    logInteraction('export_messages', 'export_button', {
-      format,
-      messageCount
-    });
-  }, [logInteraction]); // ✅ Removed unstable messages.length dependency
+  // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
 
   const handleDebugAction = useCallback((action: string, details: Record<string, unknown>) => {
-    logInteraction('debug_action', 'debug_panel', {
-      action,
-      ...details
+    // Use startTransition for non-critical debug operations
+    startTransition(() => {
+      logInteraction('debug_action', 'debug_panel', {
+        action,
+        ...details
+      });
     });
   }, [logInteraction]);
 
@@ -350,7 +419,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             isLoading={isLoading}
             value={inputValue}
             onValueChange={handleInputValueChange}
-            placeholder={`Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`}
+            placeholder={memoizedComputations.placeholderText}
           />
         </div>
       </section>
@@ -366,7 +435,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         >
           <AnalysisButtons
             onPromptGenerated={handlePromptGenerated}
-            currentTicker={sharedTicker}
+            currentTicker={deferredSharedTicker}
             onTickerChange={handleTickerChange}
             className='fixed-analysis-buttons'
           />
@@ -375,7 +444,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
       {/* SECTION 5: Export/Recent Buttons */}
       <section className='export-buttons-section' role='complementary' aria-label='Export and recent message functions'>
-        {messages.length > 0 && (
+        {memoizedComputations.hasMessages && (
           <div className='export-recent-container'>
             <Suspense
               fallback={
@@ -384,7 +453,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             >
               <RecentMessageButtons
                 messages={messages}
-                onRecentMessageClick={handleRecentMessageClick}
               />
             </Suspense>
             <Suspense
@@ -394,7 +462,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             >
               <ExportButtons
                 messages={messages}
-                onExport={handleExport}
               />
             </Suspense>
           </div>
@@ -530,7 +597,7 @@ export const interfaceStyles = `
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* Transition removed for performance */
   }
   
   .chat-header:hover {
@@ -579,8 +646,8 @@ export const interfaceStyles = `
     width: 100%;
     max-width: 100%; /* Remove 800px limit for better mobile */
     margin: 0 auto;
-    /* Enhanced focus management */
-    scroll-behavior: smooth;
+    /* Enhanced focus management - SMOOTH SCROLLING REMOVED FOR PERFORMANCE */
+    scroll-behavior: auto;
     min-height: 0; /* Allow shrinking in grid layout */
     /* Custom scrollbar for glassmorphic look */
     scrollbar-width: thin;
@@ -590,7 +657,7 @@ export const interfaceStyles = `
     border-left: var(--border-chat);
     border-right: var(--border-chat);
     box-shadow: var(--border-glow-chat);
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* Transition removed for performance */
   }
   
   .messages-section:hover {
@@ -740,26 +807,21 @@ export const interfaceStyles = `
     height: 8px;
     border-radius: 50%;
     background-color: var(--primary-400);
-    animation: typing 1.4s infinite ease-in-out;
+    /* Animation removed for performance - use static dots */
+    opacity: 0.8;
   }
   
+  /* Typing animation removed for performance */
   .typing-dots span:nth-child(1) {
-    animation-delay: -0.32s;
+    opacity: 1;
   }
   
   .typing-dots span:nth-child(2) {
-    animation-delay: -0.16s;
+    opacity: 0.8;
   }
   
-  @keyframes typing {
-    0%, 80%, 100% {
-      transform: scale(0.8);
-      opacity: 0.5;
-    }
-    40% {
-      transform: scale(1);
-      opacity: 1;
-    }
+  .typing-dots span:nth-child(3) {
+    opacity: 0.6;
   }
   
   /* SECTION 3: Chat Input - Professional glassmorphic input section with Blue Chat Theme */
@@ -778,7 +840,7 @@ export const interfaceStyles = `
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* Transition removed for performance */
   }
   
   .chat-input-section:hover {
@@ -834,7 +896,7 @@ export const interfaceStyles = `
     justify-content: center;
     /* Contain layout changes during loading states */
     contain: layout style;
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* Transition removed for performance */
   }
   
   .analysis-buttons-section:hover {
@@ -899,7 +961,7 @@ export const interfaceStyles = `
     overflow-x: hidden; /* Prevent horizontal overflow */
     /* Contain layout changes during loading states */
     contain: layout style;
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* Transition removed for performance */
   }
   
   .export-buttons-section:hover {
@@ -942,7 +1004,7 @@ export const interfaceStyles = `
     overflow-x: hidden; /* Prevent horizontal overflow */
     /* Contain layout changes during loading states */
     contain: layout style;
-    transition: box-shadow var(--timing-base) var(--ease-out);
+    /* Transition removed for performance */
   }
   
   .debug-section:hover {
@@ -1039,19 +1101,9 @@ export const interfaceStyles = `
     }
   }
   
-  /* Reduced motion support */
+  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .messages-section {
-      scroll-behavior: auto;
-    }
-    
-    .typing-dots span {
-      animation: none;
-    }
-    
-    .chat-interface {
-      transition: none;
-    }
+    /* All animations already removed */
   }
   
   /* Focus visible improvements with modern focus rings - DARK MODE */
@@ -1068,7 +1120,7 @@ export const interfaceStyles = `
   .analysis-buttons-section:focus-within,
   .export-buttons-section:focus-within {
     background-color: rgba(99, 179, 237, 0.1); /* Light blue overlay for dark mode */
-    transition: background-color 0.2s ease;
+    /* Transition removed for performance */
   }
   
   /* Modern focus indicators for sections - DARK MODE */
@@ -1111,20 +1163,12 @@ export const interfaceStyles = `
   }
 
   .component-loading::before {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--neutral-600);
-    border-top: 2px solid var(--primary-400);
-    border-radius: 50%;
-    animation: component-loading-spin 1s linear infinite;
+    content: '⚙️';
     margin-right: var(--space-2);
     flex-shrink: 0;
-  }
-
-  @keyframes component-loading-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    font-size: 16px;
+    color: var(--primary-400);
+    /* Spinner animation removed for performance */
   }
 
   /* Loading state variations for different locations */
@@ -1162,20 +1206,9 @@ export const interfaceStyles = `
   
   /* Dark mode is now the default theme - no media queries needed */
   
-  /* Reduced motion support - DARK MODE */
+  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .component-loading::before {
-      animation: none;
-      border: 2px solid #63b3ed; /* Light blue for dark mode */
-    }
-    
-    .chat-input-section,
-    .ticker-input-section,
-    .analysis-buttons-section,
-    .export-buttons-section,
-    .debug-section {
-      transition: none;
-    }
+    /* All animations already removed */
   }
   
   /* Note: Component-specific styles are now included within each lazy-loaded component */

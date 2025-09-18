@@ -388,21 +388,14 @@ export const errorBoundaryStyles = `
   }
   
   .error-reset-button[data-loading="true"]::after {
-    content: '';
+    content: '⏳';
     position: absolute;
     top: 50%;
     right: var(--spacing-3);
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid var(--text-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    font-size: 14px;
+    color: var(--text-primary);
     transform: translateY(-50%);
   }
   
-  @keyframes spin {
-    0% { transform: translateY(-50%) rotate(0deg); }
-    100% { transform: translateY(-50%) rotate(360deg); }
-  }
+  /* @keyframes spin removed for performance */
 `;

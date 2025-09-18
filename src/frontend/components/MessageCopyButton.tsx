@@ -222,7 +222,7 @@ export const messageCopyButtonStyles = `
     border-color: var(--accent-info);
     color: var(--text-primary);
     cursor: wait;
-    animation: loading-pulse 2s infinite;
+    /* Animation removed for performance */
     box-shadow: 
       0 4px 16px rgba(59, 130, 246, 0.3),
       0 0 20px rgba(59, 130, 246, 0.1);
@@ -256,7 +256,7 @@ export const messageCopyButtonStyles = `
     box-shadow: 
       0 4px 16px rgba(239, 68, 68, 0.4),
       0 0 20px rgba(239, 68, 68, 0.2);
-    animation: error-shake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Animation removed for performance */
   }
   
   .message-copy-button.error:hover,
@@ -290,13 +290,13 @@ export const messageCopyButtonStyles = `
   
   .copy-icon.icon-loading {
     transform: scale(1.1) rotate(180deg) translateZ(0);
-    animation: icon-loading-spin 2s linear infinite;
+    /* Animation removed for performance */
   }
   
   .copy-icon.icon-success {
     transform: scale(1.2) rotate(360deg) translateZ(0);
     filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
-    animation: icon-success-bounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Animation removed for performance */
   }
   
   .copy-icon.icon-error {
@@ -479,10 +479,10 @@ export const messageCopyButtonStyles = `
       0 0 40px rgba(16, 185, 129, 0.6),
       0 4px 20px rgba(16, 185, 129, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    animation: success-glow-pulse 1s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Animation removed for performance */
   }
   
-  /* Professional Keyframe Animations */
+  /* All keyframe animations removed for performance */
   @keyframes loading-pulse {
     0%, 100% {
       opacity: 1;

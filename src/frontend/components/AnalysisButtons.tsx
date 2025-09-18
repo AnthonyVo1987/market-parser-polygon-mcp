@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, memo, useDebugValue } from 'react';
+import { useEffect, useCallback, useState, memo, useDebugValue, useMemo, useDeferredValue, startTransition } from 'react';
 import { AnalysisButtonsProps, AnalysisType } from '../types/chat_OpenAI';
 import { usePromptAPI } from '../hooks/usePromptAPI';
 import {
@@ -8,8 +8,8 @@ import {
   useConditionalLogger
 } from '../hooks/useDebugLog';
 import { logger } from '../utils/logger';
-import AnalysisButton, { analysisButtonStyles } from './AnalysisButton';
-import SharedTickerInput, { sharedTickerInputStyles } from './SharedTickerInput';
+import AnalysisButton from './AnalysisButton';
+import SharedTickerInput from './SharedTickerInput';
 import '../styles/AnalysisButtons.css';
 
 // Define the expected order of analysis types for consistent display
@@ -192,18 +192,23 @@ export default memo(function AnalysisButtons({
     setIsExpanded(prev => !prev);
   }, [isExpanded, logInteraction]);
 
-  // Sort templates by the predefined order for consistent UI
-  const sortedTemplates = [...templates].sort((a, b) => {
-    const aIndex = ANALYSIS_TYPE_ORDER.indexOf(a.type);
-    const bIndex = ANALYSIS_TYPE_ORDER.indexOf(b.type);
+  // Memoize expensive template sorting operation
+  const sortedTemplates = useMemo(() => {
+    return [...templates].sort((a, b) => {
+      const aIndex = ANALYSIS_TYPE_ORDER.indexOf(a.type);
+      const bIndex = ANALYSIS_TYPE_ORDER.indexOf(b.type);
 
-    // Put known types first in order, unknown types at the end
-    if (aIndex === -1 && bIndex === -1) return 0;
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
+      // Put known types first in order, unknown types at the end
+      if (aIndex === -1 && bIndex === -1) return 0;
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
 
-    return aIndex - bIndex;
-  });
+      return aIndex - bIndex;
+    });
+  }, [templates]);
+  
+  // Use deferred value for ticker to improve input responsiveness
+  const deferredTicker = useDeferredValue(currentTicker);
   
   // Log template sorting results when templates change
   useEffect(() => {
@@ -329,20 +334,24 @@ export default memo(function AnalysisButtons({
         <SharedTickerInput
           value={currentTicker}
           onChange={(newTicker) => {
-            logInteraction('ticker_change', 'ticker_input', {
-              oldTicker: currentTicker,
-              newTicker,
-              source: 'shared_ticker_input'
-            });
-            
-            logger.info('🏷️ Ticker changed via input', {
-              component: 'AnalysisButtons',
-              oldTicker: currentTicker,
-              newTicker,
-              timestamp: new Date().toISOString()
-            });
-            
+            // Immediate UI update for responsiveness
             onTickerChange(newTicker);
+            
+            // Defer non-critical operations
+            startTransition(() => {
+              logInteraction('ticker_change', 'ticker_input', {
+                oldTicker: currentTicker,
+                newTicker,
+                source: 'shared_ticker_input'
+              });
+              
+              logger.info('🏷️ Ticker changed via input', {
+                component: 'AnalysisButtons',
+                oldTicker: currentTicker,
+                newTicker,
+                timestamp: new Date().toISOString()
+              });
+            });
           }}
           label='Stock Symbol'
           placeholder='NVDA'
@@ -370,7 +379,7 @@ export default memo(function AnalysisButtons({
             <p className='buttons-subtitle'>
               Click to populate your message with financial analysis prompts
               {currentTicker && (
-                <span className='current-ticker'> for {currentTicker}</span>
+                <span className='current-ticker'> for {deferredTicker}</span>
               )}
             </p>
           </div>
@@ -390,7 +399,7 @@ export default memo(function AnalysisButtons({
           <AnalysisButton
             key={template.id}
             template={template}
-            ticker={currentTicker}
+            ticker={deferredTicker}
             onPromptGenerated={handlePromptGenerated}
             isLoading={loading}
             className='grid-button'

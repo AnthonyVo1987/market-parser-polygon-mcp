@@ -264,7 +264,6 @@ export const debugPanelStyles = `
 
   .debug-header.clickable-header {
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 8px;
     padding: var(--spacing-2) var(--spacing-3) var(--spacing-2) var(--spacing-3);
     margin: 0 0 var(--spacing-2) 0;
@@ -325,7 +324,6 @@ export const debugPanelStyles = `
   .debug-header .chevron-icon {
     font-size: 14px;
     color: var(--text-secondary);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -352,7 +350,6 @@ export const debugPanelStyles = `
   /* Collapsible content container for debug panel */
   .debug-panel .collapsible-content {
     overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
   }
 
   .debug-panel .collapsible-content.expanded {
@@ -377,7 +374,6 @@ export const debugPanelStyles = `
     align-items: center;
     padding: var(--spacing-1) 0;
     border-radius: 6px;
-    transition: background 0.2s ease;
   }
   
   .debug-metric:hover {
@@ -417,20 +413,9 @@ export const debugPanelStyles = `
     overflow: hidden;
   }
   
-  /* Value Badge Animation */
+  /* Value Badge Animation - REMOVED FOR PERFORMANCE */
   .debug-value::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-  }
-  
-  .debug-value:hover::before {
-    left: 100%;
+    display: none;
   }
   
   /* State-specific styling */
@@ -463,7 +448,6 @@ export const debugPanelStyles = `
     border-radius: 20px;
     padding: var(--spacing-1) var(--spacing-2);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: var(--font-mono);
     font-size: var(--font-size-micro);
     min-width: 180px;
@@ -490,7 +474,6 @@ export const debugPanelStyles = `
     height: 18px;
     background: var(--neutral-600);
     border-radius: 9px;
-    transition: background 0.3s ease;
     flex-shrink: 0;
   }
 
@@ -502,7 +485,6 @@ export const debugPanelStyles = `
     height: 14px;
     background: var(--text-primary);
     border-radius: 50%;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
@@ -516,7 +498,6 @@ export const debugPanelStyles = `
 
   .toggle-label {
     color: var(--text-secondary);
-    transition: color 0.3s ease;
     font-size: var(--font-size-micro);
   }
 
@@ -716,25 +697,14 @@ export const debugPanelStyles = `
     border-color: var(--accent-info);
   }
   
-  /* Reduced Motion Support */
+  /* Reduced Motion Support - ALL ANIMATIONS REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .debug-value {
-      transition: none;
-    }
-    
-    .debug-value::before {
-      display: none;
-    }
-    
-    .debug-metric {
-      transition: none;
-    }
+    /* All animations already removed */
   }
   
-  /* Performance Optimizations */
+  /* Performance Optimizations - GPU HINTS REMOVED FOR PERFORMANCE */
   .debug-panel {
-    will-change: backdrop-filter;
-    transform: translateZ(0); /* Force GPU acceleration */
+    /* GPU acceleration hints removed */
   }
   
   /* High DPI Display Support */
@@ -745,28 +715,19 @@ export const debugPanelStyles = `
     }
   }
   
-  /* Professional Loading State */
+  /* Professional Loading State - SPINNER ANIMATION REMOVED FOR PERFORMANCE */
   .debug-panel[data-loading="true"] {
     opacity: 0.7;
     pointer-events: none;
   }
   
   .debug-panel[data-loading="true"]::after {
-    content: '';
+    content: '⚙️';
     position: absolute;
     top: 50%;
     right: var(--spacing-3);
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid var(--accent-info);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
     transform: translateY(-50%);
-  }
-  
-  @keyframes spin {
-    0% { transform: translateY(-50%) rotate(0deg); }
-    100% { transform: translateY(-50%) rotate(360deg); }
+    font-size: 16px;
+    color: var(--accent-info);
   }
 `;

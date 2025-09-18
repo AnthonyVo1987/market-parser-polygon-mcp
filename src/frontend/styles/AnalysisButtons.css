@@ -57,8 +57,7 @@
   /* Performance optimizations */
   contain: layout style;
   box-sizing: border-box;
-  /* Sophisticated transitions */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transitions removed for performance */
   /* Enhanced visual hierarchy */
   overflow: hidden;
 }
@@ -67,11 +66,11 @@
 .analysis-buttons-container:hover {
   background: rgba(26, 32, 44, 0.85);
   border-color: rgba(124, 58, 237, 0.3);
-  transform: translateY(-2px);
   box-shadow:
     0 12px 48px rgba(0, 0, 0, 0.25),
     0 4px 16px rgba(124, 58, 237, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  /* Transform removed for performance */
 }
 
 /* Enhanced focus-within state */
@@ -94,10 +93,10 @@
 
 .buttons-header.clickable-header {
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 12px;
   padding: 12px 16px 16px 16px;
   margin: -12px -16px 16px -16px;
+  /* Transition removed for performance */
 }
 
 .buttons-header.clickable-header:hover {
@@ -149,17 +148,18 @@
   display: inline-block;
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(124, 58, 237, 0.3);
-  border-radius: 50%;
-  border-top-color: rgba(124, 58, 237, 0.8);
-  animation: spin 1s ease-in-out infinite;
   margin-right: 12px;
   vertical-align: middle;
+  /* Spinner animation replaced with static icon */
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.loading-spinner::before {
+  content: '⏳';
+  font-size: 24px;
+  color: rgba(124, 58, 237, 0.8);
 }
+
+/* @keyframes spin removed for performance */
 
 /* Error state styling */
 .error-state {
@@ -180,7 +180,7 @@
   border-radius: 8px;
   cursor: pointer;
   margin-top: 12px;
-  transition: all 0.2s ease;
+  /* Transition removed for performance */
 }
 
 .error-retry-button:hover {
@@ -207,7 +207,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 11px;
-  transition: all 0.2s ease;
+  /* Transition removed for performance */
 }
 
 .debug-toggle-button:hover {

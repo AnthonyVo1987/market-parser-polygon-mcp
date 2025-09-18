@@ -6,6 +6,7 @@ import {
   useEffect,
   useCallback,
   memo,
+  startTransition,
 } from 'react';
 import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
 import { logger } from '../utils/logger';
@@ -75,16 +76,19 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
         
         onSendMessage(inputValue.trim());
 
-        // Clear value based on control mode
+        // Immediate clear for instant UI feedback
         if (externalValue !== undefined && onValueChange) {
           onValueChange('');
         } else {
           setInternalValue('');
         }
-        // Reset textarea height after clearing
-        if (textareaRef.current) {
-          textareaRef.current.style.height = 'auto';
-        }
+
+        // Use startTransition for non-critical height reset
+        startTransition(() => {
+          if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+          }
+        });
       } else if (!inputValue.trim()) {
         // Show error feedback for empty submission
         setHasError(true);
@@ -95,25 +99,28 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const newValue = e.target.value;
 
-      // Clear error state when user starts typing (using ref to avoid dependency)
+      // Immediate state updates for instant UI responsiveness
       setHasError(prev => prev ? false : prev);
 
-      // Update appropriate state based on control mode
+      // Update appropriate state immediately - no debouncing for <16ms responsiveness
       if (externalValue !== undefined && onValueChange) {
         onValueChange(newValue);
       } else {
         setInternalValue(newValue);
       }
 
-      // Auto-resize logic with smooth transition
+      // Use startTransition for non-critical auto-resize calculations
       const textarea = e.target;
-      const previousHeight = textarea.style.height;
-      textarea.style.height = 'auto';
-      const newHeight = Math.min(textarea.scrollHeight, 200) + 'px';
+      startTransition(() => {
+        // Auto-resize logic deferred to not block input responsiveness
+        const previousHeight = textarea.style.height;
+        textarea.style.height = 'auto';
+        const newHeight = Math.min(textarea.scrollHeight, 200) + 'px';
 
-      if (previousHeight !== newHeight) {
-        textarea.style.height = newHeight;
-      }
+        if (previousHeight !== newHeight) {
+          textarea.style.height = newHeight;
+        }
+      });
     }, [externalValue, onValueChange]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -148,29 +155,37 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
           }
         },
         setValue: (value: string) => {
+          // Immediate state update for instant responsiveness
           if (externalValue !== undefined && onValueChange) {
             onValueChange(value);
           } else {
             setInternalValue(value);
           }
-          // Auto-resize after setting value
-          if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height =
-              Math.min(textareaRef.current.scrollHeight, 200) + 'px';
-          }
+
+          // Use startTransition for non-critical auto-resize
+          startTransition(() => {
+            if (textareaRef.current) {
+              textareaRef.current.style.height = 'auto';
+              textareaRef.current.style.height =
+                Math.min(textareaRef.current.scrollHeight, 200) + 'px';
+            }
+          });
         },
         getValue: () => inputValue,
         clear: () => {
+          // Immediate state clear for instant responsiveness
           if (externalValue !== undefined && onValueChange) {
             onValueChange('');
           } else {
             setInternalValue('');
           }
-          // Reset textarea height after clearing
-          if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-          }
+
+          // Use startTransition for non-critical height reset
+          startTransition(() => {
+            if (textareaRef.current) {
+              textareaRef.current.style.height = 'auto';
+            }
+          });
         },
       }),
       [inputValue, externalValue, onValueChange]
@@ -302,13 +317,9 @@ export const inputStyles = `
     min-height: 80px;
     max-height: 200px;
     overflow-y: auto;
-    /* Professional fintech transitions */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     scrollbar-width: thin;
     scrollbar-color: var(--neutral-400) transparent;
-    /* Performance optimization */
-    will-change: border-color, box-shadow, background-color;
-    transform: translateZ(0); /* GPU acceleration */
+    /* GPU hints removed for performance */
     position: relative;
   }
   
@@ -321,48 +332,36 @@ export const inputStyles = `
       0 0 0 3px rgba(139, 92, 246, 0.15),
       0 4px 20px rgba(139, 92, 246, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
+    /* Transform removed for performance */
   }
   
-  /* Error state with professional shake animation */
+  /* Error state - animation removed for performance */
   .message-input.input-error {
     border-color: var(--error-500);
     background: var(--glass-surface-light);
     box-shadow: 
       0 0 0 3px rgba(239, 68, 68, 0.15),
       0 4px 20px rgba(239, 68, 68, 0.2);
-    animation: input-shake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Shake animation removed for performance */
   }
   
-  /* Success state with subtle celebration */
+  /* Success state - animation removed for performance */
   .message-input.input-success {
     border-color: var(--success-500);
     background: var(--glass-surface-medium);
     box-shadow: 
       0 0 0 3px rgba(34, 197, 94, 0.15),
       0 4px 20px rgba(34, 197, 94, 0.2);
-    animation: input-success-pulse 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Pulse animation removed for performance */
   }
   
-  /* Professional shake animation for errors */
-  @keyframes input-shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-    20%, 40%, 60%, 80% { transform: translateX(4px); }
-  }
+  /* Animations removed for performance */
+  /* @keyframes input-shake and input-success-pulse removed */
   
-  /* Success pulse animation */
-  @keyframes input-success-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
-  
-  /* Enhanced placeholder with smooth transitions */
+  /* Enhanced placeholder - transitions removed for performance */
   .message-input::placeholder {
     color: var(--neutral-400);
     font-family: var(--font-inter);
-    transition: color 0.3s ease, opacity 0.3s ease;
   }
   
   .message-input.input-focused::placeholder {
@@ -394,14 +393,11 @@ export const inputStyles = `
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
     font-family: var(--font-inter);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 100px;
     backdrop-filter: var(--backdrop-blur-sm);
     -webkit-backdrop-filter: var(--backdrop-blur-sm);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-    /* Performance optimization */
-    will-change: transform, box-shadow, background;
-    transform: translateZ(0);
+    /* GPU hints removed for performance */
     position: relative;
     display: flex;
     align-items: center;
@@ -417,17 +413,15 @@ export const inputStyles = `
     box-shadow: none;
   }
   
-  /* Professional hover state with trust enhancement */
+  /* Professional hover state - transforms removed for performance */
   .send-button:not(:disabled):hover {
     background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-    transform: translateY(-2px) scale(1.02);
     box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
     border-color: var(--primary-400);
   }
   
-  /* Active state with satisfying feedback */
+  /* Active state - transforms removed for performance */
   .send-button:not(:disabled):active {
-    transform: translateY(-1px) scale(0.98);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
   }
   
@@ -440,72 +434,42 @@ export const inputStyles = `
       0 6px 20px rgba(139, 92, 246, 0.4);
   }
   
-  /* Success button state */
+  /* Success button state - animation removed for performance */
   .send-button.button-success {
     background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%);
     border-color: var(--success-500);
     box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-    animation: button-success-pulse 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  /* Error button state */
+  /* Error button state - animation removed for performance */
   .send-button.button-error {
     background: linear-gradient(135deg, var(--error-600) 0%, var(--error-700) 100%);
     border-color: var(--error-500);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    animation: button-error-shake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  /* Button success pulse animation */
-  @keyframes button-success-pulse {
-    0% { transform: scale(1); }
-    50% { 
-      transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-    }
-    100% { transform: scale(1); }
-  }
+  /* Button animations removed for performance */
+  /* @keyframes button-success-pulse and button-error-shake removed */
   
-  /* Button error shake animation */
-  @keyframes button-error-shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-    20%, 40%, 60%, 80% { transform: translateX(2px); }
-  }
-  
-  /* Loading spinner for button */
+  /* Loading spinner - animation removed for performance */
   .loading-spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid currentColor;
-    border-radius: 50%;
-    animation: button-loading-spin 1s linear infinite;
     margin-right: var(--space-1);
+    /* Replaced spinner with static icon */
   }
   
-  @keyframes button-loading-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  .loading-spinner::before {
+    content: '⏳';
+    font-size: 16px;
+    color: currentColor;
   }
   
-  /* Success icon with smooth appearance */
+  /* Success icon - animation removed for performance */
   .success-icon {
     font-size: var(--text-base);
     font-weight: bold;
     color: currentColor;
-    animation: success-icon-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  @keyframes success-icon-appear {
-    0% { 
-      transform: scale(0) rotate(-90deg);
-      opacity: 0;
-    }
-    100% { 
-      transform: scale(1) rotate(0deg);
-      opacity: 1;
-    }
   }
   
   /* Enhanced glassmorphic scrollbar styling for input */
@@ -523,7 +487,7 @@ export const inputStyles = `
     -webkit-backdrop-filter: var(--backdrop-blur-sm);
     border: 1px solid var(--glass-border-highlight);
     border-radius: var(--radius-full);
-    transition: all 0.3s ease;
+    /* Transition removed for performance */
   }
   
   .message-input::-webkit-scrollbar-thumb:hover {
@@ -582,43 +546,8 @@ export const inputStyles = `
     }
   }
   
-  /* Enhanced reduced motion support for accessibility */
+  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .message-input,
-    .send-button {
-      transition: none;
-      animation: none;
-    }
-    
-    .send-button:not(:disabled):hover {
-      transform: none;
-    }
-    
-    .message-input.input-focused {
-      transform: none;
-      animation: none;
-    }
-    
-    .message-input.input-error {
-      animation: none;
-    }
-    
-    .message-input.input-success {
-      animation: none;
-    }
-    
-    .send-button.button-success,
-    .send-button.button-error {
-      animation: none;
-    }
-    
-    .loading-spinner {
-      animation: none;
-      border: 2px solid currentColor;
-    }
-    
-    .success-icon {
-      animation: none;
-    }
+    /* All animations already removed */
   }
 `;

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
 import { Message } from '../types/chat_OpenAI';
 import {
   convertToMarkdown,
@@ -22,7 +22,7 @@ interface ButtonStates {
   saveJson: ButtonState;
 }
 
-export default function ExportButtons({ messages }: ExportButtonsProps) {
+const ExportButtons = memo(function ExportButtons({ messages }: ExportButtonsProps) {
   const [buttonStates, setButtonStates] = useState<ButtonStates>({
     copyMd: 'idle',
     copyJson: 'idle',
@@ -160,7 +160,20 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
     }
   }, [messages, updateButtonState]);
 
-  const isDisabled = messages.length === 0;
+  // Memoize computed values for performance
+  const computedValues = useMemo(() => {
+    const messageCount = messages.length;
+    const isDisabled = messageCount === 0;
+    const hasMessages = messageCount > 0;
+    
+    return {
+      messageCount,
+      isDisabled,
+      hasMessages
+    };
+  }, [messages.length]);
+  
+  const { isDisabled } = computedValues;
 
   const getButtonText = (
     buttonId: keyof ButtonStates,
@@ -275,7 +288,14 @@ export default function ExportButtons({ messages }: ExportButtonsProps) {
       )}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function - only re-render if message count changes
+  return prevProps.messages.length === nextProps.messages.length;
+});
+
+ExportButtons.displayName = 'ExportButtons';
+
+export default ExportButtons;
 
 // Professional Fintech Glassmorphic Styles for Export Functionality
 export const exportButtonStyles = `
@@ -325,8 +345,7 @@ export const exportButtonStyles = `
     min-height: 40px;
     text-align: center;
     
-    /* Professional Transitions */
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Transitions removed for performance */
     position: relative;
     overflow: hidden;
   }
@@ -336,14 +355,14 @@ export const exportButtonStyles = `
     background: var(--glass-surface-3);
     border-color: var(--glass-border-2);
     color: var(--text-primary);
-    transform: translateY(-1px);
     box-shadow: var(--glass-shadow-md);
+    /* Transform removed for performance */
   }
   
   /* Active State */
   .export-button:not(.disabled):not(.loading):active {
-    transform: translateY(0);
     background: var(--glass-surface-4);
+    /* Transform removed for performance */
   }
   
   /* Disabled State - Subtle Glass Treatment */
@@ -364,14 +383,11 @@ export const exportButtonStyles = `
   }
   
   .export-button.loading::after {
-    content: '';
-    width: 14px;
-    height: 14px;
-    border: 2px solid transparent;
-    border-top: 2px solid var(--accent-info);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    content: '⏳';
+    font-size: 14px;
+    color: var(--accent-info);
     margin-left: var(--spacing-1);
+    /* Spinner animation replaced with static icon */
   }
   
   /* Success State - Fintech Green */
@@ -384,7 +400,6 @@ export const exportButtonStyles = `
   }
   
   .export-button.success:hover {
-    transform: none;
     background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
   }
   
@@ -399,7 +414,7 @@ export const exportButtonStyles = `
   
   .export-button.error:hover {
     background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
-    transform: translateY(-1px);
+    /* Transform removed for performance */
   }
   
   /* Professional Error Message Display */
@@ -505,28 +520,18 @@ export const exportButtonStyles = `
     }
   }
   
-  /* Reduced Motion Support */
+  /* Reduced Motion Support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .export-button {
-      transition: none;
-    }
-    
-    .export-button.loading::after {
-      animation: none;
-    }
+    /* All animations already removed */
   }
   
-  /* Performance Optimizations */
+  /* Performance Optimizations - GPU hints removed for performance */
   .export-button {
-    will-change: transform, background;
-    transform: translateZ(0); /* Force GPU acceleration */
+    /* GPU acceleration hints removed */
   }
   
-  /* Smooth Animations */
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+  /* Animations removed for performance */
+  /* @keyframes spin removed */
   
   /* Focus Management - Accessibility */
   .export-button:focus-visible {

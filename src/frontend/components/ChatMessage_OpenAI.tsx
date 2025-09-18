@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, Suspense, lazy, useEffect, useState } from 'react';
+import { ComponentPropsWithoutRef, Suspense, lazy, useEffect, useState, memo, useMemo } from 'react';
 
 // Lazy load react-markdown for better performance
 const Markdown = lazy(() => import('react-markdown'));
@@ -12,8 +12,8 @@ interface ChatMessage_OpenAIProps {
   message: Message;
 }
 
-// Custom components for markdown rendering
-const markdownComponents = {
+// Custom components for markdown rendering - moved inside component to use useMemo
+const createMarkdownComponents = () => ({
   p: ({ children, ...props }: ComponentPropsWithoutRef<'p'>) => (
     <p
       {...props}
@@ -168,31 +168,30 @@ const markdownComponents = {
       </pre>
     );
   },
-};
+});
 
-export default function ChatMessage_OpenAI({
+const ChatMessage_OpenAI = memo(function ChatMessage_OpenAI({
   message,
 }: ChatMessage_OpenAIProps) {
   const isUser = message.sender === 'user';
   const [isVisible, setIsVisible] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Trigger appearance animation on mount
+  // Memoize markdown components configuration for performance
+  const markdownComponents = useMemo(() => createMarkdownComponents(), []);
+
+  // Memoize expensive message processing computations
+  const messageMetadata = useMemo(() => ({
+    hasMetadata: !!message.metadata,
+    processingTime: message.metadata?.processingTime,
+    isError: message.metadata?.isError,
+    formattedTime: message.timestamp.toLocaleTimeString()
+  }), [message.metadata, message.timestamp]);
+
+  // Animation removed for performance - show immediately
   useEffect(() => {
-    // Small delay to ensure smooth animation
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 50);
-
-    // Mark as loaded after animation completes
-    const loadTimer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 400);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(loadTimer);
-    };
+    setIsVisible(true);
+    setIsLoaded(true);
   }, []);
 
   return (
@@ -221,17 +220,34 @@ export default function ChatMessage_OpenAI({
           )}
         </div>
         <div className='message-timestamp'>
-          {message.timestamp.toLocaleTimeString()}
-          {message.sender === 'ai' && message.metadata?.processingTime && (
+          {messageMetadata.formattedTime}
+          {message.sender === 'ai' && messageMetadata.processingTime && (
             <span className='response-time'>
-              {' '}({message.metadata.processingTime.toFixed(1)}s)
+              {' '}({messageMetadata.processingTime.toFixed(1)}s)
             </span>
           )}
         </div>
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function for memo
+  const prevMessage = prevProps.message;
+  const nextMessage = nextProps.message;
+  
+  // Check if message content, timestamp, or metadata changed
+  return (
+    prevMessage.id === nextMessage.id &&
+    prevMessage.content === nextMessage.content &&
+    prevMessage.sender === nextMessage.sender &&
+    prevMessage.timestamp.getTime() === nextMessage.timestamp.getTime() &&
+    JSON.stringify(prevMessage.metadata) === JSON.stringify(nextMessage.metadata)
+  );
+});
+
+ChatMessage_OpenAI.displayName = 'ChatMessage_OpenAI';
+
+export default ChatMessage_OpenAI;
 
 // Professional fintech glassmorphic message styling
 export const messageStyles = `
@@ -445,34 +461,23 @@ export const messageStyles = `
     color: rgba(255, 255, 255, 0.8);
   }
   
-  /* Enhanced loading state with professional animation */
+  /* Loading state - animation removed for performance */
   .markdown-loading {
-    transition: opacity 0.3s ease;
+    /* Transition removed for performance */
   }
   
   .markdown-loading::after {
-    content: '';
+    content: '⏳';
     display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid currentColor;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
     margin-left: 8px;
-    animation: markdown-loading-spin 1s linear infinite;
     vertical-align: middle;
+    font-size: 12px;
+    /* Spinner animation replaced with static icon */
   }
   
-  @keyframes markdown-loading-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  /* Performance optimizations */
+  /* Performance optimizations - GPU hints removed for performance */
   .message-bubble {
-    /* GPU acceleration for smooth interactions */
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    /* GPU acceleration removed for performance */
   }
   
   /* High DPI display optimization */
@@ -483,38 +488,9 @@ export const messageStyles = `
     }
   }
   
-  /* Enhanced reduced motion support for accessibility */
+  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
   @media (prefers-reduced-motion: reduce) {
-    .message {
-      transition: none;
-      animation: none;
-      opacity: 1;
-      transform: none;
-    }
-    
-    .message-visible {
-      animation: none;
-      transition: none;
-    }
-    
-    .user-bubble,
-    .ai-bubble {
-      animation: none;
-    }
-    
-    .message-bubble:hover {
-      transform: none;
-    }
-    
-    .user-bubble.message-visible,
-    .ai-bubble.message-visible {
-      animation: none;
-    }
-    
-    .markdown-loading::after {
-      animation: none;
-      border: 2px solid currentColor;
-    }
+    /* All animations already removed */
   }
 
   ${messageCopyButtonStyles}

@@ -128,9 +128,7 @@ export default function AnalysisButton({
         </span>
         {isButtonLoading && (
           <span className='loading-spinner' aria-hidden='true'>
-            <span></span>
-            <span></span>
-            <span></span>
+            ⏳
           </span>
         )}
         {showSuccess && !isButtonLoading && (
@@ -343,14 +341,10 @@ export const analysisButtonStyles = `
   .analysis-button.button-error .button-icon {
     transform: scale(1.1) rotate(-5deg);
     filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
-    animation: icon-error-shake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Animation removed for performance */
   }
   
-  @keyframes icon-error-shake {
-    0%, 100% { transform: scale(1.1) rotate(-5deg); }
-    25% { transform: scale(1.1) rotate(-8deg); }
-    75% { transform: scale(1.1) rotate(-2deg); }
-  }
+  /* @keyframes icon-error-shake removed for performance */
 
   .button-text {
     flex: 1;
@@ -373,110 +367,41 @@ export const analysisButtonStyles = `
     text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
   }
 
-  /* Sophisticated loading spinner with trust colors */
+  /* Static loading indicator */
   .loading-spinner {
-    display: flex;
-    gap: 4px;
+    display: inline-block;
     margin-left: 10px;
-    align-items: center;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
   }
 
-  .loading-spinner span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
-    animation: sophisticated-loading 1.6s infinite ease-in-out;
-    box-shadow: 
-      0 0 4px rgba(255, 255, 255, 0.3),
-      inset 0 1px 1px rgba(255, 255, 255, 0.5);
-  }
+  /* Loading spinner animation delays removed for performance */
 
-  .loading-spinner span:nth-child(1) {
-    animation-delay: -0.4s;
-  }
-
-  .loading-spinner span:nth-child(2) {
-    animation-delay: -0.2s;
-  }
-
-  .loading-spinner span:nth-child(3) {
-    animation-delay: 0s;
-  }
-
-  @keyframes sophisticated-loading {
-    0%, 80%, 100% {
-      transform: scale(0.6) translateY(0);
-      opacity: 0.4;
-      box-shadow: 0 0 2px rgba(255, 255, 255, 0.2);
-    }
-    40% {
-      transform: scale(1) translateY(-4px);
-      opacity: 1;
-      box-shadow: 
-        0 0 8px rgba(255, 255, 255, 0.4),
-        0 2px 4px rgba(0, 0, 0, 0.2),
-        inset 0 1px 1px rgba(255, 255, 255, 0.7);
-    }
-  }
+  /* @keyframes sophisticated-loading removed for performance */
   
   /* Success indicator styling */
   .success-indicator {
     font-size: 18px;
     font-weight: bold;
     color: rgba(255, 255, 255, 0.95);
-    animation: success-appear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Animation removed for performance */
     filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.6));
     margin-left: 8px;
   }
   
-  @keyframes success-appear {
-    0% {
-      transform: scale(0) rotate(-90deg);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.3) rotate(0deg);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1) rotate(0deg);
-      opacity: 1;
-    }
-  }
+  /* @keyframes success-appear removed for performance */
   
   /* Error indicator styling */
   .error-indicator {
     font-size: 18px;
     font-weight: bold;
     color: rgba(255, 255, 255, 0.95);
-    animation: error-appear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Animation removed for performance */
     filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6));
     margin-left: 8px;
   }
   
-  @keyframes error-appear {
-    0% {
-      transform: scale(0) rotate(0deg);
-      opacity: 0;
-    }
-    25% {
-      transform: scale(1.2) rotate(-10deg);
-      opacity: 0.8;
-    }
-    50% {
-      transform: scale(0.9) rotate(5deg);
-      opacity: 1;
-    }
-    75% {
-      transform: scale(1.1) rotate(-2deg);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1) rotate(0deg);
-      opacity: 1;
-    }
-  }
+  /* @keyframes error-appear removed for performance */
 
   /* Enhanced error message with design system colors */
   .error-message {
