@@ -559,8 +559,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
      * Run Performance Validation tests
      */
     async runPerformanceTests() {
-        console.log('🚀 Starting Performance Validation Tests (4 tests)');
-        
         const tests = [
             this.testF001_ResponseTimeBenchmarking(),
             this.testF002_MemoryUsageMonitoring(),
@@ -571,7 +569,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Performance Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -580,8 +577,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
      * Run Accessibility Testing tests
      */
     async runAccessibilityTests() {
-        console.log('🚀 Starting Accessibility Testing Tests (5 tests)');
-        
         const tests = [
             this.testC001_KeyboardNavigation(),
             this.testC002_ScreenReaderCompatibility(),
@@ -593,7 +588,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Accessibility Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -602,8 +596,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
      * Run Cross-Browser Compatibility tests
      */
     async runCrossBrowserTests() {
-        console.log('🚀 Starting Cross-Browser Compatibility Tests (3 tests)');
-        
         const tests = [
             this.testB001_ChromeCompatibility(),
             this.testB002_FirefoxCompatibility(),
@@ -613,7 +605,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Cross-Browser Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }

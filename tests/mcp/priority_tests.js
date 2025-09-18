@@ -194,7 +194,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
     async navigateToApp() {
         this.testStartTime = Date.now();
         // This will be implemented using MCP Playwright tools
-        console.log(`Navigating to ${this.baseUrl}`);
         // Actual MCP implementation will be added in the execution layer
     }
 
@@ -202,7 +201,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
      * Helper method to input a message in the chat interface
      */
     async inputMessage(message) {
-        console.log(`Inputting message: ${message}`);
         // This will be implemented using MCP Playwright tools
     }
 
@@ -210,7 +208,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
      * Helper method to send a message
      */
     async sendMessage() {
-        console.log('Sending message...');
         // This will be implemented using MCP Playwright tools
     }
 
@@ -218,7 +215,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
      * Helper method to click the Stock Snapshot button (Stock Snapshot)
      */
     async clickStockSnapshotButton() {
-        console.log('Clicking Stock Snapshot button (Stock Snapshot)...');
         // This will be implemented using MCP Playwright tools
     }
 
@@ -226,7 +222,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
      * Helper method to wait for response with timeout
      */
     async waitForResponse(timeout) {
-        console.log(`Waiting for response (timeout: ${timeout}ms)...`);
         // This will be implemented using MCP Playwright tools
         // Should return the response text/JSON
         return '{"placeholder": "response"}';
@@ -260,9 +255,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
      * Run all priority tests in sequence
      */
     async runAllPriorityTests() {
-        console.log('🚀 Starting Priority Tests Suite - 5 Critical Tests');
-        console.log('Target: 100% pass rate required for system validation\n');
-
         const results = [];
 
         // Execute priority tests in sequence
@@ -275,13 +267,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
         // Generate priority test report
         const priorityPassRate = results.filter(r => r.status === 'PASS').length / results.length * 100;
         
-        console.log('\nPriority Tests Summary:');
-        console.log(`Total Tests: ${results.length}`);
-        console.log(`Passed: ${results.filter(r => r.status === 'PASS').length}`);
-        console.log(`Failed: ${results.filter(r => r.status === 'FAIL').length}`);
-        console.log(`Pass Rate: ${priorityPassRate.toFixed(1)}%`);
-        console.log(`Status: ${priorityPassRate >= 100 ? 'SYSTEM VALIDATED ✅' : 'CRITICAL ISSUES ❌'}`);
-
         return results;
     }
 }

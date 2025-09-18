@@ -20,8 +20,6 @@ class MCPBrowserImplementation {
         if (this.isInitialized) return;
         
         try {
-            console.log('🔧 Initializing MCP Playwright browser...');
-            
             // Navigate to the application
             await this.navigate(this.baseUrl);
             
@@ -29,9 +27,7 @@ class MCPBrowserImplementation {
             this.currentPageSnapshot = await this.takeSnapshot();
             
             this.isInitialized = true;
-            console.log('✅ Browser initialized successfully');
         } catch (error) {
-            console.error('❌ Browser initialization failed:', error.message);
             throw error;
         }
     }
@@ -40,8 +36,6 @@ class MCPBrowserImplementation {
      * Navigate to a specific URL using MCP Playwright
      */
     async navigate(url) {
-        console.log(`🌐 Navigating to ${url}`);
-        
         // This will be called via MCP tools when integrated with the actual test runner
         // For now, we define the interface that will be used
         
@@ -56,8 +50,6 @@ class MCPBrowserImplementation {
      * Take a snapshot of current page state
      */
     async takeSnapshot() {
-        console.log('📸 Taking page snapshot...');
-        
         // Simulated MCP call:
         // const snapshot = await mcp__playwright__browser_snapshot({});
         // return snapshot;
@@ -80,8 +72,6 @@ class MCPBrowserImplementation {
      * Wait for page to load completely
      */
     async waitForPageLoad() {
-        console.log('⏳ Waiting for page load...');
-        
         // Simulated MCP wait for specific elements
         // await mcp__playwright__browser_wait_for({ 
         //     text: 'Stock Snapshot', 
@@ -93,8 +83,6 @@ class MCPBrowserImplementation {
      * Input text into the chat input field
      */
     async inputMessage(message) {
-        console.log(`⌨️  Inputting message: "${message}"`);
-        
         // Clear existing input first
         await this.clearChatInput();
         
@@ -111,8 +99,6 @@ class MCPBrowserImplementation {
      * Clear the chat input field
      */
     async clearChatInput() {
-        console.log('🗑️  Clearing chat input...');
-        
         // Simulated MCP call to clear input:
         // await mcp__playwright__browser_evaluate({
         //     element: 'chat input field',
@@ -124,8 +110,6 @@ class MCPBrowserImplementation {
      * Click the Stock Snapshot button (📈)
      */
     async clickStockSnapshotButton() {
-        console.log('Clicking Stock Snapshot button (Stock Snapshot)...');
-        
         // Simulated MCP click:
         // await mcp__playwright__browser_click({
         //     element: 'Stock Snapshot button',
@@ -137,8 +121,6 @@ class MCPBrowserImplementation {
      * Click the Support & Resistance button (🎯)
      */
     async clickSupportResistanceButton() {
-        console.log('Clicking Support & Resistance button (Support & Resistance)...');
-        
         // Simulated MCP click:
         // await mcp__playwright__browser_click({
         //     element: 'Support & Resistance button', 
@@ -150,8 +132,6 @@ class MCPBrowserImplementation {
      * Click the Technical Analysis button (🔧)
      */
     async clickTechnicalAnalysisButton() {
-        console.log('🔧 Clicking Technical Analysis button (🔧)...');
-        
         // Simulated MCP click:
         // await mcp__playwright__browser_click({
         //     element: 'Technical Analysis button',
@@ -163,8 +143,6 @@ class MCPBrowserImplementation {
      * Send message using the Send button
      */
     async sendMessage() {
-        console.log('📤 Sending message...');
-        
         // Simulated MCP click on send button:
         // await mcp__playwright__browser_click({
         //     element: 'Send button',
@@ -176,8 +154,6 @@ class MCPBrowserImplementation {
      * Wait for API response with specific timeout
      */
     async waitForResponse(timeout = 120000) {
-        console.log(`⏳ Waiting for response (timeout: ${timeout}ms)...`);
-        
         const startTime = Date.now();
         const endTime = startTime + timeout;
         
@@ -190,7 +166,6 @@ class MCPBrowserImplementation {
                 if (responseContent && responseContent.trim().length > 0) {
                     // Check if it looks like JSON
                     if (responseContent.includes('{') && responseContent.includes('}')) {
-                        console.log(`✅ Response received after ${Date.now() - startTime}ms`);
                         return responseContent;
                     }
                 }
@@ -199,7 +174,6 @@ class MCPBrowserImplementation {
                 await this.sleep(1000);
                 
             } catch (error) {
-                console.log(`⚠️  Error while waiting for response: ${error.message}`);
                 await this.sleep(1000);
             }
         }
@@ -226,8 +200,6 @@ class MCPBrowserImplementation {
      * Extract JSON specifically from JSON output elements
      */
     async extractJSONFromPage() {
-        console.log('🔍 Extracting JSON from page...');
-        
         // Try multiple selectors to find JSON content
         const selectors = [
             '.json-output',
@@ -254,11 +226,10 @@ class MCPBrowserImplementation {
                 const content = null;
                 
                 if (content && content.trim().length > 0) {
-                    console.log(`✅ Found JSON content in ${selector}`);
                     return content;
                 }
             } catch (error) {
-                console.log(`⚠️  Could not extract from ${selector}: ${error.message}`);
+                // Could not extract from this selector
             }
         }
         
@@ -304,8 +275,6 @@ class MCPBrowserImplementation {
      * Scroll to element
      */
     async scrollToElement(selector) {
-        console.log(`📜 Scrolling to element: ${selector}`);
-        
         // Simulated MCP evaluation:
         // await mcp__playwright__browser_evaluate({
         //     element: `element ${selector}`,
@@ -320,8 +289,6 @@ class MCPBrowserImplementation {
      * Wait for element to be visible
      */
     async waitForElement(selector, timeout = 30000) {
-        console.log(`⏳ Waiting for element: ${selector} (timeout: ${timeout}ms)`);
-        
         // Simulated MCP wait:
         // await mcp__playwright__browser_wait_for({
         //     text: selector.includes('button') ? 'button' : 'element',
@@ -338,8 +305,6 @@ class MCPBrowserImplementation {
             filename = `screenshot_${timestamp}.png`;
         }
         
-        console.log(`📷 Taking screenshot: ${filename}`);
-        
         // Simulated MCP screenshot:
         // await mcp__playwright__browser_take_screenshot({
         //     filename: filename,
@@ -353,8 +318,6 @@ class MCPBrowserImplementation {
      * Resize browser window
      */
     async resizeBrowser(width, height) {
-        console.log(`📐 Resizing browser to ${width}x${height}`);
-        
         // Simulated MCP resize:
         // await mcp__playwright__browser_resize({
         //     width: width,
@@ -373,8 +336,6 @@ class MCPBrowserImplementation {
      * Close browser
      */
     async close() {
-        console.log('🔚 Closing browser...');
-        
         // Simulated MCP close:
         // await mcp__playwright__browser_close({});
         

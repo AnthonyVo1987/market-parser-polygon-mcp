@@ -134,23 +134,17 @@ class PlaywrightMCPTestFramework {
             data: null
         };
 
-        console.log(`🚀 Starting ${testId}: ${testName}`);
-
         try {
             const result = await testFunction();
             testResult.endTime = Date.now();
             testResult.duration = testResult.endTime - startTime;
             testResult.status = 'PASS';
             testResult.data = result;
-            
-            console.log(`✅ ${testId}: PASS (${(testResult.duration / 1000).toFixed(1)}s)`);
         } catch (error) {
             testResult.endTime = Date.now();
             testResult.duration = testResult.endTime - startTime;
             testResult.status = 'FAIL';
             testResult.errors.push(error.message);
-            
-            console.log(`❌ ${testId}: FAIL (${(testResult.duration / 1000).toFixed(1)}s) - ${error.message}`);
         }
 
         this.testResults.push(testResult);

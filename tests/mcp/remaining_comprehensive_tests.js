@@ -749,8 +749,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
      * Run Responsive Design tests
      */
     async runResponsiveDesignTests() {
-        console.log('🚀 Starting Responsive Design Tests (4 tests)');
-        
         const tests = [
             this.testR001_MobileViewportTesting(),
             this.testR002_DesktopViewportTesting(),
@@ -761,7 +759,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Responsive Design Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -770,8 +767,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
      * Run Backend API Integration tests
      */
     async runAPIIntegrationTests() {
-        console.log('🚀 Starting Backend API Integration Tests (7 tests)');
-        
         const tests = [
             this.testA001_FastAPIHealthCheck(),
             this.testA002_JSONSchemaCompliance(),
@@ -785,7 +780,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`API Integration Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -794,8 +788,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
      * Run Error Handling tests
      */
     async runErrorHandlingTests() {
-        console.log('🚀 Starting Error Handling Tests (6 tests)');
-        
         const tests = [
             this.testH001_NetworkErrorRecovery(),
             this.testH002_InvalidJSONResponseHandling(),
@@ -808,7 +800,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Error Handling Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }

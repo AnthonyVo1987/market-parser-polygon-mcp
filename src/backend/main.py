@@ -50,11 +50,6 @@ from .api_models import (
     ButtonAnalysisResponse,
     ChatAnalysisRequest,
     ChatAnalysisResponse,
-    ConsoleLogClearResponse,
-    ConsoleLogEntry,
-    ConsoleLogStatusResponse,
-    ConsoleLogWriteRequest,
-    ConsoleLogWriteResponse,
     GeneratePromptRequest,
     GeneratePromptResponse,
     PromptMode,
@@ -613,10 +608,7 @@ async def lifespan(app: FastAPI):
 
     # Startup: Create shared instances
     try:
-        console.print(
-            f"[bold green]Starting FastAPI server on {settings.fastapi_host}:{settings.fastapi_port}[/bold green]"
-        )
-        console.print("[bold green]Initializing shared MCP server...[/bold green]")
+        # Server initialization
 
         # Initialize session
         session_start = time.time()
@@ -639,7 +631,7 @@ async def lifespan(app: FastAPI):
             mcp_time,
         )
 
-        console.print("[bold green]✓ Shared MCP server and session initialized[/bold green]")
+        # Initialization complete
     except Exception as e:
         startup_time = time.time() - startup_start
         logger.error(
@@ -648,7 +640,7 @@ async def lifespan(app: FastAPI):
             str(e),
             type(e).__name__,
         )
-        console.print(f"[bold red]✗ Failed to initialize shared resources: {e}[/bold red]")
+        logger.error(f"Failed to initialize shared resources: {e}")
         raise
 
     yield
@@ -658,7 +650,7 @@ async def lifespan(app: FastAPI):
     logger.info("🔄 FastAPI application shutdown initiated")
 
     try:
-        console.print("[bold yellow]Shutting down shared MCP server...[/bold yellow]")
+        # Shutting down MCP server
         if shared_mcp_server:
             mcp_shutdown_start = time.time()
             await shared_mcp_server.__aexit__(None, None, None)
@@ -671,7 +663,7 @@ async def lifespan(app: FastAPI):
             {"shutdown_time": f"{shutdown_time:.3f}s"},
         )
 
-        console.print("[bold green]✓ Shared resources cleaned up[/bold green]")
+        # Resources cleaned up
     except Exception as e:
         shutdown_time = time.time() - shutdown_start
         logger.error(
@@ -682,7 +674,7 @@ async def lifespan(app: FastAPI):
                 "shutdown_time": f"{shutdown_time:.3f}s",
             },
         )
-        console.print(f"[bold red]✗ Error during cleanup: {e}[/bold red]")
+        logger.error(f"Error during cleanup: {e}")
 
 
 # FastAPI App Setup
@@ -1128,150 +1120,6 @@ async def health_check():
     )
 
 
-# ====== CONSOLE LOGGING API ENDPOINTS ======
-
-
-@app.post("/api/v1/logs/console/write", response_model=ConsoleLogWriteResponse)
-async def write_console_logs(request: ConsoleLogWriteRequest):
-    """Write console log entries to the log file."""
-    # Check LOG_MODE - return early if NONE mode is active
-    log_mode = os.getenv("LOG_MODE", "").upper()
-    if log_mode == "NONE":
-        return ConsoleLogWriteResponse(
-            entries_written=0,
-            file_size_bytes=0,
-            message="Console logging disabled (LOG_MODE=NONE)"
-        )
-    
-    import aiofiles
-    from pathlib import Path
-
-    try:
-        # Ensure logs directory exists
-        logs_dir = Path("logs")
-        logs_dir.mkdir(exist_ok=True)
-
-        log_file_path = logs_dir / "console_debug_log.txt"
-
-        # Prepare log entries for writing
-        log_lines = []
-        for entry in request.entries:
-            # Format: timestamp [LEVEL] message [args]
-            timestamp_str = entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-            args_str = f" {' '.join(entry.args)}" if entry.args else ""
-            log_line = f"[{timestamp_str}] [{entry.level.upper()}] {entry.message}{args_str}\n"
-            log_lines.append(log_line)
-
-        # Write to file atomically
-        async with aiofiles.open(log_file_path, mode="a", encoding="utf-8") as f:
-            await f.writelines(log_lines)
-
-        # Get file size
-        file_size = log_file_path.stat().st_size if log_file_path.exists() else 0
-
-        logger.debug(f"Wrote {len(request.entries)} console log entries to {log_file_path}")
-
-        return ConsoleLogWriteResponse(
-            entries_written=len(request.entries),
-            file_size_bytes=file_size,
-            message=f"Successfully wrote {len(request.entries)} log entries"
-        )
-
-    except Exception as e:
-        logger.error(f"Failed to write console logs: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to write console logs: {str(e)}"
-        ) from e
-
-
-@app.get("/api/v1/logs/console/status", response_model=ConsoleLogStatusResponse)
-async def get_console_log_status():
-    """Get console log file status and metadata."""
-    # Check LOG_MODE - return disabled status if NONE mode is active
-    log_mode = os.getenv("LOG_MODE", "").upper()
-    if log_mode == "NONE":
-        return ConsoleLogStatusResponse(
-            exists=False,
-            file_size_bytes=0,
-            line_count=0,
-            file_path="/dev/null",
-            writable=False,
-            last_modified=None
-        )
-    
-    from pathlib import Path
-
-    try:
-        log_file_path = Path("logs") / "console_debug_log.txt"
-
-        if log_file_path.exists():
-            stat = log_file_path.stat()
-
-            # Count lines efficiently
-            line_count = 0
-            try:
-                with open(log_file_path, 'r', encoding='utf-8') as f:
-                    line_count = sum(1 for _ in f)
-            except Exception:
-                line_count = 0
-
-            return ConsoleLogStatusResponse(
-                exists=True,
-                file_size_bytes=stat.st_size,
-                line_count=line_count,
-                last_modified=datetime.fromtimestamp(stat.st_mtime),
-                file_path=str(log_file_path),
-                writable=os.access(log_file_path.parent, os.W_OK)
-            )
-        else:
-            return ConsoleLogStatusResponse(
-                exists=False,
-                file_path=str(log_file_path),
-                writable=os.access(log_file_path.parent, os.W_OK) if log_file_path.parent.exists() else False
-            )
-
-    except Exception as e:
-        logger.error(f"Failed to get console log status: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get console log status: {str(e)}"
-        ) from e
-
-
-@app.delete("/api/v1/logs/console", response_model=ConsoleLogClearResponse)
-async def clear_console_logs():
-    """Clear the console log file."""
-    # Check LOG_MODE - return early if NONE mode is active
-    log_mode = os.getenv("LOG_MODE", "").upper()
-    if log_mode == "NONE":
-        return ConsoleLogClearResponse(
-            message="Console logging disabled (LOG_MODE=NONE) - no action taken",
-            previous_size_bytes=0
-        )
-    
-    from pathlib import Path
-
-    try:
-        log_file_path = Path("logs") / "console_debug_log.txt"
-
-        previous_size = 0
-        if log_file_path.exists():
-            previous_size = log_file_path.stat().st_size
-            log_file_path.unlink()
-            logger.info(f"Cleared console log file: {log_file_path} (was {previous_size} bytes)")
-
-        return ConsoleLogClearResponse(
-            message=f"Console log cleared (previous size: {previous_size} bytes)",
-            previous_size_bytes=previous_size
-        )
-
-    except Exception as e:
-        logger.error(f"Failed to clear console logs: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to clear console logs: {str(e)}"
-        ) from e
 
 
 # Cache Management API Endpoints (Security Review Priority 1 fixes)
@@ -1406,11 +1254,7 @@ if __name__ == "__main__":
         # Run as FastAPI server
         import uvicorn
 
-        console.print("[bold blue]Starting FastAPI server with settings:[/bold blue]")
-        console.print(f"[dim]Host: {settings.fastapi_host}[/dim]")
-        console.print(f"[dim]Port: {settings.fastapi_port}[/dim]")
-        console.print(f"[dim]Model: {settings.openai_model}[/dim]")
-        console.print(f"[dim]Session: {settings.agent_session_name}[/dim]")
+        # Starting FastAPI server
 
         uvicorn.run(
             "main:app",

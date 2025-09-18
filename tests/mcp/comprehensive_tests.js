@@ -572,8 +572,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
      * Run the first batch of comprehensive tests (Template Button Interactions + Message Input)
      */
     async runTemplateAndInputTests() {
-        console.log('🚀 Starting Template Button Interactions & Message Input Tests (14 tests)');
-        
         const tests = [
             // Template Button Interactions
             this.testT001_SnapshotButtonResponseTime(),
@@ -597,7 +595,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Template & Input Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -606,8 +603,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
      * Run Export Functionality tests
      */
     async runExportTests() {
-        console.log('🚀 Starting Export Functionality Tests (5 tests)');
-        
         const tests = [
             this.testE001_JSONCopyToClipboard(),
             this.testE002_JSONFormatValidation(),
@@ -619,7 +614,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`Export Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
