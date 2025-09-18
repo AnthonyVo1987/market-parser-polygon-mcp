@@ -26,14 +26,14 @@ I'll read the task details from new_task_details.md and use @agent-tech-lead-orc
 
 ## Available Specialists (per CLAUDE.md)
 
-| Task Category | Agent | Responsibilities | Notes |
-|---------------|-------|------------------|-------|
-| **Code Review & Quality** | `@code-reviewer` | MANDATORY for all features, PRs, merges. Security-aware reviews, quality assurance for both Python and React code | Required for all development work |
-| **Python Backend Development** | `@backend-developer` | Python/Pydantic AI development, FSM management, dual-mode processing, MCP server integration, backend API design | Primary architect for Python application logic |
-| **React Frontend Architecture** | `@react-component-architect` | React component design, Next.js 14+ architecture, modern React patterns, component library integration | Leads React frontend development and component architecture |
-| **API Design & Integration** | `@api-architect` | Backend-Frontend API contracts, RESTful API design, response schema design, integration patterns | Ensures clean data flow between Python backend and React frontend |
-| **Documentation & Architecture** | `@documentation-specialist` | Architecture documentation, user guides, API documentation, component documentation, migration planning | Maintains comprehensive project documentation |
-| **Deep Analysis & Planning** | `@code-archaeologist` | Complex architectural decisions, system analysis, migration strategy, technical debt assessment | On-demand for major architectural changes and system analysis |
+| **Task Category** | **Agent** | **Specific Responsibilities** |
+|-------------------|-----------|------------------------------|
+| **Agent System Development** | `backend-developer` | FastAPI + Pydantic AI + OpenAI Agents SDK, guardrail system, prompt templates |
+| **Financial Query Processing** | `backend-developer` | MCP integration, Polygon.io data handling, agent orchestration |
+| **React Components & UI** | `react-component-architect` | Modern React 18.2+ patterns, hooks, PWA features, financial dashboards |
+| **API Design & Integration** | `api-architect` | REST endpoints, Polygon.io MCP server design, data contracts |
+| **Performance & Optimization** | `performance-optimizer` | Real-time financial data processing, agent efficiency, response times |
+| **Code Quality & Security** | `code-reviewer` | Security-aware reviews, financial data handling, maintainability |
 
 ## Primary Tool Requirements
 
