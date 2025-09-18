@@ -8,7 +8,7 @@ Task 2. Perform a secondary Comprehensive Sanity Check Doc & Code Review verify 
 
 - tests/playwright/mcp_test_script_basic.md
 - docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
-- tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN.
+- tests/playwright/PLAYWRIGHT_TESTING_MASTER_PLAN
 - CLAUDE.md
 - README.md
 - ANY playwright* docs etc
