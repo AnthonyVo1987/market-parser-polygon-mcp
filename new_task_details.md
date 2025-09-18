@@ -4,6 +4,54 @@
 
 ## Detailed Implementation Plan: Performance Optimizations
 
+Context:
+
+- Repository: /home/1000211866/Github/market-parser-polygon-mcp
+- Goal: Research Phase: Use All available tools to Research & Scope out a detailed implementation plan task breakdown to "Retire the Emoji Market Sentiment code & Emoji Response Enforcement"
+
+Instructions:
+
+1) Use Serena’s discovery tools to analyze the codebase:
+   - Locate the Emoji Market Sentiment Emphasis code
+   - Locate where Prompts are stored and saved for User Input and Button Prompts
+   - Locate all and any docs that reference Emojis
+2) Summarize:
+   - Emoji Market Sentiment Emphasis code
+   - Where and which prompts are there
+   - Docs with references to using Emojis
+3) Deliverable:
+   - A concise scope brief with clear boundaries, dependencies, and assumptions.
+
+Constraints:
+
+- Do not perform code edits.
+- Favor minimal changes; reuse existing patterns where possible.
+- If ambiguity exists, list open questions.
+
+Context:
+
+- Repository: /home/1000211866/Github/market-parser-polygon-mcp
+- Goal: Research Phase: Use All available tools to Research & Scope out a detailed implementation plan task breakdown to "Retire the Emoji Market Sentiment code & Emoji Response Enforcement"
+
+Instructions:
+
+1) Use Serena’s discovery tools to analyze the codebase:
+   - Locate the Emoji Market Sentiment Emphasis code
+   - Locate where Prompts are stored and saved for User Input and Button Prompts
+   - Locate all and any docs that reference Emojis
+2) Summarize:
+   - Emoji Market Sentiment Emphasis code
+   - Where and which prompts are there
+   - Docs with references to using Emojis
+3) Deliverable:
+   - A concise scope brief with clear boundaries, dependencies, and assumptions.
+
+Constraints:
+
+- Do not perform code edits.
+- Favor minimal changes; reuse existing patterns where possible.
+- If ambiguity exists, list open questions.
+
 Plan to address all performance issues related to Frontend is APPROVED, so Use @agent-tech-lead-orchestrator to analyze the plan & provide Specialist Task Assignments per CLAUDE.md to implement the entire plan. @agent-tech-lead-orchestrator MUST assign Tools Usage for EACH Assigned Specialist to MUST USE `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes etc to perform the requested plan and\or task(s)
 
 Expected Outcome:

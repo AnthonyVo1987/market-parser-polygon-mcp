@@ -140,7 +140,15 @@
       "Bash(PLAYWRIGHT_BASE_URL=http://localhost:3000 npx playwright test --timeout=120000 --workers=1 test-b001-market-status.spec.ts)",
       "Bash(xargs:*)",
       "Bash(./start-app.sh:*)",
-      "Bash(./start-app-xterm.sh:*)"
+      "Bash(./start-app-xterm.sh:*)",
+      "mcp__serena__list_dir",
+      "mcp__serena__find_file",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__list_memories",
+      "mcp__serena__write_memory",
+      "mcp__serena__read_memory",
+      "mcp__serena__delete_memory"
     ],
     "deny": [],
     "ask": [],
