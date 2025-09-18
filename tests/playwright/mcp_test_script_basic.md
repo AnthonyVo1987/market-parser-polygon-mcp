@@ -2,9 +2,48 @@
 
 **Document Purpose:** This is the definitive guide for AI agents to perform Playwright MCP testing with 100% first-try success rate. Follow these instructions EXACTLY as written for guaranteed testing success.
 
-**Target Audience:** AI Coding Agents performing MCP method testing  
-**Expected Outcome:** Any AI agent can read this document and execute MCP testing correctly without external research  
-**Methodology:** Modern Playwright MCP with auto-retry detection (NO polling)  
+**Target Audience:** AI Coding Agents performing MCP method testing
+**Expected Outcome:** Any AI agent can read this document and execute MCP testing correctly without external research
+**Methodology:** Modern Playwright MCP with auto-retry detection (NO polling)
+
+---
+
+## LESSONS LEARNED & CORRECTIVE ACTIONS
+
+**CRITICAL SUCCESS FACTORS** (Apply to all future testing):
+
+### 1. **Mandatory Context Protection Protocol**
+- **Always instruct specialists to READ this test plan file FIRST** before any execution
+- **Prevent context-loss substitutions** by explicitly requiring verbatim procedure following
+- **Include full file paths in specialist instructions** to ensure proper document access
+- **Never assume specialists retain context** from previous conversations
+
+### 2. **Orchestration Requirements for Complex Testing**
+- **Use tech-lead-orchestrator for multi-phase testing** to prevent coordination failures
+- **Sequential phase execution with completion confirmation** before proceeding to next phase
+- **Explicit specialist assignments** with clear deliverable expectations
+- **TodoWrite tool usage** for progress tracking and user visibility
+
+### 3. **Test Plan Adherence Standards**
+- **"User-specified test plans are sacred"** - enforce ZERO deviations policy
+- **Verbatim message usage** - exact text strings must be preserved exactly
+- **Timeout parameter compliance** - always use `time: 120` for MCP wait operations
+- **Template compliance verification** as standard practice for all reports
+
+### 4. **Communication & Execution Protocols**
+- **Address user concerns immediately** (example: "why haven't you started testing?")
+- **Don't wait for user prompting** when servers are confirmed ready
+- **Complete all phases sequentially** without gaps or delays
+- **Generate file-based deliverables immediately** upon task completion
+- **Always create test result files** - don't just provide results in conversation
+
+### 5. **Anti-Patterns to Avoid**
+- **Never substitute AI-generated test procedures** for user-specified plans
+- **Prevent context loss through explicit file reading instructions** in all specialist prompts
+- **Don't assume "equivalent" procedures are acceptable** - follow exact specifications
+- **Avoid execution gaps** between confirmed server readiness and test start
+
+**SUCCESS INDICATOR:** Following these corrective actions should achieve 100% first-try success rate with complete coverage and proper documentation for all future testing requests.
 
 ---
 
