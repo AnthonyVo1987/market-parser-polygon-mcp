@@ -47,7 +47,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
                 responseTime, 
                 response, 
                 validation,
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat 
             };
         });
@@ -74,7 +74,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
                 responseTime, 
                 response, 
                 validation,
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat 
             };
         });
@@ -101,7 +101,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
                 responseTime, 
                 response, 
                 validation,
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat 
             };
         });
@@ -597,7 +597,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Template & Input Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Template & Input Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -619,7 +619,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Export Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Export Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }

@@ -314,7 +314,7 @@ Professional message bubble component with glassmorphic design, responsive sizin
 ```tsx
 <div className="message-bubble ai">
   <div className="message-content">
-    <h6 className="chat-section-header">🎯 Key Takeaways</h6>
+    <h6 className="chat-section-header">Key Takeaways</h6>
     
     <p className="text-body">
       <span className="ticker">NVIDIA</span> is trading at{' '}
@@ -603,7 +603,7 @@ Advanced button component with sophisticated state management, loading indicator
 }
 
 .analysis-button.snapshot::before {
-  content: '📊';
+  content: '\25A0'; /* Square bullet */
   margin-right: var(--spacing-2);
 }
 ```
@@ -616,7 +616,7 @@ Advanced button component with sophisticated state management, loading indicator
 }
 
 .analysis-button.technical::before {
-  content: '📈';
+  content: '\25B2'; /* Up triangle */
   margin-right: var(--spacing-2);
 }
 ```
@@ -629,7 +629,7 @@ Advanced button component with sophisticated state management, loading indicator
 }
 
 .analysis-button.support-resistance::before {
-  content: '🎯';
+  content: '\2022'; /* Bullet point */
   margin-right: var(--spacing-2);
 }
 ```
@@ -694,7 +694,7 @@ Advanced button component with sophisticated state management, loading indicator
   )}
   
   {hasError && (
-    <div className="error-indicator animate-shake">⚠</div>
+    <div className="error-indicator animate-shake">!</div>
   )}
 </button>
 ```
@@ -765,7 +765,7 @@ Professional stock ticker input with real-time validation, accessibility feature
 }
 
 .ticker-input-container.invalid::after {
-  content: '⚠';
+  content: '!';
   position: absolute;
   right: var(--spacing-3);
   top: 50%;

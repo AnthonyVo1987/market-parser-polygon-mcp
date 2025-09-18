@@ -48,7 +48,7 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
                     mobileCompatible: true,
                     response: response,
                     validation: validation,
-                    hasEmojis: validation.hasEmojis
+                    hasStructuredContent: validation.hasStructuredContent
                 };
             } catch (error) {
                 return {
@@ -87,7 +87,7 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
                     desktopOptimized: true,
                     response: response,
                     validation: validation,
-                    hasEmojis: validation.hasEmojis
+                    hasStructuredContent: validation.hasStructuredContent
                 };
             } catch (error) {
                 return {
@@ -761,7 +761,7 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Responsive Design Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Responsive Design Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -785,7 +785,7 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 API Integration Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`API Integration Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -808,7 +808,7 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Error Handling Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Error Handling Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }

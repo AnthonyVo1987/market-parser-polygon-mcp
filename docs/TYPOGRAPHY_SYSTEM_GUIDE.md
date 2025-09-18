@@ -137,7 +137,7 @@ This typography system is built on a foundation of **500+ CSS custom properties*
 
 <!-- AI responses -->
 <div class="chat-message chat-message-ai">
-  📈 NVIDIA (NVDA) is currently trading at $124.36...
+  NVIDIA (NVDA) is currently trading at $124.36 with bullish indicators...
 </div>
 
 <!-- Section headers in AI responses -->
@@ -370,7 +370,7 @@ The typography system integrates seamlessly with glassmorphic design patterns:
 
 ```html
 <div class="chat-message chat-message-ai">
-  <h6 class="chat-section-header">🎯 Key Takeaways</h6>
+  <h6 class="chat-section-header">Key Takeaways</h6>
   
   <p class="text-body">
     <span class="ticker">NVIDIA</span> Corporation is currently trading at 
@@ -378,7 +378,7 @@ The typography system integrates seamlessly with glassmorphic design patterns:
     <span class="percentage percentage-negative">-3.59%</span> change today.
   </p>
   
-  <h6 class="chat-section-header">📊 Financial Metrics</h6>
+  <h6 class="chat-section-header">Financial Metrics</h6>
   
   <ul class="text-body">
     <li>Market Cap: <span class="currency font-mono">$3.05T</span></li>

@@ -1,6 +1,6 @@
 # Market Parser with Polygon MCP Server
 
-A Python CLI and React web application for natural language financial queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI GPT-5-mini via the Pydantic AI Agent Framework. Features emoji-based sentiment indicators, real-time financial data, and cross-platform interfaces.
+A Python CLI and React web application for natural language financial queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI GPT-5-mini via the Pydantic AI Agent Framework. Features intelligent sentiment analysis, real-time financial data, and cross-platform interfaces.
 
 ## Quick Start
 
@@ -118,16 +118,16 @@ Ask questions like:
 
 ### Enhanced Response Format
 
-Responses include emoji-based sentiment indicators:
+Responses use a structured format with clear sentiment analysis:
 
 ```text
-🎯 KEY TAKEAWAYS
-📈 NVDA showing strong bullish momentum with 12% weekly gain
-💰 Strong earnings beat with $35.08B revenue (+122% YoY)
-🏢 AI chip demand driving continued growth trajectory
+KEY TAKEAWAYS
+• NVDA showing strong bullish momentum with 12% weekly gain
+• Strong earnings beat with $35.08B revenue (+122% YoY)
+• AI chip demand driving continued growth trajectory
 
-📊 DETAILED ANALYSIS
-[Comprehensive analysis with emoji sentiment indicators]
+DETAILED ANALYSIS
+[Comprehensive analysis with clear directional indicators]
 ```
 
 ### Multiple Interfaces
@@ -142,7 +142,7 @@ Responses include emoji-based sentiment indicators:
 
 1. Open <http://127.0.0.1:3000>
 2. Type your financial query
-3. Get instant emoji-enhanced responses with sentiment analysis
+3. Get instant structured responses with sentiment analysis
 
 ### CLI Interface
 
@@ -150,8 +150,8 @@ Responses include emoji-based sentiment indicators:
 uv run src/backend/main.py
 
 > Tesla stock analysis
-🎯 KEY TAKEAWAYS
-📈 TSLA showing bullish momentum...
+KEY TAKEAWAYS
+• TSLA showing bullish momentum...
 ```
 
 ## Architecture

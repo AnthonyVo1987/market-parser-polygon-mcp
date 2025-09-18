@@ -42,7 +42,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
                 responseTime: Date.now() - this.testStartTime,
                 response: response,
                 validation: validation,
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat
             };
         });
@@ -60,7 +60,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             // Input priority fast request with ticker
             await this.inputMessage("Single Ticker Snapshot: NVDA, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity");
             
-            // Click the Stock Snapshot button (📈)
+            // Click the Stock Snapshot button (Stock Snapshot)
             await this.clickStockSnapshotButton();
             
             // Wait for response (any format acceptable)
@@ -77,7 +77,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
                 response: response,
                 validation: validation,
                 ticker: 'NVDA',
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat
             };
         });
@@ -95,7 +95,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             // Input priority fast request with ticker
             await this.inputMessage("Single Ticker Snapshot: SPY, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity");
             
-            // Click the Stock Snapshot button (📈)
+            // Click the Stock Snapshot button (Stock Snapshot)
             await this.clickStockSnapshotButton();
             
             // Wait for response (any format acceptable)
@@ -112,7 +112,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
                 response: response,
                 validation: validation,
                 ticker: 'SPY',
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat
             };
         });
@@ -130,7 +130,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             // Input priority fast request with ticker
             await this.inputMessage("Single Ticker Snapshot: GME, PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity");
             
-            // Click the Stock Snapshot button (📈)
+            // Click the Stock Snapshot button (Stock Snapshot)
             await this.clickStockSnapshotButton();
             
             // Wait for response (any format acceptable)
@@ -147,7 +147,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
                 response: response,
                 validation: validation,
                 ticker: 'GME',
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat
             };
         });
@@ -165,7 +165,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             // Input priority fast request with multiple tickers
             await this.inputMessage("Full Market Snapshot with multiple Tickers: NVDA, SPY, QQQ, IWM: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE WITH MINIMAL TOOL CALLS ONLY & LOW Verbosity");
             
-            // Click the Stock Snapshot button (📈)
+            // Click the Stock Snapshot button (Stock Snapshot)
             await this.clickStockSnapshotButton();
             
             // Wait for response (any format acceptable, may take longer for multiple tickers)
@@ -182,7 +182,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
                 response: response,
                 validation: validation,
                 expectedTickers: ['NVDA', 'SPY', 'QQQ', 'IWM'],
-                hasEmojis: validation.hasEmojis,
+                hasStructuredContent: validation.hasStructuredContent,
                 responseFormat: validation.responseFormat
             };
         });
@@ -215,10 +215,10 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
     }
 
     /**
-     * Helper method to click the Stock Snapshot button (📈)
+     * Helper method to click the Stock Snapshot button (Stock Snapshot)
      */
     async clickStockSnapshotButton() {
-        console.log('Clicking Stock Snapshot button (📈)...');
+        console.log('Clicking Stock Snapshot button (Stock Snapshot)...');
         // This will be implemented using MCP Playwright tools
     }
 
@@ -275,7 +275,7 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
         // Generate priority test report
         const priorityPassRate = results.filter(r => r.status === 'PASS').length / results.length * 100;
         
-        console.log('\n📊 Priority Tests Summary:');
+        console.log('\nPriority Tests Summary:');
         console.log(`Total Tests: ${results.length}`);
         console.log(`Passed: ${results.filter(r => r.status === 'PASS').length}`);
         console.log(`Failed: ${results.filter(r => r.status === 'FAIL').length}`);

@@ -383,7 +383,7 @@ export const exportButtonStyles = `
   }
   
   .export-button.loading::after {
-    content: '⏳';
+    content: 'Loading...';
     font-size: 14px;
     color: var(--accent-info);
     margin-left: var(--spacing-1);

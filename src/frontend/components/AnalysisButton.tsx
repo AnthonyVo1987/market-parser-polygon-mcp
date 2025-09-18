@@ -128,7 +128,7 @@ export default function AnalysisButton({
         </span>
         {isButtonLoading && (
           <span className='loading-spinner' aria-hidden='true'>
-            ⏳
+            Loading...
           </span>
         )}
         {showSuccess && !isButtonLoading && (

@@ -316,7 +316,7 @@ export const debugPanelStyles = `
   }
   
   .debug-title::before {
-    content: '⚙️';
+    content: 'Debug';
     font-size: var(--font-size-small);
   }
 
@@ -722,7 +722,7 @@ export const debugPanelStyles = `
   }
   
   .debug-panel[data-loading="true"]::after {
-    content: '⚙️';
+    content: 'Processing...';
     position: absolute;
     top: 50%;
     right: var(--spacing-3);

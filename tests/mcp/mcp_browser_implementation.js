@@ -66,8 +66,8 @@ class MCPBrowserImplementation {
             timestamp: new Date().toISOString(),
             elements: [
                 { type: 'input', selector: 'textarea[placeholder*="message"]', id: 'chat-input' },
-                { type: 'button', selector: 'button[title*="Stock Snapshot"]', id: 'snapshot-button', text: '📈' },
-                { type: 'button', selector: 'button[title*="Support"]', id: 'support-button', text: '🎯' },
+                { type: 'button', selector: 'button[title*="Stock Snapshot"]', id: 'snapshot-button', text: 'Stock Snapshot' },
+                { type: 'button', selector: 'button[title*="Support"]', id: 'support-button', text: 'Support & Resistance' },
                 { type: 'button', selector: 'button[title*="Technical"]', id: 'technical-button', text: '🔧' },
                 { type: 'button', selector: 'button[type="submit"]', id: 'send-button', text: 'Send' },
                 { type: 'div', selector: '.response-container', id: 'response-area' },
@@ -124,7 +124,7 @@ class MCPBrowserImplementation {
      * Click the Stock Snapshot button (📈)
      */
     async clickStockSnapshotButton() {
-        console.log('🎯 Clicking Stock Snapshot button (📈)...');
+        console.log('Clicking Stock Snapshot button (Stock Snapshot)...');
         
         // Simulated MCP click:
         // await mcp__playwright__browser_click({
@@ -137,7 +137,7 @@ class MCPBrowserImplementation {
      * Click the Support & Resistance button (🎯)
      */
     async clickSupportResistanceButton() {
-        console.log('🎯 Clicking Support & Resistance button (🎯)...');
+        console.log('Clicking Support & Resistance button (Support & Resistance)...');
         
         // Simulated MCP click:
         // await mcp__playwright__browser_click({

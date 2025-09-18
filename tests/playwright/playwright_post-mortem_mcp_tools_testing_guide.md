@@ -47,7 +47,7 @@ The **primary enabler** was the comprehensive `mcp_test_script_basic.md` documen
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
-    "text": "🎯 KEY TAKEAWAYS",
+    "text": "KEY TAKEAWAYS",
     "time": 120
   }
 }
@@ -55,7 +55,7 @@ The **primary enabler** was the comprehensive `mcp_test_script_basic.md` documen
 
 **NPX Equivalent (Target Implementation):**
 ```typescript
-await page.waitForSelector('text=🎯 KEY TAKEAWAYS', {
+await page.waitForSelector('text=KEY TAKEAWAYS', {
   timeout: 120000
 });
 ```
@@ -93,7 +93,7 @@ await page.waitForSelector('text=🎯 KEY TAKEAWAYS', {
 ```
 
 **Validation Criteria Applied:**
-- Financial emoji presence (🎯📊📈📉💰)
+- Financial content presence (structured format with directional indicators)
 - Content length thresholds
 - Ticker-specific content (NVDA validation)
 - Response structure compliance (KEY TAKEAWAYS → DETAILED ANALYSIS → DISCLAIMER)
@@ -239,7 +239,7 @@ await page.fill('textarea[placeholder*="message"]', 'test message');
 await page.keyboard.press('Enter');
 
 // Response detection
-await page.waitForSelector('text=🎯 KEY TAKEAWAYS', {
+await page.waitForSelector('text=KEY TAKEAWAYS', {
   timeout: 120000
 });
 
@@ -315,7 +315,7 @@ expect(validation.isValid).toBe(true);
 **Fallback Pattern for Robust Detection:**
 ```typescript
 // Primary selector
-const selector = 'text=🎯 KEY TAKEAWAYS';
+const selector = 'text=KEY TAKEAWAYS';
 
 // Fallback selectors
 const fallbacks = [
@@ -406,9 +406,9 @@ const validateFinancialResponse = async (page: Page) => {
     const lastMessage = messages[messages.length - 1]?.textContent || '';
 
     return {
-      hasFinancialEmojis: /[📈📉💰🎯📊]/.test(lastMessage),
+      hasFinancialContent: /(bullish|bearish|financial|KEY TAKEAWAYS|DETAILED ANALYSIS)/i.test(lastMessage),
       contentLength: lastMessage.length,
-      hasKeyTakeaways: /🎯\s*KEY\s*TAKEAWAYS/i.test(lastMessage),
+      hasKeyTakeaways: /KEY\s*TAKEAWAYS/i.test(lastMessage),
       hasDisclaimer: /disclaimer/i.test(lastMessage)
     };
   });
@@ -436,7 +436,7 @@ const validateFinancialResponse = async (page: Page) => {
 ### 2. Content Validation Standards
 
 **Required Response Elements:**
-- ✅ Financial emoji indicators present (📈📉💰🎯📊)
+- ✅ Financial content indicators present (bullish/bearish/financial/KEY TAKEAWAYS/DETAILED ANALYSIS)
 - ✅ Proper response structure (KEY TAKEAWAYS → DETAILED ANALYSIS → DISCLAIMER)
 - ✅ Ticker-specific content when applicable (NVDA in Tests 2 & 3)
 - ✅ Minimum content length thresholds (>900 characters)

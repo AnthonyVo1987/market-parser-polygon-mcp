@@ -43,10 +43,12 @@ class PlaywrightMCPTestFramework {
                     return response && typeof response === 'string' && response.trim().length > 0;
                 }
             },
-            emojiIndicators: {
-                financialEmojis: ['📈', '📉', '💰', '💸', '🏢', '📊', '🎯', '🔧'],
-                isEmojiPresent: (response) => {
-                    return /[📈📉💰💸🏢📊🎯🔧]/.test(response);
+            contentStructure: {
+                requiredSections: ['KEY TAKEAWAYS', 'DETAILED ANALYSIS', 'DISCLAIMER'],
+                hasStructure: (response) => {
+                    return /KEY\s*TAKEAWAYS/i.test(response) || 
+                           /DETAILED\s*ANALYSIS/i.test(response) || 
+                           /DISCLAIMER/i.test(response);
                 }
             }
         };
@@ -79,11 +81,11 @@ class PlaywrightMCPTestFramework {
             return { success: false, errors: ['Response is not in a readable format'], notes, warnings };
         }
 
-        // Check for emoji presence (encouraged but not required)
-        if (validation.emojiIndicators.isEmojiPresent(response)) {
-            notes.push('✅ Response contains financial emojis - excellent user experience!');
+        // Check for content structure (required for proper analysis)
+        if (validation.contentStructure.hasStructure(response)) {
+            notes.push('✅ Response contains structured analysis sections');
         } else {
-            notes.push('ℹ️  Response could be enhanced with emojis (📈📉💰) for better user experience');
+            notes.push('ℹ️  Response could benefit from structured sections (KEY TAKEAWAYS, DETAILED ANALYSIS)');
         }
 
         // Determine response format
@@ -92,8 +94,8 @@ class PlaywrightMCPTestFramework {
             JSON.parse(response);
             formatType = 'json';
         } catch {
-            if (validation.emojiIndicators.isEmojiPresent(response)) {
-                formatType = 'emoji-enhanced';
+            if (validation.contentStructure.hasStructure(response)) {
+                formatType = 'structured-analysis';
             } else if (response.includes('analysis') || response.includes('data') || response.includes('price')) {
                 formatType = 'conversational';
             }
@@ -107,7 +109,7 @@ class PlaywrightMCPTestFramework {
             notes,
             warnings,
             responseFormat: formatType,
-            hasEmojis: validation.emojiIndicators.isEmojiPresent(response),
+            hasStructure: validation.contentStructure.hasStructure(response),
             contentLength: response.length
         };
     }

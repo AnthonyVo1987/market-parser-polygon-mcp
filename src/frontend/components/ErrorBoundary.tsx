@@ -388,7 +388,7 @@ export const errorBoundaryStyles = `
   }
   
   .error-reset-button[data-loading="true"]::after {
-    content: '⏳';
+    content: 'Loading...';
     position: absolute;
     top: 50%;
     right: var(--spacing-3);

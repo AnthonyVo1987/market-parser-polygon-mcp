@@ -228,7 +228,7 @@ export default memo(function AnalysisButtons({
 
   // Loading state
   if (loading && templates.length === 0) {
-    logger.debug('⏳ Rendering loading state', {
+    logger.debug('Loading analysis templates', {
       component: 'AnalysisButtons',
       loading,
       templatesCount: templates.length

@@ -467,7 +467,7 @@ export const messageStyles = `
   }
   
   .markdown-loading::after {
-    content: '⏳';
+    content: 'Loading...';
     display: inline-block;
     margin-left: 8px;
     vertical-align: middle;

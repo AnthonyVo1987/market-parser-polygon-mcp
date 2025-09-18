@@ -1163,7 +1163,7 @@ export const interfaceStyles = `
   }
 
   .component-loading::before {
-    content: '⚙️';
+    content: 'Processing...';
     margin-right: var(--space-2);
     flex-shrink: 0;
     font-size: 16px;

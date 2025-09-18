@@ -423,7 +423,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 'img',
                 'svg',
                 '[role="img"]',
-                'button[title*="📈"], button[title*="🎯"], button[title*="🔧"]', // Icon buttons
+                'button[title*="Stock"], button[title*="Support"], button[title*="Technical"]', // Icon buttons
                 '.icon, .emoji, [class*="icon"]'
             ];
             
@@ -571,7 +571,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Performance Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Performance Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -593,7 +593,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Accessibility Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Accessibility Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }
@@ -613,7 +613,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         const results = await Promise.all(tests);
         
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        console.log(`📊 Cross-Browser Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
+        console.log(`Cross-Browser Tests: ${passedTests}/${results.length} passed (${(passedTests/results.length*100).toFixed(1)}%)`);
         
         return results;
     }

@@ -93,7 +93,7 @@ export default function MessageCopyButton({
   const getButtonIcon = (): string => {
     switch (buttonState) {
       case 'loading':
-        return '⏳';
+        return 'Copying...';
       case 'success':
         return '✅';
       case 'error':

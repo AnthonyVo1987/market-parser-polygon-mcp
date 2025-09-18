@@ -205,7 +205,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
-    "text": "🎯 KEY TAKEAWAYS",
+    "text": "KEY TAKEAWAYS",
     "time": 120
   }
 }
@@ -213,20 +213,20 @@ If any of these tools are unavailable, STOP and request tool access before proce
 
 **CRITICAL SUCCESS FACTORS:**
 - **Timeout:** Always use `time: 120` for AI responses
-- **Detection Text:** Look for response indicators like "🎯 KEY TAKEAWAYS"
+- **Detection Text:** Look for response indicators like "KEY TAKEAWAYS"
 - **Auto-Retry:** Tool automatically retries until detected or timeout
 - **NO Manual Polling:** Tool handles retry logic internally
 
 **Alternative Detection Patterns:**
 ```json
 // For market data responses
-{"text": "📈", "time": 120}
+{"text": "MARKET", "time": 120}
 
 // For technical analysis  
-{"text": "📊", "time": 120}
+{"text": "ANALYSIS", "time": 120}
 
 // For any financial content
-{"text": "💰", "time": 120}
+{"text": "DETAILED ANALYSIS", "time": 120}
 ```
 
 ---
@@ -315,7 +315,7 @@ Document actual response time for performance classification and optimization in
 
 **Troubleshooting Steps:**
 1. Take snapshot to examine actual response content
-2. Try alternative detection patterns (📈, 📊, 💰)
+2. Try alternative detection patterns (MARKET, ANALYSIS, DETAILED ANALYSIS)
 3. Verify server health and processing status
 
 ### 5.4 Browser State Issues
@@ -341,7 +341,7 @@ Document actual response time for performance classification and optimization in
 **Required Validation Checks:**
 1. **Response Detection:** Verify auto-retry successfully detected response
 2. **Content Quality:** Check for financial data and analysis
-3. **Format Compliance:** Verify emoji indicators (📈📉💰🎯)
+3. **Format Compliance:** Verify structured sections (KEY TAKEAWAYS, DETAILED ANALYSIS, DISCLAIMER)
 4. **Completeness:** Ensure response addresses original query
 
 **Validation Tool Usage:**
@@ -489,7 +489,7 @@ Document actual response time for performance classification and optimization in
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
-    "text": "🎯 KEY TAKEAWAYS",
+    "text": "KEY TAKEAWAYS",
     "time": 120
   }
 }
@@ -498,7 +498,7 @@ Document actual response time for performance classification and optimization in
 {
   "tool": "mcp__playwright__browser_evaluate",
   "parameters": {
-    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage), contentLength: lastMessage.length, containsMarketData: /market|trading|status/i.test(lastMessage) }; }"
+    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasStructuredContent: /KEY\\s*TAKEAWAYS|DETAILED\\s*ANALYSIS|DISCLAIMER/i.test(lastMessage), contentLength: lastMessage.length, containsMarketData: /market|trading|status/i.test(lastMessage) }; }"
   }
 }
 ```
@@ -554,7 +554,7 @@ Document actual response time for performance classification and optimization in
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
-    "text": "📈",
+    "text": "NVIDIA",
     "time": 120
   }
 }
@@ -572,7 +572,7 @@ Document actual response time for performance classification and optimization in
 {
   "tool": "mcp__playwright__browser_evaluate",
   "parameters": {
-    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage), contentLength: lastMessage.length, containsNVDA: /nvda|nvidia/i.test(lastMessage), hasStockData: /price|volume|market cap|current/i.test(lastMessage) }; }"
+    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasStructuredContent: /KEY\\s*TAKEAWAYS|DETAILED\\s*ANALYSIS|DISCLAIMER/i.test(lastMessage), contentLength: lastMessage.length, containsNVDA: /nvda|nvidia/i.test(lastMessage), hasStockData: /price|volume|market cap|current/i.test(lastMessage) }; }"
   }
 }
 ```
@@ -616,12 +616,12 @@ Document actual response time for performance classification and optimization in
   }
 }
 
-// Step 4: Click Stock Snapshot button (📈)
+// Step 4: Click Stock Snapshot button (Stock Snapshot)
 {
   "tool": "mcp__playwright__browser_click",
   "parameters": {
     "element": "Stock Snapshot button",
-    "ref": "button:has-text('📈'), button:has-text('Stock Snapshot'), [data-testid='stock-snapshot-button']"
+    "ref": "button:has-text('Stock Snapshot'), button[title*='Stock'], [data-testid='stock-snapshot-button']"
   }
 }
 
@@ -629,7 +629,7 @@ Document actual response time for performance classification and optimization in
 {
   "tool": "mcp__playwright__browser_wait_for",
   "parameters": {
-    "text": "📈",
+    "text": "DETAILED ANALYSIS",
     "time": 120
   }
 }
@@ -647,7 +647,7 @@ Document actual response time for performance classification and optimization in
 {
   "tool": "mcp__playwright__browser_evaluate",
   "parameters": {
-    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasFinancialEmojis: /[📈📉💰🎯]/.test(lastMessage), contentLength: lastMessage.length, hasSnapshotContent: /snapshot|stock|price|volume/i.test(lastMessage), buttonTriggered: true }; }"
+    "function": "() => { const messages = document.querySelectorAll('.message-content'); const lastMessage = messages[messages.length-1]?.textContent || ''; return { hasStructuredContent: /KEY\\s*TAKEAWAYS|DETAILED\\s*ANALYSIS|DISCLAIMER/i.test(lastMessage), contentLength: lastMessage.length, hasSnapshotContent: /snapshot|stock|price|volume/i.test(lastMessage), buttonTriggered: true }; }"
   }
 }
 ```

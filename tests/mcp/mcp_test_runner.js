@@ -111,7 +111,7 @@ class MCPPlaywrightTestRunner {
      * MCP Playwright Button Click - Stock Snapshot
      */
     async mcpClickStockSnapshotButton() {
-        console.log('🎯 MCP Click: Stock Snapshot button (📈)');
+        console.log('MCP Click: Stock Snapshot button (Stock Snapshot)');
         
         // Click using MCP Playwright
         // await mcp__playwright__browser_click({
@@ -124,7 +124,7 @@ class MCPPlaywrightTestRunner {
      * MCP Playwright Button Click - Support & Resistance
      */
     async mcpClickSupportResistanceButton() {
-        console.log('🎯 MCP Click: Support & Resistance button (🎯)');
+        console.log('MCP Click: Support & Resistance button (Support & Resistance)');
         
         // await mcp__playwright__browser_click({
         //     element: 'Support & Resistance button',
@@ -136,7 +136,7 @@ class MCPPlaywrightTestRunner {
      * MCP Playwright Button Click - Technical Analysis
      */
     async mcpClickTechnicalAnalysisButton() {
-        console.log('🔧 MCP Click: Technical Analysis button (🔧)');
+        console.log('MCP Click: Technical Analysis button (Technical Analysis)');
         
         // await mcp__playwright__browser_click({
         //     element: 'Technical Analysis button',
@@ -335,7 +335,7 @@ class MCPPlaywrightTestRunner {
 
         const priorityPassRate = results.filter(r => r.status === 'PASS').length / results.length * 100;
         
-        console.log('\n📊 Priority Tests Summary:');
+        console.log('\nPriority Tests Summary:');
         console.log(`Total Tests: ${results.length}`);
         console.log(`Passed: ${results.filter(r => r.status === 'PASS').length}`);
         console.log(`Failed: ${results.filter(r => r.status === 'FAIL').length}`);
@@ -528,7 +528,7 @@ class MCPPlaywrightTestRunner {
         const validation = {
             hasContent: true,
             contentLength: response.length,
-            hasEmojis: /[📈📉💰💸🏢📊🎯🔧]/.test(response),
+            hasStructuredContent: /KEY\s*TAKEAWAYS|DETAILED\s*ANALYSIS|DISCLAIMER/i.test(response),
             format: 'unknown'
         };
 
@@ -537,8 +537,8 @@ class MCPPlaywrightTestRunner {
             JSON.parse(response);
             validation.format = 'json';
         } catch {
-            if (validation.hasEmojis) {
-                validation.format = 'emoji-enhanced';
+            if (validation.hasStructuredContent) {
+                validation.format = 'structured-analysis';
             } else if (response.includes('analysis') || response.includes('data') || response.includes('price')) {
                 validation.format = 'conversational';
             } else {
@@ -560,10 +560,10 @@ class MCPPlaywrightTestRunner {
 
         // Provide user experience feedback
         const feedback = [];
-        if (validation.hasEmojis) {
-            feedback.push('✅ Response contains financial emojis - excellent user experience!');
+        if (validation.hasStructuredContent) {
+            feedback.push('✅ Response contains structured analysis sections - excellent format!');
         } else {
-            feedback.push('ℹ️  Response could be enhanced with emojis (📈📉💰) for better user experience');
+            feedback.push('ℹ️  Response could be enhanced with structured sections (KEY TAKEAWAYS, DETAILED ANALYSIS)');
         }
         feedback.push(`📋 Response format: ${validation.format} (all formats acceptable)`);
 

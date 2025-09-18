@@ -345,7 +345,7 @@ export const recentMessageButtonsStyles = `
   }
   
   .recent-message-button.loading::after {
-    content: '⏳';
+    content: 'Loading...';
     font-size: 12px;
     color: var(--accent-info);
     margin-left: var(--spacing-1);

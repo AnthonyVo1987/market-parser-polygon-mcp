@@ -11,7 +11,7 @@
 - **Backend**: FastAPI server on http://127.0.0.1:8000 (fixed port for consistent testing)
 - **Frontend**: React + Vite on http://127.0.0.1:3000
 - **Production**: Static build on http://127.0.0.1:5500
-- **Key Features**: Financial chat interface, analysis buttons, emoji-based responses, Polygon.io data integration
+- **Key Features**: Financial chat interface, analysis buttons, structured responses, Polygon.io data integration
 
 **Server Startup (PRIMARY METHOD):**
 - **RECOMMENDED**: Use `./start-app.sh` for one-click startup of both servers
@@ -30,7 +30,7 @@
 **Critical UI Components to Test:**
 - `ChatInput_OpenAI`: Multi-line text input with financial queries
 - `AnalysisButtons`: Stock Snapshot, Support/Resistance, Technical Analysis buttons  
-- `ChatInterface_OpenAI`: Message container with emoji indicators
+- `ChatInterface_OpenAI`: Message container with structured response indicators
 - `DebugPanel`: Expandable debugging information
 - `ExportButtons`: Copy and export functionality
 
@@ -38,7 +38,7 @@
 
 ## AI Response Testing Procedures (CRITICAL)
 
-**⚠️ IMPORTANT: AI responses take 30-90 seconds on average. Use modern Playwright MCP auto-retry patterns!**
+**IMPORTANT: AI responses take 30-90 seconds on average. Use modern Playwright MCP auto-retry patterns!**
 
 ### Modern Auto-Retry Approach
 - **Per Test Timeout**: 120 seconds maximum for AI responses, 30s for UI changes
@@ -148,7 +148,7 @@ When:
   ✅ Before interacting with financial chat interface
   ✅ After sending financial queries to validate responses
   ✅ To locate specific UI elements (buttons, inputs)
-  ✅ To verify emoji indicators in responses
+  ✅ To verify structured content in responses
 Input: No parameters required
 Output: Structured accessibility tree with element references
 ```
@@ -159,13 +159,13 @@ Output: Structured accessibility tree with element references
 const snapshot = await mcp__playwright__browser_snapshot()
 // Look for: "Stock Snapshot", "Support/Resistance", "Technical Analysis" buttons
 // Look for: textarea with placeholder "Ask about stocks..."
-// Look for: emoji indicators like 📈📉💰 in responses
+// Look for: directional indicators like bullish/bearish in responses
 ```
 
 **Correct Conditions:**
 - Use to find ChatInput_OpenAI textarea
 - Use to locate AnalysisButtons before clicking
-- Use to verify financial response content with emojis
+- Use to verify financial response content with structured format
 - Use to find element references (ref values) for interactions
 
 **Incorrect Conditions:**
@@ -303,15 +303,9 @@ Expected Output: All specified fields filled
 await mcp__playwright__browser_fill_form({
   fields: [
     {
-      name: "Debug level selector",
-      type: "combobox", 
-      ref: "select[0]",
-      value: "verbose"
-    },
-    {
-      name: "Enable emoji indicators",
+      name: "Enable structured indicators",
       type: "checkbox",
-      ref: "input[1]", 
+      ref: "input[1]",
       value: "true"
     }
   ]
@@ -337,7 +331,41 @@ Expected Output: Condition met or timeout
 ```typescript
 // MODERN: Single wait with auto-retry (recommended)
 await mcp__playwright__browser_wait_for({
-  text: "🎯 KEY TAKEAWAYS", // Our response format
+      name: "Debug level selector",
+      type: "combobox", 
+      ref: "select[0]",
+      value: "verbose"
+    },
+    {
+      name: "Enable structured indicators",
+      type: "checkbox",
+      ref: "input[1]",
+      value: "true"
+    }
+  ]
+})
+```
+
+---
+
+### 4. Content Validation and Waiting
+
+#### `mcp__playwright__browser_wait_for`
+**Modern Usage:** Wait for financial responses with built-in auto-retry
+```
+Purpose: Wait for Market Parser specific content/states
+Input:
+  - text (string): Specific text to wait for
+  - textGone (string): Text to wait for disappearance
+  - time (number): Maximum timeout (120s for AI responses)
+Expected Output: Condition met or timeout
+```
+
+**Example - MODERN Auto-Retry Approach:**
+```typescript
+// MODERN: Single wait with auto-retry (recommended)
+await mcp__playwright__browser_wait_for({
+  text: "KEY TAKEAWAYS", // Our response format
   time: 120 // Maximum timeout - auto-retries until found
 });
 console.log(`✅ AI response detected via auto-retry`);
@@ -345,7 +373,7 @@ console.log(`✅ AI response detected via auto-retry`);
 // Alternative modern patterns
 // Wait for bullish indicator with auto-retry
 await mcp__playwright__browser_wait_for({
-  text: "📈", // Bullish indicator
+  text: "bullish", // Bullish indicator
   time: 120 // Auto-retries until found or timeout
 })
 
@@ -362,7 +390,7 @@ const responseContent = await mcp__playwright__browser_evaluate({
       const checkForResponse = () => {
         const messages = document.querySelectorAll('.chat-message');
         const lastMessage = Array.from(messages).pop();
-        if (lastMessage && lastMessage.textContent.includes('🎯 KEY TAKEAWAYS')) {
+        if (lastMessage && lastMessage.textContent.includes('KEY TAKEAWAYS')) {
           resolve({ found: true, content: lastMessage.textContent });
         } else {
           setTimeout(checkForResponse, 1000); // Built-in retry
@@ -377,7 +405,7 @@ const responseContent = await mcp__playwright__browser_evaluate({
 // Note: This is standard Playwright pattern, not MCP specific
 // await expect.poll(async () => {
 //   const snapshot = await browser_snapshot();
-//   return snapshot.includes('🎯 KEY TAKEAWAYS');
+//   return snapshot.includes('KEY TAKEAWAYS');
 // }, { timeout: 120000 }).toBe(true);
 ```
 
@@ -386,7 +414,7 @@ const responseContent = await mcp__playwright__browser_evaluate({
 // ✅ RECOMMENDED: Use context-appropriate timeouts
 // AI responses: 120s timeout (backend processing time)
 await mcp__playwright__browser_wait_for({
-  text: "🎯 KEY TAKEAWAYS",
+  text: "KEY TAKEAWAYS",
   time: 120
 });
 
@@ -441,8 +469,8 @@ try {
 ```
 
 **Market Parser Specific Wait Patterns:**
-- Wait for "🎯 KEY TAKEAWAYS" (our response format)
-- Wait for financial emojis: 📈📉💰💸🏢📊
+- Wait for "KEY TAKEAWAYS" (our response format)
+- Wait for financial indicators: bullish, bearish, financial data, analysis
 - Wait for analysis completion
 - Wait for button state changes
 
@@ -472,9 +500,9 @@ const emojiData = await mcp__playwright__browser_evaluate({
     const emojis = [];
     messages.forEach(msg => {
       const text = msg.textContent;
-      if (text.includes('📈')) emojis.push('bullish');
-      if (text.includes('📉')) emojis.push('bearish'); 
-      if (text.includes('💰')) emojis.push('financial');
+      if (text.includes('bullish')) indicators.push('bullish');
+      if (text.includes('bearish')) indicators.push('bearish'); 
+      if (text.includes('financial')) indicators.push('financial');
     });
     return emojis;
   }`
@@ -547,7 +575,7 @@ const requests = await mcp__playwright__browser_network_requests()
    
 // MODERN: Single wait with auto-retry
 5. await browser_wait_for({
-     text: "🎯 KEY TAKEAWAYS",
+     text: "KEY TAKEAWAYS",
      time: 120 // Auto-retries until found or timeout
    });
    console.log(`✅ Response detected via auto-retry`);
@@ -559,7 +587,7 @@ const requests = await mcp__playwright__browser_network_requests()
 //   function: `() => {
 //     return new Promise(resolve => {
 //       const checkCondition = () => {
-//         if (document.body.textContent.includes('🎯 KEY TAKEAWAYS')) {
+//         if (document.body.textContent.includes('KEY TAKEAWAYS')) {
 //           resolve(true);
 //         } else {
 //           setTimeout(checkCondition, 1000);
@@ -582,7 +610,7 @@ const requests = await mcp__playwright__browser_network_requests()
    
 // MODERN: Auto-retry waiting
 4. await browser_wait_for({
-     text: "📊", // Financial data indicator
+     text: "DETAILED ANALYSIS", // Financial data indicator
      time: 120 // Auto-retries until condition met
    });
    console.log(`✅ Button response detected`);
@@ -591,7 +619,7 @@ const requests = await mcp__playwright__browser_network_requests()
 
 // Alternative: Multiple condition checking with auto-retry
 const checkResponse = async () => {
-  const conditions = ["📊", "🎯 KEY TAKEAWAYS", "📈", "💰"];
+  const conditions = ["DETAILED ANALYSIS", "KEY TAKEAWAYS", "bullish", "financial"];
   for (const condition of conditions) {
     try {
       await browser_wait_for({text: condition, time: 30});
@@ -608,15 +636,15 @@ const responseType = await checkResponse();
 ### Response Validation Pattern
 ```typescript
 1. [Send financial query]
-2. browser_wait_for({text: "🎯 KEY TAKEAWAYS"})
+2. browser_wait_for({text: "KEY TAKEAWAYS"})
 3. browser_evaluate({
      function: `() => {
        const content = document.body.textContent;
        return {
-         hasKeyTakeaways: content.includes('🎯 KEY TAKEAWAYS'),
-         hasBullishEmoji: content.includes('📈'),
-         hasBearishEmoji: content.includes('📉'),
-         hasFinancialEmoji: content.includes('💰')
+         hasKeyTakeaways: content.includes('KEY TAKEAWAYS'),
+         hasBullishContent: content.includes('bullish'),
+         hasBearishContent: content.includes('bearish'),
+         hasFinancialContent: content.includes('financial')
        };
      }`
    }) // Extract validation data
@@ -626,7 +654,7 @@ const responseType = await checkResponse();
 
 ## Modern Auto-Retry vs Timeout Detection (CRITICAL)
 
-**⚠️ Most Critical Section: Leverages Playwright's built-in retry mechanisms**
+**Most Critical Section: Leverages Playwright's built-in retry mechanisms**
 
 ### Understanding Modern Auto-Retry
 
@@ -720,11 +748,11 @@ while (Date.now() - startTime < 120000) {
 **✅ Recommended Patterns:**
 ```typescript
 // Simple auto-retry wait (most common)
-await browser_wait_for({text: "🎯 KEY TAKEAWAYS", time: 120});
+await browser_wait_for({text: "KEY TAKEAWAYS", time: 120});
 
 // Multiple condition checking with early exit
 const waitForAnyResponse = async () => {
-  const conditions = ["🎯 KEY TAKEAWAYS", "📈", "📊", "💰"];
+  const conditions = ["KEY TAKEAWAYS", "bullish", "DETAILED ANALYSIS", "financial"];
   for (const condition of conditions) {
     try {
       await browser_wait_for({text: condition, time: 30});
@@ -741,7 +769,7 @@ await browser_evaluate({
   function: `() => {
     return new Promise(resolve => {
       const checkCondition = () => {
-        const hasResponse = document.body.textContent.includes('🎯 KEY TAKEAWAYS');
+        const hasResponse = document.body.textContent.includes('KEY TAKEAWAYS');
         if (hasResponse || document.readyState === 'complete') {
           resolve(true);
         } else {
@@ -800,8 +828,8 @@ Before reporting a timeout failure, verify:
 - **Wrong:** Not waiting for dynamic content to load
 
 ### ❌ Content Validation Errors
-- **Wrong:** Looking for generic success messages instead of "🎯 KEY TAKEAWAYS"
-- **Wrong:** Not validating financial emoji indicators (📈📉💰)
+- **Wrong:** Looking for generic success messages instead of "KEY TAKEAWAYS"
+- **Wrong:** Not validating financial content indicators (bullish/bearish/financial)
 - **Wrong:** Ignoring Market Parser specific response format
 
 ### ❌ Timing Errors

@@ -460,7 +460,7 @@ export const inputStyles = `
   }
   
   .loading-spinner::before {
-    content: '⏳';
+    content: 'Loading...';
     font-size: 16px;
     color: currentColor;
   }

@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+## EXECUTIVE SUMMARY
 
 ### SYSTEM STATUS: ALL 6 BASIC TESTS PASSED - REMARKABLE IMPROVEMENT FROM PREVIOUS FAILURES
 
@@ -30,7 +30,7 @@
 
 ---
 
-## 📊 TEST EXECUTION RESULTS
+## TEST EXECUTION RESULTS
 
 ### Individual Test Performance Analysis
 
@@ -40,8 +40,8 @@
 - **Performance Classification**: SUCCESS (<45s)
 - **Validation Results**:
   - ✅ Comprehensive market status information delivered
-  - ✅ Emoji-based sentiment indicators present (📈📉💰📊)
-  - ✅ Structured "🎯 KEY TAKEAWAYS" format maintained
+  - ✅ Structured sentiment indicators present (bullish/bearish/financial/analysis)
+  - ✅ Structured "KEY TAKEAWAYS" format maintained
   - ✅ Real-time market data integration working correctly
 - **Quality Assessment**: Excellent market overview with proper formatting and emoji integration
 
@@ -53,7 +53,7 @@
   - ✅ NVDA price data: $168.31 (+0.71%) accurately reported
   - ✅ VWAP analysis included in comprehensive response
   - ✅ Volume and market cap metrics properly calculated
-  - ✅ Bullish/bearish sentiment indicators (📈) correctly applied
+  - ✅ Bullish/bearish sentiment indicators correctly applied
 - **Quality Assessment**: Comprehensive single ticker analysis with detailed financial metrics
 - **Note**: Slightly slower response due to comprehensive VWAP calculations
 
@@ -65,7 +65,7 @@
   - ✅ SPY price data: $648.83 (+0.25%) accurately delivered
   - ✅ Detailed ETF metrics and sector analysis included
   - ✅ Market correlation indicators properly displayed
-  - ✅ Emoji-based sentiment analysis (📈) correctly implemented
+  - ✅ Structured sentiment analysis correctly implemented
 - **Quality Assessment**: Excellent ETF analysis with sector breakdown and correlation data
 
 #### TEST-B004: Single Ticker GME Test
@@ -76,7 +76,7 @@
   - ✅ GME price data: $23.22 (+3.01%) accurately reported
   - ✅ Volume analysis with historical comparison included
   - ✅ Volatility metrics and trading pattern analysis present
-  - ✅ Bullish sentiment indicators (📈) properly applied for +3.01% gain
+  - ✅ Bullish sentiment indicators properly applied for +3.01% gain
 - **Quality Assessment**: Comprehensive meme stock analysis with volatility and volume insights
 
 #### TEST-B005: Multi-Ticker Test
@@ -104,7 +104,7 @@
 
 ---
 
-## 📈 PERFORMANCE ANALYSIS
+## PERFORMANCE ANALYSIS
 
 ### Response Time Distribution
 - **SUCCESS (<45s)**: 5 tests (83.3% of total)
@@ -127,7 +127,7 @@
 
 ---
 
-## 🛠️ TECHNICAL ACHIEVEMENTS
+## TECHNICAL ACHIEVEMENTS
 
 ### Critical System Fixes Implemented
 
@@ -150,8 +150,8 @@
 - **Result**: 100% success rate in frontend-backend data exchange
 
 #### 4. Response Format Standardization
-- **Achievement**: All responses contain proper emoji-based sentiment indicators (📈📉💰📊)
-- **Achievement**: Consistent "🎯 KEY TAKEAWAYS" format maintained across all responses
+- **Achievement**: All responses contain proper structured sentiment indicators (bullish/bearish/financial/analysis)
+- **Achievement**: Consistent "KEY TAKEAWAYS" format maintained across all responses
 - **Achievement**: Financial data formatting standardized with clear metric presentation
 - **Impact**: Professional-grade user experience with enhanced readability
 
@@ -275,7 +275,7 @@
 
 ---
 
-## 🎯 CONCLUSION
+## CONCLUSION
 
 ### BREAKTHROUGH ACHIEVEMENT SUMMARY
 
