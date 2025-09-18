@@ -57,35 +57,37 @@ class DebugFilter(logging.Filter):
         return True
 
 
-def setup_logging(
-    level: str = "INFO", log_to_file: bool = False, log_file_path: Optional[str] = None
-) -> None:
+def setup_logging(log_to_file: bool = False, log_file_path: Optional[str] = None) -> None:
     """
-    Configure the logging system with colored console output.
+    Configure the logging system with colored console output based on LOG_MODE.
 
     Args:
-        level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_to_file: Whether to also log to a file
         log_file_path: Path to log file (defaults to logs/backend.log)
     """
-    # Check for NONE mode first - completely disable logging
-    log_mode = os.getenv("LOG_MODE", "").upper()
+    # Get log mode from environment and map to logging levels
+    log_mode = os.getenv("LOG_MODE", "DEBUG").upper()
+
     if log_mode == "NONE":
-        # Set logging to CRITICAL level to disable all lower-level logs
-        # and skip all handler initialization for maximum performance
+        # Completely disable logging for maximum performance
+        # Set level higher than any possible log message
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.CRITICAL)
+        root_logger.setLevel(logging.CRITICAL + 1)
         # Remove any existing handlers to ensure no file I/O occurs
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
         return
-    
-    # Get log level from environment or parameter
-    log_level = os.getenv("LOG_LEVEL", level).upper()
+    elif log_mode == "PRODUCTION":
+        log_level = logging.WARNING  # Only warnings and errors in production
+    elif log_mode == "DEBUG":
+        log_level = logging.DEBUG    # Full debugging information
+    else:
+        # Default fallback for any unrecognized LOG_MODE values
+        log_level = logging.INFO
 
     # Create root logger
     root_logger = logging.getLogger()
-    root_logger.setLevel(getattr(logging, log_level, logging.INFO))
+    root_logger.setLevel(log_level)
 
     # Remove existing handlers to avoid duplication
     for handler in root_logger.handlers[:]:
@@ -93,7 +95,7 @@ def setup_logging(
 
     # Console handler with colors
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(getattr(logging, log_level, logging.INFO))
+    console_handler.setLevel(log_level)
 
     # Format with colors and extra context
     console_format = "🔍 %(debug_timestamp)s [%(levelname)s] %(name)s:%(lineno)d - %(message)s"
@@ -256,31 +258,14 @@ def log_agent_processing(
     logger.debug(f"🤖 Agent Processing: {step}", extra=extra_data)
 
 
-# Initialize logging on module import based on environment
+# Initialize logging on module import based on LOG_MODE
 def _initialize_logging():
-    """Initialize logging configuration on module import."""
-    # Check for NONE mode first - if set, skip all logging setup
-    log_mode = os.getenv("LOG_MODE", "").upper()
-    if log_mode == "NONE":
-        setup_logging()  # Will handle NONE mode internally
-        return
-    
-    # Determine environment mode
-    environment = os.getenv("ENVIRONMENT", "development").lower()
-    debug_mode = os.getenv("DEBUG", "false").lower() in ("true", "1", "yes")
+    """Initialize logging configuration on module import using LOG_MODE."""
+    # Enable file logging based on LOG_TO_FILE environment variable
+    log_to_file = os.getenv("LOG_TO_FILE", "false").lower() in ("true", "1", "yes")
 
-    # Set appropriate log levels based on environment
-    if environment == "production":
-        log_level = "WARNING"  # Only warnings and errors in production
-    elif debug_mode or environment == "development":
-        log_level = "DEBUG"    # Full debugging in development
-    else:
-        log_level = "INFO"     # Standard info level
-
-    # Enable file logging in development for debugging
-    log_to_file = debug_mode or os.getenv("LOG_TO_FILE", "false").lower() in ("true", "1", "yes")
-
-    setup_logging(level=log_level, log_to_file=log_to_file)
+    # Setup logging using LOG_MODE (handles all mode logic internally)
+    setup_logging(log_to_file=log_to_file)
 
 
 # Auto-initialize logging when module is imported

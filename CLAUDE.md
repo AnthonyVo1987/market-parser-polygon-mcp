@@ -9,17 +9,16 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Add NONE console log mode toggle for performance optimization
+refactor: Consolidate logging configuration to single LOG_MODE variable
 
-- Add NONE mode to LogMode type (frontend) with complete logging disabling
-- Set NONE as new default mode in localStorage and .env (LOG_MODE=NONE)
-- Implement 3-way toggle cycling: NONE → DEBUG → PRODUCTION → NONE
-- Add backend LOG_MODE environment variable support with early returns
-- Skip console interception, FileLogService, and console_debug_log.txt in NONE mode
-- Update DebugPanel UI with 3-state toggle and neutral gray NONE styling
-- Add mode transition logic for proper service initialization/cleanup
-- Backend API endpoints return early when LOG_MODE=NONE for zero file I/O
-- Comprehensive specialist review via tech-lead-orchestrator confirms implementation
+- Remove deprecated DEBUG and LOG_LEVEL environment variables from .env and .env.example
+- Simplify to LOG_MODE with NONE/DEBUG/PRODUCTION options for centralized control
+- Update logger.py to use single configuration source with robust fallback handling
+- Set LOG_MODE=NONE as new default for maximum performance optimization
+- Implement complete logging disabling when LOG_MODE=NONE (removes handlers, sets CRITICAL+1)
+- Add comprehensive migration documentation explaining deprecated variable removal
+- Verify no remaining functional code references to DEBUG or LOG_LEVEL variables
+- Maintain backward compatibility with sensible defaults and case-insensitive handling
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
