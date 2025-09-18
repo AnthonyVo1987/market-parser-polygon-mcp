@@ -28,11 +28,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 When working with tools, prioritize the following MCP Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
-- **Serena MCP**: Code-aware exploration and refactoring: fast file/pattern/symbol search, symbol-level edits, and built-in TODO/memory tracking
+- **Serena MCP**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring
 - **Sequential-Thinking MCP**:  Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
 - **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
 - **Playwright MCP**: Browser automation for React GUI testing & App Validation
-- **Filesystem MCP**: Multi-file operations (3+ files)
+- **Filesystem MCP**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization).  *DO NOT USE Filesystem Tools for for single-file content modifications and instead use standard Read/Write/Edit Tools*
 
 Use standard Read/Write/Edit tools for single-file operations.
 
