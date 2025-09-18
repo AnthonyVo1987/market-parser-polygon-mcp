@@ -29,6 +29,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 When working with tools, prioritize the following MCP Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
+- **Serena MCP**: Code-aware exploration and refactoring: fast file/pattern/symbol search, symbol-level edits, and built-in TODO/memory tracking
 - **Sequential-Thinking MCP**:  Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
 - **Context7 MCP**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
 - **Playwright MCP**: Browser automation for React GUI testing & App Validation
@@ -335,6 +336,7 @@ market-parser-polygon-mcp/
 The project uses Playwright MCP Tools for E2E testing - the ONLY testing method:
 
 **MCP Tools Testing Approach:**
+
 - Playwright MCP Tools for browser automation and React GUI testing
 - 3 core test validation: Market Status, NVDA Ticker, Stock Snapshot Button
 - Comprehensive test coverage for all financial query scenarios
