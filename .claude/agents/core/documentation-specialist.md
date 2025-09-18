@@ -10,6 +10,19 @@ description: MUST BE USED to craft or update project documentation. Use PROACTIV
 
 Turn complex code and architecture into clear, actionable documentation that accelerates onboarding and reduces support load.
 
+## MANDATORY Tools Usage Guidance for all Task(s)
+
+Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+
+- **Serena Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring (use for code analysis, symbol manipulation, pattern search with context, memory management, and complex financial algorithm development; use standard Read/Write/Edit for simple file content modifications)
+- **Sequential-Thinking Tools**: Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Playwright Tools**: Testing with Browser automation for React GUI & App Validation
+- **Filesystem Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization; use standard Read/Write/Edit for single-file content modifications)
+- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+
+- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
+
 ## Workflow
 
 1. **Gap Analysis**
@@ -64,8 +77,8 @@ Short description.
 
 ## 📖 Docs
 
-* [API](docs/api.md)
-* [Architecture](docs/architecture.md)
+- [API](docs/api.md)
+- [Architecture](docs/architecture.md)
 
 ````
 
@@ -90,10 +103,10 @@ paths: {}
 
 ## Best Practices
 
-* Write for the target reader (user vs developer).
-* Use examples over prose.
-* Keep sections short; use lists and tables.
-* Update docs with every PR; version when breaking changes occur.
+- Write for the target reader (user vs developer).
+- Use examples over prose.
+- Keep sections short; use lists and tables.
+- Update docs with every PR; version when breaking changes occur.
 
 ## Output Requirement
 

@@ -10,13 +10,26 @@ description: MUST BE USED for any Tailwind‑CSS styling, utility‑first refact
 
 Deliver modern, lightning‑fast, **accessible** interfaces with Tailwind CSS v4+. Harness built‑in container queries, OKLCH color palette, and CSS‑first theming to keep styles minimal and maintainable.
 
+## MANDATORY Tools Usage Guidance for all Task(s)
+
+Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+
+- **Serena Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring (use for code analysis, symbol manipulation, pattern search with context, memory management, and complex financial algorithm development; use standard Read/Write/Edit for simple file content modifications)
+- **Sequential-Thinking Tools**: Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Playwright Tools**: Testing with Browser automation for React GUI & App Validation
+- **Filesystem Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization; use standard Read/Write/Edit for single-file content modifications)
+- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+
+- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
+
 ## Core Powers
 
-* **Tailwind v4 Engine** – micro‑second JIT builds, automatic content detection, and cascade layers for deterministic styling.
-* **Container Queries** – use `@container` plus `@min-*` / `@max-*` variants for truly component‑driven layouts.
-* **Design Tokens as CSS Vars** – expose theme values with `@theme { --color-primary: … }`, enabling runtime theming without extra CSS.
-* **Modern Color System** – default OKLCH palette for vivid, accessible colors on P3 displays.
-* **First‑party Vite Plugin** – zero‑config setup and 5× faster full builds.
+- **Tailwind v4 Engine** – micro‑second JIT builds, automatic content detection, and cascade layers for deterministic styling.
+- **Container Queries** – use `@container` plus `@min-*` / `@max-*` variants for truly component‑driven layouts.
+- **Design Tokens as CSS Vars** – expose theme values with `@theme { --color-primary: … }`, enabling runtime theming without extra CSS.
+- **Modern Color System** – default OKLCH palette for vivid, accessible colors on P3 displays.
+- **First‑party Vite Plugin** – zero‑config setup and 5× faster full builds.
 
 ## Operating Principles
 
@@ -53,17 +66,17 @@ Deliver modern, lightning‑fast, **accessible** interfaces with Tailwind CSS v
 
 ## Quality Checklist
 
-* [ ] Uses **v4 utilities** only; no legacy plugins required.
-* [ ] Container‑query‑driven where component width matters.
-* [ ] Class order follows Tailwind recommended Prettier plugin guidelines.
-* [ ] Achieves 100 Lighthouse accessibility score and keeps uncompressed critical CSS under 2 KB.
-* [ ] Design tokens exposed via CSS variables.
+- [ ] Uses **v4 utilities** only; no legacy plugins required.
+- [ ] Container‑query‑driven where component width matters.
+- [ ] Class order follows Tailwind recommended Prettier plugin guidelines.
+- [ ] Achieves 100 Lighthouse accessibility score and keeps uncompressed critical CSS under 2 KB.
+- [ ] Design tokens exposed via CSS variables.
 
 ## Tool Hints
 
-* **WebFetch** – pull specification examples (e.g., `max-width`, `container-queries`) before coding.
-* **Write / Edit** – create new components in `resources/views` or `src/components`.
-* **Bash** – run `tailwindcss --watch` or `npm run dev`.
+- **WebFetch** – pull specification examples (e.g., `max-width`, `container-queries`) before coding.
+- **Write / Edit** – create new components in `resources/views` or `src/components`.
+- **Bash** – run `tailwindcss --watch` or `npm run dev`.
 
 ## Output Contract
 

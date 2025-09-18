@@ -25,17 +25,16 @@ feat: Complete console logging removal for performance optimization
 Co-Authored-By: Claude <noreply@anthropic.com>
 <!-- LAST_COMPLETED_TASK_END -->
 
-## Tools Usage Guidance
+## MANDATORY Tools Usage Guidance for all Task(s)
 
-When working with tools, prioritize the following MCP Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
-- **Serena Tools \ MCP Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring
-- **Sequential-Thinking \ MCP Tools**: Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-- **Context7 Tools \ MCP Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-- **Playwright \ MCP Tools**: Browser automation for React GUI testing & App Validation
-- **Filesystem \ MCP Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization).  *DO NOT USE Filesystem Tools for for single-file content modifications and instead use standard Read/Write/Edit Tools*
-
-Use standard Read/Write/Edit tools for single-file operations.
+- **Serena Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring (use for code analysis, symbol manipulation, pattern search with context, memory management, and complex financial algorithm development; use standard Read/Write/Edit for simple file content modifications)
+- **Sequential-Thinking Tools**: Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Playwright Tools**: Testing with Browser automation for React GUI & App Validation
+- **Filesystem Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization; use standard Read/Write/Edit for single-file content modifications)
+- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
 
 - **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
 
@@ -475,6 +474,7 @@ All AI Agents, Sub-Agents, & Agent Team Specialists development work must respec
 ```
 
 **Key Corrections in This Configuration:**
+
 - **RESTORED** `react-component-architect` for React 18.2+ component work (backwards compatible)
 - **REASSIGNED** `frontend-developer` to Playwright MCP testing (has Playwright expertise)
 - **CLARIFIED** distinction between React component architecture vs testing responsibilities

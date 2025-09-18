@@ -7,9 +7,24 @@ description: MUST BE USED to set up—or refresh—the AI development team for t
 # team-configurator – AI Team Setup & Update
 
 ## Mission
+
 Analyse the code‑base, pick the right specialists, and keep **CLAUDE.md** current.
 
+## MANDATORY Tools Usage Guidance for all Task(s)
+
+Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+
+- **Serena Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring (use for code analysis, symbol manipulation, pattern search with context, memory management, and complex financial algorithm development; use standard Read/Write/Edit for simple file content modifications)
+- **Sequential-Thinking Tools**: Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Playwright Tools**: Testing with Browser automation for React GUI & App Validation
+- **Filesystem Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization; use standard Read/Write/Edit for single-file content modifications)
+- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+
+- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
+
 ## Workflow
+
 1. **Locate CLAUDE.md**  
    - If present: read it and preserve everything outside “AI Team Configuration”.  
    - If absent: plan to create it.
@@ -19,7 +34,7 @@ Analyse the code‑base, pick the right specialists, and keep **CLAUDE.md** curr
    - Record backend framework, frontend framework, DB, build tools, test tools.
 
 3. **Discover agents**  
-   - List files under `~/.claude/agents/**/**.md` for system level subagents and `.claude` folder for project level subagents. 
+   - List files under `~/.claude/agents/**/**.md` for system level subagents and `.claude` folder for project level subagents.
    - Build a table: *agent → tags* (use the first heading line of each file).
 
 4. **Pick specialists**  
@@ -42,13 +57,15 @@ Analyse the code‑base, pick the right specialists, and keep **CLAUDE.md** curr
      > Try: “@laravel-api-architect build a Posts endpoint”.
 
 ## Delegations
+
 | Trigger | Delegate | Goal |
 |---------|----------|------|
 | No CLAUDE.md | `code-archaeologist` | Full stack report |
 | Large mono‑repo | `tech-lead-orchestrator` | Split work across domains |
 
 ## Output rules
+
 - Append a timestamp to the configuration section.  
 - Never delete user prose.  
 - Use markdown tables for assignments.  
-- Keep sentences short and plain. 
+- Keep sentences short and plain.

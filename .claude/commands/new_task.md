@@ -17,7 +17,7 @@ When you invoke `/new_task`, I will:
 1. **Read your task details** from `new_task_details.md`
 2. **Invoke @agent-tech-lead-orchestrator** to analyze the task and create a specialist assignment plan
 3. **Execute the plan** using the exact agents recommended by the tech-lead
-4. **MUST USE Context7, Sequential-Thinking, Filesystem Tools as Primary Tools compliance** for all specialists
+4. **MUST USE Serena, Context7, Sequential-Thinking, Filesystem Tools as Primary Tools compliance** for all specialists
 5. **Create actual deliverables** (not just summaries)
 
 ## Command Execution
@@ -37,11 +37,18 @@ I'll read the task details from new_task_details.md and use @agent-tech-lead-orc
 
 ## Primary Tool Requirements
 
-Context7, Sequential-Thinking, Filesystem are PRIMARY tools for ALL specialists. All specialists MUST use:
+All specialists MUST use: MANDATORY Tools Usage Guidance for all Task(s)
 
-- `mcp__sequential-thinking__sequentialthinking` for systematic analysis
-- `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` for research
-- `mcp__filesystem__*` tools for all file operations
+Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+
+- **Serena Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring (use for code analysis, symbol manipulation, pattern search with context, memory management, and complex financial algorithm development; use standard Read/Write/Edit for simple file content modifications)
+- **Sequential-Thinking Tools**: Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Playwright Tools**: Testing with Browser automation for React GUI & App Validation
+- **Filesystem Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization; use standard Read/Write/Edit for single-file content modifications)
+- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+
+- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
 
 ---
 
@@ -94,6 +101,7 @@ The `/new_task` command follows a systematic A-I process with tech-lead orchestr
 **H. Atomic Git Commit & Push - Final Task 3**
 
 **MANDATORY PRE-COMMIT CHECKLIST (CRITICAL FOR SUCCESS):**
+
 1. Run `git status` to identify ALL modified files
 2. Run `git add .` to stage ALL changes (never commit without staging all)
 3. Run `git status` again to verify ALL files are staged
@@ -101,6 +109,7 @@ The `/new_task` command follows a systematic A-I process with tech-lead orchestr
 5. Only then execute `git commit` with comprehensive message
 
 **AGENT PROCESS REQUIREMENTS:**
+
 - Code reviewer MUST verify all specialist work is staged before commit
 - NEVER commit without comprehensive staging verification
 - Implement explicit git status checks at each phase

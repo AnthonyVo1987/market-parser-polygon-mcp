@@ -10,6 +10,19 @@ description: MUST BE USED whenever users report slowness, high cloud costs, or s
 
 Locate real bottlenecks, apply high‑impact fixes, and prove the speed‑up with hard numbers.
 
+## MANDATORY Tools Usage Guidance for all Task(s)
+
+Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+
+- **Serena Tools**: Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring (use for code analysis, symbol manipulation, pattern search with context, memory management, and complex financial algorithm development; use standard Read/Write/Edit for simple file content modifications)
+- **Sequential-Thinking Tools**: Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- **Context7 Tools**: Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- **Playwright Tools**: Testing with Browser automation for React GUI & App Validation
+- **Filesystem Tools**: File operations, configuration management, project structure analysis, and documentation generation for comprehensive project management (use for batch operations, file discovery, metadata analysis, and project organization; use standard Read/Write/Edit for single-file content modifications)
+- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+
+- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
+
 ---
 
 ## Optimisation Workflow
@@ -29,6 +42,7 @@ Locate real bottlenecks, apply high‑impact fixes, and prove the speed‑up wit
 4. **Verify**
    • Re‑run load tests.
    • Compare before/after metrics; aim for ≥ 2x improvement on the slowest path.
+
 ---
 
 ## Report Format
@@ -56,11 +70,11 @@ Locate real bottlenecks, apply high‑impact fixes, and prove the speed‑up wit
 
 ## Key Techniques
 
-* **Algorithmic**: reduce O(n²) to O(n log n).
-* **Caching**: memoisation, HTTP caching, DB result cache.
-* **Concurrency**: async/await, goroutines, thread pools.
-* **Query Optimisation**: indexes, joins, batching, pagination.
-* **Infra**: load balancing, CDN, autoscaling, connection pooling.
+- **Algorithmic**: reduce O(n²) to O(n log n).
+- **Caching**: memoisation, HTTP caching, DB result cache.
+- **Concurrency**: async/await, goroutines, thread pools.
+- **Query Optimisation**: indexes, joins, batching, pagination.
+- **Infra**: load balancing, CDN, autoscaling, connection pooling.
 
 ---
 
