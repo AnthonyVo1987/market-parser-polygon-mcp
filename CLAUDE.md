@@ -9,12 +9,14 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Achieve 100% NPX test parity and modernize Playwright implementation
+refactor: Complete removal of Playwright CLI/NPX testing infrastructure
 
-- Fix npx_test_script_basic.md: Add complete server startup guide, full test report template, comprehensive troubleshooting
-- Modernize test-basic-suite.spec.ts: Replace manual selectors with semantic locators (getByPlaceholder, getByRole), implement web-first assertions
-- Add package.json test:basic script for NPX basic test suite execution
-- Enable 100% first-try success for AI agents using NPX method with complete parity to MCP method
+- Delete 35+ NPX test files: All test-b*.spec.ts, test-basic-suite.spec.ts, integration tests
+- Remove @playwright/test dependency and 22 NPX test scripts from package.json
+- Delete entire /tests/e2e/ directory and NPX configuration files
+- Update core documentation: CLAUDE.md, README.md to reference only MCP testing
+- Modernize MCP docs: Replace 30s polling with auto-retry patterns in usage guides
+- Establish Playwright MCP Tools as the exclusive testing method for the project
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -146,20 +148,7 @@ uv run src/backend/main.py
 
 ### Testing
 
-```bash
-# NPX Basic Test Suite (3 core tests - recommended for validation)
-cd tests/playwright
-npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
-
-# Playwright E2E tests (B001-B016 test suite)
-npx playwright test
-
-# Specific test
-npx playwright test test-b001-market-status.spec.ts
-
-# With browser visible
-npx playwright test --headed
-```
+Testing with Playwright MCP Tools only - see `/tests/playwright/mcp_test_script_basic.md`
 
 ### Code Quality
 
@@ -341,21 +330,13 @@ market-parser-polygon-mcp/
 
 ## Testing Strategy
 
-The project uses Playwright for E2E testing with multiple testing approaches:
+The project uses Playwright MCP Tools for E2E testing - the ONLY testing method:
 
-**NPX Basic Test Suite (test-basic-suite.spec.ts):**
-- 3 core tests for rapid validation
-- Market Status, NVDA Ticker, Stock Snapshot Button
-- Designed for 100% first-try success rate
-- Ideal for methodology validation and development testing
-
-**Comprehensive B001-B016 Test Suite:**
-- Market status queries
-- Individual stock analysis
-- Multi-ticker queries
-- Button interactions
-- Error handling
-- Performance validation
+**MCP Tools Testing Approach:**
+- Playwright MCP Tools for browser automation and React GUI testing
+- 3 core test validation: Market Status, NVDA Ticker, Stock Snapshot Button
+- Comprehensive test coverage for all financial query scenarios
+- See `/tests/playwright/mcp_test_script_basic.md` for testing procedures
 
 ## Prototyping Principles
 
@@ -405,7 +386,7 @@ All AI Agents, Sub-Agents, & Agent Team Specialists development work must respec
 
 **Testing & Development:**
 
-- Playwright E2E test suite (B001-B016), Fixed ports (8000/3000/5500)
+- Playwright MCP Tools for E2E testing, Fixed ports (8000/3000/5500)
 - Git workflow, One-click startup scripts
 
 ### Optimal Agent Team Assignment

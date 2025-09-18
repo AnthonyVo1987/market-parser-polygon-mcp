@@ -13,6 +13,11 @@
 - **Production**: Static build on http://127.0.0.1:5500
 - **Key Features**: Financial chat interface, analysis buttons, emoji-based responses, Polygon.io data integration
 
+**Server Startup (Recommended):**
+- **Primary**: Use `./start-app.sh` for one-click startup of both servers
+- **Alternative**: Use `npm run start:app` for automated server management
+- Both methods handle server cleanup, health verification, and proper startup sequence
+
 **Network Configuration Notes:**
 - Backend binds to 0.0.0.0 for network accessibility but AI agents should use 127.0.0.1:8000 for testing
 - Frontend strictly binds to 127.0.0.1:3000 with no dynamic port allocation
@@ -32,42 +37,40 @@
 
 ## AI Response Testing Procedures (CRITICAL)
 
-**⚠️ IMPORTANT: AI responses take 30-90 seconds on average. Never expect immediate responses!**
+**⚠️ IMPORTANT: AI responses take 30-90 seconds on average. Use modern auto-retry patterns!**
 
-### Testing Timeline Requirements
+### Modern Auto-Retry Approach
 - **Per Test Timeout**: 120 seconds maximum
 - **AI Response Time**: Typically 30-90 seconds
-- **Polling Interval**: Every 30 seconds
-- **Success Condition**: CORRECT response received within any 30s polling cycle
-- **Failure Condition**: ONLY after 120s max timeout WITHOUT correct response
+- **Auto-Retry Mechanism**: Built-in web-first assertions handle retries automatically
+- **Success Condition**: Response detected as soon as available (no fixed intervals)
+- **Failure Condition**: Only after 120s timeout without response
 
-### Proper AI Response Testing Workflow
+### Modern AI Response Testing Workflow
 
 ```typescript
-// CORRECT: 30-second polling approach
+// MODERN: Auto-retry with web-first assertions
 1. Send AI query (via browser_type or browser_click)
-2. Start polling every 30s using browser_wait_for with 30s timeout
-3. Check for CORRECT response after each 30s poll
-4. If CORRECT response found: SUCCESS (no need to wait full 120s)
-5. If no response after 30s: Continue polling (NOT a failure yet)
-6. Repeat polling until either:
-   - CORRECT response received (SUCCESS)
-   - 120s total time elapsed (TIMEOUT FAILURE)
+2. Use page.waitForSelector() or await expect() with timeout
+3. Playwright automatically retries until condition met or timeout
+4. No manual polling loops required
+5. Immediate success when response appears
 ```
 
-### Critical Polling Rules
+### Modern Auto-Retry Patterns
 
-**✅ CORRECT Expectations:**
-- First poll at 30s mark (never expect response in 5-10s)
-- Continue polling every 30s until success or 120s timeout
-- Only mark as failure after 120s without correct response
-- Distinguish between "no response yet" vs "true timeout"
+**✅ MODERN Approach (Recommended):**
+- Use `page.waitForSelector()` with appropriate timeout
+- Employ web-first assertions: `await expect(locator).toBeVisible()`
+- Let Playwright handle retry logic automatically
+- Set reasonable timeouts (120s for AI responses)
+- Use `page.waitForLoadState('networkidle')` for network completion
 
-**❌ INCORRECT Expectations (Causes False Positives):**
-- Expecting immediate response within 5-30 seconds
-- Single 30s poll and marking as timeout failure
-- Not distinguishing polling from actual timeout
-- Using timeout values less than 30s for AI responses
+**❌ OUTDATED Patterns (Replace These):**
+- Manual polling loops with fixed 30-second intervals
+- Custom retry logic when Playwright provides built-in solutions
+- setTimeout-based waiting instead of condition-based waiting
+- Checking for responses at fixed intervals instead of continuous monitoring
 
 ---
 
@@ -316,82 +319,91 @@ await mcp__playwright__browser_fill_form({
 ### 4. Content Validation and Waiting
 
 #### `mcp__playwright__browser_wait_for`
-**Correct Usage:** Wait for financial responses and UI updates with proper AI polling
+**Modern Usage:** Wait for financial responses with built-in auto-retry
 ```
 Purpose: Wait for Market Parser specific content/states
 Input:
   - text (string): Specific text to wait for
   - textGone (string): Text to wait for disappearance
-  - time (number): Seconds to wait (30s for polling, NOT 5s)
+  - time (number): Maximum timeout (120s for AI responses)
 Expected Output: Condition met or timeout
 ```
 
-**Example - CORRECT AI Response Polling:**
+**Example - MODERN Auto-Retry Approach:**
 ```typescript
-// CORRECT: 30-second polling for AI response
-let responseReceived = false;
-let totalTimeElapsed = 0;
-const maxTimeout = 120; // 120 seconds total
-const pollInterval = 30; // 30 seconds per poll
+// MODERN: Single wait with auto-retry (recommended)
+await mcp__playwright__browser_wait_for({
+  text: "🎯 KEY TAKEAWAYS", // Our response format
+  time: 120 // Maximum timeout - auto-retries until found
+});
+console.log(`✅ AI response detected via auto-retry`);
 
-while (totalTimeElapsed < maxTimeout && !responseReceived) {
-  try {
-    // Poll for AI response every 30 seconds
-    await mcp__playwright__browser_wait_for({
-      text: "🎯 KEY TAKEAWAYS", // Our response format
-      time: 30 // 30-second poll interval
-    });
-    responseReceived = true; // SUCCESS - found response!
-    console.log(`✅ AI response received after ${totalTimeElapsed + 30}s`);
-  } catch (error) {
-    // No response yet - continue polling (NOT a failure)
-    totalTimeElapsed += 30;
-    console.log(`⏳ No response yet at ${totalTimeElapsed}s - continuing polling...`);
-    
-    if (totalTimeElapsed >= maxTimeout) {
-      console.log(`❌ TRUE TIMEOUT: No response after ${maxTimeout}s`);
-      throw new Error(`AI response timeout after ${maxTimeout}s`);
+// Alternative modern patterns
+// Wait for bullish indicator with auto-retry
+await mcp__playwright__browser_wait_for({
+  text: "📈", // Bullish indicator
+  time: 120 // Auto-retries until found or timeout
+})
+
+// Wait for loading completion
+await mcp__playwright__browser_wait_for({
+  textGone: "Analyzing financial data...",
+  time: 120 // Auto-retries until condition met
+})
+
+// For more sophisticated waiting, use evaluate with retry
+const responseContent = await mcp__playwright__browser_evaluate({
+  function: `() => {
+    // Check for response indicators
+    const messages = document.querySelectorAll('.chat-message');
+    const lastMessage = Array.from(messages).pop();
+    if (lastMessage && lastMessage.textContent.includes('🎯 KEY TAKEAWAYS')) {
+      return { found: true, content: lastMessage.textContent };
     }
+    return { found: false, content: null };
+  }`
+});
+```
+
+**MODERN Best Practices:**
+```typescript
+// ✅ RECOMMENDED: Use appropriate timeout for context
+// AI responses: 120s timeout
+await mcp__playwright__browser_wait_for({
+  text: "🎯 KEY TAKEAWAYS",
+  time: 120
+});
+
+// UI state changes: 30s timeout
+await mcp__playwright__browser_wait_for({
+  text: "Analysis complete",
+  time: 30
+});
+
+// Fast UI feedback: 10s timeout
+await mcp__playwright__browser_wait_for({
+  text: "Button clicked",
+  time: 10
+});
+```
+
+**OUTDATED Patterns (Replace These):**
+```typescript
+// ❌ OUTDATED: Manual polling loops
+let found = false;
+while (!found) {
+  try {
+    await mcp__playwright__browser_wait_for({text: "response", time: 30});
+    found = true;
+  } catch (e) {
+    // Continue polling...
   }
 }
 
-// Additional polling examples for different response types
-// Poll for bullish indicator
-await mcp__playwright__browser_wait_for({
-  text: "📈", // Bullish indicator
-  time: 30 // 30-second poll, NOT immediate expectation
-})
-
-// Poll for loading completion
-await mcp__playwright__browser_wait_for({
-  textGone: "Analyzing financial data...",
-  time: 30 // 30-second poll interval
-})
-```
-
-**INCORRECT Examples (Cause False Positives):**
-```typescript
-// ❌ WRONG: Expecting immediate response
-await mcp__playwright__browser_wait_for({
-  text: "🎯 KEY TAKEAWAYS",
-  time: 5 // TOO SHORT - AI needs 30-90s
-})
-
-// ❌ WRONG: Single 30s poll and failing
-try {
-  await mcp__playwright__browser_wait_for({
-    text: "🎯 KEY TAKEAWAYS",
-    time: 30
-  });
-} catch (error) {
-  throw new Error("Timeout"); // WRONG - this is just first poll!
+// ❌ OUTDATED: Fixed interval checking
+for (let i = 0; i < 4; i++) {
+  await mcp__playwright__browser_wait_for({text: "response", time: 30});
 }
-
-// ❌ WRONG: Not accounting for AI processing time
-await mcp__playwright__browser_wait_for({
-  text: "📈",
-  time: 10 // Too short for AI responses
-})
 ```
 
 **Market Parser Specific Wait Patterns:**
@@ -487,7 +499,7 @@ const requests = await mcp__playwright__browser_network_requests()
 
 ## Market Parser Specific Testing Patterns
 
-### Financial Query Test Pattern (with Proper AI Polling)
+### Financial Query Test Pattern (Modern Auto-Retry)
 ```typescript
 1. browser_install() // Setup
 2. browser_navigate({url: "http://127.0.0.1:3000"}) // Load app
@@ -499,32 +511,21 @@ const requests = await mcp__playwright__browser_network_requests()
      submit: true
    }) // Send query
    
-// CRITICAL: Proper AI response polling (30s intervals)
-5. let responseReceived = false;
-   let totalTimeElapsed = 0;
-   const maxTimeout = 120;
-   
-   while (totalTimeElapsed < maxTimeout && !responseReceived) {
-     try {
-       await browser_wait_for({
-         text: "🎯 KEY TAKEAWAYS",
-         time: 30 // 30-second poll
-       });
-       responseReceived = true;
-       console.log(`✅ Response received after ${totalTimeElapsed + 30}s`);
-     } catch (error) {
-       totalTimeElapsed += 30;
-       if (totalTimeElapsed >= maxTimeout) {
-         throw new Error(`AI response timeout after ${maxTimeout}s`);
-       }
-       console.log(`⏳ Continuing to poll at ${totalTimeElapsed}s...`);
-     }
-   }
+// MODERN: Single wait with auto-retry
+5. await browser_wait_for({
+     text: "🎯 KEY TAKEAWAYS",
+     time: 120 // Auto-retries until found or timeout
+   });
+   console.log(`✅ Response detected via auto-retry`);
    
 6. browser_snapshot() // Verify response content
+
+// Alternative: Web-first assertion pattern
+// Note: If using standard Playwright (not MCP), use:
+// await expect(page.getByText("🎯 KEY TAKEAWAYS")).toBeVisible({timeout: 120000});
 ```
 
-### Analysis Button Test Pattern (with Proper AI Polling)
+### Analysis Button Test Pattern (Modern Auto-Retry)
 ```typescript
 1. browser_navigate({url: "http://127.0.0.1:3000"})
 2. browser_snapshot() // Find buttons
@@ -533,27 +534,27 @@ const requests = await mcp__playwright__browser_network_requests()
      ref: "button[2]"
    }) // Click analysis button
    
-// CRITICAL: Wait for AI response with proper polling
-4. let responseReceived = false;
-   let totalTimeElapsed = 0;
-   const maxTimeout = 120;
-   
-   while (totalTimeElapsed < maxTimeout && !responseReceived) {
-     try {
-       await browser_wait_for({
-         text: "📊", // Financial data indicator
-         time: 30 // 30-second poll interval
-       });
-       responseReceived = true;
-     } catch (error) {
-       totalTimeElapsed += 30;
-       if (totalTimeElapsed >= maxTimeout) {
-         throw new Error(`Button response timeout after ${maxTimeout}s`);
-       }
-     }
-   }
+// MODERN: Auto-retry waiting
+4. await browser_wait_for({
+     text: "📊", // Financial data indicator
+     time: 120 // Auto-retries until condition met
+   });
+   console.log(`✅ Button response detected`);
    
 5. browser_snapshot() // Verify populated query
+
+// Alternative: Multiple condition checking
+// Check for either response format
+const checkResponse = async () => {
+  try {
+    await browser_wait_for({text: "📊", time: 60});
+    return "chart_data";
+  } catch {
+    await browser_wait_for({text: "🎯 KEY TAKEAWAYS", time: 60});
+    return "analysis_response";
+  }
+};
+const responseType = await checkResponse();
 ```
 
 ### Response Validation Pattern
@@ -575,126 +576,156 @@ const requests = await mcp__playwright__browser_network_requests()
 
 ---
 
-## Polling vs Timeout Failure Detection (CRITICAL)
+## Modern Auto-Retry vs Timeout Detection (CRITICAL)
 
-**⚠️ Most Critical Section: Prevents 95% of false positive test failures**
+**⚠️ Most Critical Section: Leverages Playwright's built-in retry mechanisms**
 
-### Understanding the Difference
+### Understanding Modern Auto-Retry
 
-**🔄 POLLING (Expected Behavior):**
+**🔄 AUTO-RETRY (Modern Behavior):**
 - AI Agent sends query at 0s
-- First check at 30s: No response yet → CONTINUE POLLING (NOT failure)
-- Second check at 60s: No response yet → CONTINUE POLLING (NOT failure)  
-- Third check at 90s: Response received → SUCCESS!
-- **Total Time**: 90s (within 120s limit)
-- **Result**: PASS ✅
+- `browser_wait_for()` continuously checks for condition
+- No manual intervals - checks as frequently as possible
+- Response detected immediately when available (could be 45s, 67s, 89s, etc.)
+- **Total Time**: Variable based on actual response time
+- **Result**: PASS ✅ as soon as condition met
 
 **⏰ TRUE TIMEOUT (Actual Failure):**
 - AI Agent sends query at 0s
-- Polling at 30s, 60s, 90s, 120s: No response
+- Auto-retry continues for full timeout period (120s)
+- No response detected within timeout period
 - **Total Time**: 120s elapsed without response
 - **Result**: FAIL ❌
 
-### Correct Implementation Pattern
+### Modern Implementation Pattern
 
 ```typescript
-// ✅ CORRECT: Distinguishes polling from timeout
-function waitForAIResponse(expectedText: string): Promise<boolean> {
-  return new Promise(async (resolve, reject) => {
-    let responseReceived = false;
-    let totalTimeElapsed = 0;
-    const maxTimeout = 120;
-    const pollInterval = 30;
+// ✅ MODERN: Single wait with built-in auto-retry
+async function waitForAIResponse(expectedText: string): Promise<boolean> {
+  try {
+    // Single call with auto-retry built-in
+    await mcp__playwright__browser_wait_for({
+      text: expectedText,
+      time: 120 // Maximum timeout - auto-retries internally
+    });
     
-    while (totalTimeElapsed < maxTimeout && !responseReceived) {
-      try {
-        // This is a POLL, not a final timeout check
-        await mcp__playwright__browser_wait_for({
-          text: expectedText,
-          time: pollInterval // 30-second poll
-        });
-        
-        console.log(`✅ SUCCESS: Response found after ${totalTimeElapsed + pollInterval}s`);
-        responseReceived = true;
-        resolve(true);
-        return;
-        
-      } catch (pollError) {
-        // No response in this 30s window - CONTINUE POLLING
-        totalTimeElapsed += pollInterval;
-        console.log(`⏳ POLLING: No response at ${totalTimeElapsed}s mark - continuing...`);
-        
-        // Only fail if we've reached the TRUE timeout
-        if (totalTimeElapsed >= maxTimeout) {
-          console.log(`❌ TRUE TIMEOUT: No response after ${maxTimeout}s`);
-          reject(new Error(`AI response timeout after ${maxTimeout}s`));
-          return;
-        }
-        
-        // Continue to next poll cycle
-      }
+    console.log(`✅ SUCCESS: Response detected via auto-retry`);
+    return true;
+    
+  } catch (error) {
+    console.log(`❌ TRUE TIMEOUT: No response after 120s`);
+    throw new Error(`AI response timeout after 120s`);
+  }
+}
+
+// Alternative: Progressive timeout strategy
+async function waitWithFallbacks(primaryText: string, fallbackText: string): Promise<string> {
+  try {
+    await mcp__playwright__browser_wait_for({text: primaryText, time: 90});
+    return "primary_response";
+  } catch {
+    try {
+      await mcp__playwright__browser_wait_for({text: fallbackText, time: 30});
+      return "fallback_response";
+    } catch {
+      throw new Error("No response after 120s total");
     }
-  });
+  }
 }
 ```
 
-### INCORRECT Implementations (Cause False Positives)
+### OUTDATED Implementations (Replace These)
 
 ```typescript
-// ❌ WRONG: Treats first poll as timeout
-try {
-  await mcp__playwright__browser_wait_for({
-    text: "🎯 KEY TAKEAWAYS",
-    time: 30
-  });
-  console.log("Success");
-} catch (error) {
-  // WRONG: This is just the first poll, NOT a timeout!
-  throw new Error("Timeout after 30s"); // FALSE POSITIVE!
+// ❌ OUTDATED: Manual polling loops
+let found = false;
+let attempts = 0;
+while (!found && attempts < 4) {
+  try {
+    await mcp__playwright__browser_wait_for({text: "response", time: 30});
+    found = true;
+  } catch {
+    attempts++;
+    console.log(`Attempt ${attempts} failed, retrying...`);
+  }
 }
 
-// ❌ WRONG: Too short timeout
-try {
-  await mcp__playwright__browser_wait_for({
-    text: "🎯 KEY TAKEAWAYS", 
-    time: 5 // Way too short for AI
-  });
-} catch (error) {
-  throw new Error("Timeout"); // FALSE POSITIVE!
+// ❌ OUTDATED: Fixed interval checking
+for (let i = 0; i < 4; i++) {
+  try {
+    await mcp__playwright__browser_wait_for({text: "response", time: 30});
+    break;
+  } catch {
+    if (i === 3) throw new Error("Final timeout");
+  }
 }
 
-// ❌ WRONG: Not implementing polling loop
-await mcp__playwright__browser_wait_for({
-  text: "🎯 KEY TAKEAWAYS",
-  time: 120 // Single 120s wait - doesn't show progress
+// ❌ OUTDATED: Custom timeout management
+const startTime = Date.now();
+while (Date.now() - startTime < 120000) {
+  // Custom retry logic
+}
+```
+
+### Modern Best Practices
+
+**✅ Recommended Patterns:**
+```typescript
+// Simple auto-retry wait
+await browser_wait_for({text: "🎯 KEY TAKEAWAYS", time: 120});
+
+// Multiple condition checking
+const waitForAnyResponse = async () => {
+  const conditions = ["🎯 KEY TAKEAWAYS", "📈", "📊", "💰"];
+  for (const condition of conditions) {
+    try {
+      await browser_wait_for({text: condition, time: 30});
+      return condition;
+    } catch {
+      continue;
+    }
+  }
+  throw new Error("No financial response detected");
+};
+
+// Network state waiting
+await browser_evaluate({
+  function: `() => {
+    return new Promise(resolve => {
+      if (document.readyState === 'complete') {
+        resolve(true);
+      } else {
+        window.addEventListener('load', () => resolve(true));
+      }
+    });
+  }`
 });
 ```
 
 ### Key Debugging Indicators
 
-**✅ Proper Polling Logs:**
+**✅ Modern Auto-Retry Logs:**
 ```
-⏳ POLLING: No response at 30s mark - continuing...
-⏳ POLLING: No response at 60s mark - continuing... 
-✅ SUCCESS: Response found after 90s
+⏳ Waiting for response (auto-retry active)...
+✅ SUCCESS: Response detected after 67s
 ```
 
-**❌ False Positive Logs:**
+**❌ Outdated Manual Polling Logs:**
 ```
-❌ Timeout after 30s  // WRONG - this is just first poll!
-❌ Timeout after 5s   // WRONG - AI needs 30-90s
+⏳ POLLING: No response at 30s mark - continuing...
+⏳ POLLING: No response at 60s mark - continuing...
 ```
 
 ### Validation Checklist
 
 Before reporting a timeout failure, verify:
-- [ ] Did you poll for at least 120 seconds total?
-- [ ] Did you use 30-second polling intervals?
-- [ ] Did you distinguish between "no response yet" vs "true timeout"?
-- [ ] Did you log each polling attempt?
-- [ ] Did you only fail after 120s without ANY response?
+- [ ] Did you use a single `browser_wait_for()` call with appropriate timeout?
+- [ ] Did you avoid manual polling loops?
+- [ ] Did you set timeout to 120s for AI responses?
+- [ ] Did you check for multiple possible response indicators?
+- [ ] Did you let auto-retry handle the timing?
 
-**If any answer is "No", it's likely a false positive, not a real timeout.**
+**If using manual polling, you're using outdated patterns that should be replaced.**
 
 ---
 

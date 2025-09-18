@@ -171,19 +171,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing (Auto-Retry Detection)
-cd tests/playwright
-
-# NPX Basic Test Suite (3 core tests - recommended for validation)
-npx playwright test --timeout=120000 --workers=1 test-basic-suite.spec.ts
-
-# Full E2E test suite (B001-B016)
-npx playwright test       # E2E tests with auto-retry detection
-npx playwright test --headed  # Run with browser visible
-
-# Auto-retry eliminates 30-second polling with intelligent two-phase detection:
-# Phase 1: Detect ANY AI response completion
-# Phase 2: Validate response content quality
+# Testing with Playwright MCP Tools only - see `/tests/playwright/mcp_test_script_basic.md`
 
 # Code quality
 npm run lint              # All linting

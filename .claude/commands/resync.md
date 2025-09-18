@@ -22,6 +22,6 @@ When you invoke `/resync`, I will:
 - High level summary of current status of the project
 - Last Completed Task Summary from CLAUDE.md
 - Primary MCP Tools Usage & Secondary Fallback Tools Usage
-- PLaywright Tools are the ONLY method to test
+- Playwright MCP Tools are the ONLY method to test - see `/tests/playwright/mcp_test_script_basic.md`
 
 ---
