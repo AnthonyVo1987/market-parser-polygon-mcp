@@ -54,7 +54,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
    - Note: Vite may auto-select ports 3001, 3002 if 3000 occupied
 ```
 
-**CRITICAL:** If servers are not running, execute: `npm run start:app` and wait for "ready" messages before proceeding.
+**CRITICAL:** If servers are not running, execute: `./start-app.sh` (or `npm run start:app` as alternative) and wait for "ready" messages before proceeding.
 
 ### 1.3 Environment Verification
 

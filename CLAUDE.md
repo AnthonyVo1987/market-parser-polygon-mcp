@@ -9,14 +9,13 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-refactor: Complete removal of Playwright CLI/NPX testing infrastructure
+refactor: Complete NPX/CLI testing cleanup with MCP modernization
 
-- Delete 35+ NPX test files: All test-b*.spec.ts, test-basic-suite.spec.ts, integration tests
-- Remove @playwright/test dependency and 22 NPX test scripts from package.json
-- Delete entire /tests/e2e/ directory and NPX configuration files
-- Update core documentation: CLAUDE.md, README.md to reference only MCP testing
-- Modernize MCP docs: Replace 30s polling with auto-retry patterns in usage guides
-- Establish Playwright MCP Tools as the exclusive testing method for the project
+- Remove NPX/CLI references from CLAUDE.md and testing documentation templates
+- Clean template directory: Remove cli_report_template.md, update MCP-focused guides
+- Modernize Playwright MCP documentation with auto-retry patterns, no polling
+- Fix mcp_test_script_basic.md server startup to prioritize ./start-app.sh
+- Establish Playwright MCP Tools as single source of truth for testing methodology
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -323,7 +322,7 @@ market-parser-polygon-mcp/
 ├── src/frontend/         # React frontend
 │   ├── components/       # React components
 │   └── hooks/           # Custom React hooks
-├── tests/playwright/     # E2E test suite (B001-B016)
+├── tests/playwright/     # MCP testing documentation and scripts
 ├── start-app.sh         # One-click startup script
 └── .env                 # Environment configuration
 ```

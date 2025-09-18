@@ -1,17 +1,16 @@
-# Playwright Test Report Format Specifications
+# Playwright MCP Test Report Format Specifications
 
-**Document Purpose:** Standardized format specifications for comprehensive Playwright testing report generation  
-**Template Coverage:** CLI and MCP methodologies for B001-B016 test suite execution  
-**Compliance Level:** Required for all test reporting across Market Parser application  
+**Document Purpose:** Standardized format specifications for comprehensive MCP Playwright testing report generation  
+**Template Coverage:** MCP methodology for B001-B016 test suite execution  
+**Compliance Level:** Required for all MCP test reporting across Market Parser application  
 
 ---
 
 ## Overview
 
-This document defines the standardized format specifications for Playwright test report generation across both CLI and MCP testing methodologies. These specifications ensure consistent, professional, and actionable test reporting that provides comprehensive insights for development and quality assurance.
+This document defines the standardized format specifications for MCP Playwright test report generation using browser automation methodology. These specifications ensure consistent, professional, and actionable test reporting that provides comprehensive insights for development and quality assurance.
 
 ### Template Files
-- **CLI Template:** `.claude/templates/cli_report_template.md`
 - **MCP Template:** `.claude/templates/mcp_report_template.md`
 - **Integration Guide:** `.claude/templates/template_integration_guide.md`
 
@@ -39,20 +38,20 @@ All reports MUST include these standardized sections in exact order:
 
 #### Report Header & Metadata
 ```markdown
-# Playwright {METHOD} Test Execution Report
+# Playwright MCP Test Execution Report
 
-**Report Type:** {METHOD} Methodology - Complete B001-B016 Test Suite
+**Report Type:** MCP Browser Automation - Complete B001-B016 Test Suite
 **Execution Date:** {TIMESTAMP}
-**Report File:** playwright_{METHOD}_test_{TIMESTAMP}.md
-**Testing Method:** {METHOD_DESCRIPTION}
-**Session Protocol:** {SESSION_PROTOCOL}
+**Report File:** playwright_MCP_test_{TIMESTAMP}.md
+**Testing Method:** MCP Browser Automation with Playwright Tools
+**Session Protocol:** Single Browser Session Continuity
 ```
 
 **Required Variables:**
-- `{METHOD}`: "CLI" or "MCP"
 - `{TIMESTAMP}`: ISO 8601 format (YYYY-MM-DDTHH-MM-SS)
-- `{METHOD_DESCRIPTION}`: Methodology-specific description
-- `{SESSION_PROTOCOL}`: Session management approach
+- `{SESSION_DURATION}`: Total browser session duration
+- `{SESSION_INIT_STATUS}`: Browser session initialization status
+- `{SESSION_TERMINATION_STATUS}`: Browser session cleanup status
 
 ---
 
@@ -60,7 +59,7 @@ All reports MUST include these standardized sections in exact order:
 
 ### Universal Performance Categories
 
-**Required for both CLI and MCP reports:**
+**Required for MCP reports:**
 
 ```
 😊 Good: ≤30 seconds (optimal performance)
@@ -79,41 +78,23 @@ Performance Category    | Count | Percentage | Expected Range
 ❌ Timeout (≥120s)     | {TIMEOUT_COUNT} | {TIMEOUT_PERCENTAGE}% | {EXPECTED_TIMEOUT_RANGE}
 ```
 
-### Method-Specific Performance Expectations
+### MCP Performance Expectations
 
-#### CLI Method Expectations
-- **Good Range:** 60-80% (inherently faster)
-- **OK Range:** 20-40% (acceptable)
-- **Slow Range:** 0-10% (investigate if >10%)
-- **Timeout Range:** 0% (fix required)
-
-#### MCP Method Expectations  
+#### MCP Method Performance Standards
 - **Good Range:** 20-40% (optimistic for MCP)
 - **OK Range:** 40-60% (typical for MCP)
 - **Slow Range:** 10-30% (expected for MCP)
 - **Timeout Range:** 0-5% (investigate if >5%)
 
+#### Browser Automation Considerations
+- **Session Overhead:** Initial browser startup and navigation
+- **Tool Interaction Delays:** MCP tool execution latency
+- **Polling Configuration:** 10-second intervals for response waiting
+- **Real User Simulation:** More realistic but slower execution
+
 ---
 
-## 🔧 Method-Specific Configuration Standards
-
-### CLI Configuration Requirements
-
-**Mandatory Configuration Validation:**
-```markdown
-### CLI Parameters Used
-```bash
-npx playwright test --timeout=120000 --workers=1 --reporter=line {TEST_FILE}
-```
-
-### Configuration Validation
-- **Timeout Setting:** ✅ 120000ms (2 minutes) - CORRECT
-- **Worker Setting:** ✅ --workers=1 (single session) - CORRECT  
-- **Reporter Setting:** ✅ --reporter=line (fast CLI output) - CORRECT
-- **Retry Setting:** ✅ --retries=0 (accurate timing) - CORRECT
-```
-
-### MCP Configuration Requirements
+## 🔧 MCP Configuration Standards
 
 **Mandatory Tool Validation:**
 ```markdown
@@ -154,12 +135,6 @@ Session Lifecycle:
 - **Classification:** {CLASSIFICATION_EMOJI} {CLASSIFICATION_NAME}
 - **{METHOD_SPECIFIC_FIELD}:** {METHOD_SPECIFIC_VALUE}
 - **Notes:** {DETAILED_NOTES}
-```
-
-### CLI-Specific Test Fields
-```markdown
-- **CLI Command:** `npx playwright test --timeout=120000 --workers=1 --reporter=line {TEST_FILE}`
-- **File:** {TEST_FILE_NAME}
 ```
 
 ### MCP-Specific Test Fields
@@ -216,20 +191,20 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 
 **Mandatory error categorization:**
 ```markdown
-### {METHOD} Error Patterns
-- **Configuration Errors:** {CONFIG_ERROR_COUNT}
+### MCP Error Patterns
+- **Browser Session Errors:** {BROWSER_SESSION_ERROR_COUNT}
+- **MCP Tool Errors:** {MCP_TOOL_ERROR_COUNT}
 - **Timeout Errors:** {TIMEOUT_ERROR_COUNT}
 - **Network Errors:** {NETWORK_ERROR_COUNT}
-- **{METHOD_SPECIFIC_ERRORS}:** {METHOD_SPECIFIC_ERROR_COUNT}
 ```
 
 ### Error Resolution Template
 ```markdown
-### Error Resolution Recommendations
-{ERROR_RESOLUTION_RECOMMENDATIONS}
+### MCP Error Resolution Recommendations
+{MCP_ERROR_RESOLUTION_RECOMMENDATIONS}
 
-### Known {METHOD} Method Issues
-{KNOWN_METHOD_ISSUES}
+### Known MCP Method Issues
+{KNOWN_MCP_ISSUES}
 ```
 
 ---
@@ -248,11 +223,11 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 - **Coverage Percentage:** {COVERAGE_PERCENTAGE}%
 - **Missing Tests:** {MISSING_TESTS}
 
-### {METHOD} Configuration Compliance
-- ✅ {COMPLIANCE_ITEM_1}
-- ✅ {COMPLIANCE_ITEM_2}
-- ✅ {COMPLIANCE_ITEM_3}
-- ✅ {COMPLIANCE_ITEM_4}
+### MCP Configuration Compliance
+- ✅ Single Browser Session Protocol
+- ✅ 10-Second Polling Configuration
+- ✅ MCP Tool Availability Validation
+- ✅ Browser Session Lifecycle Management
 
 ### Evidence Collection Status
 - **Execution Logs:** {EXECUTION_LOGS_STATUS}
@@ -302,10 +277,14 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 
 #### Command Reference Section
 ```markdown
-### {METHOD} Command Reference
-```bash
-# Standard {METHOD} execution pattern
-{COMMAND_EXAMPLES}
+### MCP Tool Command Reference
+```javascript
+// Standard MCP execution pattern
+mcp__playwright__browser_navigate({url: "http://localhost:3000/"})
+mcp__playwright__browser_wait_for({text: "Market", time: 10})
+mcp__playwright__browser_click({element: "button", ref: "element_ref"})
+mcp__playwright__browser_type({element: "input", text: "test", ref: "input_ref"})
+mcp__playwright__browser_close()
 ```
 ```
 
@@ -320,10 +299,11 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 
 #### Method Advantages
 ```markdown
-### {METHOD} Method Advantages
-- **{ADVANTAGE_1}:** {DESCRIPTION_1}
-- **{ADVANTAGE_2}:** {DESCRIPTION_2}
-- **{ADVANTAGE_3}:** {DESCRIPTION_3}
+### MCP Method Advantages
+- **Real User Simulation:** Authentic browser behavior and state management
+- **Complex UI Testing:** Advanced DOM manipulation and interaction testing
+- **State Continuity:** Persistent session state across test sequences
+- **Visual Validation:** Screenshot and visual regression capabilities
 ```
 
 ---
@@ -331,9 +311,9 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 ## 🔄 Report Generation Integration Requirements
 
 ### File Naming Convention
-- **CLI Reports:** `playwright_CLI_test_{TIMESTAMP}.md`
 - **MCP Reports:** `playwright_MCP_test_{TIMESTAMP}.md`
 - **Timestamp Format:** `YYYY-MM-DDTHH-MM-SS`
+- **Session ID Reference:** Include browser session identifier for tracking
 
 ### Report Storage Requirements
 - **Location:** Project root directory or designated reports folder
@@ -366,19 +346,14 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 - [ ] Timestamp format compliant (ISO 8601)
 - [ ] File naming convention followed
 
-### Method-Specific Compliance
-
-#### CLI Report Compliance
-- [ ] CLI configuration validation completed
-- [ ] CLI command examples included
-- [ ] CLI performance expectations documented
-- [ ] CLI error patterns analyzed
-
-#### MCP Report Compliance  
+### MCP Report Compliance
 - [ ] MCP tool availability validated
 - [ ] Single browser session protocol documented
 - [ ] 10-second polling configuration verified
 - [ ] MCP performance expectations set appropriately
+- [ ] Browser session lifecycle documented
+- [ ] MCP-specific error patterns analyzed
+- [ ] Real user simulation quality validated
 
 ---
 
@@ -399,11 +374,11 @@ Response Time: {FRONTEND_RESPONSE_TIME}ms
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 2.0 (MCP-Only)  
 **Last Updated:** {CURRENT_TIMESTAMP}  
-**Compliance Level:** Mandatory for all Playwright test reporting  
-**Next Review:** Quarterly or upon framework updates
+**Compliance Level:** Mandatory for all MCP Playwright test reporting  
+**Next Review:** Quarterly or upon MCP framework updates
 
 ---
 
-*These format specifications ensure consistent, professional, and actionable test reporting across all Playwright testing methodologies for the Market Parser application. Adherence to these standards is required for all test execution and reporting activities.*
+*These format specifications ensure consistent, professional, and actionable test reporting for MCP Playwright testing methodology in the Market Parser application. Adherence to these standards is required for all MCP test execution and reporting activities.*

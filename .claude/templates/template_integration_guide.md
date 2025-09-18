@@ -1,8 +1,8 @@
-# Playwright Test Report Template Integration Guide
+# Playwright MCP Test Report Template Integration Guide
 
-**Integration Guide Purpose:** Step-by-step instructions for implementing report generation templates in Playwright testing commands  
-**Target Audience:** Specialists executing `/test_cli_full` and `/test_mcp_full` slash commands  
-**Template Coverage:** CLI and MCP methodologies with comprehensive data collection and variable substitution  
+**Integration Guide Purpose:** Step-by-step instructions for implementing report generation templates for MCP Playwright testing  
+**Target Audience:** Specialists executing MCP testing with comprehensive browser automation  
+**Template Coverage:** MCP methodology with comprehensive data collection and variable substitution  
 
 ---
 
@@ -11,10 +11,12 @@
 ### Template File Locations
 ```
 .claude/templates/
-├── cli_report_template.md           # CLI methodology report template
 ├── mcp_report_template.md           # MCP methodology report template  
 ├── report_format_specifications.md  # Format standards and requirements
 └── template_integration_guide.md    # This integration guide
+
+tests/playwright/
+└── mcp_test_script_basic.md         # MCP testing execution guide
 ```
 
 ### Integration Workflow Overview
@@ -29,7 +31,7 @@
 
 ### Universal Data Collection Requirements
 
-**Required for BOTH CLI and MCP methods:**
+**Required for MCP testing methodology:**
 
 ```python
 # Core execution data structure
@@ -85,117 +87,7 @@ test_data = {
 }
 ```
 
----
 
-## 🔧 CLI Method Integration
-
-### CLI Data Collection Pattern
-
-```python
-def collect_cli_test_data(test_id, test_file):
-    """Collect CLI-specific test execution data"""
-    
-    # Pre-execution setup
-    start_time = time.time()
-    cli_command = f"npx playwright test --timeout=120000 --workers=1 --reporter=line {test_file}"
-    
-    # Execute CLI command and capture results
-    try:
-        result = subprocess.run(cli_command.split(), 
-                              capture_output=True, 
-                              text=True, 
-                              timeout=125)
-        
-        end_time = time.time()
-        duration = end_time - start_time
-        
-        # Determine test result
-        test_result = "PASS" if result.returncode == 0 else "FAIL"
-        
-        # Classify performance
-        if duration <= 30:
-            classification = "😊 Good"
-        elif duration <= 60:
-            classification = "😐 OK"
-        elif duration <= 119:
-            classification = "😴 Slow"
-        else:
-            classification = "❌ Timeout"
-        
-        # CLI-specific data
-        cli_data = {
-            "cli_command": cli_command,
-            "exit_code": result.returncode,
-            "stdout": result.stdout,
-            "stderr": result.stderr
-        }
-        
-        return {
-            "test_id": test_id,
-            "result": test_result,
-            "duration": round(duration, 1),
-            "classification": classification,
-            "method_specific_data": cli_data
-        }
-        
-    except subprocess.TimeoutExpired:
-        return {
-            "test_id": test_id,
-            "result": "FAIL",
-            "duration": 120.0,
-            "classification": "❌ Timeout",
-            "method_specific_data": {"timeout": True}
-        }
-```
-
-### CLI Template Variable Mapping
-
-```python
-def map_cli_variables(execution_data):
-    """Map collected data to CLI template variables"""
-    
-    variables = {
-        # Header variables
-        "TIMESTAMP": execution_data["timestamp"],
-        "GENERATION_TIMESTAMP": datetime.now().isoformat(),
-        
-        # Summary variables
-        "PASSED_COUNT": execution_data["passed_count"],
-        "FAILED_COUNT": execution_data["failed_count"],
-        "SUCCESS_PERCENTAGE": execution_data["success_percentage"],
-        "TOTAL_EXECUTION_TIME": execution_data["total_execution_time"],
-        "AVERAGE_TEST_TIME": execution_data["average_test_time"],
-        
-        # Performance distribution
-        "GOOD_COUNT": execution_data["good_count"],
-        "OK_COUNT": execution_data["ok_count"],
-        "SLOW_COUNT": execution_data["slow_count"],
-        "TIMEOUT_COUNT": execution_data["timeout_count"],
-        
-        # CLI-specific configuration
-        "NODE_VERSION": get_node_version(),
-        "NPM_VERSION": get_npm_version(),
-        "PLAYWRIGHT_VERSION": get_playwright_version(),
-        
-        # Infrastructure status
-        "BACKEND_STATUS": execution_data["backend_status"],
-        "FRONTEND_STATUS": execution_data["frontend_status"],
-        "BACKEND_PORT": execution_data["backend_port"],
-        "FRONTEND_PORT": execution_data["frontend_port"]
-    }
-    
-    # Add individual test variables (B001-B016)
-    for test_id, test_data in execution_data["test_results"].items():
-        variables.update({
-            f"{test_id}_RESULT": test_data["result"],
-            f"{test_id}_DURATION": test_data["duration"],
-            f"{test_id}_CLASSIFICATION": test_data["classification"],
-            f"{test_id}_NOTES": test_data.get("notes", ""),
-            f"{test_id}_CLI_COMMAND": test_data["method_specific_data"].get("cli_command", "")
-        })
-    
-    return variables
-```
 
 ---
 
@@ -339,32 +231,27 @@ def map_mcp_variables(execution_data):
 ### Template Loading and Processing
 
 ```python
-def generate_report(method, execution_data):
-    """Generate report using appropriate template"""
+def generate_mcp_report(execution_data):
+    """Generate MCP test report using template"""
     
-    # Load template based on method
-    template_path = f".claude/templates/{method.lower()}_report_template.md"
+    # Load MCP template
+    template_path = ".claude/templates/mcp_report_template.md"
     
     try:
         with open(template_path, 'r', encoding='utf-8') as f:
             template_content = f.read()
     except FileNotFoundError:
-        raise Exception(f"Template file not found: {template_path}")
+        raise Exception(f"MCP template file not found: {template_path}")
     
-    # Map variables based on method
-    if method.upper() == "CLI":
-        variables = map_cli_variables(execution_data)
-    elif method.upper() == "MCP":
-        variables = map_mcp_variables(execution_data)
-    else:
-        raise ValueError(f"Unknown method: {method}")
+    # Map variables for MCP method
+    variables = map_mcp_variables(execution_data)
     
     # Process template with variable substitution
     processed_content = substitute_variables(template_content, variables)
     
     # Generate report filename
     timestamp = execution_data["timestamp"]
-    report_filename = f"playwright_{method.upper()}_test_{timestamp}.md"
+    report_filename = f"playwright_MCP_test_{timestamp}.md"
     
     # Write report file
     with open(report_filename, 'w', encoding='utf-8') as f:
@@ -515,8 +402,8 @@ def calculate_performance_distribution(test_results):
 ### Report Validation Framework
 
 ```python
-def validate_report_quality(report_content, method):
-    """Validate generated report meets quality standards"""
+def validate_mcp_report_quality(report_content):
+    """Validate generated MCP report meets quality standards"""
     
     validation_results = {
         "template_sections_present": False,
@@ -524,7 +411,7 @@ def validate_report_quality(report_content, method):
         "variables_substituted": False,
         "performance_classification_complete": False,
         "infrastructure_status_documented": False,
-        "method_specific_requirements_met": False
+        "mcp_specific_requirements_met": False
     }
     
     # Check mandatory sections
@@ -557,24 +444,19 @@ def validate_report_quality(report_content, method):
         emoji in report_content for emoji in performance_emojis
     )
     
-    # Method-specific validation
-    if method.upper() == "CLI":
-        validation_results["method_specific_requirements_met"] = (
-            "npx playwright test" in report_content and
-            "--timeout=120000" in report_content
-        )
-    elif method.upper() == "MCP":
-        validation_results["method_specific_requirements_met"] = (
-            "browser_navigate" in report_content and
-            "10s intervals" in report_content
-        )
+    # MCP-specific validation
+    validation_results["mcp_specific_requirements_met"] = (
+        "browser_navigate" in report_content and
+        "10s intervals" in report_content and
+        "Single Browser Session" in report_content
+    )
     
     return validation_results
 
-def log_validation_results(validation_results, report_filename):
-    """Log validation results for quality assurance"""
+def log_mcp_validation_results(validation_results, report_filename):
+    """Log MCP validation results for quality assurance"""
     
-    print(f"Report validation for {report_filename}:")
+    print(f"MCP Report validation for {report_filename}:")
     for check, passed in validation_results.items():
         status = "✅ PASS" if passed else "❌ FAIL"
         print(f"  {check}: {status}")
@@ -659,83 +541,98 @@ def execute_test_with_report_generation(method="CLI"):
 
 ---
 
-## 📖 Template Integration Best Practices
+## 📖 MCP Template Integration Best Practices
 
-### Performance Optimization
-1. **Lazy Template Loading**: Load templates only when needed
-2. **Variable Caching**: Cache environment data that doesn't change
-3. **Parallel Data Collection**: Collect health checks in parallel
-4. **Memory Management**: Clean up large data structures after processing
+### MCP Performance Optimization
+1. **Browser Session Reuse**: Maintain single browser session across tests
+2. **Variable Caching**: Cache browser state and environment data
+3. **Parallel Health Checks**: Collect infrastructure status in parallel
+4. **Memory Management**: Monitor browser memory usage and cleanup
 
-### Error Handling
-1. **Graceful Degradation**: Continue with partial data if some collection fails
-2. **Template Fallbacks**: Use basic format if template loading fails
-3. **Variable Defaults**: Provide default values for missing variables
-4. **Validation Recovery**: Attempt to fix common validation issues
+### MCP Error Handling
+1. **Browser Session Recovery**: Restart browser session on critical failures
+2. **Template Fallbacks**: Use basic format if MCP template loading fails
+3. **Variable Defaults**: Provide default values for missing MCP variables
+4. **Tool Validation**: Verify MCP tool availability before execution
 
-### Security Considerations
-1. **Input Sanitization**: Sanitize all user input before template substitution
+### MCP Security Considerations
+1. **Browser Isolation**: Ensure browser session security and isolation
 2. **File Permissions**: Set appropriate permissions on generated reports
 3. **Path Validation**: Validate all file paths to prevent directory traversal
-4. **Content Filtering**: Filter sensitive information from error messages
+4. **Content Filtering**: Filter sensitive information from browser logs
 
-### Maintenance Guidelines
-1. **Template Versioning**: Version templates and track compatibility
-2. **Variable Documentation**: Document all template variables and their sources
-3. **Test Coverage**: Test template generation with various data scenarios
-4. **Performance Monitoring**: Monitor template processing performance
+### MCP Maintenance Guidelines
+1. **Template Versioning**: Version MCP templates and track compatibility
+2. **Variable Documentation**: Document all MCP template variables and sources
+3. **Browser Testing**: Test template generation with various browser states
+4. **Performance Monitoring**: Monitor MCP tool performance and browser usage
 
 ---
 
-## 🚨 Troubleshooting Common Issues
+## 🚨 Troubleshooting MCP Issues
 
-### Template Loading Issues
+### MCP Template Loading Issues
 ```python
-# Issue: Template file not found
-# Solution: Verify template path and permissions
-if not os.path.exists(template_path):
-    print(f"Template not found at {template_path}")
+# Issue: MCP template file not found
+# Solution: Verify MCP template path and permissions
+mcp_template_path = ".claude/templates/mcp_report_template.md"
+if not os.path.exists(mcp_template_path):
+    print(f"MCP template not found at {mcp_template_path}")
     print("Available templates:")
     for f in os.listdir(".claude/templates/"):
         print(f"  {f}")
 ```
 
-### Variable Substitution Issues
+### MCP Variable Substitution Issues
 ```python
-# Issue: Variables not substituting
-# Solution: Debug variable mapping
-print("Variables being substituted:")
+# Issue: MCP variables not substituting
+# Solution: Debug MCP variable mapping
+print("MCP Variables being substituted:")
 for var_name, var_value in variables.items():
     print(f"  {var_name}: {var_value}")
 
-# Check for common variable name mismatches
+# Check for common MCP variable name mismatches
 expected_vars = extract_template_variables(template_content)
 provided_vars = set(variables.keys())
 missing_vars = expected_vars - provided_vars
-print(f"Missing variables: {missing_vars}")
+print(f"Missing MCP variables: {missing_vars}")
 ```
 
-### Report Quality Issues
+### MCP Browser Session Issues
 ```python
-# Issue: Report fails validation
-# Solution: Debug validation failures
+# Issue: Browser session failures
+# Solution: Debug browser state and tool availability
+try:
+    mcp__playwright__browser_navigate({"url": "http://localhost:3000/"})
+    print("Browser session initialized successfully")
+except Exception as e:
+    print(f"Browser session failed: {e}")
+    print("Check MCP tool availability and browser installation")
+```
+
+### MCP Report Quality Issues
+```python
+# Issue: MCP report fails validation
+# Solution: Debug MCP validation failures
 for check, passed in validation_results.items():
     if not passed:
-        print(f"Failed validation check: {check}")
+        print(f"Failed MCP validation check: {check}")
         # Provide specific guidance for each check type
         if check == "variables_substituted":
-            print("Check for remaining {VARIABLE} placeholders in report")
+            print("Check for remaining {VARIABLE} placeholders in MCP report")
         elif check == "all_tests_documented":
-            print("Verify all B001-B016 tests are present in report")
+            print("Verify all B001-B016 tests are present in MCP report")
+        elif check == "mcp_specific_requirements_met":
+            print("Verify MCP-specific content: browser_navigate, 10s intervals, Single Browser Session")
 ```
 
 ---
 
-**Integration Guide Version:** 1.0  
-**Compatible With:** CLI and MCP test commands v1.0+  
+**Integration Guide Version:** 2.0 (MCP-Only)  
+**Compatible With:** MCP test commands v2.0+  
 **Last Updated:** {CURRENT_TIMESTAMP}  
-**Framework Dependencies:** Python 3.8+, Playwright, MCP Tools
+**Framework Dependencies:** Python 3.8+, Playwright MCP Tools, Browser Automation
 
 ---
 
-*This integration guide provides comprehensive instructions for implementing professional test report generation across all Playwright testing methodologies. Following these patterns ensures consistent, high-quality reporting that meets all project standards and requirements.*
+*This integration guide provides comprehensive instructions for implementing professional MCP test report generation using browser automation. Following these patterns ensures consistent, high-quality reporting that meets all project standards for realistic user simulation testing.*

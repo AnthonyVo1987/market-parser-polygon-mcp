@@ -8,19 +8,20 @@
 ## Application Context
 
 **Market Parser Application Stack:**
-- **Backend**: FastAPI server on http://0.0.0.0:8000 (accessible via http://127.0.0.1:8000 for testing)
+- **Backend**: FastAPI server on http://127.0.0.1:8000 (fixed port for consistent testing)
 - **Frontend**: React + Vite on http://127.0.0.1:3000
 - **Production**: Static build on http://127.0.0.1:5500
 - **Key Features**: Financial chat interface, analysis buttons, emoji-based responses, Polygon.io data integration
 
-**Server Startup (Recommended):**
-- **Primary**: Use `./start-app.sh` for one-click startup of both servers
-- **Alternative**: Use `npm run start:app` for automated server management
-- Both methods handle server cleanup, health verification, and proper startup sequence
+**Server Startup (PRIMARY METHOD):**
+- **RECOMMENDED**: Use `./start-app.sh` for one-click startup of both servers
+- **Alternative**: Use `npm run start:app` or `./start-app-xterm.sh` variants
+- All methods handle server cleanup, health verification, and proper startup sequence
+- Ensures consistent server ports and proper backend/frontend coordination
 
 **Network Configuration Notes:**
-- Backend binds to 0.0.0.0 for network accessibility but AI agents should use 127.0.0.1:8000 for testing
-- Frontend strictly binds to 127.0.0.1:3000 with no dynamic port allocation
+- Backend and frontend use fixed ports (8000/3000) for reliable testing
+- No dynamic port allocation - ensures consistent MCP tool targeting
 - Production builds are served on 127.0.0.1:5500 via Live Server
 
 **TypeScript Configuration Note:**
@@ -37,40 +38,43 @@
 
 ## AI Response Testing Procedures (CRITICAL)
 
-**⚠️ IMPORTANT: AI responses take 30-90 seconds on average. Use modern auto-retry patterns!**
+**⚠️ IMPORTANT: AI responses take 30-90 seconds on average. Use modern Playwright MCP auto-retry patterns!**
 
 ### Modern Auto-Retry Approach
-- **Per Test Timeout**: 120 seconds maximum
+- **Per Test Timeout**: 120 seconds maximum for AI responses, 30s for UI changes
 - **AI Response Time**: Typically 30-90 seconds
-- **Auto-Retry Mechanism**: Built-in web-first assertions handle retries automatically
-- **Success Condition**: Response detected as soon as available (no fixed intervals)
-- **Failure Condition**: Only after 120s timeout without response
+- **Auto-Retry Mechanism**: Built-in Playwright MCP auto-retry handles continuous checking
+- **Success Condition**: Response detected immediately when available (no fixed intervals)
+- **Failure Condition**: Only after timeout period without response
+- **Alternative**: Use `expect.poll()` pattern for complex conditions
 
 ### Modern AI Response Testing Workflow
 
 ```typescript
-// MODERN: Auto-retry with web-first assertions
+// MODERN: Auto-retry with Playwright MCP built-in mechanisms
 1. Send AI query (via browser_type or browser_click)
-2. Use page.waitForSelector() or await expect() with timeout
-3. Playwright automatically retries until condition met or timeout
+2. Use browser_wait_for() with appropriate timeout
+3. Playwright MCP automatically retries until condition met or timeout
 4. No manual polling loops required
 5. Immediate success when response appears
+6. Alternative: browser_evaluate() with promise-based waiting
 ```
 
 ### Modern Auto-Retry Patterns
 
 **✅ MODERN Approach (Recommended):**
-- Use `page.waitForSelector()` with appropriate timeout
-- Employ web-first assertions: `await expect(locator).toBeVisible()`
-- Let Playwright handle retry logic automatically
-- Set reasonable timeouts (120s for AI responses)
-- Use `page.waitForLoadState('networkidle')` for network completion
+- Use `browser_wait_for()` with appropriate timeout (120s for AI, 30s for UI)
+- Employ Playwright MCP auto-retry mechanisms
+- Let Playwright MCP handle retry logic automatically
+- Use `browser_evaluate()` with promise-based waiting for complex conditions
+- Alternative: `expect.poll()` pattern for custom condition checking
 
 **❌ OUTDATED Patterns (Replace These):**
-- Manual polling loops with fixed 30-second intervals
-- Custom retry logic when Playwright provides built-in solutions
+- Manual polling loops with fixed intervals
+- Custom retry logic when Playwright MCP provides built-in solutions
 - setTimeout-based waiting instead of condition-based waiting
-- Checking for responses at fixed intervals instead of continuous monitoring
+- Checking for responses at predetermined intervals instead of auto-retry
+- Multiple sequential timeout calls instead of single auto-retry call
 
 ---
 
@@ -351,39 +355,61 @@ await mcp__playwright__browser_wait_for({
   time: 120 // Auto-retries until condition met
 })
 
-// For more sophisticated waiting, use evaluate with retry
+// For sophisticated conditions, use promise-based evaluation
 const responseContent = await mcp__playwright__browser_evaluate({
   function: `() => {
-    // Check for response indicators
-    const messages = document.querySelectorAll('.chat-message');
-    const lastMessage = Array.from(messages).pop();
-    if (lastMessage && lastMessage.textContent.includes('🎯 KEY TAKEAWAYS')) {
-      return { found: true, content: lastMessage.textContent };
-    }
-    return { found: false, content: null };
+    return new Promise((resolve) => {
+      const checkForResponse = () => {
+        const messages = document.querySelectorAll('.chat-message');
+        const lastMessage = Array.from(messages).pop();
+        if (lastMessage && lastMessage.textContent.includes('🎯 KEY TAKEAWAYS')) {
+          resolve({ found: true, content: lastMessage.textContent });
+        } else {
+          setTimeout(checkForResponse, 1000); // Built-in retry
+        }
+      };
+      checkForResponse();
+    });
   }`
 });
+
+// Alternative: expect.poll() pattern (for complex assertions)
+// Note: This is standard Playwright pattern, not MCP specific
+// await expect.poll(async () => {
+//   const snapshot = await browser_snapshot();
+//   return snapshot.includes('🎯 KEY TAKEAWAYS');
+// }, { timeout: 120000 }).toBe(true);
 ```
 
 **MODERN Best Practices:**
 ```typescript
-// ✅ RECOMMENDED: Use appropriate timeout for context
-// AI responses: 120s timeout
+// ✅ RECOMMENDED: Use context-appropriate timeouts
+// AI responses: 120s timeout (backend processing time)
 await mcp__playwright__browser_wait_for({
   text: "🎯 KEY TAKEAWAYS",
   time: 120
 });
 
-// UI state changes: 30s timeout
+// UI state changes: 30s timeout (React updates)
 await mcp__playwright__browser_wait_for({
   text: "Analysis complete",
   time: 30
 });
 
-// Fast UI feedback: 10s timeout
+// Fast UI feedback: 10s timeout (immediate responses)
 await mcp__playwright__browser_wait_for({
   text: "Button clicked",
   time: 10
+});
+
+// Network completion: Use built-in network waiting
+await mcp__playwright__browser_evaluate({
+  function: `() => {
+    return new Promise(resolve => {
+      if (document.readyState === 'complete') resolve(true);
+      else window.addEventListener('load', () => resolve(true));
+    });
+  }`
 });
 ```
 
@@ -396,13 +422,21 @@ while (!found) {
     await mcp__playwright__browser_wait_for({text: "response", time: 30});
     found = true;
   } catch (e) {
-    // Continue polling...
+    // Continue polling... (AVOID THIS)
   }
 }
 
 // ❌ OUTDATED: Fixed interval checking
 for (let i = 0; i < 4; i++) {
   await mcp__playwright__browser_wait_for({text: "response", time: 30});
+}
+
+// ❌ OUTDATED: Multiple sequential calls
+try {
+  await browser_wait_for({text: "response", time: 30});
+} catch {
+  await browser_wait_for({text: "response", time: 30});
+  // Repeated calls instead of single auto-retry
 }
 ```
 
@@ -517,12 +551,24 @@ const requests = await mcp__playwright__browser_network_requests()
      time: 120 // Auto-retries until found or timeout
    });
    console.log(`✅ Response detected via auto-retry`);
-   
+
 6. browser_snapshot() // Verify response content
 
-// Alternative: Web-first assertion pattern
-// Note: If using standard Playwright (not MCP), use:
-// await expect(page.getByText("🎯 KEY TAKEAWAYS")).toBeVisible({timeout: 120000});
+// Alternative: Promise-based evaluation for complex conditions
+// const result = await browser_evaluate({
+//   function: `() => {
+//     return new Promise(resolve => {
+//       const checkCondition = () => {
+//         if (document.body.textContent.includes('🎯 KEY TAKEAWAYS')) {
+//           resolve(true);
+//         } else {
+//           setTimeout(checkCondition, 1000);
+//         }
+//       };
+//       checkCondition();
+//     });
+//   }`
+// });
 ```
 
 ### Analysis Button Test Pattern (Modern Auto-Retry)
@@ -540,19 +586,21 @@ const requests = await mcp__playwright__browser_network_requests()
      time: 120 // Auto-retries until condition met
    });
    console.log(`✅ Button response detected`);
-   
+
 5. browser_snapshot() // Verify populated query
 
-// Alternative: Multiple condition checking
-// Check for either response format
+// Alternative: Multiple condition checking with auto-retry
 const checkResponse = async () => {
-  try {
-    await browser_wait_for({text: "📊", time: 60});
-    return "chart_data";
-  } catch {
-    await browser_wait_for({text: "🎯 KEY TAKEAWAYS", time: 60});
-    return "analysis_response";
+  const conditions = ["📊", "🎯 KEY TAKEAWAYS", "📈", "💰"];
+  for (const condition of conditions) {
+    try {
+      await browser_wait_for({text: condition, time: 30});
+      return condition;
+    } catch {
+      continue; // Try next condition
+    }
   }
+  throw new Error("No financial response detected after 120s total");
 };
 const responseType = await checkResponse();
 ```
@@ -671,35 +719,45 @@ while (Date.now() - startTime < 120000) {
 
 **✅ Recommended Patterns:**
 ```typescript
-// Simple auto-retry wait
+// Simple auto-retry wait (most common)
 await browser_wait_for({text: "🎯 KEY TAKEAWAYS", time: 120});
 
-// Multiple condition checking
+// Multiple condition checking with early exit
 const waitForAnyResponse = async () => {
   const conditions = ["🎯 KEY TAKEAWAYS", "📈", "📊", "💰"];
   for (const condition of conditions) {
     try {
       await browser_wait_for({text: condition, time: 30});
-      return condition;
+      return condition; // Exit immediately when found
     } catch {
-      continue;
+      continue; // Try next condition
     }
   }
-  throw new Error("No financial response detected");
+  throw new Error("No financial response detected after 120s total");
 };
 
-// Network state waiting
+// Promise-based custom condition waiting
 await browser_evaluate({
   function: `() => {
     return new Promise(resolve => {
-      if (document.readyState === 'complete') {
-        resolve(true);
-      } else {
-        window.addEventListener('load', () => resolve(true));
-      }
+      const checkCondition = () => {
+        const hasResponse = document.body.textContent.includes('🎯 KEY TAKEAWAYS');
+        if (hasResponse || document.readyState === 'complete') {
+          resolve(true);
+        } else {
+          setTimeout(checkCondition, 1000); // Built-in retry
+        }
+      };
+      checkCondition();
     });
   }`
 });
+
+// Alternative: expect.poll() for complex assertions (standard Playwright)
+// await expect.poll(async () => {
+//   const snapshot = await browser_snapshot();
+//   return snapshot.includes('financial_indicator');
+// }, { timeout: 120000 }).toBe(true);
 ```
 
 ### Key Debugging Indicators
