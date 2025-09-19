@@ -2,10 +2,6 @@
 
 ## MANDATORY Tools Usage Guidance for all Task(s)
 
-Generate Test Reports from [BUG-001: Incomplete Frontend Console Logging Removal]
-
-- There was a violation and NO TEST REPORTS WERE GENERATED WHATSOEVER
-
 Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
 - **Serena Tools**: Use for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
@@ -47,7 +43,7 @@ MANDATORY: Read These Files First (In Order)
 - Understand prototyping principles (no over-engineering)
 - Note AI Team Configuration for specialist agent usage
 
-3. Original Problem Evidence: test-reports/console-logging-removal-issue-analysis.md
+3. Original Problem Evidence: test-reports/console-logging-removal/console-logging-removal-issue-analysis.md
 
 - Shows the 404 errors that should be eliminated after your fix
 - Documents current problematic behavior in detail
@@ -134,16 +130,16 @@ MANDATORY: Read These Files First
 
 - Read this completely to understand what was broken and what should be fixed
 
-2. Original Test Evidence: test-reports/console-logging-removal-issue-analysis.md
+2. Original Test Evidence: test-reports/console-logging-removal/console-logging-removal-issue-analysis.md
 
 - This documents the 404 errors that should now be eliminated
 - Pay attention to sections about FileLogService and 404 errors
 
 3. Test Methodology References:
 
-- test-reports/console-logging-removal-detailed-execution.md - Shows the step-by-step testing that was performed
-- test-reports/console-logging-removal-comprehensive-test-report.md - Documents the comprehensive testing approach
-- test-reports/console-logging-removal-performance-analysis.md - Shows the performance testing methodology
+- test-reports/console-logging-removal/console-logging-removal-detailed-execution.md - Shows the step-by-step testing that was performed
+- test-reports/console-logging-removal/console-logging-removal-comprehensive-test-report.md - Documents the comprehensive testing approach
+- test-reports/console-logging-removal/console-logging-removal-performance-analysis.md - Shows the performance testing methodology
 
 4. CRITICAL - Playwright MCP Tools Usage: docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
 
@@ -163,7 +159,7 @@ Step 1: Execute the official test plan exactly as documented:
 Step 2: Comprehensive Playwright Testing Replication
 
 - FIRST: Study docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md for proper tool usage
-- THEN: Read test-reports/console-logging-removal-comprehensive-test-report.md
+- THEN: Read test-reports/console-logging-removal/console-logging-removal-comprehensive-test-report.md
 - In the "Extended Testing Coverage" section, you'll find the specific test scenarios that were run
 - Replicate these using Playwright MCP Tools with proper syntax from the usage guide:
 - Console error monitoring for 404 logging endpoint errors
@@ -176,7 +172,7 @@ Step 2: Comprehensive Playwright Testing Replication
 Step 3: Performance Verification Replication
 
 - Reference: docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md for performance testing patterns
-- Read: test-reports/console-logging-removal-performance-analysis.md
+- Read: test-reports/console-logging-removal/console-logging-removal-performance-analysis.md
 - Look for the "Performance Metrics" section showing the original measurements
 - Use Playwright MCP Tools to replicate these measurements:
 - Page load times
@@ -232,7 +228,7 @@ Testing Protocol Requirements
 - MUST use Playwright MCP Tools exclusively (per project requirements)
 - MUST follow syntax and patterns from docs/MCP_Tools_Usage_Guide/Playwright_MCP_Tools_Usage_Guide.md
 - Follow Testing Protocol Guidelines in CLAUDE.md (user-specified test plans are sacred)
-- Generate detailed test reports following the 8-report structure from test-reports/
+- Generate detailed test reports following the 8-report structure from test-reports/console-logging-removal/
 - Compare your results directly with the original test reports
 
 Testing Workflow
@@ -263,7 +259,7 @@ Phase 4: Documentation and Reporting
 
 4.1 Generate Test Reports:
 
-- Follow the 8-report structure from existing test-reports/ directory
+- Follow the 8-report structure from existing test-reports/console-logging-removal/ directory
 - Document before/after comparison showing fix effectiveness
 - Include detailed validation of each acceptance criteria item
 
