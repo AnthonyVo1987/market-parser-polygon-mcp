@@ -17,7 +17,7 @@ Prioritize using the following Tools FIRST in any particular order to match the 
 
 feat: Add AI Model Selector Drop Down Menu in Debug Panel & Set Default Model to 'gpt-5-nano'
 
-## Task 1. Add a new AI Model Selector Drop Down Menu in Debug Panel to allow the user to select and swap different AI Model on the fly for any new action, and set the app default now to use 'gpt-5-nano', from the current Model of 'gpt-5-mini'.  This can allow user to test out and compare different responses from teh same prompts and\or actions just by selecting new models every other action on the fly before sending the message
+## Task 1. Add a new AI Model Selector Drop Down Menu in Debug Panel to allow the user to select and swap different AI Model on the fly for any new action, and set the app default now to use 'gpt-5-nano', from the current Model of 'gpt-5-mini'. This can allow user to test out and compare different responses from the same prompts and\or actions just by selecting new models every other action on the fly before sending the message.  Update ALL AI Prompts to now end all responses with the model name that the response was generated with.  Example: "[gpt-5-nano]" or "[gpt-5-mini]" etc
 
 ## Task 2. ALL Docs need to be updated to reflect the new default 'gpt-5-nano' model usage and new dropdown model selector feature
 
