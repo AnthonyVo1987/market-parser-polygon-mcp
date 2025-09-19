@@ -1,14 +1,14 @@
 import {
-  useState,
-  useRef,
-  useImperativeHandle,
   forwardRef,
-  useEffect,
-  useCallback,
   memo,
   startTransition,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
 } from 'react';
-import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
+import { useComponentLogger } from '../hooks/useDebugLog';
 import { logger } from '../utils/logger';
 
 interface ChatInput_OpenAIProps {
@@ -41,10 +41,10 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
     const [isFocused, setIsFocused] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    
+
     // Initialize logging
     useComponentLogger('ChatInput_OpenAI', { placeholder });
-    const _logInteraction = useInteractionLogger('ChatInput_OpenAI');
+    // const _logInteraction = useInteractionLogger('ChatInput_OpenAI');
 
     // Use external value if provided, otherwise use internal state
     const inputValue =
@@ -65,15 +65,15 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
 
     const handleSubmit = useCallback((e: React.FormEvent) => {
       e.preventDefault();
-      
+
       // Clear any existing error state
       setHasError(false);
-      
+
       if (inputValue.trim() && !isLoading) {
         // Show success feedback
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 500);
-        
+
         onSendMessage(inputValue.trim());
 
         // Immediate clear for instant UI feedback
@@ -128,19 +128,19 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
         e.preventDefault();
         // Create a synthetic form event for handleSubmit
         const syntheticEvent = {
-          preventDefault: () => {},
+          preventDefault: () => { },
           target: e.target,
           currentTarget: e.target,
         } as React.FormEvent;
         handleSubmit(syntheticEvent);
       }
     }, [handleSubmit]);
-    
+
     // Enhanced focus handlers for smooth transitions
     const handleFocus = useCallback(() => {
       setIsFocused(true);
     }, []);
-    
+
     const handleBlur = useCallback(() => {
       setIsFocused(false);
     }, []);
@@ -212,13 +212,10 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            className={`message-input ${
-              isFocused ? 'input-focused' : ''
-            } ${
-              hasError ? 'input-error' : ''
-            } ${
-              showSuccess ? 'input-success' : ''
-            }`}
+            className={`message-input ${isFocused ? 'input-focused' : ''
+              } ${hasError ? 'input-error' : ''
+              } ${showSuccess ? 'input-success' : ''
+              }`}
             disabled={isLoading}
             rows={4}
             style={{ minHeight: '80px', maxHeight: '200px' }}
@@ -235,11 +232,9 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
           <button
             type='submit'
             disabled={!inputValue.trim() || isLoading}
-            className={`send-button ${
-              showSuccess ? 'button-success' : ''
-            } ${
-              hasError ? 'button-error' : ''
-            }`}
+            className={`send-button ${showSuccess ? 'button-success' : ''
+              } ${hasError ? 'button-error' : ''
+              }`}
             aria-describedby='send-help'
           >
             {isLoading ? (

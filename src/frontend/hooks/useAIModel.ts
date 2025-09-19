@@ -103,7 +103,7 @@ export function useAIModel(): UseAIModelReturn {
 
     // Load models on mount
     useEffect(() => {
-        loadModels();
+        void loadModels();
     }, [loadModels]);
 
     return {

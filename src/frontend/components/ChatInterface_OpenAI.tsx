@@ -159,7 +159,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     // Update refs
     isFirstRenderRef.current = false;
     previousMessageCountRef.current = currentMessageCount;
-  }, [messages.length]); // Only depend on messages.length // ✅ Include messages.length dependency
+  }, [messages.length, isLoading]); // Include messages.length and isLoading dependencies
 
   // Direct input change handler for <16ms responsiveness - no debouncing
 
@@ -302,7 +302,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       // End performance timing even on error
       endTiming('message_processing');
     }
-  }, [startTiming, endTiming, logInteraction]); // Simplified dependencies
+  }, [startTiming, endTiming, logInteraction, currentModel]); // Include currentModel dependency
 
   const handleTickerChange = useCallback((newTicker: string) => {
     // Immediate ticker update using reducer dispatch

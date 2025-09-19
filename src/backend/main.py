@@ -265,10 +265,10 @@ def get_cached_response(cache_key: str) -> Optional[str]:
             cache_stats["current_size"] = len(response_cache)
             logger.info(f"Cache hit for key: {cache_key[:20]}...")
             return response_cache[cache_key]
-        else:
-            cache_stats["misses"] += 1
-            cache_stats["current_size"] = len(response_cache)
-            return None
+
+        cache_stats["misses"] += 1
+        cache_stats["current_size"] = len(response_cache)
+        return None
     except Exception as e:
         logger.error(f"Cache retrieval error: {e}")
         cache_stats["misses"] += 1
@@ -436,7 +436,7 @@ async def process_financial_query(
     start_time = time.time()
     if not request_id:
         request_id = str(uuid.uuid4())[:8]
-    
+
     # Use provided model or default
     active_model = model if model else settings.openai_model
 
@@ -596,7 +596,8 @@ async def process_financial_query(
         }
     except (
         Exception
-    ) as e:  # pylint: disable=broad-exception-caught        processing_time = time.time() - start_time
+    ) as e:  # pylint: disable=broad-exception-caught
+        processing_time = time.time() - start_time
         log_agent_processing(
             logger,
             "Agent processing failed with exception",
@@ -793,7 +794,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         raise
     except (
         Exception
-    ) as e:  # pylint: disable=broad-exception-caught        response_time = time.time() - start_time
+    ) as e:  # pylint: disable=broad-exception-caught
+        response_time = time.time() - start_time
         log_api_response(logger, 500, response_time, request_id=request_id)
         logger.error(
             f"💥 Unhandled exception in chat endpoint",
@@ -830,7 +832,8 @@ async def get_prompt_templates():
         return TemplateListResponse(
             mode="conversational_only", templates=templates, total_count=len(templates)
         )
-    except Exception as e:        raise HTTPException(
+    except Exception as e:
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve templates: {str(e)}",
         ) from e
@@ -873,7 +876,8 @@ async def generate_prompt_endpoint(request: GeneratePromptRequest):
             mode=request.mode,
         )
 
-    except Exception as e:        raise HTTPException(
+    except Exception as e:
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to generate prompt: {str(e)}",
         ) from e
@@ -1040,7 +1044,8 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
 
     except HTTPException:
         raise
-    except Exception as e:        raise HTTPException(
+    except Exception as e:
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Chat analysis failed: {str(e)}",
         ) from e
@@ -1060,7 +1065,8 @@ async def get_system_status():
         )
 
         return SystemStatusResponse(status="operational", metrics=metrics)
-    except Exception as e:        raise HTTPException(
+    except Exception as e:
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve system status: {str(e)}",
         ) from e
@@ -1225,7 +1231,7 @@ async def get_available_models():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve models: {str(e)}"
-        )
+        ) from e
 
 @model_router.post(
     "/select",
@@ -1264,7 +1270,7 @@ async def select_model(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to select model: {str(e)}"
-        )
+        ) from e
 
 # Add router to app
 app.include_router(model_router)
@@ -1302,7 +1308,7 @@ async def invalidate_ticker_cache(ticker: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to invalidate cache: {str(e)}"
-        )
+        ) from e
 
 
 @app.delete("/api/v1/cache/all")
@@ -1320,7 +1326,7 @@ async def clear_all_cache_endpoint():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to clear cache: {str(e)}"
-        )
+        ) from e
 
 
 # Main CLI
@@ -1387,9 +1393,11 @@ async def cli_async():
                 except (EOFError, KeyboardInterrupt):
                     print("\nGoodbye!")
                     break
-                except Exception as e:                    print_error(e, "Unexpected Error")
+                except Exception as e:
+                    print_error(e, "Unexpected Error")
 
-    except Exception as e:        print_error(e, "Setup Error")
+    except Exception as e:
+        print_error(e, "Setup Error")
     finally:
         print("Market Analysis Agent shutdown complete")
 

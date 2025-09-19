@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
+import { useComponentLogger } from '../hooks/useDebugLog';
 import { AIModel, AIModelId } from '../types/ai_models';
 import { logger, LogMode } from '../utils/logger';
 
@@ -47,7 +47,7 @@ const DebugPanel = memo<DebugPanelProps>(({
     currentModel,
     modelCount: models.length
   });
-  const _logInteraction = useInteractionLogger('DebugPanel');
+  // const _logInteraction = useInteractionLogger('DebugPanel');
 
   // Console log mode state management
   const [logMode, setLogMode] = useState<LogMode>(() => logger.getLogMode());
@@ -205,7 +205,7 @@ const DebugPanel = memo<DebugPanelProps>(({
                 onClick={toggleLogMode}
                 onKeyDown={toggleLogMode}
                 aria-label={`Switch from ${logMode} to ${logMode === 'NONE' ? 'DEBUG' :
-                    logMode === 'DEBUG' ? 'PRODUCTION' : 'NONE'
+                  logMode === 'DEBUG' ? 'PRODUCTION' : 'NONE'
                   } mode`}
                 aria-pressed={logMode !== 'NONE'}
                 role="switch"
