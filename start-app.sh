@@ -132,13 +132,29 @@ done
 if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
     echo ""
     echo "🎉 All servers are running successfully!"
+    echo "🌐 Opening application in browser..."
+    
+    # Open browser with cross-platform support
+    if command -v xdg-open >/dev/null 2>&1; then
+        # Linux
+        xdg-open "${FRONTEND_URL}" 2>/dev/null &
+    elif command -v open >/dev/null 2>&1; then
+        # macOS
+        open "${FRONTEND_URL}" 2>/dev/null &
+    elif command -v start >/dev/null 2>&1; then
+        # Windows (WSL)
+        start "${FRONTEND_URL}" 2>/dev/null &
+    else
+        echo "⚠️ Could not automatically open browser. Please manually navigate to:"
+        echo "   ${FRONTEND_URL}"
+    fi
+    
+    sleep 2  # Give browser time to open
+    
     echo ""
-    echo "✨ Application is ready!"
+    echo "✨ Application started successfully!"
     echo "📊 Backend API: ${BACKEND_URL}"
     echo "🌐 Frontend UI: ${FRONTEND_URL}"
-    echo ""
-    echo "💡 To access the application, open your preferred web browser and navigate to:"
-    echo "   ${FRONTEND_URL}"
     echo ""
     echo "💡 Tip: Keep both terminal windows open to see server logs"
     echo "🛑 To stop servers: Close both terminal windows or use Ctrl+C in each"

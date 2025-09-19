@@ -36,36 +36,21 @@ A Python CLI and React web application for natural language financial queries us
 
 **One-Click Application Startup (Recommended):**
 
-# Option 1: Run one click  quick start script directly (recommended)
-
-./start-app.sh
+The startup scripts automatically manage all development servers and **open the application in your browser**.
 
 ```bash
-# Option 2: Use npm script 
-# Prerequisites: uv, Node.js 18+, API keys in .env
-npm run start:app
-```
-
-# Option 1: Run one click Quick start script directly (recommended)
-
+# Option 1: Main startup script (recommended)
 ./start-app.sh
 
-# Option 2: Use npm script
-
-```bash
-# Prerequisites: uv, Node.js 18+, API keys in .env
-npm run start:app
-```
-
-# Option 3: Use xterm version for better terminal compatibility one click Quick start script directly
-
+# Option 2: XTerm version for better terminal compatibility
 ./start-app-xterm.sh
 
-# Option 4: Use xterm version npm command directly
-
-```bash
-npm run start:app:xterm
+# Option 3: Use npm scripts
+npm run start:app          # Main script
+npm run start:app:xterm    # XTerm version
 ```
+
+**Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
@@ -103,6 +88,12 @@ npm run start:app:xterm
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
 - Verifies frontend serves content properly
+
+### 🌐 Browser Launch
+
+- **Automatically opens the application in your default browser**
+- Cross-platform support (Linux, macOS, Windows/WSL)
+- True one-click experience - no manual navigation required
 
 **Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 

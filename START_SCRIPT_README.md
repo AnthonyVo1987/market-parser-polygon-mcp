@@ -37,9 +37,11 @@ npm run start:app:xterm
 - Verifies frontend serves content properly
 
 ### 🌐 Browser Launch
-- Automatically opens the application in your default browser
+- **Automatically opens the application in your default browser** after server confirmation
 - Supports multiple browser opening methods (xdg-open, open, start)
+- Cross-platform compatibility (Linux, macOS, Windows/WSL)
 - Shows helpful success message with URLs
+- **True one-click experience** - no manual browser navigation required
 
 ## Script Variants
 
@@ -142,9 +144,10 @@ bash -n start-app.sh
 3. Check terminal windows for specific error messages
 4. Test manual server startup to identify issues
 
-### Browser Won't Open
+### Browser Won't Open Automatically
 - The application will still be accessible at `http://127.0.0.1:3000`
-- Try opening manually if automatic browser launch fails
+- Script will show manual navigation instructions if automatic browser launch fails
+- Check if `xdg-open`, `open`, or `start` commands are available on your system
 
 ## Success Output
 

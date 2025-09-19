@@ -93,7 +93,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
    - Note: Vite may auto-select ports 3001, 3002 if 3000 occupied
 ```
 
-**CRITICAL:** If servers are not running, execute: `./start-app.sh` (or `npm run start:app` as alternative) and wait for "ready" messages before proceeding.
+**CRITICAL:** If servers are not running, execute: `./start-app.sh` (or `npm run start:app` as alternative). The script will automatically open the application in your browser after confirming both servers are running.
 
 ### 1.3 Environment Verification
 
@@ -303,7 +303,7 @@ Document actual response time for performance classification and optimization in
 2. Verify frontend: `curl http://127.0.0.1:3000/`
 3. Check for port conflicts or server crashes
 
-**Solution:** Restart servers with `npm run start:app` and wait for ready messages
+**Solution:** Restart servers with `./start-app.sh` or `npm run start:app`. The script will automatically open the application in your browser once servers are confirmed running.
 
 ### 5.3 Response Detection Failures
 

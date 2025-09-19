@@ -9,16 +9,14 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Complete console logging removal for performance optimization
+feat: Add automatic browser opening to startup scripts for true one-click experience
 
-- Remove FileLogService class and console method interception from frontend logger
-- Eliminate periodic 10-second log buffer flushing to backend API endpoints
-- Remove 3 console logging API endpoints (/write, /status, /clear) from FastAPI backend
-- Delete 6 Pydantic models for console logging (ConsoleLogEntry, etc.)
-- Simplify backend logger to minimal error-only configuration
-- Remove 114+ console statements from 7 MCP test files for clean execution
-- Update Vite configuration to preserve LOG_MODE=NONE runtime control
-- Restore native console performance eliminating method interception overhead
+- Add cross-platform browser opening (xdg-open/open/start) to start-app.sh and start-app-xterm.sh
+- Scripts now automatically open application in browser after server confirmation
+- Update all project documentation (README.md, CLAUDE.md, START_SCRIPT_README.md, tests/playwright/mcp_test_script_basic.md)
+- Eliminates AI agent confusion about manual browser navigation
+- Both scripts tested and confirmed working with browser opening functionality
+- Maintains backward compatibility and cross-platform support (Linux/macOS/Windows/WSL)
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -42,36 +40,21 @@ Prioritize using the following Tools FIRST in any particular order to match the 
 
 **One-Click Application Startup (Recommended):**
 
-# Option 1: Run one click  quick start script directly (recommended)
-
-./start-app.sh
+The startup scripts automatically manage all development servers and **open the application in your browser**.
 
 ```bash
-# Option 2: Use npm script 
-# Prerequisites: uv, Node.js 18+, API keys in .env
-npm run start:app
-```
-
-# Option 1: Run one click Quick start script directly (recommended)
-
+# Option 1: Main startup script (recommended)
 ./start-app.sh
 
-# Option 2: Use npm script
-
-```bash
-# Prerequisites: uv, Node.js 18+, API keys in .env
-npm run start:app
-```
-
-# Option 3: Use xterm version for better terminal compatibility one click Quick start script directly
-
+# Option 2: XTerm version for better terminal compatibility
 ./start-app-xterm.sh
 
-# Option 4: Use xterm version npm command directly
-
-```bash
-npm run start:app:xterm
+# Option 3: Use npm scripts
+npm run start:app          # Main script
+npm run start:app:xterm    # XTerm version
 ```
+
+**Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
@@ -109,6 +92,12 @@ npm run start:app:xterm
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
 - Verifies frontend serves content properly
+
+### 🌐 Browser Launch
+
+- **Automatically opens the application in your default browser**
+- Cross-platform support (Linux, macOS, Windows/WSL)
+- True one-click experience - no manual navigation required
 
 **Manual Setup:**
 
