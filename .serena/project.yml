@@ -65,3 +65,25 @@ excluded_tools: []
 initial_prompt: ""
 
 project_name: "market-parser-polygon-mcp"
+
+# Enable tool usage statistics collection
+record_tool_usage_stats: true
+
+# Optional: Configure stats collection behavior
+stats:
+  # Enable detailed tool usage tracking
+  detailed_tracking: true
+  
+  # Enable performance metrics
+  performance_metrics: true
+  
+  # Enable dashboard access
+  dashboard_enabled: true
+
+# Optional: Configure output settings
+output:
+  # Show stats in console output
+  show_stats: true
+  
+  # Verbose logging for debugging
+  verbose: true
