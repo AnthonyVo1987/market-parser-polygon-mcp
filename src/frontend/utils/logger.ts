@@ -28,180 +28,11 @@ export interface PerformanceMetric {
   duration?: number;
 }
 
-export interface ConsoleLogEntry {
-  timestamp: Date;
-  level: 'log' | 'debug' | 'info' | 'warn' | 'error';
-  message: string;
-  args: string[];
-  source: string;
-}
 
-export interface FileLogServiceConfig {
-  bufferSize: number;
-  flushIntervalMs: number;
-  apiEndpoint: string;
-  enabled: boolean;
-}
 
-// FileLogService class for managing console log file operations
-class FileLogService {
-  private config: FileLogServiceConfig;
-  private buffer: ConsoleLogEntry[] = [];
-  private flushTimer: number | null = null;
-  private isFlushingActive: boolean = false;
-  private totalEntries: number = 0;
-  private bufferWrapped: boolean = false;
-  private wrapCount: number = 0;
 
-  constructor(config: FileLogServiceConfig) {
-    this.config = config;
-    this.startPeriodicFlush();
-  }
 
-  /**
-   * Add a log entry to the circular buffer
-   */
-  addEntry(entry: ConsoleLogEntry): void {
-    if (!this.config.enabled) return;
 
-    try {
-      // Add to circular buffer
-      if (this.buffer.length >= this.config.bufferSize) {
-        // Buffer is full, start overwriting oldest entries
-        const index = this.totalEntries % this.config.bufferSize;
-        this.buffer[index] = entry;
-
-        if (!this.bufferWrapped) {
-          this.bufferWrapped = true;
-          this.wrapCount = 1;
-        } else {
-          this.wrapCount++;
-        }
-      } else {
-        this.buffer.push(entry);
-      }
-
-      this.totalEntries++;
-    } catch (error) {
-      console.error('Failed to add entry to log buffer:', error);
-    }
-  }
-
-  /**
-   * Flush buffer to file via API
-   */
-  async flush(): Promise<void> {
-    if (!this.config.enabled || this.isFlushingActive || this.buffer.length === 0) {
-      return;
-    }
-
-    this.isFlushingActive = true;
-
-    try {
-      // Create a copy of buffer for flushing
-      const entriesToFlush = [...this.buffer];
-
-      // Add wrap indicator if buffer has wrapped
-      if (this.bufferWrapped) {
-        const wrapIndicator: ConsoleLogEntry = {
-          timestamp: new Date(),
-          level: 'info',
-          message: `🔄 Buffer wrapped ${this.wrapCount} time(s). Total entries processed: ${this.totalEntries}`,
-          args: [`wrapCount:${this.wrapCount}`, `totalEntries:${this.totalEntries}`],
-          source: 'fileLogService'
-        };
-        entriesToFlush.unshift(wrapIndicator);
-      }
-
-      const response = await fetch(this.config.apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          entries: entriesToFlush.map(entry => ({
-            timestamp: entry.timestamp.toISOString(),
-            level: entry.level,
-            message: entry.message,
-            args: entry.args,
-            source: entry.source
-          }))
-        })
-      });
-
-      if (response.ok) {
-        // Clear buffer after successful flush
-        this.buffer = [];
-        this.bufferWrapped = false;
-        this.wrapCount = 0;
-      } else {
-        console.error('Failed to flush log buffer:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error flushing log buffer:', error);
-    } finally {
-      this.isFlushingActive = false;
-    }
-  }
-
-  /**
-   * Start periodic flushing
-   */
-  private startPeriodicFlush(): void {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
-    }
-
-    this.flushTimer = window.setInterval(() => {
-      this.flush();
-    }, this.config.flushIntervalMs);
-  }
-
-  /**
-   * Stop periodic flushing
-   */
-  stopPeriodicFlush(): void {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
-      this.flushTimer = null;
-    }
-  }
-
-  /**
-   * Check if file logging is enabled
-   */
-  isEnabled(): boolean {
-    return this.config.enabled;
-  }
-
-  /**
-   * Get buffer status
-   */
-  getBufferStatus(): {
-    size: number;
-    capacity: number;
-    totalEntries: number;
-    wrapped: boolean;
-    wrapCount: number;
-  } {
-    return {
-      size: this.buffer.length,
-      capacity: this.config.bufferSize,
-      totalEntries: this.totalEntries,
-      wrapped: this.bufferWrapped,
-      wrapCount: this.wrapCount
-    };
-  }
-
-  /**
-   * Cleanup resources
-   */
-  destroy(): void {
-    this.stopPeriodicFlush();
-    // Final flush before destroy
-    this.flush();
-  }
-}
 
 class FrontendLogger {
   private isDevelopment: boolean;
@@ -218,14 +49,8 @@ class FrontendLogger {
   private logModeChangeListeners: Array<(mode: LogMode) => void> = [];
 
   // File logging properties
-  private fileLogService: FileLogService | null = null;
-  private originalConsole: {
-    log: typeof console.log;
-    debug: typeof console.debug;
-    info: typeof console.info;
-    warn: typeof console.warn;
-    error: typeof console.error;
-  } | null = null;
+  
+  
 
   constructor() {
     this.isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
@@ -269,7 +94,6 @@ class FrontendLogger {
         environment: import.meta.env.MODE,
         debugMode: this.isDebugMode,
         logMode: this.logMode,
-        fileLogging: this.fileLogService?.isEnabled() || false,
         timestamp: new Date().toISOString()
       });
     }
@@ -279,140 +103,27 @@ class FrontendLogger {
    * Initialize file logging service and console interception
    */
   private initializeFileLogging(): void {
-    // Skip initialization entirely in NONE mode
-    if (this.logMode === 'NONE') {
-      if (this.isDevelopment) {
-        console.info('📴 File logging disabled - NONE mode active');
-      }
-      return;
-    }
-
-    try {
-      // Create file log service with configuration
-      const config: FileLogServiceConfig = {
-        bufferSize: 1000,
-        flushIntervalMs: 10000, // 10 seconds
-        apiEndpoint: '/api/v1/logs/console/write',
-        enabled: this.isDevelopment
-      };
-
-      this.fileLogService = new FileLogService(config);
-
-      // Clear log file on app startup
-      this.clearLogFile();
-
-      // Intercept console methods
-      this.interceptConsole();
-
-      if (this.isDevelopment) {
-        this.debug('📝 File logging service initialized', {
-          bufferSize: config.bufferSize,
-          flushInterval: `${config.flushIntervalMs}ms`,
-          enabled: config.enabled
-        });
-      }
-    } catch (error) {
-      this.error('Failed to initialize file logging service', { error });
+    // File logging has been removed - this method is now a no-op
+    // LOG_MODE=NONE provides native console performance
+    if (this.isDevelopment) {
+      console.info('📴 File logging disabled - native console performance active');
     }
   }
 
   /**
    * Intercept console methods to capture logs
    */
-  private interceptConsole(): void {
-    // Skip console interception in NONE mode
-    if (this.logMode === 'NONE' || !this.fileLogService || this.originalConsole) return;
-
-    // Store original console methods
-    this.originalConsole = {
-      log: console.log.bind(console),
-      debug: console.debug.bind(console),
-      info: console.info.bind(console),
-      warn: console.warn.bind(console),
-      error: console.error.bind(console)
-    };
-
-    // Intercept console.log
-    console.log = (...args: unknown[]) => {
-      this.originalConsole!.log(...args);
-      this.captureConsoleLog('log', args);
-    };
-
-    // Intercept console.debug
-    console.debug = (...args: unknown[]) => {
-      this.originalConsole!.debug(...args);
-      this.captureConsoleLog('debug', args);
-    };
-
-    // Intercept console.info
-    console.info = (...args: unknown[]) => {
-      this.originalConsole!.info(...args);
-      this.captureConsoleLog('info', args);
-    };
-
-    // Intercept console.warn
-    console.warn = (...args: unknown[]) => {
-      this.originalConsole!.warn(...args);
-      this.captureConsoleLog('warn', args);
-    };
-
-    // Intercept console.error
-    console.error = (...args: unknown[]) => {
-      this.originalConsole!.error(...args);
-      this.captureConsoleLog('error', args);
-    };
-  }
+  
 
   /**
    * Capture console log for file writing
    */
-  private captureConsoleLog(level: ConsoleLogEntry['level'], args: unknown[]): void {
-    if (!this.fileLogService) return;
-
-    try {
-      const message = args.length > 0 ? String(args[0]) : '';
-      const additionalArgs = args.slice(1).map(arg => {
-        try {
-          return typeof arg === 'object' ? JSON.stringify(arg) : String(arg);
-        } catch {
-          return String(arg);
-        }
-      });
-
-      const entry: ConsoleLogEntry = {
-        timestamp: new Date(),
-        level,
-        message,
-        args: additionalArgs,
-        source: 'frontend'
-      };
-
-      this.fileLogService.addEntry(entry);
-    } catch (error) {
-      // Use original console to avoid infinite recursion
-      this.originalConsole?.error('Failed to capture console log:', error);
-    }
-  }
+  
 
   /**
    * Clear the log file on startup
    */
-  private async clearLogFile(): Promise<void> {
-    try {
-      const response = await fetch('/api/v1/logs/console', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        this.debug('🗑️ Console log file cleared on startup');
-      }
-    } catch (error) {
-      this.warn('Failed to clear log file on startup', { error });
-    }
-  }
+  
 
   /**
    * Set the current log mode (NONE, DEBUG or PRODUCTION)
@@ -487,28 +198,10 @@ class FrontendLogger {
    * Cleanup file logging services
    */
   private cleanupFileLogging(): void {
-    try {
-      // Destroy file log service
-      if (this.fileLogService) {
-        this.fileLogService.destroy();
-        this.fileLogService = null;
-      }
-
-      // Restore original console methods
-      if (this.originalConsole) {
-        console.log = this.originalConsole.log;
-        console.debug = this.originalConsole.debug;
-        console.info = this.originalConsole.info;
-        console.warn = this.originalConsole.warn;
-        console.error = this.originalConsole.error;
-        this.originalConsole = null;
-      }
-
-      if (this.isDevelopment) {
-        console.info('🧹 File logging services cleaned up - NONE mode active');
-      }
-    } catch (error) {
-      console.error('Failed to cleanup file logging services:', error);
+    // File logging has been removed - this method is now a no-op
+    // No cleanup needed as console methods are no longer intercepted
+    if (this.isDevelopment) {
+      console.info('🧹 File logging cleanup complete - native console performance maintained');
     }
   }
 
