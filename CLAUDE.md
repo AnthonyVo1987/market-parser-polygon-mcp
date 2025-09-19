@@ -4,23 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Market Parser is a Python CLI and React web application for natural language financial queries using the Polygon.io MCP server and OpenAI GPT-5-mini via the Pydantic AI Agent Framework.
+Market Parser is a Python CLI and React web application for natural language financial queries using the Polygon.io MCP server and OpenAI GPT-5-nano via the Pydantic AI Agent Framework.
 
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-docs: Complete post-mortem analysis and validation framework after Section 3.4 testing execution failure
+feat: Add AI Model Selector Dropdown in Debug Panel & Set Default Model to 'gpt-5-nano'
 
-- Generate comprehensive post-mortem documentation for Section 3.4 testing validation failure
-- Execute FULL CORRECT Section 3.4 Testing & Validation Plan with 100% protocol adherence
-- Complete comprehensive code review using mandatory priority tools (Serena, Sequential-Thinking, Context7)
-- Validate React 18.3.1 best practices compliance and performance optimization standards
-- Confirm complete FileLogService removal with zero orphaned references across entire frontend codebase
-- Verify native console performance restoration and LOG_MODE=NONE effectiveness
-- Document corrective actions and lessons learned for future testing protocol enforcement
-- Establish professional testing standards ensuring user-specified procedures are sacred
-- Create comprehensive validation framework with all test reports and post-mortem analysis
-- Production deployment validated with PASSING code review status and complete compliance verification
+- Backend: Updated Settings class with 'gpt-5-nano' default and available models list
+- Backend: Added Pydantic v2 API models for AI model management with strict validation
+- Backend: Enhanced process_financial_query to accept model parameter and append model names to responses
+- Backend: Implemented model management API endpoints with dependency injection and comprehensive error handling
+- Frontend: Created TypeScript interfaces and enums for AI model management with type guards
+- Frontend: Added useAIModel custom hook with proper cleanup, error handling, and localStorage persistence
+- Frontend: Enhanced DebugPanel with model selector dropdown, accessibility attributes, and responsive styling
+- Frontend: Updated ChatInterface to integrate model selection and pass model to API calls
+- Frontend: Added API service functions for model listing and selection with proper error handling
+- Code Quality: Fixed critical linting issues, achieved 9.46/10 Python score, zero TypeScript errors
+- Documentation: Updated implementation plan with completion status and verification details
+
+All AI responses now end with model identifier format: [gpt-5-nano]
+Model selection persists across sessions via localStorage
+Comprehensive error handling and loading states implemented
+Strict TypeScript typing with readonly interfaces and type guards
+Accessibility compliant with ARIA labels and keyboard navigation
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 

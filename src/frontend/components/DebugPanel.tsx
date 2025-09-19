@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useComponentLogger, useInteractionLogger } from '../hooks/useDebugLog';
+import { AIModel, AIModelId } from '../types/ai_models';
 import { logger, LogMode } from '../utils/logger';
 
 /**
@@ -12,6 +13,12 @@ interface DebugPanelProps {
   className?: string;
   /** Optional callback for debug actions */
   onDebugAction?: (action: string, details: Record<string, unknown>) => void;
+  // AI Model props
+  models: readonly AIModel[];
+  currentModel: AIModelId | null;
+  onModelChange: (modelId: AIModelId) => void;
+  isLoadingModels?: boolean;
+  modelError?: string | null;
 }
 
 /**
@@ -23,18 +30,25 @@ interface DebugPanelProps {
  * @param props - The component props
  * @returns JSX element displaying debug information
  */
-export default function DebugPanel({ 
-  latestResponseTime, 
+const DebugPanel = memo<DebugPanelProps>(({
+  latestResponseTime,
   className = '',
-  onDebugAction: _onDebugAction
-}: DebugPanelProps) {
+  onDebugAction: _onDebugAction,
+  models,
+  currentModel,
+  onModelChange,
+  isLoadingModels = false,
+  modelError = null
+}) => {
   // Initialize logging
-  useComponentLogger('DebugPanel', { 
+  useComponentLogger('DebugPanel', {
     hasResponseTime: latestResponseTime !== null,
-    responseTime: latestResponseTime 
+    responseTime: latestResponseTime,
+    currentModel,
+    modelCount: models.length
   });
   const _logInteraction = useInteractionLogger('DebugPanel');
-  
+
   // Console log mode state management
   const [logMode, setLogMode] = useState<LogMode>(() => logger.getLogMode());
 
@@ -128,13 +142,26 @@ export default function DebugPanel({
     }
   }, [logMode]);
 
+  // Handle model selection change
+  const handleModelChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+    const modelId = event.target.value as AIModelId;
+    if (Object.values(AIModelId).includes(modelId)) {
+      onModelChange(modelId);
+      logger.debug('Model selection changed', {
+        component: 'DebugPanel',
+        newModel: modelId,
+        previousModel: currentModel
+      });
+    }
+  }, [currentModel, onModelChange]);
+
   return (
-    <div 
+    <div
       className={`debug-panel ${className}`}
       role="status"
       aria-label="Debug information"
     >
-      <div 
+      <div
         className="debug-header clickable-header"
         onClick={toggleExpanded}
         onKeyDown={toggleExpanded}
@@ -153,8 +180,8 @@ export default function DebugPanel({
           </div>
         </div>
       </div>
-      
-      <div 
+
+      <div
         id="debug-panel-content"
         className={`collapsible-content ${isExpanded ? 'expanded' : 'collapsed'}`}
         aria-hidden={!isExpanded}
@@ -177,10 +204,9 @@ export default function DebugPanel({
                 className={`log-mode-toggle ${logMode.toLowerCase()}-mode`}
                 onClick={toggleLogMode}
                 onKeyDown={toggleLogMode}
-                aria-label={`Switch from ${logMode} to ${
-                  logMode === 'NONE' ? 'DEBUG' :
-                  logMode === 'DEBUG' ? 'PRODUCTION' : 'NONE'
-                } mode`}
+                aria-label={`Switch from ${logMode} to ${logMode === 'NONE' ? 'DEBUG' :
+                    logMode === 'DEBUG' ? 'PRODUCTION' : 'NONE'
+                  } mode`}
                 aria-pressed={logMode !== 'NONE'}
                 role="switch"
               >
@@ -204,11 +230,51 @@ export default function DebugPanel({
               </span>
             </div>
           </div>
+
+          {/* AI Model Selector */}
+          <div className="debug-metric">
+            <span className="debug-label">AI Model:</span>
+            <div className="model-selector-container">
+              <select
+                className="model-selector"
+                value={currentModel || ''}
+                onChange={handleModelChange}
+                disabled={isLoadingModels || models.length === 0}
+                aria-label="Select AI model"
+                aria-describedby={modelError ? "model-error" : undefined}
+              >
+                {models.length === 0 ? (
+                  <option value="">No models available</option>
+                ) : (
+                  models.map(model => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                      {model.isDefault && ' (default)'}
+                    </option>
+                  ))
+                )}
+              </select>
+              {isLoadingModels && (
+                <span className="loading-indicator" aria-label="Loading models">
+                  Loading...
+                </span>
+              )}
+              {modelError && (
+                <span id="model-error" className="error-message" role="alert">
+                  {modelError}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+});
+
+DebugPanel.displayName = 'DebugPanel';
+
+export default DebugPanel;
 
 /**
  * Professional Fintech Glassmorphic Styles for Developer Debug Panel
@@ -514,6 +580,81 @@ export const debugPanelStyles = `
     letter-spacing: var(--letter-spacing-tight);
   }
 
+  /* ==========================================================================
+     AI MODEL SELECTOR - Professional Glassmorphic Dropdown
+     ========================================================================== */
+
+  .model-selector-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    position: relative;
+  }
+
+  .model-selector {
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border-2);
+    color: var(--text-primary);
+    padding: var(--spacing-1) var(--spacing-2);
+    padding-right: var(--spacing-6); /* Space for dropdown arrow */
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-small);
+    min-width: 160px;
+    cursor: pointer;
+    transition: all 0.2s var(--transition-timing);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-2) center;
+    background-size: 16px;
+  }
+
+  .model-selector:hover:not(:disabled) {
+    background-color: var(--glass-surface-2);
+    border-color: var(--accent-info);
+    box-shadow: 0 0 0 1px var(--accent-info-light);
+  }
+
+  .model-selector:focus {
+    outline: 2px solid var(--accent-info);
+    outline-offset: 2px;
+  }
+
+  .model-selector:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .model-selector option {
+    background: var(--background-primary);
+    color: var(--text-primary);
+    padding: var(--spacing-1);
+  }
+
+  .loading-indicator {
+    position: absolute;
+    right: var(--spacing-8);
+    font-size: var(--font-size-micro);
+    color: var(--accent-info);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .error-message {
+    position: absolute;
+    top: calc(100% + var(--spacing-1));
+    left: 0;
+    font-size: var(--font-size-micro);
+    color: var(--accent-error);
+    white-space: nowrap;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
   /* NONE Mode Styling - Neutral gray theme */
   .log-mode-toggle.none-mode .toggle-slider {
     background: linear-gradient(135deg, var(--neutral-700) 0%, var(--neutral-600) 100%);
@@ -643,6 +784,22 @@ export const debugPanelStyles = `
       padding: var(--spacing-1);
       min-width: 80px;
       align-self: flex-end;
+    }
+
+    .model-selector {
+      min-width: 120px;
+      font-size: var(--font-size-micro);
+    }
+    
+    .model-selector-container {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--spacing-1);
+    }
+    
+    .error-message {
+      position: static;
+      margin-top: var(--spacing-1);
     }
   }
   

@@ -1,8 +1,14 @@
-import { useRef, useEffect, Suspense, lazy, useCallback, memo, startTransition, useReducer, useMemo, useDeferredValue } from 'react';
+import { Suspense, lazy, memo, startTransition, useCallback, useDeferredValue, useEffect, useMemo, useReducer, useRef } from 'react';
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
+import { useAIModel } from '../hooks/useAIModel';
+import {
+  useInteractionLogger,
+  usePerformanceLogger
+} from '../hooks/useDebugLog';
 import { sendChatMessage } from '../services/api_OpenAI';
 import { Message } from '../types/chat_OpenAI';
+import { logger } from '../utils/logger';
 
 // Consolidated state interface for useReducer
 interface ChatState {
@@ -15,7 +21,7 @@ interface ChatState {
 }
 
 // Action types for state management
-type ChatAction = 
+type ChatAction =
   | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
   | { type: 'SEND_MESSAGE_SUCCESS'; payload: { aiMessage: Message; responseTime: number } }
   | { type: 'SEND_MESSAGE_ERROR'; payload: { errorMessage: string; aiMessage: Message; responseTime: number } }
@@ -80,11 +86,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return state;
   }
 }
-import { 
-  useInteractionLogger, 
-  usePerformanceLogger
-} from '../hooks/useDebugLog';
-import { logger } from '../utils/logger';
 
 import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
@@ -108,16 +109,19 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // Consolidated state management using useReducer for performance optimization
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const { messages, isLoading, error, inputValue, sharedTicker, latestResponseTime } = state;
-  
+
+  // AI Model management
+  const { models, currentModel, isLoading: isLoadingModels, error: modelError, selectModel } = useAIModel();
+
   // Use deferred values for non-urgent UI updates to improve responsiveness
   const deferredSharedTicker = useDeferredValue(sharedTicker);
-  
+
   // Memoize expensive computations for performance
   const memoizedComputations = useMemo(() => {
     const hasMessages = messages.length > 0;
     const lastMessage = messages[messages.length - 1];
     const placeholderText = `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`;
-    
+
     return {
       hasMessages,
       lastMessage,
@@ -145,8 +149,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
     // Only scroll if messages increased and not loading
     const shouldScroll = !isFirstRenderRef.current &&
-                        currentMessageCount > previousMessageCountRef.current &&
-                        !isLoading;
+      currentMessageCount > previousMessageCountRef.current &&
+      !isLoading;
 
     if (shouldScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
@@ -241,7 +245,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       });
 
       // Send to API and get response
-      const aiResponse = await sendChatMessage(messageContent);
+      const aiResponse = await sendChatMessage(messageContent, currentModel);
       const processingTime = (Date.now() - startTime) / 1000;
 
       logger.info('✅ API response received', {
@@ -474,6 +478,11 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           latestResponseTime={latestResponseTime}
           className='main-debug-panel'
           onDebugAction={handleDebugAction}
+          models={models}
+          currentModel={currentModel}
+          onModelChange={selectModel}
+          isLoadingModels={isLoadingModels}
+          modelError={modelError}
         />
       </section>
     </div>

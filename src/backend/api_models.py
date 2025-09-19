@@ -9,7 +9,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, validator, ConfigDict
 
 
 class AnalysisType(str, Enum):
@@ -276,3 +276,55 @@ class SuccessResponse(BaseModel):
     success: bool = True
     message: str
     timestamp: datetime = Field(default_factory=datetime.now)
+
+
+# ====== AI MODEL SELECTION MODELS ======
+
+class CustomModel(BaseModel):
+    """Base model with custom configuration for all API models"""
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True,
+        json_schema_extra={"example": {}}
+    )
+
+class AIModelId(str, Enum):
+    """Enum for available AI models"""
+    GPT_5_NANO = "gpt-5-nano"
+    GPT_5_MINI = "gpt-5-mini"
+    GPT_4O = "gpt-4o"
+    GPT_4O_MINI = "gpt-4o-mini"
+
+class AIModel(CustomModel):
+    """AI Model information with validation"""
+    id: AIModelId = Field(..., description="Model identifier")
+    name: str = Field(..., description="Display name", min_length=1, max_length=50)
+    description: Optional[str] = Field(None, description="Model description", max_length=200)
+    is_default: bool = Field(False, description="Whether this is the default model")
+    cost_per_1k_tokens: Optional[float] = Field(None, ge=0, description="Cost per 1000 tokens")
+    max_tokens: Optional[int] = Field(None, gt=0, description="Maximum tokens supported")
+
+    @field_validator("name", mode="after")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        """Ensure name is properly formatted"""
+        return v.strip()
+
+class ModelListResponse(CustomModel):
+    """Response for listing available models"""
+    models: List[AIModel]
+    current_model: AIModelId
+    total_count: int = Field(..., ge=0)
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+class ModelSelectionRequest(CustomModel):
+    """Request for selecting a model with validation"""
+    model_id: AIModelId = Field(..., description="Model ID to select")
+
+class ModelSelectionResponse(CustomModel):
+    """Response for model selection"""
+    success: bool
+    message: str = Field(..., min_length=1)
+    selected_model: AIModelId
+    previous_model: Optional[AIModelId] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)

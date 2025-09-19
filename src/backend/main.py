@@ -12,11 +12,9 @@ import re
 import time
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
-from functools import lru_cache
-from hashlib import md5
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import List, Optional
 
 from cachetools import TTLCache
 
@@ -37,7 +35,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from dotenv import load_dotenv
 
 # FastAPI imports
-from fastapi import FastAPI, HTTPException, status
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
@@ -45,6 +43,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 from .api_models import (
+    AIModel,
+    AIModelId,
     AnalysisType,
     ButtonAnalysisRequest,
     ButtonAnalysisResponse,
@@ -52,6 +52,8 @@ from .api_models import (
     ChatAnalysisResponse,
     GeneratePromptRequest,
     GeneratePromptResponse,
+    ModelListResponse,
+    ModelSelectionResponse,
     PromptMode,
     PromptTemplateInfo,
     SystemHealthResponse,
@@ -110,11 +112,19 @@ class Settings:
 
         # Hard-coded application configuration
         self.mcp_timeout_seconds: float = 120.0
-        self.openai_model: str = "gpt-5-mini"
+        self.openai_model: str = "gpt-5-nano"  # Changed from gpt-5-mini
         self.agent_session_name: str = "finance_conversation"
 
         # Hard-coded CORS configuration
         self.cors_origins: str = "http://127.0.0.1:3000"
+
+        # Add available models list
+        self.available_models: List[str] = [
+            "gpt-5-nano",
+            "gpt-5-mini",
+            "gpt-4o",
+            "gpt-4o-mini"
+        ]
 
 
 # Initialize settings
@@ -154,6 +164,7 @@ class ChatRequest(BaseModel):
     """Request model for chat endpoint."""
 
     message: str
+    model: Optional[str] = None
 
 
 class ChatResponse(BaseModel):
@@ -403,9 +414,16 @@ def print_guardrail_error(exception):
 
 
 async def process_financial_query(
-    query: str, session: SQLiteSession, server, request_id: Optional[str] = None
+    query: str, session: SQLiteSession, server, request_id: Optional[str] = None, model: Optional[str] = None
 ) -> dict:
     """Process a financial query using the agent system with caching.
+    
+    Args:
+        query: The user's query
+        session: SQLite session for database operations
+    server: MCP server instance
+    request_id: Optional request ID for tracking
+    model: Optional AI model to use (defaults to settings.openai_model)
 
     Returns:
         dict: {
@@ -418,6 +436,9 @@ async def process_financial_query(
     start_time = time.time()
     if not request_id:
         request_id = str(uuid.uuid4())[:8]
+    
+    # Use provided model or default
+    active_model = model if model else settings.openai_model
 
     # Extract ticker from query for cache key generation
     ticker_match = re.search(r'\b([A-Z]{1,5})\b', query.upper())
@@ -507,14 +528,14 @@ async def process_financial_query(
                 tools=[save_analysis_report],
                 input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
                 model=OpenAIResponsesModel(
-                    model=settings.openai_model, openai_client=AsyncOpenAI()
+                    model=active_model, openai_client=AsyncOpenAI()
                 ),
                 model_settings=ModelSettings(truncation="auto"),
             )
             log_agent_processing(
                 logger,
                 "Running analysis agent",
-                {"request_id": request_id, "model": settings.openai_model},
+                {"request_id": request_id, "model": active_model},
             )
 
             output = await Runner.run(analysis_agent, query, session=session)
@@ -533,11 +554,14 @@ async def process_financial_query(
 
             # Cache the successful response
             response_text = str(final_output)
-            cache_response(cache_key, response_text)
+
+            # Append model name to response
+            response_text_with_model = f"{response_text}\n\n[{active_model}]"
+            cache_response(cache_key, response_text_with_model)
 
             return {
                 "success": True,
-                "response": response_text,
+                "response": response_text_with_model,
                 "error": None,
                 "error_type": None,
             }
@@ -741,8 +765,10 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     try:
         # Use shared instances instead of creating new ones
+        # Use provided model or default
+        active_model = request.model if request.model else settings.openai_model
         result = await process_financial_query(
-            stripped_message, shared_session, shared_mcp_server, request_id
+            stripped_message, shared_session, shared_mcp_server, request_id, active_model
         )
 
         response_time = time.time() - start_time
@@ -900,7 +926,7 @@ async def get_button_analysis(analysis_type: AnalysisType, request: ButtonAnalys
         query = query_templates[analysis_type]
 
         # Use shared instances instead of creating new ones
-        result = await process_financial_query(query, shared_session, shared_mcp_server)
+        result = await process_financial_query(query, shared_session, shared_mcp_server, None, settings.openai_model)
 
         if result["success"]:
             return ButtonAnalysisResponse(
@@ -973,7 +999,7 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
 
         # Use shared instances instead of creating new ones
         result = await process_financial_query(
-            request.message.strip(), shared_session, shared_mcp_server
+            request.message.strip(), shared_session, shared_mcp_server, None, settings.openai_model
         )
 
         if result["success"]:
@@ -1122,6 +1148,127 @@ async def health_check():
 
 
 
+# ====== AI MODEL MANAGEMENT ENDPOINTS ======
+
+# Dependency for validating model selection
+async def valid_model_id(model_id: AIModelId) -> AIModelId:
+    """Validate that the requested model exists and is available"""
+    if model_id.value not in settings.available_models:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid model ID: {model_id.value}"
+        )
+    return model_id
+
+# Model management router
+model_router = APIRouter(prefix="/api/v1/models", tags=["AI Models"])
+
+@model_router.get(
+    "",
+    response_model=ModelListResponse,
+    summary="List available AI models",
+    description="Get list of all available AI models with current selection",
+    responses={
+        status.HTTP_200_OK: {
+            "model": ModelListResponse,
+            "description": "Successfully retrieved model list"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Failed to retrieve models"
+        }
+    }
+)
+async def get_available_models():
+    """Get list of available AI models"""
+    try:
+        models = [
+            AIModel(
+                id=AIModelId.GPT_5_NANO,
+                name="GPT-5 Nano",
+                description="Fast and efficient model for quick responses",
+                is_default=True,
+                cost_per_1k_tokens=0.15,
+                max_tokens=4096
+            ),
+            AIModel(
+                id=AIModelId.GPT_5_MINI,
+                name="GPT-5 Mini",
+                description="Balanced performance model",
+                is_default=False,
+                cost_per_1k_tokens=0.25,
+                max_tokens=8192
+            ),
+            AIModel(
+                id=AIModelId.GPT_4O,
+                name="GPT-4o",
+                description="Advanced model for complex tasks",
+                is_default=False,
+                cost_per_1k_tokens=2.50,
+                max_tokens=4096
+            ),
+            AIModel(
+                id=AIModelId.GPT_4O_MINI,
+                name="GPT-4o Mini",
+                description="Cost-effective advanced model",
+                is_default=False,
+                cost_per_1k_tokens=0.15,
+                max_tokens=16384
+            )
+        ]
+
+        return ModelListResponse(
+            models=models,
+            current_model=AIModelId(settings.openai_model),
+            total_count=len(models)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve models: {str(e)}"
+        )
+
+@model_router.post(
+    "/select",
+    response_model=ModelSelectionResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Select an AI model",
+    description="Change the active AI model for subsequent requests",
+    responses={
+        status.HTTP_200_OK: {
+            "model": ModelSelectionResponse,
+            "description": "Model successfully selected"
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Invalid model ID provided"
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Failed to select model"
+        }
+    }
+)
+async def select_model(
+    model_id: AIModelId = Depends(valid_model_id)
+):
+    """Select an AI model for use"""
+    try:
+        previous_model = settings.openai_model
+        settings.openai_model = model_id.value
+
+        return ModelSelectionResponse(
+            success=True,
+            message=f"Successfully switched from {previous_model} to {model_id.value}",
+            selected_model=model_id,
+            previous_model=AIModelId(previous_model) if previous_model != model_id.value else None
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to select model: {str(e)}"
+        )
+
+# Add router to app
+app.include_router(model_router)
+
 # Cache Management API Endpoints (Security Review Priority 1 fixes)
 
 @app.get("/api/v1/cache/metrics")
@@ -1198,7 +1345,7 @@ async def cli_async():
                         continue
 
                     # Use the shared processing function
-                    result = await process_financial_query(user_input, session, server)
+                    result = await process_financial_query(user_input, session, server, None, settings.openai_model)
                     print("\r", end="")
 
                     if result["success"]:

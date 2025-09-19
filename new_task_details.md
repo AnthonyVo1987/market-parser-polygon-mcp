@@ -224,6 +224,8 @@ Implement a new AI Model Selector dropdown menu in the React frontend Debug Pane
 - Preserve existing functionality while adding new features
 - Follow prototyping principles - keep it simple and functional
 
+We will perform a Checkpoint Review & Commit of the current implemntation to save our Progress now.  A new task will be generated later to specify Testing & Validation details for testing out the new feature.
+
 # Final Task 1: Review/Fix Loop
 
 - Use Serena Tools, `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive review
@@ -256,7 +258,7 @@ Implement a new AI Model Selector dropdown menu in the React frontend Debug Pane
 
 **Commit Requirements:**
 
-- Create single atomic git commit containing ALL changes: CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHPTS\VIDEOS ETC
+- Create single atomic git commit containing ALL : CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHOTS\VIDEOS ETC
 - **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 - git Push commit to repository using provided personal access token
