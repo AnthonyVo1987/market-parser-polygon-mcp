@@ -2,6 +2,10 @@
 
 ## MANDATORY Tools Usage Guidance for all Task(s)
 
+Generate Test Reports from [BUG-001: Incomplete Frontend Console Logging Removal]
+
+- There was a violation and NO TEST REPORTS WERE GENERATED WHATSOEVER
+
 Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
 
 - **Serena Tools**: Use for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
