@@ -25,8 +25,8 @@ export interface AIModel {
 
 export interface ModelListResponse {
     readonly models: readonly AIModel[];
-    readonly currentModel: AIModelId;
-    readonly totalCount: number;
+    readonly current_model: AIModelId;
+    readonly total_count: number;
     readonly timestamp: string;
 }
 
@@ -37,8 +37,8 @@ export interface ModelSelectionRequest {
 export interface ModelSelectionResponse {
     readonly success: boolean;
     readonly message: string;
-    readonly selectedModel: AIModelId;
-    readonly previousModel?: AIModelId;
+    readonly selected_model: AIModelId;
+    readonly previous_model?: AIModelId;
     readonly timestamp: string;
 }
 
@@ -67,6 +67,6 @@ export function isValidModelListResponse(value: unknown): value is ModelListResp
 
 // API endpoint constants
 export const MODEL_API_ENDPOINTS = {
-    LIST: '/api/v1/models',
-    SELECT: '/api/v1/models/select'
+    LIST: '/v1/models',
+    SELECT: '/v1/models/select'
 } as const;

@@ -29,6 +29,7 @@ export function useAIModel(): UseAIModelReturn {
     const isMountedRef = useRef(true);
 
     useEffect(() => {
+        isMountedRef.current = true;
         return () => {
             isMountedRef.current = false;
         };
@@ -46,14 +47,14 @@ export function useAIModel(): UseAIModelReturn {
             if (!isMountedRef.current) return;
 
             setModels(response.models);
-            setCurrentModel(response.currentModel);
+            setCurrentModel(response.current_model);
 
             // Persist to localStorage
-            localStorage.setItem('selectedAIModel', response.currentModel);
+            localStorage.setItem('selectedAIModel', response.current_model);
 
             logger.info('AI models loaded successfully', {
-                modelCount: response.totalCount,
-                currentModel: response.currentModel
+                modelCount: response.total_count,
+                currentModel: response.current_model
             });
         } catch (err) {
             if (!isMountedRef.current) return;
@@ -80,12 +81,12 @@ export function useAIModel(): UseAIModelReturn {
             if (!isMountedRef.current) return;
 
             if (response.success) {
-                setCurrentModel(response.selectedModel);
-                localStorage.setItem('selectedAIModel', response.selectedModel);
+                setCurrentModel(response.selected_model);
+                localStorage.setItem('selectedAIModel', response.selected_model);
 
                 logger.info('Model selected successfully', {
-                    previousModel: response.previousModel,
-                    selectedModel: response.selectedModel
+                    previousModel: response.previous_model,
+                    selectedModel: response.selected_model
                 });
             }
         } catch (err) {

@@ -1,6 +1,6 @@
-import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
@@ -12,12 +12,12 @@ export default defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   const isDevelopment = mode === 'development'
   const isBuild = command === 'build'
-  
+
   return {
     // Build configuration
     root: '.', // Root is project root
     publicDir: 'public',
-    
+
     plugins: [
       react(),
       // PWA functionality with auto-update strategy
@@ -76,7 +76,7 @@ export default defineConfig(({ command, mode }) => {
             },
             {
               src: 'pwa-512x512.png',
-              sizes: '512x512', 
+              sizes: '512x512',
               type: 'image/png',
               purpose: 'any'
             },
@@ -122,6 +122,11 @@ export default defineConfig(({ command, mode }) => {
           target: 'http://127.0.0.1:8000',
           changeOrigin: true,
           secure: false
+        },
+        '/chat': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          secure: false
         }
       }
     },
@@ -140,30 +145,30 @@ export default defineConfig(({ command, mode }) => {
           keep_fnames: isDevelopment
         }
       },
-      
+
       // Source map configuration based on environment
       sourcemap: isProduction ? 'hidden' : true, // Hidden in production, full in development
-      
+
       // Build output to root dist directory
       outDir: 'dist',
       emptyOutDir: true, // Always clean output directory
       reportCompressedSize: isProduction, // Show gzip sizes in production builds
-    
-      
+
+
       // Asset optimization settings
       assetsInlineLimit: 4096, // 4KB threshold for inlining small assets as base64 data URLs
       cssCodeSplit: true, // Enable CSS code splitting for better caching
-      
+
       // Environment-aware performance settings
       chunkSizeWarningLimit: isProduction ? 500 : 1000, // Stricter limits in production
-      
+
       // Build performance optimization
       ...(isProduction && {
         target: 'es2015', // Ensure broad browser compatibility in production
         cssTarget: 'chrome61' // CSS compatibility target
       }),
-    
-      
+
+
       // Phase 2: Advanced build optimizations with manual chunking
       rollupOptions: {
         output: {
@@ -176,27 +181,27 @@ export default defineConfig(({ command, mode }) => {
             // PWA-related workbox libraries (separate chunk for better caching)
             pwa: ['workbox-window']
           },
-          
+
           // Intelligent asset organization by type with content hashes
           assetFileNames: (assetInfo) => {
             const info = assetInfo.name.split('.')
             const ext = info[info.length - 1]
-            
+
             // Images: PNG, JPG, JPEG, SVG, GIF, WebP, etc.
             if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(ext)) {
               return `images/[name].[hash].[ext]`
             }
-            
+
             // CSS files
             if (/css/i.test(ext)) {
               return `css/[name].[hash].[ext]`
             }
-            
+
             // Fonts: WOFF, WOFF2, TTF, EOT, etc.
             if (/woff2?|ttf|eot|otf/i.test(ext)) {
               return `fonts/[name].[hash].[ext]`
             }
-            
+
             // Everything else goes to general assets
             return `assets/[name].[hash].[ext]`
           },
@@ -219,7 +224,7 @@ export default defineConfig(({ command, mode }) => {
       // Force re-optimization in development if needed
       force: isDevelopment && env.FORCE_OPTIMIZE === 'true'
     },
-    
+
     // Environment variable configuration
     define: {
       // Expose build information to the application

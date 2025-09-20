@@ -9,29 +9,17 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Add AI Model Selector Dropdown in Debug Panel & Set Default Model to 'gpt-5-nano'
+feat: Fix AI Model Selector integration and create environment migration plan
 
-- Backend: Updated Settings class with 'gpt-5-nano' default and available models list
-- Backend: Added Pydantic v2 API models for AI model management with strict validation
-- Backend: Enhanced process_financial_query to accept model parameter and append model names to responses
-- Backend: Implemented model management API endpoints with dependency injection and comprehensive error handling
-- Frontend: Created TypeScript interfaces and enums for AI model management with type guards
-- Frontend: Added useAIModel custom hook with proper cleanup, error handling, and localStorage persistence
-- Frontend: Enhanced DebugPanel with model selector dropdown, accessibility attributes, and responsive styling
-- Frontend: Updated ChatInterface to integrate model selection and pass model to API calls
-- Frontend: Added API service functions for model listing and selection with proper error handling
-- Code Quality: Fixed critical linting issues, achieved 9.46/10 Python score, zero TypeScript errors
-- Documentation: Updated implementation plan with completion status and verification details
+- Fix API field name mismatches (snake_case vs camelCase) in frontend types
+- Update useAIModel hook to handle race conditions and correct field mapping
+- Fix API request format for model selection (query param vs body)
+- Add /chat proxy rule to vite.config.ts for proper backend routing
+- Update .env.development to use /api proxy instead of direct localhost
+- Create comprehensive environment variable migration plan in new_task_plan.md
+- Document API routing fixes and configuration consolidation strategy
 
-All AI responses now end with model identifier format: [gpt-5-nano]
-Model selection persists across sessions via localStorage
-Comprehensive error handling and loading states implemented
-Strict TypeScript typing with readonly interfaces and type guards
-Accessibility compliant with ARIA labels and keyboard navigation
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
+Resolves AI Model Selector functionality and prepares for cloud deployment
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## MANDATORY Tools Usage Guidance for all Task(s)

@@ -2,6 +2,7 @@ import { AIModelId, MODEL_API_ENDPOINTS, ModelListResponse, ModelSelectionRespon
 import { ApiError, ChatResponse } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
 
+// Force use of Vite proxy instead of direct localhost connection
 const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
 
 // Initialize API service logging
@@ -14,7 +15,7 @@ logger.info('🌐 API service initialized', {
 export async function sendChatMessage(message: string, model?: AIModelId): Promise<string> {
   const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
   const startTime = performance.now();
-  const endpoint = `${API_BASE_URL}/chat`;
+  const endpoint = '/chat';
 
   logger.apiRequest('POST', endpoint, {
     messageLength: message.length,
@@ -214,8 +215,8 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
     }
 
     logger.apiResponse('GET', endpoint, response.status, duration, {
-      modelCount: data.totalCount,
-      currentModel: data.currentModel,
+      modelCount: data.total_count,
+      currentModel: data.current_model,
       requestId
     });
 
@@ -223,8 +224,8 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
       service: 'api_OpenAI',
       requestId,
       duration: `${duration.toFixed(2)}ms`,
-      modelCount: data.totalCount,
-      currentModel: data.currentModel
+      modelCount: data.total_count,
+      currentModel: data.current_model
     });
 
     return data;
@@ -281,12 +282,11 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       modelId
     });
 
-    const response = await fetch(endpoint, {
+    const response = await fetch(`${endpoint}?model_id=${encodeURIComponent(modelId)}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ modelId }),
     });
 
     const duration = performance.now() - startTime;
@@ -337,8 +337,8 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
 
     logger.apiResponse('POST', endpoint, response.status, duration, {
       success: data.success,
-      selectedModel: data.selectedModel,
-      previousModel: data.previousModel,
+      selectedModel: data.selected_model,
+      previousModel: data.previous_model,
       requestId
     });
 
@@ -346,8 +346,8 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       service: 'api_OpenAI',
       requestId,
       duration: `${duration.toFixed(2)}ms`,
-      selectedModel: data.selectedModel,
-      previousModel: data.previousModel,
+      selectedModel: data.selected_model,
+      previousModel: data.previous_model,
       success: data.success
     });
 
