@@ -40,9 +40,7 @@ class Settings:
         # Add available models list
         self.available_models: List[str] = [
             "gpt-5-nano",
-            "gpt-5-mini", 
-            "gpt-4o",
-            "gpt-4o-mini"
+            "gpt-5-mini"
         ]
 ```
 
@@ -69,8 +67,6 @@ class AIModelId(str, Enum):
     """Enum for available AI models"""
     GPT_5_NANO = "gpt-5-nano"
     GPT_5_MINI = "gpt-5-mini"
-    GPT_4O = "gpt-4o"
-    GPT_4O_MINI = "gpt-4o-mini"
 
 class AIModel(CustomModel):
     """AI Model information with validation"""
@@ -196,22 +192,6 @@ async def get_available_models():
             is_default=False,
             cost_per_1k_tokens=0.25,
             max_tokens=8192
-        ),
-        AIModel(
-            id=AIModelId.GPT_4O,
-            name="GPT-4o",
-            description="Advanced model for complex tasks",
-            is_default=False,
-            cost_per_1k_tokens=2.50,
-            max_tokens=4096
-        ),
-        AIModel(
-            id=AIModelId.GPT_4O_MINI,
-            name="GPT-4o Mini",
-            description="Cost-effective advanced model",
-            is_default=False,
-            cost_per_1k_tokens=0.15,
-            max_tokens=16384
         )
     ]
     
@@ -276,9 +256,7 @@ Following Context7 React TypeScript patterns:
 // Enum for model IDs matching backend
 export enum AIModelId {
   GPT_5_NANO = 'gpt-5-nano',
-  GPT_5_MINI = 'gpt-5-mini',
-  GPT_4O = 'gpt-4o',
-  GPT_4O_MINI = 'gpt-4o-mini'
+  GPT_5_MINI = 'gpt-5-mini'
 }
 
 // Strict interface definitions

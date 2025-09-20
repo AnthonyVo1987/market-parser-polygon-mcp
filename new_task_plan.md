@@ -62,7 +62,7 @@ Based on my analysis using Serena tools, Sequential-thinking tools, and Context7
       "port": 8000
     },
     "ai": {
-      "availableModels": ["gpt-5-nano", "gpt-5-mini", "gpt-4o", "gpt-4o-mini"],
+      "availableModels": ["gpt-5-nano", "gpt-5-mini"],
       "maxContextLength": 128000,
       "pricing": {
         "gpt-5-nano": {
@@ -72,14 +72,6 @@ Based on my analysis using Serena tools, Sequential-thinking tools, and Context7
         "gpt-5-mini": {
           "inputPer1M": 0.25,
           "outputPer1M": 2.00
-        },
-        "gpt-4o": {
-          "inputPer1M": 5.00,
-          "outputPer1M": 15.00
-        },
-        "gpt-4o-mini": {
-          "inputPer1M": 0.15,
-          "outputPer1M": 0.60
         }
       }
     },
