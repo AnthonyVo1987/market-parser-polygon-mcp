@@ -1,5 +1,5 @@
 // Configuration loader for frontend
-import appConfig from '../../config/app.config.json';
+import appConfig from '../../../config/app.config.json';
 
 export interface AppConfig {
   backend: {
