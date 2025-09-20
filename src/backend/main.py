@@ -42,36 +42,68 @@ from pydantic_settings import BaseSettings
 from rich.console import Console
 from rich.markdown import Markdown
 
-from .api_models import (
-    AIModel,
-    AIModelId,
-    AnalysisType,
-    ButtonAnalysisRequest,
-    ButtonAnalysisResponse,
-    ChatAnalysisRequest,
-    ChatAnalysisResponse,
-    GeneratePromptRequest,
-    GeneratePromptResponse,
-    ModelListResponse,
-    ModelSelectionResponse,
-    PromptMode,
-    PromptTemplateInfo,
-    SystemHealthResponse,
-    SystemMetrics,
-    SystemStatusResponse,
-    TemplateListResponse,
-    TickerContextInfo,
-)
-from .prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
-
-# Import logging utilities
-from .utils.logger import (
-    get_logger,
-    log_agent_processing,
-    log_api_request,
-    log_api_response,
-    log_mcp_operation,
-)
+try:
+    # Try relative imports first (when run as module)
+    from .api_models import (
+        AIModel,
+        AIModelId,
+        AnalysisType,
+        ButtonAnalysisRequest,
+        ButtonAnalysisResponse,
+        ChatAnalysisRequest,
+        ChatAnalysisResponse,
+        GeneratePromptRequest,
+        GeneratePromptResponse,
+        ModelListResponse,
+        ModelSelectionResponse,
+        PromptMode,
+        PromptTemplateInfo,
+        ResponseMetadata,
+        SystemHealthResponse,
+        SystemMetrics,
+        SystemStatusResponse,
+        TemplateListResponse,
+        TickerContextInfo,
+    )
+    from .prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+    from .utils.logger import (
+        get_logger,
+        log_agent_processing,
+        log_api_request,
+        log_api_response,
+        log_mcp_operation,
+    )
+except ImportError:
+    # Fallback to absolute imports (when run directly)
+    from api_models import (
+        AIModel,
+        AIModelId,
+        AnalysisType,
+        ButtonAnalysisRequest,
+        ButtonAnalysisResponse,
+        ChatAnalysisRequest,
+        ChatAnalysisResponse,
+        GeneratePromptRequest,
+        GeneratePromptResponse,
+        ModelListResponse,
+        ModelSelectionResponse,
+        PromptMode,
+        PromptTemplateInfo,
+        ResponseMetadata,
+        SystemHealthResponse,
+        SystemMetrics,
+        SystemStatusResponse,
+        TemplateListResponse,
+        TickerContextInfo,
+    )
+    from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+    from utils.logger import (
+        get_logger,
+        log_agent_processing,
+        log_api_request,
+        log_api_response,
+        log_mcp_operation,
+    )
 
 load_dotenv()
 
@@ -100,7 +132,7 @@ class ConfigSettings:
 
     def __init__(self):
         config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
-        with open(config_path) as f:
+        with open(config_path, encoding="utf-8") as f:
             self.config = json.load(f)
 
         # Backend settings
@@ -172,7 +204,7 @@ response_cache = TTLCache(maxsize=CACHE_MAX_SIZE, ttl=CACHE_TTL_SECONDS)
 cache_stats = {"hits": 0, "misses": 0, "evictions": 0, "current_size": 0}
 
 # Request tracking for logging
-active_requests = {}
+active_requests: dict[str, dict] = {}
 
 
 # Models
@@ -197,6 +229,7 @@ class ChatResponse(BaseModel):
     response: str
     success: bool = True
     error: Optional[str] = None
+    metadata: Optional[ResponseMetadata] = None
 
 
 @function_tool
@@ -463,7 +496,7 @@ async def process_financial_query(
         request_id = str(uuid.uuid4())[:8]
 
     # Use provided model or default
-    active_model = model if model else config_settings.backend["ai"]["availableModels"][0]
+    active_model = model if model else settings.available_models[0]
 
     # Extract ticker from query for cache key generation
     ticker_match = re.search(r"\b([A-Z]{1,5})\b", query.upper())
@@ -573,15 +606,25 @@ async def process_financial_query(
             # Cache the successful response
             response_text = str(final_output)
 
-            # Append model name to response
-            response_text_with_model = f"{response_text}\n\n[{active_model}]"
-            cache_response(cache_key, response_text_with_model)
+            # Create metadata for response
+            response_metadata = ResponseMetadata(
+                model=active_model,
+                timestamp=datetime.now().isoformat(),
+                response_time=f"{processing_time:.3f}s",
+                processing_time=processing_time,
+                request_id=request_id,
+            )
+
+            # Append model name, timestamp, and response time to response
+            response_text_with_metadata = f"{response_text}\n\n[{response_metadata.model}] | {response_metadata.timestamp} | {response_metadata.response_time}"
+            cache_response(cache_key, response_text_with_metadata)
 
             return {
                 "success": True,
-                "response": response_text_with_model,
+                "response": response_text_with_metadata,
                 "error": None,
                 "error_type": None,
+                "metadata": response_metadata,
             }
     except InputGuardrailTripwireTriggered as e:
         processing_time = time.time() - start_time
@@ -792,7 +835,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
         if result["success"]:
             log_api_response(logger, 200, response_time, request_id=request_id)
-            return ChatResponse(response=result["response"])
+            return ChatResponse(response=result["response"], metadata=result.get("metadata"))
 
         if result["error_type"] == "guardrail":
             response_time = time.time() - start_time

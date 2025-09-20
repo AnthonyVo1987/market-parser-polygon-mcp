@@ -9,20 +9,31 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Complete comprehensive linting and code quality improvements
+feat: migrate response time calculation from frontend to backend
 
-- Run full comprehensive linting for entire project (Python, TypeScript, JavaScript)
-- Fix all linting issues: ESLint, Pylint, Black, isort, Prettier, Mypy
-- Fix CSS syntax error in src/frontend/index.css (missing closing brace)
-- Fix TypeScript type issues and ESLint warnings across frontend components
-- Update backend main.py to use centralized configuration for model selection
-- Improve error handling and type safety in frontend hooks and components
-- Generate comprehensive test report with 100% pass rate (13/13 tests)
-- Perform comprehensive code review using modern best practices
-- Ensure all code follows current FastAPI and React/TypeScript standards
-- Maintain backward compatibility while improving code quality
+- Add ResponseMetadata Pydantic model with proper type validation
+- Update ChatResponse to use typed ResponseMetadata instead of generic dict
+- Move response time calculation from frontend to backend process_financial_query()
+- Add metadata footer to CLI output showing model, timestamp, and response time
+- Update frontend API service to return full ChatResponse object
+- Remove frontend timing calculation from ChatInterface_OpenAI.tsx
+- Update frontend components to use backend-provided response time
+- Fix import issues and add proper type annotations
+- Ensure consistent field naming between backend and frontend
 
-Resolves linting issues and enhances overall code quality and maintainability
+Backend changes:
+
+- src/backend/api_models.py: Add ResponseMetadata BaseModel
+- src/backend/main.py: Update ChatResponse model and process_financial_query()
+
+Frontend changes:
+
+- src/frontend/types/chat_OpenAI.ts: Update ResponseMetadata interface
+- src/frontend/services/api_OpenAI.ts: Return full ChatResponse object
+- src/frontend/components/ChatInterface_OpenAI.tsx: Remove frontend timing
+
+Result: CLI now shows metadata footer: [model] | timestamp | response_time
+All response time calculations now handled by backend for consistency.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## MANDATORY Tools Usage Guidance for all Task(s)

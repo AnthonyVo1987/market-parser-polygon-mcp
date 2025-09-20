@@ -292,6 +292,19 @@ class AIModelId(str, Enum):
 
     GPT_5_NANO = "gpt-5-nano"
     GPT_5_MINI = "gpt-5-mini"
+    GPT_4O = "gpt-4o"
+    GPT_4O_MINI = "gpt-4o-mini"
+
+
+class ResponseMetadata(BaseModel):
+    """Metadata for API responses including timing and model information."""
+
+    model: str
+    timestamp: str
+    response_time: str
+    processing_time: Optional[float] = None
+    request_id: Optional[str] = None
+    token_count: Optional[int] = None
 
 
 class AIModel(CustomModel):

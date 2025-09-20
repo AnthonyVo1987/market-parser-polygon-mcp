@@ -35,17 +35,17 @@ interface ChatState {
 type ChatAction =
   | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
   | {
-      type: 'SEND_MESSAGE_SUCCESS';
-      payload: { aiMessage: Message; responseTime: number };
-    }
+    type: 'SEND_MESSAGE_SUCCESS';
+    payload: { aiMessage: Message; responseTime: number };
+  }
   | {
-      type: 'SEND_MESSAGE_ERROR';
-      payload: {
-        errorMessage: string;
-        aiMessage: Message;
-        responseTime: number;
-      };
-    }
+    type: 'SEND_MESSAGE_ERROR';
+    payload: {
+      errorMessage: string;
+      aiMessage: Message;
+      responseTime: number;
+    };
+  }
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'UPDATE_TICKER'; payload: string }
   | { type: 'CLEAR_ERROR' }
@@ -275,9 +275,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         });
       });
 
-      // Start timing for response tracking
-      const startTime = Date.now();
-
       try {
         logger.group('🌐 API Request Processing');
         logger.info('Sending message to API', {
@@ -287,41 +284,46 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         });
 
         // Send to API and get response
-        const aiResponse = await sendChatMessage(messageContent, currentModel);
-        const processingTime = (Date.now() - startTime) / 1000;
+        const apiResponse = await sendChatMessage(messageContent, currentModel);
+
+        // Extract response time from backend metadata
+        const responseTime = apiResponse.metadata?.response_time
+          ? parseFloat(apiResponse.metadata.response_time.replace('s', ''))
+          : 0;
 
         logger.info('✅ API response received', {
           messageId,
-          processingTime: `${processingTime.toFixed(2)}s`,
-          responseLength: aiResponse.length,
+          processingTime: `${responseTime}s`,
+          responseLength: apiResponse.response.length,
         });
         logger.groupEnd();
 
         // Create AI message and dispatch success action
         const aiMessage: Message = {
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          content: aiResponse,
+          content: apiResponse.response,
           sender: 'ai',
           timestamp: new Date(),
-          metadata: { processingTime },
+          metadata: { processingTime: responseTime },
         };
 
         dispatch({
           type: 'SEND_MESSAGE_SUCCESS',
-          payload: { aiMessage, responseTime: processingTime },
+          payload: { aiMessage, responseTime },
         });
 
         // End performance timing
         endTiming('message_processing');
       } catch (err: unknown) {
-        const processingTime = (Date.now() - startTime) / 1000;
+        // For errors, we don't have backend response time, so use 0 as fallback
+        const responseTime = 0;
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to send message';
 
         logger.group('❌ API Request Failed');
         logger.error('API request failed', {
           messageId,
-          processingTime: `${processingTime.toFixed(2)}s`,
+          processingTime: `${responseTime}s`,
           errorType: err instanceof Error ? err.constructor.name : 'Unknown',
           errorMessage:
             errorMessage.slice(0, 200) +
@@ -335,12 +337,12 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           content: `Error: ${errorMessage}`,
           sender: 'ai',
           timestamp: new Date(),
-          metadata: { processingTime, isError: true },
+          metadata: { processingTime: responseTime, isError: true },
         };
 
         dispatch({
           type: 'SEND_MESSAGE_ERROR',
-          payload: { errorMessage, aiMessage, responseTime: processingTime },
+          payload: { errorMessage, aiMessage, responseTime },
         });
 
         // End performance timing even on error

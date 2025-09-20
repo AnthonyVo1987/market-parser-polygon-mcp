@@ -33,6 +33,7 @@ export interface ResponseMetadata {
   readonly tokenCount?: number;
   readonly model?: string;
   readonly timestamp?: string;
+  readonly response_time?: string;
 }
 
 // API Error interface with enhanced error details

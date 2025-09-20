@@ -21,7 +21,7 @@ logger.info('🌐 API service initialized', {
 export async function sendChatMessage(
   message: string,
   model?: AIModelId
-): Promise<string> {
+): Promise<ChatResponse> {
   const requestId =
     Date.now().toString() + Math.random().toString(36).substr(2, 9);
   const startTime = performance.now();
@@ -122,7 +122,7 @@ export async function sendChatMessage(
       success: data.success,
     });
 
-    return data.response;
+    return data;
   } catch (error) {
     const duration = performance.now() - startTime;
 

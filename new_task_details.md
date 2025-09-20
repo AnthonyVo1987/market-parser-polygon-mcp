@@ -15,7 +15,10 @@ Prioritize using the following Tools FIRST in any particular order to match the 
 
 ## Task Description
 
-- Remove OpenAI Models "gpt-4o" & "gpt-4o-mini" from the AI Model Selection Drop Down code.  All code and references related to the removed models also need to  be removed.  The end result is only the LATEST and greatest GPT-5 family models are supported because the 4o series is older and outdated.  All project docs need to be update to reflect the new changes.
+- Migrate the response time code that measures the AI Response time from the Frontend GUI code, to now be handled by the CLI Backend code.  Update CLI output response to now also include the response time as part of the response near the current AI Model during the response and also add the current timestamp of the response as well.
+- Expected outcome:
+CLI: Each AI response will now have the following metadata footer appended to each AI response: AI Model (existing), Timestamp, Response Time
+REACT GUI: AI Response is no effective change and will show exact output as CLI version since it does not handle the response timing anymore and the responses will still have the new footer data from the CLI code.  But the React GUI debug info component that displays the last response time needs to be updated to handle the new logic and source of where the response time value is coming from now
 
 # Code\Doc Review Task
 
