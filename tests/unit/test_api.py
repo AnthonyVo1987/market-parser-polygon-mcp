@@ -5,7 +5,6 @@ Simple functional validation following prototyping principles.
 Tests basic API health endpoint without over-engineering.
 """
 
-import os
 import sys
 from pathlib import Path
 

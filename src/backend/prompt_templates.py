@@ -61,7 +61,7 @@ class PromptTemplate:
         self,
         ticker_context: TickerContext,
         custom_instructions: Optional[str] = None,
-        mode: PromptMode = PromptMode.CONVERSATIONAL,
+        mode: PromptMode = PromptMode.CONVERSATIONAL,  # pylint: disable=unused-argument
     ) -> str:
         """Generate a complete conversational prompt using the template.
 
@@ -71,7 +71,6 @@ class PromptTemplate:
             mode: Prompt mode (unused but kept for compatibility)
         """
         # Note: mode parameter kept for backward compatibility but not used
-        del mode  # Mark as intentionally unused
 
         # Unified conversational mode for all interactions
         prompt_parts = [
@@ -187,16 +186,16 @@ class TickerExtractor:
         for company_pattern, ticker_info in self._company_patterns.items():
             match = re.search(company_pattern, text, re.IGNORECASE)
             if match:
-                context = TickerContext(
+                ticker_context = TickerContext(
                     symbol=ticker_info["ticker"],
                     company_name=ticker_info["name"],
                     sector=ticker_info.get("sector"),
                     confidence=0.8,
                     source="company_name",
                 )
-                self._update_last_mentioned(context)
+                self._update_last_mentioned(ticker_context)
                 self.logger.info(f"Extracted from company name: {ticker_info['ticker']}")
-                return context
+                return ticker_context
 
         return None
 
@@ -215,14 +214,14 @@ class TickerExtractor:
                 ticker_match = self._extract_explicit_ticker(content)
                 if ticker_match:
                     # Use context from history but with lower confidence
-                    context = TickerContext(
+                    ticker_context = TickerContext(
                         symbol=ticker_match.symbol,
                         company_name=ticker_match.company_name,
                         confidence=0.6,
                         source="context",
                     )
-                    self.logger.info(f"Extracted from context: {context.symbol}")
-                    return context
+                    self.logger.info(f"Extracted from context: {ticker_context.symbol}")
+                    return ticker_context
 
         return None
 
@@ -369,7 +368,7 @@ class PromptTemplateManager:
         chat_history: Optional[List[Dict]] = None,
         custom_instructions: Optional[str] = None,
         mode: PromptMode = PromptMode.CONVERSATIONAL,
-    ) -> Tuple[str, TickerContext]:
+    ) -> Tuple[str, TickerContext]:  # pylint: disable=too-many-arguments
         """
         Generate a unified conversational prompt for stock analysis
 
@@ -385,7 +384,7 @@ class PromptTemplateManager:
         """
         # Extract or determine ticker context
         if ticker:
-            ticker_context = TickerContext(symbol=ticker.upper(), confidence=1.0, source="explicit")
+            ticker_ctx = TickerContext(symbol=ticker.upper(), confidence=1.0, source="explicit")
         else:
             # Try to extract from conversation context
             context_text = ""
@@ -395,18 +394,18 @@ class PromptTemplateManager:
                     [msg.get("content", "") for msg in recent_messages if msg is not None]
                 )
 
-            ticker_context = self.ticker_extractor.extract_ticker(context_text, chat_history)
+            ticker_ctx = self.ticker_extractor.extract_ticker(context_text, chat_history)
 
         # Get the appropriate template
         template = self.templates[prompt_type]
 
         # Generate the prompt in specified mode
-        prompt = template.generate_prompt(ticker_context, custom_instructions, mode)
+        prompt = template.generate_prompt(ticker_ctx, custom_instructions, mode)
 
         self.logger.info(
-            f"Generated {prompt_type.value} conversational prompt for {ticker_context.symbol}"
+            f"Generated {prompt_type.value} conversational prompt for {ticker_ctx.symbol}"
         )
-        return prompt, ticker_context
+        return prompt, ticker_ctx
 
     def generate_conversational_prompt(
         self,
@@ -472,11 +471,11 @@ CONVERSATIONAL RESPONSE MODE:
             for indicator in ["snapshot", "current price", "market data", "overview"]
         ):
             return PromptType.SNAPSHOT
-        elif any(
+        if any(
             indicator in user_lower for indicator in ["support", "resistance", "levels", "s&r"]
         ):
             return PromptType.SUPPORT_RESISTANCE
-        elif any(
+        if any(
             indicator in user_lower
             for indicator in ["technical", "rsi", "macd", "indicators", "ta"]
         ):
@@ -674,11 +673,11 @@ Not financial advice."""
         prompts = []
         for ticker in test_tickers:
             try:
-                prompt, context = self.generate_prompt(prompt_type, ticker=ticker)
+                prompt, ticker_ctx = self.generate_prompt(prompt_type, ticker=ticker)
                 prompts.append(prompt)
                 results["prompts"][ticker] = {
                     "prompt": prompt,
-                    "context": context.__dict__,
+                    "context": ticker_ctx.__dict__,
                     "length": len(prompt),
                     "word_count": len(prompt.split()),
                 }
@@ -716,7 +715,7 @@ Not financial advice."""
 
 def run_prompt_consistency_tests() -> Dict[str, Any]:
     """Run comprehensive prompt consistency tests"""
-    manager = PromptTemplateManager()
+    template_manager = PromptTemplateManager()
 
     test_results = {
         "test_date": "2024-12-01",
@@ -731,7 +730,7 @@ def run_prompt_consistency_tests() -> Dict[str, Any]:
     total_score = 0.0
 
     for prompt_type in PromptType:
-        results = manager.test_prompt_consistency(prompt_type, test_tickers)
+        results = template_manager.test_prompt_consistency(prompt_type, test_tickers)
         test_results["results_by_type"][prompt_type.value] = results
         total_score += results["consistency_score"]
 
@@ -759,7 +758,7 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
     """Validate that templates are compatible with response parsing"""
     # Note: response_parser module not available - simplified validation
 
-    manager = PromptTemplateManager()
+    template_manager = PromptTemplateManager()
 
     validation_results = {
         "template_compatibility": {},
@@ -769,7 +768,7 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
 
     # Test each template type (simplified without parser dependency)
     for prompt_type in PromptType:
-        template = manager.templates[prompt_type]
+        template = template_manager.templates[prompt_type]
         example_response = template.example_response
 
         try:
@@ -819,7 +818,7 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
 
 def test_dual_mode_behavior() -> Dict[str, Any]:
     """Test dual-mode prompt generation behavior"""
-    manager = PromptTemplateManager()
+    template_manager = PromptTemplateManager()
 
     test_results = {
         "dual_mode_tests": {},
@@ -832,7 +831,7 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
     for prompt_type in PromptType:
         try:
             # Test conversational mode (unified architecture)
-            conv_prompt, _conv_context = manager.generate_prompt(
+            conv_prompt, _ticker_ctx = template_manager.generate_prompt(
                 prompt_type, ticker="AAPL", mode=PromptMode.CONVERSATIONAL
             )
 
@@ -869,7 +868,7 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
     # Test system prompt enhancement (conversational mode)
     base_prompt = "You are a financial analyst."
 
-    conv_enhanced = manager.get_enhanced_system_prompt(base_prompt)
+    conv_enhanced = template_manager.get_enhanced_system_prompt(base_prompt)
 
     test_results["system_prompt_tests"] = {
         "conversational_mode_different": conv_enhanced != base_prompt,
@@ -907,16 +906,16 @@ if __name__ == "__main__":
 
     # Test example generation in unified conversational mode
     print("\n📝 Testing Unified Conversational Prompt Generation")
-    manager = PromptTemplateManager()
+    template_manager = PromptTemplateManager()
 
     for prompt_type in PromptType:
         try:
             # Test unified conversational mode
-            conv_prompt, context = manager.generate_prompt(prompt_type, ticker="AAPL")
+            conv_prompt, ticker_ctx = template_manager.generate_prompt(prompt_type, ticker="AAPL")
 
             print(f"✅ {prompt_type.value}:")
             print(f"   Conversational mode: {len(conv_prompt)} chars")
-            print(f"   Context: {context.symbol} (source: {context.source})")
+            print(f"   Context: {ticker_ctx.symbol} (source: {ticker_ctx.source})")
 
         except Exception as e:
             print(f"❌ {prompt_type.value}: Failed - {e}")

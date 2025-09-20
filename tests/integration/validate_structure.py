@@ -99,7 +99,11 @@ def validate_smoke_tests():
             # Try to run the test (dry run)
             try:
                 result = subprocess.run(
-                    [sys.executable, str(test_path)], capture_output=True, text=True, timeout=30, check=False
+                    [sys.executable, str(test_path)],
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                    check=False,
                 )
 
                 if "smoke tests" in result.stdout:

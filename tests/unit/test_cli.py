@@ -23,7 +23,11 @@ def test_cli_help():
 
         # Run CLI with --help flag
         result = subprocess.run(
-            [sys.executable, str(cli_path), "--help"], capture_output=True, text=True, timeout=10, check=False
+            [sys.executable, str(cli_path), "--help"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
         )
 
         if result.returncode == 0:

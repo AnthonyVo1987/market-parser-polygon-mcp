@@ -164,8 +164,8 @@ class Settings:
         self.reports_directory: str = config_settings.backend["agent"]["reportsDirectory"]
 
         # CORS configuration from config file
-        cors_origins = config_settings.backend["security"]["cors"]["origins"]
-        self.cors_origins: str = ",".join(cors_origins)
+        cors_origins_list = config_settings.backend["security"]["cors"]["origins"]
+        self.cors_origins: str = ",".join(cors_origins_list)
 
         # Available models from config file
         self.available_models: List[str] = config_settings.backend["ai"]["availableModels"]
@@ -326,7 +326,7 @@ def get_cached_response(cache_key: str) -> Optional[str]:
         cache_stats["misses"] += 1
         cache_stats["current_size"] = len(response_cache)
         return None
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error(f"Cache retrieval error: {e}")
         cache_stats["misses"] += 1
         return None
@@ -470,7 +470,7 @@ def print_guardrail_error(exception):
 async def process_financial_query(
     query: str,
     session: SQLiteSession,
-    server,
+    server,  # pylint: disable=unused-argument
     request_id: Optional[str] = None,
     model: Optional[str] = None,
 ) -> dict:
@@ -479,9 +479,9 @@ async def process_financial_query(
     Args:
         query: The user's query
         session: SQLite session for database operations
-    server: MCP server instance
-    request_id: Optional request ID for tracking
-    model: Optional AI model to use (defaults to first available model from config)
+        server: MCP server instance
+        request_id: Optional request ID for tracking
+        model: Optional AI model to use (defaults to first available model from config)
 
     Returns:
         dict: {
@@ -655,7 +655,7 @@ async def process_financial_query(
             "error": error_msg,
             "error_type": "guardrail",
         }
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         processing_time = time.time() - start_time
         log_agent_processing(
             logger,
@@ -703,7 +703,8 @@ async def lifespan(app: FastAPI):
         # Initialize MCP server
         mcp_start = time.time()
         shared_mcp_server = create_polygon_mcp_server()
-        await shared_mcp_server.__aenter__()
+        async with shared_mcp_server:
+            pass  # Context manager handles initialization
         mcp_time = time.time() - mcp_start
         log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
 

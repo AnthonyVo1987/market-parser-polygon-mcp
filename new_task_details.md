@@ -15,10 +15,10 @@ Prioritize using the following Tools FIRST in any particular order to match the 
 
 ## Task Description
 
-- Migrate the response time code that measures the AI Response time from the Frontend GUI code, to now be handled by the CLI Backend code.  Update CLI output response to now also include the response time as part of the response near the current AI Model during the response and also add the current timestamp of the response as well.
-- Expected outcome:
-CLI: Each AI response will now have the following metadata footer appended to each AI response: AI Model (existing), Timestamp, Response Time
-REACT GUI: AI Response is no effective change and will show exact output as CLI version since it does not handle the response timing anymore and the responses will still have the new footer data from the CLI code.  But the React GUI debug info component that displays the last response time needs to be updated to handle the new logic and source of where the response time value is coming from now
+- Re-run full Lint, Pylint, ESLint and fix all issues. Re-install\Download any dependencies if needed to run the full lint because we are currently setting up a new development PC, so not all tools and dependncies may be setup\config correctly yet
+- Expected Outcome is all LINT issues fix
+- You can review commit 'e192ee7f4555cda027d557f2c11a119f1b31bd16' for the most recent full Lint run that was performed on the previous development environment to see that linting is fully supported and ran before as long as we have everything configured correctly
+- If you hit "sudo" issues where it needs my password, you need to pause and then ask me for the password and wait until i install it with the password if needed
 
 # Code\Doc Review Task
 

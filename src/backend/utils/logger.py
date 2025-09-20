@@ -5,7 +5,6 @@ Provides essential error logging only for performance optimization.
 """
 
 import logging
-import os
 from typing import Optional
 
 
@@ -43,22 +42,22 @@ def get_logger(name: str) -> logging.Logger:
 
 # Minimal helper functions for backward compatibility
 def log_api_request(
-    logger,
-    method: str,
-    endpoint: str,
-    user_message: Optional[str] = None,
-    request_id: Optional[str] = None,
+    logger,  # pylint: disable=unused-argument
+    method: str,  # pylint: disable=unused-argument
+    endpoint: str,  # pylint: disable=unused-argument
+    user_message: Optional[str] = None,  # pylint: disable=unused-argument
+    request_id: Optional[str] = None,  # pylint: disable=unused-argument
 ):
     """Minimal API request logging - errors only."""
-    pass  # No-op for performance
+    # No-op for performance
 
 
 def log_api_response(
     logger,
     status_code: int,
     response_time: float,
-    token_count: Optional[int] = None,
-    request_id: Optional[str] = None,
+    token_count: Optional[int] = None,  # pylint: disable=unused-argument
+    request_id: Optional[str] = None,  # pylint: disable=unused-argument
 ):
     """Minimal API response logging - errors only."""
     if status_code >= 400:
@@ -66,13 +65,17 @@ def log_api_response(
 
 
 def log_mcp_operation(
-    logger, operation: str, duration: float, success: bool, error_message: Optional[str] = None
+    logger, operation: str, duration: float, success: bool, error_message: Optional[str] = None  # pylint: disable=unused-argument
 ):
     """Minimal MCP operation logging - errors only."""
     if not success:
         logger.error(f"MCP Operation failed: {operation} - {error_message}")
 
 
-def log_agent_processing(logger, step: str, details=None):
+def log_agent_processing(
+    logger,  # pylint: disable=unused-argument
+    step: str,  # pylint: disable=unused-argument
+    details=None,  # pylint: disable=unused-argument
+):
     """Minimal agent processing logging - errors only."""
-    pass  # No-op for performance
+    # No-op for performance
