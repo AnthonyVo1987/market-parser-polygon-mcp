@@ -28,7 +28,7 @@ npm run start:app:xterm
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
 - **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
 - Opens each server in a separate terminal window for easy monitoring
-- Uses consistent hard-coded ports (no dynamic allocation)
+- Uses consistent ports from centralized configuration (no dynamic allocation)
 
 ### ✅ Health Verification
 - Performs health checks on both servers
@@ -58,13 +58,12 @@ npm run start:app:xterm
 
 ## Configuration
 
-The scripts use **hard-coded configuration** for consistency:
+The scripts use **centralized configuration** from `config/app.config.json` for consistency:
 
 ```bash
-BACKEND_HOST="127.0.0.1"
-BACKEND_PORT="8000"
-FRONTEND_HOST="127.0.0.1"
-FRONTEND_PORT="3000"
+# Configuration is loaded from config/app.config.json
+# Backend: 127.0.0.1:8000
+# Frontend: 127.0.0.1:3000
 ```
 
 This ensures:
@@ -72,6 +71,7 @@ This ensures:
 - ✅ Consistent development environment
 - ✅ Cloud deployment compatibility
 - ✅ Easy troubleshooting
+- ✅ Single source of truth for configuration
 
 ## Requirements
 

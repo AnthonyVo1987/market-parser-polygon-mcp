@@ -75,6 +75,7 @@ curl -f http://localhost:3003/ || echo "❌ FRONTEND FAILED - STOP ALL TESTING"
 
 # Manual Browser Verification
 # Open http://localhost:[VITE_PORT]/ - must load React application successfully
+# Note: Port configuration is now centralized in config/app.config.json
 ```
 
 #### Server Startup Validation Checklist

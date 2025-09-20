@@ -9,20 +9,20 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Complete environment variable migration to centralized configuration
+docs: Update all documentation to reflect centralized configuration migration
 
-- Create config/app.config.json with all non-sensitive configuration settings
-- Update backend main.py to load configuration from JSON file instead of hardcoded values
-- Remove openai_model from Settings class - AI Model Selector manages model selection
-- Create frontend config loader utility to read from config/app.config.json
-- Update vite.config.ts to use configuration values from JSON file
-- Update frontend components to use config values instead of import.meta.env
-- Clean up .env file to contain only API keys (POLYGON_API_KEY, OPENAI_API_KEY, etc.)
-- Delete .env.development, .env.production, .env.staging files
-- Update .env.example to show only API key format
-- Consolidate all non-sensitive settings into single searchable configuration file
+- Update README.md to reference config/app.config.json for non-sensitive settings
+- Update START_SCRIPT_README.md to reflect centralized configuration approach
+- Update GEMINI.md to reference centralized configuration instead of hard-coded values
+- Update docs/development/DEVELOPMENT_WORKFLOW.md with new project structure
+- Update docs/development/STRUCTURE.md to include config/ directory and guidelines
+- Update docs/implementation_plans/ai_model_selector_implementation.md with new config approach
+- Update tests/unit/test_api.py to remove outdated VITE_API_URL references
+- Update tests/mcp/README.md to reference centralized port configuration
+- Ensure all documentation is consistent with environment variable migration
+- Remove references to multiple .env files and hardcoded configuration values
 
-Resolves environment variable migration and prepares application for cloud deployment
+Resolves documentation inconsistencies and ensures all docs reflect current implementation
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## MANDATORY Tools Usage Guidance for all Task(s)

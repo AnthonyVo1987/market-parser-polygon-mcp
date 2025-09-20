@@ -34,6 +34,8 @@ A Python CLI and React web application for natural language financial queries us
    # OPENAI_API_KEY=your_openai_key_here
    ```
 
+   **Note:** All non-sensitive configuration is now centralized in `config/app.config.json`. Only API keys are stored in `.env`.
+
 **One-Click Application Startup (Recommended):**
 
 The startup scripts automatically manage all development servers and **open the application in your browser**.
@@ -80,7 +82,7 @@ npm run start:app:xterm    # XTerm version
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
 - **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
 - Opens each server in a separate terminal window for easy monitoring
-- Uses consistent hard-coded ports (no dynamic allocation)
+- Uses consistent ports from centralized configuration (no dynamic allocation)
 
 ### ✅ Health Verification
 
@@ -179,7 +181,10 @@ src/
 │   └── prompt_templates.py # Analysis templates
 ├── frontend/            # React frontend
 │   ├── components/      # React components
-│   └── hooks/          # Custom hooks
+│   ├── hooks/          # Custom hooks
+│   └── config/         # Configuration loader
+config/                  # Centralized configuration
+│   └── app.config.json # Non-sensitive settings
 tests/playwright/        # E2E test suite
 ```
 

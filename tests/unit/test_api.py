@@ -18,10 +18,8 @@ def test_api_health():
         # Default API URL
         api_url = "http://localhost:8000"
 
-        # Check for custom API URL from environment
-        env_api_url = os.getenv("VITE_API_URL")
-        if env_api_url:
-            api_url = env_api_url
+        # Note: API URL is now centralized in config/app.config.json
+        # Environment variables are only used for API keys
 
         health_url = f"{api_url}/health"
 

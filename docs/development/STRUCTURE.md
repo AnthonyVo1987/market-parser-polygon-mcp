@@ -36,6 +36,8 @@ src/frontend/
 ├── components/                  # React components
 ├── hooks/                      # Custom React hooks
 ├── types/                      # TypeScript type definitions
+├── config/                     # Configuration loader
+│   └── config.loader.ts       # Centralized config access
 └── App.tsx                     # Main application component
 ```
 
@@ -44,6 +46,24 @@ src/frontend/
 - TypeScript for type safety
 - Responsive design for multiple devices
 - PWA capabilities enabled
+
+### Configuration Management (`config/`)
+
+**Purpose**: Centralized configuration for all non-sensitive application settings.
+
+```
+config/
+└── app.config.json             # Centralized configuration file
+    ├── backend/                # Backend server and AI settings
+    ├── frontend/               # Frontend server and feature settings
+    └── security/               # Security and CORS configuration
+```
+
+**Guidelines:**
+- All non-sensitive settings centralized in JSON format
+- API keys remain in `.env` file for security
+- Configuration is version-controlled and searchable
+- Supports cloud deployment with consistent settings
 
 ### Testing Infrastructure (`tests/`)
 

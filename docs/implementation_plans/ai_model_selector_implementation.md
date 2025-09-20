@@ -12,22 +12,25 @@ This document outlines the implementation plan for adding an AI Model Selector d
 
 ```python
 class Settings:
-    """Application configuration with hard-coded server configuration."""
+    """Application configuration with centralized JSON configuration."""
     
     def __init__(self):
         # Load environment settings for API keys
         env_settings = EnvironmentSettings()
+        
+        # Load configuration from JSON file
+        config_settings = ConfigSettings()
 
-        # Hard-coded server configuration (no environment variable override)
-        self.fastapi_host: str = "127.0.0.1"  # Hard-coded localhost for security
-        self.fastapi_port: int = 8000  # Hard-coded port
+        # Server configuration from config file
+        self.fastapi_host: str = config_settings.backend["server"]["host"]
+        self.fastapi_port: int = config_settings.backend["server"]["port"]
 
         # API Keys from environment
         self.polygon_api_key: str = env_settings.polygon_api_key
         self.openai_api_key: str = env_settings.openai_api_key
 
-        # Hard-coded application configuration
-        self.mcp_timeout_seconds: float = 120.0
+        # Application configuration from config file
+        self.mcp_timeout_seconds: float = config_settings.backend["mcp"]["timeoutSeconds"]
         self.openai_model: str = "gpt-5-nano"  # Changed from gpt-5-mini
         self.agent_session_name: str = "finance_conversation"
 

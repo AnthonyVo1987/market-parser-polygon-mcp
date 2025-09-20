@@ -240,7 +240,7 @@ OPENAI_GPT5_MINI_INPUT_PRICE_PER_1M=0.25
 OPENAI_GPT5_MINI_OUTPUT_PRICE_PER_1M=2.00
 ```
 
-Server configuration is hard-coded (not configurable via environment):
+Server configuration is centralized in `config/app.config.json` (not configurable via environment):
 
 - Backend: 127.0.0.1:8000
 - Frontend Dev: 127.0.0.1:3000

@@ -9,7 +9,7 @@ This document outlines the unified code quality workflow for the Market Parser p
 # One-click startup (recommended)
 npm run start:app
 
-# Static server configuration:
+# Server configuration from config/app.config.json:
 # Backend: http://127.0.0.1:8000
 # Frontend: http://127.0.0.1:3000
 ```
@@ -45,7 +45,9 @@ market-parser-polygon-mcp/
 ├── package.json                 # Unified npm scripts and dependencies
 ├── pyproject.toml              # Python project configuration
 ├── start-app.sh                # One-click application startup
-└── .env.example                # Environment configuration template
+├── .env.example                # API keys template
+├── config/                     # Centralized configuration
+│   └── app.config.json        # Non-sensitive settings
 ```
 
 ## Code Quality Tools
