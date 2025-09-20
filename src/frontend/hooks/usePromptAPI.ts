@@ -7,8 +7,9 @@ import {
   PROMPT_API_ENDPOINTS,
   isValidPromptTemplate,
 } from '../types/chat_OpenAI';
+import { getAPIBaseURL } from '../config/config.loader';
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
+const API_BASE_URL = getAPIBaseURL();
 
 // Cache for template data to avoid unnecessary API calls
 const templateCache = {

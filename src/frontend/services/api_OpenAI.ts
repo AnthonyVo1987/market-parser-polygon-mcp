@@ -1,15 +1,16 @@
 import { AIModelId, MODEL_API_ENDPOINTS, ModelListResponse, ModelSelectionResponse } from '../types/ai_models';
 import { ApiError, ChatResponse } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
+import { getAPIBaseURL, isDevelopment } from '../config/config.loader';
 
 // Force use of Vite proxy instead of direct localhost connection
-const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || '/api';
+const API_BASE_URL = getAPIBaseURL();
 
 // Initialize API service logging
 logger.info('🌐 API service initialized', {
   service: 'api_OpenAI',
   baseUrl: API_BASE_URL,
-  environment: import.meta.env.MODE
+  environment: isDevelopment() ? 'development' : 'production'
 });
 
 export async function sendChatMessage(message: string, model?: AIModelId): Promise<string> {

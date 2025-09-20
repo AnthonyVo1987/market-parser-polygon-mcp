@@ -7,6 +7,7 @@ Markdown reports in the `reports/` directory.
 """
 
 import asyncio
+import json
 import os
 import re
 import time
@@ -95,36 +96,65 @@ class EnvironmentSettings(BaseSettings):
         extra = "ignore"
 
 
+class ConfigSettings:
+    """Configuration settings loaded from config/app.config.json."""
+
+    def __init__(self):
+        config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
+        with open(config_path) as f:
+            self.config = json.load(f)
+        
+        # Backend settings
+        self.backend = self.config["backend"]
+        self.frontend = self.config["frontend"]
+
+
 class Settings:
-    """Application configuration with hard-coded server configuration."""
+    """Application configuration with JSON-based configuration."""
 
     def __init__(self):
         # Load environment settings for API keys
         env_settings = EnvironmentSettings()
+        
+        # Load configuration from JSON file
+        config_settings = ConfigSettings()
 
-        # Hard-coded server configuration (no environment variable override)
-        self.fastapi_host: str = "127.0.0.1"  # Hard-coded localhost for security
-        self.fastapi_port: int = 8000  # Hard-coded port
+        # Server configuration from config file
+        self.fastapi_host: str = config_settings.backend["server"]["host"]
+        self.fastapi_port: int = config_settings.backend["server"]["port"]
 
         # API Keys from environment
         self.polygon_api_key: str = env_settings.polygon_api_key
         self.openai_api_key: str = env_settings.openai_api_key
 
-        # Hard-coded application configuration
-        self.mcp_timeout_seconds: float = 120.0
-        self.openai_model: str = "gpt-5-nano"  # Changed from gpt-5-mini
-        self.agent_session_name: str = "finance_conversation"
-
-        # Hard-coded CORS configuration
-        self.cors_origins: str = "http://127.0.0.1:3000"
-
-        # Add available models list
-        self.available_models: List[str] = [
-            "gpt-5-nano",
-            "gpt-5-mini",
-            "gpt-4o",
-            "gpt-4o-mini"
-        ]
+        # Application configuration from config file
+        self.mcp_timeout_seconds: float = config_settings.backend["mcp"]["timeoutSeconds"]
+        self.agent_session_name: str = config_settings.backend["agent"]["sessionName"]
+        self.reports_directory: str = config_settings.backend["agent"]["reportsDirectory"]
+        
+        # CORS configuration from config file
+        cors_origins = config_settings.backend["security"]["cors"]["origins"]
+        self.cors_origins: str = ",".join(cors_origins)
+        
+        # Available models from config file
+        self.available_models: List[str] = config_settings.backend["ai"]["availableModels"]
+        
+        # AI configuration from config file
+        self.max_context_length: int = config_settings.backend["ai"]["maxContextLength"]
+        self.ai_pricing: dict = config_settings.backend["ai"]["pricing"]
+        
+        # Security configuration from config file
+        self.enable_rate_limiting: bool = config_settings.backend["security"]["enableRateLimiting"]
+        self.rate_limit_rpm: int = config_settings.backend["security"]["rateLimitRPM"]
+        
+        # Logging configuration from config file
+        self.log_mode: str = config_settings.backend["logging"]["mode"]
+        
+        # MCP configuration from config file
+        self.polygon_mcp_version: str = config_settings.backend["mcp"]["version"]
+        
+        # Frontend configuration from config file
+        self.frontend_config = config_settings.frontend
 
 
 # Initialize settings
@@ -627,7 +657,7 @@ async def lifespan(app: FastAPI):
         "🚀 FastAPI application startup initiated - host: %s, port: %s, model: %s, session: %s",
         settings.fastapi_host,
         settings.fastapi_port,
-        settings.openai_model,
+        settings.available_models[0],
         settings.agent_session_name,
     )
 
@@ -766,8 +796,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     try:
         # Use shared instances instead of creating new ones
-        # Use provided model or default
-        active_model = request.model if request.model else settings.openai_model
+        # Use provided model or default to first available model
+        active_model = request.model if request.model else settings.available_models[0]
         result = await process_financial_query(
             stripped_message, shared_session, shared_mcp_server, request_id, active_model
         )
@@ -930,7 +960,7 @@ async def get_button_analysis(analysis_type: AnalysisType, request: ButtonAnalys
         query = query_templates[analysis_type]
 
         # Use shared instances instead of creating new ones
-        result = await process_financial_query(query, shared_session, shared_mcp_server, None, settings.openai_model)
+        result = await process_financial_query(query, shared_session, shared_mcp_server, None, settings.available_models[0])
 
         if result["success"]:
             return ButtonAnalysisResponse(
@@ -1003,7 +1033,7 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
 
         # Use shared instances instead of creating new ones
         result = await process_financial_query(
-            request.message.strip(), shared_session, shared_mcp_server, None, settings.openai_model
+            request.message.strip(), shared_session, shared_mcp_server, None, settings.available_models[0]
         )
 
         if result["success"]:
@@ -1224,7 +1254,7 @@ async def get_available_models():
 
         return ModelListResponse(
             models=models,
-            current_model=AIModelId(settings.openai_model),
+            current_model=AIModelId(settings.available_models[0]),
             total_count=len(models)
         )
     except Exception as e:
@@ -1257,14 +1287,13 @@ async def select_model(
 ):
     """Select an AI model for use"""
     try:
-        previous_model = settings.openai_model
-        settings.openai_model = model_id.value
-
+        # Note: Model selection is now managed by the AI Model Selector feature
+        # This endpoint is kept for backward compatibility but doesn't change global settings
         return ModelSelectionResponse(
             success=True,
-            message=f"Successfully switched from {previous_model} to {model_id.value}",
+            message=f"Model {model_id.value} selected for this request",
             selected_model=model_id,
-            previous_model=AIModelId(previous_model) if previous_model != model_id.value else None
+            previous_model=None
         )
     except Exception as e:
         raise HTTPException(
@@ -1351,7 +1380,7 @@ async def cli_async():
                         continue
 
                     # Use the shared processing function
-                    result = await process_financial_query(user_input, session, server, None, settings.openai_model)
+                    result = await process_financial_query(user_input, session, server, None, settings.available_models[0])
                     print("\r", end="")
 
                     if result["success"]:

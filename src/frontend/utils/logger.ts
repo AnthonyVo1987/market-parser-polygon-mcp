@@ -14,6 +14,8 @@
  *   logger.groupEnd();
  */
 
+import { isDevelopment, isDebugMode } from '../config/config.loader';
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export type LogMode = 'DEBUG' | 'PRODUCTION' | 'NONE';
 
@@ -53,7 +55,7 @@ class FrontendLogger {
   
 
   constructor() {
-    this.isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
+    this.isDevelopment = isDevelopment();
 
     // Initialize log mode from localStorage, default to NONE
     const storedLogMode = localStorage.getItem('console_log_mode') as LogMode;
@@ -91,7 +93,7 @@ class FrontendLogger {
 
     if (this.isDevelopment) {
       this.info('🚀 Frontend logger initialized', {
-        environment: import.meta.env.MODE,
+        environment: isDevelopment() ? 'development' : 'production',
         debugMode: this.isDebugMode,
         logMode: this.logMode,
         timestamp: new Date().toISOString()
@@ -396,7 +398,7 @@ class FrontendLogger {
   exportLogs(): void {
     const logs = {
       exported_at: new Date().toISOString(),
-      environment: import.meta.env.MODE,
+      environment: isDevelopment() ? 'development' : 'production',
       debug_mode: this.isDebugMode,
       buffer: this.logBuffer,
       performance_metrics: Array.from(this.performanceMetrics.entries())
@@ -533,7 +535,7 @@ export const loggers = {
 };
 
 // Add debugging helpers to window in development
-if (import.meta.env.DEV) {
+if (isDebugMode()) {
   (window as Record<string, unknown>).__logger = logger;
   (window as Record<string, unknown>).__loggers = loggers;
 }

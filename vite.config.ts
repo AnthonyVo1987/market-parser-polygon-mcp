@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { config } from './src/frontend/config/config.loader'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -90,12 +91,12 @@ export default defineConfig(({ command, mode }) => {
         },
         // Development options
         devOptions: {
-          enabled: isDevelopment,
+          enabled: config.frontend.features.pwa && isDevelopment,
           type: 'module'
         }
       }),
       // Bundle analysis - environment-aware configuration
-      (env.ANALYZE || isProduction) && visualizer({
+      (env.ANALYZE || config.frontend.development.bundleAnalyzer) && visualizer({
         filename: 'dist/bundle-analysis.html',
         open: !isBuild, // Only auto-open in development
         gzipSize: true,
@@ -107,9 +108,9 @@ export default defineConfig(({ command, mode }) => {
     ].filter(Boolean),
     // Development server configuration (only applies in dev mode)
     server: {
-      host: '127.0.0.1',
-      port: 3000,
-      strictPort: true, // Fail if port 3000 is busy, no dynamic port allocation
+      host: config.frontend.server.host,
+      port: config.frontend.server.port,
+      strictPort: true, // Fail if port is busy, no dynamic port allocation
       // Enable CORS for root-level development and cross-origin requests
       cors: true,
       // Phase 1: Server warmup optimization for faster cold starts
@@ -119,12 +120,12 @@ export default defineConfig(({ command, mode }) => {
       // Phase 1: Static proxy configuration for backend integration
       proxy: {
         '/api': {
-          target: 'http://127.0.0.1:8000',
+          target: `http://${config.backend.server.host}:${config.backend.server.port}`,
           changeOrigin: true,
           secure: false
         },
         '/chat': {
-          target: 'http://127.0.0.1:8000',
+          target: `http://${config.backend.server.host}:${config.backend.server.port}`,
           changeOrigin: true,
           secure: false
         }
@@ -147,7 +148,7 @@ export default defineConfig(({ command, mode }) => {
       },
 
       // Source map configuration based on environment
-      sourcemap: isProduction ? 'hidden' : true, // Hidden in production, full in development
+      sourcemap: isProduction ? 'hidden' : config.frontend.development.sourceMap, // Use config for source maps
 
       // Build output to root dist directory
       outDir: 'dist',
@@ -232,10 +233,10 @@ export default defineConfig(({ command, mode }) => {
       __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
       __IS_PRODUCTION__: JSON.stringify(isProduction),
       // Environment-specific build information
-      __APP_ENV__: JSON.stringify(env.VITE_APP_ENV || mode),
-      __API_URL__: JSON.stringify('http://127.0.0.1:8000'),
-      __PWA_ENABLED__: JSON.stringify(env.VITE_PWA_ENABLED === 'true'),
-      __DEBUG_MODE__: JSON.stringify(env.VITE_DEBUG_MODE === 'true')
+      __APP_ENV__: JSON.stringify(config.frontend.features.appEnv),
+      __API_URL__: JSON.stringify(`http://${config.backend.server.host}:${config.backend.server.port}`),
+      __PWA_ENABLED__: JSON.stringify(config.frontend.features.pwa),
+      __DEBUG_MODE__: JSON.stringify(config.frontend.features.debugMode)
     }
   }
 })

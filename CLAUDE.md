@@ -9,17 +9,20 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Fix AI Model Selector integration and create environment migration plan
+feat: Complete environment variable migration to centralized configuration
 
-- Fix API field name mismatches (snake_case vs camelCase) in frontend types
-- Update useAIModel hook to handle race conditions and correct field mapping
-- Fix API request format for model selection (query param vs body)
-- Add /chat proxy rule to vite.config.ts for proper backend routing
-- Update .env.development to use /api proxy instead of direct localhost
-- Create comprehensive environment variable migration plan in new_task_plan.md
-- Document API routing fixes and configuration consolidation strategy
+- Create config/app.config.json with all non-sensitive configuration settings
+- Update backend main.py to load configuration from JSON file instead of hardcoded values
+- Remove openai_model from Settings class - AI Model Selector manages model selection
+- Create frontend config loader utility to read from config/app.config.json
+- Update vite.config.ts to use configuration values from JSON file
+- Update frontend components to use config values instead of import.meta.env
+- Clean up .env file to contain only API keys (POLYGON_API_KEY, OPENAI_API_KEY, etc.)
+- Delete .env.development, .env.production, .env.staging files
+- Update .env.example to show only API key format
+- Consolidate all non-sensitive settings into single searchable configuration file
 
-Resolves AI Model Selector functionality and prepares for cloud deployment
+Resolves environment variable migration and prepares application for cloud deployment
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## MANDATORY Tools Usage Guidance for all Task(s)
