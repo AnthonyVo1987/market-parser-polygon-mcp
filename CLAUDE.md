@@ -9,36 +9,29 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: comprehensive linting and code review with response time migration
+fix: revert MCP server initialization to restore chat functionality
 
-- Complete comprehensive linting and code review using Serena and Context7 tools
-- Fix all Pylint warnings and ESLint issues across Python and TypeScript codebases
-- Achieve Pylint score of 9.82/10 with proper error handling and type annotations
-- Resolve import issues, unused variables, and code quality violations
-- Implement proper pylint disable comments for intentionally unused parameters
-- Fix redefined variable names and unnecessary elif statements
-- Remove unused imports and optimize code structure
-- Maintain strong type safety across backend and frontend
-- Ensure consistent error handling patterns throughout codebase
+- Revert MCP server initialization from context manager back to direct __aenter__() call
+- Fix "Agent error: Server not initialized. Make sure you call `connect()` first." error
+- Restore proper MCP server connection and keep-alive functionality
+- Resolve chat endpoint 500 Internal Server Error caused by lint fix regression
 
-Linting improvements:
+Technical details:
 
-- src/backend/main.py: Fix import handling, type annotations, and error suppression
-- src/backend/api_models.py: Add proper model validation and type hints
-- src/backend/prompt_templates.py: Resolve variable naming conflicts and argument counts
-- src/backend/utils/logger.py: Remove unused imports and optimize function signatures
-- src/frontend/: All TypeScript/React code passes ESLint validation
-- tests/unit/test_api.py: Clean up unused imports
+- src/backend/main.py: Revert lifespan function MCP server initialization
+- Change from `async with shared_mcp_server: pass` back to `await shared_mcp_server.__aenter__()`
+- Maintain proper MCP server connection throughout application lifetime
+- Ensure chat functionality works correctly with AI agent system
 
-Code quality metrics:
+Root cause analysis:
 
-- Pylint Score: 9.82/10 (excellent)
-- ESLint: All issues resolved
-- TypeScript: Strong type safety maintained
-- React: Follows best practices and performance patterns
+- Previous lint fix incorrectly changed MCP server initialization method
+- Context manager approach (`async with`) initializes but immediately closes connection
+- Direct `__aenter__()` call properly initializes and maintains connection
+- Chat endpoint requires persistent MCP server connection for AI agent processing
 
-Result: Codebase now meets high quality standards with comprehensive error handling,
-proper type annotations, and optimized performance patterns.
+Result: Chat functionality restored, AI agent system working correctly,
+all E2E tests passing with proper MCP server integration.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## MANDATORY Tools Usage Guidance for all Task(s)

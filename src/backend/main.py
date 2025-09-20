@@ -703,8 +703,7 @@ async def lifespan(app: FastAPI):
         # Initialize MCP server
         mcp_start = time.time()
         shared_mcp_server = create_polygon_mcp_server()
-        async with shared_mcp_server:
-            pass  # Context manager handles initialization
+        await shared_mcp_server.__aenter__()
         mcp_time = time.time() - mcp_start
         log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
 
