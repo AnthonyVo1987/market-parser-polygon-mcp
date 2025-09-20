@@ -153,6 +153,7 @@ Playwright_Tools_Test_Report__YY-MM-DD_hh-mm.md
 ```
 
 **⚠️ NAMING CONVENTION REQUIREMENTS:**
+
 - **Format**: Use **DOUBLE UNDERSCORE** between "Report" and date
 - **Example**: `Playwright_Tools_Test_Report__25-09-19_18-47.md`
 - **MUST** follow this exact format for consistency
