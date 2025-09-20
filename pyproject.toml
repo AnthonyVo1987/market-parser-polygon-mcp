@@ -18,6 +18,7 @@ dependencies = [
   "uvicorn[standard]",
   "cachetools>=6.2.0",
   "aiofiles>=24.1.0",
+  "python-lsp-server[all]>=1.13.1",
 ]
 
 [build-system]

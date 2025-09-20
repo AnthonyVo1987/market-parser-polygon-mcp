@@ -128,37 +128,32 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     sleep 2
 done
 
-# Step D: Launch browser if servers are ready
+# Step D: Confirm servers are ready and provide manual launch instructions
 if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
     echo ""
     echo "🎉 All servers are running successfully!"
-    echo "🌐 Opening application in browser..."
-    
-    # Open browser with cross-platform support
-    if command -v xdg-open >/dev/null 2>&1; then
-        # Linux
-        xdg-open "${FRONTEND_URL}" 2>/dev/null &
-    elif command -v open >/dev/null 2>&1; then
-        # macOS
-        open "${FRONTEND_URL}" 2>/dev/null &
-    elif command -v start >/dev/null 2>&1; then
-        # Windows (WSL)
-        start "${FRONTEND_URL}" 2>/dev/null &
-    else
-        echo "⚠️ Could not automatically open browser. Please manually navigate to:"
-        echo "   ${FRONTEND_URL}"
-    fi
-    
-    sleep 2  # Give browser time to open
-    
     echo ""
-    echo "✨ Application started successfully!"
-    echo "📊 Backend API: ${BACKEND_URL}"
-    echo "🌐 Frontend UI: ${FRONTEND_URL}"
+    echo "⚠️  IMPORTANT: Both servers are now running in separate terminal windows"
+    echo "   • Backend Server: Running in one terminal window"
+    echo "   • Frontend Server: Running in another terminal window"
     echo ""
-    echo "💡 Tip: Keep both terminal windows open to see server logs"
-    echo "🛑 To stop servers: Close both terminal windows or use Ctrl+C in each"
+    echo "🔴 CRITICAL: BOTH servers MUST remain running for the app to work!"
+    echo "   • Keep both terminal windows open at all times"
+    echo "   • Do NOT close the terminal windows while using the app"
+    echo "   • To stop servers: Close both terminal windows or use Ctrl+C in each"
     echo ""
+    echo "🌐 MANUAL BROWSER LAUNCH REQUIRED:"
+    echo "   This script does NOT launch the actual application"
+    echo "   You must manually open your browser and navigate to:"
+    echo "   ${FRONTEND_URL}"
+    echo ""
+    echo "📊 Server URLs:"
+    echo "   • Backend API: ${BACKEND_URL}"
+    echo "   • Frontend UI: ${FRONTEND_URL}"
+    echo ""
+    echo "✅ Setup complete! Script exiting - servers will continue running in their terminals."
+    echo ""
+    exit 0
 else
     echo ""
     echo "❌ Failed to start all servers within timeout period."
