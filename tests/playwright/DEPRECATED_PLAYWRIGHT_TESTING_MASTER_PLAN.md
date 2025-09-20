@@ -64,6 +64,30 @@ This document serves as the **single source of truth** for Playwright testing of
 5. Close browser session via mcp__playwright__browser_close
 ```
 
+#### Phase 2.1: AI Agent Report Generation Requirements
+
+**CRITICAL**: AI agents MUST follow these exact requirements to prevent formatting errors:
+
+- **VERBATIM CAPTURE**:
+  - **Test Input**: Must capture the EXACT user input message or button name
+  - **Test Output**: Must capture the COMPLETE AI response text verbatim
+  - **NO SUMMARIES**: Do not summarize or truncate responses
+
+- **TEMPLATE COMPLIANCE**:
+  - **EXACT FORMAT**: Follow template structure precisely without modifications
+  - **REQUIRED SECTIONS**: Include all mandatory sections in exact order
+  - **NO DEVIATIONS**: Do not add, remove, or modify template sections
+
+- **NAMING CONVENTIONS**:
+  - **REPORT NAMING**: Use `Playwright_Tools_Test_Report__YY-MM-DD_hh-mm.md` (double underscore)
+  - **TEST NUMBERING**: Use `### Test [X]: [Test Name]` format
+  - **CONSISTENCY**: Maintain consistent formatting throughout report
+
+- **TIMESTAMP DETECTION**:
+  - **MANDATORY TOOL USAGE**: Use `run_terminal_cmd` with exact commands specified
+  - **REAL-WORLD TIMESTAMPS**: Never use training data cutoff dates
+  - **PACIFIC TIME**: Always use `TZ='America/Los_Angeles'` for timezone
+
 #### Phase 3: State Management
 
 - [ ] **Session Continuity**: Single browser instance maintained
@@ -125,8 +149,13 @@ This document serves as the **single source of truth** for Playwright testing of
 #### Report Naming Convention
 
 ```
-Playwright_Tools_Test_Report_YY-MM-DD_hh-mm.md
+Playwright_Tools_Test_Report__YY-MM-DD_hh-mm.md
 ```
+
+**⚠️ NAMING CONVENTION REQUIREMENTS:**
+- **Format**: Use **DOUBLE UNDERSCORE** between "Report" and date
+- **Example**: `Playwright_Tools_Test_Report__25-09-19_18-47.md`
+- **MUST** follow this exact format for consistency
 
 **Timestamp Requirements:**
 
@@ -176,9 +205,9 @@ TZ='America/Los_Angeles' date '+%y-%m-%d_%H-%M'
 **Execution Date**: [YYYY-MM-DD] - **MUST** use `run_terminal_cmd` with `TZ='America/Los_Angeles' date '+%Y-%m-%d'`
 **Execution Time**: [HH:MM PT/PST] - **MUST** use `run_terminal_cmd` with `TZ='America/Los_Angeles' date '+%H:%M %Z'`
 **Methodology**: Playwright Tools
-**Test Suite**: B001-B016 Complete Validation
-**Total Tests**: 16
-**Success Rate**: [X/16] ([XX%])
+**Test Suite**: [Test Suite Name] (X Tests)
+**Total Tests**: [X]
+**Success Rate**: [X/X] ([XX%])
 **Total Execution Time**: [XX.X]s
 **Browser Sessions**: 1 (Continuous)
 
@@ -187,6 +216,12 @@ TZ='America/Los_Angeles' date '+%y-%m-%d_%H-%M'
 - **MUST** execute: `TZ='America/Los_Angeles' date '+%Y-%m-%d'` for Execution Date
 - **MUST** execute: `TZ='America/Los_Angeles' date '+%H:%M %Z'` for Execution Time
 - **MUST** use actual system-detected timestamps, not assumed dates
+
+**⚠️ CRITICAL AI AGENT REQUIREMENTS:**
+- **VERBATIM INPUT/OUTPUT**: **MUST** capture exact user input and complete AI response text
+- **TEMPLATE COMPLIANCE**: **MUST** follow exact template format without modifications
+- **NAMING PRECISION**: **MUST** use double underscore in report naming: `Playwright_Tools_Test_Report__YY-MM-DD_hh-mm.md`
+- **NO DEVIATIONS**: **MUST** follow template structure exactly as specified
 ```
 
 **Key improvements:**
@@ -259,10 +294,10 @@ This ensures AI agents will actually detect the real-world Pacific timestamps in
 This ensures complete traceability and allows users to review exactly what was sent and what was received for each test.
 
 ```markdown
-### B[XXX]: [Test Name]
+### Test [X]: [Test Name]
 **Status**: ✅ PASS / ❌ FAIL / ⚠️ PARTIAL
-**Test Input**: 
-**Test Output**: 
+**Test Input**: [VERBATIM Chat Input Message OR Button Name]
+**Test Output**: [VERBATIM AI Response - Complete Response Text]
 **Duration**: [X.X]s
 **Timeout**: 120s (Standard)
 **Execution Time**: [Actual timing]
@@ -447,6 +482,36 @@ Use mcp__playwright__browser_close to end session
 
 - [ ] **Operating System**: Linux/WSL2 environment functional
 - [ ] **Memory**: Sufficient RAM for browser automation (2GB+ recommended)
+
+#### AI Agent Common Mistakes and Prevention
+
+**CRITICAL**: The following mistakes have been identified in previous test reports and MUST be avoided:
+
+1. **VERBATIM INPUT/OUTPUT ERRORS**:
+   - ❌ **WRONG**: "Navigate to frontend and check model selector visibility"
+   - ✅ **CORRECT**: "Market Status: PRIORITY FAST REQUEST NEEDING QUICK RESPONSE..."
+   - **PREVENTION**: Always capture the EXACT user input message, not test descriptions
+
+2. **TEMPLATE FORMAT DEVIATIONS**:
+   - ❌ **WRONG**: Using "Test X" instead of following template exactly
+   - ✅ **CORRECT**: Follow template structure precisely as specified
+   - **PREVENTION**: Copy template format exactly without modifications
+
+3. **NAMING CONVENTION ERRORS**:
+   - ❌ **WRONG**: `Playwright_Tools_Test_Report_25-09-19_18-47.md` (single underscore)
+   - ✅ **CORRECT**: `Playwright_Tools_Test_Report__25-09-19_18-47.md` (double underscore)
+   - **PREVENTION**: Use double underscore between "Report" and date
+
+4. **OUTPUT FORMATTING ERRORS**:
+   - ❌ **WRONG**: Showing JSON objects or test descriptions as output
+   - ✅ **CORRECT**: Showing complete AI response text verbatim
+   - **PREVENTION**: Always capture the full AI response, not intermediate data
+
+5. **TIMESTAMP DETECTION ERRORS**:
+   - ❌ **WRONG**: Using training data cutoff dates
+   - ✅ **CORRECT**: Using `run_terminal_cmd` with `TZ='America/Los_Angeles'` commands
+   - **PREVENTION**: Always execute the exact timestamp commands specified in template
+
 - [ ] **Network**: Stable internet connection for API integrations
 - [ ] **Permissions**: Appropriate file system access for test execution
 
