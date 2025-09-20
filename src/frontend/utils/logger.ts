@@ -1,12 +1,12 @@
 /**
  * Frontend logging utility for Market Parser React application.
- * 
+ *
  * Provides environment-aware logging with console organization, performance tracking,
  * and safe React integration patterns to prevent render loops.
- * 
+ *
  * Usage:
  *   import { logger } from '@/utils/logger';
- *   
+ *
  *   logger.info('Component mounted', { component: 'ChatInterface' });
  *   logger.debug('API call started', { endpoint: '/chat', method: 'POST' });
  *   logger.group('User Interaction');
@@ -14,7 +14,7 @@
  *   logger.groupEnd();
  */
 
-import { isDevelopment, isDebugMode } from '../config/config.loader';
+import { isDebugMode, isDevelopment } from '../config/config.loader';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export type LogMode = 'DEBUG' | 'PRODUCTION' | 'NONE';
@@ -29,12 +29,6 @@ export interface PerformanceMetric {
   endTime?: number;
   duration?: number;
 }
-
-
-
-
-
-
 
 class FrontendLogger {
   private isDevelopment: boolean;
@@ -51,41 +45,42 @@ class FrontendLogger {
   private logModeChangeListeners: Array<(mode: LogMode) => void> = [];
 
   // File logging properties
-  
-  
 
   constructor() {
     this.isDevelopment = isDevelopment();
 
     // Initialize log mode from localStorage, default to NONE
     const storedLogMode = localStorage.getItem('console_log_mode') as LogMode;
-    this.logMode = ['DEBUG', 'PRODUCTION', 'NONE'].includes(storedLogMode) ? storedLogMode : 'NONE';
+    this.logMode = ['DEBUG', 'PRODUCTION', 'NONE'].includes(storedLogMode)
+      ? storedLogMode
+      : 'NONE';
 
-    this.isDebugMode = this.isDevelopment && (
-      localStorage.getItem('debug_mode') === 'true' ||
-      (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
-      this.logMode === 'DEBUG'
-    );
+    this.isDebugMode =
+      this.isDevelopment &&
+      (localStorage.getItem('debug_mode') === 'true' ||
+        (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
+        this.logMode === 'DEBUG');
     this.performanceMetrics = new Map();
     this.logBuffer = [];
-    
+
     // Enable global debug mode control
     (window as Record<string, unknown>).__enableDebugMode = () => {
       localStorage.setItem('debug_mode', 'true');
       this.isDebugMode = true;
       this.info('🔧 Debug mode enabled - verbose logging active');
     };
-    
+
     (window as Record<string, unknown>).__disableDebugMode = () => {
       localStorage.setItem('debug_mode', 'false');
       this.isDebugMode = false;
       this.info('🔇 Debug mode disabled - minimal logging active');
     };
-    
+
     (window as Record<string, unknown>).__exportLogs = () => this.exportLogs();
 
     // Add global log mode control methods
-    (window as Record<string, unknown>).__setLogMode = (mode: LogMode) => this.setLogMode(mode);
+    (window as Record<string, unknown>).__setLogMode = (mode: LogMode) =>
+      this.setLogMode(mode);
     (window as Record<string, unknown>).__getLogMode = () => this.getLogMode();
 
     // Initialize file logging service
@@ -96,7 +91,7 @@ class FrontendLogger {
         environment: isDevelopment() ? 'development' : 'production',
         debugMode: this.isDebugMode,
         logMode: this.logMode,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -108,31 +103,34 @@ class FrontendLogger {
     // File logging has been removed - this method is now a no-op
     // LOG_MODE=NONE provides native console performance
     if (this.isDevelopment) {
-      console.info('📴 File logging disabled - native console performance active');
+      // eslint-disable-next-line no-console
+      console.info(
+        '📴 File logging disabled - native console performance active'
+      );
     }
   }
 
   /**
    * Intercept console methods to capture logs
    */
-  
 
   /**
    * Capture console log for file writing
    */
-  
 
   /**
    * Clear the log file on startup
    */
-  
 
   /**
    * Set the current log mode (NONE, DEBUG or PRODUCTION)
    */
   setLogMode(mode: LogMode): void {
     if (!['DEBUG', 'PRODUCTION', 'NONE'].includes(mode)) {
-      this.warn('Invalid log mode provided', { attemptedMode: mode, validModes: ['DEBUG', 'PRODUCTION', 'NONE'] });
+      this.warn('Invalid log mode provided', {
+        attemptedMode: mode,
+        validModes: ['DEBUG', 'PRODUCTION', 'NONE'],
+      });
       return;
     }
 
@@ -140,11 +138,11 @@ class FrontendLogger {
     this.logMode = mode;
 
     // Update isDebugMode based on new mode
-    this.isDebugMode = this.isDevelopment && (
-      localStorage.getItem('debug_mode') === 'true' ||
-      (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
-      this.logMode === 'DEBUG'
-    );
+    this.isDebugMode =
+      this.isDevelopment &&
+      (localStorage.getItem('debug_mode') === 'true' ||
+        (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
+        this.logMode === 'DEBUG');
 
     // Persist to localStorage
     localStorage.setItem('console_log_mode', mode);
@@ -159,7 +157,10 @@ class FrontendLogger {
       } catch (error) {
         // Only log error if not transitioning to NONE mode
         if (mode !== 'NONE') {
-          this.error('Error notifying log mode change listener', { error, mode });
+          this.error('Error notifying log mode change listener', {
+            error,
+            mode,
+          });
         }
       }
     });
@@ -169,7 +170,7 @@ class FrontendLogger {
       this.info(`🔄 Console log mode changed: ${previousMode} → ${mode}`, {
         previousMode,
         newMode: mode,
-        isDebugMode: this.isDebugMode
+        isDebugMode: this.isDebugMode,
       });
     }
   }
@@ -189,7 +190,7 @@ class FrontendLogger {
     if (previousMode === 'NONE' && newMode !== 'NONE') {
       this.initializeFileLogging();
     }
-    
+
     // Transitioning TO NONE mode - need to cleanup services
     if (previousMode !== 'NONE' && newMode === 'NONE') {
       this.cleanupFileLogging();
@@ -203,7 +204,10 @@ class FrontendLogger {
     // File logging has been removed - this method is now a no-op
     // No cleanup needed as console methods are no longer intercepted
     if (this.isDevelopment) {
-      console.info('🧹 File logging cleanup complete - native console performance maintained');
+      // eslint-disable-next-line no-console
+      console.info(
+        '🧹 File logging cleanup complete - native console performance maintained'
+      );
     }
   }
 
@@ -227,7 +231,7 @@ class FrontendLogger {
    */
   debug(message: string, context?: LogContext): void {
     if (!this.isDebugMode) return;
-    
+
     this.log('debug', message, context, '🔍', 'color: #6B7280');
   }
 
@@ -236,7 +240,7 @@ class FrontendLogger {
    */
   info(message: string, context?: LogContext): void {
     if (!this.isDevelopment && !this.isDebugMode) return;
-    
+
     this.log('info', message, context, 'ℹ️', 'color: #3B82F6');
   }
 
@@ -259,7 +263,7 @@ class FrontendLogger {
    */
   group(groupName: string, collapsed: boolean = false): void {
     if (!this.shouldLog('info')) return;
-    
+
     const timestamp = this.getTimestamp();
     const method = collapsed ? 'groupCollapsed' : 'group';
     // eslint-disable-next-line no-console
@@ -280,12 +284,12 @@ class FrontendLogger {
    */
   startTiming(name: string): void {
     if (!this.isDebugMode) return;
-    
+
     const metric: PerformanceMetric = {
       name,
-      startTime: performance.now()
+      startTime: performance.now(),
     };
-    
+
     this.performanceMetrics.set(name, metric);
     this.debug(`⏱️ Started timing: ${name}`);
   }
@@ -295,22 +299,22 @@ class FrontendLogger {
    */
   endTiming(name: string): number | null {
     if (!this.isDebugMode) return null;
-    
+
     const metric = this.performanceMetrics.get(name);
     if (!metric) {
       this.warn(`⏱️ No timing started for: ${name}`);
       return null;
     }
-    
+
     metric.endTime = performance.now();
     metric.duration = metric.endTime - metric.startTime;
-    
+
     this.info(`⏱️ Timing complete: ${name}`, {
       duration: `${metric.duration.toFixed(2)}ms`,
       startTime: metric.startTime,
-      endTime: metric.endTime
+      endTime: metric.endTime,
     });
-    
+
     this.performanceMetrics.delete(name);
     return metric.duration;
   }
@@ -324,7 +328,7 @@ class FrontendLogger {
       method: method.toUpperCase(),
       url,
       timestamp: new Date().toISOString(),
-      hasData: !!data
+      hasData: !!data,
     });
     if (data && this.isDebugMode) {
       this.debug('Request data', { data });
@@ -335,17 +339,23 @@ class FrontendLogger {
   /**
    * Log API response with status and timing
    */
-  apiResponse(method: string, url: string, status: number, duration: number, data?: unknown): void {
+  apiResponse(
+    method: string,
+    url: string,
+    status: number,
+    duration: number,
+    data?: unknown
+  ): void {
     const emoji = status < 300 ? '✅' : status < 400 ? '⚠️' : '❌';
     const level = status < 300 ? 'info' : status < 400 ? 'warn' : 'error';
-    
+
     this.group(`${emoji} API Response: ${method.toUpperCase()} ${url}`, true);
     this[level]('Response received', {
       method: method.toUpperCase(),
       url,
       status,
       duration: `${duration.toFixed(2)}ms`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     if (data && this.isDebugMode) {
       this.debug('Response data', { data });
@@ -356,13 +366,17 @@ class FrontendLogger {
   /**
    * Log React component lifecycle events
    */
-  componentLifecycle(componentName: string, event: 'mount' | 'unmount' | 'update', details?: LogContext): void {
+  componentLifecycle(
+    componentName: string,
+    event: 'mount' | 'unmount' | 'update',
+    details?: LogContext
+  ): void {
     const emoji = event === 'mount' ? '🎭' : event === 'unmount' ? '💀' : '🔄';
     this.debug(`${emoji} Component ${event}: ${componentName}`, {
       component: componentName,
       event,
       timestamp: new Date().toISOString(),
-      ...details
+      ...details,
     });
   }
 
@@ -374,21 +388,26 @@ class FrontendLogger {
       action,
       element,
       timestamp: new Date().toISOString(),
-      ...details
+      ...details,
     });
   }
 
   /**
    * Log state changes (use carefully to avoid render loops)
    */
-  stateChange(componentName: string, stateName: string, oldValue: unknown, newValue: unknown): void {
+  stateChange(
+    componentName: string,
+    stateName: string,
+    oldValue: unknown,
+    newValue: unknown
+  ): void {
     this.debug(`🔄 State change in ${componentName}`, {
       component: componentName,
       state: stateName,
       oldValue,
       newValue,
       changed: !this.deepEqual(oldValue, newValue),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -401,10 +420,12 @@ class FrontendLogger {
       environment: isDevelopment() ? 'development' : 'production',
       debug_mode: this.isDebugMode,
       buffer: this.logBuffer,
-      performance_metrics: Array.from(this.performanceMetrics.entries())
+      performance_metrics: Array.from(this.performanceMetrics.entries()),
     };
-    
-    const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+
+    const blob = new Blob([JSON.stringify(logs, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -413,31 +434,37 @@ class FrontendLogger {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     this.info('📁 Logs exported to file');
   }
 
   /**
    * Core logging method
    */
-  private log(level: LogLevel, message: string, context?: LogContext, emoji?: string, style?: string): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: LogContext,
+    emoji?: string,
+    style?: string
+  ): void {
     if (!this.shouldLog(level)) return;
-    
+
     const timestamp = this.getTimestamp();
     const prefix = emoji ? `${emoji} ${timestamp}` : timestamp;
     const logEntry = {
       timestamp: new Date().toISOString(),
       level,
       message,
-      context
+      context,
     };
-    
+
     // Add to buffer for export
     this.logBuffer.push(logEntry);
     if (this.logBuffer.length > this.maxBufferSize) {
       this.logBuffer.shift();
     }
-    
+
     // Console output
     const args = [`${prefix} ${message}`];
     if (style) {
@@ -447,7 +474,7 @@ class FrontendLogger {
     if (context) {
       args.push(context);
     }
-    
+
     // eslint-disable-next-line no-console
     console[level](...args);
   }
@@ -482,7 +509,11 @@ class FrontendLogger {
    */
   private getTimestamp(): string {
     const now = new Date();
-    return now.toTimeString().slice(0, 8) + '.' + now.getMilliseconds().toString().padStart(3, '0');
+    return (
+      now.toTimeString().slice(0, 8) +
+      '.' +
+      now.getMilliseconds().toString().padStart(3, '0')
+    );
   }
 
   /**
@@ -493,16 +524,16 @@ class FrontendLogger {
     if (a == null || b == null) return false;
     if (typeof a !== typeof b) return false;
     if (typeof a !== 'object') return false;
-    
+
     const keysA = Object.keys(a);
     const keysB = Object.keys(b);
     if (keysA.length !== keysB.length) return false;
-    
+
     for (const key of keysA) {
       if (!keysB.includes(key)) return false;
       if (!this.deepEqual(a[key], b[key])) return false;
     }
-    
+
     return true;
   }
 }
@@ -514,24 +545,24 @@ export const logger = new FrontendLogger();
 export const loggers = {
   api: {
     request: logger.apiRequest.bind(logger),
-    response: logger.apiResponse.bind(logger)
+    response: logger.apiResponse.bind(logger),
   },
   component: {
     lifecycle: logger.componentLifecycle.bind(logger),
-    stateChange: logger.stateChange.bind(logger)
+    stateChange: logger.stateChange.bind(logger),
   },
   user: {
-    interaction: logger.userInteraction.bind(logger)
+    interaction: logger.userInteraction.bind(logger),
   },
   performance: {
     start: logger.startTiming.bind(logger),
-    end: logger.endTiming.bind(logger)
+    end: logger.endTiming.bind(logger),
   },
   mode: {
     set: logger.setLogMode.bind(logger),
     get: logger.getLogMode.bind(logger),
-    onChange: logger.onLogModeChange.bind(logger)
-  }
+    onChange: logger.onLogModeChange.bind(logger),
+  },
 };
 
 // Add debugging helpers to window in development

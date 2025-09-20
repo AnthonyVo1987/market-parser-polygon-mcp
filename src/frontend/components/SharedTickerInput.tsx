@@ -1,10 +1,10 @@
-import { 
-  useState, 
-  useEffect, 
+import {
+  useState,
+  useEffect,
   useRef,
   useCallback,
   forwardRef,
-  useImperativeHandle 
+  useImperativeHandle,
 } from 'react';
 
 interface SharedTickerInputProps {
@@ -29,72 +29,77 @@ export interface SharedTickerInputRef {
   validate: () => boolean;
 }
 
-const SharedTickerInput = forwardRef<SharedTickerInputRef, SharedTickerInputProps>(
-  function SharedTickerInput(
-    {
-      value: externalValue,
-      onChange,
-      className = '',
-      placeholder = 'NVDA',
-      disabled = false,
-      error: externalError,
-      label = 'Stock Symbol',
-      'aria-describedby': ariaDescribedBy,
-      onEnter,
-      autoFocus = false,
-      required = false,
-    },
-    ref
-  ) {
-    // Internal state for uncontrolled mode and validation
-    const [internalValue, setInternalValue] = useState(externalValue ?? 'NVDA');
-    const [validationError, setValidationError] = useState<string>('');
-    const [isTouched, setIsTouched] = useState(false);
-    
-    const inputRef = useRef<HTMLInputElement>(null);
+const SharedTickerInput = forwardRef<
+  SharedTickerInputRef,
+  SharedTickerInputProps
+>(function SharedTickerInput(
+  {
+    value: externalValue,
+    onChange,
+    className = '',
+    placeholder = 'NVDA',
+    disabled = false,
+    error: externalError,
+    label = 'Stock Symbol',
+    'aria-describedby': ariaDescribedBy,
+    onEnter,
+    autoFocus = false,
+    required = false,
+  },
+  ref
+) {
+  // Internal state for uncontrolled mode and validation
+  const [internalValue, setInternalValue] = useState(externalValue ?? 'NVDA');
+  const [validationError, setValidationError] = useState<string>('');
+  const [isTouched, setIsTouched] = useState(false);
 
-    // Use external value if provided, otherwise use internal state
-    const inputValue = externalValue !== undefined ? externalValue : internalValue;
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    // Update internal state when external value changes
-    useEffect(() => {
-      if (externalValue !== undefined) {
-        setInternalValue(externalValue);
-      }
-    }, [externalValue]);
+  // Use external value if provided, otherwise use internal state
+  const inputValue =
+    externalValue !== undefined ? externalValue : internalValue;
 
-    // Validation function
-    const validateTicker = useCallback((ticker: string): string => {
+  // Update internal state when external value changes
+  useEffect(() => {
+    if (externalValue !== undefined) {
+      setInternalValue(externalValue);
+    }
+  }, [externalValue]);
+
+  // Validation function
+  const validateTicker = useCallback(
+    (ticker: string): string => {
       const cleanTicker = ticker.trim();
-      
+
       if (!cleanTicker) {
         return required ? 'Stock symbol is required' : '';
       }
-      
+
       if (cleanTicker.length < 3) {
         return 'Stock symbol must be at least 3 characters';
       }
-      
+
       if (cleanTicker.length > 10) {
         return 'Stock symbol must be 10 characters or less';
       }
-      
+
       // Check for valid characters (alphanumeric only)
       if (!/^[A-Z0-9]+$/.test(cleanTicker)) {
         return 'Stock symbol must contain only letters and numbers';
       }
-      
-      return '';
-    }, [required]);
 
-    // Handle input changes with formatting and validation
-    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      return '';
+    },
+    [required]
+  );
+
+  // Handle input changes with formatting and validation
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       const rawValue = e.target.value;
-      
+
       // Format input: uppercase and alphanumeric only
-      const formattedValue = rawValue
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, '');
+      const formattedValue = rawValue.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
       // Update appropriate state based on control mode
       if (externalValue !== undefined) {
@@ -109,17 +114,20 @@ const SharedTickerInput = forwardRef<SharedTickerInputRef, SharedTickerInputProp
         const error = validateTicker(formattedValue);
         setValidationError(error);
       }
-    }, [externalValue, onChange, validateTicker, isTouched]);
+    },
+    [externalValue, onChange, validateTicker, isTouched]
+  );
 
-    // Handle blur event for validation
-    const handleBlur = useCallback(() => {
-      setIsTouched(true);
-      const error = validateTicker(inputValue);
-      setValidationError(error);
-    }, [inputValue, validateTicker]);
+  // Handle blur event for validation
+  const handleBlur = useCallback(() => {
+    setIsTouched(true);
+    const error = validateTicker(inputValue);
+    setValidationError(error);
+  }, [inputValue, validateTicker]);
 
-    // Handle key press events
-    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  // Handle key press events
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' && !disabled && onEnter) {
         e.preventDefault();
         const error = validateTicker(inputValue);
@@ -127,144 +135,139 @@ const SharedTickerInput = forwardRef<SharedTickerInputRef, SharedTickerInputProp
           onEnter();
         }
       }
-    }, [inputValue, validateTicker, disabled, onEnter]);
+    },
+    [inputValue, validateTicker, disabled, onEnter]
+  );
 
-    // Determine current error to display
-    const displayError = externalError || validationError;
-    const hasError = Boolean(displayError);
-    const isValid = !hasError && inputValue.length >= 3;
+  // Determine current error to display
+  const displayError = externalError || validationError;
+  const hasError = Boolean(displayError);
+  const isValid = !hasError && inputValue.length >= 3;
 
-    // Auto-focus effect
-    useEffect(() => {
-      if (autoFocus && inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, [autoFocus]);
+  // Auto-focus effect
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
-    // Expose imperative methods to parent components
-    useImperativeHandle(
-      ref,
-      () => ({
-        focus: () => {
-          inputRef.current?.focus();
-        },
-        setValue: (value: string) => {
-          const formattedValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-          if (externalValue !== undefined) {
-            onChange(formattedValue);
-          } else {
-            setInternalValue(formattedValue);
-            onChange(formattedValue);
-          }
-          setValidationError('');
-        },
-        getValue: () => inputValue,
-        clear: () => {
-          const defaultValue = 'NVDA';
-          if (externalValue !== undefined) {
-            onChange(defaultValue);
-          } else {
-            setInternalValue(defaultValue);
-            onChange(defaultValue);
-          }
-          setValidationError('');
-          setIsTouched(false);
-        },
-        validate: () => {
-          const error = validateTicker(inputValue);
-          setValidationError(error);
-          setIsTouched(true);
-          return !error;
-        },
-      }),
-      [inputValue, externalValue, onChange, validateTicker]
-    );
+  // Expose imperative methods to parent components
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+      setValue: (value: string) => {
+        const formattedValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (externalValue !== undefined) {
+          onChange(formattedValue);
+        } else {
+          setInternalValue(formattedValue);
+          onChange(formattedValue);
+        }
+        setValidationError('');
+      },
+      getValue: () => inputValue,
+      clear: () => {
+        const defaultValue = 'NVDA';
+        if (externalValue !== undefined) {
+          onChange(defaultValue);
+        } else {
+          setInternalValue(defaultValue);
+          onChange(defaultValue);
+        }
+        setValidationError('');
+        setIsTouched(false);
+      },
+      validate: () => {
+        const error = validateTicker(inputValue);
+        setValidationError(error);
+        setIsTouched(true);
+        return !error;
+      },
+    }),
+    [inputValue, externalValue, onChange, validateTicker]
+  );
 
-    const inputId = `ticker-input-${Math.random().toString(36).substr(2, 9)}`;
-    const errorId = `${inputId}-error`;
-    const helpId = `${inputId}-help`;
+  const inputId = `ticker-input-${Math.random().toString(36).substr(2, 9)}`;
+  const errorId = `${inputId}-error`;
+  const helpId = `${inputId}-help`;
 
-    const describedBy = [
-      helpId,
-      hasError ? errorId : null,
-      ariaDescribedBy,
-    ]
-      .filter(Boolean)
-      .join(' ');
+  const describedBy = [helpId, hasError ? errorId : null, ariaDescribedBy]
+    .filter(Boolean)
+    .join(' ');
 
-    return (
-      <div className={`shared-ticker-input-container ${className}`}>
-        <label htmlFor={inputId} className="ticker-label">
-          {label}
-          {required && (
-            <span className="required-indicator" aria-hidden="true">
-              *
-            </span>
+  return (
+    <div className={`shared-ticker-input-container ${className}`}>
+      <label htmlFor={inputId} className='ticker-label'>
+        {label}
+        {required && (
+          <span className='required-indicator' aria-hidden='true'>
+            *
+          </span>
+        )}
+      </label>
+
+      <div className='ticker-input-wrapper'>
+        <input
+          id={inputId}
+          ref={inputRef}
+          type='text'
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          maxLength={10}
+          className={`ticker-input ${hasError ? 'error' : ''} ${isValid ? 'valid' : ''}`}
+          disabled={disabled}
+          aria-describedby={describedBy}
+          aria-invalid={hasError}
+          aria-required={required}
+          spellCheck={false}
+          autoComplete='off'
+          autoCorrect='off'
+          autoCapitalize='characters'
+        />
+
+        {/* Validation status icon */}
+        <div className='validation-icon' aria-hidden='true'>
+          {isValid && !hasError && (
+            <span className='validation-success'>✓</span>
           )}
-        </label>
-        
-        <div className="ticker-input-wrapper">
-          <input
-            id={inputId}
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            maxLength={10}
-            className={`ticker-input ${hasError ? 'error' : ''} ${isValid ? 'valid' : ''}`}
-            disabled={disabled}
-            aria-describedby={describedBy}
-            aria-invalid={hasError}
-            aria-required={required}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="characters"
-          />
-          
-          {/* Validation status icon */}
-          <div className="validation-icon" aria-hidden="true">
-            {isValid && !hasError && (
-              <span className="validation-success">✓</span>
-            )}
-            {hasError && (
-              <span className="validation-error">!</span>
-            )}
-          </div>
+          {hasError && <span className='validation-error'>!</span>}
         </div>
-
-        {/* Help text */}
-        <div id={helpId} className="sr-only">
-          Enter a stock symbol (3-10 characters, letters and numbers only).
-          {onEnter && ' Press Enter to proceed.'}
-          {required && ' This field is required.'}
-        </div>
-
-        {/* Error message */}
-        {hasError && (
-          <div
-            id={errorId}
-            className="error-message"
-            role="alert"
-            aria-live="polite"
-          >
-            {displayError}
-          </div>
-        )}
-
-        {/* Success feedback for screen readers */}
-        {isValid && !hasError && isTouched && (
-          <div className="sr-only" aria-live="polite">
-            Valid stock symbol entered
-          </div>
-        )}
       </div>
-    );
-  }
-);
+
+      {/* Help text */}
+      <div id={helpId} className='sr-only'>
+        Enter a stock symbol (3-10 characters, letters and numbers only).
+        {onEnter && ' Press Enter to proceed.'}
+        {required && ' This field is required.'}
+      </div>
+
+      {/* Error message */}
+      {hasError && (
+        <div
+          id={errorId}
+          className='error-message'
+          role='alert'
+          aria-live='polite'
+        >
+          {displayError}
+        </div>
+      )}
+
+      {/* Success feedback for screen readers */}
+      {isValid && !hasError && isTouched && (
+        <div className='sr-only' aria-live='polite'>
+          Valid stock symbol entered
+        </div>
+      )}
+    </div>
+  );
+});
 
 export default SharedTickerInput;
 

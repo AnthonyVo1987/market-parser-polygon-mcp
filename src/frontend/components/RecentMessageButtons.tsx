@@ -17,242 +17,244 @@ interface ButtonStates {
   lastUser: ButtonState;
 }
 
-const RecentMessageButtons = memo(function RecentMessageButtons({
-  messages,
-}: RecentMessageButtonsProps) {
-  const [buttonStates, setButtonStates] = useState<ButtonStates>({
-    lastAI: 'idle',
-    lastUser: 'idle',
-  });
+const RecentMessageButtons = memo(
+  function RecentMessageButtons({ messages }: RecentMessageButtonsProps) {
+    const [buttonStates, setButtonStates] = useState<ButtonStates>({
+      lastAI: 'idle',
+      lastUser: 'idle',
+    });
 
-  const [errorMessages, setErrorMessages] = useState<Record<string, string>>(
-    {}
-  );
+    const [errorMessages, setErrorMessages] = useState<Record<string, string>>(
+      {}
+    );
 
-  // Refs to store timeout IDs for cleanup
-  const timeoutRefs = useRef<
-    Record<keyof ButtonStates, ReturnType<typeof setTimeout> | null>
-  >({
-    lastAI: null,
-    lastUser: null,
-  });
+    // Refs to store timeout IDs for cleanup
+    const timeoutRefs = useRef<
+      Record<keyof ButtonStates, ReturnType<typeof setTimeout> | null>
+    >({
+      lastAI: null,
+      lastUser: null,
+    });
 
-  // Cleanup timeouts on component unmount
-  useEffect(() => {
-    return () => {
-      // Clear all active timeouts to prevent memory leaks
-      // Copy ref value inside effect cleanup to avoid stale reference
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const currentTimeouts = timeoutRefs.current;
-      Object.values(currentTimeouts).forEach(timeoutId => {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-      });
-    };
-  }, []);
+    // Cleanup timeouts on component unmount
+    useEffect(() => {
+      return () => {
+        // Clear all active timeouts to prevent memory leaks
+        // Copy ref value inside effect cleanup to avoid stale reference
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const currentTimeouts = timeoutRefs.current;
+        Object.values(currentTimeouts).forEach(timeoutId => {
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+        });
+      };
+    }, []);
 
-  const updateButtonState = useCallback(
-    (
-      buttonId: keyof ButtonStates,
-      state: ButtonState,
-      errorMessage?: string
-    ) => {
-      // Clear any existing timeout for this button to prevent conflicts
-      if (timeoutRefs.current[buttonId]) {
-        clearTimeout(timeoutRefs.current[buttonId]);
-        timeoutRefs.current[buttonId] = null;
-      }
-
-      setButtonStates(prev => ({ ...prev, [buttonId]: state }));
-
-      if (errorMessage) {
-        setErrorMessages(prev => ({ ...prev, [buttonId]: errorMessage }));
-      } else {
-        setErrorMessages(prev => ({ ...prev, [buttonId]: '' }));
-      }
-
-      // Auto-reset success and error states after timeout
-      if (state === 'success' || state === 'error') {
-        const timeoutDuration = state === 'success' ? 2000 : 4000; // Errors show longer
-
-        timeoutRefs.current[buttonId] = setTimeout(() => {
-          setButtonStates(prev => ({ ...prev, [buttonId]: 'idle' }));
-          setErrorMessages(prev => ({ ...prev, [buttonId]: '' }));
+    const updateButtonState = useCallback(
+      (
+        buttonId: keyof ButtonStates,
+        state: ButtonState,
+        errorMessage?: string
+      ) => {
+        // Clear any existing timeout for this button to prevent conflicts
+        if (timeoutRefs.current[buttonId]) {
+          clearTimeout(timeoutRefs.current[buttonId]);
           timeoutRefs.current[buttonId] = null;
-        }, timeoutDuration);
+        }
+
+        setButtonStates(prev => ({ ...prev, [buttonId]: state }));
+
+        if (errorMessage) {
+          setErrorMessages(prev => ({ ...prev, [buttonId]: errorMessage }));
+        } else {
+          setErrorMessages(prev => ({ ...prev, [buttonId]: '' }));
+        }
+
+        // Auto-reset success and error states after timeout
+        if (state === 'success' || state === 'error') {
+          const timeoutDuration = state === 'success' ? 2000 : 4000; // Errors show longer
+
+          timeoutRefs.current[buttonId] = setTimeout(() => {
+            setButtonStates(prev => ({ ...prev, [buttonId]: 'idle' }));
+            setErrorMessages(prev => ({ ...prev, [buttonId]: '' }));
+            timeoutRefs.current[buttonId] = null;
+          }, timeoutDuration);
+        }
+      },
+      []
+    );
+
+    const handleCopyLastAI = useCallback(async () => {
+      const buttonId = 'lastAI';
+      updateButtonState(buttonId, 'loading');
+
+      try {
+        const lastAIMessage = getMostRecentMessage(messages, 'ai');
+        if (!lastAIMessage) {
+          throw new Error('No AI messages found');
+        }
+
+        const markdownContent = convertSingleMessageToMarkdown(lastAIMessage);
+        await copyToClipboard(markdownContent);
+        updateButtonState(buttonId, 'success');
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to copy AI response';
+        updateButtonState(buttonId, 'error', errorMessage);
       }
-    },
-    []
-  );
+    }, [messages, updateButtonState]);
 
-  const handleCopyLastAI = useCallback(async () => {
-    const buttonId = 'lastAI';
-    updateButtonState(buttonId, 'loading');
+    const handleCopyLastUser = useCallback(async () => {
+      const buttonId = 'lastUser';
+      updateButtonState(buttonId, 'loading');
 
-    try {
-      const lastAIMessage = getMostRecentMessage(messages, 'ai');
-      if (!lastAIMessage) {
-        throw new Error('No AI messages found');
+      try {
+        const lastUserMessage = getMostRecentMessage(messages, 'user');
+        if (!lastUserMessage) {
+          throw new Error('No user messages found');
+        }
+
+        const markdownContent = convertSingleMessageToMarkdown(lastUserMessage);
+        await copyToClipboard(markdownContent);
+        updateButtonState(buttonId, 'success');
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Failed to copy user request';
+        updateButtonState(buttonId, 'error', errorMessage);
       }
+    }, [messages, updateButtonState]);
 
-      const markdownContent = convertSingleMessageToMarkdown(lastAIMessage);
-      await copyToClipboard(markdownContent);
-      updateButtonState(buttonId, 'success');
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to copy AI response';
-      updateButtonState(buttonId, 'error', errorMessage);
-    }
-  }, [messages, updateButtonState]);
+    // Memoize expensive message computations
+    const messageAnalysis = useMemo(() => {
+      const messageCount = messages.length;
+      const isEmpty = messageCount === 0;
+      const hasAIMessages = messages.some(m => m.sender === 'ai');
+      const hasUserMessages = messages.some(m => m.sender === 'user');
 
-  const handleCopyLastUser = useCallback(async () => {
-    const buttonId = 'lastUser';
-    updateButtonState(buttonId, 'loading');
+      return {
+        messageCount,
+        isEmpty,
+        hasAIMessages,
+        hasUserMessages,
+      };
+    }, [messages]);
 
-    try {
-      const lastUserMessage = getMostRecentMessage(messages, 'user');
-      if (!lastUserMessage) {
-        throw new Error('No user messages found');
+    const { isEmpty, hasAIMessages, hasUserMessages } = messageAnalysis;
+
+    const getButtonText = (
+      buttonId: keyof ButtonStates,
+      defaultText: string
+    ): string => {
+      const state = buttonStates[buttonId];
+      switch (state) {
+        case 'loading':
+          return 'Copying...';
+        case 'success':
+          return 'Copied!';
+        case 'error':
+          return 'Error';
+        default:
+          return defaultText;
       }
-
-      const markdownContent = convertSingleMessageToMarkdown(lastUserMessage);
-      await copyToClipboard(markdownContent);
-      updateButtonState(buttonId, 'success');
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to copy user request';
-      updateButtonState(buttonId, 'error', errorMessage);
-    }
-  }, [messages, updateButtonState]);
-
-  // Memoize expensive message computations
-  const messageAnalysis = useMemo(() => {
-    const messageCount = messages.length;
-    const isEmpty = messageCount === 0;
-    const hasAIMessages = messages.some(m => m.sender === 'ai');
-    const hasUserMessages = messages.some(m => m.sender === 'user');
-    
-    return {
-      messageCount,
-      isEmpty,
-      hasAIMessages,
-      hasUserMessages
     };
-  }, [messages]);
-  
-  const { isEmpty, hasAIMessages, hasUserMessages } = messageAnalysis;
 
-  const getButtonText = (
-    buttonId: keyof ButtonStates,
-    defaultText: string
-  ): string => {
-    const state = buttonStates[buttonId];
-    switch (state) {
-      case 'loading':
-        return 'Copying...';
-      case 'success':
-        return 'Copied!';
-      case 'error':
-        return 'Error';
-      default:
-        return defaultText;
+    const getButtonClass = (
+      buttonId: keyof ButtonStates,
+      isDisabled: boolean
+    ): string => {
+      const state = buttonStates[buttonId];
+      const baseClass = 'recent-message-button';
+
+      if (isDisabled) return `${baseClass} disabled`;
+
+      switch (state) {
+        case 'loading':
+          return `${baseClass} loading`;
+        case 'success':
+          return `${baseClass} success`;
+        case 'error':
+          return `${baseClass} error`;
+        default:
+          return baseClass;
+      }
+    };
+
+    // Don't render if no messages at all
+    if (isEmpty) {
+      return null;
     }
-  };
 
-  const getButtonClass = (
-    buttonId: keyof ButtonStates,
-    isDisabled: boolean
-  ): string => {
-    const state = buttonStates[buttonId];
-    const baseClass = 'recent-message-button';
+    return (
+      <div className='recent-message-buttons-container'>
+        <div className='recent-message-buttons'>
+          {/* Copy Last AI Response Button */}
+          <button
+            onClick={handleCopyLastAI}
+            disabled={!hasAIMessages || buttonStates.lastAI === 'loading'}
+            className={getButtonClass('lastAI', !hasAIMessages)}
+            title={
+              !hasAIMessages
+                ? 'No AI responses to copy'
+                : 'Copy most recent AI response to clipboard as markdown'
+            }
+            aria-label='Copy most recent AI response to clipboard as markdown'
+          >
+            🤖 {getButtonText('lastAI', 'Copy Last AI Response')}
+          </button>
 
-    if (isDisabled) return `${baseClass} disabled`;
+          {/* Copy Last User Request Button */}
+          <button
+            onClick={handleCopyLastUser}
+            disabled={!hasUserMessages || buttonStates.lastUser === 'loading'}
+            className={getButtonClass('lastUser', !hasUserMessages)}
+            title={
+              !hasUserMessages
+                ? 'No user requests to copy'
+                : 'Copy most recent user request to clipboard as markdown'
+            }
+            aria-label='Copy most recent user request to clipboard as markdown'
+          >
+            👤 {getButtonText('lastUser', 'Copy Last User Request')}
+          </button>
+        </div>
 
-    switch (state) {
-      case 'loading':
-        return `${baseClass} loading`;
-      case 'success':
-        return `${baseClass} success`;
-      case 'error':
-        return `${baseClass} error`;
-      default:
-        return baseClass;
-    }
-  };
-
-  // Don't render if no messages at all
-  if (isEmpty) {
-    return null;
-  }
-
-  return (
-    <div className='recent-message-buttons-container'>
-      <div className='recent-message-buttons'>
-        {/* Copy Last AI Response Button */}
-        <button
-          onClick={handleCopyLastAI}
-          disabled={!hasAIMessages || buttonStates.lastAI === 'loading'}
-          className={getButtonClass('lastAI', !hasAIMessages)}
-          title={
-            !hasAIMessages
-              ? 'No AI responses to copy'
-              : 'Copy most recent AI response to clipboard as markdown'
-          }
-          aria-label='Copy most recent AI response to clipboard as markdown'
-        >
-          🤖 {getButtonText('lastAI', 'Copy Last AI Response')}
-        </button>
-
-        {/* Copy Last User Request Button */}
-        <button
-          onClick={handleCopyLastUser}
-          disabled={!hasUserMessages || buttonStates.lastUser === 'loading'}
-          className={getButtonClass('lastUser', !hasUserMessages)}
-          title={
-            !hasUserMessages
-              ? 'No user requests to copy'
-              : 'Copy most recent user request to clipboard as markdown'
-          }
-          aria-label='Copy most recent user request to clipboard as markdown'
-        >
-          👤 {getButtonText('lastUser', 'Copy Last User Request')}
-        </button>
+        {/* Error Messages Display */}
+        {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
+          errorMessage &&
+          buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
+            <div key={buttonId} className='recent-message-error-message'>
+              <strong>Copy Error:</strong> {errorMessage}
+            </div>
+          ) : null
+        )}
       </div>
+    );
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison function - only re-render if message count or message content changes
+    const prevMessages = prevProps.messages;
+    const nextMessages = nextProps.messages;
 
-      {/* Error Messages Display */}
-      {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
-        errorMessage &&
-        buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
-          <div key={buttonId} className='recent-message-error-message'>
-            <strong>Copy Error:</strong> {errorMessage}
-          </div>
-        ) : null
-      )}
-    </div>
-  );
-}, (prevProps, nextProps) => {
-  // Custom comparison function - only re-render if message count or message content changes
-  const prevMessages = prevProps.messages;
-  const nextMessages = nextProps.messages;
-  
-  // Quick length check first
-  if (prevMessages.length !== nextMessages.length) {
-    return false;
+    // Quick length check first
+    if (prevMessages.length !== nextMessages.length) {
+      return false;
+    }
+
+    // If same length, check if the most recent messages of each type changed
+    // This is more efficient than deep comparison for this use case
+    const prevLastAI = prevMessages.filter(m => m.sender === 'ai').pop();
+    const nextLastAI = nextMessages.filter(m => m.sender === 'ai').pop();
+    const prevLastUser = prevMessages.filter(m => m.sender === 'user').pop();
+    const nextLastUser = nextMessages.filter(m => m.sender === 'user').pop();
+
+    return (
+      prevLastAI?.id === nextLastAI?.id && prevLastUser?.id === nextLastUser?.id
+    );
   }
-  
-  // If same length, check if the most recent messages of each type changed
-  // This is more efficient than deep comparison for this use case
-  const prevLastAI = prevMessages.filter(m => m.sender === 'ai').pop();
-  const nextLastAI = nextMessages.filter(m => m.sender === 'ai').pop();
-  const prevLastUser = prevMessages.filter(m => m.sender === 'user').pop();
-  const nextLastUser = nextMessages.filter(m => m.sender === 'user').pop();
-  
-  return (
-    prevLastAI?.id === nextLastAI?.id &&
-    prevLastUser?.id === nextLastUser?.id
-  );
-});
+);
 
 RecentMessageButtons.displayName = 'RecentMessageButtons';
 

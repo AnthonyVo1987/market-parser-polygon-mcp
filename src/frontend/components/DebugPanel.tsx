@@ -23,254 +23,281 @@ interface DebugPanelProps {
 
 /**
  * DebugPanel component - displays developer information including the latest AI response time
- * 
+ *
  * This component is designed for debugging and monitoring during development.
  * It shows the processing time of the most recent AI response in a developer-friendly format.
- * 
+ *
  * @param props - The component props
  * @returns JSX element displaying debug information
  */
-const DebugPanel = memo<DebugPanelProps>(({
-  latestResponseTime,
-  className = '',
-  onDebugAction: _onDebugAction,
-  models,
-  currentModel,
-  onModelChange,
-  isLoadingModels = false,
-  modelError = null
-}) => {
-  // Initialize logging
-  useComponentLogger('DebugPanel', {
-    hasResponseTime: latestResponseTime !== null,
-    responseTime: latestResponseTime,
+const DebugPanel = memo<DebugPanelProps>(
+  ({
+    latestResponseTime,
+    className = '',
+    onDebugAction: _onDebugAction,
+    models,
     currentModel,
-    modelCount: models.length
-  });
-  // const _logInteraction = useInteractionLogger('DebugPanel');
+    onModelChange,
+    isLoadingModels = false,
+    modelError = null,
+  }) => {
+    // Initialize logging
+    useComponentLogger('DebugPanel', {
+      hasResponseTime: latestResponseTime !== null,
+      responseTime: latestResponseTime,
+      currentModel,
+      modelCount: models.length,
+    });
+    // const _logInteraction = useInteractionLogger('DebugPanel');
 
-  // Console log mode state management
-  const [logMode, setLogMode] = useState<LogMode>(() => logger.getLogMode());
+    // Console log mode state management
+    const [logMode, setLogMode] = useState<LogMode>(() => logger.getLogMode());
 
-  // Collapsible state management with localStorage persistence
-  const [isExpanded, setIsExpanded] = useState(() => {
-    try {
-      const saved = localStorage.getItem('debugPanelExpanded');
-      const defaultExpanded = saved !== null ? JSON.parse(saved) as boolean : true;
+    // Collapsible state management with localStorage persistence
+    const [isExpanded, setIsExpanded] = useState(() => {
+      try {
+        const saved = localStorage.getItem('debugPanelExpanded');
+        const defaultExpanded =
+          saved !== null ? (JSON.parse(saved) as boolean) : true;
 
-      logger.debug('🔧 DebugPanel initialized', {
-        component: 'DebugPanel',
-        expanded: defaultExpanded,
-        hasResponseTime: latestResponseTime !== null,
-        responseTime: latestResponseTime,
-        logMode: logMode
-      });
+        logger.debug('🔧 DebugPanel initialized', {
+          component: 'DebugPanel',
+          expanded: defaultExpanded,
+          hasResponseTime: latestResponseTime !== null,
+          responseTime: latestResponseTime,
+          logMode: logMode,
+        });
 
-      return defaultExpanded;
-    } catch (error) {
-      logger.warn('⚠️ Failed to parse DebugPanel localStorage state', {
-        component: 'DebugPanel',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-      return true;
-    }
-  });
-
-  // Persist expand/collapse state
-  useEffect(() => {
-    localStorage.setItem('debugPanelExpanded', JSON.stringify(isExpanded));
-  }, [isExpanded]);
-
-  // Listen for log mode changes from logger
-  useEffect(() => {
-    const unsubscribe = logger.onLogModeChange((newMode: LogMode) => {
-      setLogMode(newMode);
+        return defaultExpanded;
+      } catch (error) {
+        logger.warn('⚠️ Failed to parse DebugPanel localStorage state', {
+          component: 'DebugPanel',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+        return true;
+      }
     });
 
-    return unsubscribe;
-  }, []);
+    // Persist expand/collapse state
+    useEffect(() => {
+      localStorage.setItem('debugPanelExpanded', JSON.stringify(isExpanded));
+    }, [isExpanded]);
 
-  // Toggle expand/collapse with keyboard support
-  const toggleExpanded = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
-    if (event && 'key' in event) {
-      // Handle keyboard events
-      if (event.key !== 'Enter' && event.key !== ' ') {
-        return;
-      }
-      event.preventDefault();
-    }
-    setIsExpanded(prev => !prev);
-  }, []);
-
-  // Toggle log mode cycling through NONE → DEBUG → PRODUCTION → NONE
-  const toggleLogMode = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
-    if (event && 'key' in event) {
-      // Handle keyboard events
-      if (event.key !== 'Enter' && event.key !== ' ') {
-        return;
-      }
-      event.preventDefault();
-    }
-
-    // Cycle through modes: NONE → DEBUG → PRODUCTION → NONE
-    let newMode: LogMode;
-    switch (logMode) {
-      case 'NONE':
-        newMode = 'DEBUG';
-        break;
-      case 'DEBUG':
-        newMode = 'PRODUCTION';
-        break;
-      case 'PRODUCTION':
-        newMode = 'NONE';
-        break;
-      default:
-        newMode = 'NONE'; // fallback
-        break;
-    }
-
-    logger.setLogMode(newMode);
-
-    // Only log if not switching to NONE mode
-    if (newMode !== 'NONE') {
-      logger.info(`🔄 Console log mode toggled via UI`, {
-        component: 'DebugPanel',
-        previousMode: logMode,
-        newMode: newMode,
-        timestamp: new Date().toISOString()
+    // Listen for log mode changes from logger
+    useEffect(() => {
+      const unsubscribe = logger.onLogModeChange((newMode: LogMode) => {
+        setLogMode(newMode);
       });
-    }
-  }, [logMode]);
 
-  // Handle model selection change
-  const handleModelChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const modelId = event.target.value as AIModelId;
-    if (Object.values(AIModelId).includes(modelId)) {
-      onModelChange(modelId);
-      logger.debug('Model selection changed', {
-        component: 'DebugPanel',
-        newModel: modelId,
-        previousModel: currentModel
-      });
-    }
-  }, [currentModel, onModelChange]);
+      return unsubscribe;
+    }, []);
 
-  return (
-    <div
-      className={`debug-panel ${className}`}
-      role="status"
-      aria-label="Debug information"
-    >
+    // Toggle expand/collapse with keyboard support
+    const toggleExpanded = useCallback(
+      (event?: React.KeyboardEvent | React.MouseEvent) => {
+        if (event && 'key' in event) {
+          // Handle keyboard events
+          if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+          }
+          event.preventDefault();
+        }
+        setIsExpanded(prev => !prev);
+      },
+      []
+    );
+
+    // Toggle log mode cycling through NONE → DEBUG → PRODUCTION → NONE
+    const toggleLogMode = useCallback(
+      (event?: React.KeyboardEvent | React.MouseEvent) => {
+        if (event && 'key' in event) {
+          // Handle keyboard events
+          if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+          }
+          event.preventDefault();
+        }
+
+        // Cycle through modes: NONE → DEBUG → PRODUCTION → NONE
+        let newMode: LogMode;
+        switch (logMode) {
+          case 'NONE':
+            newMode = 'DEBUG';
+            break;
+          case 'DEBUG':
+            newMode = 'PRODUCTION';
+            break;
+          case 'PRODUCTION':
+            newMode = 'NONE';
+            break;
+          default:
+            newMode = 'NONE'; // fallback
+            break;
+        }
+
+        logger.setLogMode(newMode);
+
+        // Only log if not switching to NONE mode
+        if (newMode !== 'NONE') {
+          logger.info(`🔄 Console log mode toggled via UI`, {
+            component: 'DebugPanel',
+            previousMode: logMode,
+            newMode: newMode,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      },
+      [logMode]
+    );
+
+    // Handle model selection change
+    const handleModelChange = useCallback(
+      (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const modelId = event.target.value as AIModelId;
+        if (Object.values(AIModelId).includes(modelId)) {
+          onModelChange(modelId);
+          logger.debug('Model selection changed', {
+            component: 'DebugPanel',
+            newModel: modelId,
+            previousModel: currentModel,
+          });
+        }
+      },
+      [currentModel, onModelChange]
+    );
+
+    return (
       <div
-        className="debug-header clickable-header"
-        onClick={toggleExpanded}
-        onKeyDown={toggleExpanded}
-        role="button"
-        aria-expanded={isExpanded}
-        aria-controls="debug-panel-content"
-        tabIndex={0}
-        aria-label={`${isExpanded ? 'Collapse' : 'Expand'} Debug Info section`}
+        className={`debug-panel ${className}`}
+        role='status'
+        aria-label='Debug information'
       >
-        <div className="header-content">
-          <div className="header-left">
-            <h3 className="debug-title">Debug Info</h3>
-          </div>
-          <div className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`} aria-hidden="true">
-            ▶
+        <div
+          className='debug-header clickable-header'
+          onClick={toggleExpanded}
+          onKeyDown={toggleExpanded}
+          role='button'
+          aria-expanded={isExpanded}
+          aria-controls='debug-panel-content'
+          tabIndex={0}
+          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} Debug Info section`}
+        >
+          <div className='header-content'>
+            <div className='header-left'>
+              <h3 className='debug-title'>Debug Info</h3>
+            </div>
+            <div
+              className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`}
+              aria-hidden='true'
+            >
+              ▶
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        id="debug-panel-content"
-        className={`collapsible-content ${isExpanded ? 'expanded' : 'collapsed'}`}
-        aria-hidden={!isExpanded}
-      >
-        <div className="debug-content">
-          <div className="debug-metric">
-            <span className="debug-label">Latest Response Time:</span>
-            <span className="debug-value" aria-live="polite">
-              {latestResponseTime !== null
-                ? `${latestResponseTime.toFixed(1)}s`
-                : 'No responses yet'
-              }
-            </span>
-          </div>
-
-          <div className="debug-metric">
-            <span className="debug-label">Console Log Mode:</span>
-            <div className="log-mode-toggle-container">
-              <button
-                className={`log-mode-toggle ${logMode.toLowerCase()}-mode`}
-                onClick={toggleLogMode}
-                onKeyDown={toggleLogMode}
-                aria-label={`Switch from ${logMode} to ${logMode === 'NONE' ? 'DEBUG' :
-                  logMode === 'DEBUG' ? 'PRODUCTION' : 'NONE'
-                  } mode`}
-                aria-pressed={logMode !== 'NONE'}
-                role="switch"
-              >
-                <span className="toggle-slider" aria-hidden="true">
-                  <span className="toggle-indicator"></span>
-                </span>
-                <span className="toggle-labels">
-                  <span className={`toggle-label none-label-text ${logMode === 'NONE' ? 'active' : ''}`}>
-                    NONE
-                  </span>
-                  <span className={`toggle-label debug-label-text ${logMode === 'DEBUG' ? 'active' : ''}`}>
-                    DEBUG
-                  </span>
-                  <span className={`toggle-label production-label-text ${logMode === 'PRODUCTION' ? 'active' : ''}`}>
-                    PRODUCTION
-                  </span>
-                </span>
-              </button>
-              <span className="current-mode-indicator" aria-live="polite">
-                {logMode} Mode
+        <div
+          id='debug-panel-content'
+          className={`collapsible-content ${isExpanded ? 'expanded' : 'collapsed'}`}
+          aria-hidden={!isExpanded}
+        >
+          <div className='debug-content'>
+            <div className='debug-metric'>
+              <span className='debug-label'>Latest Response Time:</span>
+              <span className='debug-value' aria-live='polite'>
+                {latestResponseTime !== null
+                  ? `${latestResponseTime.toFixed(1)}s`
+                  : 'No responses yet'}
               </span>
             </div>
-          </div>
 
-          {/* AI Model Selector */}
-          <div className="debug-metric">
-            <span className="debug-label">AI Model:</span>
-            <div className="model-selector-container">
-              <select
-                className="model-selector"
-                value={currentModel || ''}
-                onChange={handleModelChange}
-                disabled={isLoadingModels || models.length === 0}
-                aria-label="Select AI model"
-                aria-describedby={modelError ? "model-error" : undefined}
-              >
-                {models.length === 0 ? (
-                  <option value="">No models available</option>
-                ) : (
-                  models.map(model => (
-                    <option key={model.id} value={model.id}>
-                      {model.name}
-                      {model.isDefault && ' (default)'}
-                    </option>
-                  ))
+            <div className='debug-metric'>
+              <span className='debug-label'>Console Log Mode:</span>
+              <div className='log-mode-toggle-container'>
+                <button
+                  className={`log-mode-toggle ${logMode.toLowerCase()}-mode`}
+                  onClick={toggleLogMode}
+                  onKeyDown={toggleLogMode}
+                  aria-label={`Switch from ${logMode} to ${
+                    logMode === 'NONE'
+                      ? 'DEBUG'
+                      : logMode === 'DEBUG'
+                        ? 'PRODUCTION'
+                        : 'NONE'
+                  } mode`}
+                  aria-pressed={logMode !== 'NONE'}
+                  role='switch'
+                >
+                  <span className='toggle-slider' aria-hidden='true'>
+                    <span className='toggle-indicator'></span>
+                  </span>
+                  <span className='toggle-labels'>
+                    <span
+                      className={`toggle-label none-label-text ${logMode === 'NONE' ? 'active' : ''}`}
+                    >
+                      NONE
+                    </span>
+                    <span
+                      className={`toggle-label debug-label-text ${logMode === 'DEBUG' ? 'active' : ''}`}
+                    >
+                      DEBUG
+                    </span>
+                    <span
+                      className={`toggle-label production-label-text ${logMode === 'PRODUCTION' ? 'active' : ''}`}
+                    >
+                      PRODUCTION
+                    </span>
+                  </span>
+                </button>
+                <span className='current-mode-indicator' aria-live='polite'>
+                  {logMode} Mode
+                </span>
+              </div>
+            </div>
+
+            {/* AI Model Selector */}
+            <div className='debug-metric'>
+              <span className='debug-label'>AI Model:</span>
+              <div className='model-selector-container'>
+                <select
+                  className='model-selector'
+                  value={currentModel || ''}
+                  onChange={handleModelChange}
+                  disabled={isLoadingModels || models.length === 0}
+                  aria-label='Select AI model'
+                  aria-describedby={modelError ? 'model-error' : undefined}
+                >
+                  {models.length === 0 ? (
+                    <option value=''>No models available</option>
+                  ) : (
+                    models.map(model => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                        {model.isDefault && ' (default)'}
+                      </option>
+                    ))
+                  )}
+                </select>
+                {isLoadingModels && (
+                  <span
+                    className='loading-indicator'
+                    aria-label='Loading models'
+                  >
+                    Loading...
+                  </span>
                 )}
-              </select>
-              {isLoadingModels && (
-                <span className="loading-indicator" aria-label="Loading models">
-                  Loading...
-                </span>
-              )}
-              {modelError && (
-                <span id="model-error" className="error-message" role="alert">
-                  {modelError}
-                </span>
-              )}
+                {modelError && (
+                  <span id='model-error' className='error-message' role='alert'>
+                    {modelError}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 DebugPanel.displayName = 'DebugPanel';
 

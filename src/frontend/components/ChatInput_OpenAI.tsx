@@ -26,8 +26,8 @@ export interface ChatInputRef {
   clear: () => void;
 }
 
-const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
-  function ChatInput_OpenAI(
+const ChatInput_OpenAI = memo(
+  forwardRef<ChatInputRef, ChatInput_OpenAIProps>(function ChatInput_OpenAI(
     {
       onSendMessage,
       isLoading,
@@ -56,85 +56,94 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
         logger.debug('📝 External value updated', {
           component: 'ChatInput_OpenAI',
           newValueLength: externalValue.length,
-          hasContent: externalValue.length > 0
+          hasContent: externalValue.length > 0,
         });
         setInternalValue(externalValue);
       }
     }, [externalValue]);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const handleSubmit = useCallback((e: React.FormEvent) => {
-      e.preventDefault();
+    const handleSubmit = useCallback(
+      (e: React.FormEvent) => {
+        e.preventDefault();
 
-      // Clear any existing error state
-      setHasError(false);
+        // Clear any existing error state
+        setHasError(false);
 
-      if (inputValue.trim() && !isLoading) {
-        // Show success feedback
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 500);
+        if (inputValue.trim() && !isLoading) {
+          // Show success feedback
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 500);
 
-        onSendMessage(inputValue.trim());
+          onSendMessage(inputValue.trim());
 
-        // Immediate clear for instant UI feedback
+          // Immediate clear for instant UI feedback
+          if (externalValue !== undefined && onValueChange) {
+            onValueChange('');
+          } else {
+            setInternalValue('');
+          }
+
+          // Use startTransition for non-critical height reset
+          startTransition(() => {
+            if (textareaRef.current) {
+              textareaRef.current.style.height = 'auto';
+            }
+          });
+        } else if (!inputValue.trim()) {
+          // Show error feedback for empty submission
+          setHasError(true);
+          setTimeout(() => setHasError(false), 600);
+        }
+      },
+      [inputValue, isLoading, onSendMessage, externalValue, onValueChange]
+    );
+
+    const handleInputChange = useCallback(
+      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = e.target.value;
+
+        // Immediate state updates for instant UI responsiveness
+        setHasError(prev => (prev ? false : prev));
+
+        // Update appropriate state immediately - no debouncing for <16ms responsiveness
         if (externalValue !== undefined && onValueChange) {
-          onValueChange('');
+          onValueChange(newValue);
         } else {
-          setInternalValue('');
+          setInternalValue(newValue);
         }
 
-        // Use startTransition for non-critical height reset
+        // Use startTransition for non-critical auto-resize calculations
+        const textarea = e.target;
         startTransition(() => {
-          if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
+          // Auto-resize logic deferred to not block input responsiveness
+          const previousHeight = textarea.style.height;
+          textarea.style.height = 'auto';
+          const newHeight = Math.min(textarea.scrollHeight, 200) + 'px';
+
+          if (previousHeight !== newHeight) {
+            textarea.style.height = newHeight;
           }
         });
-      } else if (!inputValue.trim()) {
-        // Show error feedback for empty submission
-        setHasError(true);
-        setTimeout(() => setHasError(false), 600);
-      }
-    }, [inputValue, isLoading, onSendMessage, externalValue, onValueChange]);
+      },
+      [externalValue, onValueChange]
+    );
 
-    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
-
-      // Immediate state updates for instant UI responsiveness
-      setHasError(prev => prev ? false : prev);
-
-      // Update appropriate state immediately - no debouncing for <16ms responsiveness
-      if (externalValue !== undefined && onValueChange) {
-        onValueChange(newValue);
-      } else {
-        setInternalValue(newValue);
-      }
-
-      // Use startTransition for non-critical auto-resize calculations
-      const textarea = e.target;
-      startTransition(() => {
-        // Auto-resize logic deferred to not block input responsiveness
-        const previousHeight = textarea.style.height;
-        textarea.style.height = 'auto';
-        const newHeight = Math.min(textarea.scrollHeight, 200) + 'px';
-
-        if (previousHeight !== newHeight) {
-          textarea.style.height = newHeight;
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          // Create a synthetic form event for handleSubmit
+          const syntheticEvent = {
+            preventDefault: () => {},
+            target: e.target,
+            currentTarget: e.target,
+          } as React.FormEvent;
+          handleSubmit(syntheticEvent);
         }
-      });
-    }, [externalValue, onValueChange]);
-
-    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        // Create a synthetic form event for handleSubmit
-        const syntheticEvent = {
-          preventDefault: () => { },
-          target: e.target,
-          currentTarget: e.target,
-        } as React.FormEvent;
-        handleSubmit(syntheticEvent);
-      }
-    }, [handleSubmit]);
+      },
+      [handleSubmit]
+    );
 
     // Enhanced focus handlers for smooth transitions
     const handleFocus = useCallback(() => {
@@ -212,10 +221,9 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            className={`message-input ${isFocused ? 'input-focused' : ''
-              } ${hasError ? 'input-error' : ''
-              } ${showSuccess ? 'input-success' : ''
-              }`}
+            className={`message-input ${isFocused ? 'input-focused' : ''} ${
+              hasError ? 'input-error' : ''
+            } ${showSuccess ? 'input-success' : ''}`}
             disabled={isLoading}
             rows={4}
             style={{ minHeight: '80px', maxHeight: '200px' }}
@@ -232,9 +240,9 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
           <button
             type='submit'
             disabled={!inputValue.trim() || isLoading}
-            className={`send-button ${showSuccess ? 'button-success' : ''
-              } ${hasError ? 'button-error' : ''
-              }`}
+            className={`send-button ${showSuccess ? 'button-success' : ''} ${
+              hasError ? 'button-error' : ''
+            }`}
             aria-describedby='send-help'
           >
             {isLoading ? (
@@ -244,7 +252,9 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
               </>
             ) : showSuccess ? (
               <>
-                <span className='success-icon' aria-hidden='true'>✓</span>
+                <span className='success-icon' aria-hidden='true'>
+                  ✓
+                </span>
                 Sent
               </>
             ) : (
@@ -261,8 +271,8 @@ const ChatInput_OpenAI = memo(forwardRef<ChatInputRef, ChatInput_OpenAIProps>(
         </div>
       </form>
     );
-  }
-));
+  })
+);
 
 export default ChatInput_OpenAI;
 

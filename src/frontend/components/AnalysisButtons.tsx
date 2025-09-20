@@ -1,16 +1,25 @@
-import { useEffect, useCallback, useState, memo, useDebugValue, useMemo, useDeferredValue, startTransition } from 'react';
-import { AnalysisButtonsProps, AnalysisType } from '../types/chat_OpenAI';
-import { usePromptAPI } from '../hooks/usePromptAPI';
 import {
-  useStateLogger,
+  memo,
+  startTransition,
+  useCallback,
+  useDebugValue,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  useConditionalLogger,
   useInteractionLogger,
   usePerformanceLogger,
-  useConditionalLogger
+  useStateLogger,
 } from '../hooks/useDebugLog';
+import { usePromptAPI } from '../hooks/usePromptAPI';
+import '../styles/AnalysisButtons.css';
+import { AnalysisButtonsProps, AnalysisType } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
 import AnalysisButton from './AnalysisButton';
 import SharedTickerInput from './SharedTickerInput';
-import '../styles/AnalysisButtons.css';
 
 // Define the expected order of analysis types for consistent display
 const ANALYSIS_TYPE_ORDER: AnalysisType[] = [
@@ -30,19 +39,22 @@ export default memo(function AnalysisButtons({
   // ✅ React DevTools debugging (preferred for component inspection)
   useDebugValue(
     `Templates: ${templates.length}, Loading: ${loading}, Ticker: ${currentTicker}`,
-    (value) => `AnalysisButtons - ${value}`
+    value => `AnalysisButtons - ${value}`
   );
 
   // ✅ Consolidated state logging (React best practice: single focused logger)
-  useStateLogger('AnalysisButtons', 'state', {
-    templatesCount: templates.length,
-    loading,
-    hasError: !!error,
-    ticker: currentTicker
-  },
-  // ✅ Only log on meaningful changes (avoids Strict Mode double-logging)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  process.env.NODE_ENV === 'development' && (templates.length > 0 || !!error)
+  useStateLogger(
+    'AnalysisButtons',
+    'state',
+    {
+      templatesCount: templates.length,
+      loading,
+      hasError: !!error,
+      ticker: currentTicker,
+    },
+    // ✅ Only log on meaningful changes (avoids Strict Mode double-logging)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    process.env.NODE_ENV === 'development' && (templates.length > 0 || !!error)
   );
 
   // ✅ Performance tracking (kept for actual performance measurement)
@@ -52,26 +64,41 @@ export default memo(function AnalysisButtons({
   const logInteraction = useInteractionLogger('AnalysisButtons');
 
   // ✅ Simplified error logging (only when errors actually occur)
-  useConditionalLogger('AnalysisButtons', !!error, 'Error state detected', {
-    errorMessage: error,
-    templatesCount: templates.length
-  }, 'warn');
-  
+  useConditionalLogger(
+    'AnalysisButtons',
+    !!error,
+    'Error state detected',
+    {
+      errorMessage: error,
+      templatesCount: templates.length,
+    },
+    'warn'
+  );
+
   // Conditional logging for successful template loads
-  useConditionalLogger('AnalysisButtons', templates.length > 0 && !loading, 'Templates loaded successfully', {
-    templateCount: templates.length,
-    currentTicker
-  }, 'info');
+  useConditionalLogger(
+    'AnalysisButtons',
+    templates.length > 0 && !loading,
+    'Templates loaded successfully',
+    {
+      templateCount: templates.length,
+      currentTicker,
+    },
+    'info'
+  );
 
   // Auto-retry template loading on error after a delay
   useEffect(() => {
     if (error && !loading) {
       logger.warn('⚠️ Templates failed to load, scheduling auto-retry', {
         component: 'AnalysisButtons',
-        error: typeof error === 'string' ? error.slice(0, 100) + (error.length > 100 ? '...' : '') : 'Unknown error',
-        retryDelaySeconds: 3
+        error:
+          typeof error === 'string'
+            ? error.slice(0, 100) + (error.length > 100 ? '...' : '')
+            : 'Unknown error',
+        retryDelaySeconds: 3,
       });
-      
+
       const retryTimeout = setTimeout(() => {
         logger.info('🔄 Auto-retrying template load after error');
         void refreshTemplates(); // Use void operator for floating promise
@@ -90,16 +117,16 @@ export default memo(function AnalysisButtons({
       logInteraction('prompt_generated', 'analysis_button', {
         promptLength: prompt.length,
         promptPreview: prompt.slice(0, 80) + (prompt.length > 80 ? '...' : ''),
-        currentTicker
+        currentTicker,
       });
-      
+
       logger.info('🎯 Analysis prompt generated', {
         component: 'AnalysisButtons',
         promptLength: prompt.length,
         ticker: currentTicker,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       onPromptGenerated(prompt);
     },
     [onPromptGenerated, currentTicker, logInteraction]
@@ -109,15 +136,18 @@ export default memo(function AnalysisButtons({
   const handleRetry = useCallback(() => {
     logInteraction('retry_templates', 'retry_button', {
       previousError: error,
-      templatesCount: templates.length
+      templatesCount: templates.length,
     });
-    
+
     logger.info('🔄 Manual retry triggered', {
       component: 'AnalysisButtons',
       reason: 'user_retry',
-      previousError: error && typeof error === 'string' ? error.slice(0, 100) + (error.length > 100 ? '...' : '') : 'Unknown error'
+      previousError:
+        error && typeof error === 'string'
+          ? error.slice(0, 100) + (error.length > 100 ? '...' : '')
+          : 'Unknown error',
     });
-    
+
     startTiming('template_retry');
     void refreshTemplates(); // Use void operator for floating promise
   }, [refreshTemplates, logInteraction, error, templates.length, startTiming]);
@@ -126,24 +156,29 @@ export default memo(function AnalysisButtons({
   const [isExpanded, setIsExpanded] = useState(() => {
     try {
       const saved = localStorage.getItem('quickAnalysisExpanded');
-      const defaultExpanded = saved !== null ? JSON.parse(saved) as boolean : true;
+      const defaultExpanded =
+        saved !== null ? (JSON.parse(saved) as boolean) : true;
 
       // ✅ Only log localStorage initialization when value actually changes from default
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (process.env.NODE_ENV === 'development' && saved !== null && defaultExpanded !== true) {
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      if (isDevelopment && saved !== null && defaultExpanded !== true) {
         logger.debug('📦 Initialized expand state from localStorage', {
           component: 'AnalysisButtons',
           savedValue: saved,
-          defaultExpanded
+          defaultExpanded,
         });
       }
-      
+
       return defaultExpanded;
     } catch (error) {
-      logger.warn('⚠️ Failed to parse localStorage expand state, using default', {
-        component: 'AnalysisButtons',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
+      logger.warn(
+        '⚠️ Failed to parse localStorage expand state, using default',
+        {
+          component: 'AnalysisButtons',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }
+      );
       return true;
     }
   });
@@ -156,41 +191,50 @@ export default memo(function AnalysisButtons({
     } catch (storageError) {
       logger.warn('⚠️ Failed to persist expand state to localStorage', {
         component: 'AnalysisButtons',
-        error: storageError instanceof Error ? storageError.message : 'Unknown error'
+        error:
+          storageError instanceof Error
+            ? storageError.message
+            : 'Unknown error',
       });
     }
   }, [isExpanded]);
 
   // Toggle expand/collapse with keyboard support
-  const toggleExpanded = useCallback((event?: React.KeyboardEvent | React.MouseEvent) => {
-    if (event && 'key' in event) {
-      // Handle keyboard events
-      if (event.key !== 'Enter' && event.key !== ' ') {
-        return;
+  const toggleExpanded = useCallback(
+    (event?: React.KeyboardEvent | React.MouseEvent) => {
+      if (event && 'key' in event) {
+        // Handle keyboard events
+        if (event.key !== 'Enter' && event.key !== ' ') {
+          return;
+        }
+        event.preventDefault();
+
+        logInteraction('toggle_expanded', 'keyboard', {
+          key: event.key,
+          currentState: isExpanded,
+          newState: !isExpanded,
+        });
+      } else if (event) {
+        logInteraction('toggle_expanded', 'mouse_click', {
+          currentState: isExpanded,
+          newState: !isExpanded,
+        });
       }
-      event.preventDefault();
-      
-      logInteraction('toggle_expanded', 'keyboard', {
-        key: event.key,
-        currentState: isExpanded,
-        newState: !isExpanded
-      });
-    } else if (event) {
-      logInteraction('toggle_expanded', 'mouse_click', {
-        currentState: isExpanded,
-        newState: !isExpanded
-      });
-    }
-    
-    logger.info(`🔄 Toggling analysis section: ${isExpanded ? 'collapsing' : 'expanding'}`, {
-      component: 'AnalysisButtons',
-      previousState: isExpanded,
-      newState: !isExpanded,
-      inputMethod: event && 'key' in event ? 'keyboard' : 'mouse'
-    });
-    
-    setIsExpanded(prev => !prev);
-  }, [isExpanded, logInteraction]);
+
+      logger.info(
+        `🔄 Toggling analysis section: ${isExpanded ? 'collapsing' : 'expanding'}`,
+        {
+          component: 'AnalysisButtons',
+          previousState: isExpanded,
+          newState: !isExpanded,
+          inputMethod: event && 'key' in event ? 'keyboard' : 'mouse',
+        }
+      );
+
+      setIsExpanded(prev => !prev);
+    },
+    [isExpanded, logInteraction]
+  );
 
   // Memoize expensive template sorting operation
   const sortedTemplates = useMemo(() => {
@@ -206,22 +250,24 @@ export default memo(function AnalysisButtons({
       return aIndex - bIndex;
     });
   }, [templates]);
-  
+
   // Use deferred value for ticker to improve input responsiveness
   const deferredTicker = useDeferredValue(currentTicker);
-  
+
   // Log template sorting results when templates change
   useEffect(() => {
     if (templates.length > 0) {
       const templateTypes = sortedTemplates.map(t => t.type);
-      const unknownTypes = templates.filter(t => !ANALYSIS_TYPE_ORDER.includes(t.type));
-      
+      const unknownTypes = templates.filter(
+        t => !ANALYSIS_TYPE_ORDER.includes(t.type)
+      );
+
       logger.debug('📊 Templates sorted for display', {
         component: 'AnalysisButtons',
         totalTemplates: templates.length,
         sortedOrder: templateTypes,
         unknownTypes: unknownTypes.map(t => t.type),
-        predefinedOrder: ANALYSIS_TYPE_ORDER
+        predefinedOrder: ANALYSIS_TYPE_ORDER,
       });
     }
   }, [templates, sortedTemplates]);
@@ -231,9 +277,9 @@ export default memo(function AnalysisButtons({
     logger.debug('Loading analysis templates', {
       component: 'AnalysisButtons',
       loading,
-      templatesCount: templates.length
+      templatesCount: templates.length,
     });
-    
+
     return (
       <div
         className={`analysis-buttons-container loading ${className}`}
@@ -258,9 +304,9 @@ export default memo(function AnalysisButtons({
       component: 'AnalysisButtons',
       error: error.slice(0, 150) + (error.length > 150 ? '...' : ''),
       loading,
-      templatesCount: templates.length
+      templatesCount: templates.length,
     });
-    
+
     return (
       <div
         className={`analysis-buttons-container error ${className}`}
@@ -297,10 +343,10 @@ export default memo(function AnalysisButtons({
         component: 'AnalysisButtons',
         loading,
         error,
-        templatesCount: templates.length
+        templatesCount: templates.length,
       });
     }
-    
+
     return (
       <div
         className={`analysis-buttons-container empty ${className}`}
@@ -333,23 +379,23 @@ export default memo(function AnalysisButtons({
       <div className='ticker-input-wrapper'>
         <SharedTickerInput
           value={currentTicker}
-          onChange={(newTicker) => {
+          onChange={newTicker => {
             // Immediate UI update for responsiveness
             onTickerChange(newTicker);
-            
+
             // Defer non-critical operations
             startTransition(() => {
               logInteraction('ticker_change', 'ticker_input', {
                 oldTicker: currentTicker,
                 newTicker,
-                source: 'shared_ticker_input'
+                source: 'shared_ticker_input',
               });
-              
+
               logger.info('🏷️ Ticker changed via input', {
                 component: 'AnalysisButtons',
                 oldTicker: currentTicker,
                 newTicker,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
               });
             });
           }}
@@ -363,7 +409,7 @@ export default memo(function AnalysisButtons({
         </div>
       </div>
 
-      <div 
+      <div
         className='buttons-header clickable-header'
         onClick={toggleExpanded}
         onKeyDown={toggleExpanded}
@@ -383,28 +429,31 @@ export default memo(function AnalysisButtons({
               )}
             </p>
           </div>
-          <div className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`} aria-hidden='true'>
+          <div
+            className={`chevron-icon ${isExpanded ? 'expanded' : 'collapsed'}`}
+            aria-hidden='true'
+          >
             ▶
           </div>
         </div>
       </div>
 
-      <div 
+      <div
         id='analysis-buttons-content'
         className={`collapsible-content ${isExpanded ? 'expanded' : 'collapsed'}`}
         aria-hidden={!isExpanded}
       >
         <div className='buttons-grid'>
-        {sortedTemplates.map(template => (
-          <AnalysisButton
-            key={template.id}
-            template={template}
-            ticker={deferredTicker}
-            onPromptGenerated={handlePromptGenerated}
-            isLoading={loading}
-            className='grid-button'
-          />
-        ))}
+          {sortedTemplates.map(template => (
+            <AnalysisButton
+              key={template.id}
+              template={template}
+              ticker={deferredTicker}
+              onPromptGenerated={handlePromptGenerated}
+              isLoading={loading}
+              className='grid-button'
+            />
+          ))}
         </div>
       </div>
 
@@ -424,14 +473,17 @@ export default memo(function AnalysisButtons({
         <div className='refresh-error' role='alert' aria-live='polite'>
           <span className='error-icon-small'>⚠️</span>
           <span className='error-text-small'>Failed to refresh: {error}</span>
-          <button 
+          <button
             onClick={() => {
               logInteraction('retry_refresh_error', 'retry_button_small', {
-                error: typeof error === 'string' ? error.slice(0, 50) + (error.length > 50 ? '...' : '') : 'Unknown error',
-                templatesCount: templates.length
+                error:
+                  typeof error === 'string'
+                    ? error.slice(0, 50) + (error.length > 50 ? '...' : '')
+                    : 'Unknown error',
+                templatesCount: templates.length,
               });
               handleRetry();
-            }} 
+            }}
             className='retry-button-small'
           >
             Retry
@@ -441,4 +493,3 @@ export default memo(function AnalysisButtons({
     </div>
   );
 });
-

@@ -31,9 +31,7 @@ def get_logger(name: str) -> logging.Logger:
         handler.setLevel(logging.ERROR)
 
         # Simple format without colors or complex formatting
-        formatter = logging.Formatter(
-            "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s - %(message)s")
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
@@ -44,18 +42,32 @@ def get_logger(name: str) -> logging.Logger:
 
 
 # Minimal helper functions for backward compatibility
-def log_api_request(logger, method: str, endpoint: str, user_message: Optional[str] = None, request_id: Optional[str] = None):
+def log_api_request(
+    logger,
+    method: str,
+    endpoint: str,
+    user_message: Optional[str] = None,
+    request_id: Optional[str] = None,
+):
     """Minimal API request logging - errors only."""
     pass  # No-op for performance
 
 
-def log_api_response(logger, status_code: int, response_time: float, token_count: Optional[int] = None, request_id: Optional[str] = None):
+def log_api_response(
+    logger,
+    status_code: int,
+    response_time: float,
+    token_count: Optional[int] = None,
+    request_id: Optional[str] = None,
+):
     """Minimal API response logging - errors only."""
     if status_code >= 400:
         logger.error(f"API Error: {status_code} in {response_time:.3f}s")
 
 
-def log_mcp_operation(logger, operation: str, duration: float, success: bool, error_message: Optional[str] = None):
+def log_mcp_operation(
+    logger, operation: str, duration: float, success: bool, error_message: Optional[str] = None
+):
     """Minimal MCP operation logging - errors only."""
     if not success:
         logger.error(f"MCP Operation failed: {operation} - {error_message}")

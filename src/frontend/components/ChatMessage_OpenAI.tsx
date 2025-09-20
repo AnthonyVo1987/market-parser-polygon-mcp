@@ -1,4 +1,12 @@
-import { ComponentPropsWithoutRef, Suspense, lazy, useEffect, useState, memo, useMemo } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  memo,
+  useMemo,
+} from 'react';
 
 // Lazy load react-markdown for better performance
 const Markdown = lazy(() => import('react-markdown'));
@@ -170,80 +178,88 @@ const createMarkdownComponents = () => ({
   },
 });
 
-const ChatMessage_OpenAI = memo(function ChatMessage_OpenAI({
-  message,
-}: ChatMessage_OpenAIProps) {
-  const isUser = message.sender === 'user';
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+const ChatMessage_OpenAI = memo(
+  function ChatMessage_OpenAI({ message }: ChatMessage_OpenAIProps) {
+    const isUser = message.sender === 'user';
+    const [isVisible, setIsVisible] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-  // Memoize markdown components configuration for performance
-  const markdownComponents = useMemo(() => createMarkdownComponents(), []);
+    // Memoize markdown components configuration for performance
+    const markdownComponents = useMemo(() => createMarkdownComponents(), []);
 
-  // Memoize expensive message processing computations
-  const messageMetadata = useMemo(() => ({
-    hasMetadata: !!message.metadata,
-    processingTime: message.metadata?.processingTime,
-    isError: message.metadata?.isError,
-    formattedTime: message.timestamp.toLocaleTimeString()
-  }), [message.metadata, message.timestamp]);
+    // Memoize expensive message processing computations
+    const messageMetadata = useMemo(
+      () => ({
+        hasMetadata: !!message.metadata,
+        processingTime: message.metadata?.processingTime,
+        isError: message.metadata?.isError,
+        formattedTime: message.timestamp.toLocaleTimeString(),
+      }),
+      [message.metadata, message.timestamp]
+    );
 
-  // Animation removed for performance - show immediately
-  useEffect(() => {
-    setIsVisible(true);
-    setIsLoaded(true);
-  }, []);
+    // Animation removed for performance - show immediately
+    useEffect(() => {
+      setIsVisible(true);
+      setIsLoaded(true);
+    }, []);
 
-  return (
-    <div className={`message ${isUser ? 'user-message' : 'ai-message'} ${
-      isVisible ? 'message-visible' : 'message-hidden'
-    } ${
-      isLoaded ? 'message-loaded' : 'message-loading'
-    }`}>
-      <div className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`}>
-        <MessageCopyButton message={message} />
-        <div className='message-content'>
-          {isUser ? (
-            // For user messages, display as plain text
-            message.content
-          ) : (
-            // For AI messages, render as markdown with enhanced formatting
-            <Suspense
-              fallback={
-                <div className='markdown-loading'>Loading content...</div>
-              }
-            >
-              <Markdown components={markdownComponents}>
-                {message.content}
-              </Markdown>
-            </Suspense>
-          )}
-        </div>
-        <div className='message-timestamp'>
-          {messageMetadata.formattedTime}
-          {message.sender === 'ai' && messageMetadata.processingTime && (
-            <span className='response-time'>
-              {' '}({messageMetadata.processingTime.toFixed(1)}s)
-            </span>
-          )}
+    return (
+      <div
+        className={`message ${isUser ? 'user-message' : 'ai-message'} ${
+          isVisible ? 'message-visible' : 'message-hidden'
+        } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
+      >
+        <div
+          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`}
+        >
+          <MessageCopyButton message={message} />
+          <div className='message-content'>
+            {isUser ? (
+              // For user messages, display as plain text
+              message.content
+            ) : (
+              // For AI messages, render as markdown with enhanced formatting
+              <Suspense
+                fallback={
+                  <div className='markdown-loading'>Loading content...</div>
+                }
+              >
+                <Markdown components={markdownComponents}>
+                  {message.content}
+                </Markdown>
+              </Suspense>
+            )}
+          </div>
+          <div className='message-timestamp'>
+            {messageMetadata.formattedTime}
+            {message.sender === 'ai' && messageMetadata.processingTime && (
+              <span className='response-time'>
+                {' '}
+                ({messageMetadata.processingTime.toFixed(1)}s)
+              </span>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}, (prevProps, nextProps) => {
-  // Custom comparison function for memo
-  const prevMessage = prevProps.message;
-  const nextMessage = nextProps.message;
-  
-  // Check if message content, timestamp, or metadata changed
-  return (
-    prevMessage.id === nextMessage.id &&
-    prevMessage.content === nextMessage.content &&
-    prevMessage.sender === nextMessage.sender &&
-    prevMessage.timestamp.getTime() === nextMessage.timestamp.getTime() &&
-    JSON.stringify(prevMessage.metadata) === JSON.stringify(nextMessage.metadata)
-  );
-});
+    );
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison function for memo
+    const prevMessage = prevProps.message;
+    const nextMessage = nextProps.message;
+
+    // Check if message content, timestamp, or metadata changed
+    return (
+      prevMessage.id === nextMessage.id &&
+      prevMessage.content === nextMessage.content &&
+      prevMessage.sender === nextMessage.sender &&
+      prevMessage.timestamp.getTime() === nextMessage.timestamp.getTime() &&
+      JSON.stringify(prevMessage.metadata) ===
+        JSON.stringify(nextMessage.metadata)
+    );
+  }
+);
 
 ChatMessage_OpenAI.displayName = 'ChatMessage_OpenAI';
 

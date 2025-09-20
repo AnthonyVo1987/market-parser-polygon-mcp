@@ -34,7 +34,10 @@ export default function AnalysisButton({
 
   // Determine if button should show loading state
   const isButtonLoading = isLoading || isGenerating;
-  const isButtonDisabled = disabled || isButtonLoading || (template.requiresTicker && ticker.length < 3);
+  const isButtonDisabled =
+    disabled ||
+    isButtonLoading ||
+    (template.requiresTicker && ticker.length < 3);
 
   // Handle button click to generate and populate prompt
   const handleButtonClick = useCallback(async () => {
@@ -71,16 +74,16 @@ export default function AnalysisButton({
     generateWithLoading,
     isButtonDisabled,
   ]);
-  
+
   // Mouse event handlers for enhanced hover state
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
   }, []);
-  
+
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
   }, []);
-  
+
   // Update error state based on API or generation errors
   useEffect(() => {
     const hasAnyError = !!(generationError || apiError);
@@ -88,8 +91,6 @@ export default function AnalysisButton({
       setHasError(hasAnyError);
     }
   }, [generationError, apiError, hasError]);
-
-
 
   const displayError = generationError || apiError;
 
@@ -99,8 +100,6 @@ export default function AnalysisButton({
       role='group'
       aria-labelledby={`button-${template.id}-label`}
     >
-
-
       {/* Main analysis button */}
       <button
         id={`button-${template.id}-label`}
@@ -109,13 +108,9 @@ export default function AnalysisButton({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         disabled={isButtonDisabled}
-        className={`analysis-button ${
-          showSuccess ? 'button-success' : ''
-        } ${
+        className={`analysis-button ${showSuccess ? 'button-success' : ''} ${
           hasError ? 'button-error' : ''
-        } ${
-          isHovered ? 'button-hovered' : ''
-        }`}
+        } ${isHovered ? 'button-hovered' : ''}`}
         data-testid={getTestId(template.type)}
         aria-describedby={`button-help-${template.id} ${displayError ? `error-${template.id}` : ''}`}
         title={template.description}
@@ -124,7 +119,11 @@ export default function AnalysisButton({
           {template.icon}
         </span>
         <span className='button-text'>
-          {isButtonLoading ? 'Loading...' : showSuccess ? 'Generated!' : template.name}
+          {isButtonLoading
+            ? 'Loading...'
+            : showSuccess
+              ? 'Generated!'
+              : template.name}
         </span>
         {isButtonLoading && (
           <span className='loading-spinner' aria-hidden='true'>
@@ -132,10 +131,14 @@ export default function AnalysisButton({
           </span>
         )}
         {showSuccess && !isButtonLoading && (
-          <span className='success-indicator' aria-hidden='true'>✓</span>
+          <span className='success-indicator' aria-hidden='true'>
+            ✓
+          </span>
         )}
         {hasError && !isButtonLoading && (
-          <span className='error-indicator' aria-hidden='true'>⚠</span>
+          <span className='error-indicator' aria-hidden='true'>
+            ⚠
+          </span>
         )}
       </button>
 
@@ -159,8 +162,6 @@ export default function AnalysisButton({
           {displayError}
         </div>
       )}
-
-
     </div>
   );
 }

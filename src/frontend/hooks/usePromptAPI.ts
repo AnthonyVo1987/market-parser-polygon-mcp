@@ -5,7 +5,7 @@ import {
   PROMPT_API_ENDPOINTS,
   PromptTemplate,
   UsePromptAPIResult,
-  isValidPromptTemplate
+  isValidPromptTemplate,
 } from '../types/chat_OpenAI';
 
 const API_BASE_URL = getAPIBaseURL();
@@ -80,25 +80,36 @@ export function usePromptAPI(): UsePromptAPIResult {
           );
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as {
+          templates?: Record<
+            string,
+            { templateId: string; description: string }
+          >;
+        };
 
         // Handle new backend response format
         if (data.templates) {
           // Convert backend format to frontend format
-          const templateArray = Object.values(data.templates).map((template: any) => ({
-            id: template.templateId,
-            type: template.templateId,
-            name: template.description.replace(' analysis template', ''),
-            description: template.description,
-            template: `Provide ${template.templateId.replace('_', ' ')} analysis for {ticker}`,
-            icon: template.templateId === 'snapshot' ? '📈' :
-              template.templateId === 'technical' ? '🔧' : '🎯',
-            requiresTicker: true,
-            followUpQuestions: [
-              "Would you like more details on this analysis?",
-              "Should we analyze another stock?",
-            ],
-          }));
+          const templateArray = Object.values(data.templates).map(
+            (template: { templateId: string; description: string }) => ({
+              id: template.templateId,
+              type: template.templateId,
+              name: template.description.replace(' analysis template', ''),
+              description: template.description,
+              template: `Provide ${template.templateId.replace('_', ' ')} analysis for {ticker}`,
+              icon:
+                template.templateId === 'snapshot'
+                  ? '📈'
+                  : template.templateId === 'technical'
+                    ? '🔧'
+                    : '🎯',
+              requiresTicker: true,
+              followUpQuestions: [
+                'Would you like more details on this analysis?',
+                'Should we analyze another stock?',
+              ],
+            })
+          );
 
           // Validate template data
           const validTemplates = templateArray.filter(

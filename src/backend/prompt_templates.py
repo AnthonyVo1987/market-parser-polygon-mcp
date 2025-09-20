@@ -200,7 +200,9 @@ class TickerExtractor:
 
         return None
 
-    def _extract_from_context(self, _text: str, chat_history: List[Dict]) -> Optional[TickerContext]:
+    def _extract_from_context(
+        self, _text: str, chat_history: List[Dict]
+    ) -> Optional[TickerContext]:
         """Extract ticker from conversation context"""
         # Look through recent chat history for ticker mentions
         recent_messages = chat_history[-10:]  # Last 10 messages

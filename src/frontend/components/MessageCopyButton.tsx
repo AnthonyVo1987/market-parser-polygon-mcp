@@ -80,12 +80,12 @@ export default function MessageCopyButton({
     },
     [message, updateButtonState]
   );
-  
+
   // Enhanced hover handlers for sophisticated micro-interactions
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
   }, []);
-  
+
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
   }, []);

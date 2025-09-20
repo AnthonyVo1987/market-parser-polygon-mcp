@@ -1,5 +1,10 @@
 import { getAPIBaseURL, isDevelopment } from '../config/config.loader';
-import { AIModelId, MODEL_API_ENDPOINTS, ModelListResponse, ModelSelectionResponse } from '../types/ai_models';
+import {
+  AIModelId,
+  MODEL_API_ENDPOINTS,
+  ModelListResponse,
+  ModelSelectionResponse,
+} from '../types/ai_models';
 import { ApiError, ChatResponse } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
 
@@ -10,11 +15,15 @@ const API_BASE_URL = `${getAPIBaseURL()}/api`;
 logger.info('🌐 API service initialized', {
   service: 'api_OpenAI',
   baseUrl: API_BASE_URL,
-  environment: isDevelopment() ? 'development' : 'production'
+  environment: isDevelopment() ? 'development' : 'production',
 });
 
-export async function sendChatMessage(message: string, model?: AIModelId): Promise<string> {
-  const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+export async function sendChatMessage(
+  message: string,
+  model?: AIModelId
+): Promise<string> {
+  const requestId =
+    Date.now().toString() + Math.random().toString(36).substr(2, 9);
   const startTime = performance.now();
   const endpoint = '/chat';
 
@@ -22,7 +31,7 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
     messageLength: message.length,
     messagePreview: message.slice(0, 100) + (message.length > 100 ? '...' : ''),
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   try {
@@ -31,7 +40,7 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
       endpoint,
       method: 'POST',
       requestId,
-      hasBody: true
+      hasBody: true,
     });
 
     const response = await fetch(endpoint, {
@@ -53,8 +62,8 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
       duration: `${duration.toFixed(2)}ms`,
       headers: {
         contentType: response.headers.get('content-type'),
-        contentLength: response.headers.get('content-length')
-      }
+        contentLength: response.headers.get('content-length'),
+      },
     });
 
     if (!response.ok) {
@@ -66,14 +75,17 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
           service: 'api_OpenAI',
           requestId,
           status: response.status,
-          parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+          parseError:
+            parseError instanceof Error
+              ? parseError.message
+              : 'Unknown parse error',
         });
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       logger.apiResponse('POST', endpoint, response.status, duration, {
         error: errorData.error,
-        requestId
+        requestId,
       });
 
       throw new Error(errorData.error || 'Failed to send message');
@@ -87,7 +99,10 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
         service: 'api_OpenAI',
         requestId,
         status: response.status,
-        parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+        parseError:
+          parseError instanceof Error
+            ? parseError.message
+            : 'Unknown parse error',
       });
       throw new Error('Failed to parse server response');
     }
@@ -95,7 +110,7 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
     logger.apiResponse('POST', endpoint, response.status, duration, {
       responseLength: data.response.length,
       success: data.success,
-      requestId
+      requestId,
     });
 
     logger.info('✅ Chat message sent successfully', {
@@ -104,11 +119,10 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
       duration: `${duration.toFixed(2)}ms`,
       inputLength: message.length,
       outputLength: data.response.length,
-      success: data.success
+      success: data.success,
     });
 
     return data.response;
-
   } catch (error) {
     const duration = performance.now() - startTime;
 
@@ -119,13 +133,15 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
         duration: `${duration.toFixed(2)}ms`,
         errorType: error.constructor.name,
         errorMessage: error.message,
-        stack: error.stack?.slice(0, 300) + (error.stack && error.stack.length > 300 ? '...' : '')
+        stack:
+          error.stack?.slice(0, 300) +
+          (error.stack && error.stack.length > 300 ? '...' : ''),
       });
 
       logger.apiResponse('POST', endpoint, 0, duration, {
         error: error.message,
         errorType: error.constructor.name,
-        requestId
+        requestId,
       });
 
       throw error;
@@ -135,7 +151,7 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
       service: 'api_OpenAI',
       requestId,
       duration: `${duration.toFixed(2)}ms`,
-      error: String(error)
+      error: String(error),
     });
 
     throw new Error('Unknown error occurred');
@@ -145,13 +161,14 @@ export async function sendChatMessage(message: string, model?: AIModelId): Promi
 // ====== AI MODEL MANAGEMENT API FUNCTIONS ======
 
 export async function getAvailableModels(): Promise<ModelListResponse> {
-  const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  const requestId =
+    Date.now().toString() + Math.random().toString(36).substr(2, 9);
   const startTime = performance.now();
   const endpoint = `${API_BASE_URL}${MODEL_API_ENDPOINTS.LIST}`;
 
   logger.apiRequest('GET', endpoint, {
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   try {
@@ -159,7 +176,7 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
       service: 'api_OpenAI',
       endpoint,
       method: 'GET',
-      requestId
+      requestId,
     });
 
     const response = await fetch(endpoint, {
@@ -177,7 +194,7 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
       status: response.status,
       statusText: response.statusText,
       ok: response.ok,
-      duration: `${duration.toFixed(2)}ms`
+      duration: `${duration.toFixed(2)}ms`,
     });
 
     if (!response.ok) {
@@ -189,14 +206,17 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
           service: 'api_OpenAI',
           requestId,
           status: response.status,
-          parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+          parseError:
+            parseError instanceof Error
+              ? parseError.message
+              : 'Unknown parse error',
         });
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       logger.apiResponse('GET', endpoint, response.status, duration, {
         error: errorData.error,
-        requestId
+        requestId,
       });
 
       throw new Error(errorData.error || 'Failed to fetch models');
@@ -210,7 +230,10 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
         service: 'api_OpenAI',
         requestId,
         status: response.status,
-        parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+        parseError:
+          parseError instanceof Error
+            ? parseError.message
+            : 'Unknown parse error',
       });
       throw new Error('Failed to parse models response');
     }
@@ -218,7 +241,7 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
     logger.apiResponse('GET', endpoint, response.status, duration, {
       modelCount: data.total_count,
       currentModel: data.current_model,
-      requestId
+      requestId,
     });
 
     logger.info('✅ Models fetched successfully', {
@@ -226,11 +249,10 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
       requestId,
       duration: `${duration.toFixed(2)}ms`,
       modelCount: data.total_count,
-      currentModel: data.current_model
+      currentModel: data.current_model,
     });
 
     return data;
-
   } catch (error) {
     const duration = performance.now() - startTime;
 
@@ -240,13 +262,13 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
         requestId,
         duration: `${duration.toFixed(2)}ms`,
         errorType: error.constructor.name,
-        errorMessage: error.message
+        errorMessage: error.message,
       });
 
       logger.apiResponse('GET', endpoint, 0, duration, {
         error: error.message,
         errorType: error.constructor.name,
-        requestId
+        requestId,
       });
 
       throw error;
@@ -256,22 +278,25 @@ export async function getAvailableModels(): Promise<ModelListResponse> {
       service: 'api_OpenAI',
       requestId,
       duration: `${duration.toFixed(2)}ms`,
-      error: String(error)
+      error: String(error),
     });
 
     throw new Error('Unknown error occurred while fetching models');
   }
 }
 
-export async function selectModel(modelId: AIModelId): Promise<ModelSelectionResponse> {
-  const requestId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+export async function selectModel(
+  modelId: AIModelId
+): Promise<ModelSelectionResponse> {
+  const requestId =
+    Date.now().toString() + Math.random().toString(36).substr(2, 9);
   const startTime = performance.now();
   const endpoint = `${API_BASE_URL}${MODEL_API_ENDPOINTS.SELECT}`;
 
   logger.apiRequest('POST', endpoint, {
     modelId,
     requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   try {
@@ -280,15 +305,18 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       endpoint,
       method: 'POST',
       requestId,
-      modelId
+      modelId,
     });
 
-    const response = await fetch(`${endpoint}?model_id=${encodeURIComponent(modelId)}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(
+      `${endpoint}?model_id=${encodeURIComponent(modelId)}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
     const duration = performance.now() - startTime;
 
@@ -298,7 +326,7 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       status: response.status,
       statusText: response.statusText,
       ok: response.ok,
-      duration: `${duration.toFixed(2)}ms`
+      duration: `${duration.toFixed(2)}ms`,
     });
 
     if (!response.ok) {
@@ -310,14 +338,17 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
           service: 'api_OpenAI',
           requestId,
           status: response.status,
-          parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+          parseError:
+            parseError instanceof Error
+              ? parseError.message
+              : 'Unknown parse error',
         });
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       logger.apiResponse('POST', endpoint, response.status, duration, {
         error: errorData.error,
-        requestId
+        requestId,
       });
 
       throw new Error(errorData.error || 'Failed to select model');
@@ -331,7 +362,10 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
         service: 'api_OpenAI',
         requestId,
         status: response.status,
-        parseError: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+        parseError:
+          parseError instanceof Error
+            ? parseError.message
+            : 'Unknown parse error',
       });
       throw new Error('Failed to parse model selection response');
     }
@@ -340,7 +374,7 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       success: data.success,
       selectedModel: data.selected_model,
       previousModel: data.previous_model,
-      requestId
+      requestId,
     });
 
     logger.info('✅ Model selected successfully', {
@@ -349,11 +383,10 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       duration: `${duration.toFixed(2)}ms`,
       selectedModel: data.selected_model,
       previousModel: data.previous_model,
-      success: data.success
+      success: data.success,
     });
 
     return data;
-
   } catch (error) {
     const duration = performance.now() - startTime;
 
@@ -364,13 +397,13 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
         duration: `${duration.toFixed(2)}ms`,
         errorType: error.constructor.name,
         errorMessage: error.message,
-        modelId
+        modelId,
       });
 
       logger.apiResponse('POST', endpoint, 0, duration, {
         error: error.message,
         errorType: error.constructor.name,
-        requestId
+        requestId,
       });
 
       throw error;
@@ -381,7 +414,7 @@ export async function selectModel(modelId: AIModelId): Promise<ModelSelectionRes
       requestId,
       duration: `${duration.toFixed(2)}ms`,
       error: String(error),
-      modelId
+      modelId,
     });
 
     throw new Error('Unknown error occurred while selecting model');

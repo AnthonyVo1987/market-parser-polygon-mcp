@@ -102,7 +102,7 @@ class ConfigSettings:
         config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
         with open(config_path) as f:
             self.config = json.load(f)
-        
+
         # Backend settings
         self.backend = self.config["backend"]
         self.frontend = self.config["frontend"]
@@ -114,7 +114,7 @@ class Settings:
     def __init__(self):
         # Load environment settings for API keys
         env_settings = EnvironmentSettings()
-        
+
         # Load configuration from JSON file
         config_settings = ConfigSettings()
 
@@ -130,28 +130,28 @@ class Settings:
         self.mcp_timeout_seconds: float = config_settings.backend["mcp"]["timeoutSeconds"]
         self.agent_session_name: str = config_settings.backend["agent"]["sessionName"]
         self.reports_directory: str = config_settings.backend["agent"]["reportsDirectory"]
-        
+
         # CORS configuration from config file
         cors_origins = config_settings.backend["security"]["cors"]["origins"]
         self.cors_origins: str = ",".join(cors_origins)
-        
+
         # Available models from config file
         self.available_models: List[str] = config_settings.backend["ai"]["availableModels"]
-        
+
         # AI configuration from config file
         self.max_context_length: int = config_settings.backend["ai"]["maxContextLength"]
         self.ai_pricing: dict = config_settings.backend["ai"]["pricing"]
-        
+
         # Security configuration from config file
         self.enable_rate_limiting: bool = config_settings.backend["security"]["enableRateLimiting"]
         self.rate_limit_rpm: int = config_settings.backend["security"]["rateLimitRPM"]
-        
+
         # Logging configuration from config file
         self.log_mode: str = config_settings.backend["logging"]["mode"]
-        
+
         # MCP configuration from config file
         self.polygon_mcp_version: str = config_settings.backend["mcp"]["version"]
-        
+
         # Frontend configuration from config file
         self.frontend_config = config_settings.frontend
 
@@ -165,16 +165,11 @@ shared_session = None
 
 # Secure response cache for financial queries with automatic size and TTL management
 CACHE_TTL_SECONDS = 900  # 15 minutes in seconds
-CACHE_MAX_SIZE = 1000    # Maximum number of cached responses
+CACHE_MAX_SIZE = 1000  # Maximum number of cached responses
 response_cache = TTLCache(maxsize=CACHE_MAX_SIZE, ttl=CACHE_TTL_SECONDS)
 
 # Cache statistics for monitoring
-cache_stats = {
-    "hits": 0,
-    "misses": 0,
-    "evictions": 0,
-    "current_size": 0
-}
+cache_stats = {"hits": 0, "misses": 0, "evictions": 0, "current_size": 0}
 
 # Request tracking for logging
 active_requests = {}
@@ -339,10 +334,7 @@ def invalidate_cache_by_ticker(ticker: str) -> int:
 
     try:
         ticker_upper = ticker.upper().strip()
-        keys_to_remove = [
-            key for key in response_cache.keys()
-            if key.endswith(f":{ticker_upper}")
-        ]
+        keys_to_remove = [key for key in response_cache.keys() if key.endswith(f":{ticker_upper}")]
 
         for key in keys_to_remove:
             try:
@@ -384,9 +376,9 @@ def cleanup_session_periodically():
     """Clean up old session data to prevent memory leaks."""
     global shared_session
 
-    if hasattr(shared_session, '_session_data'):
+    if hasattr(shared_session, "_session_data"):
         # Keep only last 100 conversation turns to prevent memory growth
-        session_data = getattr(shared_session, '_session_data', {})
+        session_data = getattr(shared_session, "_session_data", {})
         if isinstance(session_data, dict) and len(session_data) > 100:
             # Keep only the most recent entries
             sorted_keys = sorted(session_data.keys())
@@ -443,16 +435,20 @@ def print_guardrail_error(exception):
 
 
 async def process_financial_query(
-    query: str, session: SQLiteSession, server, request_id: Optional[str] = None, model: Optional[str] = None
+    query: str,
+    session: SQLiteSession,
+    server,
+    request_id: Optional[str] = None,
+    model: Optional[str] = None,
 ) -> dict:
     """Process a financial query using the agent system with caching.
-    
+
     Args:
         query: The user's query
         session: SQLite session for database operations
     server: MCP server instance
     request_id: Optional request ID for tracking
-    model: Optional AI model to use (defaults to settings.openai_model)
+    model: Optional AI model to use (defaults to first available model from config)
 
     Returns:
         dict: {
@@ -467,10 +463,10 @@ async def process_financial_query(
         request_id = str(uuid.uuid4())[:8]
 
     # Use provided model or default
-    active_model = model if model else settings.openai_model
+    active_model = model if model else config_settings.backend["ai"]["availableModels"][0]
 
     # Extract ticker from query for cache key generation
-    ticker_match = re.search(r'\b([A-Z]{1,5})\b', query.upper())
+    ticker_match = re.search(r"\b([A-Z]{1,5})\b", query.upper())
     ticker = ticker_match.group(1) if ticker_match else ""
 
     # Check cache first
@@ -488,12 +484,7 @@ async def process_financial_query(
                 "processing_time": f"{processing_time:.3f}s",
             },
         )
-        return {
-            "success": True,
-            "response": cached_response,
-            "error": None,
-            "error_type": None
-        }
+        return {"success": True, "response": cached_response, "error": None, "error_type": None}
 
     # Clean up session periodically
     cleanup_session_periodically()
@@ -556,9 +547,7 @@ async def process_financial_query(
                 mcp_servers=[server],
                 tools=[save_analysis_report],
                 input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
-                model=OpenAIResponsesModel(
-                    model=active_model, openai_client=AsyncOpenAI()
-                ),
+                model=OpenAIResponsesModel(model=active_model, openai_client=AsyncOpenAI()),
                 model_settings=ModelSettings(truncation="auto"),
             )
             log_agent_processing(
@@ -623,9 +612,7 @@ async def process_financial_query(
             "error": error_msg,
             "error_type": "guardrail",
         }
-    except (
-        Exception
-    ) as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:  # pylint: disable=broad-exception-caught
         processing_time = time.time() - start_time
         log_agent_processing(
             logger,
@@ -821,9 +808,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     except HTTPException:
         raise
-    except (
-        Exception
-    ) as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:  # pylint: disable=broad-exception-caught
         response_time = time.time() - start_time
         log_api_response(logger, 500, response_time, request_id=request_id)
         logger.error(
@@ -959,7 +944,9 @@ async def get_button_analysis(analysis_type: AnalysisType, request: ButtonAnalys
         query = query_templates[analysis_type]
 
         # Use shared instances instead of creating new ones
-        result = await process_financial_query(query, shared_session, shared_mcp_server, None, settings.available_models[0])
+        result = await process_financial_query(
+            query, shared_session, shared_mcp_server, None, settings.available_models[0]
+        )
 
         if result["success"]:
             return ButtonAnalysisResponse(
@@ -1032,7 +1019,11 @@ async def process_chat_analysis(request: ChatAnalysisRequest):
 
         # Use shared instances instead of creating new ones
         result = await process_financial_query(
-            request.message.strip(), shared_session, shared_mcp_server, None, settings.available_models[0]
+            request.message.strip(),
+            shared_session,
+            shared_mcp_server,
+            None,
+            settings.available_models[0],
         )
 
         if result["success"]:
@@ -1181,22 +1172,22 @@ async def health_check():
     )
 
 
-
-
 # ====== AI MODEL MANAGEMENT ENDPOINTS ======
+
 
 # Dependency for validating model selection
 async def valid_model_id(model_id: AIModelId) -> AIModelId:
     """Validate that the requested model exists and is available"""
     if model_id.value not in settings.available_models:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid model ID: {model_id.value}"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid model ID: {model_id.value}"
         )
     return model_id
 
+
 # Model management router
 model_router = APIRouter(prefix="/api/v1/models", tags=["AI Models"])
+
 
 @model_router.get(
     "",
@@ -1206,12 +1197,10 @@ model_router = APIRouter(prefix="/api/v1/models", tags=["AI Models"])
     responses={
         status.HTTP_200_OK: {
             "model": ModelListResponse,
-            "description": "Successfully retrieved model list"
+            "description": "Successfully retrieved model list",
         },
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Failed to retrieve models"
-        }
-    }
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Failed to retrieve models"},
+    },
 )
 async def get_available_models():
     """Get list of available AI models"""
@@ -1223,7 +1212,7 @@ async def get_available_models():
                 description="Fast and efficient model for quick responses",
                 is_default=True,
                 cost_per_1k_tokens=0.15,
-                max_tokens=4096
+                max_tokens=4096,
             ),
             AIModel(
                 id=AIModelId.GPT_5_MINI,
@@ -1231,7 +1220,7 @@ async def get_available_models():
                 description="Balanced performance model",
                 is_default=False,
                 cost_per_1k_tokens=0.25,
-                max_tokens=8192
+                max_tokens=8192,
             ),
             AIModel(
                 id=AIModelId.GPT_4O,
@@ -1239,7 +1228,7 @@ async def get_available_models():
                 description="Advanced model for complex tasks",
                 is_default=False,
                 cost_per_1k_tokens=2.50,
-                max_tokens=4096
+                max_tokens=4096,
             ),
             AIModel(
                 id=AIModelId.GPT_4O_MINI,
@@ -1247,20 +1236,21 @@ async def get_available_models():
                 description="Cost-effective advanced model",
                 is_default=False,
                 cost_per_1k_tokens=0.15,
-                max_tokens=16384
-            )
+                max_tokens=16384,
+            ),
         ]
 
         return ModelListResponse(
             models=models,
             current_model=AIModelId(settings.available_models[0]),
-            total_count=len(models)
+            total_count=len(models),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve models: {str(e)}"
+            detail=f"Failed to retrieve models: {str(e)}",
         ) from e
+
 
 @model_router.post(
     "/select",
@@ -1271,19 +1261,13 @@ async def get_available_models():
     responses={
         status.HTTP_200_OK: {
             "model": ModelSelectionResponse,
-            "description": "Model successfully selected"
+            "description": "Model successfully selected",
         },
-        status.HTTP_400_BAD_REQUEST: {
-            "description": "Invalid model ID provided"
-        },
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "description": "Failed to select model"
-        }
-    }
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid model ID provided"},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Failed to select model"},
+    },
 )
-async def select_model(
-    model_id: AIModelId = Depends(valid_model_id)
-):
+async def select_model(model_id: AIModelId = Depends(valid_model_id)):
     """Select an AI model for use"""
     try:
         # Note: Model selection is now managed by the AI Model Selector feature
@@ -1292,18 +1276,20 @@ async def select_model(
             success=True,
             message=f"Model {model_id.value} selected for this request",
             selected_model=model_id,
-            previous_model=None
+            previous_model=None,
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to select model: {str(e)}"
+            detail=f"Failed to select model: {str(e)}",
         ) from e
+
 
 # Add router to app
 app.include_router(model_router)
 
 # Cache Management API Endpoints (Security Review Priority 1 fixes)
+
 
 @app.get("/api/v1/cache/metrics")
 async def get_cache_metrics():
@@ -1316,7 +1302,7 @@ async def get_cache_metrics():
             "max_size": CACHE_MAX_SIZE,
             "ttl_seconds": CACHE_TTL_SECONDS,
         },
-        "status": "healthy"
+        "status": "healthy",
     }
 
 
@@ -1329,13 +1315,13 @@ async def invalidate_ticker_cache(ticker: str):
             "success": True,
             "message": f"Invalidated {cleared_count} cache entries for ticker {ticker.upper()}",
             "cleared_count": cleared_count,
-            "ticker": ticker.upper()
+            "ticker": ticker.upper(),
         }
     except Exception as e:
         logger.error(f"Failed to invalidate cache for ticker {ticker}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to invalidate cache: {str(e)}"
+            detail=f"Failed to invalidate cache: {str(e)}",
         ) from e
 
 
@@ -1347,13 +1333,13 @@ async def clear_all_cache_endpoint():
         return {
             "success": True,
             "message": f"Cleared all {cleared_count} cache entries",
-            "cleared_count": cleared_count
+            "cleared_count": cleared_count,
         }
     except Exception as e:
         logger.error(f"Failed to clear all cache: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to clear cache: {str(e)}"
+            detail=f"Failed to clear cache: {str(e)}",
         ) from e
 
 
@@ -1379,7 +1365,9 @@ async def cli_async():
                         continue
 
                     # Use the shared processing function
-                    result = await process_financial_query(user_input, session, server, None, settings.available_models[0])
+                    result = await process_financial_query(
+                        user_input, session, server, None, settings.available_models[0]
+                    )
                     print("\r", end="")
 
                     if result["success"]:
