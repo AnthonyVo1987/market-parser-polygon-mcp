@@ -4,17 +4,17 @@ import appConfig from '../../../config/app.config.json';
 export interface AppConfig {
   backend: {
     server: { host: string; port: number };
-    ai: { 
-      availableModels: string[]; 
-      maxContextLength: number; 
-      pricing: Record<string, { inputPer1M: number; outputPer1M: number }> 
+    ai: {
+      availableModels: string[];
+      maxContextLength: number;
+      pricing: Record<string, { inputPer1M: number; outputPer1M: number }>
     };
     agent: { sessionName: string; reportsDirectory: string };
     mcp: { version: string; timeoutSeconds: number };
-    security: { 
-      enableRateLimiting: boolean; 
-      rateLimitRPM: number; 
-      cors: { origins: string[] } 
+    security: {
+      enableRateLimiting: boolean;
+      rateLimitRPM: number;
+      cors: { origins: string[] }
     };
     logging: { mode: string };
   };
@@ -41,7 +41,7 @@ export const isDebugMode = () => config.frontend.features.debugMode;
 export const isPWAEnabled = () => config.frontend.features.pwa;
 
 // API configuration helpers
-export const getAPIBaseURL = () => config.frontend.api.baseUrl;
+export const getAPIBaseURL = () => `http://${config.backend.server.host}:${config.backend.server.port}`;
 export const getBackendURL = () => `http://${config.backend.server.host}:${config.backend.server.port}`;
 export const getFrontendURL = () => `http://${config.frontend.server.host}:${config.frontend.server.port}`;
 

@@ -1,10 +1,10 @@
+import { getAPIBaseURL, isDevelopment } from '../config/config.loader';
 import { AIModelId, MODEL_API_ENDPOINTS, ModelListResponse, ModelSelectionResponse } from '../types/ai_models';
 import { ApiError, ChatResponse } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
-import { getAPIBaseURL, isDevelopment } from '../config/config.loader';
 
 // Force use of Vite proxy instead of direct localhost connection
-const API_BASE_URL = getAPIBaseURL();
+const API_BASE_URL = `${getAPIBaseURL()}/api`;
 
 // Initialize API service logging
 logger.info('🌐 API service initialized', {

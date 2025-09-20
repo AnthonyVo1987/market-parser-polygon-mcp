@@ -17,8 +17,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
-from cachetools import TTLCache
-
 from agents import (
     Agent,
     AsyncOpenAI,
@@ -33,6 +31,7 @@ from agents import (
 from agents.exceptions import InputGuardrailTripwireTriggered
 from agents.mcp import MCPServerStdio
 from agents.models.openai_responses import OpenAIResponsesModel
+from cachetools import TTLCache
 from dotenv import load_dotenv
 
 # FastAPI imports
@@ -852,7 +851,7 @@ async def get_prompt_templates():
         templates = {}
         for template_type in AnalysisType:
             templates[template_type.value] = PromptTemplateInfo(
-                template_type=template_type,
+                templateId=template_type,
                 available=True,
                 mode=PromptMode.CONVERSATIONAL,
                 enhanced_formatting=True,

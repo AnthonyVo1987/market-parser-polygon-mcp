@@ -1,13 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  PromptTemplate,
-  PromptTemplateResponse,
-  GeneratePromptRequest,
-  UsePromptAPIResult,
-  PROMPT_API_ENDPOINTS,
-  isValidPromptTemplate,
-} from '../types/chat_OpenAI';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAPIBaseURL } from '../config/config.loader';
+import {
+  GeneratePromptRequest,
+  PROMPT_API_ENDPOINTS,
+  PromptTemplate,
+  UsePromptAPIResult,
+  isValidPromptTemplate
+} from '../types/chat_OpenAI';
 
 const API_BASE_URL = getAPIBaseURL();
 
@@ -81,28 +80,45 @@ export function usePromptAPI(): UsePromptAPIResult {
           );
         }
 
-        const data = (await response.json()) as PromptTemplateResponse;
+        const data = await response.json();
 
-        if (!data.success) {
-          throw new Error(data.error || 'Failed to fetch templates');
-        }
+        // Handle new backend response format
+        if (data.templates) {
+          // Convert backend format to frontend format
+          const templateArray = Object.values(data.templates).map((template: any) => ({
+            id: template.templateId,
+            type: template.templateId,
+            name: template.description.replace(' analysis template', ''),
+            description: template.description,
+            template: `Provide ${template.templateId.replace('_', ' ')} analysis for {ticker}`,
+            icon: template.templateId === 'snapshot' ? '📈' :
+              template.templateId === 'technical' ? '🔧' : '🎯',
+            requiresTicker: true,
+            followUpQuestions: [
+              "Would you like more details on this analysis?",
+              "Should we analyze another stock?",
+            ],
+          }));
 
-        // Validate template data
-        const validTemplates = data.templates.filter(
-          (template): template is PromptTemplate => {
-            if (!isValidPromptTemplate(template)) {
-              // Invalid template filtered out silently
-              return false;
+          // Validate template data
+          const validTemplates = templateArray.filter(
+            (template): template is PromptTemplate => {
+              if (!isValidPromptTemplate(template)) {
+                // Invalid template filtered out silently
+                return false;
+              }
+              return true;
             }
-            return true;
-          }
-        );
+          );
 
-        // Update cache
-        templateCache.data = validTemplates;
-        templateCache.timestamp = now;
+          // Update cache
+          templateCache.data = validTemplates;
+          templateCache.timestamp = now;
 
-        setTemplates(validTemplates);
+          setTemplates(validTemplates);
+        } else {
+          throw new Error('Invalid response format from server');
+        }
       } catch (err) {
         // Handle aborted requests gracefully
         if (err instanceof Error && err.name === 'AbortError') {
