@@ -20,6 +20,8 @@ Prioritize using the following Tools FIRST in any particular order to match the 
 - You can review commit 'e192ee7f4555cda027d557f2c11a119f1b31bd16' for the most recent full Lint run that was performed on the previous development environment to see that linting is fully supported and ran before as long as we have everything configured correctly
 - If you hit "sudo" issues where it needs my password, you need to pause and then ask me for the password and wait until i install it with the password if needed
 
+Let's perform a checkpoint commit before the testing phase:
+
 # Code\Doc Review Task
 
 - Use Serena Tools, `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive review

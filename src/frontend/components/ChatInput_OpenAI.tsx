@@ -1,4 +1,4 @@
-import React, { useState, useCallback, FC, FormEvent, KeyboardEvent, ChangeEvent } from 'react';
+import { ChangeEvent, FC, FormEvent, KeyboardEvent, useCallback, useState } from 'react';
 
 import { ChatInputProps } from '../types';
 

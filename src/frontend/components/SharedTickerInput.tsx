@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useId, FC, ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent, FC, KeyboardEvent, useCallback, useId, useState } from 'react';
 
 import { TickerInputProps } from '../types';
 

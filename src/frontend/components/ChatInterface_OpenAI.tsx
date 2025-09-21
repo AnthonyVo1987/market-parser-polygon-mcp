@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { Message } from '../types';
-import ChatInput_OpenAI from './ChatInput_OpenAI';
-import SharedTickerInput from './SharedTickerInput';
 import AnalysisButtons from './AnalysisButtons';
-import DebugPanel from './DebugPanel';
+import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
+import DebugPanel from './DebugPanel';
+import SharedTickerInput from './SharedTickerInput';
 
 // Mock functions for parts of the old implementation that are not in the new plan.
 // This is to ensure the component is self-contained and runnable as per the plan.
@@ -18,12 +18,31 @@ const sendChatMessage = async (message: string, _model: string) => {
   };
 };
 
-const ChatInterface_OpenAI = () => {
+const ChatInterface_OpenAI: FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageSentStatus, setMessageSentStatus] = useState(false);
   const [tickerValue, setTickerValue] = useState('AAPL');
   const [lastResponseTime, setLastResponseTime] = useState(0);
-  const [currentModel, setCurrentModel] = useState('mock-model');
+  const [currentModel] = useState('mock-model');
+
+  // Add screen reader announcements for message sent status
+  useEffect(() => {
+    if (messageSentStatus) {
+      // Announce to screen readers
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'assertive');
+      announcement.setAttribute('aria-atomic', 'true');
+      announcement.className = 'sr-only';
+      announcement.textContent = 'Message sent. Please wait for AI response.';
+      document.body.appendChild(announcement);
+
+      return () => {
+        if (document.body.contains(announcement)) {
+          document.body.removeChild(announcement);
+        }
+      };
+    }
+  }, [messageSentStatus]);
 
   const handleSendMessage = useCallback(async (messageContent: string) => {
     const messageId = Date.now().toString();
@@ -102,7 +121,7 @@ const ChatInterface_OpenAI = () => {
 
       <div className="messages-container">
         {messages.map((message) => (
-           <ChatMessage_OpenAI key={message.id} message={message} />
+          <ChatMessage_OpenAI key={message.id} message={message} />
         ))}
       </div>
 

@@ -1,9 +1,5 @@
-import { inputStyles } from './components/ChatInput_OpenAI';
-import ChatInterface_OpenAI, {
-  interfaceStyles,
-} from './components/ChatInterface_OpenAI';
-import { messageStyles } from './components/ChatMessage_OpenAI';
-import ErrorBoundary, { errorBoundaryStyles } from './components/ErrorBoundary';
+import ChatInterface_OpenAI from './components/ChatInterface_OpenAI';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
   const handleError = (
@@ -16,10 +12,6 @@ export default function App() {
 
   return (
     <ErrorBoundary onError={handleError}>
-      <style>{interfaceStyles}</style>
-      <style>{messageStyles}</style>
-      <style>{inputStyles}</style>
-      <style>{errorBoundaryStyles}</style>
       <ChatInterface_OpenAI />
     </ErrorBoundary>
   );
