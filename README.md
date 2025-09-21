@@ -93,9 +93,7 @@ npm run start:app:xterm    # XTerm version
 
 ### 🌐 Browser Launch
 
-- **Automatically opens the application in your default browser**
-- Cross-platform support (Linux, macOS, Windows/WSL)
-- True one-click experience - no manual navigation required
+- **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
 
 **Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 

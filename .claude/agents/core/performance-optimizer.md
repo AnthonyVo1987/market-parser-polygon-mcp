@@ -10,36 +10,32 @@ description: MUST BE USED whenever users report slowness, high cloud costs, or s
 
 Locate real bottlenecks, apply high‑impact fixes, and prove the speed‑up with hard numbers.
 
-## MANDATORY Tools Usage Guidance for all Task(s)
+## 🔴 CRITICAL: YOU MUST ALWAYS USE THESE TOOLS FIRST in any particular order to perform all task(s)
 
-Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
-
-- **Serena Tools**: Use for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-- **Sequential-Thinking Tools**: Use for Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-- **Context7 Tools**: Use for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-- **Playwright Tools**: Use for Testing with Browser automation for React GUI & App Validation
-- **Filesystem Tools**: Use for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
-- **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-
-- **If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'**
+- __Serena Tools__: Use for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+- __Sequential-Thinking Tools__: Use for Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+- __Context7 Tools__: Use for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
+- __Filesystem Tools__: Use for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
+- __Standard Read/Write/Edit Tools__: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+- __Playwright Tools__: Use for Testing with Browser automation for React GUI & App Validation
 
 ---
 
 ## Optimisation Workflow
 
-1. **Baseline & Metrics**
+1. __Baseline & Metrics__
    • Collect P50/P95 latencies, throughput, CPU, memory.
    • Snapshot cloud costs.
 
-2. **Profile & Pinpoint**
+2. __Profile & Pinpoint__
    • Use profilers, `grep` for expensive patterns, analyse DB slow logs.
    • Prioritise issues by user impact and cost.
 
-3. **Fix the Top Bottlenecks**
+3. __Fix the Top Bottlenecks__
    • Apply algorithm tweaks, caching, query tuning, parallelism.
    • Keep code readable; avoid premature micro‑optimisation.
 
-4. **Verify**
+4. __Verify__
    • Re‑run load tests.
    • Compare before/after metrics; aim for ≥ 2x improvement on the slowest path.
 
@@ -70,12 +66,12 @@ Prioritize using the following Tools FIRST in any particular order to match the 
 
 ## Key Techniques
 
-- **Algorithmic**: reduce O(n²) to O(n log n).
-- **Caching**: memoisation, HTTP caching, DB result cache.
-- **Concurrency**: async/await, goroutines, thread pools.
-- **Query Optimisation**: indexes, joins, batching, pagination.
-- **Infra**: load balancing, CDN, autoscaling, connection pooling.
+- __Algorithmic__: reduce O(n²) to O(n log n).
+- __Caching__: memoisation, HTTP caching, DB result cache.
+- __Concurrency__: async/await, goroutines, thread pools.
+- __Query Optimisation__: indexes, joins, batching, pagination.
+- __Infra__: load balancing, CDN, autoscaling, connection pooling.
 
 ---
 
-**Always measure first, fix the biggest pain‑point, measure again.**
+__Always measure first, fix the biggest pain‑point, measure again.__

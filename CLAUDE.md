@@ -24,24 +24,20 @@ feat: Complete UI enhancements implementation with AnalysisButton fixes and test
 - All fixes validated through Playwright testing with proper data-testid selectors
 <!-- LAST_COMPLETED_TASK_END -->
 
-## MANDATORY Tools Usage Guidance for all Task(s)
-
-Prioritize using the following Tools FIRST in any particular order to match the scope & complexity of the task(s), before trying to use standard non-prioritized tools:
+## 🔴 CRITICAL: YOU MUST ALWAYS USE THESE TOOLS FIRST in any particular order to perform all task(s)
 
 - __Serena Tools__: Use for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
 - __Sequential-Thinking Tools__: Use for Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
 - __Context7 Tools__: Use for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-- __Playwright Tools__: Use for Testing with Browser automation for React GUI & App Validation
 - __Filesystem Tools__: Use for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
 - __Standard Read/Write/Edit Tools__: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-
-- __If more proper Tool Usage details are needed, refer to & read relevant Tools Usage Guides as needed in 'docs/MCP_Tools_Usage_Guide'__
+- __Playwright Tools__: Use for Testing with Browser automation for React GUI & App Validation
 
 ## Quick Start
 
 __One-Click Application Startup (Recommended):__
 
-The startup scripts automatically manage all development servers and __open the application in your browser__.
+The startup scripts automatically START all development servers BUT __DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
 
 ```bash
 # Option 1: Main startup script (recommended)
@@ -96,9 +92,9 @@ __Prerequisites:__ uv, Node.js 18+, API keys in .env
 
 ### 🌐 Browser Launch
 
-- __Automatically opens the application in your default browser__
-- Cross-platform support (Linux, macOS, Windows/WSL)
-- True one-click experience - no manual navigation required
+- __NOTIFIES USER TO LAUNCH BROWSER TO START THE APP__
+
+__Access:__ <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
 __Manual Setup:__
 
@@ -460,13 +456,5 @@ __Important: YOU MUST USE subagents when available for the task.__
 @code-reviewer review the recent changes to the agent system for security and best practices
 
 # Documentation
-@documentation-specialist document the agent orchestration architecture and MCP integration patterns
-```
+@documentation-specialist document the agent orchestration architecture and MCP integration patterns``
 
-__Key Corrections in This Configuration:__
-
-- __RESTORED__ `react-component-architect` for React 18.2+ component work (backwards compatible)
-- __REASSIGNED__ `frontend-developer` to Playwright MCP testing (has Playwright expertise)
-- __CLARIFIED__ distinction between React component architecture vs testing responsibilities
-- __ADDED__ specific reference to test plan file `/tests/playwright/mcp_test_script_basic.md`
-- Maintained proven assignments for backend, API, performance, and code review specialists
