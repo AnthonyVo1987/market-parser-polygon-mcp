@@ -30,6 +30,8 @@ export interface ChatInputProps {
   onSendMessage: (message: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 export interface TickerInputProps {
@@ -38,14 +40,6 @@ export interface TickerInputProps {
   onAnalyze: () => void;
   disabled?: boolean;
   required?: boolean;
-}
-
-// Additional Required Types for Complete Implementation
-export interface AnalysisButtonsProps {
-  onSnapshot: () => void;
-  onSupportResistance: () => void;
-  onTechnicalAnalysis: () => void;
-  disabled?: boolean;
 }
 
 export interface DebugPanelProps {

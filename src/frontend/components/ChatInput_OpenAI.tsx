@@ -1,34 +1,30 @@
-import React, { 
-  useState, 
-  useCallback, 
-  useEffect, 
-  useMemo, 
-  useId,
-  FC,
-  ComponentType,
-  ReactNode,
-  JSX
+import type {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent
 } from 'react';
-import type { 
-  FormEvent, 
-  KeyboardEvent, 
-  ChangeEvent 
+import {
+  FC,
+  useCallback,
+  useState
 } from 'react';
 import { ChatInputProps } from '../types';
 
 const ChatInput_OpenAI: FC<ChatInputProps> = ({
   onSendMessage,
   disabled = false,
-  placeholder = "Type your message here..."
+  placeholder = "Type your message here...",
+  value = '',
+  onChange
 }) => {
-  const [message, setMessage] = useState('');
   const [isComposing, setIsComposing] = useState(false);
+  const message = value;
 
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     if (message.trim() && !disabled && !isComposing) {
       onSendMessage(message.trim());
-      setMessage('');
+      // Note: Parent component handles clearing the input via onChange
     }
   }, [message, onSendMessage, disabled, isComposing]);
 
@@ -48,8 +44,10 @@ const ChatInput_OpenAI: FC<ChatInputProps> = ({
   }, []);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
-  }, []);
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  }, [onChange]);
 
   return (
     <div className="chat-input-container" data-testid="chat-input">
@@ -57,7 +55,7 @@ const ChatInput_OpenAI: FC<ChatInputProps> = ({
         <h3 className="chat-input-title">AI CHATBOT INPUT</h3>
         <div className="chat-input-subtitle">Type your financial questions here</div>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="chat-input-form">
         <div className="chat-input-wrapper">
           <textarea

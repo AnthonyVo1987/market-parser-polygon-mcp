@@ -12,12 +12,12 @@ import {
 } from 'react';
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
-import { useAIModel } from '../hooks/useAIModel';
 import {
   useInteractionLogger,
   usePerformanceLogger,
 } from '../hooks/useDebugLog';
 import { sendChatMessage } from '../services/api_OpenAI';
+import { AIModelId } from '../types/ai_models';
 import { Message } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
 
@@ -120,8 +120,8 @@ const ExportButtons = lazy(() =>
 const RecentMessageButtons = lazy(() =>
   import('./RecentMessageButtons').then(module => ({ default: module.default }))
 );
-const AnalysisButtons = lazy(() =>
-  import('./AnalysisButtons').then(module => ({ default: module.default }))
+const AnalysisButton = lazy(() =>
+  import('./AnalysisButton').then(module => ({ default: module.default }))
 );
 
 // Note: Styles are now included within each lazy-loaded component to prevent static imports
@@ -139,14 +139,15 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     latestResponseTime,
   } = state;
 
-  // AI Model management
-  const {
-    models,
-    currentModel,
-    isLoading: isLoadingModels,
-    error: modelError,
-    selectModel,
-  } = useAIModel();
+  // AI Model management - temporarily disabled to fix React Hook order error
+  // const {
+  //   models,
+  //   currentModel,
+  //   isLoading: isLoadingModels,
+  //   error: modelError,
+  //   selectModel,
+  // } = useAIModel();
+  const currentModel: AIModelId = 'gpt-5-nano' as AIModelId;
 
   // Use deferred values for non-urgent UI updates to improve responsiveness
   const deferredSharedTicker = useDeferredValue(sharedTicker);
@@ -174,6 +175,14 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // User interaction logging - always available for UX insights
   const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
 
+  // Prompt template API for analysis buttons - temporarily disabled to fix React Hook order error
+  // const { templates } = usePromptAPI();
+  const templates = [
+    { id: 'snapshot', type: 'snapshot' as const, name: 'Stock Snapshot', description: 'Snapshot analysis template', template: 'Provide snapshot analysis for {ticker}', icon: '📊', requiresTicker: true },
+    { id: 'support_resistance', type: 'support_resistance' as const, name: 'Support/Resistance', description: 'Support Resistance analysis template', template: 'Provide support resistance analysis for {ticker}', icon: '📈', requiresTicker: true },
+    { id: 'technical', type: 'technical' as const, name: 'Technical Analysis', description: 'Technical analysis template', template: 'Provide technical analysis for {ticker}', icon: '🔍', requiresTicker: true }
+  ];
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
   // ChatInputRef removed - using direct props instead
@@ -200,23 +209,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   }, [messages.length, isLoading]); // Include messages.length and isLoading dependencies
 
   // Direct input change handler for <16ms responsiveness - no debouncing
-
-  // Handle input changes with immediate state updates for optimal responsiveness
-  const handleInputValueChange = useCallback((value: string) => {
-    // Always update immediately for instant UI feedback using reducer dispatch
-    dispatch({ type: 'UPDATE_INPUT', payload: value });
-
-    // Use startTransition for non-urgent derived state updates
-    startTransition(() => {
-      // Any analytics, word counting, or other non-critical updates would go here
-      // This prevents them from blocking the input responsiveness
-      logger.debug('📝 Input value updated', {
-        component: 'ChatInterface_OpenAI',
-        valueLength: value.length,
-        hasContent: value.length > 0,
-      });
-    });
-  }, []); // No dependencies needed - always direct update
+  // Note: Input handling is now managed by ChatInput component directly
 
   // Handle prompt population from analysis buttons with immediate updates
   const handlePromptGenerated = useCallback(
@@ -368,19 +361,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   );
 
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
-
-  const handleDebugAction = useCallback(
-    (action: string, details: Record<string, unknown>) => {
-      // Use startTransition for non-critical debug operations
-      startTransition(() => {
-        logInteraction('debug_action', 'debug_panel', {
-          action,
-          ...details,
-        });
-      });
-    },
-    [logInteraction]
-  );
+  // Removed handleDebugAction as it's now handled internally by DebugPanel
 
   return (
     <div
@@ -494,6 +475,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             onSendMessage={handleSendMessage}
             disabled={isLoading}
             placeholder={memoizedComputations.placeholderText}
+            value={inputValue}
+            onChange={(value) => dispatch({ type: 'UPDATE_INPUT', payload: value })}
           />
         </div>
       </section>
@@ -514,16 +497,25 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           <SharedTickerInput
             value={deferredSharedTicker}
             onChange={handleTickerChange}
-            onSearch={(ticker) => handlePromptGenerated(`analyze ${ticker}`)}
-            disabled={isLoading}
-            placeholder="Enter stock ticker (e.g., AAPL)"
-          />
-          <AnalysisButtons
-            onSnapshot={() => handlePromptGenerated('snapshot')}
-            onSupportResistance={() => handlePromptGenerated('support-resistance')}
-            onTechnicalAnalysis={() => handlePromptGenerated('technical-analysis')}
+            onAnalyze={() => handlePromptGenerated(`analyze ${deferredSharedTicker}`)}
             disabled={isLoading}
           />
+          <div className="analysis-buttons-container" data-testid="analysis-buttons">
+            <h3 className="analysis-section-header">Quick Analysis</h3>
+            <div className="analysis-buttons-grid">
+              {templates.map((template) => (
+                <Suspense key={template.id} fallback={<div>Loading...</div>}>
+                  <AnalysisButton
+                    template={template}
+                    ticker={deferredSharedTicker}
+                    onPromptGenerated={handlePromptGenerated}
+                    isLoading={isLoading}
+                    disabled={isLoading}
+                  />
+                </Suspense>
+              ))}
+            </div>
+          </div>
         </Suspense>
       </section>
 

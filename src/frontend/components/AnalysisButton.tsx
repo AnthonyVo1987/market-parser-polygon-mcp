@@ -1,19 +1,18 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { AnalysisButtonProps } from '../types/chat_OpenAI';
-import { usePromptAPI, usePromptGeneration } from '../hooks/usePromptAPI';
 
 // Map template types to expected data-testid attributes for test compatibility
 const getTestId = (templateType: string): string => {
   switch (templateType) {
     case 'snapshot':
-      return 'stock-snapshot-button';
+      return 'analysis-button-snapshot';
     case 'support_resistance':
-      return 'support-resistance-button';
+      return 'analysis-button-support-resistance';
     case 'technical_analysis':
     case 'technical':
-      return 'technical-analysis-button';
+      return 'analysis-button-technical';
     default:
-      return `${templateType}-button`;
+      return `analysis-button-${templateType}`;
   }
 };
 
@@ -25,15 +24,12 @@ export default function AnalysisButton({
   disabled = false,
   className = '',
 }: AnalysisButtonProps) {
-  const { generatePrompt, error: apiError } = usePromptAPI();
-  const { isGenerating, generationError, generateWithLoading } =
-    usePromptGeneration();
   const [showSuccess, setShowSuccess] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   // Determine if button should show loading state
-  const isButtonLoading = isLoading || isGenerating;
+  const isButtonLoading = isLoading;
   const isButtonDisabled =
     disabled ||
     isButtonLoading ||
@@ -52,15 +48,15 @@ export default function AnalysisButton({
       : undefined;
 
     try {
-      await generateWithLoading(
-        () => generatePrompt(template.id, tickerValue),
-        generatedPrompt => {
-          onPromptGenerated(generatedPrompt);
-          // Show success feedback
-          setShowSuccess(true);
-          setTimeout(() => setShowSuccess(false), 1000);
-        }
-      );
+      // Generate prompt from static template
+      const generatedPrompt = template.template.replace('{ticker}', tickerValue || 'the selected stock');
+
+      // Call the onPromptGenerated callback
+      onPromptGenerated(generatedPrompt);
+
+      // Show success feedback
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1000);
     } catch (error) {
       // Show error feedback
       setHasError(true);
@@ -69,9 +65,7 @@ export default function AnalysisButton({
   }, [
     template,
     ticker,
-    generatePrompt,
     onPromptGenerated,
-    generateWithLoading,
     isButtonDisabled,
   ]);
 
@@ -84,15 +78,8 @@ export default function AnalysisButton({
     setIsHovered(false);
   }, []);
 
-  // Update error state based on API or generation errors
-  useEffect(() => {
-    const hasAnyError = !!(generationError || apiError);
-    if (hasAnyError !== hasError) {
-      setHasError(hasAnyError);
-    }
-  }, [generationError, apiError, hasError]);
-
-  const displayError = generationError || apiError;
+  // No error handling needed for static templates
+  const displayError = null;
 
   return (
     <div
@@ -108,9 +95,8 @@ export default function AnalysisButton({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         disabled={isButtonDisabled}
-        className={`analysis-button ${showSuccess ? 'button-success' : ''} ${
-          hasError ? 'button-error' : ''
-        } ${isHovered ? 'button-hovered' : ''}`}
+        className={`analysis-button ${showSuccess ? 'button-success' : ''} ${hasError ? 'button-error' : ''
+          } ${isHovered ? 'button-hovered' : ''}`}
         data-testid={getTestId(template.type)}
         aria-describedby={`button-help-${template.id} ${displayError ? `error-${template.id}` : ''}`}
         title={template.description}
