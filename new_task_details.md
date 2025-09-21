@@ -2,7 +2,7 @@
 
 Task 1. Use Sequential-Thinking Tools, Serena Tools, & FileSystem Tools to: Read & Understand docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md to understand the testing plan FIRST
 
-Task 2. Use Sequential-Thinking Tools, Playwright Tools, FileSystem Tools to: execute the entire test plan EXACTLY from docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md.  Generate test report following the specified format and tempalte
+Task 2. Use Sequential-Thinking Tools, Playwright Tools, FileSystem Tools to: execute the entire test plan EXACTLY from docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md.  Generate test report following the specified format and template.  DO NOT FIX ANY ISSUES YOU 
 
 Task 3.
 
