@@ -1,7 +1,7 @@
 // Phase 4: Accessibility Utilities
 // WCAG 2.1 AA compliance and accessibility enhancement tools
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 export interface AccessibilityConfig {
     colorContrast: {

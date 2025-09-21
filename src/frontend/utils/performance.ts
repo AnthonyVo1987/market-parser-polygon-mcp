@@ -1,7 +1,7 @@
 // Phase 4: Performance Monitoring Utilities
 // Real-time performance tracking and optimization tools
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface PerformanceMetrics {
     fcp: number; // First Contentful Paint

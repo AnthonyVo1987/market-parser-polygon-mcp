@@ -1,7 +1,7 @@
 // Phase 4: Touch Gesture Utilities
 // Mobile-specific touch interactions and gesture support
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface TouchPoint {
     x: number;
