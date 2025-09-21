@@ -1,44 +1,68 @@
-import React, { 
-  useState, 
-  useCallback, 
-  useEffect, 
-  useMemo, 
-  useId,
+import type {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent
+} from 'react';
+import {
   FC,
-  ComponentType,
-  ReactNode,
-  JSX
+  memo,
+  useCallback,
+  useEffect
 } from 'react';
-import type { 
-  FormEvent, 
-  KeyboardEvent, 
-  ChangeEvent 
-} from 'react';
+import { useInputValidation } from '../hooks/useInputValidation';
 import { TickerInputProps } from '../types';
+import { getTickerPlaceholder } from '../utils/placeholderText';
+import { ValidationRule, validateTicker } from '../utils/validation';
 
-const SharedTickerInput: FC<TickerInputProps> = ({
+const SharedTickerInput: FC<TickerInputProps> = memo(({
   value,
   onChange,
   onSearch,
   disabled = false,
-  placeholder = "Enter stock ticker (e.g., AAPL)"
+  placeholder
 }) => {
-  const [ticker, setTicker] = useState(value);
-  const [isValid, setIsValid] = useState(true);
+  // Enhanced placeholder text based on user state
+  const dynamicPlaceholder = placeholder || getTickerPlaceholder(disabled ? 'loading' : 'idle');
+  // Enhanced validation rules for ticker input
+  const validationRules: ValidationRule = {
+    required: false, // Ticker is optional
+    minLength: 1,
+    maxLength: 5,
+    custom: (val) => validateTicker(val)
+  };
 
+  // Use enhanced validation hook
+  const {
+    value: ticker,
+    setValue: setTicker,
+    validationState,
+    isTouched,
+    isValid,
+    errorMessage,
+    handleChange: handleValidationChange,
+    handleBlur,
+    handleFocus,
+    reset: resetValidation
+  } = useInputValidation({
+    rules: validationRules,
+    initialValue: value,
+    validateOnChange: true,
+    validateOnBlur: true
+  });
+
+  // Sync with parent component value
   useEffect(() => {
     setTicker(value);
-  }, [value]);
+  }, [value, setTicker]);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.toUpperCase();
-    setTicker(newValue);
+    handleValidationChange({
+      ...e,
+      target: { ...e.target, value: newValue }
+    });
     onChange(newValue);
-    
-    // Basic validation for stock ticker format
-    const tickerRegex = /^[A-Z]{1,5}$/;
-    setIsValid(tickerRegex.test(newValue) || newValue === '');
-  }, [onChange]);
+  }, [handleValidationChange, onChange]);
 
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -60,7 +84,7 @@ const SharedTickerInput: FC<TickerInputProps> = ({
         <h3 className="ticker-input-title">BUTTON PROMPT STOCK TICKER</h3>
         <div className="ticker-input-subtitle">Enter stock symbol for analysis</div>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="ticker-input-form">
         <div className="ticker-input-wrapper">
           <input
@@ -68,11 +92,20 @@ const SharedTickerInput: FC<TickerInputProps> = ({
             value={ticker}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
+            placeholder={dynamicPlaceholder}
             disabled={disabled}
-            className={`ticker-input-field ${!isValid ? 'invalid' : ''}`}
+            className={`ticker-input-field ${isTouched && !isValid ? 'ticker-input-field--invalid' : ''
+              } ${isTouched && isValid ? 'ticker-input-field--valid' : ''
+              }`}
             data-testid="ticker-input-field"
             aria-label="Stock ticker input - Enter stock symbol for analysis"
+            aria-invalid={isTouched && !isValid}
+            aria-describedby={isTouched && !isValid ? 'ticker-input-error' : undefined}
+            aria-required="false"
+            role="textbox"
+            aria-autocomplete="none"
             maxLength={5}
           />
           <button
@@ -98,14 +131,23 @@ const SharedTickerInput: FC<TickerInputProps> = ({
             </svg>
           </button>
         </div>
-        {!isValid && ticker && (
-          <div className="ticker-input-error" data-testid="ticker-input-error">
-            Please enter a valid stock ticker (1-5 letters)
+        {/* Enhanced validation error display */}
+        {isTouched && !isValid && errorMessage && (
+          <div
+            id="ticker-input-error"
+            className="ticker-input-error"
+            data-testid="ticker-input-error"
+            role="alert"
+            aria-live="polite"
+          >
+            {errorMessage}
           </div>
         )}
       </form>
     </div>
   );
-};
+});
+
+SharedTickerInput.displayName = 'SharedTickerInput';
 
 export default SharedTickerInput;

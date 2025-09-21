@@ -1,17 +1,18 @@
 import {
   ComponentPropsWithoutRef,
-  Suspense,
   lazy,
-  useEffect,
-  useState,
   memo,
+  Suspense,
+  useEffect,
   useMemo,
+  useState,
 } from 'react';
 
 // Lazy load react-markdown for better performance
 const Markdown = lazy(() => import('react-markdown'));
 
 import { Message } from '../types/chat_OpenAI';
+import { formatMessage, MessageType } from '../utils/messageFormatting';
 import MessageCopyButton, {
   messageCopyButtonStyles,
 } from './MessageCopyButton';
@@ -183,6 +184,23 @@ const ChatMessage_OpenAI = memo(
     const isUser = message.sender === 'user';
     const [isVisible, setIsVisible] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [showAbsoluteTime, setShowAbsoluteTime] = useState(false);
+
+    // Enhanced message formatting
+    const formattedMessage = useMemo(() => {
+      const messageType: MessageType = message.metadata?.isError
+        ? 'error'
+        : message.sender === 'user'
+          ? 'user'
+          : 'ai';
+
+      return formatMessage({
+        type: messageType,
+        content: message.content,
+        timestamp: message.timestamp,
+        metadata: message.metadata
+      });
+    }, [message.content, message.timestamp, message.metadata, message.sender]);
 
     // Memoize markdown components configuration for performance
     const markdownComponents = useMemo(() => createMarkdownComponents(), []);
@@ -206,18 +224,21 @@ const ChatMessage_OpenAI = memo(
 
     return (
       <div
-        className={`message ${isUser ? 'user-message' : 'ai-message'} ${
-          isVisible ? 'message-visible' : 'message-hidden'
-        } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
+        className={`${formattedMessage.cssClass} ${isVisible ? 'message-visible' : 'message-hidden'
+          } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
+        role="article"
+        aria-label={formattedMessage.ariaLabel}
       >
         <div
-          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}`}
+          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'
+            } ${formattedMessage.isError ? 'message-bubble--error' : ''
+            }`}
         >
           <MessageCopyButton message={message} />
           <div className='message-content'>
             {isUser ? (
               // For user messages, display as plain text
-              message.content
+              formattedMessage.formattedContent
             ) : (
               // For AI messages, render as markdown with enhanced formatting
               <Suspense
@@ -226,17 +247,23 @@ const ChatMessage_OpenAI = memo(
                 }
               >
                 <Markdown components={markdownComponents}>
-                  {message.content}
+                  {formattedMessage.formattedContent}
                 </Markdown>
               </Suspense>
             )}
           </div>
-          <div className='message-timestamp'>
-            {messageMetadata.formattedTime}
-            {message.sender === 'ai' && messageMetadata.processingTime && (
-              <span className='response-time'>
+          <div
+            className='message-timestamp'
+            onMouseEnter={() => setShowAbsoluteTime(true)}
+            onMouseLeave={() => setShowAbsoluteTime(false)}
+            title={formattedMessage.absoluteTime}
+            aria-label={`Message timestamp: ${formattedMessage.absoluteTime}`}
+          >
+            {showAbsoluteTime ? formattedMessage.absoluteTime : formattedMessage.relativeTime}
+            {formattedMessage.processingTime && (
+              <span className='response-time' aria-label={`Processing time: ${formattedMessage.processingTime}`}>
                 {' '}
-                ({messageMetadata.processingTime.toFixed(1)}s)
+                ({formattedMessage.processingTime})
               </span>
             )}
           </div>
@@ -256,7 +283,7 @@ const ChatMessage_OpenAI = memo(
       prevMessage.sender === nextMessage.sender &&
       prevMessage.timestamp.getTime() === nextMessage.timestamp.getTime() &&
       JSON.stringify(prevMessage.metadata) ===
-        JSON.stringify(nextMessage.metadata)
+      JSON.stringify(nextMessage.metadata)
     );
   }
 );

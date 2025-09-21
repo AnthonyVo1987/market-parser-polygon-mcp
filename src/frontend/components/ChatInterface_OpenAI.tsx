@@ -586,18 +586,40 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       </div>
 
       {/* BOTTOM CONTROL PANEL: Response Time and Message Count */}
-      <div className='bottom-control-panel'>
+      <div className='bottom-control-panel' role="status" aria-live="polite">
         <div className='response-time-display'>
-          <span>Response Time:</span>
-          <span>{latestResponseTime ? `${latestResponseTime.toFixed(2)}s` : 'N/A'}</span>
+          <span className='response-time-label'>Response Time:</span>
+          <span
+            className={`response-time-value ${latestResponseTime
+                ? latestResponseTime < 5
+                  ? 'response-time--fast'
+                  : latestResponseTime < 15
+                    ? 'response-time--medium'
+                    : 'response-time--slow'
+                : ''
+              }`}
+            aria-label={`Response time: ${latestResponseTime ? `${latestResponseTime.toFixed(2)} seconds` : 'Not available'}`}
+          >
+            {latestResponseTime ? `${latestResponseTime.toFixed(2)}s` : 'N/A'}
+          </span>
         </div>
         <div className='message-count-display'>
-          <span>Messages:</span>
-          <span>{messages.length}</span>
+          <span className='message-count-label'>Messages:</span>
+          <span
+            className='message-count-value'
+            aria-label={`Total messages: ${messages.length}`}
+          >
+            {messages.length}
+          </span>
         </div>
         <div className='status-info'>
-          <span>Status:</span>
-          <span>{isLoading ? 'Processing...' : 'Ready'}</span>
+          <span className='status-label'>Status:</span>
+          <span
+            className={`status-value ${isLoading ? 'status--loading' : 'status--ready'}`}
+            aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
+          >
+            {isLoading ? 'Processing...' : 'Ready'}
+          </span>
         </div>
       </div>
     </div>
