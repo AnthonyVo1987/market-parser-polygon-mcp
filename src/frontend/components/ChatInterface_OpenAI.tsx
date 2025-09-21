@@ -386,182 +386,220 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         {error ? `Error: ${error}` : ''}
       </div>
 
-      {/* SECTION 1: Header - Clean title only */}
-      <header className='chat-header' role='banner'>
-        <h1 id='chat-title'>OpenAI Chat Interface</h1>
-        {error && (
-          <div
-            className='error-banner'
-            role='alert'
-            aria-describedby='chat-title'
-          >
-            {error}
-          </div>
-        )}
-      </header>
-
-      {/* SECTION 2: Messages Container */}
-      <main
-        className='messages-section'
-        role='log'
-        aria-live='polite'
-        aria-label='Chat conversation'
-      >
-        {messages.length === 0 ? (
-          <div className='empty-state' role='status'>
-            <div className='welcome-content'>
-              <h2 className='welcome-title'>
-                Welcome to Financial Analysis Chat
-              </h2>
-              <p className='welcome-description'>
-                Get instant financial insights powered by AI. Use the ticker
-                input and quick analysis tools below or type your own questions.
-              </p>
-              <p className='getting-started'>
-                Start by entering a ticker symbol and using the analysis
-                buttons, or type a message directly.
-              </p>
+      {/* MAIN CONTENT PANEL: Header, Messages, Chat Input */}
+      <div className='main-content-panel'>
+        {/* SECTION 1: Header - Clean title only */}
+        <header className='chat-header' role='banner'>
+          <h1 id='chat-title'>OpenAI Chat Interface</h1>
+          {error && (
+            <div
+              className='error-banner'
+              role='alert'
+              aria-describedby='chat-title'
+            >
+              {error}
             </div>
-          </div>
-        ) : (
-          <>
-            {messages.map(message => (
-              <ChatMessage_OpenAI key={message.id} message={message} />
-            ))}
-            {/* Scroll anchor */}
-            <div ref={messagesEndRef} aria-hidden='true' />
-          </>
-        )}
-        {/* MESSAGE SENT OVERLAY - Phase 3 Implementation */}
-        {isLoading && (
-          <div
-            className='message-sent-overlay'
-            role='status'
-            aria-label='Message sent, waiting for AI response'
-          >
-            <div className='message-sent-content'>
-              <div className='message-sent-icon'>
-                <svg
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-                    stroke='currentColor'
-                    strokeWidth='2'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              </div>
-              <div className='message-sent-text'>
-                <h3>MESSAGE SENT</h3>
-                <p>PLEASE WAIT FOR AI RESPONSE</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
+          )}
+        </header>
 
-      {/* SECTION 3: Chat Input */}
-      <section
-        className='chat-input-section'
-        role='complementary'
-        aria-label='Message input'
-      >
-        <div className='chat-input-container'>
-          <ChatInput_OpenAI
-            onSendMessage={handleSendMessage}
-            disabled={isLoading}
-            placeholder={memoizedComputations.placeholderText}
-            value={inputValue}
-            onChange={(value) => dispatch({ type: 'UPDATE_INPUT', payload: value })}
-          />
-        </div>
-      </section>
-
-      {/* SECTION 4: Analysis Buttons (now includes integrated ticker input) */}
-      <section
-        className='analysis-buttons-section'
-        role='complementary'
-        aria-label='Quick analysis tools'
-      >
-        <Suspense
-          fallback={
-            <div className='component-loading analysis-loading'>
-              Loading analysis tools...
-            </div>
-          }
+        {/* SECTION 2: Messages Container */}
+        <main
+          className='messages-section'
+          role='log'
+          aria-live='polite'
+          aria-label='Chat conversation'
         >
-          <SharedTickerInput
-            value={deferredSharedTicker}
-            onChange={handleTickerChange}
-            onAnalyze={() => handlePromptGenerated(`analyze ${deferredSharedTicker}`)}
-            disabled={isLoading}
-          />
-          <div className="analysis-buttons-container" data-testid="analysis-buttons">
-            <h3 className="analysis-section-header">Quick Analysis</h3>
-            <div className="analysis-buttons-grid">
-              {templates.map((template) => (
-                <Suspense key={template.id} fallback={<div>Loading...</div>}>
-                  <AnalysisButton
-                    template={template}
-                    ticker={deferredSharedTicker}
-                    onPromptGenerated={handlePromptGenerated}
-                    isLoading={isLoading}
-                    disabled={isLoading}
-                  />
-                </Suspense>
-              ))}
+          {messages.length === 0 ? (
+            <div className='empty-state' role='status'>
+              <div className='welcome-content'>
+                <h2 className='welcome-title'>
+                  Welcome to Financial Analysis Chat
+                </h2>
+                <p className='welcome-description'>
+                  Get instant financial insights powered by AI. Use the ticker
+                  input and quick analysis tools below or type your own questions.
+                </p>
+                <p className='getting-started'>
+                  Start by entering a ticker symbol and using the analysis
+                  buttons, or type a message directly.
+                </p>
+              </div>
             </div>
-          </div>
-        </Suspense>
-      </section>
-
-      {/* SECTION 5: Export/Recent Buttons */}
-      <section
-        className='export-buttons-section'
-        role='complementary'
-        aria-label='Export and recent message functions'
-      >
-        {memoizedComputations.hasMessages && (
-          <div className='export-recent-container'>
-            <Suspense
-              fallback={
-                <div className='component-loading'>
-                  Loading recent messages...
-                </div>
-              }
+          ) : (
+            <>
+              {messages.map(message => (
+                <ChatMessage_OpenAI key={message.id} message={message} />
+              ))}
+              {/* Scroll anchor */}
+              <div ref={messagesEndRef} aria-hidden='true' />
+            </>
+          )}
+          {/* MESSAGE SENT OVERLAY - Phase 3 Implementation */}
+          {isLoading && (
+            <div
+              className='message-sent-overlay'
+              role='status'
+              aria-label='Message sent, waiting for AI response'
             >
-              <RecentMessageButtons messages={messages} />
-            </Suspense>
-            <Suspense
-              fallback={
-                <div className='component-loading'>
-                  Loading export options...
+              <div className='message-sent-content'>
+                <div className='message-sent-icon'>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
                 </div>
-              }
-            >
-              <ExportButtons messages={messages} />
-            </Suspense>
-          </div>
-        )}
-      </section>
+                <div className='message-sent-text'>
+                  <h3>MESSAGE SENT</h3>
+                  <p>PLEASE WAIT FOR AI RESPONSE</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
 
-      {/* SECTION 6: Debug Panel */}
-      <section
-        className='debug-section'
-        role='complementary'
-        aria-label='Debug information'
-      >
-        <DebugPanel
-          responseTime={latestResponseTime || 0}
-          messageCount={messages.length}
-          lastUpdate={new Date()}
-          isConnected={true}
-        />
-      </section>
+        {/* SECTION 3: Chat Input */}
+        <section
+          className='chat-input-section'
+          role='complementary'
+          aria-label='Message input'
+        >
+          <div className='chat-input-container'>
+            <ChatInput_OpenAI
+              onSendMessage={handleSendMessage}
+              disabled={isLoading}
+              placeholder={memoizedComputations.placeholderText}
+              value={inputValue}
+              onChange={(value) => dispatch({ type: 'UPDATE_INPUT', payload: value })}
+            />
+          </div>
+        </section>
+      </div>
+
+      {/* RIGHT SIDEBAR PANEL: Ticker Input, Analysis Buttons, Export Buttons, Debug */}
+      <div className='right-sidebar-panel'>
+        {/* SECTION 4: Ticker Input */}
+        <section
+          className='ticker-input-section'
+          role='complementary'
+          aria-label='Stock ticker input'
+        >
+          <Suspense
+            fallback={
+              <div className='component-loading'>
+                Loading ticker input...
+              </div>
+            }
+          >
+            <SharedTickerInput
+              value={deferredSharedTicker}
+              onChange={handleTickerChange}
+              onAnalyze={() => handlePromptGenerated(`analyze ${deferredSharedTicker}`)}
+              disabled={isLoading}
+            />
+          </Suspense>
+        </section>
+
+        {/* SECTION 5: Analysis Buttons */}
+        <section
+          className='analysis-buttons-section'
+          role='complementary'
+          aria-label='Quick analysis tools'
+        >
+          <Suspense
+            fallback={
+              <div className='component-loading analysis-loading'>
+                Loading analysis tools...
+              </div>
+            }
+          >
+            <div className="analysis-buttons-container" data-testid="analysis-buttons">
+              <h3 className="analysis-section-header">QUICK ANALYSIS</h3>
+              <div className="analysis-buttons-grid">
+                {templates.map((template) => (
+                  <Suspense key={template.id} fallback={<div>Loading...</div>}>
+                    <AnalysisButton
+                      template={template}
+                      ticker={deferredSharedTicker}
+                      onPromptGenerated={handlePromptGenerated}
+                      isLoading={isLoading}
+                      disabled={isLoading}
+                    />
+                  </Suspense>
+                ))}
+              </div>
+            </div>
+          </Suspense>
+        </section>
+
+        {/* SECTION 6: Export/Recent Buttons */}
+        <section
+          className='export-buttons-section'
+          role='complementary'
+          aria-label='Export and recent message functions'
+        >
+          {memoizedComputations.hasMessages && (
+            <div className='export-recent-container'>
+              <Suspense
+                fallback={
+                  <div className='component-loading'>
+                    Loading recent messages...
+                  </div>
+                }
+              >
+                <RecentMessageButtons messages={messages} />
+              </Suspense>
+              <Suspense
+                fallback={
+                  <div className='component-loading'>
+                    Loading export options...
+                  </div>
+                }
+              >
+                <ExportButtons messages={messages} />
+              </Suspense>
+            </div>
+          )}
+        </section>
+
+        {/* SECTION 7: Debug Panel */}
+        <section
+          className='debug-section'
+          role='complementary'
+          aria-label='Debug information'
+        >
+          <DebugPanel
+            responseTime={latestResponseTime || 0}
+            messageCount={messages.length}
+            lastUpdate={new Date()}
+            isConnected={true}
+          />
+        </section>
+      </div>
+
+      {/* BOTTOM CONTROL PANEL: Response Time and Message Count */}
+      <div className='bottom-control-panel'>
+        <div className='response-time-display'>
+          <span>Response Time:</span>
+          <span>{latestResponseTime ? `${latestResponseTime.toFixed(2)}s` : 'N/A'}</span>
+        </div>
+        <div className='message-count-display'>
+          <span>Messages:</span>
+          <span>{messages.length}</span>
+        </div>
+        <div className='status-info'>
+          <span>Status:</span>
+          <span>{isLoading ? 'Processing...' : 'Ready'}</span>
+        </div>
+      </div>
     </div>
   );
 });
@@ -604,24 +642,15 @@ export const interfaceStyles = `
     border: 0;
   }
   
-  /* SIX-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
+  /* TWO-PANEL LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
   .chat-interface {
     display: grid;
-    /* Static grid rows for fixed layout - no expand/collapse */
-    grid-template-rows: 
-      70px                  /* Header: fixed height */
-      1fr                   /* Messages: flexible space for scrolling */
-      150px                 /* Chat Input: fixed height */
-      280px                 /* Analysis Buttons with Ticker: fixed height */
-      120px                 /* Export Buttons: fixed height */
-      120px;                /* Debug: fixed height */
+    /* Two-panel layout with bottom control panel */
+    grid-template-columns: 1fr 350px; /* Main content + 350px sidebar */
+    grid-template-rows: 1fr auto; /* Main content + bottom control panel */
     grid-template-areas: 
-      "header"
-      "messages"
-      "chat-input"
-      "buttons"
-      "export-buttons"
-      "debug";
+      "main-content sidebar"
+      "bottom-control bottom-control";
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
     background: var(--glass-surface-medium);
@@ -651,25 +680,51 @@ export const interfaceStyles = `
     z-index: -1;
   }
   
+  /* Tablet layout adjustments */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .chat-interface {
+      grid-template-columns: 1fr 300px; /* Main content + 300px sidebar */
+    }
+  }
+
   /* Mobile viewport optimizations with stable grid layout */
   @media (max-width: 767px) {
     .chat-interface {
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
-      /* Mobile-optimized static grid rows */
-      grid-template-rows: 
-        50px                  /* Header: fixed mobile height */
-        1fr                   /* Messages: flexible space */
-        120px                 /* Chat Input: fixed mobile height */
-        240px                 /* Analysis Buttons with Ticker: fixed mobile height */
-        100px                 /* Export Buttons: fixed mobile height */
-        80px;                 /* Debug: fixed mobile height */
+      /* Mobile-optimized two-panel layout */
+      grid-template-areas: 
+        "main-content"
+        "sidebar"
+        "bottom-control";
+      grid-template-columns: 1fr; /* Single column on mobile */
+      grid-template-rows: 1fr auto auto; /* Main content + sidebar + bottom control */
     }
   }
   
+  /* MAIN CONTENT PANEL - Contains header, messages, and chat input */
+  .main-content-panel {
+    grid-area: main-content;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* RIGHT SIDEBAR PANEL - Contains ticker input, analysis buttons, export buttons, debug */
+  .right-sidebar-panel {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    gap: 0;
+  }
+
   /* SECTION 1: Header - Professional Fintech Glassmorphic Header with Blue Chat Theme */
   .chat-header {
-    grid-area: header;
+    flex-shrink: 0;
     position: relative;
     background: var(--glass-surface-chat);
     backdrop-filter: var(--glass-blur-md);
@@ -725,7 +780,7 @@ export const interfaceStyles = `
   
   /* SECTION 2: Messages - Flexible height with glassmorphic scrolling and Blue Chat Theme */
   .messages-section {
-    grid-area: messages;
+    flex: 1;
     overflow-y: auto;
     overflow-x: hidden; /* Prevent horizontal page scroll */
     padding: var(--space-4);
@@ -734,7 +789,7 @@ export const interfaceStyles = `
     margin: 0 auto;
     /* Enhanced focus management - SMOOTH SCROLLING REMOVED FOR PERFORMANCE */
     scroll-behavior: auto;
-    min-height: 0; /* Allow shrinking in grid layout */
+    min-height: 0; /* Allow shrinking in flex layout */
     /* Custom scrollbar for glassmorphic look */
     scrollbar-width: thin;
     scrollbar-color: var(--neutral-400) transparent;
@@ -982,7 +1037,7 @@ export const interfaceStyles = `
   
   /* SECTION 3: Chat Input - Professional glassmorphic input section with Blue Chat Theme */
   .chat-input-section {
-    grid-area: chat-input;
+    flex-shrink: 0;
     background: var(--glass-surface-chat);
     backdrop-filter: var(--glass-blur-md);
     -webkit-backdrop-filter: var(--glass-blur-md);
@@ -1031,9 +1086,32 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 4: Analysis Buttons with Integrated Ticker - Professional glassmorphic analysis tools with Purple Analysis Theme */
+  /* SECTION 4: Ticker Input - Professional glassmorphic ticker input with Purple Analysis Theme */
+  .ticker-input-section {
+    flex-shrink: 0;
+    background: var(--glass-surface-analysis);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-analysis);
+    border-top: var(--border-analysis);
+    border-bottom: var(--border-analysis);
+    box-shadow: var(--border-glow-analysis);
+    padding: var(--space-2) var(--space-4);
+    min-height: 80px;
+    max-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    contain: layout style;
+  }
+
+  .ticker-input-section:hover {
+    box-shadow: var(--border-glow-analysis-hover);
+  }
+
+  /* SECTION 5: Analysis Buttons - Professional glassmorphic analysis tools with Purple Analysis Theme */
   .analysis-buttons-section {
-    grid-area: buttons;
+    flex-shrink: 0;
     background: var(--glass-surface-analysis);
     backdrop-filter: var(--glass-blur-lg);
     -webkit-backdrop-filter: var(--glass-blur-lg);
@@ -1098,7 +1176,7 @@ export const interfaceStyles = `
   
   /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities with Green Export Theme */
   .export-buttons-section {
-    grid-area: export-buttons;
+    flex-shrink: 0;
     background: var(--glass-surface-export);
     backdrop-filter: var(--glass-blur-md);
     -webkit-backdrop-filter: var(--glass-blur-md);
@@ -1142,7 +1220,7 @@ export const interfaceStyles = `
   
   /* SECTION 7: Debug Panel - Professional glassmorphic developer information with Orange/Amber Debug Theme */
   .debug-section {
-    grid-area: debug;
+    flex-shrink: 0;
     background: var(--glass-surface-debug);
     backdrop-filter: var(--glass-blur-lg);
     -webkit-backdrop-filter: var(--glass-blur-lg);
@@ -1175,6 +1253,76 @@ export const interfaceStyles = `
     max-width: 1000px;
     padding: 0;
     box-shadow: none;
+  }
+
+  /* BOTTOM CONTROL PANEL - Response Time and Message Count Display */
+  .bottom-control-panel {
+    grid-area: bottom-control;
+    background: var(--glass-surface-debug);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-debug);
+    border-top: var(--border-debug);
+    box-shadow: var(--border-glow-debug);
+    padding: var(--space-3) var(--space-4);
+    min-height: 60px;
+    max-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow-x: auto;
+    overflow-y: hidden;
+    contain: layout style;
+  }
+
+  .bottom-control-panel:hover {
+    box-shadow: var(--border-glow-debug-hover);
+  }
+
+  .response-time-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--neutral-200);
+    font-size: var(--text-sm);
+    font-family: var(--font-inter);
+    font-weight: 500;
+  }
+
+  .message-count-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--neutral-200);
+    font-size: var(--text-sm);
+    font-family: var(--font-inter);
+    font-weight: 500;
+  }
+
+  .status-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--neutral-300);
+    font-size: var(--text-xs);
+    font-family: var(--font-inter);
+  }
+
+  /* Mobile bottom control panel adjustments */
+  @media (max-width: 767px) {
+    .bottom-control-panel {
+      padding: 8px 12px;
+      min-height: 50px;
+      max-height: 70px;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .response-time-display,
+    .message-count-display,
+    .status-info {
+      font-size: var(--text-xs);
+    }
   }
   
   /* Mobile export and debug section adjustments */

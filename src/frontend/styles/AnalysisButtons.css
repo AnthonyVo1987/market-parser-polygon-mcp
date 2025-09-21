@@ -104,23 +104,70 @@
   border-bottom-color: rgba(124, 58, 237, 0.25);
 }
 
-/* Enhanced button grid with responsive design */
+/* Enhanced button grid with 3-button horizontal layout */
 .buttons-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   width: 100%;
   margin: 0;
-  /* Enhanced grid responsiveness */
-  grid-auto-rows: min-content;
-  align-items: start;
+  align-items: stretch;
+}
+
+/* Individual button styling for 3-button horizontal layout */
+.analysis-button {
+  flex: 1;
+  min-width: 0;
+  max-width: 120px;
+  min-height: 44px;
+  padding: 12px 8px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 12px;
+  background: rgba(26, 32, 44, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.analysis-button:hover:not(:disabled) {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+.analysis-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.analysis-button:focus-visible {
+  outline: 2px solid rgba(124, 58, 237, 0.6);
+  outline-offset: 2px;
 }
 
 /* Responsive breakpoints using container queries */
 @container analysis-buttons (max-width: 800px) {
   .buttons-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .analysis-button {
+    max-width: none;
+    min-height: 48px;
+    padding: 16px 12px;
   }
 
   .analysis-buttons-container {
@@ -131,7 +178,6 @@
 
 @container analysis-buttons (min-width: 1200px) {
   .buttons-grid {
-    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
 }

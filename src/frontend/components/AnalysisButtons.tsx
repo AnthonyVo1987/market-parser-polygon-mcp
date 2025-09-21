@@ -1,18 +1,5 @@
-import React, { 
-  useState, 
-  useCallback, 
-  useEffect, 
-  useMemo, 
-  useId,
-  FC,
-  ComponentType,
-  ReactNode,
-  JSX
-} from 'react';
-import type { 
-  FormEvent, 
-  KeyboardEvent, 
-  ChangeEvent 
+import {
+  FC
 } from 'react';
 import { AnalysisButtonsProps } from '../types';
 
@@ -24,7 +11,7 @@ const AnalysisButtons: FC<AnalysisButtonsProps> = ({
 }) => {
   return (
     <div className="analysis-buttons-container" data-testid="analysis-buttons">
-      <h3 className="analysis-section-header">Quick Analysis</h3>
+      <h3 className="analysis-section-header">QUICK ANALYSIS</h3>
       <div className="analysis-buttons-grid">
         <button
           className="analysis-button snapshot-button"

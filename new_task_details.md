@@ -2,15 +2,11 @@
 
 Task 1. Use Sequential-Thinking Tools, Serena Tools, & FileSystem Tools to: Read & Understand docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md to understand the testing plan FIRST
 
-Task 2. Use Sequential-Thinking Tools, Playwright Tools, FileSystem Tools to: execute the entire test plan EXACTLY from docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md.  Generate test report following the specified format and template.  DO NOT FIX ANY ISSUES YOU FIND.  User will later review
+Task 2. Use Sequential-Thinking Tools, Playwright Tools, FileSystem Tools to: execute the entire test plan EXACTLY from docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md.  Generate test report following the specified format and template.  DO NOT FIX ANY ISSUES YOU FIND.  User will later review the test report and fix issues in a different new task that will be assigned at a later point TBD
 
-Task 3.
+# Doc Review Task
 
-# Code\Doc Review Task
-
-- Use Serena Tools, `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive review
-- Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination (Multi-file operations (3+ files))
-- Use standard Read/Write/Edit tools for single-file operations
+- Use `mcp__sequential-thinking__sequentialthinking` tool for systematic approach to perform comprhensive review of the report and fix any issues in the report to verify it matches specified format and template from docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md
 - Continue review/fix loop until achieving PASSING code review status
 
 # Summary Task
