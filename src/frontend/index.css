@@ -1,5 +1,58 @@
 /* Enhanced global styles for financial chat interface - DARK MODE DEFAULT WITH FINTECH ACCENTS */
 :root {
+  /* Primary Colors */
+  --primary-400: #60a5fa;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+
+  /* Glass Surface Colors */
+  --glass-surface-chat: rgba(255, 255, 255, 0.05);
+  --glass-surface-medium: rgba(255, 255, 255, 0.08);
+  --glass-surface-warning: rgba(251, 191, 36, 0.1);
+
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+
+  /* Accent Colors */
+  --accent-warning: #fbbf24;
+  --accent-success: #10b981;
+  --accent-error: #ef4444;
+
+  /* Spacing Scale */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-4: 1rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-12: 3rem;
+
+  /* Font Sizes */
+  --font-size-small: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-h6: 1.125rem;
+
+  /* Font Weights */
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Letter Spacing */
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+
+  /* Border Radius */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+
+  /* Glass Effects */
+  --glass-blur-lg: blur(16px);
+  --glass-border-highlight: rgba(255, 255, 255, 0.1);
+  --glass-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
   /* ==========================================================================
      MODERN TYPOGRAPHY SYSTEM - Research-Backed Font Stacks & Hierarchy
      ========================================================================== */
@@ -2821,4 +2874,363 @@ SECTION-SPECIFIC UTILITY CLASSES - Tasks 4 & 6 Implementation
   .collapsible-content.collapsed {
     max-height: 0;
   }
+}
+
+/* AnalysisButtons CSS */
+.analysis-buttons-container {
+  min-height: 280px;
+  max-height: 400px;
+  padding: var(--spacing-4);
+  background: var(--glass-surface-medium);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border-highlight);
+}
+
+.analysis-section-header {
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-4) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.analysis-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+  height: 100%;
+}
+
+.analysis-button {
+  padding: var(--spacing-4);
+  background: var(--glass-surface-chat);
+  border: 2px solid var(--primary-500);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+}
+
+.analysis-button:hover:not(:disabled) {
+  background: var(--primary-500);
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+.analysis-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* DebugPanel CSS */
+.debug-panel-container {
+  min-height: 120px;
+  max-height: 200px;
+  padding: var(--spacing-4);
+  background: var(--glass-surface-medium);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border-highlight);
+}
+
+.debug-section-header {
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-4) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.debug-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-3);
+}
+
+.debug-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.debug-label {
+  font-size: var(--font-size-small);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.debug-value {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.debug-value.connected {
+  color: var(--accent-success);
+}
+
+.debug-value.disconnected {
+  color: var(--accent-error);
+}
+
+/* ChatInput_OpenAI CSS */
+.ai-chatbot-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  background: var(--glass-surface-medium);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--primary-500);
+}
+
+.ai-chatbot-label {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-400);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.required-indicator {
+  color: var(--accent-error);
+  font-size: var(--font-size-xl);
+}
+
+.ai-chatbot-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.ai-chatbot-input {
+  min-height: 120px;
+  padding: var(--spacing-3);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  border: 2px solid var(--primary-500);
+  border-radius: var(--radius-lg);
+  background: var(--glass-surface-chat);
+  color: var(--text-primary);
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.ai-chatbot-input:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.ai-chatbot-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-input-help {
+  font-size: var(--font-size-small);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.ai-chatbot-send-button {
+  align-self: flex-end;
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-chatbot-send-button:hover:not(:disabled) {
+  background: var(--primary-400);
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+.ai-chatbot-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* SharedTickerInput CSS */
+.shared-ticker-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  background: var(--glass-surface-warning);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--accent-warning);
+}
+
+.button-prompt-label {
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-warning);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  font-size: var(--font-size-small);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.ticker-input-group {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.ticker-input {
+  flex: 1;
+  padding: var(--spacing-3);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  border: 2px solid var(--accent-warning);
+  border-radius: var(--radius-lg);
+  background: var(--glass-surface-chat);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.ticker-input:focus {
+  outline: none;
+  border-color: var(--accent-warning);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+}
+
+.ticker-input.invalid {
+  border-color: var(--accent-error);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.ticker-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ticker-analyze-button {
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--accent-warning);
+  color: #1f2937;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ticker-analyze-button:hover:not(:disabled) {
+  background: #f59e0b;
+  transform: translateY(-1px);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+.ticker-analyze-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ticker-help {
+  font-size: var(--font-size-small);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.ticker-error {
+  font-size: var(--font-size-small);
+  color: var(--accent-error);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-1);
+}
+
+.message-sent-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.message-sent-content {
+  background: var(--glass-surface-medium);
+  backdrop-filter: var(--glass-blur-lg);
+  -webkit-backdrop-filter: var(--glass-blur-lg);
+  border: 2px solid var(--primary-500);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-8) var(--spacing-12);
+  text-align: center;
+  box-shadow: var(--glass-shadow-lg);
+  max-width: 400px;
+  width: 90%;
+}
+
+.message-sent-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-400);
+  margin: 0 0 var(--spacing-2) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+.message-sent-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-4) 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.message-sent-indicator {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary-400);
+  opacity: 0.6;
+}
+
+.input-section-header {
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.input-grouping {
+  border: 1px solid var(--glass-border-highlight);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
 }

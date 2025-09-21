@@ -1,1297 +1,156 @@
-import {
-  Suspense,
-  lazy,
-  memo,
-  startTransition,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-} from 'react';
-// Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { Message } from '../types';
+import ChatInput_OpenAI from './ChatInput_OpenAI';
+import SharedTickerInput from './SharedTickerInput';
+import AnalysisButtons from './AnalysisButtons';
+import DebugPanel from './DebugPanel';
+import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 
-import { useAIModel } from '../hooks/useAIModel';
-import {
-  useInteractionLogger,
-  usePerformanceLogger,
-} from '../hooks/useDebugLog';
-import { sendChatMessage } from '../services/api_OpenAI';
-import { Message } from '../types/chat_OpenAI';
-import { logger } from '../utils/logger';
-
-// Consolidated state interface for useReducer
-interface ChatState {
-  messages: Message[];
-  isLoading: boolean;
-  error: string | null;
-  inputValue: string;
-  sharedTicker: string;
-  latestResponseTime: number | null;
-}
-
-// Action types for state management
-type ChatAction =
-  | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
-  | {
-    type: 'SEND_MESSAGE_SUCCESS';
-    payload: { aiMessage: Message; responseTime: number };
-  }
-  | {
-    type: 'SEND_MESSAGE_ERROR';
-    payload: {
-      errorMessage: string;
-      aiMessage: Message;
-      responseTime: number;
-    };
-  }
-  | { type: 'UPDATE_INPUT'; payload: string }
-  | { type: 'UPDATE_TICKER'; payload: string }
-  | { type: 'CLEAR_ERROR' }
-  | { type: 'RESET_STATE' };
-
-// Initial state
-const initialChatState: ChatState = {
-  messages: [],
-  isLoading: false,
-  error: null,
-  inputValue: '',
-  sharedTicker: 'NVDA',
-  latestResponseTime: null,
+// Mock functions for parts of the old implementation that are not in the new plan.
+// This is to ensure the component is self-contained and runnable as per the plan.
+const sendChatMessage = async (message: string, _model: string) => {
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  return {
+    response: `This is a mock AI response to your message: "${message}"`,
+    metadata: {
+      response_time: '1.50s'
+    }
+  };
 };
 
-// Reducer function for consolidated state management
-function chatReducer(state: ChatState, action: ChatAction): ChatState {
-  switch (action.type) {
-    case 'SEND_MESSAGE_START':
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
-        messages: [...state.messages, action.payload.userMessage],
-      };
-    case 'SEND_MESSAGE_SUCCESS':
-      return {
-        ...state,
-        isLoading: false,
-        messages: [...state.messages, action.payload.aiMessage],
-        latestResponseTime: action.payload.responseTime,
-      };
-    case 'SEND_MESSAGE_ERROR':
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload.errorMessage,
-        messages: [...state.messages, action.payload.aiMessage],
-        latestResponseTime: action.payload.responseTime,
-      };
-    case 'UPDATE_INPUT':
-      return {
-        ...state,
-        inputValue: action.payload,
-      };
-    case 'UPDATE_TICKER':
-      return {
-        ...state,
-        sharedTicker: action.payload,
-      };
-    case 'CLEAR_ERROR':
-      return {
-        ...state,
-        error: null,
-      };
-    case 'RESET_STATE':
-      return initialChatState;
-    default:
-      return state;
-  }
-}
+const ChatInterface_OpenAI = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [messageSentStatus, setMessageSentStatus] = useState(false);
+  const [tickerValue, setTickerValue] = useState('AAPL');
+  const [lastResponseTime, setLastResponseTime] = useState(0);
+  const [currentModel, setCurrentModel] = useState('mock-model');
 
-import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
-import ChatMessage_OpenAI from './ChatMessage_OpenAI';
-import DebugPanel from './DebugPanel';
-
-// Lazy load secondary components for better performance
-const ExportButtons = lazy(() =>
-  import('./ExportButtons').then(module => ({ default: module.default }))
-);
-const RecentMessageButtons = lazy(() =>
-  import('./RecentMessageButtons').then(module => ({ default: module.default }))
-);
-const AnalysisButtons = lazy(() =>
-  import('./AnalysisButtons').then(module => ({ default: module.default }))
-);
-
-// Note: Styles are now included within each lazy-loaded component to prevent static imports
-// that would break the lazy loading optimization
-
-const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
-  // Consolidated state management using useReducer for performance optimization
-  const [state, dispatch] = useReducer(chatReducer, initialChatState);
-  const {
-    messages,
-    isLoading,
-    error,
-    inputValue,
-    sharedTicker,
-    latestResponseTime,
-  } = state;
-
-  // AI Model management
-  const {
-    models,
-    currentModel,
-    isLoading: isLoadingModels,
-    error: modelError,
-    selectModel,
-  } = useAIModel();
-
-  // Use deferred values for non-urgent UI updates to improve responsiveness
-  const deferredSharedTicker = useDeferredValue(sharedTicker);
-
-  // Memoize expensive computations for performance
-  const memoizedComputations = useMemo(() => {
-    const hasMessages = messages.length > 0;
-    const lastMessage = messages[messages.length - 1];
-    const placeholderText = `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`;
-
-    return {
-      hasMessages,
-      lastMessage,
-      placeholderText,
+  const handleSendMessage = useCallback(async (messageContent: string) => {
+    const messageId = Date.now().toString();
+    const userMessage: Message = {
+      id: messageId,
+      content: messageContent,
+      sender: 'user',
+      timestamp: new Date(),
     };
-  }, [messages, sharedTicker]);
 
-  // Performance and interaction tracking
+    setMessageSentStatus(true);
+    setMessages(prev => [...prev, userMessage]);
 
-  // Performance tracking - always available for optimization
-  const { startTiming, endTiming } = usePerformanceLogger(
-    'ChatInterface_OpenAI'
-  );
+    try {
+      const apiResponse = await sendChatMessage(messageContent, currentModel);
 
-  // User interaction logging - always available for UX insights
-  const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
+      const responseTime = apiResponse.metadata?.response_time
+        ? parseFloat(apiResponse.metadata.response_time.replace('s', ''))
+        : 0;
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const statusRegionRef = useRef<HTMLDivElement>(null);
-  const chatInputRef = useRef<ChatInputRef>(null);
-  const isFirstRenderRef = useRef(true);
-  const previousMessageCountRef = useRef(0);
-
-  // Optimized auto-scroll with minimal dependencies
-  useEffect(() => {
-    const currentMessageCount = messages.length;
-
-    // Only scroll if messages increased and not loading
-    const shouldScroll =
-      !isFirstRenderRef.current &&
-      currentMessageCount > previousMessageCountRef.current &&
-      !isLoading;
-
-    if (shouldScroll && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
-    }
-
-    // Update refs
-    isFirstRenderRef.current = false;
-    previousMessageCountRef.current = currentMessageCount;
-  }, [messages.length, isLoading]); // Include messages.length and isLoading dependencies
-
-  // Direct input change handler for <16ms responsiveness - no debouncing
-
-  // Handle input changes with immediate state updates for optimal responsiveness
-  const handleInputValueChange = useCallback((value: string) => {
-    // Always update immediately for instant UI feedback using reducer dispatch
-    dispatch({ type: 'UPDATE_INPUT', payload: value });
-
-    // Use startTransition for non-urgent derived state updates
-    startTransition(() => {
-      // Any analytics, word counting, or other non-critical updates would go here
-      // This prevents them from blocking the input responsiveness
-      logger.debug('📝 Input value updated', {
-        component: 'ChatInterface_OpenAI',
-        valueLength: value.length,
-        hasContent: value.length > 0,
-      });
-    });
-  }, []); // No dependencies needed - always direct update
-
-  // Handle prompt population from analysis buttons with immediate updates
-  const handlePromptGenerated = useCallback(
-    (prompt: string) => {
-      // Immediate state update for instant UI feedback using reducer dispatch
-      dispatch({ type: 'UPDATE_INPUT', payload: prompt });
-
-      // Focus the input immediately for best UX
-      if (chatInputRef.current) {
-        chatInputRef.current.focus();
-      }
-
-      // Use startTransition for non-critical logging and analytics
-      startTransition(() => {
-        logInteraction('prompt_generated', 'analysis_button', {
-          promptLength: prompt.length,
-          promptPreview:
-            prompt.slice(0, 50) + (prompt.length > 50 ? '...' : ''),
-        });
-
-        logger.debug('🎯 Focused chat input after prompt generation', {
-          promptLength: prompt.length,
-          hasFocus: document.activeElement === chatInputRef.current?.focus,
-        });
-      });
-    },
-    [logInteraction]
-  );
-
-  const handleSendMessage = useCallback(
-    async (messageContent: string) => {
-      const messageId = Date.now().toString();
-      const userMessage: Message = {
-        id: messageId,
-        content: messageContent,
-        sender: 'user',
+      const aiMessage: Message = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        content: apiResponse.response,
+        sender: 'ai',
         timestamp: new Date(),
+        metadata: { processingTime: responseTime },
       };
 
-      // Start performance timing
-      startTiming('message_processing');
+      setMessages(prev => [...prev, aiMessage]);
+      setLastResponseTime(responseTime);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to send message';
 
-      // Use optimized reducer action for immediate message start state
-      dispatch({
-        type: 'SEND_MESSAGE_START',
-        payload: { userMessage },
-      });
+      const aiMessage: Message = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        content: `Error: ${errorMessage}`,
+        sender: 'ai',
+        timestamp: new Date(),
+        metadata: { isError: true },
+      };
 
-      // Use startTransition for non-critical logging
-      startTransition(() => {
-        logInteraction('send_message', 'chat_input', {
-          messageLength: messageContent.length,
-          messagePreview:
-            messageContent.slice(0, 100) +
-            (messageContent.length > 100 ? '...' : ''),
-          messageId,
-        });
-      });
+      setMessages(prev => [...prev, aiMessage]);
+    } finally {
+      setMessageSentStatus(false);
+    }
+  }, [currentModel]);
 
-      try {
-        logger.group('🌐 API Request Processing');
-        logger.info('Sending message to API', {
-          messageId,
-          contentLength: messageContent.length,
-          timestamp: new Date().toISOString(),
-        });
+  const handleSnapshot = useCallback(() => {
+    handleSendMessage(`Take a snapshot of ${tickerValue}`);
+  }, [handleSendMessage, tickerValue]);
 
-        // Send to API and get response
-        const apiResponse = await sendChatMessage(messageContent, currentModel);
+  const handleSupportResistance = useCallback(() => {
+    handleSendMessage(`Analyze support and resistance for ${tickerValue}`);
+  }, [handleSendMessage, tickerValue]);
 
-        // Extract response time from backend metadata
-        const responseTime = apiResponse.metadata?.response_time
-          ? parseFloat(apiResponse.metadata.response_time.replace('s', ''))
-          : 0;
+  const handleTechnicalAnalysis = useCallback(() => {
+    handleSendMessage(`Perform technical analysis for ${tickerValue}`);
+  }, [handleSendMessage, tickerValue]);
 
-        logger.info('✅ API response received', {
-          messageId,
-          processingTime: `${responseTime}s`,
-          responseLength: apiResponse.response.length,
-        });
-        logger.groupEnd();
+  const handleTickerAnalysis = useCallback(() => {
+    handleSendMessage(`Analyze ticker ${tickerValue}`);
+  }, [handleSendMessage, tickerValue]);
 
-        // Create AI message and dispatch success action
-        const aiMessage: Message = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          content: apiResponse.response,
-          sender: 'ai',
-          timestamp: new Date(),
-          metadata: { processingTime: responseTime },
-        };
-
-        dispatch({
-          type: 'SEND_MESSAGE_SUCCESS',
-          payload: { aiMessage, responseTime },
-        });
-
-        // End performance timing
-        endTiming('message_processing');
-      } catch (err: unknown) {
-        // For errors, we don't have backend response time, so use 0 as fallback
-        const responseTime = 0;
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to send message';
-
-        logger.group('❌ API Request Failed');
-        logger.error('API request failed', {
-          messageId,
-          processingTime: `${responseTime}s`,
-          errorType: err instanceof Error ? err.constructor.name : 'Unknown',
-          errorMessage:
-            errorMessage.slice(0, 200) +
-            (errorMessage.length > 200 ? '...' : ''),
-        });
-        logger.groupEnd();
-
-        // Create error AI message and dispatch error action
-        const aiMessage: Message = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-          content: `Error: ${errorMessage}`,
-          sender: 'ai',
-          timestamp: new Date(),
-          metadata: { processingTime: responseTime, isError: true },
-        };
-
-        dispatch({
-          type: 'SEND_MESSAGE_ERROR',
-          payload: { errorMessage, aiMessage, responseTime },
-        });
-
-        // End performance timing even on error
-        endTiming('message_processing');
-      }
-    },
-    [startTiming, endTiming, logInteraction, currentModel]
-  ); // Include currentModel dependency
-
-  const handleTickerChange = useCallback(
-    (newTicker: string) => {
-      // Immediate ticker update using reducer dispatch
-      dispatch({ type: 'UPDATE_TICKER', payload: newTicker });
-
-      // Use startTransition for non-critical logging
-      startTransition(() => {
-        logInteraction('ticker_change', 'analysis_buttons', {
-          oldTicker: sharedTicker,
-          newTicker,
-          source: 'analysis_buttons',
-        });
-      });
-    },
-    [logInteraction, sharedTicker]
-  );
-
-  // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
-
-  const handleDebugAction = useCallback(
-    (action: string, details: Record<string, unknown>) => {
-      // Use startTransition for non-critical debug operations
-      startTransition(() => {
-        logInteraction('debug_action', 'debug_panel', {
-          action,
-          ...details,
-        });
-      });
-    },
-    [logInteraction]
-  );
+  const handleExport = useCallback(() => {
+    // In a real app, this would trigger a download or copy to clipboard.
+    console.log("Exporting chat:", JSON.stringify(messages, null, 2));
+    alert("Chat exported! Check the console.");
+  }, [messages]);
 
   return (
-    <div
-      className='chat-interface'
-      role='application'
-      aria-label='OpenAI Chat Interface'
-    >
-      {/* Skip link for keyboard navigation */}
-      <a href='#main-input' className='skip-link'>
-        Skip to message input
-      </a>
-
-      {/* Live regions for screen reader announcements */}
-      <div
-        ref={statusRegionRef}
-        role='status'
-        aria-live='polite'
-        aria-atomic='true'
-        className='sr-only'
-      >
-        {isLoading ? 'Sending message, please wait...' : ''}
-        {error ? `Error: ${error}` : ''}
-      </div>
-
-      {/* SECTION 1: Header - Clean title only */}
-      <header className='chat-header' role='banner'>
-        <h1 id='chat-title'>OpenAI Chat Interface</h1>
-        {error && (
-          <div
-            className='error-banner'
-            role='alert'
-            aria-describedby='chat-title'
-          >
-            {error}
-          </div>
-        )}
+    <div className="chat-interface-container">
+      <header className="chat-header">
+        <h1>Market Parser - AI Financial Analysis</h1>
       </header>
 
-      {/* SECTION 2: Messages Container */}
-      <main
-        className='messages-section'
-        role='log'
-        aria-live='polite'
-        aria-label='Chat conversation'
-      >
-        {messages.length === 0 ? (
-          <div className='empty-state' role='status'>
-            <div className='welcome-content'>
-              <h2 className='welcome-title'>
-                Welcome to Financial Analysis Chat
-              </h2>
-              <p className='welcome-description'>
-                Get instant financial insights powered by AI. Use the ticker
-                input and quick analysis tools below or type your own questions.
-              </p>
-              <p className='getting-started'>
-                Start by entering a ticker symbol and using the analysis
-                buttons, or type a message directly.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
-            {messages.map(message => (
-              <ChatMessage_OpenAI key={message.id} message={message} />
-            ))}
-            {/* Scroll anchor */}
-            <div ref={messagesEndRef} aria-hidden='true' />
-          </>
-        )}
-        {isLoading && (
-          <div
-            className='loading-indicator'
-            role='status'
-            aria-label='AI is typing'
-          >
-            <div className='typing-dots' aria-hidden='true'>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span className='sr-only'>AI is responding to your message</span>
-          </div>
-        )}
-      </main>
+      <div className="messages-container">
+        {messages.map((message) => (
+           <ChatMessage_OpenAI key={message.id} message={message} />
+        ))}
+      </div>
 
-      {/* SECTION 3: Chat Input */}
-      <section
-        className='chat-input-section'
-        role='complementary'
-        aria-label='Message input'
-      >
-        <div className='chat-input-container'>
-          <ChatInput_OpenAI
-            ref={chatInputRef}
-            onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            value={inputValue}
-            onValueChange={handleInputValueChange}
-            placeholder={memoizedComputations.placeholderText}
-          />
+      <ChatInput_OpenAI
+        onSendMessage={handleSendMessage}
+        disabled={messageSentStatus}
+      />
+
+      <SharedTickerInput
+        value={tickerValue}
+        onChange={setTickerValue}
+        onAnalyze={handleTickerAnalysis}
+        disabled={messageSentStatus}
+      />
+
+      <AnalysisButtons
+        onSnapshot={handleSnapshot}
+        onSupportResistance={handleSupportResistance}
+        onTechnicalAnalysis={handleTechnicalAnalysis}
+        disabled={messageSentStatus}
+      />
+
+      <div className="export-buttons">
+        <button onClick={handleExport}>Export Chat</button>
+      </div>
+
+      <DebugPanel
+        responseTime={lastResponseTime}
+        messageCount={messages.length}
+        lastUpdate={new Date()}
+        isConnected={true}
+      />
+
+      {messageSentStatus && (
+        <div className="message-sent-overlay" role="status" aria-live="assertive">
+          <div className="message-sent-content">
+            <h2 className="message-sent-title">MESSAGE SENT</h2>
+            <p className="message-sent-subtitle">PLEASE WAIT FOR AI RESPONSE</p>
+            <div className="message-sent-indicator" aria-hidden="true">
+              <div className="status-dot"></div>
+              <div className="status-dot"></div>
+              <div className="status-dot"></div>
+            </div>
+          </div>
         </div>
-      </section>
-
-      {/* SECTION 4: Analysis Buttons (now includes integrated ticker input) */}
-      <section
-        className='analysis-buttons-section'
-        role='complementary'
-        aria-label='Quick analysis tools'
-      >
-        <Suspense
-          fallback={
-            <div className='component-loading analysis-loading'>
-              Loading analysis tools...
-            </div>
-          }
-        >
-          <AnalysisButtons
-            onPromptGenerated={handlePromptGenerated}
-            currentTicker={deferredSharedTicker}
-            onTickerChange={handleTickerChange}
-            className='fixed-analysis-buttons'
-          />
-        </Suspense>
-      </section>
-
-      {/* SECTION 5: Export/Recent Buttons */}
-      <section
-        className='export-buttons-section'
-        role='complementary'
-        aria-label='Export and recent message functions'
-      >
-        {memoizedComputations.hasMessages && (
-          <div className='export-recent-container'>
-            <Suspense
-              fallback={
-                <div className='component-loading'>
-                  Loading recent messages...
-                </div>
-              }
-            >
-              <RecentMessageButtons messages={messages} />
-            </Suspense>
-            <Suspense
-              fallback={
-                <div className='component-loading'>
-                  Loading export options...
-                </div>
-              }
-            >
-              <ExportButtons messages={messages} />
-            </Suspense>
-          </div>
-        )}
-      </section>
-
-      {/* SECTION 6: Debug Panel */}
-      <section
-        className='debug-section'
-        role='complementary'
-        aria-label='Debug information'
-      >
-        <DebugPanel
-          latestResponseTime={latestResponseTime}
-          className='main-debug-panel'
-          onDebugAction={handleDebugAction}
-          models={models}
-          currentModel={currentModel}
-          onModelChange={selectModel}
-          isLoadingModels={isLoadingModels}
-          modelError={modelError}
-        />
-      </section>
+      )}
     </div>
   );
-});
-
-// Enable Why Did You Render tracking for this component
-ChatInterface_OpenAI.whyDidYouRender = true;
+};
 
 export default ChatInterface_OpenAI;
-
-// Enhanced responsive styles for cross-platform UI optimization with accessibility
-export const interfaceStyles = `
-  /* Accessibility: Skip link for keyboard navigation */
-  .skip-link {
-    position: absolute;
-    top: -40px;
-    left: 6px;
-    background: #000;
-    color: #fff;
-    padding: 8px;
-    text-decoration: none;
-    border-radius: 4px;
-    z-index: 1000;
-    font-size: 14px;
-  }
-  
-  .skip-link:focus {
-    top: 6px;
-  }
-  
-  /* Screen reader only content */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-  
-  /* SIX-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
-  .chat-interface {
-    display: grid;
-    /* Stable grid rows using minmax() to prevent layout shifts during loading states */
-    grid-template-rows: 
-      minmax(70px, auto)    /* Header: stable minimum height */
-      1fr                   /* Messages: flexible space for scrolling */
-      minmax(90px, 150px)   /* Chat Input: stable height range */
-      minmax(180px, 280px)  /* Analysis Buttons with Ticker: increased height range */
-      minmax(70px, 120px)   /* Export Buttons: stable height range */
-      minmax(80px, 120px);  /* Debug: stable height range */
-    grid-template-areas: 
-      "header"
-      "messages"
-      "chat-input"
-      "buttons"
-      "export-buttons"
-      "debug";
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
-    background: var(--glass-surface-medium);
-    backdrop-filter: var(--backdrop-blur-lg);
-    -webkit-backdrop-filter: var(--backdrop-blur-lg);
-    color: var(--neutral-100);
-    overflow: hidden; /* Prevent page-level scrolling */
-    gap: 0; /* No gaps between sections for seamless design */
-    position: relative;
-  }
-  
-  .chat-interface::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      135deg,
-      var(--primary-900) 0%,
-      var(--primary-800) 50%,
-      var(--neutral-900) 100%
-    );
-    opacity: 0.05;
-    pointer-events: none;
-    z-index: -1;
-  }
-  
-  /* Mobile viewport optimizations with stable grid layout */
-  @media (max-width: 767px) {
-    .chat-interface {
-      height: 100vh;
-      height: 100svh; /* Small viewport height for mobile browsers */
-      /* Mobile-optimized stable grid rows */
-      grid-template-rows: 
-        minmax(50px, auto)    /* Header: smaller mobile minimum */
-        1fr                   /* Messages: flexible space */
-        minmax(70px, 120px)   /* Chat Input: mobile-optimized range */
-        minmax(150px, 240px)  /* Analysis Buttons with Ticker: mobile-optimized range */
-        minmax(60px, 100px)   /* Export Buttons: mobile-optimized range */
-        minmax(50px, 80px);   /* Debug: mobile-optimized range */
-    }
-  }
-  
-  /* SECTION 1: Header - Professional Fintech Glassmorphic Header with Blue Chat Theme */
-  .chat-header {
-    grid-area: header;
-    position: relative;
-    background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
-    padding: var(--space-4);
-    border: var(--border-chat);
-    border-bottom: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
-    text-align: center;
-    min-height: 70px; /* Prevent layout shifts */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* Transition removed for performance */
-  }
-  
-  .chat-header:hover {
-    box-shadow: var(--border-glow-chat-hover);
-  }
-  
-  /* Mobile header adjustments */
-  @media (max-width: 767px) {
-    .chat-header {
-      padding: 12px 8px;
-      min-height: 50px;
-    }
-    
-    .chat-header h1 {
-      font-size: 1.25rem;
-      margin: 0 0 8px 0;
-    }
-  }
-  
-  .chat-header h1 {
-    margin: 0 0 var(--space-2) 0;
-    font-size: var(--text-xl);
-    font-weight: var(--font-semibold);
-    color: var(--neutral-50);
-    font-family: var(--font-inter);
-  }
-  
-  .error-banner {
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
-    border: 1px solid var(--error-500);
-    color: var(--error-100);
-    padding: var(--space-2) var(--space-4);
-    margin-top: var(--space-2);
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-  }
-  
-  /* SECTION 2: Messages - Flexible height with glassmorphic scrolling and Blue Chat Theme */
-  .messages-section {
-    grid-area: messages;
-    overflow-y: auto;
-    overflow-x: hidden; /* Prevent horizontal page scroll */
-    padding: var(--space-4);
-    width: 100%;
-    max-width: 100%; /* Remove 800px limit for better mobile */
-    margin: 0 auto;
-    /* Enhanced focus management - SMOOTH SCROLLING REMOVED FOR PERFORMANCE */
-    scroll-behavior: auto;
-    min-height: 0; /* Allow shrinking in grid layout */
-    /* Custom scrollbar for glassmorphic look */
-    scrollbar-width: thin;
-    scrollbar-color: var(--neutral-400) transparent;
-    /* Blue Chat Theme Enhancement - Tasks 4 & 6 */
-    background: var(--glass-surface-chat);
-    border-left: var(--border-chat);
-    border-right: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
-    /* Transition removed for performance */
-  }
-  
-  .messages-section:hover {
-    box-shadow: var(--border-glow-chat-hover);
-  }
-  
-  .messages-section:focus {
-    outline: 2px solid #007bff;
-    outline-offset: -2px;
-  }
-  
-  /* Modern glassmorphic scrollbar styling */
-  .messages-section::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .messages-section::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .messages-section::-webkit-scrollbar-thumb {
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
-    border: 1px solid var(--glass-border-highlight);
-    border-radius: var(--radius-full);
-  }
-  
-  .messages-section::-webkit-scrollbar-thumb:hover {
-    background: var(--glass-surface-medium);
-    border-color: var(--primary-400);
-  }
-  
-  /* Mobile-specific adjustments */
-  @media (max-width: 767px) {
-    .messages-section {
-      padding: 8px;
-      max-width: 100vw;
-    }
-    
-    .messages-section::-webkit-scrollbar {
-      width: 10px; /* Thicker scrollbars on mobile */
-    }
-    
-    .welcome-content {
-      padding: 0 8px;
-    }
-    
-    .welcome-title {
-      font-size: 20px;
-    }
-    
-    .welcome-description {
-      font-size: 14px;
-    }
-  }
-  
-  /* Tablet adjustments */
-  @media (min-width: 768px) and (max-width: 1024px) {
-    .messages-section {
-      max-width: 900px;
-      padding: 20px;
-    }
-  }
-  
-  /* Desktop optimizations */
-  @media (min-width: 1025px) {
-    .messages-section {
-      max-width: 1000px;
-      padding: 24px;
-    }
-    
-    .welcome-title {
-      font-size: 28px;
-    }
-    
-    .welcome-description {
-      font-size: 18px;
-    }
-  }
-  
-  .empty-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--neutral-300);
-    padding: var(--space-5);
-  }
-  
-  .welcome-content {
-    text-align: center;
-    max-width: 600px;
-    width: 100%;
-  }
-  
-  .welcome-title {
-    margin: 0 0 var(--space-3) 0;
-    font-size: var(--text-2xl);
-    font-weight: var(--font-semibold);
-    color: var(--neutral-50);
-    font-family: var(--font-inter);
-  }
-  
-  .welcome-description {
-    margin: 0 0 var(--space-6) 0;
-    font-size: var(--text-base);
-    line-height: var(--leading-relaxed);
-    color: var(--neutral-200);
-    font-family: var(--font-inter);
-  }
-  
-  .welcome-buttons {
-    margin: 0 0 24px 0;
-  }
-  
-  .getting-started {
-    margin: 0;
-    font-size: var(--text-sm);
-    color: var(--neutral-400);
-    font-style: italic;
-    font-family: var(--font-inter);
-  }
-  
-  .loading-indicator {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin: var(--space-4) 0;
-    gap: var(--space-2);
-  }
-  
-  .typing-dots {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-3) var(--space-4);
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
-    border: var(--glass-border-highlight);
-    border-radius: var(--radius-2xl);
-  }
-  
-  .typing-dots span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--primary-400);
-    /* Animation removed for performance - use static dots */
-    opacity: 0.8;
-  }
-  
-  /* Typing animation removed for performance */
-  .typing-dots span:nth-child(1) {
-    opacity: 1;
-  }
-  
-  .typing-dots span:nth-child(2) {
-    opacity: 0.8;
-  }
-  
-  .typing-dots span:nth-child(3) {
-    opacity: 0.6;
-  }
-  
-  /* SECTION 3: Chat Input - Professional glassmorphic input section with Blue Chat Theme */
-  .chat-input-section {
-    grid-area: chat-input;
-    background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
-    border: var(--border-chat);
-    border-top: var(--border-chat);
-    border-bottom: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
-    padding: var(--space-4);
-    min-height: 90px; /* Fixed minimum height prevents jumping */
-    max-height: 150px; /* Prevent excessive expansion */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* Transition removed for performance */
-  }
-  
-  .chat-input-section:hover {
-    box-shadow: var(--border-glow-chat-hover);
-  }
-  
-  .chat-input-container {
-    display: flex;
-    flex-direction: column;
-    max-width: 1000px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  
-
-  
-  /* Mobile input adjustments */
-  @media (max-width: 767px) {
-    .chat-input-section {
-      padding: 12px 8px;
-      min-height: 70px;
-    }
-    
-
-  }
-  
-  /* Tablet and desktop input optimizations */
-  @media (min-width: 768px) {
-    .chat-input-section {
-      padding: 20px;
-      min-height: 80px;
-    }
-  }
-  
-  /* SECTION 4: Analysis Buttons with Integrated Ticker - Professional glassmorphic analysis tools with Purple Analysis Theme */
-  .analysis-buttons-section {
-    grid-area: buttons;
-    background: var(--glass-surface-analysis);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
-    border: var(--border-analysis);
-    border-top: var(--border-analysis);
-    border-bottom: var(--border-analysis);
-    box-shadow: var(--border-glow-analysis);
-    padding: var(--space-2) var(--space-4);
-    /* Increased height to accommodate integrated ticker input - no scrolling */
-    min-height: 180px; 
-    max-height: 280px; 
-    overflow-y: visible; /* Show all content without scrolling */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    /* Contain layout changes during loading states */
-    contain: layout style;
-    /* Transition removed for performance */
-  }
-  
-  .analysis-buttons-section:hover {
-    box-shadow: var(--border-glow-analysis-hover);
-  }
-  
-
-  
-  .fixed-analysis-buttons {
-    margin: 0;
-    border: none;
-    background: transparent;
-    width: 100%;
-    max-width: 1000px;
-    padding: 0;
-  }
-  
-  .analysis-loading {
-    min-height: 80px;
-    background: #2d3748; /* Dark loading background */
-    border-radius: 8px;
-    margin: 8px 0;
-    color: #cbd5e0; /* Light loading text */
-  }
-  
-  /* Mobile analysis buttons adjustments */
-  @media (max-width: 767px) {
-    .analysis-buttons-section {
-      padding: 6px 8px;
-      min-height: 150px;
-      max-height: 240px;
-    }
-  }
-  
-  /* Tablet and desktop analysis buttons optimizations */
-  @media (min-width: 768px) {
-    .analysis-buttons-section {
-      padding: 12px 20px;
-      min-height: 160px;
-      max-height: 260px;
-    }
-  }
-  
-  /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities with Green Export Theme */
-  .export-buttons-section {
-    grid-area: export-buttons;
-    background: var(--glass-surface-export);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
-    border: var(--border-export);
-    border-top: var(--border-export);
-    border-bottom: var(--border-export);
-    box-shadow: var(--border-glow-export);
-    padding: var(--space-3) var(--space-4);
-    /* Grid minmax() now controls height - these ensure consistent behavior */
-    min-height: 70px; 
-    max-height: 120px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto; /* Enable scrolling if content exceeds bounds */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    /* Contain layout changes during loading states */
-    contain: layout style;
-    /* Transition removed for performance */
-  }
-  
-  .export-buttons-section:hover {
-    box-shadow: var(--border-glow-export-hover);
-  }
-  
-  .export-recent-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    max-width: 1000px;
-    align-items: center;
-  }
-  
-  /* Mobile export-recent container adjustments */
-  @media (max-width: 767px) {
-    .export-recent-container {
-      gap: 6px;
-    }
-  }
-  
-  /* SECTION 7: Debug Panel - Professional glassmorphic developer information with Orange/Amber Debug Theme */
-  .debug-section {
-    grid-area: debug;
-    background: var(--glass-surface-debug);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
-    border: var(--border-debug);
-    border-top: var(--border-debug);
-    box-shadow: var(--border-glow-debug);
-    padding: var(--space-3) var(--space-4);
-    /* Grid minmax() now controls height - these ensure consistent behavior */
-    min-height: 80px; 
-    max-height: 120px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto; /* Enable scrolling if content exceeds bounds */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    /* Contain layout changes during loading states */
-    contain: layout style;
-    /* Transition removed for performance */
-  }
-  
-  .debug-section:hover {
-    box-shadow: var(--border-glow-debug-hover);
-  }
-  
-  .main-debug-panel {
-    margin: 0;
-    border: none;
-    background: transparent;
-    width: 100%;
-    max-width: 1000px;
-    padding: 0;
-    box-shadow: none;
-  }
-  
-  /* Mobile export and debug section adjustments */
-  @media (max-width: 767px) {
-    .export-buttons-section {
-      padding: 8px 12px;
-      min-height: 60px;
-      max-height: 100px; /* Increased for both button sets */
-    }
-    
-    .debug-section {
-      padding: 8px 12px;
-      min-height: 50px;
-      max-height: 80px;
-    }
-  }
-  
-  /* Tablet and desktop export and debug section optimizations */
-  @media (min-width: 768px) {
-    .export-buttons-section {
-      padding: 16px 20px;
-      min-height: 70px;
-      max-height: 110px; /* Increased for both button sets */
-    }
-    
-    .debug-section {
-      padding: 16px 20px;
-      min-height: 70px;
-      max-height: 100px;
-    }
-  }
-  
-  /* Export and debug section focus management - DARK MODE */
-  .export-buttons-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  .debug-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  /* Export buttons responsive layout */
-  @media (max-width: 640px) {
-    .export-buttons-grid,
-    .recent-message-buttons {
-      gap: 6px;
-    }
-  }
-  
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
-    .chat-interface {
-      border: 2px solid;
-    }
-    
-    .message-bubble {
-      border: 1px solid;
-    }
-  }
-  
-  /* Modern Grid Layout Stability Enhancements */
-  .chat-interface {
-    container-type: inline-size; /* Enable container queries */
-  }
-  
-  /* Container query for ultra-responsive design */
-  @container (max-width: 500px) {
-    .inputs-container {
-      gap: 8px;
-    }
-    
-    .user-inputs-section {
-      min-height: 90px;
-    }
-    
-    .analysis-buttons-section {
-      min-height: 130px;
-    }
-  }
-  
-  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
-  @media (prefers-reduced-motion: reduce) {
-    /* All animations already removed */
-  }
-  
-  /* Focus visible improvements with modern focus rings - DARK MODE */
-  .chat-interface *:focus-visible {
-    outline: 2px solid #63b3ed; /* Light blue focus ring for dark mode */
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-  
-  /* Enhanced section focus management - DARK MODE */
-  .messages-section:focus-within,
-  .chat-input-section:focus-within,
-  .ticker-input-section:focus-within,
-  .analysis-buttons-section:focus-within,
-  .export-buttons-section:focus-within {
-    background-color: rgba(99, 179, 237, 0.1); /* Light blue overlay for dark mode */
-    /* Transition removed for performance */
-  }
-  
-  /* Modern focus indicators for sections - DARK MODE */
-  .chat-input-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  .ticker-input-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  .analysis-buttons-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-
-  /* Component loading states - Professional glassmorphic loading with layout containment */
-  .component-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-3);
-    color: var(--neutral-300);
-    font-size: var(--text-sm);
-    font-style: italic;
-    font-family: var(--font-inter);
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
-    border-radius: var(--radius-lg);
-    margin: var(--space-2) 0;
-    min-height: 40px;
-    max-height: 60px; /* Prevent loading states from growing too large */
-    border: var(--glass-border-highlight);
-    /* Ensure loading states don't affect parent section dimensions */
-    contain: layout size;
-    overflow: hidden;
-  }
-
-  .component-loading::before {
-    content: 'Processing...';
-    margin-right: var(--space-2);
-    flex-shrink: 0;
-    font-size: 16px;
-    color: var(--primary-400);
-    /* Spinner animation removed for performance */
-  }
-
-  /* Loading state variations for different locations */
-  .chat-header .component-loading {
-    margin: 4px 0;
-    min-height: 32px;
-    font-size: 12px;
-  }
-
-  .welcome-buttons .component-loading {
-    margin: 16px 0;
-    min-height: 60px;
-    font-size: 14px;
-  }
-
-  .conversation-buttons .component-loading {
-    margin: 0;
-    border-radius: 0;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  /* High DPI and Retina Display Support */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-    .chat-interface {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    
-    .messages-section::-webkit-scrollbar-thumb,
-    .analysis-buttons-section::-webkit-scrollbar-thumb {
-      border-radius: 4px;
-    }
-  }
-  
-  /* Dark mode is now the default theme - no media queries needed */
-  
-  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
-  @media (prefers-reduced-motion: reduce) {
-    /* All animations already removed */
-  }
-  
-  /* Note: Component-specific styles are now included within each lazy-loaded component */
-  /* Import SharedTickerInput styles for seamless integration */
-  @import url('./SharedTickerInput.css');
-`;
