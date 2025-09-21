@@ -1,4 +1,4 @@
-import { inputStyles } from './components/ChatInput_OpenAI';
+// inputStyles removed - styles now in ChatInterface_OpenAI.tsx
 import ChatInterface_OpenAI, {
   interfaceStyles,
 } from './components/ChatInterface_OpenAI';
@@ -18,7 +18,7 @@ export default function App() {
     <ErrorBoundary onError={handleError}>
       <style>{interfaceStyles}</style>
       <style>{messageStyles}</style>
-      <style>{inputStyles}</style>
+      {/* inputStyles removed - styles now in ChatInterface_OpenAI.tsx */}
       <style>{errorBoundaryStyles}</style>
       <ChatInterface_OpenAI />
     </ErrorBoundary>

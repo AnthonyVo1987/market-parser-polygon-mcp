@@ -108,9 +108,10 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
   }
 }
 
-import ChatInput_OpenAI, { ChatInputRef } from './ChatInput_OpenAI';
+import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import DebugPanel from './DebugPanel';
+import SharedTickerInput from './SharedTickerInput';
 
 // Lazy load secondary components for better performance
 const ExportButtons = lazy(() =>
@@ -175,7 +176,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
-  const chatInputRef = useRef<ChatInputRef>(null);
+  // ChatInputRef removed - using direct props instead
   const isFirstRenderRef = useRef(true);
   const previousMessageCountRef = useRef(0);
 
@@ -224,9 +225,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       dispatch({ type: 'UPDATE_INPUT', payload: prompt });
 
       // Focus the input immediately for best UX
-      if (chatInputRef.current) {
-        chatInputRef.current.focus();
-      }
+      // Note: Focus handling moved to ChatInput component
 
       // Use startTransition for non-critical logging and analytics
       startTransition(() => {
@@ -236,9 +235,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             prompt.slice(0, 50) + (prompt.length > 50 ? '...' : ''),
         });
 
-        logger.debug('🎯 Focused chat input after prompt generation', {
+        logger.debug('🎯 Prompt generated and input updated', {
           promptLength: prompt.length,
-          hasFocus: document.activeElement === chatInputRef.current?.focus,
         });
       });
     },
@@ -284,7 +282,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         });
 
         // Send to API and get response
-        const apiResponse = await sendChatMessage(messageContent, currentModel);
+        const apiResponse = await sendChatMessage(messageContent, currentModel || undefined);
 
         // Extract response time from backend metadata
         const responseTime = apiResponse.metadata?.response_time
@@ -453,18 +451,34 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             <div ref={messagesEndRef} aria-hidden='true' />
           </>
         )}
+        {/* MESSAGE SENT OVERLAY - Phase 3 Implementation */}
         {isLoading && (
           <div
-            className='loading-indicator'
+            className='message-sent-overlay'
             role='status'
-            aria-label='AI is typing'
+            aria-label='Message sent, waiting for AI response'
           >
-            <div className='typing-dots' aria-hidden='true'>
-              <span></span>
-              <span></span>
-              <span></span>
+            <div className='message-sent-content'>
+              <div className='message-sent-icon'>
+                <svg
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                  />
+                </svg>
+              </div>
+              <div className='message-sent-text'>
+                <h3>MESSAGE SENT</h3>
+                <p>PLEASE WAIT FOR AI RESPONSE</p>
+              </div>
             </div>
-            <span className='sr-only'>AI is responding to your message</span>
           </div>
         )}
       </main>
@@ -477,11 +491,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       >
         <div className='chat-input-container'>
           <ChatInput_OpenAI
-            ref={chatInputRef}
             onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            value={inputValue}
-            onValueChange={handleInputValueChange}
+            disabled={isLoading}
             placeholder={memoizedComputations.placeholderText}
           />
         </div>
@@ -500,11 +511,18 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             </div>
           }
         >
+          <SharedTickerInput
+            value={deferredSharedTicker}
+            onChange={handleTickerChange}
+            onSearch={(ticker) => handlePromptGenerated(`analyze ${ticker}`)}
+            disabled={isLoading}
+            placeholder="Enter stock ticker (e.g., AAPL)"
+          />
           <AnalysisButtons
-            onPromptGenerated={handlePromptGenerated}
-            currentTicker={deferredSharedTicker}
-            onTickerChange={handleTickerChange}
-            className='fixed-analysis-buttons'
+            onSnapshot={() => handlePromptGenerated('snapshot')}
+            onSupportResistance={() => handlePromptGenerated('support-resistance')}
+            onTechnicalAnalysis={() => handlePromptGenerated('technical-analysis')}
+            disabled={isLoading}
           />
         </Suspense>
       </section>
@@ -546,14 +564,10 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         aria-label='Debug information'
       >
         <DebugPanel
-          latestResponseTime={latestResponseTime}
-          className='main-debug-panel'
-          onDebugAction={handleDebugAction}
-          models={models}
-          currentModel={currentModel}
-          onModelChange={selectModel}
-          isLoadingModels={isLoadingModels}
-          modelError={modelError}
+          responseTime={latestResponseTime || 0}
+          messageCount={messages.length}
+          lastUpdate={new Date()}
+          isConnected={true}
         />
       </section>
     </div>
@@ -601,14 +615,14 @@ export const interfaceStyles = `
   /* SIX-SECTION LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
   .chat-interface {
     display: grid;
-    /* Stable grid rows using minmax() to prevent layout shifts during loading states */
+    /* Static grid rows for fixed layout - no expand/collapse */
     grid-template-rows: 
-      minmax(70px, auto)    /* Header: stable minimum height */
+      70px                  /* Header: fixed height */
       1fr                   /* Messages: flexible space for scrolling */
-      minmax(90px, 150px)   /* Chat Input: stable height range */
-      minmax(180px, 280px)  /* Analysis Buttons with Ticker: increased height range */
-      minmax(70px, 120px)   /* Export Buttons: stable height range */
-      minmax(80px, 120px);  /* Debug: stable height range */
+      150px                 /* Chat Input: fixed height */
+      280px                 /* Analysis Buttons with Ticker: fixed height */
+      120px                 /* Export Buttons: fixed height */
+      120px;                /* Debug: fixed height */
     grid-template-areas: 
       "header"
       "messages"
@@ -650,14 +664,14 @@ export const interfaceStyles = `
     .chat-interface {
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
-      /* Mobile-optimized stable grid rows */
+      /* Mobile-optimized static grid rows */
       grid-template-rows: 
-        minmax(50px, auto)    /* Header: smaller mobile minimum */
+        50px                  /* Header: fixed mobile height */
         1fr                   /* Messages: flexible space */
-        minmax(70px, 120px)   /* Chat Input: mobile-optimized range */
-        minmax(150px, 240px)  /* Analysis Buttons with Ticker: mobile-optimized range */
-        minmax(60px, 100px)   /* Export Buttons: mobile-optimized range */
-        minmax(50px, 80px);   /* Debug: mobile-optimized range */
+        120px                 /* Chat Input: fixed mobile height */
+        240px                 /* Analysis Buttons with Ticker: fixed mobile height */
+        100px                 /* Export Buttons: fixed mobile height */
+        80px;                 /* Debug: fixed mobile height */
     }
   }
   
@@ -862,46 +876,116 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
   }
   
-  .loading-indicator {
+  /* ==========================================================================
+     PHASE 3: LOADING STATE ENHANCEMENT - MESSAGE SENT OVERLAY
+     ========================================================================== */
+
+  /* MESSAGE SENT Overlay - Prominent loading state */
+  .message-sent-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
-    justify-content: flex-start;
     align-items: center;
-    margin: var(--space-4) 0;
-    gap: var(--space-2);
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
   }
-  
-  .typing-dots {
+
+  .message-sent-content {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-3) var(--space-4);
-    background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    gap: var(--space-4);
+    padding: var(--space-8);
+    background: var(--glass-surface-chat);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
     border: var(--glass-border-highlight);
     border-radius: var(--radius-2xl);
+    box-shadow: var(--glass-shadow-2xl);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
   }
-  
-  .typing-dots span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: var(--primary-400);
-    /* Animation removed for performance - use static dots */
-    opacity: 0.8;
+
+  .message-sent-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--success-500);
+    animation: pulse 2s infinite;
   }
-  
-  /* Typing animation removed for performance */
-  .typing-dots span:nth-child(1) {
-    opacity: 1;
+
+  .message-sent-icon svg {
+    width: 100%;
+    height: 100%;
   }
-  
-  .typing-dots span:nth-child(2) {
-    opacity: 0.8;
+
+  .message-sent-text h3 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--success-500);
+    margin: 0;
+    font-family: var(--font-inter);
+    letter-spacing: 0.05em;
   }
-  
-  .typing-dots span:nth-child(3) {
-    opacity: 0.6;
+
+  .message-sent-text p {
+    font-size: var(--text-lg);
+    color: var(--neutral-300);
+    margin: var(--space-2) 0 0 0;
+    font-family: var(--font-inter);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  /* Animations for MESSAGE SENT overlay */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.8;
+    }
+  }
+
+  /* Mobile responsive adjustments for MESSAGE SENT overlay */
+  @media (max-width: 767px) {
+    .message-sent-content {
+      padding: var(--space-6);
+      max-width: 320px;
+    }
+
+    .message-sent-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .message-sent-text h3 {
+      font-size: var(--text-xl);
+    }
+
+    .message-sent-text p {
+      font-size: var(--text-base);
+    }
   }
   
   /* SECTION 3: Chat Input - Professional glassmorphic input section with Blue Chat Theme */
@@ -1291,6 +1375,261 @@ export const interfaceStyles = `
     /* All animations already removed */
   }
   
+  /* ==========================================================================
+     PHASE 2: INPUT DIFFERENTIATION & LABELING - Enhanced Input Components
+     ========================================================================== */
+
+  /* Chat Input Container - AI CHATBOT INPUT */
+  .chat-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--glass-surface-chat);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--glass-border-highlight);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  .chat-input-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .chat-input-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--primary-500);
+    margin: 0;
+    font-family: var(--font-inter);
+  }
+
+  .chat-input-subtitle {
+    font-size: var(--text-sm);
+    color: var(--neutral-400);
+    margin: 0;
+    font-family: var(--font-inter);
+  }
+
+  .chat-input-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .chat-input-wrapper {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-end;
+  }
+
+  .chat-input-textarea {
+    flex: 1;
+    min-height: 120px; /* 6 rows * 20px per row */
+    padding: var(--space-3);
+    background: var(--glass-surface-input);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: var(--glass-border-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--neutral-100);
+    font-size: var(--text-base);
+    font-family: var(--font-inter);
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .chat-input-textarea:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
+  }
+
+  .chat-input-textarea::placeholder {
+    color: var(--neutral-400);
+  }
+
+  .chat-input-send-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--primary-500);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .chat-input-send-button:hover:not(:disabled) {
+    background: var(--primary-600);
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  .chat-input-send-button:disabled {
+    background: var(--neutral-600);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .chat-input-send-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Ticker Input Container - BUTTON PROMPT STOCK TICKER */
+  .ticker-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--glass-surface-ticker);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--glass-border-highlight);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  .ticker-input-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .ticker-input-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--accent-500);
+    margin: 0;
+    font-family: var(--font-inter);
+  }
+
+  .ticker-input-subtitle {
+    font-size: var(--text-sm);
+    color: var(--neutral-400);
+    margin: 0;
+    font-family: var(--font-inter);
+  }
+
+  .ticker-input-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .ticker-input-wrapper {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .ticker-input-field {
+    flex: 1;
+    height: 48px;
+    padding: var(--space-3);
+    background: var(--glass-surface-input);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: var(--glass-border-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--neutral-100);
+    font-size: var(--text-base);
+    font-family: var(--font-inter);
+    text-transform: uppercase;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .ticker-input-field:focus {
+    border-color: var(--accent-500);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  }
+
+  .ticker-input-field::placeholder {
+    color: var(--neutral-400);
+    text-transform: none;
+  }
+
+  .ticker-input-field.invalid {
+    border-color: var(--error-500);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  .ticker-input-search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--accent-500);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .ticker-input-search-button:hover:not(:disabled) {
+    background: var(--accent-600);
+    transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  .ticker-input-search-button:disabled {
+    background: var(--neutral-600);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .ticker-input-search-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ticker-input-error {
+    font-size: var(--text-sm);
+    color: var(--error-500);
+    margin-top: var(--space-1);
+    font-family: var(--font-inter);
+  }
+
+  /* Mobile responsive adjustments for input components */
+  @media (max-width: 767px) {
+    .chat-input-container,
+    .ticker-input-container {
+      padding: var(--space-3);
+    }
+
+    .chat-input-title,
+    .ticker-input-title {
+      font-size: var(--text-base);
+    }
+
+    .chat-input-textarea {
+      min-height: 100px; /* Reduced for mobile */
+    }
+
+    .chat-input-wrapper,
+    .ticker-input-wrapper {
+      gap: var(--space-2);
+    }
+
+    .chat-input-send-button,
+    .ticker-input-search-button {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
   /* Note: Component-specific styles are now included within each lazy-loaded component */
   /* Import SharedTickerInput styles for seamless integration */
   @import url('./SharedTickerInput.css');
