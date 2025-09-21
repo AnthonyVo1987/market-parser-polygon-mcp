@@ -1,17 +1,21 @@
 # New Task Details
 
-Task 1. Systematically Analyze, Research, & Generate a detailed granular TODO Task plan for an AI Agent to fully implement all of Phase 1: Critical Layout Fixes.  Use Context7 Tools for research, Sequential-Thinking Tools for systematic analaysis\approach.  Do NOT include any testing or validation in your plan because User will perform all Testing & Validation once ALL Phases have been implemented. Do not generate new docs for the plan yet and wait for user feedback and review of the plan first.  Do NOT perform any coding yet
+Task 1. Read & Understand docs/implementation_plans/UI_audit_report.md to provide more background & context for a new task to scope out implementation of a Phase that the User will Specify
 
-Task 2. Systematically Analyze & Review the plan for Phase 1: Critical Layout Fixes vs. the issues flagged from the UI Audit report: docs/implementation_plans/UI_audit_report.md. Fix any issues in the plan if needed.
+Task 2. Read & Understand tests/playwright/complete_test_execution_guide.md to provide more background & context on proper testing using Playwright Tools for a new task to scope out implementation of a Phase that the User will Specify
 
-Task 3. Save the detailed granular TODO Task plan for an AI Agent to fully implement all of Phase 1: Critical Layout Fixes to the new blank .md file I just created: docs/implementation_plans/UI_audit_fixes_Phase_1_Plan.md
+Task 3. Read & Understand test-reports/UI_Enhanced_Playwright_Backup_Tools_Test_Report__25-09-20_22-59.md which is a real test report generated from testing using tests/playwright/complete_test_execution_guide.md to provide more background & context on proper testing using Playwright Tools for a new task to scope out implementation of a Phase that the User will Specify
 
-Task 4. Systematically Analyze & Review the docs/implementation_plans/UI_audit_fixes_Phase_1_Plan.md vs. the issues flagged from the UI Audit report: docs/implementation_plans/UI_audit_report.md. Fix any issues in the plan doc if needed.  DO NOT CREATE A NEW DOC FOR THE FIXES
+Task 4. Based on your understanding of the docs from Task 1, 2, 3, Use Context7 Tools for research, Sequential-Thinking Tools for systematic analaysis\approach, Serena Tools, to systematically Analyze, Research, & Generate a detailed granular Test Plan using Playwright Tools and saving the test plan to the new blank .md file I just created: docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md.  The test plan needs to validate ALL 4 Phases of the UI Fixes
 
-Task 5 Checkpoint Save Progress Tasks: Let's save our progress of some of the current docs and plans we generated to save for use later
+Review Task 1: Use Context7 Tools for research, Sequential-Thinking Tools for systematic analaysis\approach, & Serena Tools to Systematically Analyze & Review the plan vs. the previous Testing plan tests/playwright/complete_test_execution_guide.md & UI Audit report: docs/implementation_plans/UI_audit_report.md. Specific TESTS for the new plan need to focus on the UI testing, BUT the testing procedure\rules must match tests/playwright/complete_test_execution_guide.md. Fix any issues in the plan if needed.
 
-- ALL the docs currently unstaged need to be saved\commited later
-- There are some placeholder doc plans I added to be updated later in a different task
+Review Task 2: Systematically Analyze & Review the plan vs. the issues flagged from the UI Audit report: docs/implementation_plans/UI_audit_report.md. Fix any issues in the plan if needed
+Review Task 3: Systematically Analyze & Review the plan vs. the issues flagged from the UI Audit report: docs/implementation_plans/UI_audit_report.md. Fix any issues in the plan if needed
+
+Task 4. Save the detailed granular TODO Task plan for an AI Agent to fully implement all of Phase
+
+Plan Doc Review Task 5. Systematically Analyze & Review the docs/implementation_plans/UI_audit_fixes_Phase_4_Plan.md vs. the issues flagged from the UI Audit report: docs/implementation_plans/UI_audit_report.md. Fix any issues in the plan doc if needed.  DO NOT CREATE A NEW DOC FOR THE FIXES
 
 # Summary Task
 
