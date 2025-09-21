@@ -9,37 +9,35 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: create comprehensive UI enhancements implementation plan with complete self-containment
+feat: migrate Phase 4 testing content to dedicated test plan document
 
-- Generated detailed implementation plan for UI enhancements & static layout conversion
-- Addressed 3 critical UI enhancement tasks: static layout, input differentiation, loading states
-- Created comprehensive plan with complete React imports, TypeScript interfaces, CSS variables
-- Ensured plan is completely self-contained for any AI Agent to implement without additional context
-- Applied 3 comprehensive sanity check reviews with critical fixes for missing imports and type consistency
-- Fixed critical issues: missing useId, FC, ComponentType, ReactNode, JSX imports and event type consistency
-- Added complete CSS variable definitions, TypeScript interfaces, accessibility patterns, testing selectors
-- Validated plan follows latest React 18 and TypeScript best practices with zero missing dependencies
+- Successfully separated implementation and testing concerns into focused documents
+- Migrated all Phase 4 testing content from implementation plan to new test plan
+- Created comprehensive test plan with complete testing procedures and validation criteria
+- Updated implementation plan to focus solely on Phases 1-3 implementation details
+- Ensured both documents are completely self-contained and ready for AI Agent use
+- Maintained all technical implementation details while removing testing context
+- Preserved data attributes for implementation while moving testing procedures to test plan
 
 Technical deliverables:
 
-- docs/implementation_plans/ui_enhancements_static_layout_plan.md: Complete 1604-line implementation plan
-- Complete React imports: useState, useCallback, useEffect, useMemo, useId, FC, ComponentType, ReactNode, JSX
-- TypeScript interfaces: Message, AnalysisButtonProps, ChatInputProps, TickerInputProps, DebugPanelProps
-- CSS variables: Complete design system with 20+ variables for colors, spacing, typography, glass effects
-- Event handlers: FormEvent, KeyboardEvent, ChangeEvent with consistent usage patterns
-- Accessibility: Complete ARIA attributes, screen reader support, keyboard navigation
-- Testing: All data-testid attributes for Playwright MCP Tools integration
+- docs/implementation_plans/ui_enhancements_static_layout_plan.md: Implementation-focused (Phases 1-3)
+- docs/implementation_plans/ui_enhancements_static_layout_test_plan.md: Testing-focused (Phase 4)
+- Complete separation of implementation vs testing concerns
+- Self-contained documents ready for copy-paste to any AI Agent new chat
+- Clear focus: implementation plan for development, test plan for validation
 
-Critical fixes applied:
+Migration details:
 
-- Fixed missing React imports that would cause TypeScript compilation failures
-- Corrected event type consistency (React.FormEvent → FormEvent)
-- Fixed component type consistency (React.FC → FC)
-- Added comprehensive error handling patterns and accessibility implementation
-- Ensured complete self-containment with zero external dependencies
+- Removed Phase 4: Comprehensive Testing & Validation from implementation plan
+- Migrated all test cases (TC-1.x.x through TC-4.x.x) to test plan
+- Moved testing strategy, execution plan, and validation criteria to test plan
+- Updated implementation plan to focus on technical implementation only
+- Preserved all code examples, CSS, TypeScript interfaces in implementation plan
+- Added comprehensive testing procedures and Playwright MCP Tools integration in test plan
 
-Result: Production-ready implementation plan that can be copied to any AI Agent new chat
-and implemented immediately without additional context or missing information.
+Result: Clean separation of concerns with implementation plan for development
+and dedicated test plan for validation, both ready for immediate AI Agent use.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## MANDATORY Tools Usage Guidance for all Task(s)

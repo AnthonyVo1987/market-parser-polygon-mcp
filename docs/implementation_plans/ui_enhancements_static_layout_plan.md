@@ -1200,58 +1200,6 @@ return (
 )}
 ```
 
-### Phase 4: Comprehensive Testing & Validation
-
-**CRITICAL**: This phase is performed ONLY after ALL previous phases (1, 2, 3) are complete. No testing should occur during incomplete UI changes.
-
-#### 4.1 Screen Reader Support
-
-**Implementation**:
-
-- Add proper ARIA labels for all input fields
-- Implement live regions for status announcements
-- Ensure keyboard navigation works correctly
-- Add descriptive help text
-
-#### 4.2 Testing Optimization
-
-**Implementation**:
-
-- Add data-testid attributes for Playwright selectors
-- Ensure consistent element positioning
-- Remove dynamic content that could cause test flakiness
-- Add clear visual indicators for test validation
-
-**Test Selectors**:
-
-```typescript
-// Add these data attributes for reliable testing
-<textarea data-testid="ai-chatbot-input" />
-<input data-testid="stock-ticker-input" />
-<div data-testid="message-sent-status" />
-<button data-testid="analysis-button-snapshot" />
-```
-
-#### 4.3 Message Sent Status Validation
-
-**Critical Testing Points**:
-
-- Verify "MESSAGE SENT" overlay appears immediately on send
-- Verify overlay disappears when AI response is received
-- Verify overlay disappears on API errors
-- Verify user can see AI response after overlay disappears
-- Test overlay doesn't interfere with message display
-
-#### 4.4 Complete UI Integration Testing
-
-**End-to-End Validation**:
-
-- Test all static components are always visible
-- Test input differentiation is clear and functional
-- Test loading states provide proper feedback
-- Test AI Agent can reliably interact with all elements
-- Validate no false positive test failures
-
 ## Implementation Timeline
 
 ### Week 1: Static Layout Conversion
@@ -1275,15 +1223,6 @@ return (
 - [ ] Ensure proper status hiding on response
 - [ ] **NO TESTING** - UI changes incomplete
 
-### Week 4: Comprehensive Testing & Validation
-
-- [ ] **ALL TESTING PERFORMED HERE** - Only after all UI changes complete
-- [ ] Run comprehensive Playwright test suite
-- [ ] Validate AI Agent testing reliability
-- [ ] Performance testing
-- [ ] Accessibility audit
-- [ ] End-to-end user flow testing
-
 ## Success Metrics
 
 ### Functional Requirements
@@ -1291,7 +1230,6 @@ return (
 - [ ] All components display statically without collapse/expand
 - [ ] Input fields are clearly differentiated and labeled
 - [ ] Loading states provide clear user feedback
-- [ ] No false positive test failures
 
 ### Performance Requirements
 
@@ -1314,14 +1252,6 @@ return (
 - **Performance Impact**: Monitor bundle size and render times
 - **Accessibility Regression**: Run automated accessibility tests
 
-### Testing Risks
-
-- **Test Flakiness**: Use stable selectors and remove dynamic content
-- **AI Agent Confusion**: Clear labeling and visual hierarchy
-- **False Positives**: Prominent status indicators
-- **Incomplete UI Testing**: **CRITICAL** - Only test after ALL phases complete
-- **Message Sent Overlay**: Ensure proper hiding on response to prevent blocking user view
-
 ## Dependencies
 
 ### Required Tools
@@ -1329,7 +1259,6 @@ return (
 - React 18.2+ (current)
 - TypeScript (current)
 - CSS Grid (current)
-- Playwright MCP Tools (current)
 
 ### External Dependencies
 
@@ -1438,21 +1367,21 @@ useEffect(() => {
 }, [messageSentStatus]);
 ```
 
-### Testing Data Attributes
+### Data Attributes for Implementation
 
 ```typescript
-// Add comprehensive test selectors for Playwright
-const testSelectors = {
-  aiChatbotInput: '[data-testid="ai-chatbot-input"]',
-  stockTickerInput: '[data-testid="stock-ticker-input"]',
-  messageSentStatus: '[data-testid="message-sent-status"]',
-  analysisButtonSnapshot: '[data-testid="analysis-button-snapshot"]',
-  analysisButtonSupportResistance: '[data-testid="analysis-button-support-resistance"]',
-  analysisButtonTechnical: '[data-testid="analysis-button-technical"]',
-  tickerAnalyzeButton: '[data-testid="ticker-analyze-button"]',
-  aiChatbotSendButton: '[data-testid="ai-chatbot-send-button"]',
-  debugPanel: '[data-testid="debug-panel"]',
-  analysisButtons: '[data-testid="analysis-buttons"]'
+// Add comprehensive data attributes for implementation
+const dataAttributes = {
+  aiChatbotInput: 'data-testid="ai-chatbot-input"',
+  stockTickerInput: 'data-testid="stock-ticker-input"',
+  messageSentStatus: 'data-testid="message-sent-status"',
+  analysisButtonSnapshot: 'data-testid="analysis-button-snapshot"',
+  analysisButtonSupportResistance: 'data-testid="analysis-button-support-resistance"',
+  analysisButtonTechnical: 'data-testid="analysis-button-technical"',
+  tickerAnalyzeButton: 'data-testid="ticker-analyze-button"',
+  aiChatbotSendButton: 'data-testid="ai-chatbot-send-button"',
+  debugPanel: 'data-testid="debug-panel"',
+  analysisButtons: 'data-testid="analysis-buttons"'
 };
 ```
 
@@ -1499,14 +1428,6 @@ const testSelectors = {
 - [ ] Add error handling for overlay hiding
 - [ ] Test loading states work correctly
 
-### Phase 4: Comprehensive Testing
-
-- [ ] Add all data-testid attributes
-- [ ] Test with Playwright MCP Tools
-- [ ] Validate AI Agent can interact reliably
-- [ ] Test accessibility with screen readers
-- [ ] Verify no false positive test failures
-
 ## Conclusion
 
 This implementation plan addresses all three research tasks with a comprehensive approach that prioritizes:
@@ -1514,9 +1435,9 @@ This implementation plan addresses all three research tasks with a comprehensive
 1. **Simplicity**: Static layouts reduce complexity
 2. **Clarity**: Clear input differentiation prevents confusion
 3. **Feedback**: Prominent loading states improve user experience
-4. **Testing**: Optimized for reliable AI Agent testing
+4. **Reliability**: Optimized for consistent user experience
 
-The plan follows React best practices, accessibility guidelines, and UX principles to create a more reliable and user-friendly interface that will significantly improve AI Agent testing success rates.
+The plan follows React best practices, accessibility guidelines, and UX principles to create a more reliable and user-friendly interface.
 
 ## ✅ **FINAL VALIDATION CHECKLIST**
 
@@ -1527,7 +1448,7 @@ The plan follows React best practices, accessibility guidelines, and UX principl
 - [x] **CSS Variables**: All referenced variables defined with values
 - [x] **Event Handlers**: All event types properly imported and used
 - [x] **Accessibility**: Complete ARIA attributes and screen reader support
-- [x] **Testing Selectors**: All data-testid attributes defined
+- [x] **Data Attributes**: All data-testid attributes defined for implementation
 - [x] **Error Handling**: Comprehensive error patterns included
 - [x] **Project Context**: Complete file structure and architecture info
 - [x] **Implementation Details**: Step-by-step technical specifications
@@ -1540,7 +1461,7 @@ The plan follows React best practices, accessibility guidelines, and UX principl
 - [x] **Missing Imports Fixed**: All React hooks and types properly imported
 - [x] **TypeScript Ready**: All interfaces and types defined
 - [x] **CSS Complete**: All styles and variables defined
-- [x] **Testing Ready**: All selectors and patterns included
+- [x] **Implementation Ready**: All data attributes and patterns included
 
 ### **AI AGENT READINESS** ✅
 
@@ -1559,7 +1480,7 @@ The plan follows React best practices, accessibility guidelines, and UX principl
 - [x] **CSS Variables**: All referenced variables defined with values
 - [x] **Event Handlers**: All event types properly imported and used
 - [x] **Accessibility**: Complete ARIA attributes and screen reader support
-- [x] **Testing Selectors**: All data-testid attributes defined
+- [x] **Data Attributes**: All data-testid attributes defined for implementation
 - [x] **Error Handling**: Comprehensive error patterns included
 - [x] **Project Context**: Complete file structure and architecture info
 - [x] **Implementation Details**: Step-by-step technical specifications
@@ -1574,7 +1495,7 @@ The plan follows React best practices, accessibility guidelines, and UX principl
 - [x] **Missing Imports Fixed**: All React hooks and types properly imported
 - [x] **TypeScript Ready**: All interfaces and types defined
 - [x] **CSS Complete**: All styles and variables defined
-- [x] **Testing Ready**: All selectors and patterns included
+- [x] **Implementation Ready**: All data attributes and patterns included
 - [x] **Event Type Consistency**: All event handlers use correct imported types
 - [x] **Component Type Consistency**: All components use correct imported types
 
@@ -1596,8 +1517,8 @@ The plan follows React best practices, accessibility guidelines, and UX principl
 4. **Added Critical Warnings**: Import requirements and type usage
 5. **Enhanced TypeScript Support**: Complete type definitions
 
-**This plan is now completely self-contained and ready for any AI Agent to implement without additional context or missing information.**
+**This implementation plan is now completely self-contained and ready for any AI Agent to implement without additional context or missing information.**
 
 ---
 
-**Next Steps**: Copy this entire plan to any AI Agent new chat and begin Phase 1 implementation.
+**Next Steps**: Copy this entire implementation plan to any AI Agent new chat and begin Phase 1 implementation. For testing and validation, refer to the separate test plan document.
