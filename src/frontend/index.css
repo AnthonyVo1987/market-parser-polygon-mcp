@@ -893,26 +893,1682 @@
     padding: 0.75rem 1rem;
   }
 
-  /* Phase 2: Mobile Input Sizing */
-  @media (max-width: 768px) {
+  /* ==========================================================================
+     PHASE 4: MOBILE & PERFORMANCE - Enhanced Responsive Design System
+     ========================================================================== */
+
+  /* Phase 4: Enhanced Breakpoint System - Mobile-First Approach */
+  :root {
+    /* Breakpoint Values - Phase 4 Enhanced */
+    --breakpoint-mobile: 320px;
+    --breakpoint-mobile-lg: 480px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-tablet-lg: 1024px;
+    --breakpoint-desktop: 1440px;
+    --breakpoint-desktop-lg: 1920px;
+
+    /* Touch Target Sizes - Phase 4 Enhanced */
+    --touch-target-min: 44px;
+    --touch-target-recommended: 48px;
+    --touch-target-large: 56px;
+
+    /* Mobile Spacing - Phase 4 Enhanced */
+    --mobile-spacing-xs: 0.25rem;
+    --mobile-spacing-sm: 0.5rem;
+    --mobile-spacing-md: 0.75rem;
+    --mobile-spacing-lg: 1rem;
+    --mobile-spacing-xl: 1.5rem;
+
+    /* Container Query Sizes - Phase 4 New */
+    --container-sm: 20rem;
+    --container-md: 28rem;
+    --container-lg: 36rem;
+    --container-xl: 48rem;
+  }
+
+  /* Phase 4: Mobile-First Base Styles */
+  .mobile-first {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-spacing-md);
+  }
+
+  /* Phase 4: Enhanced Touch Targets */
+  .touch-target {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    padding: 0.75rem 1rem;
+  }
+
+  .touch-target-recommended {
+    min-height: var(--touch-target-recommended);
+    min-width: var(--touch-target-recommended);
+    padding: 0.875rem 1.25rem;
+  }
+
+  .touch-target-large {
+    min-height: var(--touch-target-large);
+    min-width: var(--touch-target-large);
+    padding: 1rem 1.5rem;
+  }
+
+  /* Phase 4: Mobile Input Sizing - Enhanced */
+  @media (max-width: 767px) {
     .input-field {
-      min-height: 44px;
+      min-height: var(--touch-target-recommended);
       font-size: 16px;
+      /* Prevents zoom on iOS */
+      padding: 0.875rem 1rem;
+    }
+
+    .chat-input-textarea {
+      min-height: var(--touch-target-recommended);
+      font-size: 16px;
+      padding: 0.875rem 1rem;
+    }
+
+    .ticker-input-field {
+      min-height: var(--touch-target-recommended);
+      font-size: 16px;
+      padding: 0.875rem 1rem;
     }
   }
 
-  /* Phase 2: Space Utilization Improvements */
+  /* Phase 4: Enhanced Space Utilization */
   .space-efficient {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--mobile-spacing-md);
   }
 
-  /* Phase 2: Tablet Sidebar Behavior */
-  @media (min-width: 769px) and (max-width: 1024px) {
+  .space-efficient-mobile {
+    gap: var(--mobile-spacing-sm);
+  }
+
+  /* Phase 4: Enhanced Tablet Sidebar Behavior */
+  @media (min-width: 768px) and (max-width: 1023px) {
     .sidebar {
       width: 300px;
       min-width: 300px;
+      max-width: 400px;
+    }
+
+    .right-sidebar-panel {
+      width: 300px;
+      min-width: 300px;
+      max-width: 400px;
+    }
+  }
+
+  /* Phase 4: Desktop Sidebar Behavior */
+  @media (min-width: 1024px) {
+    .sidebar {
+      width: 350px;
+      min-width: 350px;
+    }
+
+    .right-sidebar-panel {
+      width: 350px;
+      min-width: 350px;
+    }
+  }
+
+  /* Phase 4: Large Desktop Optimization */
+  @media (min-width: 1440px) {
+    .sidebar {
+      width: 400px;
+      min-width: 400px;
+    }
+
+    .right-sidebar-panel {
+      width: 400px;
+      min-width: 400px;
+    }
+  }
+
+  /* Phase 4: Mobile Layout Optimization */
+  @media (max-width: 767px) {
+
+    /* Mobile 2-Panel Layout */
+    .chat-interface {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .main-content-panel {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .right-sidebar-panel {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 100%;
+      height: 100vh;
+      background: var(--glass-surface-1);
+      backdrop-filter: var(--glass-blur-md);
+      border-left: 1px solid var(--glass-border);
+      transition: right 0.3s ease-in-out;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .right-sidebar-panel.open {
+      right: 0;
+    }
+
+    /* Mobile Section Labeling */
+    .section-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--mobile-spacing-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Mobile Analysis Buttons */
+    .analysis-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: var(--mobile-spacing-sm);
+      padding: var(--mobile-spacing-md);
+    }
+
+    .analysis-button {
+      width: 100%;
+      min-height: var(--touch-target-recommended);
+      font-size: 0.875rem;
+      padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
+    }
+
+    /* Mobile Bottom Control Panel */
+    .bottom-control-panel {
+      padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+      font-size: 0.75rem;
+      flex-direction: column;
+      gap: var(--mobile-spacing-xs);
+    }
+
+    .response-time-display,
+    .message-count-display {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Phase 4: Tablet Layout Optimization */
+  @media (min-width: 768px) and (max-width: 1023px) {
+
+    /* Tablet 2-Panel Layout */
+    .chat-interface {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      height: 100vh;
+    }
+
+    .main-content-panel {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .right-sidebar-panel {
+      width: 300px;
+      min-width: 300px;
+      max-width: 400px;
+      overflow-y: auto;
+    }
+
+    /* Tablet Analysis Buttons */
+    .analysis-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--mobile-spacing-sm);
+      padding: var(--mobile-spacing-md);
+    }
+
+    .analysis-button {
+      width: 100%;
+      min-height: var(--touch-target-recommended);
+    }
+  }
+
+  /* Phase 4: Container Queries - Component-Level Responsiveness */
+  @container (min-width: 20rem) {
+    .analysis-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: var(--mobile-spacing-sm);
+    }
+
+    .analysis-button {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @container (min-width: 28rem) {
+    .analysis-buttons {
+      gap: var(--mobile-spacing-md);
+    }
+
+    .analysis-button {
+      padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
+    }
+  }
+
+  /* Phase 4: Orientation Support */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .chat-interface {
+      height: 100vh;
+    }
+
+    .main-content-panel {
+      min-height: 0;
+    }
+
+    .right-sidebar-panel {
+      height: 100vh;
+    }
+  }
+
+  /* Phase 4: Touch Device Optimization */
+  @media (hover: none) and (pointer: coarse) {
+    .analysis-button:hover {
+      transform: none;
+    }
+
+    .analysis-button:active {
+      transform: scale(0.98);
+    }
+
+    .touch-target {
+      min-height: var(--touch-target-recommended);
+      min-width: var(--touch-target-recommended);
+    }
+  }
+
+  /* Phase 4: Mobile Sidebar Components */
+  .mobile-sidebar-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1001;
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--mobile-spacing-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: var(--touch-target-recommended);
+    min-width: var(--touch-target-recommended);
+    display: none;
+  }
+
+  .mobile-sidebar-toggle:hover {
+    background: var(--glass-surface-2);
+    transform: scale(1.05);
+  }
+
+  .mobile-sidebar-toggle:active {
+    transform: scale(0.95);
+  }
+
+  .mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .mobile-sidebar-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--mobile-spacing-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: var(--touch-target-recommended);
+    min-width: var(--touch-target-recommended);
+    display: none;
+  }
+
+  .mobile-sidebar-close:hover {
+    background: var(--glass-surface-2);
+    transform: scale(1.05);
+  }
+
+  .mobile-sidebar-close:active {
+    transform: scale(0.95);
+  }
+
+  /* Phase 4: Mobile Sidebar Visibility */
+  @media (max-width: 767px) {
+    .mobile-sidebar-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-sidebar-overlay {
+      display: block;
+    }
+
+    .mobile-sidebar-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  /* ==========================================================================
+     PHASE 4: PERFORMANCE OPTIMIZATION - React Performance & Bundle Optimization
+     ========================================================================== */
+
+  /* Phase 4: Performance Containment */
+  .chat-interface {
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  .main-content-panel {
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  .right-sidebar-panel {
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  .bottom-control-panel {
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  .message {
+    contain: layout style;
+    will-change: auto;
+  }
+
+  /* Phase 4: Hardware Acceleration for Interactive Elements */
+  .analysis-button,
+  .mobile-sidebar-toggle,
+  .mobile-sidebar-close,
+  .chat-input-textarea,
+  .ticker-input-field {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Phase 4: Optimized Animations */
+  .analysis-button,
+  .mobile-sidebar-toggle,
+  .mobile-sidebar-close {
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .right-sidebar-panel {
+    transition: right 0.3s ease-in-out;
+  }
+
+  /* Phase 4: Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+
+    .analysis-button,
+    .mobile-sidebar-toggle,
+    .mobile-sidebar-close,
+    .right-sidebar-panel {
+      transition: none;
+    }
+
+    .analysis-button:hover,
+    .mobile-sidebar-toggle:hover,
+    .mobile-sidebar-close:hover {
+      transform: none;
+    }
+  }
+
+  /* Phase 4: Performance Monitoring Styles */
+  .performance-indicator {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--mobile-spacing-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    z-index: 1000;
+    display: none;
+  }
+
+  .performance-indicator.show {
+    display: block;
+  }
+
+  .performance-metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .performance-metric:last-child {
+    margin-bottom: 0;
+  }
+
+  .performance-metric.good {
+    color: var(--success-color);
+  }
+
+  .performance-metric.warning {
+    color: var(--warning-color);
+  }
+
+  .performance-metric.bad {
+    color: var(--error-color);
+  }
+
+  /* Phase 4: Bundle Size Monitoring */
+  .bundle-size-indicator {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--mobile-spacing-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    z-index: 1000;
+    display: none;
+  }
+
+  .bundle-size-indicator.show {
+    display: block;
+  }
+
+  .bundle-size-metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .bundle-size-metric:last-child {
+    margin-bottom: 0;
+  }
+
+  .bundle-size-metric.good {
+    color: var(--success-color);
+  }
+
+  .bundle-size-metric.warning {
+    color: var(--warning-color);
+  }
+
+  .bundle-size-metric.bad {
+    color: var(--error-color);
+  }
+
+  /* ==========================================================================
+     PHASE 4: ACCESSIBILITY ENHANCEMENTS - WCAG 2.1 AA Compliance
+     ========================================================================== */
+
+  /* Phase 4: Enhanced Focus Indicators */
+  *:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Phase 4: Skip Links */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    transition: top 0.3s;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
+
+  .skip-links-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+
+  /* Phase 4: Screen Reader Only Content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0.5rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    background: #000;
+    color: #fff;
+    border-radius: 4px;
+  }
+
+  /* Phase 4: High Contrast Mode Support */
+  @media (prefers-contrast: high) {
+    :root {
+      --text-primary: #000000;
+      --text-secondary: #333333;
+      --background-primary: #ffffff;
+      --background-secondary: #f5f5f5;
+      --border-color: #000000;
+      --success-color: #006600;
+      --warning-color: #cc6600;
+      --error-color: #cc0000;
+    }
+
+    .analysis-button,
+    .mobile-sidebar-toggle,
+    .mobile-sidebar-close {
+      border: 2px solid var(--border-color);
+    }
+
+    .glass-surface-1,
+    .glass-surface-2,
+    .glass-surface-3 {
+      background: var(--background-secondary);
+      backdrop-filter: none;
+    }
+  }
+
+  /* Phase 4: Reduced Motion Support */
+  @media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .analysis-button,
+    .mobile-sidebar-toggle,
+    .mobile-sidebar-close,
+    .right-sidebar-panel {
+      transition: none;
+    }
+  }
+
+  /* Phase 4: Enhanced Button Accessibility */
+  .analysis-button:focus-visible,
+  .mobile-sidebar-toggle:focus-visible,
+  .mobile-sidebar-close:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+  }
+
+  /* Phase 4: Enhanced Input Accessibility */
+  .chat-input-textarea:focus-visible,
+  .ticker-input-field:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+  }
+
+  /* Phase 4: Enhanced Form Accessibility */
+  .chat-input-container,
+  .ticker-input-container {
+    position: relative;
+  }
+
+  .chat-input-error,
+  .ticker-input-error {
+    color: var(--error-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .chat-input-character-count {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    text-align: right;
+  }
+
+  /* Phase 4: Enhanced Message Accessibility */
+  .message {
+    position: relative;
+  }
+
+  .message[role="article"] {
+    margin-bottom: 1rem;
+  }
+
+  .message-bubble {
+    position: relative;
+  }
+
+  .message-bubble:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+  }
+
+  /* Phase 4: Enhanced Live Regions */
+  [aria-live="polite"],
+  [aria-live="assertive"] {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* Phase 4: Enhanced Status Indicators */
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-indicator[aria-label] {
+    cursor: help;
+  }
+
+  /* Phase 4: Enhanced Error Handling */
+  .error-banner {
+    background: var(--error-color);
+    color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+
+  .error-banner[role="alert"] {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-5px);
+    }
+
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  /* Phase 4: Enhanced Loading States */
+  .loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-spinner[aria-label] {
+    cursor: help;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Phase 4: Enhanced Mobile Accessibility */
+  @media (max-width: 767px) {
+    .skip-link {
+      position: fixed;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+
+    /* Ensure touch targets meet minimum size */
+    .analysis-button,
+    .mobile-sidebar-toggle,
+    .mobile-sidebar-close,
+    .chat-input-textarea,
+    .ticker-input-field {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Enhanced mobile focus indicators */
+    .analysis-button:focus-visible,
+    .mobile-sidebar-toggle:focus-visible,
+    .mobile-sidebar-close:focus-visible {
+      outline: 3px solid #0066cc;
+      outline-offset: 3px;
+    }
+  }
+
+  /* Phase 4: Enhanced Tablet Accessibility */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .skip-link {
+      position: fixed;
+      top: -40px;
+      left: 1rem;
+      z-index: 1001;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+  }
+
+  /* Phase 4: Enhanced Desktop Accessibility */
+  @media (min-width: 1024px) {
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 1rem;
+      z-index: 1001;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+  }
+
+  /* Phase 4: Enhanced Keyboard Navigation */
+  .keyboard-navigation .analysis-button:focus,
+  .keyboard-navigation .mobile-sidebar-toggle:focus,
+  .keyboard-navigation .mobile-sidebar-close:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+  }
+
+  /* Phase 4: Enhanced ARIA Support */
+  [aria-expanded="true"]::after {
+    content: " (expanded)";
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  [aria-expanded="false"]::after {
+    content: " (collapsed)";
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  [aria-pressed="true"]::after {
+    content: " (pressed)";
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  [aria-pressed="false"]::after {
+    content: " (not pressed)";
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  /* ==========================================================================
+     PHASE 4: MOBILE-SPECIFIC INTERACTIONS - Touch Gestures & Mobile UX
+     ========================================================================== */
+
+  /* Phase 4: Touch Device Detection */
+  .touch-device * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .touch-device .analysis-button:hover,
+  .touch-device .mobile-sidebar-toggle:hover,
+  .touch-device .mobile-sidebar-close:hover {
+    transform: none;
+  }
+
+  .touch-device .analysis-button:active,
+  .touch-device .mobile-sidebar-toggle:active,
+  .touch-device .mobile-sidebar-close:active {
+    transform: scale(0.95);
+  }
+
+  /* Phase 4: Touch Feedback */
+  .touch-feedback {
+    transition: transform 0.1s ease, background-color 0.1s ease;
+  }
+
+  .touch-feedback:active {
+    transform: scale(0.95);
+    background-color: var(--glass-surface-2);
+  }
+
+  /* Phase 4: Swipe Gestures */
+  .swipeable {
+    touch-action: pan-x pan-y;
+    user-select: none;
+  }
+
+  .swipeable.swiping {
+    transition: transform 0.2s ease;
+  }
+
+  .swipeable.swipe-left {
+    transform: translateX(-100%);
+  }
+
+  .swipeable.swipe-right {
+    transform: translateX(100%);
+  }
+
+  .swipeable.swipe-up {
+    transform: translateY(-100%);
+  }
+
+  .swipeable.swipe-down {
+    transform: translateY(100%);
+  }
+
+  /* Phase 4: Pinch to Zoom */
+  .pinchable {
+    touch-action: manipulation;
+    user-select: none;
+  }
+
+  .pinchable.pinching {
+    transition: transform 0.1s ease;
+  }
+
+  /* Phase 4: Mobile Form Optimization */
+  .mobile-form input,
+  .mobile-form textarea,
+  .mobile-form select {
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  .mobile-form input[type="email"] {
+    inputmode: email;
+  }
+
+  .mobile-form input[type="tel"] {
+    inputmode: tel;
+  }
+
+  .mobile-form input[type="url"] {
+    inputmode: url;
+  }
+
+  .mobile-form input[type="text"] {
+    inputmode: text;
+  }
+
+  /* Phase 4: Mobile Input Optimization */
+  .mobile-input {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .mobile-input:focus {
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Phase 4: Mobile Button Optimization */
+  .mobile-button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  .mobile-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Phase 4: Mobile Scroll Optimization */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
+
+  .mobile-scroll::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
+
+  .mobile-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  /* Phase 4: Mobile Gesture Indicators */
+  .gesture-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    padding: var(--mobile-spacing-md);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .gesture-indicator.show {
+    opacity: 1;
+  }
+
+  .gesture-indicator.swipe-left::before {
+    content: "← Swipe left to close";
+  }
+
+  .gesture-indicator.swipe-right::before {
+    content: "→ Swipe right to open";
+  }
+
+  .gesture-indicator.pinch::before {
+    content: "Pinch to zoom";
+  }
+
+  .gesture-indicator.tap::before {
+    content: "Tap to interact";
+  }
+
+  .gesture-indicator.longpress::before {
+    content: "Long press for options";
+  }
+
+  .gesture-indicator.doubletap::before {
+    content: "Double tap to activate";
+  }
+
+  /* Phase 4: Mobile Haptic Feedback */
+  .haptic-light {
+    animation: haptic-light 0.1s ease;
+  }
+
+  .haptic-medium {
+    animation: haptic-medium 0.2s ease;
+  }
+
+  .haptic-heavy {
+    animation: haptic-heavy 0.3s ease;
+  }
+
+  @keyframes haptic-light {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(0.98);
+    }
+  }
+
+  @keyframes haptic-medium {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    25% {
+      transform: scale(0.95);
+    }
+
+    75% {
+      transform: scale(0.98);
+    }
+  }
+
+  @keyframes haptic-heavy {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    20% {
+      transform: scale(0.9);
+    }
+
+    40% {
+      transform: scale(0.95);
+    }
+
+    60% {
+      transform: scale(0.98);
+    }
+
+    80% {
+      transform: scale(0.99);
+    }
+  }
+
+  /* Phase 4: Mobile Pull to Refresh */
+  .pull-to-refresh {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pull-to-refresh-indicator {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--glass-border);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .pull-to-refresh-indicator.show {
+    opacity: 1;
+  }
+
+  .pull-to-refresh-indicator.pulling {
+    animation: none;
+    transform: translateX(-50%) rotate(0deg);
+  }
+
+  /* Phase 4: Mobile Swipe Navigation */
+  .swipe-navigation {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .swipe-navigation-content {
+    transition: transform 0.3s ease;
+  }
+
+  .swipe-navigation-content.swiping {
+    transition: none;
+  }
+
+  .swipe-navigation-content.swipe-left {
+    transform: translateX(-100%);
+  }
+
+  .swipe-navigation-content.swipe-right {
+    transform: translateX(100%);
+  }
+
+  /* Phase 4: Mobile Touch Targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+    margin: 4px;
+  }
+
+  .mobile-touch-target-large {
+    min-height: 56px;
+    min-width: 56px;
+    padding: 16px;
+    margin: 8px;
+  }
+
+  /* Phase 4: Mobile Gesture Zones */
+  .gesture-zone {
+    position: relative;
+    touch-action: manipulation;
+  }
+
+  .gesture-zone::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    z-index: -1;
+  }
+
+  /* Phase 4: Mobile Performance Optimizations */
+  .mobile-optimized {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .mobile-optimized * {
+    will-change: auto;
+  }
+
+  .mobile-optimized .analysis-button,
+  .mobile-optimized .mobile-sidebar-toggle,
+  .mobile-optimized .mobile-sidebar-close {
+    will-change: transform;
+  }
+
+  /* Phase 4: Mobile Accessibility Enhancements */
+  .mobile-accessible {
+    -webkit-tap-highlight-color: rgba(0, 102, 204, 0.2);
+  }
+
+  .mobile-accessible:focus {
+    -webkit-tap-highlight-color: rgba(0, 102, 204, 0.4);
+  }
+
+  /* Phase 4: Mobile Error Handling */
+  .mobile-error {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--error-color);
+    color: white;
+    padding: var(--mobile-spacing-lg);
+    border-radius: var(--border-radius-md);
+    z-index: 1000;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .mobile-error.show {
+    animation: mobile-error-slide-in 0.3s ease;
+  }
+
+  @keyframes mobile-error-slide-in {
+    0% {
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Phase 4: Mobile Success Feedback */
+  .mobile-success {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--success-color);
+    color: white;
+    padding: var(--mobile-spacing-lg);
+    border-radius: var(--border-radius-md);
+    z-index: 1000;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .mobile-success.show {
+    animation: mobile-success-slide-in 0.3s ease;
+  }
+
+  @keyframes mobile-success-slide-in {
+    0% {
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* ==========================================================================
+     PHASE 4: CROSS-PHASE INTEGRATION - Seamless Integration of All Phases
+     ========================================================================== */
+
+  /* Phase 4: Cross-Phase Mobile Integration */
+  .chat-interface {
+    /* Phase 1: 2-Panel Layout + Phase 4: Mobile Optimization */
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    height: 100vh;
+  }
+
+  @media (max-width: 767px) {
+    .chat-interface {
+      /* Phase 1: 2-Panel Layout + Phase 4: Mobile Layout */
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .chat-interface {
+      /* Phase 1: 2-Panel Layout + Phase 4: Tablet Layout */
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      height: 100vh;
+    }
+  }
+
+  /* Phase 4: Cross-Phase Visual Integration */
+  .main-content-panel {
+    /* Phase 2: Visual Polish + Phase 4: Mobile Optimization */
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-sm);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .right-sidebar-panel {
+    /* Phase 2: Visual Polish + Phase 4: Mobile Optimization */
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-md);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Phase 4: Cross-Phase Functionality Integration */
+  .analysis-button {
+    /* Phase 3: Button State Management + Phase 4: Mobile Optimization */
+    min-height: var(--touch-target-recommended);
+    min-width: var(--touch-target-recommended);
+    padding: var(--mobile-spacing-md) var(--mobile-spacing-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .analysis-button:hover {
+    /* Phase 2: Visual Polish + Phase 4: Touch Optimization */
+    background: var(--glass-surface-3);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .analysis-button:active {
+    /* Phase 4: Mobile Touch Feedback */
+    transform: scale(0.95);
+  }
+
+  .analysis-button:focus-visible {
+    /* Phase 3: Focus States + Phase 4: Accessibility */
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+  }
+
+  /* Phase 4: Cross-Phase Input Integration */
+  .chat-input-textarea,
+  .ticker-input-field {
+    /* Phase 3: Input Validation + Phase 4: Mobile Optimization */
+    min-height: var(--touch-target-recommended);
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+    padding: var(--mobile-spacing-md);
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+
+  .chat-input-textarea:focus,
+  .ticker-input-field:focus {
+    /* Phase 3: Focus States + Phase 4: Accessibility */
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+    background: var(--glass-surface-2);
+  }
+
+  .chat-input-textarea--invalid,
+  .ticker-input-field--invalid {
+    /* Phase 3: Validation States + Phase 4: Mobile Optimization */
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+  }
+
+  .chat-input-textarea--valid,
+  .ticker-input-field--valid {
+    /* Phase 3: Validation States + Phase 4: Mobile Optimization */
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
+
+  /* Phase 4: Cross-Phase Message Integration */
+  .message {
+    /* Phase 3: Message Display + Phase 4: Mobile Optimization */
+    margin-bottom: var(--mobile-spacing-md);
+    padding: var(--mobile-spacing-md);
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-sm);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .message-bubble {
+    /* Phase 3: Message Formatting + Phase 4: Mobile Optimization */
+    padding: var(--mobile-spacing-md);
+    border-radius: var(--border-radius-md);
+    background: var(--glass-surface-2);
+    backdrop-filter: var(--glass-blur-md);
+    border: 1px solid var(--glass-border);
+  }
+
+  .message-bubble--error {
+    /* Phase 3: Error Display + Phase 4: Mobile Optimization */
+    border-left: 4px solid var(--error-color);
+    background: rgba(220, 38, 38, 0.1);
+  }
+
+  /* Phase 4: Cross-Phase Bottom Control Panel Integration */
+  .bottom-control-panel {
+    /* Phase 3: Response Time Display + Phase 4: Mobile Optimization */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--mobile-spacing-sm) var(--mobile-spacing-md);
+    background: var(--glass-surface-1);
+    backdrop-filter: var(--glass-blur-sm);
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 767px) {
+    .bottom-control-panel {
+      /* Phase 3: Response Time Display + Phase 4: Mobile Layout */
+      flex-direction: column;
+      gap: var(--mobile-spacing-xs);
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Phase 4: Cross-Phase Section Labeling Integration */
+  .section-label {
+    /* Phase 1: Section Labeling + Phase 4: Mobile Optimization */
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--mobile-spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 767px) {
+    .section-label {
+      /* Phase 1: Section Labeling + Phase 4: Mobile Typography */
+      font-size: 0.75rem;
+      margin-bottom: var(--mobile-spacing-xs);
+    }
+  }
+
+  /* Phase 4: Cross-Phase Typography Integration */
+  .chat-interface {
+    /* Phase 2: Typography System + Phase 4: Mobile Optimization */
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 767px) {
+    .chat-interface {
+      /* Phase 2: Typography System + Phase 4: Mobile Typography */
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+  }
+
+  /* Phase 4: Cross-Phase Color Scheme Integration */
+  .chat-interface {
+    /* Phase 2: Color Scheme + Phase 4: Mobile Optimization */
+    background: var(--background-primary);
+    color: var(--text-primary);
+  }
+
+  @media (prefers-contrast: high) {
+    .chat-interface {
+      /* Phase 2: Color Scheme + Phase 4: High Contrast Mode */
+      background: var(--background-primary);
+      color: var(--text-primary);
+    }
+  }
+
+  /* Phase 4: Cross-Phase Performance Integration */
+  .chat-interface,
+  .main-content-panel,
+  .right-sidebar-panel,
+  .bottom-control-panel {
+    /* Phase 4: Performance Optimization + Cross-Phase Integration */
+    contain: layout style paint;
+    will-change: auto;
+  }
+
+  .message {
+    /* Phase 4: Performance Optimization + Cross-Phase Integration */
+    contain: layout style;
+    will-change: auto;
+  }
+
+  .analysis-button,
+  .mobile-sidebar-toggle,
+  .mobile-sidebar-close,
+  .chat-input-textarea,
+  .ticker-input-field {
+    /* Phase 4: Performance Optimization + Cross-Phase Integration */
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Phase 4: Cross-Phase Accessibility Integration */
+  .chat-interface {
+    /* Phase 3: Accessibility + Phase 4: Mobile Accessibility */
+    position: relative;
+  }
+
+  .skip-link {
+    /* Phase 3: Accessibility + Phase 4: Mobile Skip Links */
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    transition: top 0.3s;
+  }
+
+  .skip-link:focus {
+    top: 6px;
+  }
+
+  @media (max-width: 767px) {
+    .skip-link {
+      /* Phase 3: Accessibility + Phase 4: Mobile Skip Links */
+      position: fixed;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+    }
+
+    .skip-link:focus {
+      top: 1rem;
+    }
+  }
+
+  /* Phase 4: Cross-Phase Image Layout Requirements Integration */
+  .chat-interface {
+    /* Phase 1: 2-Panel Layout + Phase 4: Image Layout Requirements */
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    height: 100vh;
+  }
+
+  .main-content-panel {
+    /* Phase 1: Main Content Panel + Phase 4: Image Layout Requirements */
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .right-sidebar-panel {
+    /* Phase 1: Right Sidebar Panel + Phase 4: Image Layout Requirements */
+    width: 350px;
+    min-width: 350px;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 767px) {
+    .chat-interface {
+      /* Phase 1: 2-Panel Layout + Phase 4: Mobile Image Layout Requirements */
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .main-content-panel {
+      /* Phase 1: Main Content Panel + Phase 4: Mobile Image Layout Requirements */
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .right-sidebar-panel {
+      /* Phase 1: Right Sidebar Panel + Phase 4: Mobile Image Layout Requirements */
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 100%;
+      height: 100vh;
+      background: var(--glass-surface-1);
+      backdrop-filter: var(--glass-blur-md);
+      border-left: 1px solid var(--glass-border);
+      transition: right 0.3s ease-in-out;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .right-sidebar-panel.open {
+      right: 0;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .chat-interface {
+      /* Phase 1: 2-Panel Layout + Phase 4: Tablet Image Layout Requirements */
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      height: 100vh;
+    }
+
+    .main-content-panel {
+      /* Phase 1: Main Content Panel + Phase 4: Tablet Image Layout Requirements */
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .right-sidebar-panel {
+      /* Phase 1: Right Sidebar Panel + Phase 4: Tablet Image Layout Requirements */
+      width: 300px;
+      min-width: 300px;
+      max-width: 400px;
+      overflow-y: auto;
     }
   }
 

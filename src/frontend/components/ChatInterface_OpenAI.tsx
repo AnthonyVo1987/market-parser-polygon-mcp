@@ -20,6 +20,7 @@ import { sendChatMessage } from '../services/api_OpenAI';
 import { AIModelId } from '../types/ai_models';
 import { Message } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
+import { usePerformanceMonitoring } from '../utils/performance';
 
 // Consolidated state interface for useReducer
 interface ChatState {
@@ -29,6 +30,7 @@ interface ChatState {
   inputValue: string;
   sharedTicker: string;
   latestResponseTime: number | null;
+  isMobileSidebarOpen: boolean;
 }
 
 // Action types for state management
@@ -49,6 +51,8 @@ type ChatAction =
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'UPDATE_TICKER'; payload: string }
   | { type: 'CLEAR_ERROR' }
+  | { type: 'TOGGLE_MOBILE_SIDEBAR' }
+  | { type: 'CLOSE_MOBILE_SIDEBAR' }
   | { type: 'RESET_STATE' };
 
 // Initial state
@@ -59,6 +63,7 @@ const initialChatState: ChatState = {
   inputValue: '',
   sharedTicker: 'NVDA',
   latestResponseTime: null,
+  isMobileSidebarOpen: false,
 };
 
 // Reducer function for consolidated state management
@@ -101,6 +106,16 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         error: null,
       };
+    case 'TOGGLE_MOBILE_SIDEBAR':
+      return {
+        ...state,
+        isMobileSidebarOpen: !state.isMobileSidebarOpen,
+      };
+    case 'CLOSE_MOBILE_SIDEBAR':
+      return {
+        ...state,
+        isMobileSidebarOpen: false,
+      };
     case 'RESET_STATE':
       return initialChatState;
     default:
@@ -137,6 +152,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     inputValue,
     sharedTicker,
     latestResponseTime,
+    isMobileSidebarOpen,
   } = state;
 
   // AI Model management - temporarily disabled to fix React Hook order error
@@ -174,6 +190,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // User interaction logging - always available for UX insights
   const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
+
+  // Phase 4: Performance Monitoring
+  const { metrics: performanceMetrics, getReport, getBundleSize, getMemoryUsage } = usePerformanceMonitoring();
 
   // Prompt template API for analysis buttons - temporarily disabled to fix React Hook order error
   // const { templates } = usePromptAPI();
@@ -360,6 +379,27 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     [logInteraction, sharedTicker]
   );
 
+  // Phase 4: Mobile Sidebar Toggle Handlers
+  const handleToggleMobileSidebar = useCallback(() => {
+    dispatch({ type: 'TOGGLE_MOBILE_SIDEBAR' });
+
+    startTransition(() => {
+      logInteraction('mobile_sidebar_toggle', 'mobile_ui', {
+        isOpen: !isMobileSidebarOpen,
+      });
+    });
+  }, [logInteraction, isMobileSidebarOpen]);
+
+  const handleCloseMobileSidebar = useCallback(() => {
+    dispatch({ type: 'CLOSE_MOBILE_SIDEBAR' });
+
+    startTransition(() => {
+      logInteraction('mobile_sidebar_close', 'mobile_ui', {
+        isOpen: false,
+      });
+    });
+  }, [logInteraction]);
+
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
   // Removed handleDebugAction as it's now handled internally by DebugPanel
 
@@ -484,8 +524,66 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         </section>
       </div>
 
+      {/* Phase 4: Mobile Sidebar Toggle Button */}
+      <button
+        className="mobile-sidebar-toggle"
+        onClick={handleToggleMobileSidebar}
+        aria-label="Toggle sidebar"
+        aria-expanded={isMobileSidebarOpen}
+        data-testid="mobile-sidebar-toggle"
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 12h18M3 6h18M3 18h18"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {/* Phase 4: Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="mobile-sidebar-overlay"
+          onClick={handleCloseMobileSidebar}
+          aria-hidden="true"
+        />
+      )}
+
       {/* RIGHT SIDEBAR PANEL: Ticker Input, Analysis Buttons, Export Buttons, Debug */}
-      <div className='right-sidebar-panel'>
+      <div className={`right-sidebar-panel ${isMobileSidebarOpen ? 'open' : ''}`}>
+        {/* Phase 4: Mobile Sidebar Close Button */}
+        <button
+          className="mobile-sidebar-close"
+          onClick={handleCloseMobileSidebar}
+          aria-label="Close sidebar"
+          data-testid="mobile-sidebar-close"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6L6 18M6 6l12 12"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
         {/* SECTION 4: Ticker Input */}
         <section
           className='ticker-input-section'
@@ -591,12 +689,12 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           <span className='response-time-label'>Response Time:</span>
           <span
             className={`response-time-value ${latestResponseTime
-                ? latestResponseTime < 5
-                  ? 'response-time--fast'
-                  : latestResponseTime < 15
-                    ? 'response-time--medium'
-                    : 'response-time--slow'
-                : ''
+              ? latestResponseTime < 5
+                ? 'response-time--fast'
+                : latestResponseTime < 15
+                  ? 'response-time--medium'
+                  : 'response-time--slow'
+              : ''
               }`}
             aria-label={`Response time: ${latestResponseTime ? `${latestResponseTime.toFixed(2)} seconds` : 'Not available'}`}
           >
@@ -619,6 +717,28 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
           >
             {isLoading ? 'Processing...' : 'Ready'}
+          </span>
+        </div>
+      </div>
+
+      {/* Phase 4: Performance Monitoring Display */}
+      <div className="performance-indicator" data-testid="performance-indicator">
+        <div className="performance-metric">
+          <span>FCP:</span>
+          <span className={performanceMetrics.fcp && performanceMetrics.fcp < 1500 ? 'good' : 'warning'}>
+            {performanceMetrics.fcp ? `${performanceMetrics.fcp.toFixed(0)}ms` : 'N/A'}
+          </span>
+        </div>
+        <div className="performance-metric">
+          <span>LCP:</span>
+          <span className={performanceMetrics.lcp && performanceMetrics.lcp < 2500 ? 'good' : 'warning'}>
+            {performanceMetrics.lcp ? `${performanceMetrics.lcp.toFixed(0)}ms` : 'N/A'}
+          </span>
+        </div>
+        <div className="performance-metric">
+          <span>CLS:</span>
+          <span className={performanceMetrics.cls && performanceMetrics.cls < 0.1 ? 'good' : 'warning'}>
+            {performanceMetrics.cls ? performanceMetrics.cls.toFixed(3) : 'N/A'}
           </span>
         </div>
       </div>
