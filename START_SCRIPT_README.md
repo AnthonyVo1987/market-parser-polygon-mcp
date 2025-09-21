@@ -1,64 +1,88 @@
 # One-Click Startup Scripts
 
-The Market Parser project provides one-click startup scripts that automatically manage development servers and launch the application.
+The Market Parser project provides one-click startup scripts that automatically manage development servers.
 
 ## Quick Start
 
-```bash
-# Option 1: Use npm script (recommended)
-npm run start:app
+__One-Click Application Startup (Recommended):__
 
-# Option 2: Run script directly
+The startup scripts automatically START all development servers BUT __DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
+
+```bash
+# Option 1: Main startup script (recommended)
 ./start-app.sh
 
-# Option 3: Use xterm version for better terminal compatibility
-npm run start:app:xterm
-# or
+# Option 2: XTerm version for better terminal compatibility
 ./start-app-xterm.sh
+
+# Option 3: Use npm scripts
+npm run start:app          # Main script
+npm run start:app:xterm    # XTerm version
 ```
+
+__Prerequisites:__ uv, Node.js 18+, API keys in .env
+
+## Script Variants
+
+### start-app.sh (Main Script)
+
+- __Terminal Support__: Tries `gnome-terminal` first, falls back to `xterm`
+- __Cross-Platform__: Works on most Linux distributions and macOS
+- __Automatic Fallback__: Gracefully handles missing terminal emulators
+
+### start-app-xterm.sh (XTerm Version)
+
+- __XTerm Focused__: Specifically designed for xterm users
+- __Window Positioning__: Places backend and frontend terminals side-by-side
+- __Font Configuration__: Uses readable DejaVu Sans Mono font
+- __Enhanced Display__: Better window titles and layout
 
 ## What the Scripts Do
 
 ### 🔄 Server Cleanup
+
 - Kills existing development servers (uvicorn, vite)
-- **Preserves MCP servers** - does not interfere with MCP processes
+- __Preserves MCP servers__ - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
-- **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
+
+- __Backend__: Starts FastAPI server on `http://127.0.0.1:8000`
+- __Frontend__: Starts Vite dev server on `http://127.0.0.1:3000`
 - Opens each server in a separate terminal window for easy monitoring
-- Uses consistent ports from centralized configuration (no dynamic allocation)
+- Uses consistent hard-coded ports (no dynamic allocation)
 
 ### ✅ Health Verification
+
 - Performs health checks on both servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
 - Verifies frontend serves content properly
 
 ### 🌐 Browser Launch
-- **Automatically opens the application in your default browser** after server confirmation
-- Supports multiple browser opening methods (xdg-open, open, start)
-- Cross-platform compatibility (Linux, macOS, Windows/WSL)
-- Shows helpful success message with URLs
-- **True one-click experience** - no manual browser navigation required
+
+- __NOTIFIES USER TO LAUNCH BROWSER TO START THE APP__
+
+__Access:__ <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
 ## Script Variants
 
 ### start-app.sh (Main Script)
-- **Terminal Support**: Tries `gnome-terminal` first, falls back to `xterm`
-- **Cross-Platform**: Works on most Linux distributions and macOS
-- **Automatic Fallback**: Gracefully handles missing terminal emulators
+
+- __Terminal Support__: Tries `gnome-terminal` first, falls back to `xterm`
+- __Cross-Platform__: Works on most Linux distributions and macOS
+- __Automatic Fallback__: Gracefully handles missing terminal emulators
 
 ### start-app-xterm.sh (XTerm Version)
-- **XTerm Focused**: Specifically designed for xterm users
-- **Window Positioning**: Places backend and frontend terminals side-by-side
-- **Font Configuration**: Uses readable DejaVu Sans Mono font
-- **Enhanced Display**: Better window titles and layout
+
+- __XTerm Focused__: Specifically designed for xterm users
+- __Window Positioning__: Places backend and frontend terminals side-by-side
+- __Font Configuration__: Uses readable DejaVu Sans Mono font
+- __Enhanced Display__: Better window titles and layout
 
 ## Configuration
 
-The scripts use **centralized configuration** from `config/app.config.json` for consistency:
+The scripts use __centralized configuration__ from `config/app.config.json` for consistency:
 
 ```bash
 # Configuration is loaded from config/app.config.json
@@ -67,6 +91,7 @@ The scripts use **centralized configuration** from `config/app.config.json` for 
 ```
 
 This ensures:
+
 - ✅ No port conflicts or dynamic allocation issues
 - ✅ Consistent development environment
 - ✅ Cloud deployment compatibility
@@ -76,20 +101,23 @@ This ensures:
 ## Requirements
 
 ### System Requirements
-- **Terminal Emulator**: `gnome-terminal` or `xterm` (automatically detected)
-- **HTTP Client**: `curl` (for health checks)
-- **Browser**: Any modern browser with `xdg-open`, `open`, or `start` support
+
+- __Terminal Emulator__: `gnome-terminal` or `xterm` (automatically detected)
+- __HTTP Client__: `curl` (for health checks)
+- __Browser__: Any modern browser with `xdg-open`, `open`, or `start` support
 
 ### Development Dependencies
-- **Python**: uv package manager with dependencies installed
-- **Node.js**: Version 18.0.0+ with npm dependencies installed
-- **Environment**: `.env` file with required API keys
+
+- __Python__: uv package manager with dependencies installed
+- __Node.js__: Version 18.0.0+ with npm dependencies installed
+- __Environment__: `.env` file with required API keys
 
 ## Error Handling
 
 The scripts provide comprehensive error handling:
 
 ### Port Conflicts
+
 ```
 ❌ Failed to start all servers within timeout period.
 🔍 Troubleshooting:
@@ -98,12 +126,14 @@ The scripts provide comprehensive error handling:
 ```
 
 ### Missing Dependencies
+
 ```
 ❌ No suitable terminal emulator found (gnome-terminal or xterm)
 Please install gnome-terminal or xterm to use this script
 ```
 
 ### Server Startup Issues
+
 ```
 🔍 Troubleshooting:
   • Backend: Verify Python dependencies are installed (uv install)
@@ -130,6 +160,7 @@ pkill -f "vite.*--mode development"
 ## Troubleshooting
 
 ### Script Won't Run
+
 ```bash
 # Make sure scripts are executable
 chmod +x start-app.sh start-app-xterm.sh
@@ -139,15 +170,16 @@ bash -n start-app.sh
 ```
 
 ### Servers Start But Health Checks Fail
+
 1. Check if ports 8000/3000 are accessible
 2. Verify `.env` file has required API keys
 3. Check terminal windows for specific error messages
 4. Test manual server startup to identify issues
 
 ### Browser Won't Open Automatically
+
 - The application will still be accessible at `http://127.0.0.1:3000`
-- Script will show manual navigation instructions if automatic browser launch fails
-- Check if `xdg-open`, `open`, or `start` commands are available on your system
+- Script will show manual navigation for browser launch
 
 ## Success Output
 
@@ -167,29 +199,10 @@ Frontend: http://127.0.0.1:3000
 ✓ Frontend server is running at http://127.0.0.1:3000
 
 🎉 All servers are running successfully!
-🌐 Opening application in browser...
 
-✨ Application started successfully!
 📊 Backend API: http://127.0.0.1:8000
 🌐 Frontend UI: http://127.0.0.1:3000
 
 💡 Tip: Keep both terminal windows open to see server logs
 🛑 To stop servers: Close both terminal windows or use Ctrl+C in each
 ```
-
-## Integration with Development Workflow
-
-The startup scripts integrate seamlessly with existing npm commands:
-
-```bash
-# Start everything with one command
-npm run start:app
-
-# Check server status
-npm run health
-
-# Reset everything (clean + start)
-npm run reset
-```
-
-This provides a true **one-click development experience** that eliminates the complexity of managing multiple servers and processes manually.

@@ -76,7 +76,7 @@ coverage.xml
 credentials.json
 
 # Project-specific ignores
-.cursor/
+
 .taskmaster/
 scripts/
 *.log
@@ -86,8 +86,6 @@ node_modules
 
 #mcp servers
 .mcp.json
-.gemini/settings.json
-.gemini/gemini_new_task_details.md
 
 # Frontend build artifacts
 frontend/dev-dist/
