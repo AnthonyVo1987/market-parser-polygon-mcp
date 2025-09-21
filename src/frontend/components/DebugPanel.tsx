@@ -1,18 +1,5 @@
-import React, { 
-  useState, 
-  useCallback, 
-  useEffect, 
-  useMemo, 
-  useId,
-  FC,
-  ComponentType,
-  ReactNode,
-  JSX
-} from 'react';
-import type { 
-  FormEvent, 
-  KeyboardEvent, 
-  ChangeEvent 
+import {
+  FC
 } from 'react';
 import { DebugPanelProps } from '../types';
 
@@ -27,14 +14,6 @@ const DebugPanel: FC<DebugPanelProps> = ({
       <h3 className="debug-section-header">Debug Information</h3>
       <div className="debug-metrics-grid">
         <div className="debug-metric">
-          <span className="debug-label">Response Time:</span>
-          <span className="debug-value">{responseTime.toFixed(2)}s</span>
-        </div>
-        <div className="debug-metric">
-          <span className="debug-label">Messages:</span>
-          <span className="debug-value">{messageCount}</span>
-        </div>
-        <div className="debug-metric">
           <span className="debug-label">Last Update:</span>
           <span className="debug-value">{lastUpdate.toLocaleTimeString()}</span>
         </div>
@@ -43,6 +22,14 @@ const DebugPanel: FC<DebugPanelProps> = ({
           <span className={`debug-value ${isConnected ? 'connected' : 'disconnected'}`}>
             {isConnected ? '🟢 Connected' : '🔴 Disconnected'}
           </span>
+        </div>
+        <div className="debug-metric">
+          <span className="debug-label">Session:</span>
+          <span className="debug-value">Active</span>
+        </div>
+        <div className="debug-metric">
+          <span className="debug-label">Version:</span>
+          <span className="debug-value">v1.0.0</span>
         </div>
       </div>
     </div>

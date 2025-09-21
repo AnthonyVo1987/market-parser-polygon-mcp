@@ -721,25 +721,33 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         </div>
       </div>
 
-      {/* Phase 4: Performance Monitoring Display */}
+      {/* Phase 4: Performance Monitoring Display - Enhanced */}
       <div className="performance-indicator" data-testid="performance-indicator">
-        <div className="performance-metric">
-          <span>FCP:</span>
-          <span className={performanceMetrics.fcp && performanceMetrics.fcp < 1500 ? 'good' : 'warning'}>
-            {performanceMetrics.fcp ? `${performanceMetrics.fcp.toFixed(0)}ms` : 'N/A'}
-          </span>
+        <div className="performance-header">
+          <h4>Performance Metrics</h4>
         </div>
-        <div className="performance-metric">
-          <span>LCP:</span>
-          <span className={performanceMetrics.lcp && performanceMetrics.lcp < 2500 ? 'good' : 'warning'}>
-            {performanceMetrics.lcp ? `${performanceMetrics.lcp.toFixed(0)}ms` : 'N/A'}
-          </span>
+        <div className="performance-metrics-grid">
+          <div className="performance-metric">
+            <span className="metric-label">FCP:</span>
+            <span className={performanceMetrics.fcp && performanceMetrics.fcp < 1500 ? 'good' : 'warning'}>
+              {performanceMetrics.fcp ? `${performanceMetrics.fcp.toFixed(0)}ms` : 'Calculating...'}
+            </span>
+          </div>
+          <div className="performance-metric">
+            <span className="metric-label">LCP:</span>
+            <span className={performanceMetrics.lcp && performanceMetrics.lcp < 2500 ? 'good' : 'warning'}>
+              {performanceMetrics.lcp ? `${performanceMetrics.lcp.toFixed(0)}ms` : 'Calculating...'}
+            </span>
+          </div>
+          <div className="performance-metric">
+            <span className="metric-label">CLS:</span>
+            <span className={performanceMetrics.cls && performanceMetrics.cls < 0.1 ? 'good' : 'warning'}>
+              {performanceMetrics.cls ? performanceMetrics.cls.toFixed(3) : 'Calculating...'}
+            </span>
+          </div>
         </div>
-        <div className="performance-metric">
-          <span>CLS:</span>
-          <span className={performanceMetrics.cls && performanceMetrics.cls < 0.1 ? 'good' : 'warning'}>
-            {performanceMetrics.cls ? performanceMetrics.cls.toFixed(3) : 'N/A'}
-          </span>
+        <div className="performance-note">
+          <small>Metrics update after user interaction</small>
         </div>
       </div>
     </div>

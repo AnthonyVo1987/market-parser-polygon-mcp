@@ -1,7 +1,7 @@
 // Phase 4: Performance Monitoring Utilities
 // Real-time performance tracking and optimization tools
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo, lazy, Suspense } from 'react';
 
 export interface PerformanceMetrics {
     fcp: number; // First Contentful Paint
@@ -289,7 +289,7 @@ export function withPerformanceMonitoring<P extends object>(
             console.log('Component performance metrics:', metrics);
         }, [metrics]);
 
-        return <Component { ...props } />;
+        return <Component {...props} />;
     });
 }
 
@@ -301,10 +301,10 @@ export function createLazyComponent<T extends React.ComponentType<any>>(
     const LazyComponent = lazy(importFunc);
 
     return (props: React.ComponentProps<T>) => (
-        <Suspense fallback= { fallback || <div>Loading...</div>}>
-            < LazyComponent {...props } />
-                < /Suspense>
-  );
+        <Suspense fallback={fallback || <div>Loading...</div>}>
+            <LazyComponent {...props} />
+        </Suspense>
+    );
 }
 
 // Phase 4: Performance Budget Validation
