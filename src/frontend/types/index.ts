@@ -38,6 +38,8 @@ export interface TickerInputProps {
   value: string;
   onChange: (value: string) => void;
   onAnalyze: () => void;
+  onSearch?: () => void;
+  placeholder?: string;
   disabled?: boolean;
   required?: boolean;
 }

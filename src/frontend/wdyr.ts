@@ -3,7 +3,7 @@ import React from 'react';
 import { logger } from './utils/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-if (process.env.NODE_ENV === 'development') {
+if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
   void import('@welldone-software/why-did-you-render').then(
     whyDidYouRenderModule => {
       const whyDidYouRender = whyDidYouRenderModule.default;
@@ -16,31 +16,19 @@ if (process.env.NODE_ENV === 'development') {
         titleColor: 'red',
         diffNameColor: 'orange',
         diffPathColor: 'gray',
-        notifier: ({
-          Component,
-          displayName,
-          hookName,
-          prevProps,
-          prevState,
-          prevHookResult,
-          nextProps,
-          nextState,
-          nextHookResult,
-          reason,
-          _options,
-        }: {
-          Component?: React.ComponentType;
-          displayName?: string;
-          hookName?: string;
-          prevProps: unknown;
-          prevState: unknown;
-          prevHookResult: unknown;
-          nextProps: unknown;
-          nextState: unknown;
-          nextHookResult: unknown;
-          reason: string;
-          _options: unknown;
-        }) => {
+        notifier: (options: any) => {
+          const {
+            Component,
+            displayName,
+            hookName,
+            prevProps,
+            prevState,
+            prevHookResult,
+            nextProps,
+            nextState,
+            nextHookResult,
+            reason,
+          } = options;
           // Custom notification for excessive re-renders using minimal logger
           const componentName =
             displayName || hookName || Component?.name || 'Unknown';

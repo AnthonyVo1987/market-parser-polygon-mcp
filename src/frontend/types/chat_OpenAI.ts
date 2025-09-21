@@ -117,7 +117,7 @@ export interface PromptTemplate {
   readonly template: string;
   readonly icon: string;
   readonly requiresTicker: boolean;
-  readonly followUpQuestions?: readonly string[];
+  readonly followUpQuestions: readonly string[];
 }
 
 export type AnalysisType =

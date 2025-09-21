@@ -31,8 +31,7 @@ export interface UseInputValidationReturn {
 export function useInputValidation({
     rules,
     initialValue = '',
-    validateOnChange = true,
-    validateOnBlur = true
+    validateOnChange = true
 }: UseInputValidationOptions): UseInputValidationReturn {
     const [value, setValueState] = useState(initialValue);
     const [isTouched, setIsTouched] = useState(false);
@@ -62,7 +61,7 @@ export function useInputValidation({
         // Focus handler for future enhancements
     }, []);
 
-    const validate = useCallback(() => {
+    const validate = useCallback((): ValidationStateInfo => {
         const result = validateField(value, rules);
         return {
             state: result.isValid ? 'valid' : 'invalid',

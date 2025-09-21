@@ -58,30 +58,30 @@ class FrontendLogger {
     this.isDebugMode =
       this.isDevelopment &&
       (localStorage.getItem('debug_mode') === 'true' ||
-        (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
+        (window as unknown as Record<string, unknown>).__DEBUG_MODE__ === true ||
         this.logMode === 'DEBUG');
     this.performanceMetrics = new Map();
     this.logBuffer = [];
 
     // Enable global debug mode control
-    (window as Record<string, unknown>).__enableDebugMode = () => {
+    (window as unknown as Record<string, unknown>).__enableDebugMode = () => {
       localStorage.setItem('debug_mode', 'true');
       this.isDebugMode = true;
       this.info('🔧 Debug mode enabled - verbose logging active');
     };
 
-    (window as Record<string, unknown>).__disableDebugMode = () => {
+    (window as unknown as Record<string, unknown>).__disableDebugMode = () => {
       localStorage.setItem('debug_mode', 'false');
       this.isDebugMode = false;
       this.info('🔇 Debug mode disabled - minimal logging active');
     };
 
-    (window as Record<string, unknown>).__exportLogs = () => this.exportLogs();
+    (window as unknown as Record<string, unknown>).__exportLogs = () => this.exportLogs();
 
     // Add global log mode control methods
-    (window as Record<string, unknown>).__setLogMode = (mode: LogMode) =>
+    (window as unknown as Record<string, unknown>).__setLogMode = (mode: LogMode) =>
       this.setLogMode(mode);
-    (window as Record<string, unknown>).__getLogMode = () => this.getLogMode();
+    (window as unknown as Record<string, unknown>).__getLogMode = () => this.getLogMode();
 
     // Initialize file logging service
     this.initializeFileLogging();
@@ -141,7 +141,7 @@ class FrontendLogger {
     this.isDebugMode =
       this.isDevelopment &&
       (localStorage.getItem('debug_mode') === 'true' ||
-        (window as Record<string, unknown>).__DEBUG_MODE__ === true ||
+        (window as unknown as Record<string, unknown>).__DEBUG_MODE__ === true ||
         this.logMode === 'DEBUG');
 
     // Persist to localStorage
@@ -472,7 +472,7 @@ class FrontendLogger {
       args.splice(1, 0, style);
     }
     if (context) {
-      args.push(context);
+      args.push(JSON.stringify(context));
     }
 
     // eslint-disable-next-line no-console
@@ -494,11 +494,11 @@ class FrontendLogger {
 
     // In PRODUCTION mode, only log warnings and errors
     if (this.logMode === 'PRODUCTION') {
-      return level === 'warn' || level === 'error';
+      return false; // Already handled above for warn/error
     }
 
     // In DEBUG mode, respect the development environment settings
-    if (!this.isDevelopment && level !== 'warn') return false;
+    if (!this.isDevelopment && (level === 'debug' || level === 'info')) return false;
     if (level === 'debug' && !this.isDebugMode) return false;
 
     return true;
@@ -531,7 +531,7 @@ class FrontendLogger {
 
     for (const key of keysA) {
       if (!keysB.includes(key)) return false;
-      if (!this.deepEqual(a[key], b[key])) return false;
+      if (!this.deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) return false;
     }
 
     return true;
@@ -567,6 +567,6 @@ export const loggers = {
 
 // Add debugging helpers to window in development
 if (isDebugMode()) {
-  (window as Record<string, unknown>).__logger = logger;
-  (window as Record<string, unknown>).__loggers = loggers;
+  (window as unknown as Record<string, unknown>).__logger = logger;
+  (window as unknown as Record<string, unknown>).__loggers = loggers;
 }

@@ -206,15 +206,15 @@ const ChatMessage_OpenAI = memo(
     const markdownComponents = useMemo(() => createMarkdownComponents(), []);
 
     // Memoize expensive message processing computations
-    const messageMetadata = useMemo(
-      () => ({
-        hasMetadata: !!message.metadata,
-        processingTime: message.metadata?.processingTime,
-        isError: message.metadata?.isError,
-        formattedTime: message.timestamp.toLocaleTimeString(),
-      }),
-      [message.metadata, message.timestamp]
-    );
+    // const messageMetadata = useMemo(
+    //   () => ({
+    //     hasMetadata: !!message.metadata,
+    //     processingTime: message.metadata?.processingTime,
+    //     isError: message.metadata?.isError,
+    //     formattedTime: message.timestamp.toLocaleTimeString(),
+    //   }),
+    //   [message.metadata, message.timestamp]
+    // );
 
     // Animation removed for performance - show immediately
     useEffect(() => {

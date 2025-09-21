@@ -60,8 +60,8 @@ export function isValidModelListResponse(
     value !== null &&
     'models' in value &&
     'currentModel' in value &&
-    Array.isArray((value as ModelListResponse).models) &&
-    (value as ModelListResponse).models.every(isValidAIModel)
+    Array.isArray((value as unknown as ModelListResponse).models) &&
+    (value as unknown as ModelListResponse).models.every(isValidAIModel)
   );
 }
 

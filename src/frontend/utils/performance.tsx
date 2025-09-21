@@ -1,7 +1,7 @@
 // Phase 4: Performance Monitoring Utilities
 // Real-time performance tracking and optimization tools
 
-import React, { useEffect, useState, memo, lazy, Suspense } from 'react';
+import React, { Suspense, lazy, memo, useEffect, useState } from 'react';
 
 export interface PerformanceMetrics {
     fcp: number; // First Contentful Paint
@@ -47,7 +47,7 @@ export const BUNDLE_SIZE_BUDGET: BundleSizeBudget = {
 export class PerformanceMonitor {
     private metrics: Partial<PerformanceMetrics> = {};
     private observers: PerformanceObserver[] = [];
-    private isMonitoring = false;
+    // private isMonitoring = false;
 
     constructor() {
         this.initializeObservers();
@@ -137,12 +137,12 @@ export class PerformanceMonitor {
     }
 
     public startMonitoring(): void {
-        this.isMonitoring = true;
+        // this.isMonitoring = true;
         console.log('Performance monitoring started');
     }
 
     public stopMonitoring(): void {
-        this.isMonitoring = false;
+        // this.isMonitoring = false;
         this.observers.forEach(observer => observer.disconnect());
         this.observers = [];
         console.log('Performance monitoring stopped');
@@ -213,7 +213,7 @@ export function debounce<T extends (...args: any[]) => any>(
     func: T,
     wait: number
 ): (...args: Parameters<T>) => void {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     return (...args: Parameters<T>) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => func(...args), wait);
@@ -282,7 +282,7 @@ export function usePerformanceMonitoring() {
 export function withPerformanceMonitoring<P extends object>(
     Component: React.ComponentType<P>
 ): React.ComponentType<P> {
-    return memo((props: P) => {
+    const WrappedComponent = memo((props: P) => {
         const { metrics } = usePerformanceMonitoring();
 
         useEffect(() => {
@@ -291,6 +291,8 @@ export function withPerformanceMonitoring<P extends object>(
 
         return <Component {...props} />;
     });
+
+    return WrappedComponent as unknown as React.ComponentType<P>;
 }
 
 // Phase 4: Lazy Loading Utilities

@@ -39,14 +39,12 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(({
   const {
     value: message,
     setValue: setMessage,
-    validationState,
     isTouched,
     isValid,
     errorMessage,
     handleChange: handleValidationChange,
     handleBlur,
     handleFocus,
-    reset: resetValidation
   } = useInputValidation({
     rules: validationRules,
     initialValue: value,

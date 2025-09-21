@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getAPIBaseURL } from '../config/config.loader';
 import {
+  AnalysisType,
   GeneratePromptRequest,
   PROMPT_API_ENDPOINTS,
   PromptTemplate,
@@ -93,7 +94,7 @@ export function usePromptAPI(): UsePromptAPIResult {
           const templateArray = Object.values(data.templates).map(
             (template: { templateId: string; description: string }) => ({
               id: template.templateId,
-              type: template.templateId,
+              type: template.templateId as AnalysisType,
               name: template.description.replace(' analysis template', ''),
               description: template.description,
               template: `Provide ${template.templateId.replace('_', ' ')} analysis for {ticker}`,
@@ -107,7 +108,7 @@ export function usePromptAPI(): UsePromptAPIResult {
               followUpQuestions: [
                 'Would you like more details on this analysis?',
                 'Should we analyze another stock?',
-              ],
+              ] as readonly string[],
             })
           );
 
@@ -120,7 +121,7 @@ export function usePromptAPI(): UsePromptAPIResult {
               }
               return true;
             }
-          );
+          ) as PromptTemplate[];
 
           // Update cache
           templateCache.data = validTemplates;

@@ -26,7 +26,7 @@ export interface ButtonStateOptions {
 export class ButtonStateManager {
     private currentState: ButtonState;
     private options: Required<ButtonStateOptions>;
-    private timeoutId: NodeJS.Timeout | null = null;
+    private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     constructor(options: ButtonStateOptions) {
         this.currentState = options.initialState || 'idle';

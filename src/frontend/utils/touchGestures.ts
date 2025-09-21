@@ -45,7 +45,7 @@ export class TouchGestureDetector {
     private touchPoints: Map<number, TouchPoint> = new Map();
     private lastTapTime: number = 0;
     private lastTapPosition: { x: number; y: number } | null = null;
-    private longPressTimer: NodeJS.Timeout | null = null;
+    private longPressTimer: ReturnType<typeof setTimeout> | null = null;
     private onGesture: (gesture: TouchGesture) => void;
 
     constructor(
@@ -174,7 +174,7 @@ export class TouchGestureDetector {
         // Check for double tap
         if (this.lastTapPosition &&
             timeSinceLastTap < this.config.doubleTapThreshold &&
-            this.getDistance(touchPoint, this.lastTapPosition) < 50) {
+            this.getDistance(touchPoint, { id: 0, timestamp: Date.now(), x: this.lastTapPosition.x, y: this.lastTapPosition.y }) < 50) {
 
             this.onGesture({
                 type: 'doubletap',
@@ -526,7 +526,7 @@ export function optimizeForMobilePerformance(): void {
     window.addEventListener('scroll', optimizeScroll, { passive: true });
 
     // Optimize resize performance
-    let resizeTimeout: NodeJS.Timeout;
+    let resizeTimeout: ReturnType<typeof setTimeout>;
     const optimizeResize = () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {

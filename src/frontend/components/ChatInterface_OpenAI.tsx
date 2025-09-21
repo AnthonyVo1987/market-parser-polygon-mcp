@@ -192,14 +192,14 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
 
   // Phase 4: Performance Monitoring
-  const { metrics: performanceMetrics, getReport, getBundleSize, getMemoryUsage } = usePerformanceMonitoring();
+  const { metrics: performanceMetrics } = usePerformanceMonitoring();
 
   // Prompt template API for analysis buttons - temporarily disabled to fix React Hook order error
   // const { templates } = usePromptAPI();
   const templates = [
-    { id: 'snapshot', type: 'snapshot' as const, name: 'Stock Snapshot', description: 'Snapshot analysis template', template: 'Provide snapshot analysis for {ticker}', icon: '📊', requiresTicker: true },
-    { id: 'support_resistance', type: 'support_resistance' as const, name: 'Support/Resistance', description: 'Support Resistance analysis template', template: 'Provide support resistance analysis for {ticker}', icon: '📈', requiresTicker: true },
-    { id: 'technical', type: 'technical' as const, name: 'Technical Analysis', description: 'Technical analysis template', template: 'Provide technical analysis for {ticker}', icon: '🔍', requiresTicker: true }
+    { id: 'snapshot', type: 'snapshot' as const, name: 'Stock Snapshot', description: 'Snapshot analysis template', template: 'Provide snapshot analysis for {ticker}', icon: '📊', requiresTicker: true, followUpQuestions: ['Would you like more details on this analysis?', 'Should we analyze another stock?'] as readonly string[] },
+    { id: 'support_resistance', type: 'support_resistance' as const, name: 'Support/Resistance', description: 'Support Resistance analysis template', template: 'Provide support resistance analysis for {ticker}', icon: '📈', requiresTicker: true, followUpQuestions: ['Would you like more details on this analysis?', 'Should we analyze another stock?'] as readonly string[] },
+    { id: 'technical', type: 'technical' as const, name: 'Technical Analysis', description: 'Technical analysis template', template: 'Provide technical analysis for {ticker}', icon: '🔍', requiresTicker: true, followUpQuestions: ['Would you like more details on this analysis?', 'Should we analyze another stock?'] as readonly string[] }
   ];
 
   const messagesEndRef = useRef<HTMLDivElement>(null);

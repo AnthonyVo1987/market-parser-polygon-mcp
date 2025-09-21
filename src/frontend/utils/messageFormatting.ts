@@ -101,7 +101,7 @@ export function getMessageTypeClass(type: MessageType): string {
 }
 
 // Message type-specific ARIA labels
-export function getMessageAriaLabel(type: MessageType, timestamp: Date, isError: boolean): string {
+export function getMessageAriaLabel(type: MessageType, timestamp: Date, _isError: boolean): string {
     const timeStr = formatRelativeTime(timestamp);
 
     switch (type) {

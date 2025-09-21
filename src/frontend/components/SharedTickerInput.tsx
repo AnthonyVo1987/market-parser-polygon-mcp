@@ -35,14 +35,12 @@ const SharedTickerInput: FC<TickerInputProps> = memo(({
   const {
     value: ticker,
     setValue: setTicker,
-    validationState,
     isTouched,
     isValid,
     errorMessage,
     handleChange: handleValidationChange,
     handleBlur,
     handleFocus,
-    reset: resetValidation
   } = useInputValidation({
     rules: validationRules,
     initialValue: value,
@@ -67,7 +65,7 @@ const SharedTickerInput: FC<TickerInputProps> = memo(({
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     if (ticker.trim() && !disabled && isValid) {
-      onSearch(ticker.trim());
+      onSearch?.();
     }
   }, [ticker, onSearch, disabled, isValid]);
 

@@ -23,8 +23,8 @@
  *   }
  */
 
-import { useEffect, useRef, useCallback } from 'react';
-import { logger, LogContext } from '../utils/logger';
+import { useCallback, useEffect, useRef } from 'react';
+import { LogContext, logger } from '../utils/logger';
 
 /**
  * Hook for logging component lifecycle events (mount/unmount)
@@ -101,7 +101,7 @@ export function useEffectLogger(
     if (shouldLog) {
       // Log which dependencies changed (if any)
       const changedDeps = dependencies.reduce(
-        (acc, dep, index) => {
+        (acc: Record<string, { old: unknown; new: unknown }>, dep, index) => {
           if (previousDepsRef.current[index] !== dep) {
             acc[`dep_${index}`] = {
               old: previousDepsRef.current[index],
@@ -118,7 +118,7 @@ export function useEffectLogger(
         effect: effectName,
         executionCount: effectCountRef.current,
         dependenciesChanged: Object.keys(changedDeps).length > 0,
-        changedDependencies: changedDeps,
+        changedDependencies: Object.keys(changedDeps).length > 0 ? changedDeps : undefined,
       });
     }
 
@@ -354,7 +354,7 @@ export function usePropsLogger(
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (process.env.NODE_ENV !== 'development') return;
+    if (typeof window !== 'undefined' && import.meta.env?.MODE !== 'development') return;
 
     const previousProps = previousPropsRef.current;
     const changedProps: Record<string, { old: unknown; new: unknown }> = {};

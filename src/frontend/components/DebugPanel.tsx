@@ -4,8 +4,6 @@ import {
 import { DebugPanelProps } from '../types';
 
 const DebugPanel: FC<DebugPanelProps> = ({
-  responseTime = 0,
-  messageCount = 0,
   lastUpdate = new Date(),
   isConnected = true
 }) => {
