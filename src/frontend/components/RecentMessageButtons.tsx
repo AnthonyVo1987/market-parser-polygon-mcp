@@ -1,9 +1,9 @@
-import { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Message } from '../types/chat_OpenAI';
 import {
-  getMostRecentMessage,
   convertSingleMessageToMarkdown,
   copyToClipboard,
+  getMostRecentMessage,
 } from '../utils/exportHelpers';
 
 interface RecentMessageButtonsProps {
@@ -224,7 +224,7 @@ const RecentMessageButtons = memo(
         {/* Error Messages Display */}
         {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
           errorMessage &&
-          buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
+            buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
             <div key={buttonId} className='recent-message-error-message'>
               <strong>Copy Error:</strong> {errorMessage}
             </div>
@@ -284,13 +284,13 @@ export const recentMessageButtonsStyles = `
   .recent-message-button {
     /* Subtle Glassmorphic Foundation */
     background: var(--glass-surface-1);
-    backdrop-filter: var(--glass-blur-xs);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--glass-border-1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     
     /* Professional Button Design */
     padding: var(--spacing-2) var(--spacing-3);
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     
     /* Typography - Subtle Utility Styling */
@@ -356,7 +356,8 @@ export const recentMessageButtonsStyles = `
   
   /* Success State - Subtle Success Gradient */
   .recent-message-button.success {
-    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success);
     border-color: var(--accent-success);
     color: var(--text-primary);
     cursor: default;
@@ -364,12 +365,14 @@ export const recentMessageButtonsStyles = `
   }
   
   .recent-message-button.success:hover {
-    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success);
   }
   
   /* Error State - Subtle Error Treatment */
   .recent-message-button.error {
-    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error);
     border-color: var(--accent-error);
     color: var(--text-primary);
     cursor: pointer;
@@ -377,14 +380,15 @@ export const recentMessageButtonsStyles = `
   }
   
   .recent-message-button.error:hover {
-    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error-hover);
     /* Transform removed for performance */
   }
   
   /* Professional Error Message Display */
   .recent-message-error-message {
     background: var(--glass-surface-2);
-    backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--accent-error);
     border-radius: 8px;
     padding: var(--spacing-2) var(--spacing-3);
@@ -409,7 +413,7 @@ export const recentMessageButtonsStyles = `
   }
   
   /* Responsive Design - Mobile Optimization */
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .recent-message-buttons {
       gap: var(--spacing-1);
       flex-direction: column;
@@ -431,7 +435,7 @@ export const recentMessageButtonsStyles = `
   }
   
   /* Tablet Optimization */
-  @media (min-width: 641px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .recent-message-buttons {
       gap: var(--spacing-2);
     }
@@ -450,7 +454,7 @@ export const recentMessageButtonsStyles = `
     }
     
     .recent-message-button:hover {
-      backdrop-filter: var(--glass-blur-sm);
+      /* backdrop-filter removed for performance */
     }
   }
   

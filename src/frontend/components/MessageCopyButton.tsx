@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Message } from '../types/chat_OpenAI';
 import {
   convertSingleMessageToMarkdown,
@@ -165,7 +165,7 @@ export const messageCopyButtonStyles = `
     
     /* Professional Glass Surface */
     background: var(--glass-surface-3);
-    backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--glass-border-2);
     border-radius: 8px;
     
@@ -178,15 +178,15 @@ export const messageCopyButtonStyles = `
     
     /* Seamless Integration - Hidden by Default */
     opacity: 0;
-    transform: scale(0.9) translateZ(0); /* GPU acceleration */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.9);
+    transition: opacity 0.2s ease;
     z-index: 10;
     
     /* Professional Shadow */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     
     /* Performance optimization */
-    will-change: transform, opacity, box-shadow;
+    /* will-change: transform, opacity, box-shadow; removed for performance */
     backface-visibility: hidden;
   }
   
@@ -195,16 +195,15 @@ export const messageCopyButtonStyles = `
   .message-copy-button.hovered {
     background: var(--glass-surface-4);
     border-color: var(--glass-border-3);
-    transform: scale(1.05) translateY(-1px) translateZ(0);
-    box-shadow: 
-      0 4px 20px rgba(0, 0, 0, 0.2),
-      0 2px 8px rgba(139, 92, 246, 0.15);
-    backdrop-filter: var(--glass-blur-md);
+    transform: scale(1.05) translateY(-1px);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    /* backdrop-filter removed for performance */
   }
   
   /* Enhanced Active State */
   .message-copy-button:active {
-    transform: scale(0.95) translateY(0) translateZ(0);
+    transform: scale(0.95);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   
@@ -218,54 +217,54 @@ export const messageCopyButtonStyles = `
   
   /* Enhanced Loading State - Professional Info Color */
   .message-copy-button.loading {
-    background: linear-gradient(135deg, var(--accent-info) 0%, var(--accent-info-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-info);
     border-color: var(--accent-info);
     color: var(--text-primary);
     cursor: wait;
     /* Animation removed for performance */
-    box-shadow: 
-      0 4px 16px rgba(59, 130, 246, 0.3),
-      0 0 20px rgba(59, 130, 246, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
   }
   
   /* Enhanced Success State - Professional Success Treatment */
   .message-copy-button.success {
-    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success);
     border-color: var(--accent-success);
     color: var(--text-primary);
-    box-shadow: 
-      0 4px 20px rgba(16, 185, 129, 0.4),
-      0 0 24px rgba(16, 185, 129, 0.2);
-    animation: success-celebrate 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    /* animation: success-celebrate 0.6s cubic-bezier(0.4, 0, 0.2, 1); removed for performance */
   }
   
   .message-copy-button.success:hover,
   .message-copy-button.success.hovered {
-    background: linear-gradient(135deg, var(--accent-success-light) 0%, var(--accent-success) 100%);
-    transform: scale(1.08) translateY(-2px) translateZ(0);
-    box-shadow: 
-      0 6px 24px rgba(16, 185, 129, 0.5),
-      0 0 32px rgba(16, 185, 129, 0.3);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success-light);
+    transform: scale(1.08) translateY(-2px);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 3px 12px rgba(16, 185, 129, 0.4);
   }
   
   /* Enhanced Error State - Professional Error Treatment */
   .message-copy-button.error {
-    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error);
     border-color: var(--accent-error);
     color: var(--text-primary);
-    box-shadow: 
-      0 4px 16px rgba(239, 68, 68, 0.4),
-      0 0 20px rgba(239, 68, 68, 0.2);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
     /* Animation removed for performance */
   }
   
   .message-copy-button.error:hover,
   .message-copy-button.error.hovered {
-    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
-    transform: scale(1.05) translateY(-1px) translateZ(0);
-    box-shadow: 
-      0 6px 20px rgba(239, 68, 68, 0.5),
-      0 0 28px rgba(239, 68, 68, 0.3);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error-hover);
+    transform: scale(1.05) translateY(-1px);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 3px 12px rgba(239, 68, 68, 0.4);
   }
   
   /* Enhanced Professional Icon Container */
@@ -277,32 +276,32 @@ export const messageCopyButtonStyles = `
     height: 100%;
     line-height: 1;
     
-    /* Enhanced Icon Treatment */
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform: translateZ(0);
+    /* Enhanced Icon Treatment - simplified for performance */
+    /* filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2)); removed for performance */
+    transition: opacity 0.2s ease;
+    /* transform: translateZ(0); removed for performance */
   }
   
   /* Icon State Animations */
   .copy-icon.icon-idle {
-    transform: scale(1) rotate(0deg) translateZ(0);
+    transform: scale(1);
   }
   
   .copy-icon.icon-loading {
-    transform: scale(1.1) rotate(180deg) translateZ(0);
+    transform: scale(1.1);
     /* Animation removed for performance */
   }
   
   .copy-icon.icon-success {
-    transform: scale(1.2) rotate(360deg) translateZ(0);
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+    transform: scale(1.2);
+    /* filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); removed for performance */
     /* Animation removed for performance */
   }
   
   .copy-icon.icon-error {
-    transform: scale(1.1) rotate(-10deg) translateZ(0);
-    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
-    animation: icon-error-wobble 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1.1);
+    /* filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)); removed for performance */
+    /* animation: icon-error-wobble 0.6s cubic-bezier(0.4, 0, 0.2, 1); removed for performance */
   }
   
   /* Seamless Message Integration */
@@ -347,7 +346,7 @@ export const messageCopyButtonStyles = `
   }
   
   /* Responsive Design - Mobile Enhancement */
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .message-copy-button {
       width: 36px;
       height: 36px;
@@ -362,7 +361,7 @@ export const messageCopyButtonStyles = `
   }
   
   /* Tablet Optimization */
-  @media (min-width: 641px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .message-copy-button {
       width: 34px;
       height: 34px;
@@ -377,7 +376,7 @@ export const messageCopyButtonStyles = `
     }
     
     .message-copy-button:hover {
-      backdrop-filter: var(--glass-blur-md);
+      /* backdrop-filter removed for performance */
     }
   }
   
@@ -430,13 +429,13 @@ export const messageCopyButtonStyles = `
   
   /* Enhanced Performance Optimizations */
   .message-copy-button {
-    will-change: opacity, transform, box-shadow;
-    transform: translateZ(0); /* Force GPU acceleration */
+    /* will-change: opacity, transform, box-shadow; removed for performance */
+    /* transform: translateZ(0); removed for performance */
     contain: layout style paint;
   }
   
   .copy-icon {
-    will-change: transform, filter;
+    /* will-change: transform, filter; removed for performance */
     contain: layout style;
   }
   
@@ -450,134 +449,24 @@ export const messageCopyButtonStyles = `
   
   /* Enhanced Focus States for Accessibility */
   .message-copy-button:focus-visible {
-    opacity: 1;
-    transform: scale(1.0) translateZ(0);
     outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
-    box-shadow: 
-      0 0 0 4px rgba(139, 92, 246, 0.2),
-      0 4px 20px rgba(0, 0, 0, 0.2);
   }
   
   .message-copy-button.success:focus-visible {
-    outline-color: var(--focus-ring-success);
-    box-shadow: 
-      0 0 0 4px rgba(16, 185, 129, 0.2),
-      0 4px 20px rgba(16, 185, 129, 0.4);
+    outline-color: var(--accent-success);
   }
   
   .message-copy-button.error:focus-visible {
-    outline-color: var(--focus-ring-error);
-    box-shadow: 
-      0 0 0 4px rgba(239, 68, 68, 0.2),
-      0 4px 20px rgba(239, 68, 68, 0.4);
+    outline-color: var(--accent-error);
   }
   
   /* Success Glow Effect */
   .message-copy-button.success-glow {
-    box-shadow: 
-      0 0 40px rgba(16, 185, 129, 0.6),
-      0 4px 20px rgba(16, 185, 129, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 2px 8px rgba(16, 185, 129, 0.3);
     /* Animation removed for performance */
   }
   
   /* All keyframe animations removed for performance */
-  @keyframes loading-pulse {
-    0%, 100% {
-      opacity: 1;
-      box-shadow: 
-        0 4px 16px rgba(59, 130, 246, 0.3),
-        0 0 20px rgba(59, 130, 246, 0.1);
-    }
-    50% {
-      opacity: 0.8;
-      box-shadow: 
-        0 6px 20px rgba(59, 130, 246, 0.4),
-        0 0 28px rgba(59, 130, 246, 0.2);
-    }
-  }
-  
-  @keyframes success-celebrate {
-    0% {
-      transform: scale(0.9) translateY(0) translateZ(0);
-    }
-    50% {
-      transform: scale(1.15) translateY(-2px) translateZ(0);
-      box-shadow: 
-        0 8px 32px rgba(16, 185, 129, 0.5),
-        0 0 40px rgba(16, 185, 129, 0.3);
-    }
-    100% {
-      transform: scale(1.05) translateY(-1px) translateZ(0);
-    }
-  }
-  
-  @keyframes error-shake {
-    0%, 100% {
-      transform: scale(1.05) translateX(0) translateZ(0);
-    }
-    10%, 30%, 50%, 70%, 90% {
-      transform: scale(1.05) translateX(-2px) translateZ(0);
-    }
-    20%, 40%, 60%, 80% {
-      transform: scale(1.05) translateX(2px) translateZ(0);
-    }
-  }
-  
-  @keyframes success-glow-pulse {
-    0% {
-      box-shadow: 
-        0 4px 20px rgba(16, 185, 129, 0.4),
-        0 0 24px rgba(16, 185, 129, 0.2);
-    }
-    50% {
-      box-shadow: 
-        0 0 60px rgba(16, 185, 129, 0.8),
-        0 8px 32px rgba(16, 185, 129, 0.6),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-    100% {
-      box-shadow: 
-        0 4px 20px rgba(16, 185, 129, 0.4),
-        0 0 24px rgba(16, 185, 129, 0.2);
-    }
-  }
-  
-  /* Icon Keyframe Animations */
-  @keyframes icon-loading-spin {
-    0% {
-      transform: scale(1.1) rotate(180deg) translateZ(0);
-    }
-    100% {
-      transform: scale(1.1) rotate(540deg) translateZ(0);
-    }
-  }
-  
-  @keyframes icon-success-bounce {
-    0%, 20%, 53%, 80%, 100% {
-      transform: scale(1.2) rotate(360deg) translate3d(0, 0, 0);
-    }
-    40%, 43% {
-      transform: scale(1.3) rotate(360deg) translate3d(0, -3px, 0);
-    }
-    70% {
-      transform: scale(1.25) rotate(360deg) translate3d(0, -2px, 0);
-    }
-    90% {
-      transform: scale(1.22) rotate(360deg) translate3d(0, -1px, 0);
-    }
-  }
-  
-  @keyframes icon-error-wobble {
-    0%, 100% {
-      transform: scale(1.1) rotate(-10deg) translateZ(0);
-    }
-    25% {
-      transform: scale(1.15) rotate(-15deg) translateZ(0);
-    }
-    75% {
-      transform: scale(1.08) rotate(-5deg) translateZ(0);
-    }
-  }
 `;

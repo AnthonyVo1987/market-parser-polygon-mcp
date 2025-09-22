@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from 'react';
-import { ErrorBoundaryProps, ErrorFallbackProps } from '../types/error';
 import { ErrorBoundaryState, ErrorInfo } from '../types/chat_OpenAI';
+import { ErrorBoundaryProps, ErrorFallbackProps } from '../types/error';
 
 // Default error fallback component
 const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
@@ -109,9 +109,9 @@ export const errorBoundaryStyles = `
   .error-boundary-fallback {
     /* Professional Glassmorphic Error Container */
     background: var(--glass-surface-3);
-    backdrop-filter: var(--glass-blur-md);
+    /* backdrop-filter removed for performance */
     border: 2px solid var(--accent-error);
-    border-radius: 16px;
+    border-radius: 8px;
     box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3), var(--glass-shadow-lg);
     
     /* Professional Spacing */
@@ -137,7 +137,8 @@ export const errorBoundaryStyles = `
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error);
     opacity: 0.8;
   }
   
@@ -159,7 +160,7 @@ export const errorBoundaryStyles = `
   .error-boundary-fallback h2::before {
     content: '⚠️';
     font-size: var(--font-size-h3);
-    filter: grayscale(0.2);
+    /* filter: grayscale(0.2); removed for performance */
   }
   
   /* Professional Error Details Container */
@@ -169,7 +170,7 @@ export const errorBoundaryStyles = `
     
     /* Glass Effect for Details */
     background: var(--glass-surface-2);
-    backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--glass-border-2);
     border-radius: 12px;
     
@@ -186,8 +187,8 @@ export const errorBoundaryStyles = `
     
     font-size: var(--font-size-body);
     padding: var(--spacing-1);
-    border-radius: 6px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+    transition: opacity 0.2s ease;
     
     /* Professional Enhancement */
     display: flex;
@@ -197,7 +198,7 @@ export const errorBoundaryStyles = `
   
   .error-boundary-fallback summary::before {
     content: '▶';
-    transition: transform 0.2s ease;
+    /* transition: transform 0.1s ease; removed for performance */
     font-size: var(--font-size-small);
   }
   
@@ -241,7 +242,8 @@ export const errorBoundaryStyles = `
   /* Professional Reset Button */
   .error-reset-button {
     /* Fintech Button Design */
-    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error);
     color: var(--text-primary);
     border: 1px solid var(--accent-error);
     
@@ -256,7 +258,7 @@ export const errorBoundaryStyles = `
     letter-spacing: var(--letter-spacing-wide);
     
     /* Professional Transitions */
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s ease;
     position: relative;
     overflow: hidden;
     
@@ -275,7 +277,8 @@ export const errorBoundaryStyles = `
   }
   
   .error-reset-button:hover {
-    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error-hover);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
   }
@@ -290,7 +293,7 @@ export const errorBoundaryStyles = `
   }
   
   /* Responsive Design - Mobile Optimization */
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .error-boundary-fallback {
       padding: var(--spacing-4);
       margin: var(--spacing-2);
@@ -320,7 +323,7 @@ export const errorBoundaryStyles = `
   }
   
   /* Tablet Optimization */
-  @media (min-width: 641px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .error-boundary-fallback {
       padding: var(--spacing-5);
     }
@@ -334,7 +337,7 @@ export const errorBoundaryStyles = `
     }
     
     .error-boundary-fallback:hover {
-      backdrop-filter: var(--glass-blur-lg);
+      /* backdrop-filter removed for performance */
     }
   }
   
@@ -377,7 +380,7 @@ export const errorBoundaryStyles = `
   
   /* Performance Optimizations */
   .error-boundary-fallback {
-    will-change: backdrop-filter;
+    /* will-change: backdrop-filter; removed for performance */
     transform: translateZ(0); /* Force GPU acceleration */
   }
   

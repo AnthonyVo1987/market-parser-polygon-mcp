@@ -181,30 +181,25 @@ export const analysisButtonStyles = `
     max-width: 340px;
     /* Modern glassmorphic card background */
     background: rgba(45, 55, 72, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    /* backdrop-filter removed for performance */
     border: 1px solid rgba(124, 58, 237, 0.15);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 4px;
     /* Enhanced shadows for depth */
-    box-shadow: 
-      0 4px 20px rgba(0, 0, 0, 0.15),
-      0 1px 4px rgba(124, 58, 237, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     /* Performance optimizations */
     contain: layout style;
     box-sizing: border-box;
     /* Smooth transitions */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s ease;
   }
 
   .analysis-button-container:hover {
     background: rgba(45, 55, 72, 0.75);
     border-color: rgba(124, 58, 237, 0.25);
-    box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.2),
-      0 2px 8px rgba(124, 58, 237, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     transform: translateY(-1px);
   }
 
@@ -229,68 +224,51 @@ export const analysisButtonStyles = `
     letter-spacing: var(--letter-spacing-wide);
     cursor: pointer;
     /* Sophisticated transitions */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s ease;
     min-height: 56px;
     position: relative;
     overflow: hidden;
     /* Enhanced shadows with trust color */
-    box-shadow: 
-      0 4px 14px rgba(124, 58, 237, 0.25),
-      0 2px 6px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
     /* Performance optimizations */
-    will-change: transform, box-shadow, background;
+    /* will-change: transform, box-shadow, background; removed for performance */
     box-sizing: border-box;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     /* Subtle text shadow for depth */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); removed for performance */
   }
 
   /* Sophisticated hover state with enhanced trust colors */
   .analysis-button:not(:disabled):hover {
-    background: linear-gradient(135deg, var(--accent-trust-hover) 0%, var(--accent-info) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-trust-hover);
     border-color: var(--accent-trust-hover);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 
-      0 8px 25px rgba(124, 58, 237, 0.35),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    /* Enhanced glow effect */
-    filter: brightness(1.05);
+    transform: translateY(-2px);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+    /* Enhanced glow effect - simplified for performance */
+    /* filter: brightness(1.05); removed for performance */
   }
 
   /* Enhanced focus states using design system */
   .analysis-button:focus-visible {
-    outline: 3px solid var(--focus-ring);
-    outline-offset: 3px;
-    box-shadow: 
-      0 0 0 4px rgba(124, 58, 237, 0.2),
-      0 8px 25px rgba(124, 58, 237, 0.35),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
   }
 
   /* Enhanced focus-within state for container */
   .analysis-button-container:focus-within {
-    background: rgba(45, 55, 72, 0.8);
     border-color: var(--accent-trust);
-    box-shadow: 
-      0 0 0 1px var(--accent-trust),
-      0 8px 32px rgba(0, 0, 0, 0.2),
-      0 2px 8px rgba(124, 58, 237, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
   }
 
   /* Active state with subtle press effect */
   .analysis-button:not(:disabled):active {
-    transform: translateY(-1px) scale(0.98);
-    box-shadow: 
-      0 4px 14px rgba(124, 58, 237, 0.25),
-      0 2px 6px rgba(0, 0, 0, 0.1),
-      inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    filter: brightness(0.95);
+    transform: translateY(-1px);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+    /* filter: brightness(0.95); removed for performance */
   }
 
   /* Enhanced disabled state */
@@ -300,38 +278,37 @@ export const analysisButtonStyles = `
     color: rgba(247, 250, 252, 0.6);
     cursor: not-allowed;
     transform: none;
-    filter: none;
-    box-shadow: 
-      0 2px 8px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    text-shadow: none;
+    /* filter: none; removed for performance */
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    /* text-shadow: none; removed for performance */
   }
 
   /* Enhanced button content styling with better typography */
   .button-icon {
     font-size: 20px;
     flex-shrink: 0;
-    /* Enhanced icon contrast */
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Enhanced icon contrast - simplified for performance */
+    /* filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)); removed for performance */
+    transition: opacity 0.2s ease;
   }
 
   .analysis-button:hover .button-icon,
   .analysis-button.button-hovered .button-icon {
-    transform: scale(1.1) rotate(2deg);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transform: scale(1.05);
+    /* filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)); removed for performance */
   }
   
   /* Success state icon animation */
   .analysis-button.button-success .button-icon {
-    transform: scale(1.2) rotate(10deg);
-    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5));
+    transform: scale(1.1);
+    /* filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5)); removed for performance */
   }
   
   /* Error state icon animation */
   .analysis-button.button-error .button-icon {
-    transform: scale(1.1) rotate(-5deg);
-    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
+    transform: scale(1.05);
+    /* filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5)); removed for performance */
     /* Animation removed for performance */
   }
   
@@ -342,20 +319,20 @@ export const analysisButtonStyles = `
     text-align: center;
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-wide);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s ease;
     position: relative;
   }
   
   /* Success text animation */
   .analysis-button.button-success .button-text {
     color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+    /* text-shadow: 0 0 8px rgba(34, 197, 94, 0.3); removed for performance */
   }
   
   /* Error text animation */
   .analysis-button.button-error .button-text {
     color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+    /* text-shadow: 0 0 8px rgba(239, 68, 68, 0.3); removed for performance */
   }
 
   /* Static loading indicator */
@@ -376,7 +353,7 @@ export const analysisButtonStyles = `
     font-weight: bold;
     color: rgba(255, 255, 255, 0.95);
     /* Animation removed for performance */
-    filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.6));
+    /* filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.6)); removed for performance */
     margin-left: 8px;
   }
   
@@ -388,7 +365,7 @@ export const analysisButtonStyles = `
     font-weight: bold;
     color: rgba(255, 255, 255, 0.95);
     /* Animation removed for performance */
-    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6));
+    /* filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6)); removed for performance */
     margin-left: 8px;
   }
   
@@ -399,13 +376,12 @@ export const analysisButtonStyles = `
     background: var(--gradient-error-subtle);
     color: var(--accent-error);
     padding: 12px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: var(--font-size-small);
     font-weight: var(--font-weight-medium);
     border: 1px solid var(--accent-error);
-    box-shadow: 
-      0 2px 8px rgba(239, 68, 68, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 1px 4px rgba(239, 68, 68, 0.15);
     margin-top: 8px;
   }
 
@@ -415,45 +391,37 @@ export const analysisButtonStyles = `
   .analysis-button.bullish {
     background: var(--gradient-success);
     border-color: var(--accent-success);
-    box-shadow: 
-      0 4px 14px rgba(16, 185, 129, 0.25),
-      0 2px 6px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
   }
 
   .analysis-button.bullish:not(:disabled):hover {
-    background: linear-gradient(135deg, var(--accent-success-hover) 0%, var(--financial-bullish-3) 100%);
-    box-shadow: 
-      0 8px 25px rgba(16, 185, 129, 0.35),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success-hover);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
   }
 
   .analysis-button.bearish {
     background: var(--gradient-error);
     border-color: var(--accent-error);
-    box-shadow: 
-      0 4px 14px rgba(239, 68, 68, 0.25),
-      0 2px 6px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
   }
 
   .analysis-button.bearish:not(:disabled):hover {
-    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--financial-bearish-3) 100%);
-    box-shadow: 
-      0 8px 25px rgba(239, 68, 68, 0.35),
-      0 4px 12px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error-hover);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
   }
 
   .analysis-button.neutral {
     background: var(--gradient-surface-2);
     border-color: var(--neutral-color);
     color: var(--text-secondary);
-    box-shadow: 
-      0 4px 14px rgba(160, 174, 192, 0.15),
-      0 2px 6px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Complex box-shadow simplified for performance */
+    box-shadow: 0 2px 8px rgba(160, 174, 192, 0.1);
   }
 
   .analysis-button.neutral:not(:disabled):hover {
@@ -463,12 +431,12 @@ export const analysisButtonStyles = `
   }
 
   /* Enhanced mobile responsiveness with fintech styling (320px-767px) */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .analysis-button-container {
       max-width: 100%;
       margin-bottom: 12px;
       padding: 3px;
-      border-radius: 14px;
+      border-radius: 8px;
     }
 
     .analysis-button {
@@ -479,19 +447,15 @@ export const analysisButtonStyles = `
       /* Enhanced mobile interactions */
       -webkit-tap-highlight-color: transparent;
       /* Mobile-optimized shadows */
-      box-shadow: 
-        0 3px 12px rgba(124, 58, 237, 0.2),
-        0 1px 4px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
     }
 
     .analysis-button:not(:disabled):hover {
       /* Simplified hover for mobile */
       transform: translateY(-1px);
-      box-shadow: 
-        0 4px 16px rgba(124, 58, 237, 0.25),
-        0 2px 6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 3px 12px rgba(124, 58, 237, 0.2);
     }
 
     .button-icon {
@@ -500,12 +464,12 @@ export const analysisButtonStyles = `
 
     .follow-up-hint {
       padding: 10px;
-      border-radius: 10px;
+      border-radius: 8px;
     }
   }
 
   /* Enhanced tablet optimizations (768px-1024px) */
-  @media (min-width: 768px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .analysis-button-container {
       max-width: 360px;
     }
@@ -528,51 +492,43 @@ export const analysisButtonStyles = `
     }
 
     .analysis-button {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.2s ease;
     }
 
     .analysis-button:not(:disabled):hover,
     .analysis-button.button-hovered:not(:disabled) {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 
-        0 12px 40px rgba(124, 58, 237, 0.4),
-        0 6px 16px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
-      filter: brightness(1.1) saturate(1.1);
+      transform: translateY(-2px);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.3);
+      /* filter: brightness(1.1) saturate(1.1); removed for performance */
     }
 
     .analysis-button-container:hover {
       transform: translateY(-2px);
-      box-shadow: 
-        0 12px 48px rgba(0, 0, 0, 0.25),
-        0 4px 12px rgba(124, 58, 237, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
     }
 
     /* Enhanced desktop icon animations */
     .analysis-button:hover .button-icon,
     .analysis-button.button-hovered .button-icon {
-      transform: scale(1.15) rotate(5deg);
+      transform: scale(1.1);
     }
     
     /* Desktop success state enhancement */
     .analysis-button.button-success:not(:disabled) {
       transform: translateY(-4px) scale(1.03);
-      box-shadow: 
-        0 16px 48px rgba(34, 197, 94, 0.4),
-        0 8px 20px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      filter: brightness(1.15) saturate(1.2);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+      /* filter: brightness(1.15) saturate(1.2); removed for performance */
     }
     
     /* Desktop error state enhancement */
     .analysis-button.button-error:not(:disabled) {
       transform: translateY(-2px) scale(1.01);
-      box-shadow: 
-        0 12px 32px rgba(239, 68, 68, 0.4),
-        0 6px 16px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
-      filter: brightness(1.05) saturate(1.1);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 6px 24px rgba(239, 68, 68, 0.3);
+      /* filter: brightness(1.05) saturate(1.1); removed for performance */
     }
   }
 
@@ -582,26 +538,24 @@ export const analysisButtonStyles = `
     .analysis-button {
       min-height: 64px;
       /* Simplified transitions for touch */
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      transition: background-color 0.2s ease;
     }
 
     .analysis-button:not(:disabled):hover {
       /* Maintain original styling on touch hover */
       transform: none;
       background: var(--gradient-trust);
-      box-shadow: 
-        0 4px 14px rgba(124, 58, 237, 0.25),
-        0 2px 6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
     }
 
     /* Enhanced touch feedback with trust gradient */
     .analysis-button:not(:disabled):active {
-      background: linear-gradient(135deg, var(--accent-trust-active) 0%, var(--accent-info-active) 100%);
+      /* Complex gradient simplified for performance */
+      background: var(--accent-trust-active);
       transform: scale(0.96);
-      box-shadow: 
-        0 2px 8px rgba(124, 58, 237, 0.3),
-        inset 0 2px 4px rgba(0, 0, 0, 0.15);
+      /* Complex box-shadow simplified for performance */
+      box-shadow: 0 1px 4px rgba(124, 58, 237, 0.25);
     }
 
     .analysis-button-container:hover {
@@ -612,16 +566,17 @@ export const analysisButtonStyles = `
   @media (hover: hover) and (pointer: fine) {
     /* Precision input devices - sophisticated hover states */
     .analysis-button {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.2s ease;
     }
 
     .analysis-button-container {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.2s ease;
     }
 
     /* Enhanced precision hover effects */
     .analysis-button:not(:disabled):hover {
-      background: linear-gradient(135deg, var(--accent-trust-hover) 0%, var(--accent-info-hover) 100%);
+      /* Complex gradient simplified for performance */
+      background: var(--accent-trust-hover);
     }
   }
 

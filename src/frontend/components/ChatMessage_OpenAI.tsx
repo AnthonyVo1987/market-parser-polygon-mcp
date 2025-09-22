@@ -141,8 +141,7 @@ const createMarkdownComponents = () => ({
         {...props}
         style={{
           backgroundColor: 'var(--glass-surface-light)',
-          backdropFilter: 'var(--backdrop-blur-sm)',
-          WebkitBackdropFilter: 'var(--backdrop-blur-sm)',
+          /* backdrop-filter removed for performance */
           border: 'var(--glass-border-highlight)',
           padding: 'var(--space-1) var(--space-2)',
           borderRadius: 'var(--radius-md)',
@@ -160,8 +159,7 @@ const createMarkdownComponents = () => ({
         className='code-block'
         style={{
           backgroundColor: 'var(--glass-surface-dark)',
-          backdropFilter: 'var(--backdrop-blur-md)',
-          WebkitBackdropFilter: 'var(--backdrop-blur-md)',
+          /* backdrop-filter removed for performance */
           border: 'var(--glass-border-highlight)',
           padding: 'var(--space-3)',
           borderRadius: 'var(--radius-lg)',
@@ -318,13 +316,12 @@ export const messageStyles = `
     word-wrap: break-word;
     overflow-wrap: break-word;
     scrollbar-width: thin; /* Firefox */
-    backdrop-filter: var(--backdrop-blur-md);
-    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    /* backdrop-filter removed for performance */
     border: var(--glass-border-highlight);
   }
   
   /* Desktop/Tablet breakpoint */
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     .message-bubble {
       max-width: 70%;
     }

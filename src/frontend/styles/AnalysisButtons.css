@@ -21,7 +21,7 @@
   margin-bottom: 20px;
   padding: 16px;
   background: rgba(26, 32, 44, 0.3);
-  border-radius: 16px;
+  border-radius: 8px;
   border: 1px solid rgba(124, 58, 237, 0.1);
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.1),
@@ -37,23 +37,20 @@
 .analysis-buttons-container {
   /* Modern glassmorphic background */
   background: rgba(26, 32, 44, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  /* backdrop-filter removed for performance */
   border: 1px solid rgba(124, 58, 237, 0.2);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 20px;
   margin: 20px 0;
   width: 100%;
   max-width: 100%;
   position: relative;
   /* Enhanced depth with sophisticated shadows */
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    0 2px 8px rgba(124, 58, 237, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  /* Complex box-shadow simplified for performance */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   /* Modern container query support */
-  container-type: inline-size;
-  container-name: analysis-buttons;
+  /* container-type: inline-size; removed for performance */
+  /* container-name: analysis-buttons; removed for performance */
   /* Performance optimizations */
   contain: layout style;
   box-sizing: border-box;
@@ -66,21 +63,16 @@
 .analysis-buttons-container:hover {
   background: rgba(26, 32, 44, 0.85);
   border-color: rgba(124, 58, 237, 0.3);
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.25),
-    0 4px 16px rgba(124, 58, 237, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  /* Complex box-shadow simplified for performance */
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
   /* Transform removed for performance */
 }
 
 /* Enhanced focus-within state */
 .analysis-buttons-container:focus-within {
   border-color: var(--accent-trust);
-  box-shadow:
-    0 0 0 1px var(--accent-trust),
-    0 12px 48px rgba(0, 0, 0, 0.25),
-    0 4px 16px rgba(124, 58, 237, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  /* Complex box-shadow simplified for performance */
+  box-shadow: 0 0 0 1px var(--accent-trust), 0 6px 24px rgba(0, 0, 0, 0.2);
 }
 
 /* Enhanced header section with fintech styling - now clickable */
@@ -124,13 +116,12 @@
   border: 1px solid rgba(124, 58, 237, 0.2);
   border-radius: 12px;
   background: rgba(26, 32, 44, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* backdrop-filter removed for performance */
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -157,8 +148,8 @@
   outline-offset: 2px;
 }
 
-/* Responsive breakpoints using container queries */
-@container analysis-buttons (max-width: 800px) {
+/* Responsive breakpoints using media queries */
+@media (max-width: 768px) {
   .buttons-grid {
     flex-direction: column;
     gap: 8px;
@@ -176,7 +167,7 @@
   }
 }
 
-@container analysis-buttons (min-width: 1200px) {
+@media (min-width: 1025px) {
   .buttons-grid {
     gap: 20px;
   }
@@ -250,7 +241,7 @@
   border: 1px solid rgba(124, 58, 237, 0.3);
   color: rgba(124, 58, 237, 0.8);
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 11px;
   /* Transition removed for performance */

@@ -1,8 +1,8 @@
-import { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Message } from '../types/chat_OpenAI';
 import {
-  convertToMarkdown,
   convertToJSON,
+  convertToMarkdown,
   copyToClipboard,
   downloadFile,
   generateSafeFilename,
@@ -276,7 +276,7 @@ const ExportButtons = memo(
         {/* Error Messages Display */}
         {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
           errorMessage &&
-          buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
+            buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
             <div key={buttonId} className='export-error-message'>
               <strong>Export Error:</strong> {errorMessage}
             </div>
@@ -326,13 +326,13 @@ export const exportButtonStyles = `
   .export-button {
     /* Glassmorphic Foundation */
     background: var(--glass-surface-2);
-    backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--glass-border-1);
     box-shadow: var(--glass-shadow-sm);
     
     /* Professional Button Design */
     padding: var(--spacing-2) var(--spacing-3);
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
     
     /* Typography */
@@ -397,7 +397,8 @@ export const exportButtonStyles = `
   
   /* Success State - Fintech Green */
   .export-button.success {
-    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success);
     border-color: var(--accent-success);
     color: var(--text-primary);
     cursor: default;
@@ -405,12 +406,14 @@ export const exportButtonStyles = `
   }
   
   .export-button.success:hover {
-    background: linear-gradient(135deg, var(--accent-success) 0%, var(--accent-success-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-success);
   }
   
   /* Error State - Fintech Red */
   .export-button.error {
-    background: linear-gradient(135deg, var(--accent-error) 0%, var(--accent-error-light) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error);
     border-color: var(--accent-error);
     color: var(--text-primary);
     cursor: pointer;
@@ -418,14 +421,15 @@ export const exportButtonStyles = `
   }
   
   .export-button.error:hover {
-    background: linear-gradient(135deg, var(--accent-error-hover) 0%, var(--accent-error) 100%);
+    /* Complex gradient simplified for performance */
+    background: var(--accent-error-hover);
     /* Transform removed for performance */
   }
   
   /* Professional Error Message Display */
   .export-error-message {
     background: var(--glass-surface-2);
-    backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--accent-error);
     border-radius: 8px;
     padding: var(--spacing-2) var(--spacing-3);
@@ -456,7 +460,7 @@ export const exportButtonStyles = `
     padding: var(--spacing-4);
     
     background: var(--glass-surface-1);
-    backdrop-filter: var(--glass-blur-xs);
+    /* backdrop-filter: var(--glass-blur-xs); removed for performance */
     border: 1px solid var(--glass-border-1);
     border-radius: 8px;
     
@@ -464,7 +468,7 @@ export const exportButtonStyles = `
   }
   
   /* Responsive Design - Mobile Optimization */
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .export-buttons-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-1);
@@ -483,7 +487,7 @@ export const exportButtonStyles = `
   }
   
   /* Tablet Optimization */
-  @media (min-width: 641px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .export-buttons-grid {
       grid-template-columns: repeat(4, 1fr);
       gap: var(--spacing-2);
@@ -498,7 +502,7 @@ export const exportButtonStyles = `
     }
     
     .export-button:hover {
-      backdrop-filter: var(--glass-blur-md);
+      /* backdrop-filter: var(--glass-blur-md); removed for performance */
     }
   }
   

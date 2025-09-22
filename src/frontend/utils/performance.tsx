@@ -10,6 +10,14 @@ export interface PerformanceMetrics {
     tti: number; // Time to Interactive
     fid: number; // First Input Delay
     ttfb: number; // Time to First Byte
+    // Optimization-specific metrics
+    backdropFilterCount: number; // Number of backdrop-filter instances
+    boxShadowCount: number; // Number of complex box-shadow instances
+    gradientCount: number; // Number of gradient backgrounds
+    transformCount: number; // Number of transform animations
+    willChangeCount: number; // Number of will-change properties
+    cssVariableCount: number; // Number of CSS variables
+    containerQueryCount: number; // Number of container queries
 }
 
 export interface PerformanceBudget {
@@ -19,6 +27,14 @@ export interface PerformanceBudget {
     tti: number; // < 3.5s
     fid: number; // < 100ms
     ttfb: number; // < 600ms
+    // Optimization-specific budgets
+    backdropFilterCount: number; // < 0 (target: remove all)
+    boxShadowCount: number; // < 10 (target: simplify)
+    gradientCount: number; // < 5 (target: remove most)
+    transformCount: number; // < 5 (target: remove most)
+    willChangeCount: number; // < 3 (target: dynamic only)
+    cssVariableCount: number; // < 25 (target: consolidate)
+    containerQueryCount: number; // < 2 (target: replace with media queries)
 }
 
 export interface BundleSizeBudget {
@@ -35,6 +51,14 @@ export const PERFORMANCE_BUDGET: PerformanceBudget = {
     tti: 3500, // 3.5s
     fid: 100,  // 100ms
     ttfb: 600, // 600ms
+    // Optimization-specific budgets
+    backdropFilterCount: 0, // Target: remove all
+    boxShadowCount: 10, // Target: simplify to < 10
+    gradientCount: 5, // Target: remove most, keep < 5
+    transformCount: 5, // Target: remove most, keep < 5
+    willChangeCount: 3, // Target: dynamic only, < 3
+    cssVariableCount: 25, // Target: consolidate to < 25
+    containerQueryCount: 2, // Target: replace with media queries, < 2
 };
 
 export const BUNDLE_SIZE_BUDGET: BundleSizeBudget = {
@@ -43,14 +67,100 @@ export const BUNDLE_SIZE_BUDGET: BundleSizeBudget = {
     total: 300 * 1024, // 300KB
 };
 
+// Phase 4: CSS Analysis Functions
+export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
+    const metrics: Partial<PerformanceMetrics> = {
+        backdropFilterCount: 0,
+        boxShadowCount: 0,
+        gradientCount: 0,
+        transformCount: 0,
+        willChangeCount: 0,
+        cssVariableCount: 0,
+        containerQueryCount: 0,
+    };
+
+    if (typeof window === 'undefined') {
+        return metrics;
+    }
+
+    // Count backdrop-filter instances
+    const backdropFilterElements = document.querySelectorAll('*');
+    backdropFilterElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        if (computedStyle.backdropFilter !== 'none' || computedStyle.webkitBackdropFilter !== 'none') {
+            metrics.backdropFilterCount!++;
+        }
+    });
+
+    // Count complex box-shadow instances
+    const boxShadowElements = document.querySelectorAll('*');
+    boxShadowElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        if (computedStyle.boxShadow !== 'none') {
+            // Count multiple shadows (comma-separated)
+            const shadowCount = (computedStyle.boxShadow.match(/,/g) || []).length + 1;
+            if (shadowCount > 1) {
+                metrics.boxShadowCount! += shadowCount;
+            }
+        }
+    });
+
+    // Count gradient backgrounds
+    const gradientElements = document.querySelectorAll('*');
+    gradientElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        if (computedStyle.backgroundImage.includes('gradient')) {
+            metrics.gradientCount!++;
+        }
+    });
+
+    // Count transform animations
+    const transformElements = document.querySelectorAll('*');
+    transformElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        if (computedStyle.transform !== 'none') {
+            metrics.transformCount!++;
+        }
+    });
+
+    // Count will-change properties
+    const willChangeElements = document.querySelectorAll('*');
+    willChangeElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        if (computedStyle.willChange !== 'auto') {
+            metrics.willChangeCount!++;
+        }
+    });
+
+    // Count CSS variables (approximate)
+    const rootStyles = getComputedStyle(document.documentElement);
+    const cssText = rootStyles.cssText;
+    const variableMatches = cssText.match(/--[a-zA-Z-]+/g);
+    metrics.cssVariableCount = variableMatches ? variableMatches.length : 0;
+
+    // Count container queries (approximate - would need to parse CSS)
+    // This is a simplified count based on common patterns
+    const containerQueryElements = document.querySelectorAll('[style*="container-type"]');
+    metrics.containerQueryCount = containerQueryElements.length;
+
+    return metrics;
+}
+
 // Phase 4: Performance Monitoring Class
 export class PerformanceMonitor {
     private metrics: Partial<PerformanceMetrics> = {};
     private observers: PerformanceObserver[] = [];
+    private cssMetrics: Partial<PerformanceMetrics> = {};
     // private isMonitoring = false;
 
     constructor() {
         this.initializeObservers();
+        this.analyzeCSSPerformance();
+    }
+
+    private analyzeCSSPerformance(): void {
+        this.cssMetrics = analyzeCSSPerformance();
+        this.metrics = { ...this.metrics, ...this.cssMetrics };
     }
 
     private initializeObservers(): void {
@@ -135,6 +245,7 @@ export class PerformanceMonitor {
     public startMonitoring(): void {
         // this.isMonitoring = true;
         // Performance monitoring started
+        this.analyzeCSSPerformance();
     }
 
     public stopMonitoring(): void {
@@ -145,6 +256,8 @@ export class PerformanceMonitor {
     }
 
     public getMetrics(): Partial<PerformanceMetrics> {
+        // Update CSS metrics before returning
+        this.analyzeCSSPerformance();
         return { ...this.metrics };
     }
 
@@ -152,8 +265,10 @@ export class PerformanceMonitor {
         metrics: Partial<PerformanceMetrics>;
         budgets: PerformanceBudget;
         violations: Array<{ metric: string; value: number; budget: number }>;
+        regressionAlerts: Array<{ metric: string; current: number; previous: number; change: number }>;
     } {
         const violations: Array<{ metric: string; value: number; budget: number }> = [];
+        const regressionAlerts: Array<{ metric: string; current: number; previous: number; change: number }> = [];
 
         Object.entries(this.metrics).forEach(([key, value]) => {
             if (value !== undefined) {
@@ -165,6 +280,17 @@ export class PerformanceMonitor {
                         budget,
                     });
                 }
+
+                // Check for performance regression (simplified - would need historical data)
+                const previousValue = this.cssMetrics[key as keyof PerformanceMetrics];
+                if (previousValue !== undefined && value > previousValue) {
+                    regressionAlerts.push({
+                        metric: key,
+                        current: value,
+                        previous: previousValue,
+                        change: value - previousValue,
+                    });
+                }
             }
         });
 
@@ -172,6 +298,7 @@ export class PerformanceMonitor {
             metrics: this.metrics,
             budgets: PERFORMANCE_BUDGET,
             violations,
+            regressionAlerts,
         };
     }
 }
@@ -257,7 +384,14 @@ export function usePerformanceMonitoring() {
         cls: 0,
         tti: 0,
         fid: 0,
-        ttfb: 0
+        ttfb: 0,
+        backdropFilterCount: 0,
+        boxShadowCount: 0,
+        gradientCount: 0,
+        transformCount: 0,
+        willChangeCount: 0,
+        cssVariableCount: 0,
+        containerQueryCount: 0
     });
 
     useEffect(() => {

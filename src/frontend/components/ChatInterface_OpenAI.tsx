@@ -799,8 +799,7 @@ export const interfaceStyles = `
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
     background: var(--glass-surface-medium);
-    backdrop-filter: var(--backdrop-blur-lg);
-    -webkit-backdrop-filter: var(--backdrop-blur-lg);
+    /* backdrop-filter removed for performance */
     color: var(--neutral-100);
     overflow: hidden; /* Prevent page-level scrolling */
     gap: 0; /* No gaps between sections for seamless design */
@@ -826,14 +825,14 @@ export const interfaceStyles = `
   }
   
   /* Tablet layout adjustments */
-  @media (min-width: 768px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .chat-interface {
       grid-template-columns: 1fr 300px; /* Main content + 300px sidebar */
     }
   }
 
   /* Mobile viewport optimizations with stable grid layout */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .chat-interface {
       height: 100vh;
       height: 100svh; /* Small viewport height for mobile browsers */
@@ -872,8 +871,7 @@ export const interfaceStyles = `
     flex-shrink: 0;
     position: relative;
     background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
+    /* backdrop-filter removed for performance */
     padding: var(--space-4);
     border: var(--border-chat);
     border-bottom: var(--border-chat);
@@ -891,7 +889,7 @@ export const interfaceStyles = `
   }
   
   /* Mobile header adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .chat-header {
       padding: 12px 8px;
       min-height: 50px;
@@ -913,8 +911,7 @@ export const interfaceStyles = `
   
   .error-banner {
     background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--error-500);
     color: var(--error-100);
     padding: var(--space-2) var(--space-4);
@@ -966,8 +963,7 @@ export const interfaceStyles = `
   
   .messages-section::-webkit-scrollbar-thumb {
     background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    /* backdrop-filter removed for performance */
     border: 1px solid var(--glass-border-highlight);
     border-radius: var(--radius-full);
   }
@@ -978,7 +974,7 @@ export const interfaceStyles = `
   }
   
   /* Mobile-specific adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .messages-section {
       padding: 8px;
       max-width: 100vw;
@@ -1002,7 +998,7 @@ export const interfaceStyles = `
   }
   
   /* Tablet adjustments */
-  @media (min-width: 768px) and (max-width: 1024px) {
+  @media (min-width: 769px) and (max-width: 1024px) {
     .messages-section {
       max-width: 900px;
       padding: 20px;
@@ -1080,13 +1076,12 @@ export const interfaceStyles = `
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    /* backdrop-filter removed for performance */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    animation: fadeIn 0.3s ease-out;
+    /* animation: fadeIn 0.3s ease-out; removed for performance */
   }
 
   .message-sent-content {
@@ -1096,8 +1091,7 @@ export const interfaceStyles = `
     gap: var(--space-4);
     padding: var(--space-8);
     background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
+    /* backdrop-filter removed for performance */
     border: var(--glass-border-highlight);
     border-radius: var(--radius-2xl);
     box-shadow: var(--glass-shadow-2xl);
@@ -1110,7 +1104,7 @@ export const interfaceStyles = `
     width: 64px;
     height: 64px;
     color: var(--success-500);
-    animation: pulse 2s infinite;
+    /* animation: pulse 2s infinite; removed for performance */
   }
 
   .message-sent-icon svg {
@@ -1136,31 +1130,10 @@ export const interfaceStyles = `
     letter-spacing: 0.02em;
   }
 
-  /* Animations for MESSAGE SENT overlay */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1.05);
-      opacity: 0.8;
-    }
-  }
+  /* Animations for MESSAGE SENT overlay - removed for performance */
 
   /* Mobile responsive adjustments for MESSAGE SENT overlay */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .message-sent-content {
       padding: var(--space-6);
       max-width: 320px;
@@ -1184,8 +1157,7 @@ export const interfaceStyles = `
   .chat-input-section {
     flex-shrink: 0;
     background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
+    /* backdrop-filter removed for performance */
     border: var(--border-chat);
     border-top: var(--border-chat);
     border-bottom: var(--border-chat);
@@ -1214,7 +1186,7 @@ export const interfaceStyles = `
 
   
   /* Mobile input adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .chat-input-section {
       padding: 12px 8px;
       min-height: 70px;
@@ -1224,7 +1196,7 @@ export const interfaceStyles = `
   }
   
   /* Tablet and desktop input optimizations */
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     .chat-input-section {
       padding: 20px;
       min-height: 80px;
@@ -1235,8 +1207,7 @@ export const interfaceStyles = `
   .ticker-input-section {
     flex-shrink: 0;
     background: var(--glass-surface-analysis);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
+    /* backdrop-filter removed for performance */
     border: var(--border-analysis);
     border-top: var(--border-analysis);
     border-bottom: var(--border-analysis);
@@ -1258,8 +1229,7 @@ export const interfaceStyles = `
   .analysis-buttons-section {
     flex-shrink: 0;
     background: var(--glass-surface-analysis);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
+    /* backdrop-filter removed for performance */
     border: var(--border-analysis);
     border-top: var(--border-analysis);
     border-bottom: var(--border-analysis);
@@ -1302,7 +1272,7 @@ export const interfaceStyles = `
   }
   
   /* Mobile analysis buttons adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .analysis-buttons-section {
       padding: 6px 8px;
       min-height: 150px;
@@ -1311,7 +1281,7 @@ export const interfaceStyles = `
   }
   
   /* Tablet and desktop analysis buttons optimizations */
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     .analysis-buttons-section {
       padding: 12px 20px;
       min-height: 160px;
@@ -1323,8 +1293,7 @@ export const interfaceStyles = `
   .export-buttons-section {
     flex-shrink: 0;
     background: var(--glass-surface-export);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
+    /* backdrop-filter removed for performance */
     border: var(--border-export);
     border-top: var(--border-export);
     border-bottom: var(--border-export);
@@ -1357,7 +1326,7 @@ export const interfaceStyles = `
   }
   
   /* Mobile export-recent container adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .export-recent-container {
       gap: 6px;
     }
@@ -1367,8 +1336,7 @@ export const interfaceStyles = `
   .debug-section {
     flex-shrink: 0;
     background: var(--glass-surface-debug);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
+    /* backdrop-filter removed for performance */
     border: var(--border-debug);
     border-top: var(--border-debug);
     box-shadow: var(--border-glow-debug);
@@ -1404,8 +1372,7 @@ export const interfaceStyles = `
   .bottom-control-panel {
     grid-area: bottom-control;
     background: var(--glass-surface-debug);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
+    /* backdrop-filter removed for performance */
     border: var(--border-debug);
     border-top: var(--border-debug);
     box-shadow: var(--border-glow-debug);
@@ -1454,7 +1421,7 @@ export const interfaceStyles = `
   }
 
   /* Mobile bottom control panel adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .bottom-control-panel {
       padding: 8px 12px;
       min-height: 50px;
@@ -1471,7 +1438,7 @@ export const interfaceStyles = `
   }
   
   /* Mobile export and debug section adjustments */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .export-buttons-section {
       padding: 8px 12px;
       min-height: 60px;
@@ -1486,7 +1453,7 @@ export const interfaceStyles = `
   }
   
   /* Tablet and desktop export and debug section optimizations */
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     .export-buttons-section {
       padding: 16px 20px;
       min-height: 70px;
@@ -1512,7 +1479,7 @@ export const interfaceStyles = `
   }
   
   /* Export buttons responsive layout */
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .export-buttons-grid,
     .recent-message-buttons {
       gap: 6px;
@@ -1532,11 +1499,11 @@ export const interfaceStyles = `
   
   /* Modern Grid Layout Stability Enhancements */
   .chat-interface {
-    container-type: inline-size; /* Enable container queries */
+    /* container-type: inline-size; removed for performance */
   }
   
-  /* Container query for ultra-responsive design */
-  @container (max-width: 500px) {
+  /* Media query for ultra-responsive design */
+  @media (max-width: 500px) {
     .inputs-container {
       gap: 8px;
     }
@@ -1599,8 +1566,7 @@ export const interfaceStyles = `
     font-style: italic;
     font-family: var(--font-inter);
     background: var(--glass-surface-light);
-    backdrop-filter: var(--backdrop-blur-sm);
-    -webkit-backdrop-filter: var(--backdrop-blur-sm);
+    /* backdrop-filter removed for performance */
     border-radius: var(--radius-lg);
     margin: var(--space-2) 0;
     min-height: 40px;
@@ -1671,8 +1637,7 @@ export const interfaceStyles = `
     gap: var(--space-3);
     padding: var(--space-4);
     background: var(--glass-surface-chat);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
+    /* backdrop-filter removed for performance */
     border: var(--glass-border-highlight);
     border-radius: var(--radius-xl);
     box-shadow: var(--glass-shadow-lg);
@@ -1716,8 +1681,7 @@ export const interfaceStyles = `
     min-height: 120px; /* 6 rows * 20px per row */
     padding: var(--space-3);
     background: var(--glass-surface-input);
-    backdrop-filter: var(--glass-blur-sm);
-    -webkit-backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: var(--glass-border-subtle);
     border-radius: var(--radius-lg);
     color: var(--neutral-100);
@@ -1725,7 +1689,7 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
     resize: vertical;
     outline: none;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease;
   }
 
   .chat-input-textarea:focus {
@@ -1748,7 +1712,7 @@ export const interfaceStyles = `
     border-radius: var(--radius-lg);
     color: white;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease;
     flex-shrink: 0;
   }
 
@@ -1776,8 +1740,7 @@ export const interfaceStyles = `
     gap: var(--space-3);
     padding: var(--space-4);
     background: var(--glass-surface-ticker);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
+    /* backdrop-filter removed for performance */
     border: var(--glass-border-highlight);
     border-radius: var(--radius-xl);
     box-shadow: var(--glass-shadow-lg);
@@ -1821,8 +1784,7 @@ export const interfaceStyles = `
     height: 48px;
     padding: var(--space-3);
     background: var(--glass-surface-input);
-    backdrop-filter: var(--glass-blur-sm);
-    -webkit-backdrop-filter: var(--glass-blur-sm);
+    /* backdrop-filter removed for performance */
     border: var(--glass-border-subtle);
     border-radius: var(--radius-lg);
     color: var(--neutral-100);
@@ -1830,7 +1792,7 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
     text-transform: uppercase;
     outline: none;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease;
   }
 
   .ticker-input-field:focus {
@@ -1859,7 +1821,7 @@ export const interfaceStyles = `
     border-radius: var(--radius-lg);
     color: white;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease;
     flex-shrink: 0;
   }
 
@@ -1888,7 +1850,7 @@ export const interfaceStyles = `
   }
 
   /* Mobile responsive adjustments for input components */
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     .chat-input-container,
     .ticker-input-container {
       padding: var(--space-3);
