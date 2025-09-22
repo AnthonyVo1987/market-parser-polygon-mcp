@@ -1,4 +1,4 @@
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s)
+## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
@@ -12,28 +12,14 @@ TOOL USAGE REQUIREMENTS:
 
 MANDATORY TOOL USAGE PATTERNS:
 
-1. START with Sequential-Thinking for task analysis
-2. Use Context7 for research and best practices
-3. Use Serena Tools for code analysis and manipulation
-4. Use Filesystem Tools for batch operations and project management
-5. Use Standard Read/Write/Edit for file modifications
-6. Use Playwright Tools for testing and validation
-7. REPEAT any tool as needed throughout the process
-8. NEVER stop using tools - continue using them until task completion
-
-SPECIFIC TOOL USAGE GUIDELINES:
-
-**Serena Tools**: USE AS OFTEN AS NEEDED for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-
-**Sequential-Thinking Tools**: USE AS OFTEN AS NEEDED for Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-
-**Context7 Tools**: USE AS OFTEN AS NEEDED for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-
-**Filesystem Tools**: USE AS OFTEN AS NEEDED for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
-
-**Standard Read/Write/Edit Tools**: USE AS OFTEN AS NEEDED for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-
-**Playwright Tools**: USE AS OFTEN AS NEEDED for Testing with Browser automation for React GUI & App Validation
+1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
+3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
+5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
+7. 🔴 REPEAT any tool as needed throughout the process
+8. 🔴 NEVER stop using tools - continue using them until task completion
 
 TOOL OVERLAP RESOLUTION:
 
@@ -63,8 +49,45 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-1. Read & Understand docs/prompt_template_system_analysis.md for some new tasks
+## 🚀 **PHASE 1 BACKEND MIGRATION IMPLEMENTATION PROMPT**
 
-2. Based on your scoping doc, now use your entire toolkit, Context7 Tools for research, Sequential-Thinking for systematic approach, to then analyze and generate a fully detailed granular Implementation plan with TODO Task Checklist to fully perform the removal of the template loading system and migrating to simplified direct prompt sending.  The Plan will be targeted for an AI Agent to fully implement the feature, so spell everything out and provide as much context, background, docs to reference for any AI Agent to fully implement according to the scoping doc.  
+# Direct Prompt Migration - Phase 1 Backend Implementation
 
-- DO NOT CREATE A NEW DOC YET FOR THE PLAN SO USER CAN REVIEW AND CHOOSE WHETHER TO APPROVE AND\OR REJECT THE PLAN
+## TASK OVERVIEW
+
+You are tasked with implementing **Phase 1: Backend Migration** from the direct prompt migration implementation plan.
+
+## INSTRUCTIONS
+
+1. **Read the implementation plan document**: `docs/implementation_plans/direct_prompt_migration_implementation_plan.md`
+2. **Focus ONLY on Phase 1 tasks** (Tasks 1.1 through 1.6)
+3. **Follow the plan exactly** as written in the document
+4. **Mark off each task** as you complete it
+5. **Use the provided code examples** from the plan
+6. **Test each change** before moving to the next task
+
+## IMPLEMENTATION APPROACH
+
+- Start with Task 1.1 (Remove Prompt Template System Components)
+- Proceed sequentially through all Phase 1 tasks
+- Use atomic commits for each major change
+- Test functionality after each task group
+- Follow the validation steps provided in the plan
+
+## SUCCESS CRITERIA
+
+- All Phase 1 tasks completed and marked off
+- Backend runs without prompt template dependencies
+- Direct prompt architecture implemented and working
+- All tests pass
+- Clean git history with atomic commits
+
+## IMPORTANT NOTES
+
+- Do NOT modify the implementation plan document
+- Follow the exact file paths and line numbers specified
+- Use the provided code examples from the plan
+- If you encounter issues, refer back to the plan for guidance
+- The plan contains all necessary technical details
+
+Begin implementation by reading the plan document and starting with Task 1.1.

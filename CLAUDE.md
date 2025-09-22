@@ -32,7 +32,7 @@ feat: comprehensive granular implementation plan for direct prompt migration
 Status: Direct Prompt Migration Implementation Plan ✅ COMPLETED
 <!-- LAST_COMPLETED_TASK_END -->
 
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s)
+## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
@@ -46,28 +46,14 @@ TOOL USAGE REQUIREMENTS:
 
 MANDATORY TOOL USAGE PATTERNS:
 
-1. START with Sequential-Thinking for task analysis
-2. Use Context7 for research and best practices
-3. Use Serena Tools for code analysis and manipulation
-4. Use Filesystem Tools for batch operations and project management
-5. Use Standard Read/Write/Edit for file modifications
-6. Use Playwright Tools for testing and validation
-7. REPEAT any tool as needed throughout the process
-8. NEVER stop using tools - continue using them until task completion
-
-SPECIFIC TOOL USAGE GUIDELINES:
-
-**Serena Tools**: USE AS OFTEN AS NEEDED for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-
-**Sequential-Thinking Tools**: USE AS OFTEN AS NEEDED for Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-
-**Context7 Tools**: USE AS OFTEN AS NEEDED for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-
-**Filesystem Tools**: USE AS OFTEN AS NEEDED for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
-
-**Standard Read/Write/Edit Tools**: USE AS OFTEN AS NEEDED for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-
-**Playwright Tools**: USE AS OFTEN AS NEEDED for Testing with Browser automation for React GUI & App Validation
+1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
+3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
+5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
+7. 🔴 REPEAT any tool as needed throughout the process
+8. 🔴 NEVER stop using tools - continue using them until task completion
 
 TOOL OVERLAP RESOLUTION:
 
