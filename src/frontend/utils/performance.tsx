@@ -298,7 +298,7 @@ export function withPerformanceMonitoring<P extends object>(
 
     WrappedComponent.displayName = `withPerformanceMonitoring(${Component.displayName || Component.name || 'Component'})`;
 
-    return WrappedComponent;
+    return WrappedComponent as unknown as React.ComponentType<P>;
 }
 
 // Phase 4: Lazy Loading Utilities

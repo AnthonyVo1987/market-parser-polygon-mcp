@@ -170,7 +170,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // Optimize useMemo - Only memoize expensive calculations
   const hasMessages = messages.length > 0;
-  const lastMessage = messages[messages.length - 1];
   const placeholderText = useMemo(() =>
     `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`,
     [sharedTicker]

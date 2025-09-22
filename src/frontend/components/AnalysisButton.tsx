@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { AnalysisButtonProps } from '../types/chat_OpenAI';
 
 // Map template types to expected data-testid attributes for test compatibility

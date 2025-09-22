@@ -1,7 +1,7 @@
 module.exports = {
     ci: {
         collect: {
-            numberOfRuns: 3,
+            numberOfRuns: 5,
             settings: {
                 preset: 'desktop',
                 budgetPath: './budgets.json'
@@ -14,7 +14,8 @@ module.exports = {
                 'speed-index': ['error', { maxNumericValue: 3000 }],
                 'total-blocking-time': ['error', { maxNumericValue: 300 }],
                 'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
-                'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }]
+                'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
+                'performance-budget': 'error'
             }
         },
         upload: {
