@@ -1,9 +1,3 @@
-Here's the prompt to assign to an AI Agent:
-
----
-
-**AI Agent Task Assignment: Execute POST-IMPLEMENTATION TASKS for UI Performance Optimization**
-
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s)
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
@@ -65,43 +59,53 @@ SUCCESS CRITERIA:
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## Task Details
+# Code Review Task
 
-**Primary Objective**: Execute all POST-IMPLEMENTATION TASKS from the UI Performance Optimization Implementation Plan
+- Use the tools AS OFTEN AS NEEDED & IN ANY ORDER AS NEEDED: Sequential-Thinking, Serena Tools, FileSystem Tools, Context7 Tools for Researching Robust most update to date best, robust, modern practices, latest documentation, latest framework(s) to perform the task(s): perform comprehensive code review of JUST THE CHANGED FILES\DOCS ONLY - DO NOT REVIEW FILES\DOCS THAT HAVE NOTHING TO DO WITH RECENT CHANGES
+- Use standard Read/Write/Edit tools for single-file operations
+- Continue review/fix loop until achieving PASSING code review status
+- PROCEED TO REMAINING Summary Task, Atomic Git Commit & Push Task, & Final Verification Task
 
-**Task Location**: `docs/implementation_plans/UI_Performance_Optimization_Implementation_Plan.md`
+# Summary Task
 
-**Context**:
+- Create token & context efficient git commit message of all the changes to prepare for the final commit task(s)
+- Update CLAUDE.md "Last Completed Task Summary" section with the VERBATIM COPY of the token & context efficient git commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+- This ensures that the git commit message is cached for token & context efficient in order to update CLAUDE.md with, preventing the need to waste tokens by having to regenerate similiar task completion summaries
 
-- All PRE-IMPLEMENTATION TASKS (6 tasks) have been completed
-- All PHASE 1 tasks (15 tasks) have been completed  
-- All PHASE 2 tasks (18 tasks) have been completed
-- All PHASE 3 tasks (3 tasks) have been completed
-- Environment is fully synced and performance monitoring infrastructure is operational
+# Atomic Git Commit & Push Task
 
-**Requirements**:
+**MANDATORY PRE-COMMIT CHECKLIST (CRITICAL FOR SUCCESS):**
 
-1. Read and analyze the POST-IMPLEMENTATION TASKS section from the implementation plan
-2. Execute each task systematically using appropriate tools
-3. Verify completion of each task through testing and validation
-4. Document progress and results throughout the process
-5. Use comprehensive tool usage patterns as specified above
-6. Follow the mandatory tool usage requirements continuously
+1. Run `git status` to identify ALL modified files
+2. Run `git add .` to stage ALL changes (never commit without staging all)
+3. Run `git status` again to verify ALL files are staged
+4. Verify specialist work inclusion: ALL frontend, backend, test, and config changes MUST be staged
+5. Only then execute `git commit` with comprehensive message
 
-**Expected Deliverables**:
+**AGENT PROCESS REQUIREMENTS:**
 
-- Complete execution of all POST-IMPLEMENTATION TASKS
-- Comprehensive testing and validation of performance optimizations
-- Updated documentation reflecting completed work
-- Performance metrics and baseline comparisons
-- Final verification of all optimization implementations
+- Code reviewer MUST verify all specialist work is staged before commit
+- NEVER commit without comprehensive staging verification
+- Implement explicit git status checks at each phase
+- Failure to include all modified files is a CRITICAL VIOLATION
 
-**Critical Notes**:
+**Commit Requirements:**
 
-- This is the final phase of the UI Performance Optimization project
-- All previous phases have been completed and verified
-- Focus on testing, validation, and final performance verification
-- Ensure all performance monitoring and measurement tools are working correctly
-- Generate final performance reports and documentation
+- Create single atomic git commit containing ALL : CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHOTS\VIDEOS ETC
+- **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
+- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
 
-Begin by reading the POST-IMPLEMENTATION TASKS section and proceed with systematic execution using the mandatory tool usage patterns specified above.
+- ## 🚨 MANDATORY: DOUBLE CHECK THAT CLAUDE.MD HAS NO MORE CHANGES AND THAT YOU WILL COMMIT CLAUDE.MD ATOMICALY
+
+- ## 🚨 MANDATORY: YOU ARE NOT ALLOWED TO PERFORM 2 SEPARATE COMMITS WITH A SEPARATE CLAUDE.MD COMMIT
+
+- git commit to repository using provided personal access token
+- **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
+
+# Final Verification Task
+
+- Run final `git status` to confirm successful commit and push
+- Verify working tree is clean and branch is up-to-date with remote
+- Confirm all changes are properly git committed and git pushed
+- NO LINGERING UNCOMMITTED CLAUDE.MD
+- CLAUDE.MD COMMIT ALONG WITH THE REST OF FILES
