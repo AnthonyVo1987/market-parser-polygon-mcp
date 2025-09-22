@@ -121,7 +121,7 @@ export function usePromptAPI(): UsePromptAPIResult {
               }
               return true;
             }
-          ) as PromptTemplate[];
+          );
 
           // Update cache
           templateCache.data = validTemplates;

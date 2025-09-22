@@ -133,7 +133,7 @@ export function createFocusTrap(container: HTMLElement): {
             '[tabindex]:not([tabindex="-1"])',
         ];
 
-        return Array.from(container.querySelectorAll(focusableSelectors.join(', '))) as HTMLElement[];
+        return Array.from(container.querySelectorAll(focusableSelectors.join(', ')));
     };
 
     const handleKeyDown = (e: KeyboardEvent): void => {

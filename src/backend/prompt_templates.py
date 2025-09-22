@@ -363,21 +363,19 @@ class PromptTemplateManager:
 
     def generate_prompt(
         self,
-        prompt_type: PromptType,
+        analysis_type: PromptType,
         ticker: Optional[str] = None,
         chat_history: Optional[List[Dict]] = None,
         custom_instructions: Optional[str] = None,
-        mode: PromptMode = PromptMode.CONVERSATIONAL,
-    ) -> Tuple[str, TickerContext]:  # pylint: disable=too-many-arguments
+    ) -> Tuple[str, TickerContext]:
         """
         Generate a unified conversational prompt for stock analysis
 
         Args:
-            prompt_type: Type of analysis prompt
+            analysis_type: Type of analysis prompt
             ticker: Optional explicit ticker symbol
             chat_history: Conversation history for context
             custom_instructions: Additional instructions
-            mode: PromptMode (always conversational)
 
         Returns:
             Tuple of (generated_prompt, ticker_context)
@@ -397,19 +395,19 @@ class PromptTemplateManager:
             ticker_ctx = self.ticker_extractor.extract_ticker(context_text, chat_history)
 
         # Get the appropriate template
-        template = self.templates[prompt_type]
+        template = self.templates[analysis_type]
 
-        # Generate the prompt in specified mode
-        prompt = template.generate_prompt(ticker_ctx, custom_instructions, mode)
+        # Generate the prompt in conversational mode
+        prompt = template.generate_prompt(ticker_ctx, custom_instructions, PromptMode.CONVERSATIONAL)
 
         self.logger.info(
-            f"Generated {prompt_type.value} conversational prompt for {ticker_ctx.symbol}"
+            f"Generated {analysis_type.value} conversational prompt for {ticker_ctx.symbol}"
         )
         return prompt, ticker_ctx
 
     def generate_conversational_prompt(
         self,
-        prompt_type: PromptType,
+        analysis_type: PromptType,
         ticker: Optional[str] = None,
         chat_history: Optional[List[Dict]] = None,
         custom_instructions: Optional[str] = None,
@@ -418,7 +416,7 @@ class PromptTemplateManager:
         Generate a conversational prompt for any type of analysis request.
 
         Args:
-            prompt_type: Type of analysis prompt
+            analysis_type: Type of analysis prompt
             ticker: Optional explicit ticker symbol
             chat_history: Conversation history for context
             custom_instructions: Additional instructions
@@ -427,7 +425,7 @@ class PromptTemplateManager:
             Tuple of (generated_prompt, ticker_context)
         """
         return self.generate_prompt(
-            prompt_type, ticker, chat_history, custom_instructions, PromptMode.CONVERSATIONAL
+            analysis_type, ticker, chat_history, custom_instructions
         )
 
     def get_enhanced_system_prompt(self, base_system_prompt: str) -> str:
@@ -650,20 +648,20 @@ Not financial advice."""
         )
 
     def test_prompt_consistency(
-        self, prompt_type: PromptType, test_tickers: List[str]
+        self, analysis_type: PromptType, test_tickers: List[str]
     ) -> Dict[str, Any]:
         """
         Test prompt consistency across different ticker symbols
 
         Args:
-            prompt_type: Type of prompt to test
+            analysis_type: Type of prompt to test
             test_tickers: List of ticker symbols to test
 
         Returns:
             Dictionary with consistency test results
         """
         results = {
-            "prompt_type": prompt_type.value,
+            "prompt_type": analysis_type.value,
             "test_tickers": test_tickers,
             "prompts": {},
             "consistency_score": 0.0,
@@ -673,7 +671,7 @@ Not financial advice."""
         prompts = []
         for ticker in test_tickers:
             try:
-                prompt, ticker_ctx = self.generate_prompt(prompt_type, ticker=ticker)
+                prompt, ticker_ctx = self.generate_prompt(analysis_type, ticker=ticker)
                 prompts.append(prompt)
                 results["prompts"][ticker] = {
                     "prompt": prompt,
@@ -715,7 +713,7 @@ Not financial advice."""
 
 def run_prompt_consistency_tests() -> Dict[str, Any]:
     """Run comprehensive prompt consistency tests"""
-    template_manager = PromptTemplateManager()
+    test_template_manager = PromptTemplateManager()
 
     test_results = {
         "test_date": "2024-12-01",
@@ -729,9 +727,9 @@ def run_prompt_consistency_tests() -> Dict[str, Any]:
 
     total_score = 0.0
 
-    for prompt_type in PromptType:
-        results = template_manager.test_prompt_consistency(prompt_type, test_tickers)
-        test_results["results_by_type"][prompt_type.value] = results
+    for analysis_type in PromptType:
+        results = test_template_manager.test_prompt_consistency(analysis_type, test_tickers)
+        test_results["results_by_type"][analysis_type.value] = results
         total_score += results["consistency_score"]
 
     test_results["overall_score"] = total_score / len(PromptType)
@@ -758,7 +756,7 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
     """Validate that templates are compatible with response parsing"""
     # Note: response_parser module not available - simplified validation
 
-    template_manager = PromptTemplateManager()
+    validation_template_manager = PromptTemplateManager()
 
     validation_results = {
         "template_compatibility": {},
@@ -767,13 +765,13 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
     }
 
     # Test each template type (simplified without parser dependency)
-    for prompt_type in PromptType:
-        template = template_manager.templates[prompt_type]
+    for analysis_type in PromptType:
+        template = validation_template_manager.templates[analysis_type]
         example_response = template.example_response
 
         try:
             # Basic template validation without ResponseParser
-            validation_results["template_compatibility"][prompt_type.value] = {
+            validation_results["template_compatibility"][analysis_type.value] = {
                 "status": "compatible",
                 "has_example_response": bool(example_response and example_response.strip()),
                 "template_length": len(template.conversational_template),
@@ -787,7 +785,7 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
             }
 
         except Exception as e:
-            validation_results["template_compatibility"][prompt_type.value] = {
+            validation_results["template_compatibility"][analysis_type.value] = {
                 "status": "incompatible",
                 "error": str(e),
                 "extraction_rate": 0.0,
@@ -818,7 +816,7 @@ def validate_template_parsing_compatibility() -> Dict[str, Any]:
 
 def test_dual_mode_behavior() -> Dict[str, Any]:
     """Test dual-mode prompt generation behavior"""
-    template_manager = PromptTemplateManager()
+    dual_mode_template_manager = PromptTemplateManager()
 
     test_results = {
         "dual_mode_tests": {},
@@ -828,24 +826,24 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
     }
 
     # Test conversational mode generation for each prompt type
-    for prompt_type in PromptType:
+    for analysis_type in PromptType:
         try:
             # Test conversational mode (unified architecture)
-            conv_prompt, _ticker_ctx = template_manager.generate_prompt(
-                prompt_type, ticker="AAPL", mode=PromptMode.CONVERSATIONAL
+            test_conv_prompt, _ = dual_mode_template_manager.generate_prompt(
+                analysis_type, ticker="AAPL"
             )
 
-            test_results["dual_mode_tests"][prompt_type.value] = {
+            test_results["dual_mode_tests"][analysis_type.value] = {
                 "conversational_mode": {
-                    "length": len(conv_prompt),
-                    "is_conversational": "conversational" in conv_prompt.lower(),
-                    "has_content": len(conv_prompt.strip()) > 0,
+                    "length": len(test_conv_prompt),
+                    "is_conversational": "conversational" in test_conv_prompt.lower(),
+                    "has_content": len(test_conv_prompt.strip()) > 0,
                 },
                 "generated_successfully": True,
             }
 
         except Exception as e:
-            test_results["dual_mode_tests"][prompt_type.value] = {"error": str(e)}
+            test_results["dual_mode_tests"][analysis_type.value] = {"error": str(e)}
             test_results["overall_success"] = False
 
     # Test mode detection (unified conversational)
@@ -868,7 +866,7 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
     # Test system prompt enhancement (conversational mode)
     base_prompt = "You are a financial analyst."
 
-    conv_enhanced = template_manager.get_enhanced_system_prompt(base_prompt)
+    conv_enhanced = dual_mode_template_manager.get_enhanced_system_prompt(base_prompt)
 
     test_results["system_prompt_tests"] = {
         "conversational_mode_different": conv_enhanced != base_prompt,
@@ -906,18 +904,18 @@ if __name__ == "__main__":
 
     # Test example generation in unified conversational mode
     print("\n📝 Testing Unified Conversational Prompt Generation")
-    template_manager = PromptTemplateManager()
+    main_template_manager = PromptTemplateManager()
 
-    for prompt_type in PromptType:
+    for main_prompt_type in PromptType:
         try:
             # Test unified conversational mode
-            conv_prompt, ticker_ctx = template_manager.generate_prompt(prompt_type, ticker="AAPL")
+            main_conv_prompt, main_ticker_ctx = main_template_manager.generate_prompt(main_prompt_type, ticker="AAPL")
 
-            print(f"✅ {prompt_type.value}:")
-            print(f"   Conversational mode: {len(conv_prompt)} chars")
-            print(f"   Context: {ticker_ctx.symbol} (source: {ticker_ctx.source})")
+            print(f"✅ {main_prompt_type.value}:")
+            print(f"   Conversational mode: {len(main_conv_prompt)} chars")
+            print(f"   Context: {main_ticker_ctx.symbol} (source: {main_ticker_ctx.source})")
 
         except Exception as e:
-            print(f"❌ {prompt_type.value}: Failed - {e}")
+            print(f"❌ {main_prompt_type.value}: Failed - {e}")
 
     print(f"\n🏁 All unified conversational tests completed!")

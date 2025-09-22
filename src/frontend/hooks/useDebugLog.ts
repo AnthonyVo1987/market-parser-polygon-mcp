@@ -353,7 +353,6 @@ export function usePropsLogger(
   const previousPropsRef = useRef(props);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (typeof window !== 'undefined' && import.meta.env?.MODE !== 'development') return;
 
     const previousProps = previousPropsRef.current;

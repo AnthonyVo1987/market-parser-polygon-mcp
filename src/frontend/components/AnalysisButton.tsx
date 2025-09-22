@@ -36,7 +36,7 @@ export default function AnalysisButton({
     (template.requiresTicker && ticker.length < 3);
 
   // Handle button click to generate and populate prompt
-  const handleButtonClick = useCallback(async () => {
+  const handleButtonClick = useCallback(() => {
     if (isButtonDisabled) return;
 
     // Clear any existing states

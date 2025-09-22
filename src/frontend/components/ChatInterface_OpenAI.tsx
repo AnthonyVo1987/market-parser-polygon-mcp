@@ -756,6 +756,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
 // Enable Why Did You Render tracking for this component
 ChatInterface_OpenAI.whyDidYouRender = true;
+ChatInterface_OpenAI.displayName = 'ChatInterface_OpenAI';
 
 export default ChatInterface_OpenAI;
 

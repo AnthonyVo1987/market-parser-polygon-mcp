@@ -19,7 +19,7 @@ const AnalysisButtons: FC<AnalysisButtonsProps> = ({
     successText: '✓ Complete',
     errorText: '✗ Error',
     disabledText: 'Stock Snapshot',
-    onStateChange: (state) => console.log('Snapshot button state:', state)
+    onStateChange: () => { }
   });
 
   const supportResistanceButton = useButtonState({
@@ -28,7 +28,7 @@ const AnalysisButtons: FC<AnalysisButtonsProps> = ({
     successText: '✓ Complete',
     errorText: '✗ Error',
     disabledText: 'Support/Resistance',
-    onStateChange: (state) => console.log('Support/Resistance button state:', state)
+    onStateChange: () => { }
   });
 
   const technicalAnalysisButton = useButtonState({
@@ -37,40 +37,40 @@ const AnalysisButtons: FC<AnalysisButtonsProps> = ({
     successText: '✓ Complete',
     errorText: '✗ Error',
     disabledText: 'Technical Analysis',
-    onStateChange: (state) => console.log('Technical Analysis button state:', state)
+    onStateChange: () => { }
   });
 
   // Enhanced click handlers with state management
-  const handleSnapshotClick = useCallback(async () => {
+  const handleSnapshotClick = useCallback(() => {
     if (snapshotButton.isLoading || disabled) return;
 
     try {
       snapshotButton.startLoading();
-      await onSnapshot();
+      onSnapshot();
       snapshotButton.setSuccess();
     } catch (error) {
       snapshotButton.setError();
     }
   }, [snapshotButton, onSnapshot, disabled]);
 
-  const handleSupportResistanceClick = useCallback(async () => {
+  const handleSupportResistanceClick = useCallback(() => {
     if (supportResistanceButton.isLoading || disabled) return;
 
     try {
       supportResistanceButton.startLoading();
-      await onSupportResistance();
+      onSupportResistance();
       supportResistanceButton.setSuccess();
     } catch (error) {
       supportResistanceButton.setError();
     }
   }, [supportResistanceButton, onSupportResistance, disabled]);
 
-  const handleTechnicalAnalysisClick = useCallback(async () => {
+  const handleTechnicalAnalysisClick = useCallback(() => {
     if (technicalAnalysisButton.isLoading || disabled) return;
 
     try {
       technicalAnalysisButton.startLoading();
-      await onTechnicalAnalysis();
+      onTechnicalAnalysis();
       technicalAnalysisButton.setSuccess();
     } catch (error) {
       technicalAnalysisButton.setError();

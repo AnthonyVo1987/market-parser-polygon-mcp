@@ -71,7 +71,7 @@ export class PerformanceMonitor {
             fcpObserver.observe({ entryTypes: ['paint'] });
             this.observers.push(fcpObserver);
         } catch (error) {
-            console.warn('FCP observer not supported:', error);
+            // FCP observer not supported - silently continue
         }
 
         // LCP Observer
@@ -87,7 +87,7 @@ export class PerformanceMonitor {
             lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
             this.observers.push(lcpObserver);
         } catch (error) {
-            console.warn('LCP observer not supported:', error);
+            // LCP observer not supported - silently continue
         }
 
         // CLS Observer
@@ -105,7 +105,7 @@ export class PerformanceMonitor {
             clsObserver.observe({ entryTypes: ['layout-shift'] });
             this.observers.push(clsObserver);
         } catch (error) {
-            console.warn('CLS observer not supported:', error);
+            // CLS observer not supported - silently continue
         }
 
         // FID Observer
@@ -121,31 +121,27 @@ export class PerformanceMonitor {
             fidObserver.observe({ entryTypes: ['first-input'] });
             this.observers.push(fidObserver);
         } catch (error) {
-            console.warn('FID observer not supported:', error);
+            // FID observer not supported - silently continue
         }
     }
 
     private checkBudget(metric: keyof PerformanceBudget, value: number): void {
         const budget = PERFORMANCE_BUDGET[metric];
         if (value > budget) {
-            console.warn(`Performance budget exceeded for ${metric}:`, {
-                value: `${value}ms`,
-                budget: `${budget}ms`,
-                exceeded: value - budget,
-            });
+            // Performance budget exceeded - could be logged to analytics
         }
     }
 
     public startMonitoring(): void {
         // this.isMonitoring = true;
-        console.log('Performance monitoring started');
+        // Performance monitoring started
     }
 
     public stopMonitoring(): void {
         // this.isMonitoring = false;
         this.observers.forEach(observer => observer.disconnect());
         this.observers = [];
-        console.log('Performance monitoring stopped');
+        // Performance monitoring stopped
     }
 
     public getMetrics(): Partial<PerformanceMetrics> {
@@ -286,13 +282,15 @@ export function withPerformanceMonitoring<P extends object>(
         const { metrics } = usePerformanceMonitoring();
 
         useEffect(() => {
-            console.log('Component performance metrics:', metrics);
+            // Component performance metrics could be logged to analytics
         }, [metrics]);
 
         return <Component {...props} />;
     });
 
-    return WrappedComponent as unknown as React.ComponentType<P>;
+    WrappedComponent.displayName = `withPerformanceMonitoring(${Component.displayName || Component.name || 'Component'})`;
+
+    return WrappedComponent;
 }
 
 // Phase 4: Lazy Loading Utilities
@@ -302,11 +300,15 @@ export function createLazyComponent<T extends React.ComponentType<any>>(
 ): React.ComponentType<React.ComponentProps<T>> {
     const LazyComponent = lazy(importFunc);
 
-    return (props: React.ComponentProps<T>) => (
+    const LazyWrapper = (props: React.ComponentProps<T>) => (
         <Suspense fallback={fallback || <div>Loading...</div>}>
             <LazyComponent {...props} />
         </Suspense>
     );
+
+    LazyWrapper.displayName = 'LazyWrapper';
+
+    return LazyWrapper;
 }
 
 // Phase 4: Performance Budget Validation

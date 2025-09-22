@@ -470,7 +470,7 @@ def print_guardrail_error(exception):
 async def process_financial_query(
     query: str,
     session: SQLiteSession,
-    server,  # pylint: disable=unused-argument
+    server: MCPServerStdio,
     request_id: Optional[str] = None,
     model: Optional[str] = None,
 ) -> dict:
@@ -677,7 +677,7 @@ ticker_extractor = TickerExtractor()
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
     """FastAPI lifespan management for shared MCP server and session instances."""
     global shared_mcp_server, shared_session
 
@@ -703,7 +703,7 @@ async def lifespan(app: FastAPI):
         # Initialize MCP server
         mcp_start = time.time()
         shared_mcp_server = create_polygon_mcp_server()
-        await shared_mcp_server.__aenter__()
+        await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
         mcp_time = time.time() - mcp_start
         log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
 
@@ -851,7 +851,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     except HTTPException:
         raise
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except Exception as e:
         response_time = time.time() - start_time
         log_api_response(logger, 500, response_time, request_id=request_id)
         logger.error(

@@ -2,7 +2,6 @@
 import React from 'react';
 import { logger } from './utils/logger';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
   void import('@welldone-software/why-did-you-render').then(
     whyDidYouRenderModule => {
