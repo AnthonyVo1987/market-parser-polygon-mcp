@@ -63,4 +63,5 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-- Use your toolkit to  Research from the main repo instructions on how we can get Serena to work in our project for our ENTIRE Stack: <https://github.com/oraios/serena>. The main issue I see is that the Python fix was a config issue.  BUT, if we changed Serena config to Python, that most likely broke typescript and\or the rest of our Stack's lanuagaes.. so find out if it is possible to have multiple languages configured for Serena, of if it is not currently possible etc
+- Use your toolkit to Analyze, Investigate, & Research our code base to understand how our current "Prompt Template" Loading System Works.  I'd like to make some changes in this path, so first let's understand how the current path and architecture works
+- After your research, generate a new .md file in docs folder with your analysis to explain how it works and also include a full execution flow trace for the entire flow, from the moment User either inputs a prompt in AI CHat and presses send AND also if user uses button prompt to load the prompt, and then press send.  Also include a diagram so we can visually understand the flow
