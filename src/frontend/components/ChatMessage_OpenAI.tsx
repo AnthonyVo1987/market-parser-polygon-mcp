@@ -328,7 +328,8 @@ export const messageStyles = `
   }
   
   .user-bubble {
-    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    /* linear-gradient removed for performance */
+    background: var(--primary-600);
     color: var(--neutral-50);
     border-color: var(--primary-500);
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);

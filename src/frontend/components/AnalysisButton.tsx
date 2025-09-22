@@ -455,7 +455,7 @@ export const analysisButtonStyles = `
       /* Simplified hover for mobile */
       transform: translateY(-1px);
       /* Complex box-shadow simplified for performance */
-      box-shadow: 0 3px 12px rgba(124, 58, 237, 0.2);
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
     }
 
     .button-icon {
@@ -499,14 +499,14 @@ export const analysisButtonStyles = `
     .analysis-button.button-hovered:not(:disabled) {
       transform: translateY(-2px);
       /* Complex box-shadow simplified for performance */
-      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.3);
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
       /* filter: brightness(1.1) saturate(1.1); removed for performance */
     }
 
     .analysis-button-container:hover {
       transform: translateY(-2px);
       /* Complex box-shadow simplified for performance */
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
 
     /* Enhanced desktop icon animations */
@@ -519,7 +519,7 @@ export const analysisButtonStyles = `
     .analysis-button.button-success:not(:disabled) {
       transform: translateY(-4px) scale(1.03);
       /* Complex box-shadow simplified for performance */
-      box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+      box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
       /* filter: brightness(1.15) saturate(1.2); removed for performance */
     }
     
@@ -527,7 +527,7 @@ export const analysisButtonStyles = `
     .analysis-button.button-error:not(:disabled) {
       transform: translateY(-2px) scale(1.01);
       /* Complex box-shadow simplified for performance */
-      box-shadow: 0 6px 24px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
       /* filter: brightness(1.05) saturate(1.1); removed for performance */
     }
   }

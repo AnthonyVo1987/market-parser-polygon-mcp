@@ -112,7 +112,7 @@ export const errorBoundaryStyles = `
     /* backdrop-filter removed for performance */
     border: 2px solid var(--accent-error);
     border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3), var(--glass-shadow-lg);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
     
     /* Professional Spacing */
     padding: var(--spacing-6);
@@ -263,7 +263,7 @@ export const errorBoundaryStyles = `
     overflow: hidden;
     
     /* Enhancement */
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
     
     /* Button Icon */
     display: flex;
@@ -280,7 +280,7 @@ export const errorBoundaryStyles = `
     /* Complex gradient simplified for performance */
     background: var(--accent-error-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 3px 12px rgba(239, 68, 68, 0.3);
   }
   
   .error-reset-button:active {

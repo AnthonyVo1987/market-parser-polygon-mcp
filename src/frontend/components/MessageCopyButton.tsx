@@ -244,7 +244,7 @@ export const messageCopyButtonStyles = `
     background: var(--accent-success-light);
     transform: scale(1.08) translateY(-2px);
     /* Complex box-shadow simplified for performance */
-    box-shadow: 0 3px 12px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   }
   
   /* Enhanced Error State - Professional Error Treatment */
@@ -264,7 +264,7 @@ export const messageCopyButtonStyles = `
     background: var(--accent-error-hover);
     transform: scale(1.05) translateY(-1px);
     /* Complex box-shadow simplified for performance */
-    box-shadow: 0 3px 12px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
   }
   
   /* Enhanced Professional Icon Container */
@@ -464,7 +464,7 @@ export const messageCopyButtonStyles = `
   /* Success Glow Effect */
   .message-copy-button.success-glow {
     /* Complex box-shadow simplified for performance */
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 2px 8px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
     /* Animation removed for performance */
   }
   

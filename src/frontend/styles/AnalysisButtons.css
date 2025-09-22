@@ -23,9 +23,7 @@
   background: rgba(26, 32, 44, 0.3);
   border-radius: 8px;
   border: 1px solid rgba(124, 58, 237, 0.1);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .analysis-buttons-container .integrated-ticker-input {
@@ -46,7 +44,6 @@
   max-width: 100%;
   position: relative;
   /* Enhanced depth with sophisticated shadows */
-  /* Complex box-shadow simplified for performance */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   /* Modern container query support */
   /* container-type: inline-size; removed for performance */
@@ -63,16 +60,14 @@
 .analysis-buttons-container:hover {
   background: rgba(26, 32, 44, 0.85);
   border-color: rgba(124, 58, 237, 0.3);
-  /* Complex box-shadow simplified for performance */
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   /* Transform removed for performance */
 }
 
 /* Enhanced focus-within state */
 .analysis-buttons-container:focus-within {
   border-color: var(--accent-trust);
-  /* Complex box-shadow simplified for performance */
-  box-shadow: 0 0 0 1px var(--accent-trust), 0 6px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 1px var(--accent-trust);
 }
 
 /* Enhanced header section with fintech styling - now clickable */
@@ -134,7 +129,7 @@
   background: rgba(124, 58, 237, 0.2);
   border-color: rgba(124, 58, 237, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
 }
 
 .analysis-button:disabled {

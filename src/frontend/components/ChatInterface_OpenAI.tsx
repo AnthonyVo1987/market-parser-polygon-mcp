@@ -813,12 +813,8 @@ export const interfaceStyles = `
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-      135deg,
-      var(--primary-900) 0%,
-      var(--primary-800) 50%,
-      var(--neutral-900) 100%
-    );
+    /* linear-gradient removed for performance */
+    background: var(--neutral-900);
     opacity: 0.05;
     pointer-events: none;
     z-index: -1;
