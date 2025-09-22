@@ -1,275 +1,256 @@
-# Performance Budgets and Monitoring
+# Performance Budgets
 
-**Date**: September 21, 2025  
 **Project**: UI Performance Optimization  
-**Status**: Implementation Complete  
-
-## Executive Summary
-
-This document defines comprehensive performance budgets for the Market Parser application and establishes monitoring guidelines to ensure optimal performance is maintained. These budgets serve as guardrails to prevent performance regressions and guide future development decisions.
-
-## Core Web Vitals Budgets
-
-### Primary Metrics
-
-| Metric | Budget | Warning Threshold | Critical Threshold | Current Status |
-|--------|--------|------------------|-------------------|----------------|
-| **First Contentful Paint (FCP)** | < 1.5s | 1.2s | 1.5s | ✅ |
-| **Largest Contentful Paint (LCP)** | < 2.5s | 2.0s | 2.5s | ✅ |
-| **Cumulative Layout Shift (CLS)** | < 0.1 | 0.08 | 0.1 | ✅ |
-| **First Input Delay (FID)** | < 100ms | 80ms | 100ms | ✅ |
-| **Time to Interactive (TTI)** | < 3.5s | 3.0s | 3.5s | ✅ |
-| **Time to First Byte (TTFB)** | < 600ms | 500ms | 600ms | ✅ |
-
-### Secondary Metrics
-
-| Metric | Budget | Warning Threshold | Critical Threshold | Current Status |
-|--------|--------|------------------|-------------------|----------------|
-| **Speed Index** | < 2.0s | 1.5s | 2.0s | ✅ |
-| **Total Blocking Time (TBT)** | < 200ms | 150ms | 200ms | ✅ |
-| **Max Potential FID** | < 100ms | 80ms | 100ms | ✅ |
-
-## Bundle Size Budgets
-
-### JavaScript Bundles
-
-| Bundle | Budget | Warning Threshold | Critical Threshold | Current Status |
-|--------|--------|------------------|-------------------|----------------|
-| **Main Bundle** | < 200KB | 180KB | 200KB | ✅ |
-| **Vendor Bundle** | < 150KB | 130KB | 150KB | ✅ |
-| **Total JS** | < 300KB | 280KB | 300KB | ✅ |
-
-### CSS Bundles
-
-| Bundle | Budget | Warning Threshold | Critical Threshold | Current Status |
-|--------|--------|------------------|-------------------|----------------|
-| **Main CSS** | < 50KB | 45KB | 50KB | ✅ |
-| **Component CSS** | < 30KB | 25KB | 30KB | ✅ |
-| **Total CSS** | < 70KB | 60KB | 70KB | ✅ |
-
-### Asset Budgets
-
-| Asset Type | Budget | Warning Threshold | Critical Threshold | Current Status |
-|------------|--------|------------------|-------------------|----------------|
-| **Images** | < 500KB | 400KB | 500KB | ✅ |
-| **Fonts** | < 100KB | 80KB | 100KB | ✅ |
-| **Total Assets** | < 1MB | 800KB | 1MB | ✅ |
-
-## Performance Optimization Budgets
-
-### CSS Performance Metrics
-
-| Metric | Budget | Warning Threshold | Critical Threshold | Current Status |
-|--------|--------|------------------|-------------------|----------------|
-| **Backdrop Filters** | 0 | 0 | 0 | ✅ |
-| **Complex Box Shadows** | < 10 | 8 | 10 | ✅ |
-| **Gradient Backgrounds** | < 5 | 3 | 5 | ✅ |
-| **Transform Animations** | < 5 | 3 | 5 | ✅ |
-| **Will-change Properties** | < 3 | 2 | 3 | ✅ |
-| **CSS Variables** | < 25 | 20 | 25 | ✅ |
-| **Container Queries** | < 2 | 1 | 2 | ✅ |
-
-### Animation Performance
-
-| Metric | Budget | Warning Threshold | Critical Threshold | Current Status |
-|--------|--------|------------------|-------------------|----------------|
-| **Keyframe Animations** | < 3 | 2 | 3 | ✅ |
-| **Complex Transitions** | < 5 | 3 | 5 | ✅ |
-| **Transform Transitions** | < 2 | 1 | 2 | ✅ |
-| **Opacity Transitions** | < 10 | 8 | 10 | ✅ |
-
-## Device-Specific Budgets
-
-### Desktop (1920x1080)
-
-| Metric | Budget | Current Status |
-|--------|--------|----------------|
-| **FCP** | < 1.2s | ✅ |
-| **LCP** | < 2.0s | ✅ |
-| **CLS** | < 0.05 | ✅ |
-| **Bundle Size** | < 300KB | ✅ |
-
-### Tablet (768x1024)
-
-| Metric | Budget | Current Status |
-|--------|--------|----------------|
-| **FCP** | < 1.5s | ✅ |
-| **LCP** | < 2.5s | ✅ |
-| **CLS** | < 0.08 | ✅ |
-| **Bundle Size** | < 350KB | ✅ |
-
-### Mobile (375x667)
-
-| Metric | Budget | Current Status |
-|--------|--------|----------------|
-| **FCP** | < 1.8s | ✅ |
-| **LCP** | < 3.0s | ✅ |
-| **CLS** | < 0.1 | ✅ |
-| **Bundle Size** | < 400KB | ✅ |
-
-## Network Condition Budgets
-
-### 3G Slow (1.6 Mbps)
-
-| Metric | Budget | Current Status |
-|--------|--------|----------------|
-| **FCP** | < 3.0s | ✅ |
-| **LCP** | < 5.0s | ✅ |
-| **TTI** | < 8.0s | ✅ |
-
-### 3G Fast (1.6 Mbps)
-
-| Metric | Budget | Current Status |
-|--------|--------|----------------|
-| **FCP** | < 2.0s | ✅ |
-| **LCP** | < 3.5s | ✅ |
-| **TTI** | < 5.0s | ✅ |
-
-### 4G (4 Mbps)
-
-| Metric | Budget | Current Status |
-|--------|--------|----------------|
-| **FCP** | < 1.5s | ✅ |
-| **LCP** | < 2.5s | ✅ |
-| **TTI** | < 3.5s | ✅ |
-
-## Performance Monitoring
-
-### Real-time Monitoring
-
-- **Performance Metrics**: Tracked via `usePerformanceMonitoring` hook
-- **Regression Detection**: Automated alerts when budgets are exceeded
-- **Visual Monitoring**: Performance toggle for real-time feedback
-- **Bundle Analysis**: Automated bundle size monitoring
-
-### Monitoring Tools
-
-1. **Lighthouse CI**: Automated performance testing
-2. **WebPageTest**: Cross-browser performance validation
-3. **Chrome DevTools**: Development-time performance analysis
-4. **Bundle Analyzer**: Bundle size and composition analysis
-5. **Performance Observer API**: Real-time performance tracking
-
-### Alert Thresholds
-
-#### Warning Alerts
-
-- Triggered when metrics approach 80% of budget
-- Sent to development team
-- Requires investigation within 24 hours
-
-#### Critical Alerts
-
-- Triggered when metrics exceed budget
-- Sent to development team and stakeholders
-- Requires immediate action and rollback consideration
-
-## Performance Regression Prevention
-
-### Pre-commit Hooks
-
-- **Bundle Size Check**: Prevent commits that exceed size budgets
-- **Performance Test**: Run basic performance tests before merge
-- **CSS Analysis**: Check for performance-impacting CSS changes
-
-### Code Review Guidelines
-
-- **Performance Impact Assessment**: Required for all UI changes
-- **Budget Compliance**: Verify changes don't exceed budgets
-- **Optimization Opportunities**: Identify potential improvements
-
-### Automated Testing
-
-- **Performance Regression Tests**: Automated tests for critical paths
-- **Bundle Size Monitoring**: Continuous monitoring of bundle sizes
-- **Visual Regression Tests**: Ensure visual consistency
-
-## Performance Optimization Guidelines
-
-### CSS Best Practices
-
-1. **Avoid Expensive Properties**: Minimize use of backdrop-filter, box-shadow, transform
-2. **Optimize Selectors**: Use efficient CSS selectors
-3. **Minimize Reflows**: Avoid properties that trigger layout recalculations
-4. **Use CSS Containment**: Implement `contain` property where appropriate
-5. **Optimize Animations**: Use `transform` and `opacity` for animations
-
-### JavaScript Best Practices
-
-1. **Code Splitting**: Implement dynamic imports for large components
-2. **Tree Shaking**: Remove unused code from bundles
-3. **Lazy Loading**: Load components and assets on demand
-4. **Memoization**: Use React.memo and useMemo for expensive calculations
-5. **Bundle Analysis**: Regular analysis of bundle composition
-
-### Asset Optimization
-
-1. **Image Optimization**: Use appropriate formats and compression
-2. **Font Optimization**: Subset fonts and use font-display: swap
-3. **Resource Hints**: Implement preload, prefetch, and preconnect
-4. **CDN Usage**: Serve static assets from CDN
-5. **Compression**: Enable gzip/brotli compression
-
-## Budget Review and Updates
-
-### Quarterly Reviews
-
-- **Performance Analysis**: Comprehensive performance review
-- **Budget Adjustments**: Update budgets based on new requirements
-- **Tool Updates**: Evaluate and update monitoring tools
-- **Process Improvements**: Refine performance monitoring processes
-
-### Annual Reviews
-
-- **Strategic Planning**: Long-term performance strategy
-- **Technology Updates**: Evaluate new performance optimization techniques
-- **Budget Restructuring**: Major budget adjustments based on business needs
-- **Team Training**: Performance optimization training for development team
-
-## Success Metrics
-
-### Performance Targets
-
-- **Core Web Vitals**: 95%+ of users experience good performance
-- **Lighthouse Score**: 90+ across all categories
-- **Bundle Size**: 10%+ reduction from baseline
-- **Load Time**: 20%+ improvement from baseline
-
-### Quality Targets
-
-- **Visual Consistency**: 98%+ maintained across devices
-- **Accessibility**: WCAG 2.1 AA compliance
-- **Browser Support**: 95%+ compatibility
-- **User Satisfaction**: 90%+ positive feedback
-
-## Implementation Status
-
-### Completed Optimizations
-
-- ✅ **Phase 1**: Removed all high-impact effects (15 tasks)
-- ✅ **Phase 2**: Optimized medium-impact effects (18 tasks)
-- ✅ **Phase 3**: Refined low-impact effects (3 tasks)
-- ✅ **Performance Monitoring**: Integrated comprehensive monitoring
-- ✅ **Build Optimization**: Implemented CSS minification pipeline
-- ✅ **Performance Budgets**: Established comprehensive budgets
-
-### Current Performance Status
-
-- **All Budgets Met**: ✅
-- **No Critical Issues**: ✅
-- **Monitoring Active**: ✅
-- **Regression Prevention**: ✅
-
-## Next Steps
-
-1. **Continuous Monitoring**: Maintain real-time performance tracking
-2. **Regular Reviews**: Quarterly performance budget reviews
-3. **Process Refinement**: Continuous improvement of monitoring processes
-4. **Team Training**: Ongoing performance optimization education
-5. **Technology Updates**: Stay current with performance optimization techniques
+**Date**: September 21, 2025  
+**Status**: Active  
+**Version**: 1.0
 
 ---
 
-**Last Updated**: September 21, 2025  
-**Next Review**: December 21, 2025  
-**Maintained By**: Development Team
+## **EXECUTIVE SUMMARY**
+
+This document defines performance budgets for the Market Parser application to ensure optimal user experience and maintain performance standards. These budgets are integrated with the performance monitoring system and serve as thresholds for performance regression alerts.
+
+---
+
+## **CORE WEB VITALS BUDGETS**
+
+### **First Contentful Paint (FCP)**
+- **Budget**: 1,500ms (1.5 seconds)
+- **Target**: < 1,200ms
+- **Critical**: > 1,500ms triggers alert
+- **Measurement**: Time to first contentful paint
+
+### **Largest Contentful Paint (LCP)**
+- **Budget**: 2,500ms (2.5 seconds)
+- **Target**: < 2,000ms
+- **Critical**: > 2,500ms triggers alert
+- **Measurement**: Time to largest contentful paint
+
+### **Cumulative Layout Shift (CLS)**
+- **Budget**: 0.1
+- **Target**: < 0.05
+- **Critical**: > 0.1 triggers alert
+- **Measurement**: Layout shift score
+
+### **First Input Delay (FID)**
+- **Budget**: 100ms
+- **Target**: < 50ms
+- **Critical**: > 100ms triggers alert
+- **Measurement**: Input delay time
+
+### **Time to Interactive (TTI)**
+- **Budget**: 3,500ms (3.5 seconds)
+- **Target**: < 3,000ms
+- **Critical**: > 3,500ms triggers alert
+- **Measurement**: Time to interactive
+
+### **Time to First Byte (TTFB)**
+- **Budget**: 600ms
+- **Target**: < 400ms
+- **Critical**: > 600ms triggers alert
+- **Measurement**: Server response time
+
+---
+
+## **OPTIMIZATION-SPECIFIC BUDGETS**
+
+### **Backdrop Filter Count**
+- **Budget**: 0
+- **Target**: Remove all backdrop filters
+- **Critical**: > 0 triggers alert
+- **Rationale**: Backdrop filters are high-impact performance effects
+
+### **Box Shadow Count**
+- **Budget**: 10
+- **Target**: < 5
+- **Critical**: > 10 triggers alert
+- **Rationale**: Complex box shadows impact rendering performance
+
+### **Gradient Count**
+- **Budget**: 5
+- **Target**: < 3
+- **Critical**: > 5 triggers alert
+- **Rationale**: Gradients increase paint complexity
+
+### **Transform Count**
+- **Budget**: 5
+- **Target**: < 3
+- **Critical**: > 5 triggers alert
+- **Rationale**: Transform animations trigger expensive layout/paint operations
+
+### **Will-Change Count**
+- **Budget**: 3
+- **Target**: Dynamic only, < 3
+- **Critical**: > 3 triggers alert
+- **Rationale**: Will-change should be applied dynamically, not statically
+
+### **CSS Variable Count**
+- **Budget**: 25
+- **Target**: < 20
+- **Critical**: > 25 triggers alert
+- **Rationale**: Too many CSS variables increase parsing time
+
+### **Container Query Count**
+- **Budget**: 2
+- **Target**: Replace with media queries, < 2
+- **Critical**: > 2 triggers alert
+- **Rationale**: Container queries have limited browser support
+
+---
+
+## **BUNDLE SIZE BUDGETS**
+
+### **JavaScript Bundle**
+- **Initial Bundle**: < 200KB (gzipped)
+- **Total Bundle**: < 500KB (gzipped)
+- **Vendor Bundle**: < 150KB (gzipped)
+- **Critical**: Exceeding limits triggers alert
+
+### **CSS Bundle**
+- **Main CSS**: < 50KB (gzipped)
+- **Total CSS**: < 100KB (gzipped)
+- **Critical**: Exceeding limits triggers alert
+
+### **Asset Budgets**
+- **Images**: < 500KB total
+- **Fonts**: < 100KB total
+- **Icons**: < 50KB total
+
+---
+
+## **RUNTIME PERFORMANCE BUDGETS**
+
+### **Memory Usage**
+- **Initial Load**: < 50MB
+- **Peak Usage**: < 100MB
+- **Critical**: > 100MB triggers alert
+
+### **Animation Performance**
+- **Frame Rate**: > 55 FPS
+- **Critical**: < 30 FPS triggers alert
+
+### **Network Performance**
+- **API Response Time**: < 1,000ms
+- **Critical**: > 2,000ms triggers alert
+
+---
+
+## **MONITORING AND ALERTS**
+
+### **Automated Monitoring**
+- Performance budgets are monitored in real-time
+- Alerts are triggered when budgets are exceeded
+- Performance regression detection is active
+- Budget violations are logged for analysis
+
+### **Alert Levels**
+1. **Warning**: Approaching budget limit (80% of budget)
+2. **Critical**: Budget exceeded
+3. **Regression**: Performance degradation detected
+
+### **Reporting**
+- Daily performance reports
+- Budget violation summaries
+- Performance trend analysis
+- Optimization recommendations
+
+---
+
+## **BUDGET ENFORCEMENT**
+
+### **Development Phase**
+- Pre-commit hooks check performance budgets
+- CI/CD pipeline validates budget compliance
+- Performance tests run on every build
+
+### **Production Phase**
+- Real-time monitoring with alerts
+- Automated rollback on critical violations
+- Performance dashboard for tracking
+
+---
+
+## **OPTIMIZATION STRATEGIES**
+
+### **When Budgets Are Exceeded**
+1. **Immediate Actions**:
+   - Identify the source of the violation
+   - Apply quick fixes (remove effects, optimize code)
+   - Re-test performance
+
+2. **Long-term Actions**:
+   - Refactor problematic components
+   - Implement performance optimizations
+   - Update performance budgets if needed
+
+### **Prevention Strategies**
+- Code reviews include performance checks
+- Performance testing in development
+- Regular budget reviews and updates
+- Team training on performance best practices
+
+---
+
+## **BUDGET REVIEW PROCESS**
+
+### **Monthly Reviews**
+- Analyze performance trends
+- Review budget effectiveness
+- Update budgets based on new requirements
+- Document lessons learned
+
+### **Quarterly Updates**
+- Comprehensive budget review
+- Technology stack updates
+- Performance target adjustments
+- Team performance training
+
+---
+
+## **INTEGRATION WITH PERFORMANCE MONITORING**
+
+The performance budgets are integrated with the `PerformanceMonitor` class in `src/frontend/utils/performance.tsx`:
+
+```typescript
+// Budget checking is automatic
+private checkBudget(metric: keyof PerformanceBudget, value: number): void {
+    const budget = PERFORMANCE_BUDGET[metric];
+    if (value > budget) {
+        // Performance budget exceeded - alert triggered
+    }
+}
+```
+
+### **Usage in Components**
+```typescript
+// Components can check budgets
+const { getReport } = usePerformanceMonitoring();
+const report = getReport();
+if (report.violations.length > 0) {
+    // Handle budget violations
+}
+```
+
+---
+
+## **SUCCESS METRICS**
+
+### **Budget Compliance**
+- **Target**: 95% of budgets met
+- **Current**: Monitored in real-time
+- **Trend**: Tracked over time
+
+### **Performance Improvements**
+- **Target**: 15-25% performance gain
+- **Measurement**: Core Web Vitals improvement
+- **Validation**: Lighthouse scores
+
+### **User Experience**
+- **Target**: 90%+ user satisfaction
+- **Measurement**: Performance feedback
+- **Validation**: User testing
+
+---
+
+This performance budget system ensures consistent performance standards while providing clear guidelines for optimization efforts and preventing performance regressions.
