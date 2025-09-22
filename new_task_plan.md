@@ -63,8 +63,4 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## Task Details
 
-1. Fix all issues
-
-
-
-
+1. Use Context7 Tools for Researching Best Robust & Up to Date Implementation Practices & Documentation Systematically Analyze & Review the plan & Fix any issues in the plan: UI_Performance_Optimization_Implementation_Plan.md. REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Context7 research nChoose the right tool for the right operation.  Make fixes to the plan doc itself and DO NOT CREATE A NEW DOC FOR THE FIXES
