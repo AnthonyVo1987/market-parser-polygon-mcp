@@ -19,18 +19,12 @@ from typing import List, Optional
 
 from agents import (
     Agent,
-    AsyncOpenAI,
     GuardrailFunctionOutput,
-    InputGuardrail,
-    ModelSettings,
     Runner,
     SQLiteSession,
     function_tool,
-    trace,
 )
-from agents.exceptions import InputGuardrailTripwireTriggered
 from agents.mcp import MCPServerStdio
-from agents.models.openai_responses import OpenAIResponsesModel
 from cachetools import TTLCache
 from dotenv import load_dotenv
 
@@ -47,63 +41,24 @@ try:
     from .api_models import (
         AIModel,
         AIModelId,
-        AnalysisType,
-        ButtonAnalysisRequest,
-        ButtonAnalysisResponse,
-        ChatAnalysisRequest,
-        ChatAnalysisResponse,
-        GeneratePromptRequest,
-        GeneratePromptResponse,
         ModelListResponse,
         ModelSelectionResponse,
-        PromptMode,
-        PromptTemplateInfo,
         ResponseMetadata,
         SystemHealthResponse,
         SystemMetrics,
         SystemStatusResponse,
-        TemplateListResponse,
-        TickerContextInfo,
     )
-    from .prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
+    from .direct_prompts import DirectPromptManager
     from .utils.logger import (
         get_logger,
-        log_agent_processing,
         log_api_request,
         log_api_response,
         log_mcp_operation,
     )
 except ImportError:
     # Fallback to absolute imports (when run directly)
-    from api_models import (
-        AIModel,
-        AIModelId,
-        AnalysisType,
-        ButtonAnalysisRequest,
-        ButtonAnalysisResponse,
-        ChatAnalysisRequest,
-        ChatAnalysisResponse,
-        GeneratePromptRequest,
-        GeneratePromptResponse,
-        ModelListResponse,
-        ModelSelectionResponse,
-        PromptMode,
-        PromptTemplateInfo,
-        ResponseMetadata,
-        SystemHealthResponse,
-        SystemMetrics,
-        SystemStatusResponse,
-        TemplateListResponse,
-        TickerContextInfo,
-    )
-    from prompt_templates import PromptTemplateManager, PromptType, TickerExtractor
-    from utils.logger import (
-        get_logger,
-        log_agent_processing,
-        log_api_request,
-        log_api_response,
-        log_mcp_operation,
-    )
+    # Note: This fallback is not needed for the direct prompt migration
+    pass
 
 load_dotenv()
 
@@ -467,213 +422,11 @@ def print_guardrail_error(exception):
     console.print("------------------\n")
 
 
-async def process_financial_query(
-    query: str,
-    session: SQLiteSession,
-    server: MCPServerStdio,
-    request_id: Optional[str] = None,
-    model: Optional[str] = None,
-) -> dict:
-    """Process a financial query using the agent system with caching.
-
-    Args:
-        query: The user's query
-        session: SQLite session for database operations
-        server: MCP server instance
-        request_id: Optional request ID for tracking
-        model: Optional AI model to use (defaults to first available model from config)
-
-    Returns:
-        dict: {
-            'success': bool,
-            'response': str,
-            'error': str or None,
-            'error_type': str or None
-        }
-    """
-    start_time = time.time()
-    if not request_id:
-        request_id = str(uuid.uuid4())[:8]
-
-    # Use provided model or default
-    active_model = model if model else settings.available_models[0]
-
-    # Extract ticker from query for cache key generation
-    ticker_match = re.search(r"\b([A-Z]{1,5})\b", query.upper())
-    ticker = ticker_match.group(1) if ticker_match else ""
-
-    # Check cache first
-    cache_key = generate_cache_key(query, ticker)
-    cached_response = get_cached_response(cache_key)
-
-    if cached_response:
-        processing_time = time.time() - start_time
-        log_agent_processing(
-            logger,
-            "Cache hit - returning cached response",
-            {
-                "request_id": request_id,
-                "cache_key": cache_key[:8],
-                "processing_time": f"{processing_time:.3f}s",
-            },
-        )
-        return {"success": True, "response": cached_response, "error": None, "error_type": None}
-
-    # Clean up session periodically
-    cleanup_session_periodically()
-
-    log_agent_processing(
-        logger,
-        "Starting financial query processing",
-        {
-            "request_id": request_id,
-            "query_length": len(query),
-            "session_name": session.session_name if hasattr(session, "session_name") else "unknown",
-        },
-    )
-
-    try:
-        with trace("Polygon.io Demo"):
-            analysis_agent = Agent(
-                name="Financial Analysis Agent",
-                instructions=(
-                    "Financial analysis agent. Steps:\n"
-                    "1. Verify finance-related using guardrail\n"
-                    "2. Call Polygon tools precisely; pull the minimal required data.\n"
-                    "3. Handle invalid tickers gracefully with clear error messages.\n"
-                    "4. Include disclaimers.\n"
-                    "5. Offer to save reports if not asked by the user to save a report.\n\n"
-                    "FORMATTING REQUIREMENTS:\n"
-                    "- ALWAYS start responses with '🎯 KEY TAKEAWAYS' section using bullet points\n"
-                    "- ALWAYS explicitly mention ticker symbols throughout the response\n"
-                    "- Follow this exact structure: 🎯 KEY TAKEAWAYS, 📊 DETAILED ANALYSIS, ⚠️ DISCLAIMER\n"
-                    "- Use financial emojis throughout: 📈 (bullish), 📉 (bearish), "
-                    "💰 (money/profit), 💸 (loss), 🏢 (company), 📊 (data/analysis)\n"
-                    "- Structure responses with proper sections and line spacing for readability\n"
-                    "- Use emoji bullet points in lists instead of regular bullets\n"
-                    "- Indicate market sentiment clearly with 📈 BULLISH or 📉 BEARISH "
-                    "labels where appropriate\n"
-                    "- Use sentiment emojis directly in content: 📈 for bullish/positive "
-                    "indicators, 📉 for bearish/negative indicators\n"
-                    "- Place emojis at the beginning of relevant bullet points and "
-                    "statements for immediate visual sentiment\n"
-                    "- Example format: '📈 AAPL Strong growth momentum detected' or "
-                    "'📉 TSLA Declining revenue trend observed'\n"
-                    "- Use 📊 for neutral analysis, 💰 for profit/gains, 💸 for "
-                    "losses, 🏢 for company info\n"
-                    "- End with standard disclaimers in a clearly formatted section\n\n"
-                    "RULES:\n"
-                    "Double-check math; limit news to ≤3 articles/ticker in date range.\n"
-                    "If the user asks to save a report, save it to the reports folder "
-                    "using the save_analysis_report tool.\n"
-                    "When using any polygon.io data tools, be mindful of how much "
-                    "data you pull based \n"
-                    "on the users input to minimize context being exceeded.\n"
-                    "If data unavailable or tool fails, explain gracefully — never fabricate.\n"
-                    "For invalid ticker symbols, respond with: 'The ticker symbol [TICKER] "
-                    "could not be found or may not be valid. Please verify the symbol and try again.'\n"
-                    "Validate ticker symbols before making API calls when possible.\n"
-                    "TOOLS:\n"
-                    "Polygon.io data, save_analysis_report\n"
-                    "Disclaimer: Not financial advice. For informational purposes only."
-                ),
-                mcp_servers=[server],
-                tools=[save_analysis_report],
-                input_guardrails=[InputGuardrail(guardrail_function=finance_guardrail)],
-                model=OpenAIResponsesModel(model=active_model, openai_client=AsyncOpenAI()),
-                model_settings=ModelSettings(truncation="auto"),
-            )
-            log_agent_processing(
-                logger,
-                "Running analysis agent",
-                {"request_id": request_id, "model": active_model},
-            )
-
-            output = await Runner.run(analysis_agent, query, session=session)
-            final_output = getattr(output, "final_output", output)
-
-            processing_time = time.time() - start_time
-            log_agent_processing(
-                logger,
-                "Agent processing completed successfully",
-                {
-                    "request_id": request_id,
-                    "processing_time": f"{processing_time:.3f}s",
-                    "response_length": len(str(final_output)),
-                },
-            )
-
-            # Cache the successful response
-            response_text = str(final_output)
-
-            # Create metadata for response
-            response_metadata = ResponseMetadata(
-                model=active_model,
-                timestamp=datetime.now().isoformat(),
-                response_time=f"{processing_time:.3f}s",
-                processing_time=processing_time,
-                request_id=request_id,
-            )
-
-            # Append model name, timestamp, and response time to response
-            response_text_with_metadata = f"{response_text}\n\n[{response_metadata.model}] | {response_metadata.timestamp} | {response_metadata.response_time}"
-            cache_response(cache_key, response_text_with_metadata)
-
-            return {
-                "success": True,
-                "response": response_text_with_metadata,
-                "error": None,
-                "error_type": None,
-                "metadata": response_metadata,
-            }
-    except InputGuardrailTripwireTriggered as e:
-        processing_time = time.time() - start_time
-        reasoning = ""
-        if hasattr(e, "output_info") and e.output_info:  # pylint: disable=no-member
-            reasoning = f" Reasoning: {e.output_info.reasoning}"  # pylint: disable=no-member
-
-        error_msg = (
-            f"This query is not related to finance.{reasoning} "
-            "Please ask about stock prices, market data, financial analysis, "
-            "economic indicators, or company financials."
-        )
-
-        log_agent_processing(
-            logger,
-            "Guardrail triggered - non-finance query",
-            {
-                "request_id": request_id,
-                "processing_time": f"{processing_time:.3f}s",
-                "reasoning": reasoning.strip(),
-                "query_preview": query[:50] + "..." if len(query) > 50 else query,
-            },
-        )
-
-        return {
-            "success": False,
-            "response": "",
-            "error": error_msg,
-            "error_type": "guardrail",
-        }
-    except Exception as e:
-        processing_time = time.time() - start_time
-        log_agent_processing(
-            logger,
-            "Agent processing failed with exception",
-            {
-                "request_id": request_id,
-                "processing_time": f"{processing_time:.3f}s",
-                "error_type": type(e).__name__,
-                "error_message": str(e)[:200] + "..." if len(str(e)) > 200 else str(e),
-            },
-        )
-
-        return {"success": False, "response": "", "error": str(e), "error_type": "agent_error"}
+# process_financial_query function removed as part of direct prompt migration
 
 
-# Initialize prompt template system
-prompt_manager = PromptTemplateManager()
-ticker_extractor = TickerExtractor()
+# Initialize direct prompt system
+direct_prompt_manager = DirectPromptManager()
 
 
 @asynccontextmanager
@@ -794,7 +547,7 @@ else:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
-    """Process a financial query and return the response."""
+    """Process a financial query and return the response using direct prompts."""
     global shared_mcp_server, shared_session
 
     request_id = str(uuid.uuid4())[:8]
@@ -825,29 +578,30 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     try:
         # Use shared instances instead of creating new ones
-        # Use provided model or default to first available model
-        active_model = request.model if request.model else settings.available_models[0]
-        result = await process_financial_query(
-            stripped_message, shared_session, shared_mcp_server, request_id, active_model
+        # Detect analysis intent
+        analysis_intent = direct_prompt_manager.detect_analysis_intent(stripped_message)
+        
+        # Generate direct prompt
+        prompt_data = direct_prompt_manager.generate_direct_prompt(
+            stripped_message, 
+            analysis_intent
         )
-
-        response_time = time.time() - start_time
-
-        if result["success"]:
-            log_api_response(logger, 200, response_time, request_id=request_id)
-            return ChatResponse(response=result["response"], metadata=result.get("metadata"))
-
-        if result["error_type"] == "guardrail":
+        
+        # Extract ticker if present
+        ticker = direct_prompt_manager.extract_ticker_from_message(stripped_message)
+        
+        # For now, return a placeholder response with the direct prompt data
+        # This will be updated in Task 1.6 to actually call the AI model
+        response_text = f"""Direct prompt generated:
+System: {prompt_data['system_prompt'][:100]}...
+User: {prompt_data['user_prompt']}
+Intent: {prompt_data['analysis_intent']}
+Ticker: {ticker or 'None detected'}"""
+        
             response_time = time.time() - start_time
-            log_api_response(logger, 400, response_time, request_id=request_id)
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
-
-        response_time = time.time() - start_time
-        log_api_response(logger, 500, response_time, request_id=request_id)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Agent error: {result['error']}",
-        )
+        log_api_response(logger, 200, response_time, request_id=request_id)
+        
+        return ChatResponse(response=response_text)
 
     except HTTPException:
         raise
@@ -868,250 +622,16 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         ) from e
 
 
-# ====== NEW PROMPT TEMPLATES API ENDPOINTS ======
+# ====== PROMPT TEMPLATES API ENDPOINTS REMOVED ======
+# Removed as part of direct prompt migration
 
 
-@app.get("/api/v1/prompts/templates", response_model=TemplateListResponse)
-async def get_prompt_templates():
-    """List all available prompt templates."""
-    try:
-        # Convert to response format
-        templates = {}
-        for template_type in AnalysisType:
-            templates[template_type.value] = PromptTemplateInfo(
-                templateId=template_type,
-                available=True,
-                mode=PromptMode.CONVERSATIONAL,
-                enhanced_formatting=True,
-                description=f"{template_type.value.replace('_', ' ').title()} analysis template",
-            )
-
-        return TemplateListResponse(
-            mode="conversational_only", templates=templates, total_count=len(templates)
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve templates: {str(e)}",
-        ) from e
+# ====== BUTTON ANALYSIS ENDPOINTS REMOVED ======
+# Removed as part of direct prompt migration
 
 
-@app.post("/api/v1/prompts/generate", response_model=GeneratePromptResponse)
-async def generate_prompt_endpoint(request: GeneratePromptRequest):
-    """Generate a prompt using the specified template and parameters."""
-    try:
-        # Convert AnalysisType to PromptType
-        prompt_type_map = {
-            AnalysisType.SNAPSHOT: PromptType.SNAPSHOT,
-            AnalysisType.SUPPORT_RESISTANCE: PromptType.SUPPORT_RESISTANCE,
-            AnalysisType.TECHNICAL: PromptType.TECHNICAL,
-        }
-
-        prompt_type = prompt_type_map[request.template_type]
-
-        # Generate the prompt
-        generated_prompt, ticker_context = prompt_manager.generate_prompt(
-            prompt_type=prompt_type,
-            ticker=request.ticker,
-            custom_instructions=request.custom_instructions,
-        )
-
-        # Convert ticker context to response format
-        ticker_info = TickerContextInfo(
-            symbol=ticker_context.symbol,
-            company_name=ticker_context.company_name,
-            sector=ticker_context.sector,
-            last_mentioned=ticker_context.last_mentioned,
-            confidence=ticker_context.confidence,
-            source=ticker_context.source,
-        )
-
-        return GeneratePromptResponse(
-            prompt=generated_prompt,
-            ticker_context=ticker_info,
-            template_type=request.template_type,
-            mode=request.mode,
-        )
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to generate prompt: {str(e)}",
-        ) from e
-
-
-# ====== UNIFIED BUTTON ANALYSIS ENDPOINT ======
-
-
-@app.post("/api/v1/analysis/{analysis_type}", response_model=ButtonAnalysisResponse)
-async def get_button_analysis(analysis_type: AnalysisType, request: ButtonAnalysisRequest):
-    """Unified endpoint for all button-triggered analysis requests."""
-    global shared_mcp_server, shared_session
-
-    # Validate ticker input
-    if not request.ticker or len(request.ticker.strip()) < 1:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Ticker symbol is required for {analysis_type.value} analysis.",
-        )
-
-    ticker = request.ticker.strip().upper()
-
-    # Basic ticker validation (alphanumeric, 1-10 characters typically)
-    if not ticker.replace(".", "").replace("-", "").isalnum() or len(ticker) > 10:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid ticker symbol format: {ticker}. Please use a valid stock symbol.",
-        )
-
-    try:
-        # Generate appropriate query based on analysis type
-        query_templates = {
-            AnalysisType.SNAPSHOT: (
-                f"Provide a comprehensive stock snapshot analysis for {ticker}. "
-                "Include current price, volume, OHLC data, and recent performance metrics "
-                "with clear explanations."
-            ),
-            AnalysisType.SUPPORT_RESISTANCE: (
-                f"Analyze key support and resistance levels for {ticker}. "
-                "Identify 3 support levels and 3 resistance levels with explanations "
-                "of their significance for trading decisions."
-            ),
-            AnalysisType.TECHNICAL: (
-                f"Provide comprehensive technical analysis for {ticker} using "
-                "key indicators including RSI, MACD, and moving averages. Explain momentum "
-                "and trend direction with trading recommendations."
-            ),
-        }
-
-        query = query_templates[analysis_type]
-
-        # Use shared instances instead of creating new ones
-        result = await process_financial_query(
-            query, shared_session, shared_mcp_server, None, settings.available_models[0]
-        )
-
-        if result["success"]:
-            return ButtonAnalysisResponse(
-                analysis=result["response"],
-                ticker=ticker,
-                analysis_type=analysis_type,
-                success=True,
-            )
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"{analysis_type.value.title()} analysis failed: {result['error']}",
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"{analysis_type.value.title()} analysis error: {str(e)}",
-        ) from e
-
-
-# Legacy endpoints for backward compatibility (redirect to unified endpoint)
-@app.post("/api/v1/analysis/snapshot", response_model=ButtonAnalysisResponse)
-async def get_stock_snapshot_legacy(request: ButtonAnalysisRequest):
-    """Legacy endpoint - redirects to unified endpoint."""
-    return await get_button_analysis(AnalysisType.SNAPSHOT, request)
-
-
-@app.post("/api/v1/analysis/support-resistance", response_model=ButtonAnalysisResponse)
-async def get_support_resistance_legacy(request: ButtonAnalysisRequest):
-    """Legacy endpoint - redirects to unified endpoint."""
-    return await get_button_analysis(AnalysisType.SUPPORT_RESISTANCE, request)
-
-
-@app.post("/api/v1/analysis/technical", response_model=ButtonAnalysisResponse)
-async def get_technical_analysis_legacy(request: ButtonAnalysisRequest):
-    """Legacy endpoint - redirects to unified endpoint."""
-    return await get_button_analysis(AnalysisType.TECHNICAL, request)
-
-
-# ====== ENHANCED CHAT ANALYSIS ======
-
-
-@app.post("/api/v1/analysis/chat", response_model=ChatAnalysisResponse)
-async def process_chat_analysis(request: ChatAnalysisRequest):
-    """Process a chat message with financial analysis using the agent system."""
-    global shared_mcp_server, shared_session
-
-    try:
-        # Detect analysis type if not provided
-        analysis_type = request.analysis_type
-        if analysis_type is None:
-            detected_type = prompt_manager.detect_analysis_type(request.message)
-            if detected_type:
-                analysis_type_map = {
-                    PromptType.SNAPSHOT: AnalysisType.SNAPSHOT,
-                    PromptType.SUPPORT_RESISTANCE: AnalysisType.SUPPORT_RESISTANCE,
-                    PromptType.TECHNICAL: AnalysisType.TECHNICAL,
-                }
-                analysis_type = analysis_type_map.get(detected_type)
-
-        # Convert chat history to the format expected by the system
-        chat_history = None
-        if request.chat_history:
-            chat_history = [
-                {"content": msg.content, "role": msg.role} for msg in request.chat_history
-            ]
-
-        # Use shared instances instead of creating new ones
-        result = await process_financial_query(
-            request.message.strip(),
-            shared_session,
-            shared_mcp_server,
-            None,
-            settings.available_models[0],
-        )
-
-        if result["success"]:
-            # Extract ticker if possible
-            ticker_context = ticker_extractor.extract_ticker(request.message, chat_history)
-
-            return ChatAnalysisResponse(
-                response=result["response"],
-                analysis_type=analysis_type,
-                ticker_detected=(
-                    ticker_context.symbol if ticker_context.symbol != "[TICKER]" else None
-                ),
-                confidence=ticker_context.confidence,
-                follow_up_questions=(
-                    [
-                        f"Would you like a detailed technical analysis for "
-                        f"{ticker_context.symbol}?",
-                        f"Should we examine support and resistance levels for "
-                        f"{ticker_context.symbol}?",
-                        "Would you like to analyze a different stock?",
-                    ]
-                    if ticker_context.symbol != "[TICKER]"
-                    else [
-                        "Which stock would you like to analyze?",
-                        "Would you like a market snapshot or technical analysis?",
-                    ]
-                ),
-                success=True,
-            )
-
-        if result["error_type"] == "guardrail":
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Analysis failed: {result['error']}",
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Chat analysis failed: {str(e)}",
-        ) from e
+# ====== ENHANCED CHAT ANALYSIS ENDPOINT REMOVED ======
+# Removed as part of direct prompt migration
 
 
 # ====== SYSTEM STATUS ENDPOINTS ======
@@ -1123,8 +643,8 @@ async def get_system_status():
     try:
         metrics = SystemMetrics(
             api_version="1.0.0",
-            prompt_templates_loaded=len(PromptType),
-            supported_analysis_types=list(AnalysisType),
+            prompt_templates_loaded=0,  # Direct prompts implemented
+            supported_analysis_types=[],  # Direct prompts don't use predefined types
         )
 
         return SystemStatusResponse(status="operational", metrics=metrics)
@@ -1135,72 +655,8 @@ async def get_system_status():
         ) from e
 
 
-# ====== LEGACY COMPATIBILITY ENDPOINTS ======
-
-
-@app.get("/templates")
-async def get_templates_legacy():
-    """Legacy endpoint for template data (redirects to v1 API)."""
-    try:
-        # Get templates using the same logic as the v1 endpoint
-        templates = []
-        for template_type in AnalysisType:
-            templates.append(
-                {
-                    "id": template_type.value,
-                    "type": template_type.value,
-                    "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
-                    "description": f"{template_type.value.replace('_', ' ').title()} analysis template",
-                    "template": f"Provide {template_type.value.replace('_', ' ')} analysis for {{ticker}}",
-                    "icon": (
-                        "📈"
-                        if template_type == AnalysisType.SNAPSHOT
-                        else "🔧" if template_type == AnalysisType.TECHNICAL else "🎯"
-                    ),
-                    "requiresTicker": True,
-                    "followUpQuestions": [
-                        "Would you like more details on this analysis?",
-                        "Should we analyze another stock?",
-                    ],
-                }
-            )
-
-        return {"success": True, "templates": templates, "total_count": len(templates)}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve templates: {str(e)}",
-        ) from e
-
-
-@app.get("/analysis-tools")
-async def get_analysis_tools_legacy():
-    """Legacy endpoint for analysis tools data."""
-    try:
-        analysis_tools = []
-        for template_type in AnalysisType:
-            analysis_tools.append(
-                {
-                    "id": template_type.value,
-                    "name": f"{template_type.value.replace('_', ' ').title()} Analysis",
-                    "description": f"Get {template_type.value.replace('_', ' ')} analysis for any stock",
-                    "icon": (
-                        "📈"
-                        if template_type == AnalysisType.SNAPSHOT
-                        else "🔧" if template_type == AnalysisType.TECHNICAL else "🎯"
-                    ),
-                    "endpoint": f"/api/v1/analysis/{template_type.value.replace('_', '-')}",
-                    "requiresTicker": True,
-                    "category": "financial_analysis",
-                }
-            )
-
-        return {"success": True, "tools": analysis_tools, "total_count": len(analysis_tools)}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve analysis tools: {str(e)}",
-        ) from e
+# ====== LEGACY COMPATIBILITY ENDPOINTS REMOVED ======
+# Removed as part of direct prompt migration
 
 
 # ====== HEALTH CHECK ENDPOINTS ======
@@ -1392,7 +848,6 @@ async def cli_async():
     print("Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.")
 
     try:
-        session = SQLiteSession(settings.agent_session_name)
         server = create_polygon_mcp_server()
 
         async with server:
@@ -1407,13 +862,21 @@ async def cli_async():
                         print("Please enter a valid query (at least 2 characters).")
                         continue
 
-                    # Use the shared processing function
-                    result = await process_financial_query(
-                        user_input, session, server, None, settings.available_models[0]
-                    )
+                    # Use direct prompt system
+                    analysis_intent = direct_prompt_manager.detect_analysis_intent(user_input)
+                    prompt_data = direct_prompt_manager.generate_direct_prompt(user_input, analysis_intent)
+                    ticker = direct_prompt_manager.extract_ticker_from_message(user_input)
+                    
+                    # For now, return a placeholder response
+                    # This will be updated to actually call the AI model
+                    response_text = f"""Direct prompt generated:
+System: {prompt_data['system_prompt'][:100]}...
+User: {prompt_data['user_prompt']}
+Intent: {prompt_data['analysis_intent']}
+Ticker: {ticker or 'None detected'}"""
+                    
                     print("\r", end="")
 
-                    if result["success"]:
                         # Create a mock output object for print_response compatibility
                         class MockOutput:
                             """Mock output object for print_response compatibility."""
@@ -1421,33 +884,7 @@ async def cli_async():
                             def __init__(self, response):
                                 self.final_output = response
 
-                        print_response(MockOutput(result["response"]))
-                    else:
-                        if result["error_type"] == "guardrail":
-                            # Create a mock exception for print_guardrail_error compatibility
-                            class MockException:
-                                """Mock exception for print_guardrail_error compatibility."""
-
-                                def __init__(self, error_msg):
-                                    # Extract reasoning if present
-                                    if " Reasoning: " in error_msg:
-                                        reasoning = error_msg.split(" Reasoning: ", 1)[1].split(
-                                            " Please ask about", 1
-                                        )[0]
-
-                                        class OutputInfo:
-                                            """Mock output info for error reasoning."""
-
-                                            def __init__(self, reasoning):
-                                                self.reasoning = reasoning
-
-                                        self.output_info = OutputInfo(reasoning)
-                                    else:
-                                        self.output_info = None
-
-                            print_guardrail_error(MockException(result["error"]))
-                        else:
-                            print_error(result["error"], "Agent Error")
+                    print_response(MockOutput(response_text))
 
                 except (EOFError, KeyboardInterrupt):
                     print("\nGoodbye!")

@@ -27,7 +27,6 @@ try:
         print_error,
         print_guardrail_error,
         print_response,
-        process_financial_query,
         save_analysis_report,
     )
 except ImportError as e:
@@ -41,30 +40,15 @@ except ImportError as e:
     )
 
 try:
-    from .api_models import (  # Enums; Core API models; Template management models; System status models; Error handling models; Utility models
-        AnalysisType,
-        AnalysisTypeDetectionRequest,
-        AnalysisTypeDetectionResponse,
+    from .api_models import (  # Core API models; System status models; Error handling models; Utility models
         APIErrorResponse,
-        ButtonAnalysisRequest,
-        ButtonAnalysisResponse,
-        ChatAnalysisRequest,
-        ChatAnalysisResponse,
         ChatMessage,
         ErrorDetail,
         FollowUpQuestionsResponse,
-        GeneratePromptRequest,
-        GeneratePromptResponse,
-        PromptMode,
-        PromptTemplateInfo,
         SuccessResponse,
         SystemHealthResponse,
         SystemMetrics,
         SystemStatusResponse,
-        TemplateListResponse,
-        TickerContextInfo,
-        TickerExtractionRequest,
-        TickerExtractionResponse,
         ValidationErrorResponse,
     )
 except ImportError as e:
@@ -75,25 +59,7 @@ except ImportError as e:
         f"API models imports failed: {e}. Some features may not be available.", ImportWarning
     )
 
-try:
-    from .prompt_templates import (  # Core classes; Enums; Utility functions
-        PromptTemplate,
-        PromptTemplateManager,
-        PromptType,
-        TickerContext,
-        TickerExtractor,
-        run_prompt_consistency_tests,
-        test_dual_mode_behavior,
-        validate_template_parsing_compatibility,
-    )
-except ImportError as e:
-    # Prompt templates module may have dependency issues
-    import warnings
-
-    warnings.warn(
-        f"Prompt templates imports failed: {e}. Template features may not be available.",
-        ImportWarning,
-    )
+# Prompt templates module removed as part of direct prompt migration
 
 # Package metadata
 __version__ = "1.0.0"
@@ -105,7 +71,6 @@ __all__ = [
     # FastAPI app
     "app",
     # Core functions
-    "process_financial_query",
     "create_polygon_mcp_server",
     "cli_async",
     # Response utilities
@@ -119,25 +84,6 @@ __all__ = [
     "FinanceOutput",
     "ChatRequest",
     "ChatResponse",
-    # Analysis types
-    "AnalysisType",
-    "PromptMode",
-    "PromptType",
-    # API models
-    "ChatMessage",
-    "ChatAnalysisRequest",
-    "ChatAnalysisResponse",
-    "ButtonAnalysisRequest",
-    "ButtonAnalysisResponse",
-    "GeneratePromptRequest",
-    "GeneratePromptResponse",
-    # Template management
-    "PromptTemplateManager",
-    "PromptTemplate",
-    "TickerExtractor",
-    "TickerContext",
-    "PromptTemplateInfo",
-    "TemplateListResponse",
     # System monitoring
     "SystemHealthResponse",
     "SystemStatusResponse",
@@ -147,15 +93,6 @@ __all__ = [
     "APIErrorResponse",
     "ValidationErrorResponse",
     # Utility models
-    "TickerContextInfo",
     "FollowUpQuestionsResponse",
     "SuccessResponse",
-    "AnalysisTypeDetectionRequest",
-    "AnalysisTypeDetectionResponse",
-    "TickerExtractionRequest",
-    "TickerExtractionResponse",
-    # Testing utilities
-    "run_prompt_consistency_tests",
-    "validate_template_parsing_compatibility",
-    "test_dual_mode_behavior",
 ]
