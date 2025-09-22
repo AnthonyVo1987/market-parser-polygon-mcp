@@ -2,7 +2,33 @@
 import React from 'react';
 import { logger } from './utils/logger';
 
+// React Scan integration for performance monitoring
+import { scan } from 'react-scan/all-environments';
+
 if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
+  // Configure React Scan for performance monitoring
+  scan({
+    enabled: import.meta.env?.MODE === 'development',
+    log: false,
+    showToolbar: true,
+    animationSpeed: 'fast',
+    trackUnnecessaryRenders: true,
+    onRender: (fiber, renders) => {
+      try {
+        if (renders.length > 1) {
+          console.warn(`🔄 Unnecessary render detected: ${fiber.type?.name || 'Unknown'}`, {
+            component: fiber.type?.name || 'Unknown',
+            renderCount: renders.length,
+            props: fiber.memoizedProps,
+            state: fiber.memoizedState
+          });
+        }
+      } catch (error) {
+        console.error('React Scan onRender error:', error);
+      }
+    }
+  });
+
   void import('@welldone-software/why-did-you-render').then(
     whyDidYouRenderModule => {
       const whyDidYouRender = whyDidYouRenderModule.default;

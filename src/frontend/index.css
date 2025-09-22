@@ -4,7 +4,6 @@
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
   --text-tertiary: #6b7280;
-  --text-quaternary: #4b5563;
   --text-muted: #9ca3af;
   --text-inverse: #000000;
 
@@ -12,33 +11,23 @@
   --accent-trust: #7c3aed;
   --accent-trust-hover: #8b5cf6;
   --accent-trust-active: #6d28d9;
-  --accent-trust-disabled: #4c1d95;
 
   /* Info Colors */
   --accent-info: #3b82f6;
   --accent-info-hover: #2563eb;
-  --accent-info-active: #1d4ed8;
 
   /* Success Colors */
   --accent-success: #10b981;
   --accent-success-hover: #059669;
-  --financial-bullish-3: #34d399;
 
   /* Error Colors */
   --accent-error: #ef4444;
   --accent-error-hover: #dc2626;
-  --financial-bearish-3: #f87171;
-
-  /* Neutral Colors */
-  --neutral-color: #6b7280;
 
   /* Gradients */
   --gradient-trust: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
   --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
   --gradient-error: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
-  --gradient-error-subtle: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(248, 113, 113, 0.1) 100%);
-  --gradient-surface-2: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-  --gradient-surface-3: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
 
   /* Focus Ring */
   --focus-ring: #7c3aed;
@@ -67,7 +56,6 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
   /* Glassmorphic Design System */
   --glass-surface-light: rgba(255, 255, 255, 0.05);
@@ -81,12 +69,11 @@
   --glass-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
   --glass-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.2);
   --glass-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.25);
-  --glass-shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.3);
 
   /* Backdrop Filters */
-  --backdrop-blur-sm: blur(8px);
-  --backdrop-blur-md: blur(12px);
-  --backdrop-blur-lg: blur(16px);
+  --backdrop-blur-sm: blur(4px);
+  --backdrop-blur-md: blur(6px);
+  --backdrop-blur-lg: blur(8px);
 
   /* Theme-specific Glass Surfaces */
   --glass-surface-chat: rgba(59, 130, 246, 0.08);
@@ -148,6 +135,9 @@ body {
   position: relative;
   border: var(--glass-border-subtle);
   box-shadow: var(--glass-shadow-lg);
+  contain: layout style;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Background Pattern */
@@ -179,6 +169,7 @@ body {
   border-right: var(--border-chat);
   box-shadow: var(--border-glow-chat);
   position: relative;
+  contain: paint;
 }
 
 /* Right Sidebar Panel - Enhanced Glassmorphic Design */
@@ -196,6 +187,7 @@ body {
   padding: var(--spacing-lg);
   gap: var(--spacing-lg);
   position: relative;
+  contain: style;
 }
 
 /* Bottom Control Panel - Enhanced Glassmorphic Design */

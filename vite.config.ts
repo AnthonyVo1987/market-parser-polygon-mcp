@@ -1,4 +1,6 @@
 import react from '@vitejs/plugin-react'
+import browserslist from 'browserslist'
+import { browserslistToTargets } from 'lightningcss'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -13,6 +15,9 @@ export default defineConfig(({ command, mode }) => {
   const isProduction = mode === 'production'
   const isDevelopment = mode === 'development'
   const isBuild = command === 'build'
+
+  // Lightning CSS browser targets
+  const targets = browserslistToTargets(browserslist('>= 0.25%', 'not dead'))
 
   return {
     // Build configuration
@@ -209,6 +214,15 @@ export default defineConfig(({ command, mode }) => {
           chunkFileNames: 'js/[name].[hash].js',
           entryFileNames: 'js/[name].[hash].js'
         }
+      }
+    },
+    // CSS optimization with Lightning CSS
+    css: {
+      transformer: 'lightningcss',
+      lightningcss: {
+        targets,
+        minify: isProduction,
+        sourceMap: isProduction
       }
     },
     // Phase 1: Dependency optimization for faster cold starts
