@@ -1,7 +1,6 @@
 # Code Review Task
 
-- Use Serena Tools, `mcp__sequential-thinking__sequentialthinking` tool for systematic approach & Use `mcp__context7__resolve-library-id` + `mcp__context7__get-library-docs` to perform research to have the most update to date best, robust, modern practices, latest documentation, latest framework(s) notes to Perform comprehensive code review of JUST THE CHANGED FILES\DOCS ONLY - DO NOT REVIEW FILES\DOCS THAT HAVE NOTHING TO DO WITH RECENT CHANGES
-- Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination (Multi-file operations (3+ files))
+- Use the tools AS OFTEN AS NEEDED & IN ANY ORDER AS NEEDED: Sequential-Thinking, Serena Tools, FileSystem Tools, Context7 Tools for Researching Robust most update to date best, robust, modern practices, latest documentation, latest framework(s) to perform the task(s): perform comprehensive code review of JUST THE CHANGED FILES\DOCS ONLY - DO NOT REVIEW FILES\DOCS THAT HAVE NOTHING TO DO WITH RECENT CHANGES
 - Use standard Read/Write/Edit tools for single-file operations
 - Continue review/fix loop until achieving PASSING code review status
 - PROCEED TO REMAINING Summary Task, Atomic Git Commit & Push Task, & Final Verification Task
