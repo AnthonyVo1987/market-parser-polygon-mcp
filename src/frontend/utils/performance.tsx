@@ -87,7 +87,7 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
     const backdropFilterElements = document.querySelectorAll('*');
     backdropFilterElements.forEach(element => {
         const computedStyle = window.getComputedStyle(element);
-        if (computedStyle.backdropFilter !== 'none' || computedStyle.webkitBackdropFilter !== 'none') {
+        if (computedStyle.backdropFilter !== 'none' || (computedStyle as any).webkitBackdropFilter !== 'none') {
             metrics.backdropFilterCount!++;
         }
     });
@@ -408,7 +408,7 @@ export function usePerformanceMonitoring() {
         };
 
         const handleIdle = () => {
-            if (window.requestIdleCallback) {
+            if (typeof window.requestIdleCallback === 'function') {
                 requestIdleCallback(updateMetrics, { timeout: 5000 });
             } else {
                 // Fallback for browsers without requestIdleCallback

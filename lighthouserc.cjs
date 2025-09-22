@@ -1,6 +1,7 @@
-export default {
+module.exports = {
     ci: {
         collect: {
+            url: ['http://localhost:5500'],
             numberOfRuns: 5,
             settings: {
                 preset: 'desktop',
