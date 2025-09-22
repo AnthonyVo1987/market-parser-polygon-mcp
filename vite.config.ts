@@ -107,6 +107,7 @@ export default defineConfig(({ command, mode }) => {
         gzipSize: true,
         brotliSize: true,
         template: 'treemap', // treemap, sunburst, network
+        projectRoot: '.',
         title: `Bundle Analysis - ${mode.toUpperCase()}`,
         sourcemap: isProduction // Enable source map analysis in production
       })
