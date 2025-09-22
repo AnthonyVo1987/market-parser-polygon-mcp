@@ -638,8 +638,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           role='complementary'
           aria-label='Export and recent message functions'
         >
-          {hasMessages && (
-            <div className='export-recent-container'>
+          <div className='export-recent-container'>
+            {hasMessages && (
               <Suspense
                 fallback={
                   <div className='component-loading'>
@@ -649,17 +649,17 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               >
                 <RecentMessageButtons messages={messages} />
               </Suspense>
-              <Suspense
-                fallback={
-                  <div className='component-loading'>
-                    Loading export options...
-                  </div>
-                }
-              >
-                <ExportButtons messages={messages} />
-              </Suspense>
-            </div>
-          )}
+            )}
+            <Suspense
+              fallback={
+                <div className='component-loading'>
+                  Loading export options...
+                </div>
+              }
+            >
+              <ExportButtons messages={messages} />
+            </Suspense>
+          </div>
         </section>
 
         {/* SECTION 7: Debug Panel */}

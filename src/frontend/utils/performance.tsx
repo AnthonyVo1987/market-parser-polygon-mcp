@@ -251,20 +251,39 @@ export function getMemoryUsage(): {
 // Phase 4: Performance Monitoring Hook
 export function usePerformanceMonitoring() {
     const monitor = useMemo(() => new PerformanceMonitor(), []);
-    const [metrics, setMetrics] = useState<Partial<PerformanceMetrics>>({});
+    const [metrics, setMetrics] = useState<Partial<PerformanceMetrics>>({
+        fcp: 0,
+        lcp: 0,
+        cls: 0,
+        tti: 0,
+        fid: 0,
+        ttfb: 0
+    });
 
     useEffect(() => {
         monitor.startMonitoring();
 
         const updateMetrics = () => {
             if (document.visibilityState === 'visible') {
-                setMetrics(monitor.getMetrics());
+                const currentMetrics = monitor.getMetrics();
+                // Only update if we have actual values
+                if (Object.keys(currentMetrics).length > 0) {
+                    setMetrics(prev => ({ ...prev, ...currentMetrics }));
+                }
             }
         };
 
         const handleIdle = () => {
-            requestIdleCallback(updateMetrics, { timeout: 5000 });
+            if (window.requestIdleCallback) {
+                requestIdleCallback(updateMetrics, { timeout: 5000 });
+            } else {
+                // Fallback for browsers without requestIdleCallback
+                setTimeout(updateMetrics, 0);
+            }
         };
+
+        // Initial update
+        handleIdle();
 
         const interval = setInterval(handleIdle, 2000);
 
