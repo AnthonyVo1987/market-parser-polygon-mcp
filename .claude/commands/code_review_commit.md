@@ -4,6 +4,7 @@
 - Optional `mcp__filesystem__*` tools for EFFICIENT file operations and examination (Multi-file operations (3+ files))
 - Use standard Read/Write/Edit tools for single-file operations
 - Continue review/fix loop until achieving PASSING code review status
+- PROCEED TO REMAINING Summary Task, Atomic Git Commit & Push Task, & Final Verification Task
 
 # Summary Task
 
@@ -33,7 +34,12 @@
 - Create single atomic git commit containing ALL : CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHOTS\VIDEOS ETC
 - **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
 - the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
-- git Push commit to repository using provided personal access token
+
+- ## 🚨 MANDATORY: DOUBLE CHECK THAT CLAUDE.MD HAS NO MORE CHANGES AND THAT YOU WILL COMMIT CLAUDE.MD ATOMICALY
+
+- ## 🚨 MANDATORY: YOU ARE NOT ALLOWED TO PERFORM 2 SEPARATE COMMITS WITH A SEPARATE CLAUDE.MD COMMIT
+
+- git commit to repository using provided personal access token
 - **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
 
 # Final Verification Task
@@ -41,3 +47,5 @@
 - Run final `git status` to confirm successful commit and push
 - Verify working tree is clean and branch is up-to-date with remote
 - Confirm all changes are properly git committed and git pushed
+- NO LINGERING UNCOMMITTED CLAUDE.MD
+- CLAUDE.MD COMMIT ALONG WITH THE REST OF FILES
