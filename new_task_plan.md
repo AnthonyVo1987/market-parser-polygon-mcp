@@ -1,9 +1,3 @@
-Here's the prompt to assign to an AI Agent:
-
----
-
-**AI Agent Task Assignment: Execute POST-IMPLEMENTATION TASKS for UI Performance Optimization**
-
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s)
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
@@ -65,43 +59,8 @@ SUCCESS CRITERIA:
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## Task Details
+###
 
-**Primary Objective**: Execute all POST-IMPLEMENTATION TASKS from the UI Performance Optimization Implementation Plan
+## New Task Details
 
-**Task Location**: `docs/implementation_plans/UI_Performance_Optimization_Implementation_Plan.md`
-
-**Context**:
-
-- All PRE-IMPLEMENTATION TASKS (6 tasks) have been completed
-- All PHASE 1 tasks (15 tasks) have been completed  
-- All PHASE 2 tasks (18 tasks) have been completed
-- All PHASE 3 tasks (3 tasks) have been completed
-- Environment is fully synced and performance monitoring infrastructure is operational
-
-**Requirements**:
-
-1. Read and analyze the POST-IMPLEMENTATION TASKS section from the implementation plan
-2. Execute each task systematically using appropriate tools
-3. Verify completion of each task through testing and validation
-4. Document progress and results throughout the process
-5. Use comprehensive tool usage patterns as specified above
-6. Follow the mandatory tool usage requirements continuously
-
-**Expected Deliverables**:
-
-- Complete execution of all POST-IMPLEMENTATION TASKS
-- Comprehensive testing and validation of performance optimizations
-- Updated documentation reflecting completed work
-- Performance metrics and baseline comparisons
-- Final verification of all optimization implementations
-
-**Critical Notes**:
-
-- This is the final phase of the UI Performance Optimization project
-- All previous phases have been completed and verified
-- Focus on testing, validation, and final performance verification
-- Ensure all performance monitoring and measurement tools are working correctly
-- Generate final performance reports and documentation
-
-Begin by reading the POST-IMPLEMENTATION TASKS section and proceed with systematic execution using the mandatory tool usage patterns specified above.
+- Use your toolkit to  Research from the main repo instructions on how we can get Serena to work in our project for our ENTIRE Stack: <https://github.com/oraios/serena>. The main issue I see is that the Python fix was a config issue.  BUT, if we changed Serena config to Python, that most likely broke typescript and\or the rest of our Stack's lanuagaes.. so find out if it is possible to have multiple languages configured for Serena, of if it is not currently possible etc
