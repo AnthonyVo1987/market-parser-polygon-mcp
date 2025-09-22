@@ -95,3 +95,4 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 - Confirm all changes are properly git committed and git pushed
 - NO LINGERING UNCOMMITTED CLAUDE.MD
 - CLAUDE.MD COMMIT ALONG WITH THE REST OF FILES
+- **CRITICAL**: If there are additional CLAUDE.md changes after you committed, check if the changes are just cosmetic\formatting only.  If just cosmetic and no functional changes, just discard the changes since nothing to commit. We do NOT want to create a 2nd commit of JUST formatting changes to CLAUDE.md because that will violate the single atomic commit rule
