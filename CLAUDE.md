@@ -9,29 +9,33 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-**Implementation Plan Phase Restructuring - Complete**
+**Code Review Commit Workflow Restructuring - Complete**
 
-docs: restructure implementation plan phases to separate implementation from testing
+docs: restructure code review commit workflow into numbered TODO checklist
 
-- Rename Phase 3 from 'Integration & Testing' to 'Integration & Implementation'
-- Create new Phase 4: 'Testing & Validation' for pure testing tasks
-- Move testing tasks (3.3.1-3.3.5) from Phase 3 to Phase 4 (4.1.1-4.1.5)
-- Keep implementation tasks (package dependencies, configuration, documentation) in Phase 3
-- Update migration strategy section to reflect new phase structure
-- Ensure clear separation between development/implementation and testing phases
+- Convert workflow from high-level sections to 50 granular numbered steps
+- Add critical workflow order section with mandatory sequence enforcement
+- Enhance summary tasks with commit message caching instructions
+- Strengthen staging tasks with 10 mandatory verification checks
+- Add recovery tasks for staging failure scenarios
+- Emphasize single atomic commit rule throughout workflow
+- Include post-commit file change handling procedures
+- Prevent separate commits for CLAUDE.md violations
 
 **Files Modified:**
 
-- docs/implementation_plans/direct_prompt_migration_implementation_plan.md (restructured phases)
+- .cursor/commands/code_review_commit.md (complete workflow restructure)
 - new_task_plan.md (updated with new task details)
 - CLAUDE.md (updated completion summary)
 
-**Phase Structure:**
+**Workflow Structure:**
 
-- Phase 3: Integration & Implementation (file changes, config updates, documentation)
-- Phase 4: Testing & Validation (pure testing and validation activities)
+- 50 numbered steps with verification checkpoints
+- Mandatory sequence enforcement
+- Single atomic commit rule
+- Recovery procedures for staging failures
 
-Status: Implementation Plan Restructuring ✅ COMPLETED - Ready for Phase 3 Implementation
+Status: Code Review Commit Workflow Restructuring ✅ COMPLETED - Ready for Implementation
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
