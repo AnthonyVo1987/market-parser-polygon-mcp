@@ -63,4 +63,8 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## Task Details
 
-- Implement & Perform Phase 4 Testing & Validation from docs/implementation_plans/UI_Performance_Optimization_Implementation_Plan.md
+1. Review the Playwright Tools Testing Procedure & Proper Tool usage from our legacy testing doc docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md. This doc was the old test plan BEFORE we performed any of the Phases 1,2,3 & 4, so it is outdated, but it still has core critical info needed how to test with playwright tools
+
+2. Review an old test report test-reports/UI_Phase_5_Test_Report__25-09-21_14-29.md that was ran using the outdated docs/implementation_plans/UI_audit_fixes_Phase_5_Test_Plan.md
+
+3. Based on your understanding of the 2 docs you just reviewed, generate a brand new test plan .md doc that will properly follow testing procedures and use Playwright Tools to test our app that has been transformed with brand new UI and Layout.  You will need to ADD and CREATE new additional test cases for the latest app since the old test plans do NOT have all the changes from today

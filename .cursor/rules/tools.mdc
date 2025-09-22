@@ -4,10 +4,6 @@ globs:
 alwaysApply: true
 ---
 
-You're absolutely right. Let me create a comprehensive prompt that includes all the specific details and tool usage guidelines:
-
----
-
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s)
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
