@@ -9,56 +9,38 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat(perf): complete UI Performance Optimization Phase 4 - Testing & Validation
+feat(test): create comprehensive enhanced Playwright test plan for modern UI
 
-Phase 4 - Testing & Validation Implementation:
+Enhanced Playwright Test Plan Implementation:
 
-- Add environment-specific testing scripts (test:perf:dev, test:perf:staging, test:perf:prod, test:perf:all)
-- Enhance Lighthouse CI configuration for performance regression testing (5 runs, performance budget validation)
-- Fix TypeScript compilation errors in performance utilities and components
-- Validate all testing scripts across development, staging, and production environments
+- Create UI_Enhanced_Playwright_Test_Plan_2025.md with comprehensive test coverage
+- Update selectors from legacy id-based to modern data-testid attributes
+- Add test cases for new UI features: mobile sidebar, performance metrics, export functionality
+- Implement proper 30-second polling intervals for all test steps
+- Cover all 5 test phases: Layout, Mobile UI, Analysis, Performance, Export
 
-Phase 4.1 - Environment-Specific Testing:
+Test Plan Features:
 
-- test:perf:dev: Development build + staging lighthouse testing
-- test:perf:staging: Staging build + staging lighthouse testing  
-- test:perf:prod: Production build + production lighthouse testing
-- test:perf:all: Comprehensive testing across all environments
+- Modern 2-panel layout validation with glassmorphic design
+- Mobile sidebar functionality testing with responsive design
+- Performance metrics display and real-time status updates
+- Enhanced analysis buttons and export functionality testing
+- Comprehensive error handling and success criteria validation
 
-Phase 4.2 - Performance Regression Testing:
+Technical Improvements:
 
-- Enhanced lighthouserc.js with 5 runs (increased from 3) for better statistical accuracy
-- Added 'performance-budget': 'error' assertion for budget validation
-- Maintained existing performance thresholds (FCP<2s, Interactive<5s, etc.)
+- Fix model reference from gpt-5-nano to gpt-5-mini for accuracy
+- Use correct Playwright MCP tool names (mcp_playwright-backup_*)
+- Implement proper data-testid selectors for enhanced UI components
+- Add comprehensive test documentation with clear success criteria
 
-Code Quality Improvements:
+Test Coverage:
 
-- Fixed unused React import in AnalysisButton.tsx
-- Removed unused lastMessage variable in ChatInterface_OpenAI.tsx
-- Resolved TypeScript type issues in performance.tsx HOC
-- All builds now compile without errors
-
-Testing Validation Results:
-
-- Development build: 805KB (includes dev tools and debugging)
-- Staging build: 439KB (optimized for testing)
-- Production build: 249KB gzipped (highly optimized)
-- All builds include PWA functionality and performance monitoring
-- All testing scripts execute successfully with proper build outputs
-
-Complete UI Performance Optimization Pipeline:
-
-- Phase 0.5-1: Performance monitoring tools and critical fixes ✅
-- Phase 2: React performance optimization ✅  
-- Phase 3: Minor optimizations ✅
-- Phase 4: Testing & validation ✅
-
-Performance Targets Achieved:
-
-- Bundle size reduction: 850KB → 249KB gzipped (70% reduction)
-- Build optimization: All environments properly configured
-- Testing automation: Comprehensive performance regression testing
-- Code quality: Zero TypeScript errors, clean builds
+- 5 comprehensive test phases with 15+ individual test steps
+- All enhanced UI features covered: mobile sidebar, performance metrics, export
+- Proper error handling and validation for each test phase
+- Clear success criteria and expected results for all tests
+- Updated selectors matching current React component structure
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s)
