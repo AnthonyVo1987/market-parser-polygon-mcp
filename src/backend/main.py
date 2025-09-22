@@ -127,6 +127,7 @@ class Settings:
 
         # AI configuration from config file
         self.max_context_length: int = config_settings.backend["ai"]["maxContextLength"]
+        self.temperature: float = config_settings.backend["ai"]["temperature"]
         self.ai_pricing: dict = config_settings.backend["ai"]["pricing"]
 
         # Security configuration from config file
@@ -227,6 +228,16 @@ guardrail_agent = Agent(
     context words (price, market, earnings, shares). If unclear, return non-finance.
     Output: is_about_finance: bool, reasoning: brief why/why not.""",
     output_type=FinanceOutput,
+)
+
+# Main financial analysis agent
+finance_analysis_agent = Agent(
+    name="Financial Analysis Agent",
+    instructions="""You are a professional financial analyst with access to real-time market data.
+    Provide accurate, data-driven financial analysis and insights.
+    Use the available tools to gather current market information.
+    Focus on actionable insights and clear explanations.""",
+    tools=[save_analysis_report],
 )
 
 
@@ -590,15 +601,39 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         # Extract ticker if present
         ticker = direct_prompt_manager.extract_ticker_from_message(stripped_message)
         
-        # For now, return a placeholder response with the direct prompt data
-        # This will be updated in Task 1.6 to actually call the AI model
-        response_text = f"""Direct prompt generated:
-System: {prompt_data['system_prompt'][:100]}...
-User: {prompt_data['user_prompt']}
-Intent: {prompt_data['analysis_intent']}
-Ticker: {ticker or 'None detected'}"""
+        # Call the AI model with the direct prompt
+        try:
+            # Create context with MCP server for market data access
+            context = {
+                "mcp_server": shared_mcp_server,
+                "session": shared_session,
+                "temperature": settings.temperature,
+                "model": settings.available_models[0]
+            }
+            
+            # Run the financial analysis agent with the direct prompt
+            result = await Runner.run(
+                finance_analysis_agent, 
+                prompt_data['user_prompt'],
+                context=context
+            )
+            
+            # Extract the response
+            response_text = str(result.final_output)
+            
+        except Exception as e:
+            logger.error(f"AI model call failed: {e}")
+            response_text = f"Error: Unable to process request. {str(e)}"
+
+        response_time = time.time() - start_time
         
-            response_time = time.time() - start_time
+        # Log performance metrics for baseline measurement and monitoring
+        logger.info(f"Performance metrics - Response time: {response_time:.3f}s, Request ID: {request_id}")
+        
+        # Log token usage if available in metadata
+        if apiResponse.metadata and apiResponse.metadata.get('tokenCount'):
+            logger.info(f"Token usage - Input: {apiResponse.metadata.get('inputTokens', 'N/A')}, Output: {apiResponse.metadata.get('outputTokens', 'N/A')}, Total: {apiResponse.metadata.get('tokenCount', 'N/A')}")
+        
         log_api_response(logger, 200, response_time, request_id=request_id)
         
         return ChatResponse(response=response_text)
@@ -867,13 +902,29 @@ async def cli_async():
                     prompt_data = direct_prompt_manager.generate_direct_prompt(user_input, analysis_intent)
                     ticker = direct_prompt_manager.extract_ticker_from_message(user_input)
                     
-                    # For now, return a placeholder response
-                    # This will be updated to actually call the AI model
-                    response_text = f"""Direct prompt generated:
-System: {prompt_data['system_prompt'][:100]}...
-User: {prompt_data['user_prompt']}
-Intent: {prompt_data['analysis_intent']}
-Ticker: {ticker or 'None detected'}"""
+                    # Call the AI model with the direct prompt
+                    try:
+                        # Create context with MCP server for market data access
+                        context = {
+                            "mcp_server": server,
+                            "session": None,  # CLI doesn't use persistent session
+                            "temperature": settings.temperature,
+                            "model": settings.available_models[0]
+                        }
+                        
+                        # Run the financial analysis agent with the direct prompt
+                        result = await Runner.run(
+                            finance_analysis_agent, 
+                            prompt_data['user_prompt'],
+                            context=context
+                        )
+                        
+                        # Extract the response
+                        response_text = str(result.final_output)
+                        
+                    except Exception as e:
+                        print_error(e, "AI Model Error")
+                        response_text = f"Error: Unable to process request. {str(e)}"
                     
                     print("\r", end="")
 

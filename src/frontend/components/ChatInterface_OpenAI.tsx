@@ -18,9 +18,10 @@ import {
 } from '../hooks/useDebugLog';
 import { sendChatMessage } from '../services/api_OpenAI';
 import { AIModelId } from '../types/ai_models';
-import { Message } from '../types/chat_OpenAI';
+import { AnalysisButtonType, Message } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
 import { usePerformanceMonitoring } from '../utils/performance';
+import AnalysisButtons from './AnalysisButtons';
 
 // Consolidated state interface for useReducer
 interface ChatState {
@@ -360,6 +361,45 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     });
   }, [logInteraction]);
 
+  // Handle analysis button clicks
+  const handleAnalysisButtonClick = useCallback(async (buttonType: AnalysisButtonType, ticker?: string) => {
+    const targetTicker = ticker || sharedTicker;
+
+    if (!targetTicker) {
+      // If no ticker available, send a general message
+      await handleSendMessage(`Please provide ${buttonType.toLowerCase()} analysis`);
+      return;
+    }
+
+    // Create the appropriate message based on button type
+    let message = '';
+    switch (buttonType) {
+      case 'SNAPSHOT':
+        message = `Provide a snapshot analysis for ${targetTicker}`;
+        break;
+      case 'SUPPORT_RESISTANCE':
+        message = `Find support and resistance levels for ${targetTicker}`;
+        break;
+      case 'TECHNICAL':
+        message = `Technical analysis for ${targetTicker}`;
+        break;
+      default:
+        message = `Analyze ${targetTicker}`;
+    }
+
+    // Send the message directly
+    await handleSendMessage(message);
+
+    // Log the interaction
+    startTransition(() => {
+      logInteraction('analysis_button_click', 'analysis_buttons', {
+        buttonType,
+        ticker: targetTicker,
+        message,
+      });
+    });
+  }, [handleSendMessage, sharedTicker, logInteraction]);
+
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
   // Removed handleDebugAction as it's now handled internally by DebugPanel
 
@@ -564,6 +604,20 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               disabled={isLoading}
             />
           </Suspense>
+        </section>
+
+        {/* SECTION 5: Analysis Buttons */}
+        <section
+          className='analysis-buttons-section'
+          role='complementary'
+          aria-label='Quick analysis buttons'
+        >
+          <AnalysisButtons
+            onButtonClick={handleAnalysisButtonClick}
+            isLoading={isLoading}
+            currentTicker={deferredSharedTicker}
+            disabled={isLoading}
+          />
         </section>
 
 

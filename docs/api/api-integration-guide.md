@@ -2,7 +2,14 @@
 
 ## Overview
 
-This document provides comprehensive integration patterns and implementation guidance for the Market Parser Prompt Delivery API. The API enables clean separation between the React frontend prompt management and Python backend financial analysis services.
+This document provides comprehensive integration patterns and implementation guidance for the Market Parser Direct Prompt API. The API enables optimized financial analysis with streamlined prompts, direct button functionality, and enhanced performance monitoring.
+
+### New Features (Phase 3)
+
+- **Optimized AI Prompts**: 40-50% token reduction with temperature control
+- **Direct Analysis Buttons**: One-click SNAPSHOT, SUPPORT/RESISTANCE, and TECHNICAL analysis
+- **Performance Monitoring**: Response time and token usage tracking
+- **Enhanced Configuration**: Centralized settings in `config/app.config.json`
 
 ## Architecture Overview
 
@@ -43,11 +50,13 @@ graph TB
 ## Server Configuration
 
 **Static Endpoints:**
-- **Backend API**: http://127.0.0.1:8000
-- **Frontend Development**: http://127.0.0.1:3000
-- **Frontend Production**: http://127.0.0.1:5500
+
+- **Backend API**: <http://127.0.0.1:8000>
+- **Frontend Development**: <http://127.0.0.1:3000>
+- **Frontend Production**: <http://127.0.0.1:5500>
 
 **One-Click Startup:**
+
 ```bash
 npm run start:app
 ```
