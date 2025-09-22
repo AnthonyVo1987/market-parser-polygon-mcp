@@ -63,5 +63,8 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-- Use your toolkit to Analyze, Investigate, & Research our code base to understand how our current "Prompt Template" Loading System Works.  I'd like to make some changes in this path, so first let's understand how the current path and architecture works
-- After your research, generate a new .md file in docs folder with your analysis to explain how it works and also include a full execution flow trace for the entire flow, from the moment User either inputs a prompt in AI CHat and presses send AND also if user uses button prompt to load the prompt, and then press send.  Also include a diagram so we can visually understand the flow
+1. Read & Understand docs/prompt_template_system_analysis.md for some new tasks
+
+2. Based on your scoping doc, now use your entire toolkit, Context7 Tools for research, Sequential-Thinking for systematic approach, to then analyze and generate a fully detailed granular Implementation plan with TODO Task Checklist to fully perform the removal of the template loading system and migrating to simplified direct prompt sending.  The Plan will be targeted for an AI Agent to fully implement the feature, so spell everything out and provide as much context, background, docs to reference for any AI Agent to fully implement according to the scoping doc.  
+
+- DO NOT CREATE A NEW DOC YET FOR THE PLAN SO USER CAN REVIEW AND CHOOSE WHETHER TO APPROVE AND\OR REJECT THE PLAN
