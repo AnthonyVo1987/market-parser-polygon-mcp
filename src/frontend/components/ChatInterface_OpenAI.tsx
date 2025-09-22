@@ -135,9 +135,6 @@ const ExportButtons = lazy(() =>
 const RecentMessageButtons = lazy(() =>
   import('./RecentMessageButtons').then(module => ({ default: module.default }))
 );
-const AnalysisButton = lazy(() =>
-  import('./AnalysisButton').then(module => ({ default: module.default }))
-);
 
 // Note: Styles are now included within each lazy-loaded component to prevent static imports
 // that would break the lazy loading optimization
@@ -188,13 +185,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // Phase 4: Performance Monitoring
   const { metrics: performanceMetrics } = usePerformanceMonitoring();
 
-  // Prompt template API for analysis buttons - temporarily disabled to fix React Hook order error
-  // const { templates } = usePromptAPI();
-  const templates = [
-    { id: 'snapshot', type: 'snapshot' as const, name: 'Stock Snapshot', description: 'Snapshot analysis template', template: 'Provide snapshot analysis for {ticker}', icon: '📊', requiresTicker: true, followUpQuestions: ['Would you like more details on this analysis?', 'Should we analyze another stock?'] as readonly string[] },
-    { id: 'support_resistance', type: 'support_resistance' as const, name: 'Support/Resistance', description: 'Support Resistance analysis template', template: 'Provide support resistance analysis for {ticker}', icon: '📈', requiresTicker: true, followUpQuestions: ['Would you like more details on this analysis?', 'Should we analyze another stock?'] as readonly string[] },
-    { id: 'technical', type: 'technical' as const, name: 'Technical Analysis', description: 'Technical analysis template', template: 'Provide technical analysis for {ticker}', icon: '🔍', requiresTicker: true, followUpQuestions: ['Would you like more details on this analysis?', 'Should we analyze another stock?'] as readonly string[] }
-  ];
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -224,30 +214,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // Direct input change handler for <16ms responsiveness - no debouncing
   // Note: Input handling is now managed by ChatInput component directly
 
-  // Handle prompt population from analysis buttons with immediate updates
-  const handlePromptGenerated = useCallback(
-    (prompt: string) => {
-      // Immediate state update for instant UI feedback using reducer dispatch
-      dispatch({ type: 'UPDATE_INPUT', payload: prompt });
-
-      // Focus the input immediately for best UX
-      // Note: Focus handling moved to ChatInput component
-
-      // Use startTransition for non-critical logging and analytics
-      startTransition(() => {
-        logInteraction('prompt_generated', 'analysis_button', {
-          promptLength: prompt.length,
-          promptPreview:
-            prompt.slice(0, 50) + (prompt.length > 50 ? '...' : ''),
-        });
-
-        logger.debug('🎯 Prompt generated and input updated', {
-          promptLength: prompt.length,
-        });
-      });
-    },
-    [logInteraction]
-  );
 
   const handleSendMessage = useCallback(
     async (messageContent: string) => {
@@ -594,43 +560,12 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             <SharedTickerInput
               value={deferredSharedTicker}
               onChange={handleTickerChange}
-              onAnalyze={() => handlePromptGenerated(`analyze ${deferredSharedTicker}`)}
+              onAnalyze={() => dispatch({ type: 'UPDATE_INPUT', payload: `analyze ${deferredSharedTicker}` })}
               disabled={isLoading}
             />
           </Suspense>
         </section>
 
-        {/* SECTION 5: Analysis Buttons */}
-        <section
-          className='analysis-buttons-section'
-          role='complementary'
-          aria-label='Quick analysis tools'
-        >
-          <Suspense
-            fallback={
-              <div className='component-loading analysis-loading'>
-                Loading analysis tools...
-              </div>
-            }
-          >
-            <div className="analysis-buttons-container" data-testid="analysis-buttons">
-              <h3 className="analysis-section-header">QUICK ANALYSIS</h3>
-              <div className="analysis-buttons-grid">
-                {templates.map((template) => (
-                  <Suspense key={template.id} fallback={<div>Loading...</div>}>
-                    <AnalysisButton
-                      template={template}
-                      ticker={deferredSharedTicker}
-                      onPromptGenerated={handlePromptGenerated}
-                      isLoading={isLoading}
-                      disabled={isLoading}
-                    />
-                  </Suspense>
-                ))}
-              </div>
-            </div>
-          </Suspense>
-        </section>
 
         {/* SECTION 6: Export/Recent Buttons */}
         <section

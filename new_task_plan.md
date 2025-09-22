@@ -49,18 +49,18 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## 🚀 **PHASE 1 BACKEND MIGRATION IMPLEMENTATION PROMPT**
+## **PHASE 2 FRONTEND MIGRATION IMPLEMENTATION PROMPT**
 
-# Direct Prompt Migration - Phase 1 Backend Implementation
+# Direct Prompt Migration - Phase 2 Frontend Implementation
 
 ## TASK OVERVIEW
 
-You are tasked with implementing **Phase 1: Backend Migration** from the direct prompt migration implementation plan.
+You are tasked with implementing **Phase 2: Frontend Migration** from the direct prompt migration implementation plan.
 
 ## INSTRUCTIONS
 
 1. **Read the implementation plan document**: `docs/implementation_plans/direct_prompt_migration_implementation_plan.md`
-2. **Focus ONLY on Phase 1 tasks** (Tasks 1.1 through 1.6)
+2. **Focus ONLY on Phase 2 tasks** (Tasks 2.1 through 2.5)
 3. **Follow the plan exactly** as written in the document
 4. **Mark off each task** as you complete it
 5. **Use the provided code examples** from the plan
@@ -68,17 +68,18 @@ You are tasked with implementing **Phase 1: Backend Migration** from the direct 
 
 ## IMPLEMENTATION APPROACH
 
-- Start with Task 1.1 (Remove Prompt Template System Components)
-- Proceed sequentially through all Phase 1 tasks
+- Start with Task 2.1 (Remove Analysis Button Components)
+- Proceed sequentially through all Phase 2 tasks
 - Use atomic commits for each major change
-- Test functionality after each task group
+- Test frontend functionality after each task group
 - Follow the validation steps provided in the plan
 
 ## SUCCESS CRITERIA
 
-- All Phase 1 tasks completed and marked off
-- Backend runs without prompt template dependencies
-- Direct prompt architecture implemented and working
+- All Phase 2 tasks completed and marked off
+- Frontend runs without analysis button dependencies
+- Chat interface updated to use direct prompts
+- All TypeScript interfaces cleaned up
 - All tests pass
 - Clean git history with atomic commits
 
@@ -90,4 +91,4 @@ You are tasked with implementing **Phase 1: Backend Migration** from the direct 
 - If you encounter issues, refer back to the plan for guidance
 - The plan contains all necessary technical details
 
-Begin implementation by reading the plan document and starting with Task 1.1.
+Begin implementation by reading the plan document and starting with Task 2.1.

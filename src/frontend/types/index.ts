@@ -19,12 +19,6 @@ export interface Message {
   };
 }
 
-export interface AnalysisButtonsProps {
-  onSnapshot: () => void;
-  onSupportResistance: () => void;
-  onTechnicalAnalysis: () => void;
-  disabled?: boolean;
-}
 
 export interface ChatInputProps {
   onSendMessage: (message: string) => void;
