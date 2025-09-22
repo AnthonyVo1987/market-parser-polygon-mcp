@@ -272,9 +272,8 @@ body {
 
 .chat-input-textarea:focus {
   border-color: var(--accent-info);
-  box-shadow:
-    var(--glass-shadow-md),
-    0 0 0 3px rgba(59, 130, 246, 0.1);
+  /* Complex multi-layer box-shadow simplified for performance */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   background: var(--glass-surface-medium);
 }
 
@@ -391,9 +390,8 @@ body {
 
 .ticker-input-field:focus {
   border-color: var(--accent-trust);
-  box-shadow:
-    var(--glass-shadow-md),
-    0 0 0 3px rgba(124, 58, 237, 0.1);
+  /* Complex multi-layer box-shadow simplified for performance */
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
   background: var(--glass-surface-medium);
 }
 

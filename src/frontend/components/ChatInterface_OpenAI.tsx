@@ -1690,6 +1690,7 @@ export const interfaceStyles = `
 
   .chat-input-textarea:focus {
     border-color: var(--primary-500);
+    /* Complex multi-layer box-shadow simplified for performance */
     box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
   }
 
@@ -1793,6 +1794,7 @@ export const interfaceStyles = `
 
   .ticker-input-field:focus {
     border-color: var(--accent-500);
+    /* Complex multi-layer box-shadow simplified for performance */
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
   }
 
@@ -1803,6 +1805,7 @@ export const interfaceStyles = `
 
   .ticker-input-field.invalid {
     border-color: var(--error-500);
+    /* Complex multi-layer box-shadow simplified for performance */
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
   }
 
