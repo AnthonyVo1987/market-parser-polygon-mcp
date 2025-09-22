@@ -203,13 +203,13 @@ export const errorBoundaryStyles = `
   }
   
   .error-boundary-fallback details[open] summary::before {
-    transform: rotate(90deg);
+    /* transform: rotate(90deg); removed for performance */
   }
   
   .error-boundary-fallback summary:hover {
     color: var(--accent-error-light);
     background: var(--glass-surface-1);
-    transform: translateX(var(--spacing-1));
+    /* transform: translateX(var(--spacing-1)); removed for performance */
   }
   
   /* Professional Error Details */
@@ -279,12 +279,12 @@ export const errorBoundaryStyles = `
   .error-reset-button:hover {
     /* Complex gradient simplified for performance */
     background: var(--accent-error-hover);
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); removed for performance */
     box-shadow: 0 3px 12px rgba(239, 68, 68, 0.3);
   }
   
   .error-reset-button:active {
-    transform: translateY(0);
+    /* transform: translateY(0); removed for performance */
   }
   
   .error-reset-button:focus-visible {
@@ -362,11 +362,11 @@ export const errorBoundaryStyles = `
   @media (prefers-reduced-motion: reduce) {
     .error-reset-button {
       transition: none;
-      transform: none;
+      /* transform: none; removed for performance */
     }
     
     .error-reset-button:hover {
-      transform: none;
+      /* transform: none; removed for performance */
     }
     
     .error-boundary-fallback summary {
@@ -381,7 +381,7 @@ export const errorBoundaryStyles = `
   /* Performance Optimizations */
   .error-boundary-fallback {
     /* will-change: backdrop-filter; removed for performance */
-    transform: translateZ(0); /* Force GPU acceleration */
+    /* transform: translateZ(0); removed for performance */
   }
   
   /* Professional Loading Animation for Retry */
@@ -397,7 +397,7 @@ export const errorBoundaryStyles = `
     right: var(--spacing-3);
     font-size: 14px;
     color: var(--text-primary);
-    transform: translateY(-50%);
+    /* transform: translateY(-50%); removed for performance */
   }
   
   /* @keyframes spin removed for performance */

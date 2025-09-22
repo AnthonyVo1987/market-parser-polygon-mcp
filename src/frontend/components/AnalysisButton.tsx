@@ -200,7 +200,7 @@ export const analysisButtonStyles = `
     border-color: rgba(124, 58, 237, 0.25);
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); removed for performance */
   }
 
 
@@ -245,7 +245,7 @@ export const analysisButtonStyles = `
     /* Complex gradient simplified for performance */
     background: var(--accent-trust-hover);
     border-color: var(--accent-trust-hover);
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); removed for performance */
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
     /* Enhanced glow effect - simplified for performance */
@@ -265,7 +265,7 @@ export const analysisButtonStyles = `
 
   /* Active state with subtle press effect */
   .analysis-button:not(:disabled):active {
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); removed for performance */
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
     /* filter: brightness(0.95); removed for performance */
@@ -277,7 +277,7 @@ export const analysisButtonStyles = `
     border-color: var(--accent-trust-disabled);
     color: rgba(247, 250, 252, 0.6);
     cursor: not-allowed;
-    transform: none;
+    /* transform: none; removed for performance */
     /* filter: none; removed for performance */
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
@@ -295,19 +295,19 @@ export const analysisButtonStyles = `
 
   .analysis-button:hover .button-icon,
   .analysis-button.button-hovered .button-icon {
-    transform: scale(1.05);
+    /* transform: scale(1.05); removed for performance */
     /* filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)); removed for performance */
   }
   
   /* Success state icon animation */
   .analysis-button.button-success .button-icon {
-    transform: scale(1.1);
+    /* transform: scale(1.1); removed for performance */
     /* filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5)); removed for performance */
   }
   
   /* Error state icon animation */
   .analysis-button.button-error .button-icon {
-    transform: scale(1.05);
+    /* transform: scale(1.05); removed for performance */
     /* filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5)); removed for performance */
     /* Animation removed for performance */
   }
@@ -427,7 +427,7 @@ export const analysisButtonStyles = `
   .analysis-button.neutral:not(:disabled):hover {
     background: var(--gradient-surface-3);
     color: var(--text-primary);
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); removed for performance */
   }
 
   /* Enhanced mobile responsiveness with fintech styling (320px-767px) */
@@ -453,7 +453,7 @@ export const analysisButtonStyles = `
 
     .analysis-button:not(:disabled):hover {
       /* Simplified hover for mobile */
-      transform: translateY(-1px);
+      /* transform: translateY(-1px); removed for performance */
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
     }
@@ -497,14 +497,14 @@ export const analysisButtonStyles = `
 
     .analysis-button:not(:disabled):hover,
     .analysis-button.button-hovered:not(:disabled) {
-      transform: translateY(-2px);
+      /* transform: translateY(-2px); removed for performance */
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
       /* filter: brightness(1.1) saturate(1.1); removed for performance */
     }
 
     .analysis-button-container:hover {
-      transform: translateY(-2px);
+      /* transform: translateY(-2px); removed for performance */
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     }
@@ -512,12 +512,12 @@ export const analysisButtonStyles = `
     /* Enhanced desktop icon animations */
     .analysis-button:hover .button-icon,
     .analysis-button.button-hovered .button-icon {
-      transform: scale(1.1);
+      /* transform: scale(1.1); removed for performance */
     }
     
     /* Desktop success state enhancement */
     .analysis-button.button-success:not(:disabled) {
-      transform: translateY(-4px) scale(1.03);
+      /* transform: translateY(-4px) scale(1.03); removed for performance */
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
       /* filter: brightness(1.15) saturate(1.2); removed for performance */
@@ -525,7 +525,7 @@ export const analysisButtonStyles = `
     
     /* Desktop error state enhancement */
     .analysis-button.button-error:not(:disabled) {
-      transform: translateY(-2px) scale(1.01);
+      /* transform: translateY(-2px) scale(1.01); removed for performance */
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
       /* filter: brightness(1.05) saturate(1.1); removed for performance */
@@ -543,7 +543,7 @@ export const analysisButtonStyles = `
 
     .analysis-button:not(:disabled):hover {
       /* Maintain original styling on touch hover */
-      transform: none;
+      /* transform: none; removed for performance */
       background: var(--gradient-trust);
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
@@ -553,13 +553,13 @@ export const analysisButtonStyles = `
     .analysis-button:not(:disabled):active {
       /* Complex gradient simplified for performance */
       background: var(--accent-trust-active);
-      transform: scale(0.96);
+      /* transform: scale(0.96); removed for performance */
       /* Complex box-shadow simplified for performance */
       box-shadow: 0 1px 4px rgba(124, 58, 237, 0.25);
     }
 
     .analysis-button-container:hover {
-      transform: none;
+      /* transform: none; removed for performance */
     }
   }
 
@@ -596,7 +596,7 @@ export const analysisButtonStyles = `
       color: black !important;
       border: 2px solid #000 !important;
       box-shadow: none !important;
-      transform: none !important;
+      /* transform: none !important; removed for performance */
     }
 
     .loading-spinner {
@@ -651,11 +651,11 @@ export const analysisButtonStyles = `
     }
 
     .analysis-button:not(:disabled):hover {
-      transform: none;
+      /* transform: none; removed for performance */
     }
 
     .analysis-button:not(:disabled):active {
-      transform: none;
+      /* transform: none; removed for performance */
     }
 
     .loading-spinner span {
@@ -673,7 +673,7 @@ export const analysisButtonStyles = `
     
     .analysis-button.button-success .button-icon,
     .analysis-button.button-error .button-icon {
-      transform: none;
+      /* transform: none; removed for performance */
       animation: none;
     }
     

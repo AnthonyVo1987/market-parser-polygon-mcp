@@ -178,7 +178,7 @@ export const messageCopyButtonStyles = `
     
     /* Seamless Integration - Hidden by Default */
     opacity: 0;
-    transform: scale(0.9);
+    /* transform: scale(0.9); removed for performance */
     transition: opacity 0.2s ease;
     z-index: 10;
     
@@ -195,7 +195,7 @@ export const messageCopyButtonStyles = `
   .message-copy-button.hovered {
     background: var(--glass-surface-4);
     border-color: var(--glass-border-3);
-    transform: scale(1.05) translateY(-1px);
+    /* transform: scale(1.05) translateY(-1px); removed for performance */
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     /* backdrop-filter removed for performance */
@@ -203,7 +203,7 @@ export const messageCopyButtonStyles = `
   
   /* Enhanced Active State */
   .message-copy-button:active {
-    transform: scale(0.95);
+    /* transform: scale(0.95); removed for performance */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   
@@ -212,7 +212,7 @@ export const messageCopyButtonStyles = `
     cursor: not-allowed;
     opacity: 0.4;
     background: var(--glass-surface-1);
-    transform: scale(0.9);
+    /* transform: scale(0.9); removed for performance */
   }
   
   /* Enhanced Loading State - Professional Info Color */
@@ -242,7 +242,7 @@ export const messageCopyButtonStyles = `
   .message-copy-button.success.hovered {
     /* Complex gradient simplified for performance */
     background: var(--accent-success-light);
-    transform: scale(1.08) translateY(-2px);
+    /* transform: scale(1.08) translateY(-2px); removed for performance */
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
   }
@@ -262,7 +262,7 @@ export const messageCopyButtonStyles = `
   .message-copy-button.error.hovered {
     /* Complex gradient simplified for performance */
     background: var(--accent-error-hover);
-    transform: scale(1.05) translateY(-1px);
+    /* transform: scale(1.05) translateY(-1px); removed for performance */
     /* Complex box-shadow simplified for performance */
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
   }
@@ -284,22 +284,22 @@ export const messageCopyButtonStyles = `
   
   /* Icon State Animations */
   .copy-icon.icon-idle {
-    transform: scale(1);
+    /* transform: scale(1); removed for performance */
   }
   
   .copy-icon.icon-loading {
-    transform: scale(1.1);
+    /* transform: scale(1.1); removed for performance */
     /* Animation removed for performance */
   }
   
   .copy-icon.icon-success {
-    transform: scale(1.2);
+    /* transform: scale(1.2); removed for performance */
     /* filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)); removed for performance */
     /* Animation removed for performance */
   }
   
   .copy-icon.icon-error {
-    transform: scale(1.1);
+    /* transform: scale(1.1); removed for performance */
     /* filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)); removed for performance */
     /* animation: icon-error-wobble 0.6s cubic-bezier(0.4, 0, 0.2, 1); removed for performance */
   }
@@ -313,13 +313,13 @@ export const messageCopyButtonStyles = `
   /* Professional Reveal on Hover */
   .message-bubble:hover .message-copy-button {
     opacity: 1;
-    transform: scale(1.0);
+    /* transform: scale(1.0); removed for performance */
   }
   
   /* Focus State for Accessibility */
   .message-copy-button:focus-visible {
     opacity: 1;
-    transform: scale(1.0);
+    /* transform: scale(1.0); removed for performance */
     outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
   }
@@ -336,7 +336,7 @@ export const messageCopyButtonStyles = `
   @media (hover: none) {
     .message-copy-button {
       opacity: 0.6;
-      transform: scale(1.0);
+      /* transform: scale(1.0); removed for performance */
     }
     
     .message-bubble:hover .message-copy-button,
@@ -396,26 +396,26 @@ export const messageCopyButtonStyles = `
   @media (prefers-reduced-motion: reduce) {
     .message-copy-button {
       transition: opacity 0.2s ease;
-      transform: none;
+      /* transform: none; removed for performance */
       animation: none;
     }
     
     .message-copy-button:hover,
     .message-copy-button.hovered,
     .message-copy-button:active {
-      transform: none;
+      /* transform: none; removed for performance */
       animation: none;
     }
     
     .message-bubble:hover .message-copy-button {
-      transform: none;
+      /* transform: none; removed for performance */
     }
     
     .copy-icon,
     .copy-icon.icon-loading,
     .copy-icon.icon-success,
     .copy-icon.icon-error {
-      transform: none;
+      /* transform: none; removed for performance */
       animation: none;
     }
     

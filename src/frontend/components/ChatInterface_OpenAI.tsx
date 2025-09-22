@@ -1715,7 +1715,7 @@ export const interfaceStyles = `
 
   .chat-input-send-button:hover:not(:disabled) {
     background: var(--primary-600);
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); removed for performance */
     box-shadow: var(--glass-shadow-lg);
   }
 
@@ -1826,7 +1826,7 @@ export const interfaceStyles = `
 
   .ticker-input-search-button:hover:not(:disabled) {
     background: var(--accent-600);
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); removed for performance */
     box-shadow: var(--glass-shadow-lg);
   }
 

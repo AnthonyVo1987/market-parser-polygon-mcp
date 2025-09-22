@@ -128,14 +128,14 @@
 .analysis-button:hover:not(:disabled) {
   background: rgba(124, 58, 237, 0.2);
   border-color: rgba(124, 58, 237, 0.4);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); removed for performance */
   box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
 }
 
 .analysis-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
+  /* transform: none; removed for performance */
 }
 
 .analysis-button:focus-visible {

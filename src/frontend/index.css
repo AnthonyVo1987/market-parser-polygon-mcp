@@ -39,6 +39,7 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 0.5rem;
+  --radius-2xl: 1rem;
   --radius-full: 50%;
 
   /* Shadows */
@@ -318,12 +319,12 @@ body {
 
 .chat-input-send-button:hover:not(:disabled) {
   background: var(--gradient-success);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); removed for performance */
   box-shadow: var(--glass-shadow-lg);
 }
 
 .chat-input-send-button:active:not(:disabled) {
-  transform: translateY(0);
+  /* transform: translateY(0); removed for performance */
   box-shadow: var(--glass-shadow-sm);
 }
 
@@ -331,7 +332,7 @@ body {
   background: var(--accent-trust-disabled);
   cursor: not-allowed;
   opacity: 0.6;
-  transform: none;
+  /* transform: none; removed for performance */
 }
 
 /* Character Count - Enhanced Typography */
@@ -357,7 +358,7 @@ body {
 
 .ticker-input-container:hover {
   box-shadow: var(--border-glow-analysis-hover);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); removed for performance */
 }
 
 .ticker-input-label {
@@ -415,7 +416,7 @@ body {
 
 .analysis-buttons-container:hover {
   box-shadow: var(--border-glow-analysis-hover);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); removed for performance */
 }
 
 .analysis-section-header {
@@ -476,12 +477,12 @@ body {
 .analysis-button:hover {
   background: var(--glass-surface-medium);
   border-color: var(--glass-border-highlight);
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); removed for performance */
   box-shadow: var(--glass-shadow-md);
 }
 
 .analysis-button:active {
-  transform: translateY(0);
+  /* transform: translateY(0); removed for performance */
   box-shadow: var(--glass-shadow-sm);
 }
 
@@ -499,7 +500,7 @@ body {
 }
 
 .analysis-button:hover .button-icon {
-  transform: scale(1.05);
+  /* transform: scale(1.05); removed for performance */
   /* filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); removed for performance */
 }
 
@@ -526,7 +527,7 @@ body {
 
 .debug-panel-container:hover {
   box-shadow: var(--border-glow-debug-hover);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); removed for performance */
 }
 
 .debug-section-header {
@@ -598,7 +599,7 @@ body {
 
 .performance-indicator:hover {
   box-shadow: var(--border-glow-debug-hover);
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); removed for performance */
 }
 
 .performance-header {
@@ -769,7 +770,7 @@ body {
 
   .mobile-sidebar-toggle:hover {
     background: var(--glass-surface-medium);
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); removed for performance */
     box-shadow: var(--glass-shadow-lg);
   }
 
@@ -806,7 +807,7 @@ body {
 
   .mobile-sidebar-close:hover {
     background: var(--glass-surface-medium);
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); removed for performance */
     box-shadow: var(--glass-shadow-lg);
   }
 
@@ -961,7 +962,7 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  /* transform: translate(-50%, -50%); removed for performance */
   font-size: 12px;
   font-weight: 500;
   color: var(--text-primary);
@@ -971,7 +972,7 @@ body {
 }
 
 .performance-toggle__input:checked+.performance-toggle__slider::before {
-  transform: translateX(88px);
+  /* transform: translateX(88px); removed for performance */
 }
 
 .performance-toggle__input:checked+.performance-toggle__slider {
@@ -1019,15 +1020,15 @@ body {
 }
 
 .performance-mode .hover-lift {
-  transform: none !important;
+  /* transform: none !important; removed for performance */
 }
 
 .performance-mode .hover-scale {
-  transform: none !important;
+  /* transform: none !important; removed for performance */
 }
 
 .performance-mode .hover-rotate {
-  transform: none !important;
+  /* transform: none !important; removed for performance */
 }
 
 /* Simplify box shadows in performance mode */
