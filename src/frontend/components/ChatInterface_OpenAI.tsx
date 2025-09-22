@@ -168,18 +168,13 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // Use deferred values for non-urgent UI updates to improve responsiveness
   const deferredSharedTicker = useDeferredValue(sharedTicker);
 
-  // Memoize expensive computations for performance
-  const memoizedComputations = useMemo(() => {
-    const hasMessages = messages.length > 0;
-    const lastMessage = messages[messages.length - 1];
-    const placeholderText = `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`;
-
-    return {
-      hasMessages,
-      lastMessage,
-      placeholderText,
-    };
-  }, [messages, sharedTicker]);
+  // Optimize useMemo - Only memoize expensive calculations
+  const hasMessages = messages.length > 0;
+  const lastMessage = messages[messages.length - 1];
+  const placeholderText = useMemo(() =>
+    `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`,
+    [sharedTicker]
+  );
 
   // Performance and interaction tracking
 
@@ -516,7 +511,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             <ChatInput_OpenAI
               onSendMessage={handleSendMessage}
               disabled={isLoading}
-              placeholder={memoizedComputations.placeholderText}
+              placeholder={placeholderText}
               value={inputValue}
               onChange={(value) => dispatch({ type: 'UPDATE_INPUT', payload: value })}
             />
@@ -644,7 +639,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           role='complementary'
           aria-label='Export and recent message functions'
         >
-          {memoizedComputations.hasMessages && (
+          {hasMessages && (
             <div className='export-recent-container'>
               <Suspense
                 fallback={

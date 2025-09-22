@@ -1,7 +1,7 @@
 // Phase 4: Performance Monitoring Utilities
 // Real-time performance tracking and optimization tools
 
-import React, { Suspense, lazy, memo, useEffect, useState } from 'react';
+import React, { Suspense, lazy, memo, useEffect, useMemo, useState } from 'react';
 
 export interface PerformanceMetrics {
     fcp: number; // First Contentful Paint
@@ -250,15 +250,23 @@ export function getMemoryUsage(): {
 
 // Phase 4: Performance Monitoring Hook
 export function usePerformanceMonitoring() {
-    const [monitor] = useState(() => new PerformanceMonitor());
+    const monitor = useMemo(() => new PerformanceMonitor(), []);
     const [metrics, setMetrics] = useState<Partial<PerformanceMetrics>>({});
 
     useEffect(() => {
         monitor.startMonitoring();
 
-        const interval = setInterval(() => {
-            setMetrics(monitor.getMetrics());
-        }, 1000);
+        const updateMetrics = () => {
+            if (document.visibilityState === 'visible') {
+                setMetrics(monitor.getMetrics());
+            }
+        };
+
+        const handleIdle = () => {
+            requestIdleCallback(updateMetrics, { timeout: 5000 });
+        };
+
+        const interval = setInterval(handleIdle, 2000);
 
         return () => {
             clearInterval(interval);

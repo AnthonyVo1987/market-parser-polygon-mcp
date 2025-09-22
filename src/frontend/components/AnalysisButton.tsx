@@ -16,7 +16,25 @@ const getTestId = (templateType: string): string => {
   }
 };
 
-export default function AnalysisButton({
+import React, { memo, useCallback, useState } from 'react';
+import { AnalysisButtonProps } from '../types/chat_OpenAI';
+
+// Map template types to expected data-testid attributes for test compatibility
+const getTestId = (templateType: string): string => {
+  switch (templateType) {
+    case 'snapshot':
+      return 'analysis-button-snapshot';
+    case 'support_resistance':
+      return 'analysis-button-support-resistance';
+    case 'technical_analysis':
+    case 'technical':
+      return 'analysis-button-technical';
+    default:
+      return `analysis-button-${templateType}`;
+  }
+};
+
+const AnalysisButton = memo(function AnalysisButton({
   template,
   ticker,
   onPromptGenerated,
@@ -84,6 +102,77 @@ export default function AnalysisButton({
   return (
     <div
       className={`analysis-button-container ${className}`}
+      role='group'
+      aria-labelledby={`button-${template.id}-label`}
+    >
+      {/* Main analysis button */}
+      <button
+        id={`button-${template.id}-label`}
+        type='button'
+        onClick={handleButtonClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        disabled={isButtonDisabled}
+        className={`analysis-button ${showSuccess ? 'button-success' : ''} ${hasError ? 'button-error' : ''
+          } ${isHovered ? 'button-hovered' : ''}`}
+        data-testid={getTestId(template.type)}
+        aria-describedby={`button-help-${template.id} ${displayError ? `error-${template.id}` : ''}`}
+        title={template.description}
+      >
+        <span className='button-icon' aria-hidden='true'>
+          {template.icon}
+        </span>
+        <span className='button-text'>
+          {isButtonLoading
+            ? 'Loading...'
+            : showSuccess
+              ? 'Generated!'
+              : template.name}
+        </span>
+        {isButtonLoading && (
+          <span className='loading-spinner' aria-hidden='true'>
+            Loading...
+          </span>
+        )}
+        {showSuccess && !isButtonLoading && (
+          <span className='success-indicator' aria-hidden='true'>
+            ✓
+          </span>
+        )}
+        {hasError && !isButtonLoading && (
+          <span className='error-indicator' aria-hidden='true'>
+            ⚠
+          </span>
+        )}
+      </button>
+
+      {/* Button help text */}
+      <div id={`button-help-${template.id}`} className='sr-only'>
+        {template.description}
+        {template.requiresTicker ? ` Uses ticker symbol: ${ticker}` : ''}
+        {isButtonLoading
+          ? ' Loading prompt...'
+          : ' Click to populate chat input with analysis prompt.'}
+      </div>
+
+      {/* Error display */}
+      {displayError && (
+        <div
+          id={`error-${template.id}`}
+          className='error-message'
+          role='alert'
+          aria-live='polite'
+        >
+          {displayError}
+        </div>
+      )}
+    </div>
+  );
+});
+
+AnalysisButton.displayName = 'AnalysisButton';
+
+export default AnalysisButton;
       role='group'
       aria-labelledby={`button-${template.id}-label`}
     >
