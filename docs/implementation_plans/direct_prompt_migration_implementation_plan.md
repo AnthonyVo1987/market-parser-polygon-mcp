@@ -217,24 +217,106 @@ This document provides a comprehensive, granular implementation plan for migrati
 
 ### **PHASE 3: INTEGRATION & IMPLEMENTATION**
 
-#### **Task 3.1: Update Package Dependencies**
+#### **Task 3.1: AI Prompt Optimization**
 
-- [ ] **3.1.1** Remove unused frontend dependencies from `package.json`
-- [ ] **3.1.2** Remove unused backend dependencies from `pyproject.toml`
-- [ ] **3.1.3** Update dependency versions if needed
+##### **Configuration Setup (Prerequisites)**
 
-#### **Task 3.2: Update Configuration**
+- [ ] **3.1.1** Add Temperature Configuration: Add temperature setting to `config/app.config.json` under `ai` section
+- [ ] **3.1.2** Update Settings Class: Add temperature configuration to `Settings` class in `src/backend/main.py`
+- [ ] **3.1.3** Configure OpenAI Client: Set up temperature parameter in OpenAI client configuration
+- [ ] **3.1.4** Establish Performance Baseline: Measure current response times and token usage
 
-- [ ] **3.2.1** Update environment variables
-- [ ] **3.2.2** Update configuration files
-- [ ] **3.2.3** Update documentation
+##### **Backend Prompt Optimization**
 
-#### **Task 3.3: Documentation Updates**
+- [ ] **3.1.5** Backup Current Prompts: Create backup of current system prompts in `src/backend/direct_prompts.py`
+- [ ] **3.1.6** Analyze Current Prompt Length: Measure token count of current system prompts
+- [ ] **3.1.7** Optimize SNAPSHOT System Prompt: Reduce from 87-94 lines to ~30 lines, remove emoji instructions, remove disclaimers
+- [ ] **3.1.8** Optimize SUPPORT_RESISTANCE System Prompt: Reduce from 96-103 lines to ~30 lines, remove emoji instructions, remove disclaimers
+- [ ] **3.1.9** Optimize TECHNICAL System Prompt: Reduce from 105-112 lines to ~30 lines, remove emoji instructions, remove disclaimers
+- [ ] **3.1.10** Optimize GENERAL System Prompt: Reduce from 114-121 lines to ~30 lines, remove emoji instructions, remove disclaimers
+- [ ] **3.1.11** Optimize User Prompts: Simplify all user prompts to be more direct and concise
+- [ ] **3.1.12** Test Prompt Optimization: Test each optimized prompt with sample queries
+- [ ] **3.1.13** Measure Performance Improvement: Compare response times before and after optimization
+- [ ] **3.1.14** Verify Token Reduction: Confirm 40-50% reduction in prompt tokens
 
-- [ ] **3.3.1** Update README.md
-- [ ] **3.3.2** Update API documentation
-- [ ] **3.3.3** Update code comments
-- [ ] **3.3.4** Update deployment documentation
+##### **Frontend Integration Updates**
+
+- [ ] **3.1.15** Update Chat Interface: Ensure chat interface works with optimized prompts
+- [ ] **3.1.16** Test Frontend Integration: Verify frontend still works correctly with optimized backend
+
+#### **Task 3.2: Direct Button Implementation**
+
+##### **TypeScript Interface Development**
+
+- [ ] **3.2.1** Create Button Types: Create TypeScript interfaces for SNAPSHOT, SUPPORT_RESISTANCE, TECHNICAL buttons in `src/frontend/types/chat_OpenAI.ts`
+- [ ] **3.2.2** Define Button Props Interface: Create `AnalysisButtonProps` interface for component props
+- [ ] **3.2.3** Define Button State Interface: Create `ButtonState` interface for loading, success, error states
+
+##### **Button Component Development**
+
+- [ ] **3.2.4** Create AnalysisButtons Component: Create new `src/frontend/components/AnalysisButtons.tsx` file
+- [ ] **3.2.5** Implement Button UI: Create three buttons with proper styling and accessibility
+- [ ] **3.2.6** Add Button State Management: Implement loading, success, and error states for each button
+- [ ] **3.2.7** Implement Ticker Extraction: Add logic to extract ticker from current input or context
+- [ ] **3.2.8** Create Direct Send Functionality: Implement function to send messages directly to chat
+- [ ] **3.2.9** Add Error Handling: Implement proper error handling for button actions
+- [ ] **3.2.10** Add Loading Indicators: Show loading state while AI is processing
+- [ ] **3.2.11** Test Button Functionality: Test each button individually
+
+##### **Chat Interface Integration**
+
+- [ ] **3.2.12** Integrate Buttons into ChatInterface: Add AnalysisButtons component to `ChatInterface_OpenAI.tsx`
+- [ ] **3.2.13** Update Chat Interface Layout: Position buttons appropriately in the chat interface
+- [ ] **3.2.14** Implement Button Click Handlers: Connect button clicks to direct message sending
+- [ ] **3.2.15** Add Context Awareness: Ensure buttons understand current ticker context
+- [ ] **3.2.16** Test Integration: Test complete button-to-chat flow
+- [ ] **3.2.17** Add Accessibility: Ensure buttons are keyboard accessible and have proper ARIA labels
+- [ ] **3.2.18** Test Error Scenarios: Test button behavior when no ticker is available
+
+##### **User Experience Optimization**
+
+- [ ] **3.2.19** Implement Visual Feedback: Add visual feedback for button interactions
+- [ ] **3.2.20** Add Success Indicators: Show success state when message is sent
+- [ ] **3.2.21** Optimize Button Placement: Ensure buttons are easily accessible
+- [ ] **3.2.22** Test Mobile Responsiveness: Ensure buttons work well on mobile devices
+- [ ] **3.2.23** Add Keyboard Shortcuts: Implement keyboard shortcuts for power users
+
+#### **Task 3.3: Configuration Updates**
+
+##### **API Configuration**
+
+- [ ] **3.3.1** Update Config File: Add temperature settings to `config/app.config.json`
+- [ ] **3.3.2** Update Settings Class: Add temperature configuration to `Settings` class
+- [ ] **3.3.3** Add Performance Monitoring: Add logging for response times and token usage
+- [ ] **3.3.4** Test API Configuration: Verify API settings work correctly
+
+##### **Documentation Updates**
+
+- [ ] **3.3.5** Update README.md: Document new button functionality and optimized prompts
+- [ ] **3.3.6** Update API Documentation: Document new API configuration options
+- [ ] **3.3.7** Update Code Comments: Add comments explaining optimized prompts and button functionality
+- [ ] **3.3.8** Update Deployment Documentation: Update deployment instructions if needed
+- [ ] **3.3.9** Create User Guide: Create guide for using new button functionality
+
+##### **Testing and Validation**
+
+- [ ] **3.3.10** Unit Test Prompt Optimization: Test that optimized prompts work correctly
+- [ ] **3.3.11** Unit Test Button Functionality: Test all button interactions
+- [ ] **3.3.12** Integration Test Complete Flow: Test end-to-end button-to-response flow
+- [ ] **3.3.13** Performance Test: Measure and document performance improvements
+- [ ] **3.3.14** Error Handling Test: Test error scenarios and recovery
+- [ ] **3.3.15** Accessibility Test: Verify accessibility compliance
+
+##### **Final Verification**
+
+- [ ] **3.3.16** Verify All Requirements Met: Confirm all change request requirements are implemented
+- [ ] **3.3.17** Test Performance Improvements: Verify 20-30% response time improvement
+- [ ] **3.3.18** Test Token Reduction: Verify 40-50% token usage reduction
+- [ ] **3.3.19** Test User Experience: Verify improved user workflow (3 steps to 1 step)
+- [ ] **3.3.20** Final Integration Test: Test complete system with all changes
+- [ ] **3.3.21** Documentation Review: Review all documentation for accuracy
+- [ ] **3.3.22** Code Review: Review all code changes for quality and best practices
+- [ ] **3.3.23** Rollback Plan Verification: Ensure rollback procedures are documented and tested
 
 ### **PHASE 4: TESTING & VALIDATION**
 

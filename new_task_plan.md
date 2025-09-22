@@ -48,3 +48,7 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 ###
 
 ## New Task Details
+
+DO NOT CREATE ANY NEW DOCS OR COMMIT ANYTHING YET - THIS IS PURELY PLANNING TASK(S)
+
+- Use your entire toolkit to generate a granular detailed implementation TODO Checklist Updated Phase 3 Task to implement Task 3.1: AI Prompt Optimization, Task 3.2: Direct Button Implementation, Task 3.3: Configuration Updates. DO NOT CREATE A NEW DOC OR UPDATE ANY FILES YET, just provide plan to User for some feedback FIRST.
