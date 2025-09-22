@@ -49,46 +49,39 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## **PHASE 2 FRONTEND MIGRATION IMPLEMENTATION PROMPT**
+Update docs/implementation_plans/direct_prompt_migration_implementation_plan.md Phase 3 & Testing Phase details
 
-# Direct Prompt Migration - Phase 2 Frontend Implementation
+- Modify the test plan to have a distinct Testing & Validation Phase that will ONLY PERFORM THE TESTING AND VALIDATION.  ANY CODE, FILE, DOC, CONFIG type change DOES NOT BELONG IN Testing & Validation Phase.  ANY file changes means it belongs as part of the development\implementation Phase. In this case, that last Phase for Implementation is Phase 3, so Phase 3 needs to wrap up ALL file changes before procdeeding to Testing & Validation Phase.  See details below on how I want it updated:
 
-## TASK OVERVIEW
+- Here are all the tasks that can remain in Phase 3 since they are still development\implementation tasks.  Even though it is NOT code that is being changed, it still counts as implementation:
 
-You are tasked with implementing **Phase 2: Frontend Migration** from the direct prompt migration implementation plan.
+### **PHASE 3: INTEGRATION & TESTING**
 
-## INSTRUCTIONS
+#### **Task 3.1: Update Package Dependencies**
 
-1. **Read the implementation plan document**: `docs/implementation_plans/direct_prompt_migration_implementation_plan.md`
-2. **Focus ONLY on Phase 2 tasks** (Tasks 2.1 through 2.5)
-3. **Follow the plan exactly** as written in the document
-4. **Mark off each task** as you complete it
-5. **Use the provided code examples** from the plan
-6. **Test each change** before moving to the next task
+- [ ] **3.1.1** Remove unused frontend dependencies from `package.json`
+- [ ] **3.1.2** Remove unused backend dependencies from `pyproject.toml`
+- [ ] **3.1.3** Update dependency versions if needed
 
-## IMPLEMENTATION APPROACH
+#### **Task 3.2: Update Configuration**
 
-- Start with Task 2.1 (Remove Analysis Button Components)
-- Proceed sequentially through all Phase 2 tasks
-- Use atomic commits for each major change
-- Test frontend functionality after each task group
-- Follow the validation steps provided in the plan
+- [ ] **3.2.1** Update environment variables
+- [ ] **3.2.2** Update configuration files
+- [ ] **3.2.3** Update documentation
 
-## SUCCESS CRITERIA
+#### **Task 3.4: Documentation Updates**
 
-- All Phase 2 tasks completed and marked off
-- Frontend runs without analysis button dependencies
-- Chat interface updated to use direct prompts
-- All TypeScript interfaces cleaned up
-- All tests pass
-- Clean git history with atomic commits
+- [ ] **3.4.1** Update README.md
+- [ ] **3.4.2** Update API documentation
+- [ ] **3.4.3** Update code comments
+- [ ] **3.4.4** Update deployment documentation
 
-## IMPORTANT NOTES
+- Here are all the previous Phase 3 tasks that MUST BE MIGRATED HAVE IT'S OWN distinct Testing & Validation Phase. You can see how none of these tasks have nothing to do with implementation and purely testing
 
-- Do NOT modify the implementation plan document
-- Follow the exact file paths and line numbers specified
-- Use the provided code examples from the plan
-- If you encounter issues, refer back to the plan for guidance
-- The plan contains all necessary technical details
+#### **Task 3.3: Testing**
 
-Begin implementation by reading the plan document and starting with Task 2.1.
+- [ ] **3.3.1** Test all API endpoints
+- [ ] **3.3.2** Test frontend functionality
+- [ ] **3.3.3** Test CLI functionality
+- [ ] **3.3.4** Test error handling
+- [ ] **3.3.5** Test performance improvements

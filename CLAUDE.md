@@ -9,36 +9,29 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-**Phase 2: Frontend Migration - Complete**
+**Implementation Plan Phase Restructuring - Complete**
 
-feat: complete Phase 2 frontend migration from prompt template system to direct prompt architecture
+docs: restructure implementation plan phases to separate implementation from testing
 
-- Remove analysis button components (AnalysisButton.tsx, AnalysisButtons.tsx, AnalysisButtons.css)
-- Remove unused hooks (usePromptAPI.ts, useAIModel.ts, useButtonState.ts) 
-- Remove TypeScript interfaces related to prompt templates (PromptTemplate, AnalysisButtonProps, etc.)
-- Update ChatInterface_OpenAI.tsx to remove analysis button rendering and state management
-- Update API integration to use direct prompts instead of template system
-- Clean up all prompt template references and dependencies
-- Update implementation plan with green checkmarks for Phase 2 completion
-
-**Files Deleted:**
-
-- src/frontend/components/AnalysisButton.tsx (690+ lines)
-- src/frontend/components/AnalysisButtons.tsx (130+ lines)
-- src/frontend/styles/AnalysisButtons.css (248+ lines)
-- src/frontend/hooks/usePromptAPI.ts (265+ lines)
-- src/frontend/hooks/useAIModel.ts (127+ lines)
-- src/frontend/utils/buttonStates.ts (208+ lines)
+- Rename Phase 3 from 'Integration & Testing' to 'Integration & Implementation'
+- Create new Phase 4: 'Testing & Validation' for pure testing tasks
+- Move testing tasks (3.3.1-3.3.5) from Phase 3 to Phase 4 (4.1.1-4.1.5)
+- Keep implementation tasks (package dependencies, configuration, documentation) in Phase 3
+- Update migration strategy section to reflect new phase structure
+- Ensure clear separation between development/implementation and testing phases
 
 **Files Modified:**
 
-- src/frontend/components/ChatInterface_OpenAI.tsx (removed analysis button section)
-- src/frontend/types/chat_OpenAI.ts (removed template interfaces)
-- src/frontend/types/index.ts (removed AnalysisButtonsProps)
-- docs/implementation_plans/direct_prompt_migration_implementation_plan.md (marked Phase 2 complete)
+- docs/implementation_plans/direct_prompt_migration_implementation_plan.md (restructured phases)
+- new_task_plan.md (updated with new task details)
 - CLAUDE.md (updated completion summary)
 
-Status: Phase 2 Frontend Migration ✅ COMPLETED - Ready for Phase 3 Integration & Testing
+**Phase Structure:**
+
+- Phase 3: Integration & Implementation (file changes, config updates, documentation)
+- Phase 4: Testing & Validation (pure testing and validation activities)
+
+Status: Implementation Plan Restructuring ✅ COMPLETED - Ready for Phase 3 Implementation
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴

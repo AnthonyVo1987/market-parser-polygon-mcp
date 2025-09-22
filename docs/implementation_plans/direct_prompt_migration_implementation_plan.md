@@ -100,12 +100,17 @@ This document provides a comprehensive, granular implementation plan for migrati
 3. Remove unused hooks and types
 4. Implement direct prompt UI
 
-### Phase 3: Integration & Testing
+### Phase 3: Integration & Implementation
 
-1. Update API integration
-2. Test all functionality
-3. Performance validation
-4. Documentation updates
+1. Update package dependencies
+2. Update configuration
+3. Update documentation
+
+### Phase 4: Testing & Validation
+
+1. Test all functionality
+2. Performance validation
+3. Error handling validation
 
 ## Detailed Implementation TODO Checklist
 
@@ -210,7 +215,7 @@ This document provides a comprehensive, granular implementation plan for migrati
 - [x] **2.5.3** Remove `PROMPT_API_ENDPOINTS` from `src/frontend/types/chat_OpenAI.ts` ✅
 - [x] **2.5.4** Update API response handling ✅
 
-### **PHASE 3: INTEGRATION & TESTING**
+### **PHASE 3: INTEGRATION & IMPLEMENTATION**
 
 #### **Task 3.1: Update Package Dependencies**
 
@@ -224,20 +229,22 @@ This document provides a comprehensive, granular implementation plan for migrati
 - [ ] **3.2.2** Update configuration files
 - [ ] **3.2.3** Update documentation
 
-#### **Task 3.3: Testing**
+#### **Task 3.3: Documentation Updates**
 
-- [ ] **3.3.1** Test all API endpoints
-- [ ] **3.3.2** Test frontend functionality
-- [ ] **3.3.3** Test CLI functionality
-- [ ] **3.3.4** Test error handling
-- [ ] **3.3.5** Test performance improvements
+- [ ] **3.3.1** Update README.md
+- [ ] **3.3.2** Update API documentation
+- [ ] **3.3.3** Update code comments
+- [ ] **3.3.4** Update deployment documentation
 
-#### **Task 3.4: Documentation Updates**
+### **PHASE 4: TESTING & VALIDATION**
 
-- [ ] **3.4.1** Update README.md
-- [ ] **3.4.2** Update API documentation
-- [ ] **3.4.3** Update code comments
-- [ ] **3.4.4** Update deployment documentation
+#### **Task 4.1: Testing**
+
+- [ ] **4.1.1** Test all API endpoints
+- [ ] **4.1.2** Test frontend functionality
+- [ ] **4.1.3** Test CLI functionality
+- [ ] **4.1.4** Test error handling
+- [ ] **4.1.5** Test performance improvements
 
 ## Code Examples
 
