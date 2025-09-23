@@ -58,7 +58,8 @@ class FrontendLogger {
     this.isDebugMode =
       this.isDevelopment &&
       (localStorage.getItem('debug_mode') === 'true' ||
-        (window as unknown as Record<string, unknown>).__DEBUG_MODE__ === true ||
+        (window as unknown as Record<string, unknown>).__DEBUG_MODE__ ===
+          true ||
         this.logMode === 'DEBUG');
     this.performanceMetrics = new Map();
     this.logBuffer = [];
@@ -76,12 +77,15 @@ class FrontendLogger {
       this.info('🔇 Debug mode disabled - minimal logging active');
     };
 
-    (window as unknown as Record<string, unknown>).__exportLogs = () => this.exportLogs();
+    (window as unknown as Record<string, unknown>).__exportLogs = () =>
+      this.exportLogs();
 
     // Add global log mode control methods
-    (window as unknown as Record<string, unknown>).__setLogMode = (mode: LogMode) =>
-      this.setLogMode(mode);
-    (window as unknown as Record<string, unknown>).__getLogMode = () => this.getLogMode();
+    (window as unknown as Record<string, unknown>).__setLogMode = (
+      mode: LogMode
+    ) => this.setLogMode(mode);
+    (window as unknown as Record<string, unknown>).__getLogMode = () =>
+      this.getLogMode();
 
     // Initialize file logging service
     this.initializeFileLogging();
@@ -141,7 +145,8 @@ class FrontendLogger {
     this.isDebugMode =
       this.isDevelopment &&
       (localStorage.getItem('debug_mode') === 'true' ||
-        (window as unknown as Record<string, unknown>).__DEBUG_MODE__ === true ||
+        (window as unknown as Record<string, unknown>).__DEBUG_MODE__ ===
+          true ||
         this.logMode === 'DEBUG');
 
     // Persist to localStorage
@@ -498,7 +503,8 @@ class FrontendLogger {
     }
 
     // In DEBUG mode, respect the development environment settings
-    if (!this.isDevelopment && (level === 'debug' || level === 'info')) return false;
+    if (!this.isDevelopment && (level === 'debug' || level === 'info'))
+      return false;
     if (level === 'debug' && !this.isDebugMode) return false;
 
     return true;
@@ -531,7 +537,13 @@ class FrontendLogger {
 
     for (const key of keysA) {
       if (!keysB.includes(key)) return false;
-      if (!this.deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) return false;
+      if (
+        !this.deepEqual(
+          (a as Record<string, unknown>)[key],
+          (b as Record<string, unknown>)[key]
+        )
+      )
+        return false;
     }
 
     return true;

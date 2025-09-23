@@ -196,7 +196,7 @@ const ChatMessage_OpenAI = memo(
         type: messageType,
         content: message.content,
         timestamp: message.timestamp,
-        metadata: message.metadata
+        metadata: message.metadata,
       });
     }, [message.content, message.timestamp, message.metadata, message.sender]);
 
@@ -222,15 +222,16 @@ const ChatMessage_OpenAI = memo(
 
     return (
       <div
-        className={`${formattedMessage.cssClass} ${isVisible ? 'message-visible' : 'message-hidden'
-          } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
-        role="article"
+        className={`${formattedMessage.cssClass} ${
+          isVisible ? 'message-visible' : 'message-hidden'
+        } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
+        role='article'
         aria-label={formattedMessage.ariaLabel}
       >
         <div
-          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'
-            } ${formattedMessage.isError ? 'message-bubble--error' : ''
-            }`}
+          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'} ${
+            formattedMessage.isError ? 'message-bubble--error' : ''
+          }`}
         >
           <MessageCopyButton message={message} />
           <div className='message-content'>
@@ -257,9 +258,14 @@ const ChatMessage_OpenAI = memo(
             title={formattedMessage.absoluteTime}
             aria-label={`Message timestamp: ${formattedMessage.absoluteTime}`}
           >
-            {showAbsoluteTime ? formattedMessage.absoluteTime : formattedMessage.relativeTime}
+            {showAbsoluteTime
+              ? formattedMessage.absoluteTime
+              : formattedMessage.relativeTime}
             {formattedMessage.processingTime && (
-              <span className='response-time' aria-label={`Processing time: ${formattedMessage.processingTime}`}>
+              <span
+                className='response-time'
+                aria-label={`Processing time: ${formattedMessage.processingTime}`}
+              >
                 {' '}
                 ({formattedMessage.processingTime})
               </span>
@@ -281,7 +287,7 @@ const ChatMessage_OpenAI = memo(
       prevMessage.sender === nextMessage.sender &&
       prevMessage.timestamp.getTime() === nextMessage.timestamp.getTime() &&
       JSON.stringify(prevMessage.metadata) ===
-      JSON.stringify(nextMessage.metadata)
+        JSON.stringify(nextMessage.metadata)
     );
   }
 );

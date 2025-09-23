@@ -224,7 +224,7 @@ const RecentMessageButtons = memo(
         {/* Error Messages Display */}
         {Object.entries(errorMessages).map(([buttonId, errorMessage]) =>
           errorMessage &&
-            buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
+          buttonStates[buttonId as keyof ButtonStates] === 'error' ? (
             <div key={buttonId} className='recent-message-error-message'>
               <strong>Copy Error:</strong> {errorMessage}
             </div>

@@ -1,12 +1,14 @@
 # One-Click Startup Scripts
 
-The Market Parser project provides one-click startup scripts that automatically manage development servers.
+The Market Parser project provides one-click startup scripts that
+automatically manage development servers.
 
 ## Quick Start
 
 __One-Click Application Startup (Recommended):__
 
-The startup scripts automatically START all development servers BUT __DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
+The startup scripts automatically START all development servers BUT
+__DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
 
 ```bash
 # Option 1: Main startup script (recommended)

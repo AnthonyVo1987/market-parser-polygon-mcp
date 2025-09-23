@@ -45,7 +45,10 @@ export interface ApiError {
 }
 
 // Analysis button types
-export type AnalysisButtonType = 'SNAPSHOT' | 'SUPPORT_RESISTANCE' | 'TECHNICAL';
+export type AnalysisButtonType =
+  | 'SNAPSHOT'
+  | 'SUPPORT_RESISTANCE'
+  | 'TECHNICAL';
 
 // Analysis button props interface
 export interface AnalysisButtonProps {
@@ -126,8 +129,6 @@ export const ERROR_CODES = {
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
-
-
 // Export utility functions for type guards
 export const isValidMessageSender = (
   sender: string
@@ -153,4 +154,3 @@ export const isValidMessage = (message: unknown): message is Message => {
     (message as Message).timestamp instanceof Date
   );
 };
-

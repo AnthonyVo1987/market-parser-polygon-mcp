@@ -1,60 +1,57 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working
+with code in this repository.
 
 ## Project Overview
 
-Market Parser is a Python CLI and React web application for natural language financial queries using the Polygon.io MCP server and OpenAI GPT-5-nano via the Pydantic AI Agent Framework.
+Market Parser is a Python CLI and React web application for natural
+language financial queries using the Polygon.io MCP server and OpenAI
+GPT-5-nano via the Pydantic AI Agent Framework.
 
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Add standardized test prompts documentation system
+feat: comprehensive code quality improvements and memory system updates
 
-📋 Documentation Standardization:
-- Create tests/playwright/test_prompts.md as single source of truth for all test prompts
-- Add 10 standardized test prompts designed for 30-60 second responses
-- Include usage guidelines, performance classification, and integration notes
+- Fixed TypeScript type safety issues in performance.tsx and touchGestures.ts
+- Resolved all critical TypeScript compilation errors
+- Updated project memory system with latest fixes and milestones
+- Enhanced standardized test prompts documentation
+- Improved markdown formatting across memory files
+- Deleted duplicate code file (direct_prompts_backup.py)
+- Applied consistent code formatting and linting fixes
+- Updated project documentation with current status and achievements
 
-📚 Main Documentation Updates:
-- Update CLAUDE.md, AGENTS.md, README.md with standardized prompts
-- Add both individual prompts and references to test_prompts.md
-- Ensure consistent formatting across all documentation files
-
-🧪 Test Documentation Updates:
-- Update tests/playwright/mcp_test_script_basic.md with prompts + reference
-- Update tests/playwright/complete_test_execution_guide.md with prompts + reference  
-- Update tests/playwright/UI_complete_test_execution_guide.md with prompts + reference
-- Maintain dual documentation approach for quick reference and comprehensive docs
-
-🔧 Backend Import Fixes:
-- Fix ImportError handling in src/backend/main.py with proper fallback imports
-- Fix ImportError handling in src/backend/api_models.py for AnalysisIntent import
-- Ensure both relative and absolute imports work correctly
-
-🎨 Linting Fixes:
-- Fix markdown linting issues (H1 headings, ordered list numbering)
-- Fix duplicate heading in README.md (Features → Application Features)
-- Fix emphasis-as-heading issues in test documentation files
-
-✅ Result: Standardized test prompts ensure consistent 30-60 second response times and prevent false failures from complex prompts across all Market Parser testing scenarios
+This commit represents a comprehensive code quality improvement across the entire codebase, ensuring zero critical linting errors and maintaining high code standards throughout the project.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## STANDARDIZED TEST PROMPTS
 
-**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+**CRITICAL:** All testing MUST use these standardized prompts to ensure
+consistent, quick responses (30-60 seconds) and avoid false failures from
+complex prompts.
 
 ### Quick Response Test Prompts (Use These Only)
 
-1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
-2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
-3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
-4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
-5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
-6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
-7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
-8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
-9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+1. **"Quick Response Needed with minimal tool calls: What is the current
+   Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Technical Analysis SPY"**
 
 **MANDATORY RULES:**
 
@@ -65,44 +62,68 @@ feat: Add standardized test prompts documentation system
 - ❌ DO NOT modify these prompts
 - ❌ DO NOT use complex, open-ended queries
 
-**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test
+prompts documentation, see `tests/playwright/test_prompts.md`
 
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
+## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop
 
-CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
+using tools - continue using them until tasks completion!!!! 🔴
+
+CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout
+the entire task execution. This is NOT a one-time checklist - you must
+continuously use tools throughout the process.
 
 TOOL USAGE REQUIREMENTS:
 
 - Use tools in ANY ORDER as needed for the specific task
 - Use the SAME tool MULTIPLE TIMES if needed
 - NEVER treat tool lists as a rigid sequence
-- ALWAYS use tools when they would be helpful, even if you've used them before
-- Use tools for investigation, analysis, verification, and implementation at every step
+- ALWAYS use tools when they would be helpful, even if you've used them
+  before
+- Use tools for investigation, analysis, verification, and implementation
+  at every step
 
 MANDATORY TOOL USAGE PATTERNS:
 
-1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
-3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
-5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+1. START with Sequential-Thinking for task analysis, Investigation,
+   Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+2. Use Context7 for research and best up to date Implementation Practices
+   & Library documentation lookups
+3. Use Serena Tools for code analysis, symbol manipulation, pattern search
+   with context, and memory management for complex financial algorithm
+   development and refactoring; Use standard Read/Write/Edit for simple file
+   content modifications
+4. Use Filesystem Tools for Batch File operations (3+), file discovery,
+   configuration management, metadata analysis, project organization, project
+   structure analysis, and documentation generation for comprehensive project
+   management; Use standard Read/Write/Edit for single-file content
+   modifications
+5. Use Standard Read/Write/Edit for single-file content modifications,
+   simple edits, and direct file operations; use Serena/Filesystem for
+   complex analysis, batch operations, and project management
 6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
 7. 🔴 REPEAT any tool as needed throughout the process
 8. 🔴 NEVER stop using tools - continue using them until task completion
 
 TOOL OVERLAP RESOLUTION:
 
-- Filesystem Tools: Use for 3+ file operations, batch processing, project management, metadata analysis, comprehensive project operations
-- Standard Read/Write/Edit: Use for single-file modifications, simple edits, direct file operations
-- Serena Tools: Use for complex code analysis, symbol manipulation, pattern search with context
-- When in doubt: Use Filesystem for batch/complex operations, Standard for simple single-file operations
+- Filesystem Tools: Use for 3+ file operations, batch processing, project
+  management, metadata analysis, comprehensive project operations
+- Standard Read/Write/Edit: Use for single-file modifications, simple
+  edits, direct file operations
+- Serena Tools: Use for complex code analysis, symbol manipulation,
+  pattern search with context
+- When in doubt: Use Filesystem for batch/complex operations, Standard
+  for simple single-file operations
 
 VIOLATION PENALTIES:
 
 - If you use tools only once and stop, you're failing
-- If you follow a rigid order instead of using tools as needed, you're failing
+- If you follow a rigid order instead of using tools as needed, you're
+  failing
 - If you don't use tools throughout the entire process, you're failing
-- If you use wrong tool for the operation (e.g., Standard for batch operations), you're failing
+- If you use wrong tool for the operation (e.g., Standard for batch
+  operations), you're failing
 
 SUCCESS CRITERIA:
 
@@ -112,13 +133,16 @@ SUCCESS CRITERIA:
 - Correct tool selection based on operation type
 - No rigid sequencing - only logical tool usage based on task requirements
 
-REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
+REMEMBER: The tool list is your toolkit - use every tool as often as
+needed, in any order, throughout the entire task execution. Choose the
+right tool for the right operation
 
 ## Quick Start
 
 **One-Click Application Startup (Recommended):**
 
-The startup scripts automatically START all development servers BUT **DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
+The startup scripts automatically START all development servers BUT **DOES
+NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
 # Option 1: Main startup script (recommended)
@@ -223,7 +247,8 @@ KEY TAKEAWAYS
 
 ### UI Performance Improvements
 
-This application has been optimized for maximum performance while maintaining visual quality:
+This application has been optimized for maximum performance while
+maintaining visual quality:
 
 #### Core Web Vitals
 
@@ -235,7 +260,8 @@ This application has been optimized for maximum performance while maintaining vi
 #### Optimization Techniques
 
 - **CSS Minification**: Automated CSS optimization with cssnano
-- **Removed High-Impact Effects**: Eliminated backdrop filters, complex shadows, gradients
+- **Removed High-Impact Effects**: Eliminated backdrop filters, complex
+  shadows, gradients
 - **Simplified Transitions**: Optimized to simple opacity and color transitions
 - **Container Query Replacement**: Replaced with efficient media queries
 - **Bundle Optimization**: Vite build optimizations with tree shaking
@@ -327,7 +353,10 @@ netstat -tlnp | grep :8000
 
 ## Disclaimer
 
-**Warning:** This application uses AI and large language models. Outputs may contain inaccuracies and should not be treated as financial advice. Always verify information independently before making financial decisions. Use for informational purposes only.
+**Warning:** This application uses AI and large language models.
+Outputs may contain inaccuracies and should not be treated as financial
+advice. Always verify information independently before making financial
+decisions. Use for informational purposes only.
 
 ## License
 

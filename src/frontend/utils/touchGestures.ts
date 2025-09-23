@@ -47,6 +47,7 @@ export class TouchGestureDetector {
     private lastTapPosition: { x: number; y: number } | null = null;
     private longPressTimer: ReturnType<typeof setTimeout> | null = null;
     private onGesture: (gesture: TouchGesture) => void;
+    private initialPinchDistance: number = 0;
 
     constructor(
         onGesture: (gesture: TouchGesture) => void,
@@ -172,10 +173,16 @@ export class TouchGestureDetector {
         const timeSinceLastTap = now - this.lastTapTime;
 
         // Check for double tap
-        if (this.lastTapPosition &&
+        if (
+            this.lastTapPosition &&
             timeSinceLastTap < this.config.doubleTapThreshold &&
-            this.getDistance(touchPoint, { id: 0, timestamp: Date.now(), x: this.lastTapPosition.x, y: this.lastTapPosition.y }) < 50) {
-
+            this.getDistance(touchPoint, {
+                id: 0,
+                timestamp: Date.now(),
+                x: this.lastTapPosition.x,
+                y: this.lastTapPosition.y,
+            }) < 50
+        ) {
             this.onGesture({
                 type: 'doubletap',
                 center: { x: touchPoint.x, y: touchPoint.y },
@@ -205,11 +212,9 @@ export class TouchGestureDetector {
         if (!touch1 || !touch2) return;
 
         const initialDistance = this.getDistance(touch1, touch2);
-        const center = this.getCenter(touch1, touch2);
 
         // Store initial pinch data
-        (this as any).initialPinchDistance = initialDistance;
-        (this as any).initialPinchCenter = center;
+        this.initialPinchDistance = initialDistance;
     }
 
     private handlePinchMove(touches: Touch[]): void {
@@ -221,7 +226,7 @@ export class TouchGestureDetector {
         if (!touch1 || !touch2) return;
 
         const currentDistance = this.getDistance(touch1, touch2);
-        const initialDistance = (this as any).initialPinchDistance;
+        const initialDistance = this.initialPinchDistance;
 
         if (initialDistance && currentDistance) {
             const scale = currentDistance / initialDistance;
@@ -238,8 +243,7 @@ export class TouchGestureDetector {
 
     private handlePinchEnd(): void {
         // Clear pinch data
-        (this as any).initialPinchDistance = null;
-        (this as any).initialPinchCenter = null;
+        this.initialPinchDistance = 0;
     }
 
     private getDistance(point1: TouchPoint, point2: TouchPoint): number {
@@ -248,7 +252,10 @@ export class TouchGestureDetector {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private getCenter(point1: TouchPoint, point2: TouchPoint): { x: number; y: number } {
+    private getCenter(
+        point1: TouchPoint,
+        point2: TouchPoint
+    ): { x: number; y: number } {
         return {
             x: (point1.x + point2.x) / 2,
             y: (point1.y + point2.y) / 2,
@@ -294,13 +301,22 @@ export class MobileUXManager {
     public initialize(element: HTMLElement): void {
         if (!this.config.gestureNavigation) return;
 
-        this.gestureDetector = new TouchGestureDetector((gesture) => {
+        this.gestureDetector = new TouchGestureDetector(gesture => {
             this.handleGesture(gesture);
         });
 
-        element.addEventListener('touchstart', this.gestureDetector.handleTouchStart.bind(this.gestureDetector));
-        element.addEventListener('touchmove', this.gestureDetector.handleTouchMove.bind(this.gestureDetector));
-        element.addEventListener('touchend', this.gestureDetector.handleTouchEnd.bind(this.gestureDetector));
+        element.addEventListener(
+            'touchstart',
+            this.gestureDetector.handleTouchStart.bind(this.gestureDetector)
+        );
+        element.addEventListener(
+            'touchmove',
+            this.gestureDetector.handleTouchMove.bind(this.gestureDetector)
+        );
+        element.addEventListener(
+            'touchend',
+            this.gestureDetector.handleTouchEnd.bind(this.gestureDetector)
+        );
     }
 
     private handleGesture(gesture: TouchGesture): void {
@@ -439,12 +455,15 @@ export function useMobileUX(config: MobileUXConfig = MOBILE_UX_CONFIG) {
     const [mobileUXManager] = useState(() => new MobileUXManager(config));
     const [isInitialized, setIsInitialized] = useState(false);
 
-    const initialize = useCallback((element: HTMLElement) => {
-        if (isInitialized) return;
+    const initialize = useCallback(
+        (element: HTMLElement) => {
+            if (isInitialized) return;
 
-        mobileUXManager.initialize(element);
-        setIsInitialized(true);
-    }, [mobileUXManager, isInitialized]);
+            mobileUXManager.initialize(element);
+            setIsInitialized(true);
+        },
+        [mobileUXManager, isInitialized]
+    );
 
     const destroy = useCallback(() => {
         mobileUXManager.destroy();
@@ -467,7 +486,9 @@ export function useMobileUX(config: MobileUXConfig = MOBILE_UX_CONFIG) {
 // Phase 4: Mobile Form Optimization
 export function optimizeForMobile(form: HTMLFormElement): void {
     // Set input mode for better mobile keyboards
-    const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"]');
+    const inputs = form.querySelectorAll(
+        'input[type="text"], input[type="email"], input[type="tel"], input[type="url"]'
+    );
     inputs.forEach(input => {
         const inputElement = input as HTMLInputElement;
         if (inputElement.type === 'email') {
@@ -496,7 +517,10 @@ export function optimizeForMobile(form: HTMLFormElement): void {
     const textInputs = form.querySelectorAll('input[type="text"], textarea');
     textInputs.forEach(input => {
         const inputElement = input as HTMLInputElement;
-        if (inputElement.name.includes('name') || inputElement.name.includes('title')) {
+        if (
+            inputElement.name.includes('name') ||
+            inputElement.name.includes('title')
+        ) {
             inputElement.setAttribute('autocapitalize', 'words');
         } else {
             inputElement.setAttribute('autocapitalize', 'sentences');

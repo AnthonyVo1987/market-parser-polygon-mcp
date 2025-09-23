@@ -38,17 +38,17 @@ interface ChatState {
 type ChatAction =
   | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
   | {
-    type: 'SEND_MESSAGE_SUCCESS';
-    payload: { aiMessage: Message; responseTime: number };
-  }
+      type: 'SEND_MESSAGE_SUCCESS';
+      payload: { aiMessage: Message; responseTime: number };
+    }
   | {
-    type: 'SEND_MESSAGE_ERROR';
-    payload: {
-      errorMessage: string;
-      aiMessage: Message;
-      responseTime: number;
-    };
-  }
+      type: 'SEND_MESSAGE_ERROR';
+      payload: {
+        errorMessage: string;
+        aiMessage: Message;
+        responseTime: number;
+      };
+    }
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'UPDATE_TICKER'; payload: string }
   | { type: 'CLEAR_ERROR' }
@@ -168,8 +168,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // Optimize useMemo - Only memoize expensive calculations
   const hasMessages = messages.length > 0;
-  const placeholderText = useMemo(() =>
-    `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`,
+  const placeholderText = useMemo(
+    () =>
+      `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`,
     [sharedTicker]
   );
 
@@ -185,7 +186,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // Phase 4: Performance Monitoring
   const { metrics: performanceMetrics } = usePerformanceMonitoring();
-
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -214,7 +214,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // Direct input change handler for <16ms responsiveness - no debouncing
   // Note: Input handling is now managed by ChatInput component directly
-
 
   const handleSendMessage = useCallback(
     async (messageContent: string) => {
@@ -255,7 +254,10 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         });
 
         // Send to API and get response
-        const apiResponse = await sendChatMessage(messageContent, currentModel || undefined);
+        const apiResponse = await sendChatMessage(
+          messageContent,
+          currentModel || undefined
+        );
 
         // Extract response time from backend metadata
         const responseTime = apiResponse.metadata?.response_time
@@ -362,43 +364,48 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   }, [logInteraction]);
 
   // Handle analysis button clicks
-  const handleAnalysisButtonClick = useCallback(async (buttonType: AnalysisButtonType, ticker?: string) => {
-    const targetTicker = ticker || sharedTicker;
+  const handleAnalysisButtonClick = useCallback(
+    async (buttonType: AnalysisButtonType, ticker?: string) => {
+      const targetTicker = ticker || sharedTicker;
 
-    if (!targetTicker) {
-      // If no ticker available, send a general message
-      await handleSendMessage(`Please provide ${buttonType.toLowerCase()} analysis`);
-      return;
-    }
+      if (!targetTicker) {
+        // If no ticker available, send a general message
+        await handleSendMessage(
+          `Please provide ${buttonType.toLowerCase()} analysis`
+        );
+        return;
+      }
 
-    // Create the appropriate message based on button type
-    let message = '';
-    switch (buttonType) {
-      case 'SNAPSHOT':
-        message = `Provide a snapshot analysis for ${targetTicker}`;
-        break;
-      case 'SUPPORT_RESISTANCE':
-        message = `Find support and resistance levels for ${targetTicker}`;
-        break;
-      case 'TECHNICAL':
-        message = `Technical analysis for ${targetTicker}`;
-        break;
-      default:
-        message = `Analyze ${targetTicker}`;
-    }
+      // Create the appropriate message based on button type
+      let message = '';
+      switch (buttonType) {
+        case 'SNAPSHOT':
+          message = `Provide a snapshot analysis for ${targetTicker}`;
+          break;
+        case 'SUPPORT_RESISTANCE':
+          message = `Find support and resistance levels for ${targetTicker}`;
+          break;
+        case 'TECHNICAL':
+          message = `Technical analysis for ${targetTicker}`;
+          break;
+        default:
+          message = `Analyze ${targetTicker}`;
+      }
 
-    // Send the message directly
-    await handleSendMessage(message);
+      // Send the message directly
+      await handleSendMessage(message);
 
-    // Log the interaction
-    startTransition(() => {
-      logInteraction('analysis_button_click', 'analysis_buttons', {
-        buttonType,
-        ticker: targetTicker,
-        message,
+      // Log the interaction
+      startTransition(() => {
+        logInteraction('analysis_button_click', 'analysis_buttons', {
+          buttonType,
+          ticker: targetTicker,
+          message,
+        });
       });
-    });
-  }, [handleSendMessage, sharedTicker, logInteraction]);
+    },
+    [handleSendMessage, sharedTicker, logInteraction]
+  );
 
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
   // Removed handleDebugAction as it's now handled internally by DebugPanel
@@ -457,7 +464,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
                 </h2>
                 <p className='welcome-description'>
                   Get instant financial insights powered by AI. Use the ticker
-                  input and quick analysis tools below or type your own questions.
+                  input and quick analysis tools below or type your own
+                  questions.
                 </p>
                 <p className='getting-started'>
                   Start by entering a ticker symbol and using the analysis
@@ -518,7 +526,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               disabled={isLoading}
               placeholder={placeholderText}
               value={inputValue}
-              onChange={(value) => dispatch({ type: 'UPDATE_INPUT', payload: value })}
+              onChange={value =>
+                dispatch({ type: 'UPDATE_INPUT', payload: value })
+              }
             />
           </div>
         </section>
@@ -526,25 +536,25 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
       {/* Phase 4: Mobile Sidebar Toggle Button */}
       <button
-        className="mobile-sidebar-toggle"
+        className='mobile-sidebar-toggle'
         onClick={handleToggleMobileSidebar}
-        aria-label="Toggle sidebar"
+        aria-label='Toggle sidebar'
         aria-expanded={isMobileSidebarOpen}
-        data-testid="mobile-sidebar-toggle"
+        data-testid='mobile-sidebar-toggle'
       >
         <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+          width='24'
+          height='24'
+          viewBox='0 0 24 24'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
         >
           <path
-            d="M3 12h18M3 6h18M3 18h18"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            d='M3 12h18M3 6h18M3 18h18'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
           />
         </svg>
       </button>
@@ -552,34 +562,36 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       {/* Phase 4: Mobile Sidebar Overlay */}
       {isMobileSidebarOpen && (
         <div
-          className="mobile-sidebar-overlay"
+          className='mobile-sidebar-overlay'
           onClick={handleCloseMobileSidebar}
-          aria-hidden="true"
+          aria-hidden='true'
         />
       )}
 
       {/* RIGHT SIDEBAR PANEL: Ticker Input, Analysis Buttons, Export Buttons, Debug */}
-      <div className={`right-sidebar-panel ${isMobileSidebarOpen ? 'open' : ''}`}>
+      <div
+        className={`right-sidebar-panel ${isMobileSidebarOpen ? 'open' : ''}`}
+      >
         {/* Phase 4: Mobile Sidebar Close Button */}
         <button
-          className="mobile-sidebar-close"
+          className='mobile-sidebar-close'
           onClick={handleCloseMobileSidebar}
-          aria-label="Close sidebar"
-          data-testid="mobile-sidebar-close"
+          aria-label='Close sidebar'
+          data-testid='mobile-sidebar-close'
         >
           <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            width='24'
+            height='24'
+            viewBox='0 0 24 24'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
           >
             <path
-              d="M18 6L6 18M6 6l12 12"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              d='M18 6L6 18M6 6l12 12'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
             />
           </svg>
         </button>
@@ -592,15 +604,18 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         >
           <Suspense
             fallback={
-              <div className='component-loading'>
-                Loading ticker input...
-              </div>
+              <div className='component-loading'>Loading ticker input...</div>
             }
           >
             <SharedTickerInput
               value={deferredSharedTicker}
               onChange={handleTickerChange}
-              onAnalyze={() => dispatch({ type: 'UPDATE_INPUT', payload: `analyze ${deferredSharedTicker}` })}
+              onAnalyze={() =>
+                dispatch({
+                  type: 'UPDATE_INPUT',
+                  payload: `analyze ${deferredSharedTicker}`,
+                })
+              }
               disabled={isLoading}
             />
           </Suspense>
@@ -619,7 +634,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             disabled={isLoading}
           />
         </section>
-
 
         {/* SECTION 6: Export/Recent Buttons */}
         <section
@@ -667,18 +681,19 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       </div>
 
       {/* BOTTOM CONTROL PANEL: Response Time and Message Count */}
-      <div className='bottom-control-panel' role="status" aria-live="polite">
+      <div className='bottom-control-panel' role='status' aria-live='polite'>
         <div className='response-time-display'>
           <span className='response-time-label'>Response Time:</span>
           <span
-            className={`response-time-value ${latestResponseTime
-              ? latestResponseTime < 5
-                ? 'response-time--fast'
-                : latestResponseTime < 15
-                  ? 'response-time--medium'
-                  : 'response-time--slow'
-              : ''
-              }`}
+            className={`response-time-value ${
+              latestResponseTime
+                ? latestResponseTime < 5
+                  ? 'response-time--fast'
+                  : latestResponseTime < 15
+                    ? 'response-time--medium'
+                    : 'response-time--slow'
+                : ''
+            }`}
             aria-label={`Response time: ${latestResponseTime ? `${latestResponseTime.toFixed(2)} seconds` : 'Not available'}`}
           >
             {latestResponseTime ? `${latestResponseTime.toFixed(2)}s` : 'N/A'}
@@ -705,31 +720,58 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       </div>
 
       {/* Phase 4: Performance Monitoring Display - Enhanced */}
-      <div className="performance-indicator" data-testid="performance-indicator">
-        <div className="performance-header">
+      <div
+        className='performance-indicator'
+        data-testid='performance-indicator'
+      >
+        <div className='performance-header'>
           <h4>Performance Metrics</h4>
         </div>
-        <div className="performance-metrics-grid">
-          <div className="performance-metric">
-            <span className="metric-label">FCP:</span>
-            <span className={performanceMetrics.fcp && performanceMetrics.fcp < 1500 ? 'good' : 'warning'}>
-              {performanceMetrics.fcp ? `${performanceMetrics.fcp.toFixed(0)}ms` : 'Calculating...'}
+        <div className='performance-metrics-grid'>
+          <div className='performance-metric'>
+            <span className='metric-label'>FCP:</span>
+            <span
+              className={
+                performanceMetrics.fcp && performanceMetrics.fcp < 1500
+                  ? 'good'
+                  : 'warning'
+              }
+            >
+              {performanceMetrics.fcp
+                ? `${performanceMetrics.fcp.toFixed(0)}ms`
+                : 'Calculating...'}
             </span>
           </div>
-          <div className="performance-metric">
-            <span className="metric-label">LCP:</span>
-            <span className={performanceMetrics.lcp && performanceMetrics.lcp < 2500 ? 'good' : 'warning'}>
-              {performanceMetrics.lcp ? `${performanceMetrics.lcp.toFixed(0)}ms` : 'Calculating...'}
+          <div className='performance-metric'>
+            <span className='metric-label'>LCP:</span>
+            <span
+              className={
+                performanceMetrics.lcp && performanceMetrics.lcp < 2500
+                  ? 'good'
+                  : 'warning'
+              }
+            >
+              {performanceMetrics.lcp
+                ? `${performanceMetrics.lcp.toFixed(0)}ms`
+                : 'Calculating...'}
             </span>
           </div>
-          <div className="performance-metric">
-            <span className="metric-label">CLS:</span>
-            <span className={performanceMetrics.cls && performanceMetrics.cls < 0.1 ? 'good' : 'warning'}>
-              {performanceMetrics.cls ? performanceMetrics.cls.toFixed(3) : 'Calculating...'}
+          <div className='performance-metric'>
+            <span className='metric-label'>CLS:</span>
+            <span
+              className={
+                performanceMetrics.cls && performanceMetrics.cls < 0.1
+                  ? 'good'
+                  : 'warning'
+              }
+            >
+              {performanceMetrics.cls
+                ? performanceMetrics.cls.toFixed(3)
+                : 'Calculating...'}
             </span>
           </div>
         </div>
-        <div className="performance-note">
+        <div className='performance-note'>
           <small>Metrics update after user interaction</small>
         </div>
       </div>

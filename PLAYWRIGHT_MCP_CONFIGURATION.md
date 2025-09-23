@@ -2,7 +2,8 @@
 
 ## ✅ Configuration Complete
 
-Both Cursor IDE and Claude Code have been successfully configured to use ExecuteAutomation Playwright MCP.
+Both Cursor IDE and Claude Code have been successfully configured to use
+ExecuteAutomation Playwright MCP.
 
 ## 📁 Configuration Files Updated
 
@@ -41,7 +42,8 @@ Both Cursor IDE and Claude Code have been successfully configured to use Execute
 ## 🚀 Next Steps
 
 1. **Restart Cursor IDE** - Close and reopen Cursor IDE to load the new MCP configuration
-2. **Restart Claude Code** - Close and reopen Claude Code to load the new MCP configuration
+2. **Restart Claude Code** - Close and reopen Claude Code to load the new
+   MCP configuration
 3. **Verify Installation** - The ExecuteAutomation Playwright MCP server will be automatically installed when first used
 
 ## 🎯 Available Tools

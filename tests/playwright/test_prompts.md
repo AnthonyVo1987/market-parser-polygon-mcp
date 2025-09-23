@@ -1,10 +1,16 @@
 # Standardized Test Prompts
 
-**Document Purpose:** This is the single source of truth for all standardized test prompts used in Market Parser testing. All AI agents and testing procedures MUST use these exact prompts to ensure consistent, quick responses and avoid false failures.
+**Document Purpose:** This is the single source of truth for all
+standardized test prompts used in Market Parser testing. All AI agents
+and testing procedures MUST use these exact prompts to ensure
+consistent, quick responses and avoid false failures.
 
-**Target Audience:** AI Coding Agents, Test Specialists, and anyone performing Market Parser testing
-**Expected Outcome:** Consistent 30-60 second response times with minimal tool calls
-**Methodology:** Quick response prompts designed to avoid complex processing that could cause timeouts
+**Target Audience:** AI Coding Agents, Test Specialists, and anyone
+performing Market Parser testing
+**Expected Outcome:** Consistent 30-60 second response times with minimal
+tool calls
+**Methodology:** Quick response prompts designed to avoid complex
+processing that could cause timeouts
 
 ---
 
@@ -25,39 +31,65 @@
 
 ### 1. Market Status Query
 
-**"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
+#### Test Prompt 1: Market Status Query
+
+"Quick Response Needed with minimal tool calls: What is the current Market Status?"
 
 ### 2. Single Stock Snapshot
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
+#### Test Prompt 2: Single Stock Snapshot
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, Single Stock Snapshot NVDA"
 
 ### 3. Full Market Snapshot
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
+#### Test Prompt 3: Full Market Snapshot
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, Full Market Snapshot: SPY, QQQ, IWM"
 
 ### 4. Closing Price Query
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
+#### Test Prompt 4: Closing Price Query
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, what was the closing price of GME today?"
 
 ### 5. Performance Analysis
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
+#### Test Prompt 5: Performance Analysis
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, how is SOUN performance doing this week?"
 
 ### 6. Top Gainers
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
+#### Test Prompt 6: Top Gainers
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, Top Market Movers Today for Gainers"
 
 ### 7. Top Losers
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
+#### Test Prompt 7: Top Losers
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, Top Market Movers Today for Losers"
 
 ### 8. Support & Resistance
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
+#### Test Prompt 8: Support & Resistance
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, Support & Resistance Levels NVDA"
 
 ### 9. Technical Analysis
 
-**"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+#### Test Prompt 9: Technical Analysis
+
+"Quick Response Needed with minimal tool calls: Based on Market Status
+Date, Technical Analysis SPY"
 
 ---
 
@@ -94,7 +126,8 @@ This file is referenced by:
 - `AGENTS.md` - Agent instructions
 - `README.md` - Project documentation
 - `tests/playwright/mcp_test_script_basic.md` - MCP testing guide
-- `tests/playwright/complete_test_execution_guide.md` - Complete test guide
+- `tests/playwright/complete_test_execution_guide.md` - Complete test
+  guide
 - `tests/playwright/UI_complete_test_execution_guide.md` - UI test guide
 - All other test documentation files
 

@@ -1,108 +1,215 @@
-# Standardized Test Prompts System - Implementation Complete ✅
+# Standardized Test Prompts System - Updated 2025-01-09
 
-## 🎯 SYSTEM OVERVIEW
+## System Overview
 
-The Standardized Test Prompts System has been successfully implemented to ensure consistent, reliable testing across all Market Parser scenarios. This system prevents false failures from complex prompts and guarantees 30-60 second response times.
+**Purpose**: Ensure consistent, reliable testing with quick response times
+**Response Time**: 30-60 seconds per test
+**Usage**: Regression testing, validation, and quality assurance
+**Status**: ✅ Fully implemented and documented
 
-## 📋 CORE COMPONENTS
+## Core Test Prompts (9 Total)
 
-### Single Source of Truth
-- **File**: `tests/playwright/test_prompts.md`
-- **Purpose**: Comprehensive reference for all standardized test prompts
-- **Content**: 10 test prompts, usage guidelines, performance classification, integration notes
+### 1. Market Status Check
 
-### 10 Standardized Test Prompts
+**Prompt**: "What is the current Market Status?"
+**Purpose**: Verify overall market data access and system health
+**Expected Response**: Current market status, trading hours, key indices
+**Performance**: Quick response (30-60 seconds)
 
-1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
-2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
-3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
-4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
-5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
-6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
-7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
-8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
-9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+### 2. Single Stock Snapshot
 
-## 🎨 PERFORMANCE CLASSIFICATION
+**Prompt**: "Based on Market Status Date, Single Stock Snapshot NVDA"
+**Purpose**: Test individual stock data retrieval and analysis
+**Expected Response**: NVDA stock data, price, volume, analysis
+**Performance**: Quick response (30-60 seconds)
 
-### Response Time Categories
-- **SUCCESS** (✅): Response received in under 45 seconds
-- **SLOW_PERFORMANCE** (⚠️): Response received between 45 and 120 seconds (requires optimization)
-- **TIMEOUT** (❌): No response received within 120 seconds (critical failure)
+### 3. Full Market Snapshot
 
-### Expected Performance
-- **Target Response Time**: 30-60 seconds
-- **Consistency**: All prompts designed for similar processing requirements
-- **Reliability**: Prevents false failures from complex or random queries
+**Prompt**: "Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"
+**Purpose**: Test multiple stock analysis and market overview
+**Expected Response**: SPY, QQQ, IWM data with comparative analysis
+**Performance**: Quick response (30-60 seconds)
 
-## 📚 DOCUMENTATION INTEGRATION
+### 4. Closing Price Query
 
-### Dual Documentation Approach
-1. **Individual Prompts**: Listed in all relevant documentation files
-2. **Comprehensive Reference**: Link to `tests/playwright/test_prompts.md`
+**Prompt**: "Based on Market Status Date, what was the closing price of GME today?"
+**Purpose**: Test specific price data retrieval
+**Expected Response**: GME closing price and related data
+**Performance**: Quick response (30-60 seconds)
 
-### Files Updated
-- **Main Documentation**: CLAUDE.md, AGENTS.md, README.md
-- **Test Documentation**: 
-  - tests/playwright/mcp_test_script_basic.md
-  - tests/playwright/complete_test_execution_guide.md
-  - tests/playwright/UI_complete_test_execution_guide.md
+### 5. Performance Analysis
 
-### Integration Notes for AI Agents
-- **Reference this document**: AI Agents should refer to `test_prompts.md` as primary source
-- **Copy verbatim**: When executing tests, copy prompts exactly as written
-- **Avoid variations**: Do not introduce variations or additional context
-- **Focus on single intent**: Each prompt tests specific analysis intent with minimal complexity
-- **Report performance**: Always report response time and classify according to performance criteria
+**Prompt**: "Based on Market Status Date, how is SOUN performance doing this week?"
+**Purpose**: Test performance analysis and trend evaluation
+**Expected Response**: SOUN weekly performance analysis
+**Performance**: Quick response (30-60 seconds)
 
-## 🔧 IMPLEMENTATION DETAILS
+### 6. Top Gainers
 
-### Backend Fixes Applied
-- **Import Error Handling**: Fixed in src/backend/main.py and src/backend/api_models.py
-- **Robust Import System**: Both relative and absolute imports now work correctly
-- **Code Quality**: All linting issues resolved
+**Prompt**: "Based on Market Status Date, Top Market Movers Today for Gainers"
+**Purpose**: Test market movers data and analysis
+**Expected Response**: List of top gaining stocks with analysis
+**Performance**: Quick response (30-60 seconds)
 
-### Documentation Standards
-- **Consistent Formatting**: All files follow same prompt structure
-- **Clear References**: Easy navigation between individual prompts and comprehensive docs
-- **Maintenance**: Single source of truth ensures easy updates
+### 7. Top Losers
 
-## ✅ BENEFITS ACHIEVED
+**Prompt**: "Based on Market Status Date, Top Market Movers Today for Losers"
+**Purpose**: Test market movers data for declining stocks
+**Expected Response**: List of top losing stocks with analysis
+**Performance**: Quick response (30-60 seconds)
 
-### Testing Consistency
-- **Predictable Results**: All tests use same prompt structure
-- **Reliable Performance**: Consistent 30-60 second response times
-- **False Failure Prevention**: Eliminates issues from complex or random prompts
+### 8. Support & Resistance
 
-### Development Efficiency
-- **Quick Reference**: Individual prompts available in all docs
-- **Comprehensive Guide**: Detailed reference in test_prompts.md
-- **Easy Maintenance**: Single source of truth for updates
+**Prompt**: "Based on Market Status Date, Support & Resistance Levels NVDA"
+**Purpose**: Test technical analysis capabilities
+**Expected Response**: NVDA support and resistance levels
+**Performance**: Quick response (30-60 seconds)
 
-### Quality Assurance
-- **Standardized Testing**: All scenarios use proven prompts
-- **Performance Monitoring**: Clear classification system for response times
-- **Documentation Coverage**: Complete integration across all relevant files
+### 9. Technical Analysis
 
-## 🚀 USAGE GUIDELINES
+**Prompt**: "Based on Market Status Date, Technical Analysis SPY"
+**Purpose**: Test comprehensive technical analysis
+**Expected Response**: SPY technical analysis with indicators
+**Performance**: Quick response (30-60 seconds)
 
-### For AI Agents
-1. **Use Only These Prompts**: Copy prompts exactly as written
-2. **Include Prefix**: Always include "Quick Response Needed with minimal tool calls:" prefix
-3. **Report Performance**: Classify response time according to performance criteria
-4. **Reference Documentation**: Use test_prompts.md for comprehensive guidelines
+## Usage Guidelines
 
-### For Developers
-1. **Test Consistency**: Use these prompts for all testing scenarios
-2. **Performance Monitoring**: Track response times and classify results
-3. **Documentation Updates**: Update test_prompts.md for any changes
-4. **Maintenance**: Keep individual prompt lists in sync with main reference
+### Mandatory Rules
 
-## 📊 SYSTEM STATUS
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
 
-**Implementation Status**: ✅ **COMPLETE**
-**Documentation Coverage**: ✅ **COMPREHENSIVE**
-**Code Quality**: ✅ **ALL LINTING ISSUES RESOLVED**
-**Testing Ready**: ✅ **PRODUCTION READY**
+### Performance Classification
 
-The Standardized Test Prompts System is now fully operational and ready for consistent, reliable testing across all Market Parser scenarios.
+- **Quick Response**: 30-60 seconds
+- **Minimal Tool Usage**: Efficient processing
+- **Consistent Results**: Standardized format
+- **Reliable Testing**: No false failures
+
+### Integration Notes
+
+- **CLI Testing**: Use with `uv run src/backend/main.py`
+- **API Testing**: Use with chat endpoint
+- **Frontend Testing**: Use with React interface
+- **Documentation**: Reference `tests/playwright/test_prompts.md`
+
+## Implementation Details
+
+### File Locations
+
+- **Main Documentation**: `tests/playwright/test_prompts.md`
+- **CLAUDE.md**: Updated with test prompts
+- **AGENTS.md**: Updated with test prompts
+- **README.md**: Updated with test prompts
+- **Test Guides**: All test execution guides updated
+
+### Documentation Structure
+
+1. **Individual Prompts**: All 9 prompts spelled out
+2. **Reference File**: Link to `tests/playwright/test_prompts.md`
+3. **Usage Guidelines**: Mandatory rules and procedures
+4. **Performance Notes**: Response time expectations
+
+### Testing Procedures
+
+1. **Start Application**: Run backend and frontend servers
+2. **Select Prompt**: Choose from standardized list
+3. **Execute Test**: Run prompt through system
+4. **Verify Response**: Check response time and content
+5. **Document Results**: Record test outcomes
+
+## Quality Assurance
+
+### Response Time Validation
+
+- **Target**: 30-60 seconds per test
+- **Monitoring**: Track response times
+- **Optimization**: Adjust for performance issues
+- **Reporting**: Document performance metrics
+
+### Content Validation
+
+- **Accuracy**: Verify data correctness
+- **Completeness**: Ensure comprehensive responses
+- **Consistency**: Maintain standardized format
+- **Quality**: High-quality analysis output
+
+### System Health Monitoring
+
+- **MCP Server**: Verify Polygon.io integration
+- **API Endpoints**: Check backend functionality
+- **Frontend**: Validate UI responsiveness
+- **Database**: Ensure data integrity
+
+## Maintenance and Updates
+
+### Regular Validation
+
+- **Weekly Testing**: Run all 9 prompts
+- **Performance Review**: Monitor response times
+- **Content Quality**: Verify analysis accuracy
+- **System Health**: Check overall functionality
+
+### Documentation Updates
+
+- **Prompt Refinement**: Update based on testing results
+- **Procedure Updates**: Improve testing procedures
+- **Performance Tuning**: Optimize response times
+- **Quality Enhancement**: Improve analysis quality
+
+### Future Enhancements
+
+- **Additional Prompts**: Expand test coverage
+- **Performance Optimization**: Improve response times
+- **Quality Metrics**: Enhanced validation procedures
+- **Automation**: Automated testing integration
+
+## Success Metrics
+
+### Performance Metrics
+
+- **Response Time**: 30-60 seconds average
+- **Success Rate**: 95%+ successful responses
+- **Error Rate**: <5% error rate
+- **Consistency**: Standardized output format
+
+### Quality Metrics
+
+- **Accuracy**: High-quality analysis output
+- **Completeness**: Comprehensive responses
+- **Relevance**: Market-appropriate analysis
+- **Usability**: Clear and actionable insights
+
+### System Metrics
+
+- **Uptime**: 99%+ system availability
+- **Reliability**: Consistent performance
+- **Scalability**: Handle multiple concurrent tests
+- **Maintainability**: Easy to update and modify
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Slow Response**: Check MCP server status
+2. **Missing Data**: Verify API key configuration
+3. **Format Errors**: Check prompt formatting
+4. **System Errors**: Review logs and configuration
+
+### Resolution Procedures
+
+1. **Identify Issue**: Analyze error messages
+2. **Check Configuration**: Verify settings
+3. **Restart Services**: Restart if necessary
+4. **Document Issue**: Record for future reference
+
+### Support Resources
+
+- **Documentation**: Comprehensive guides available
+- **Logs**: Detailed error logging
+- **Configuration**: Well-documented settings
+- **Community**: Support channels available

@@ -1,7 +1,14 @@
 // Phase 4: Performance Monitoring Utilities
 // Real-time performance tracking and optimization tools
 
-import React, { Suspense, lazy, memo, useEffect, useMemo, useState } from 'react';
+import React, {
+    Suspense,
+    lazy,
+    memo,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 
 export interface PerformanceMetrics {
     fcp: number; // First Contentful Paint
@@ -47,9 +54,9 @@ export interface BundleSizeBudget {
 export const PERFORMANCE_BUDGET: PerformanceBudget = {
     fcp: 1500, // 1.5s
     lcp: 2500, // 2.5s
-    cls: 0.1,  // 0.1
+    cls: 0.1, // 0.1
     tti: 3500, // 3.5s
-    fid: 100,  // 100ms
+    fid: 100, // 100ms
     ttfb: 600, // 600ms
     // Optimization-specific budgets
     backdropFilterCount: 0, // Target: remove all
@@ -62,8 +69,8 @@ export const PERFORMANCE_BUDGET: PerformanceBudget = {
 };
 
 export const BUNDLE_SIZE_BUDGET: BundleSizeBudget = {
-    js: 250 * 1024,   // 250KB
-    css: 50 * 1024,   // 50KB
+    js: 250 * 1024, // 250KB
+    css: 50 * 1024, // 50KB
     total: 300 * 1024, // 300KB
 };
 
@@ -87,8 +94,14 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
     const backdropFilterElements = document.querySelectorAll('*');
     backdropFilterElements.forEach(element => {
         const computedStyle = window.getComputedStyle(element);
-        if (computedStyle.backdropFilter !== 'none' || (computedStyle as any).webkitBackdropFilter !== 'none') {
-            metrics.backdropFilterCount!++;
+        if (
+            computedStyle.backdropFilter !== 'none' ||
+            (computedStyle as CSSStyleDeclaration & { webkitBackdropFilter?: string })
+                .webkitBackdropFilter !== 'none'
+        ) {
+            if (metrics.backdropFilterCount !== null && metrics.backdropFilterCount !== undefined) {
+                metrics.backdropFilterCount++;
+            }
         }
     });
 
@@ -98,9 +111,12 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
         const computedStyle = window.getComputedStyle(element);
         if (computedStyle.boxShadow !== 'none') {
             // Count multiple shadows (comma-separated)
-            const shadowCount = (computedStyle.boxShadow.match(/,/g) || []).length + 1;
+            const shadowCount =
+                (computedStyle.boxShadow.match(/,/g) || []).length + 1;
             if (shadowCount > 1) {
-                metrics.boxShadowCount! += shadowCount;
+                if (metrics.boxShadowCount !== null && metrics.boxShadowCount !== undefined) {
+                    metrics.boxShadowCount += shadowCount;
+                }
             }
         }
     });
@@ -110,7 +126,9 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
     gradientElements.forEach(element => {
         const computedStyle = window.getComputedStyle(element);
         if (computedStyle.backgroundImage.includes('gradient')) {
-            metrics.gradientCount!++;
+            if (metrics.gradientCount !== null && metrics.gradientCount !== undefined) {
+                metrics.gradientCount++;
+            }
         }
     });
 
@@ -119,7 +137,9 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
     transformElements.forEach(element => {
         const computedStyle = window.getComputedStyle(element);
         if (computedStyle.transform !== 'none') {
-            metrics.transformCount!++;
+            if (metrics.transformCount !== null && metrics.transformCount !== undefined) {
+                metrics.transformCount++;
+            }
         }
     });
 
@@ -128,7 +148,9 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
     willChangeElements.forEach(element => {
         const computedStyle = window.getComputedStyle(element);
         if (computedStyle.willChange !== 'auto') {
-            metrics.willChangeCount!++;
+            if (metrics.willChangeCount !== null && metrics.willChangeCount !== undefined) {
+                metrics.willChangeCount++;
+            }
         }
     });
 
@@ -140,7 +162,9 @@ export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
 
     // Count container queries (approximate - would need to parse CSS)
     // This is a simplified count based on common patterns
-    const containerQueryElements = document.querySelectorAll('[style*="container-type"]');
+    const containerQueryElements = document.querySelectorAll(
+        '[style*="container-type"]'
+    );
     metrics.containerQueryCount = containerQueryElements.length;
 
     return metrics;
@@ -170,9 +194,11 @@ export class PerformanceMonitor {
 
         // FCP Observer
         try {
-            const fcpObserver = new PerformanceObserver((list) => {
+            const fcpObserver = new PerformanceObserver(list => {
                 const entries = list.getEntries();
-                const fcpEntry = entries.find(entry => entry.name === 'first-contentful-paint');
+                const fcpEntry = entries.find(
+                    entry => entry.name === 'first-contentful-paint'
+                );
                 if (fcpEntry) {
                     this.metrics.fcp = fcpEntry.startTime;
                     this.checkBudget('fcp', fcpEntry.startTime);
@@ -186,7 +212,7 @@ export class PerformanceMonitor {
 
         // LCP Observer
         try {
-            const lcpObserver = new PerformanceObserver((list) => {
+            const lcpObserver = new PerformanceObserver(list => {
                 const entries = list.getEntries();
                 const lastEntry = entries[entries.length - 1];
                 if (lastEntry) {
@@ -203,10 +229,14 @@ export class PerformanceMonitor {
         // CLS Observer
         try {
             let clsValue = 0;
-            const clsObserver = new PerformanceObserver((list) => {
+            const clsObserver = new PerformanceObserver(list => {
                 for (const entry of list.getEntries()) {
-                    if (!(entry as any).hadRecentInput) {
-                        clsValue += (entry as any).value;
+                    const layoutShiftEntry = entry as PerformanceEntry & {
+                        hadRecentInput?: boolean;
+                        value?: number;
+                    };
+                    if (!layoutShiftEntry.hadRecentInput) {
+                        clsValue += layoutShiftEntry.value || 0;
                         this.metrics.cls = clsValue;
                         this.checkBudget('cls', clsValue);
                     }
@@ -220,10 +250,13 @@ export class PerformanceMonitor {
 
         // FID Observer
         try {
-            const fidObserver = new PerformanceObserver((list) => {
+            const fidObserver = new PerformanceObserver(list => {
                 const entries = list.getEntries();
                 for (const entry of entries) {
-                    const fid = (entry as any).processingStart - entry.startTime;
+                    const firstInputEntry = entry as PerformanceEntry & {
+                        processingStart?: number;
+                    };
+                    const fid = (firstInputEntry.processingStart || 0) - entry.startTime;
                     this.metrics.fid = fid;
                     this.checkBudget('fid', fid);
                 }
@@ -265,10 +298,21 @@ export class PerformanceMonitor {
         metrics: Partial<PerformanceMetrics>;
         budgets: PerformanceBudget;
         violations: Array<{ metric: string; value: number; budget: number }>;
-        regressionAlerts: Array<{ metric: string; current: number; previous: number; change: number }>;
+        regressionAlerts: Array<{
+            metric: string;
+            current: number;
+            previous: number;
+            change: number;
+        }>;
     } {
-        const violations: Array<{ metric: string; value: number; budget: number }> = [];
-        const regressionAlerts: Array<{ metric: string; current: number; previous: number; change: number }> = [];
+        const violations: Array<{ metric: string; value: number; budget: number }> =
+            [];
+        const regressionAlerts: Array<{
+            metric: string;
+            current: number;
+            previous: number;
+            change: number;
+        }> = [];
 
         Object.entries(this.metrics).forEach(([key, value]) => {
             if (value !== undefined) {
@@ -305,23 +349,26 @@ export class PerformanceMonitor {
 
 // Phase 4: Bundle Size Monitoring
 export function getBundleSize(): Promise<BundleSizeBudget> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         if (typeof window === 'undefined') {
             resolve({ js: 0, css: 0, total: 0 });
             return;
         }
 
-        const jsSize = Array.from(document.querySelectorAll('script[src]'))
-            .reduce((total, script) => {
+        const jsSize = Array.from(document.querySelectorAll('script[src]')).reduce(
+            (total, script) => {
                 const src = (script as HTMLScriptElement).src;
                 return total + (src ? new URL(src).pathname.length : 0);
-            }, 0);
+            },
+            0
+        );
 
-        const cssSize = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-            .reduce((total, link) => {
-                const href = (link as HTMLLinkElement).href;
-                return total + (href ? new URL(href).pathname.length : 0);
-            }, 0);
+        const cssSize = Array.from(
+            document.querySelectorAll('link[rel="stylesheet"]')
+        ).reduce((total, link) => {
+            const href = (link as HTMLLinkElement).href;
+            return total + (href ? new URL(href).pathname.length : 0);
+        }, 0);
 
         resolve({
             js: jsSize,
@@ -332,7 +379,7 @@ export function getBundleSize(): Promise<BundleSizeBudget> {
 }
 
 // Phase 4: Performance Optimization Utilities
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
     func: T,
     wait: number
 ): (...args: Parameters<T>) => void {
@@ -343,7 +390,7 @@ export function debounce<T extends (...args: any[]) => any>(
     };
 }
 
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
     func: T,
     limit: number
 ): (...args: Parameters<T>) => void {
@@ -367,9 +414,13 @@ export function getMemoryUsage(): {
         return { used: 0, total: 0, percentage: 0 };
     }
 
-    const memory = (performance as any).memory;
-    const used = memory.usedJSHeapSize;
-    const total = memory.totalJSHeapSize;
+    const memory = (
+        performance as Performance & {
+            memory?: { usedJSHeapSize: number; totalJSHeapSize: number };
+        }
+    ).memory;
+    const used = memory?.usedJSHeapSize || 0;
+    const total = memory?.totalJSHeapSize || 0;
     const percentage = (used / total) * 100;
 
     return { used, total, percentage };
@@ -391,7 +442,7 @@ export function usePerformanceMonitoring() {
         transformCount: 0,
         willChangeCount: 0,
         cssVariableCount: 0,
-        containerQueryCount: 0
+        containerQueryCount: 0,
     });
 
     useEffect(() => {
@@ -458,10 +509,10 @@ export function withPerformanceMonitoring<P extends object>(
 export function createLazyComponent<T extends React.ComponentType<any>>(
     importFunc: () => Promise<{ default: T }>,
     fallback?: React.ReactNode
-): React.ComponentType<React.ComponentProps<T>> {
+): React.ComponentType<any> {
     const LazyComponent = lazy(importFunc);
 
-    const LazyWrapper = (props: React.ComponentProps<T>) => (
+    const LazyWrapper = (props: any) => (
         <Suspense fallback={fallback || <div>Loading...</div>}>
             <LazyComponent {...props} />
         </Suspense>
@@ -479,7 +530,8 @@ export function validatePerformanceBudget(
     isValid: boolean;
     violations: Array<{ metric: string; value: number; budget: number }>;
 } {
-    const violations: Array<{ metric: string; value: number; budget: number }> = [];
+    const violations: Array<{ metric: string; value: number; budget: number }> =
+        [];
 
     Object.entries(metrics).forEach(([key, value]) => {
         if (value !== undefined) {

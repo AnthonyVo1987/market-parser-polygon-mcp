@@ -1,22 +1,38 @@
 # Market Parser with Polygon MCP Server
 
-A Python CLI and React web application for natural language financial queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI GPT-5-mini via the Pydantic AI Agent Framework. Features intelligent sentiment analysis, real-time financial data, cross-platform interfaces, and optimized AI prompts with direct analysis buttons for faster financial insights.
+A Python CLI and React web application for natural language financial
+queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI
+GPT-5-mini via the Pydantic AI Agent Framework. Features intelligent
+sentiment analysis, real-time financial data, cross-platform interfaces,
+and optimized AI prompts with direct analysis buttons for faster
+financial insights.
 
 ## STANDARDIZED TEST PROMPTS
 
-**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+**CRITICAL:** All testing MUST use these standardized prompts to ensure
+consistent, quick responses (30-60 seconds) and avoid false failures from
+complex prompts.
 
 ### Quick Response Test Prompts (Use These Only)
 
-1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
-2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
-3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
-4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
-5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
-6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
-7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
-8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
-9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+1. **"Quick Response Needed with minimal tool calls: What is the current
+   Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Technical Analysis SPY"**
 
 **MANDATORY RULES:**
 
@@ -27,7 +43,8 @@ A Python CLI and React web application for natural language financial queries us
 - ❌ DO NOT modify these prompts
 - ❌ DO NOT use complex, open-ended queries
 
-**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts
+documentation, see `tests/playwright/test_prompts.md`
 
 ## Features
 
@@ -84,11 +101,13 @@ A Python CLI and React web application for natural language financial queries us
    # OPENAI_API_KEY=your_openai_key_here
    ```
 
-   **Note:** All non-sensitive configuration is now centralized in `config/app.config.json`. Only API keys are stored in `.env`.
+   **Note:** All non-sensitive configuration is now centralized in
+   `config/app.config.json`. Only API keys are stored in `.env`.
 
 **One-Click Application Startup (Recommended):**
 
-The startup scripts automatically manage all development servers and **open the application in your browser**.
+The startup scripts automatically manage all development servers and
+**open the application in your browser**.
 
 ```bash
 # Option 1: Main startup script (recommended)
@@ -207,7 +226,8 @@ KEY TAKEAWAYS
 
 ### UI Performance Improvements
 
-This application has been optimized for maximum performance while maintaining visual quality:
+This application has been optimized for maximum performance while
+maintaining visual quality:
 
 #### Core Web Vitals
 
@@ -219,7 +239,8 @@ This application has been optimized for maximum performance while maintaining vi
 #### Optimization Techniques
 
 - **CSS Minification**: Automated CSS optimization with cssnano
-- **Removed High-Impact Effects**: Eliminated backdrop filters, complex shadows, gradients
+- **Removed High-Impact Effects**: Eliminated backdrop filters, complex
+  shadows, gradients
 - **Simplified Transitions**: Optimized to simple opacity and color transitions
 - **Container Query Replacement**: Replaced with efficient media queries
 - **Bundle Optimization**: Vite build optimizations with tree shaking
@@ -311,7 +332,10 @@ netstat -tlnp | grep :8000
 
 ## Disclaimer
 
-**Warning:** This application uses AI and large language models. Outputs may contain inaccuracies and should not be treated as financial advice. Always verify information independently before making financial decisions. Use for informational purposes only.
+**Warning:** This application uses AI and large language models.
+Outputs may contain inaccuracies and should not be treated as financial
+advice. Always verify information independently before making financial
+decisions. Use for informational purposes only.
 
 ## License
 

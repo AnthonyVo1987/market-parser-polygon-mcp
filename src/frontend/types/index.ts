@@ -1,11 +1,7 @@
 // React Core - ALL REQUIRED HOOKS AND TYPES
 
 // React Event Types - REQUIRED FOR EVENT HANDLERS
-import type {
-  ChangeEvent,
-  FormEvent,
-  KeyboardEvent
-} from 'react';
+import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react';
 
 // TypeScript Types - COMPLETE INTERFACE DEFINITIONS
 export interface Message {
@@ -18,7 +14,6 @@ export interface Message {
     isError?: boolean;
   };
 }
-
 
 export interface ChatInputProps {
   onSendMessage: (message: string) => void;

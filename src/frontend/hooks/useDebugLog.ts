@@ -118,7 +118,8 @@ export function useEffectLogger(
         effect: effectName,
         executionCount: effectCountRef.current,
         dependenciesChanged: Object.keys(changedDeps).length > 0,
-        changedDependencies: Object.keys(changedDeps).length > 0 ? changedDeps : undefined,
+        changedDependencies:
+          Object.keys(changedDeps).length > 0 ? changedDeps : undefined,
       });
     }
 
@@ -353,7 +354,11 @@ export function usePropsLogger(
   const previousPropsRef = useRef(props);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && import.meta.env?.MODE !== 'development') return;
+    if (
+      typeof window !== 'undefined' &&
+      import.meta.env?.MODE !== 'development'
+    )
+      return;
 
     const previousProps = previousPropsRef.current;
     const changedProps: Record<string, { old: unknown; new: unknown }> = {};
