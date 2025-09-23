@@ -591,16 +591,15 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         # Use shared instances instead of creating new ones
         # Detect analysis intent
         analysis_intent = direct_prompt_manager.detect_analysis_intent(stripped_message)
-        
+
         # Generate direct prompt
         prompt_data = direct_prompt_manager.generate_direct_prompt(
-            stripped_message, 
-            analysis_intent
+            stripped_message, analysis_intent
         )
-        
-        # Extract ticker if present
-        ticker = direct_prompt_manager.extract_ticker_from_message(stripped_message)
-        
+
+        # Extract ticker if present (for future use)
+        _ = direct_prompt_manager.extract_ticker_from_message(stripped_message)
+
         # Call the AI model with the direct prompt
         try:
             # Create context with MCP server for market data access
@@ -608,34 +607,36 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 "mcp_server": shared_mcp_server,
                 "session": shared_session,
                 "temperature": settings.temperature,
-                "model": settings.available_models[0]
+                "model": settings.available_models[0],
             }
-            
+
             # Run the financial analysis agent with the direct prompt
             result = await Runner.run(
-                finance_analysis_agent, 
-                prompt_data['user_prompt'],
-                context=context
+                finance_analysis_agent, prompt_data["user_prompt"], context=context
             )
-            
+
             # Extract the response
             response_text = str(result.final_output)
-            
+
         except Exception as e:
             logger.error(f"AI model call failed: {e}")
             response_text = f"Error: Unable to process request. {str(e)}"
 
         response_time = time.time() - start_time
-        
+
         # Log performance metrics for baseline measurement and monitoring
-        logger.info(f"Performance metrics - Response time: {response_time:.3f}s, Request ID: {request_id}")
-        
+        logger.info(
+            f"Performance metrics - Response time: {response_time:.3f}s, Request ID: {request_id}"
+        )
+
         # Log token usage if available in metadata
-        if apiResponse.metadata and apiResponse.metadata.get('tokenCount'):
-            logger.info(f"Token usage - Input: {apiResponse.metadata.get('inputTokens', 'N/A')}, Output: {apiResponse.metadata.get('outputTokens', 'N/A')}, Total: {apiResponse.metadata.get('tokenCount', 'N/A')}")
-        
+        if hasattr(result, "metadata") and result.metadata and result.metadata.get("tokenCount"):
+            logger.info(
+                f"Token usage - Input: {result.metadata.get('inputTokens', 'N/A')}, Output: {result.metadata.get('outputTokens', 'N/A')}, Total: {result.metadata.get('tokenCount', 'N/A')}"
+            )
+
         log_api_response(logger, 200, response_time, request_id=request_id)
-        
+
         return ChatResponse(response=response_text)
 
     except HTTPException:
@@ -899,9 +900,11 @@ async def cli_async():
 
                     # Use direct prompt system
                     analysis_intent = direct_prompt_manager.detect_analysis_intent(user_input)
-                    prompt_data = direct_prompt_manager.generate_direct_prompt(user_input, analysis_intent)
-                    ticker = direct_prompt_manager.extract_ticker_from_message(user_input)
-                    
+                    prompt_data = direct_prompt_manager.generate_direct_prompt(
+                        user_input, analysis_intent
+                    )
+                    _ = direct_prompt_manager.extract_ticker_from_message(user_input)
+
                     # Call the AI model with the direct prompt
                     try:
                         # Create context with MCP server for market data access
@@ -909,31 +912,29 @@ async def cli_async():
                             "mcp_server": server,
                             "session": None,  # CLI doesn't use persistent session
                             "temperature": settings.temperature,
-                            "model": settings.available_models[0]
+                            "model": settings.available_models[0],
                         }
-                        
+
                         # Run the financial analysis agent with the direct prompt
                         result = await Runner.run(
-                            finance_analysis_agent, 
-                            prompt_data['user_prompt'],
-                            context=context
+                            finance_analysis_agent, prompt_data["user_prompt"], context=context
                         )
-                        
+
                         # Extract the response
                         response_text = str(result.final_output)
-                        
+
                     except Exception as e:
                         print_error(e, "AI Model Error")
                         response_text = f"Error: Unable to process request. {str(e)}"
-                    
+
                     print("\r", end="")
 
-                        # Create a mock output object for print_response compatibility
-                        class MockOutput:
-                            """Mock output object for print_response compatibility."""
+                    # Create a mock output object for print_response compatibility
+                    class MockOutput:
+                        """Mock output object for print_response compatibility."""
 
-                            def __init__(self, response):
-                                self.final_output = response
+                        def __init__(self, response):
+                            self.final_output = response
 
                     print_response(MockOutput(response_text))
 

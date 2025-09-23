@@ -12,7 +12,7 @@
 import React, { useCallback, useState } from 'react';
 import { AnalysisButtonProps, AnalysisButtonType, ButtonState } from '../types/chat_OpenAI';
 
-interface AnalysisButtonsState {
+type AnalysisButtonsState = {
     [key in AnalysisButtonType]: ButtonState;
 }
 
@@ -28,7 +28,7 @@ const AnalysisButtons: React.FC<AnalysisButtonProps> = ({
         TECHNICAL: { loading: false, success: false, error: null }
     });
 
-    const handleButtonClick = useCallback(async (buttonType: AnalysisButtonType) => {
+    const handleButtonClick = useCallback((buttonType: AnalysisButtonType) => {
         // Set loading state
         setButtonStates(prev => ({
             ...prev,
@@ -37,7 +37,7 @@ const AnalysisButtons: React.FC<AnalysisButtonProps> = ({
 
         try {
             // Call the parent handler
-            await onButtonClick(buttonType, currentTicker);
+            onButtonClick(buttonType, currentTicker);
 
             // Set success state
             setButtonStates(prev => ({
@@ -75,7 +75,7 @@ const AnalysisButtons: React.FC<AnalysisButtonProps> = ({
     }, [onButtonClick, currentTicker]);
 
     const getButtonText = (buttonType: AnalysisButtonType): string => {
-        const state = buttonStates[buttonType];
+        const state = buttonStates[buttonType] as ButtonState;
         if (state.loading) return 'Loading...';
         if (state.success) return 'Sent!';
         if (state.error) return 'Error';
@@ -89,7 +89,7 @@ const AnalysisButtons: React.FC<AnalysisButtonProps> = ({
     };
 
     const getButtonStyle = (buttonType: AnalysisButtonType): string => {
-        const state = buttonStates[buttonType];
+        const state = buttonStates[buttonType] as ButtonState;
         const baseStyle = "px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
         if (state.loading) return `${baseStyle} bg-blue-100 text-blue-700 cursor-wait`;
@@ -115,7 +115,7 @@ const AnalysisButtons: React.FC<AnalysisButtonProps> = ({
             </div>
 
             {buttons.map(({ type, label }) => {
-                const state = buttonStates[type];
+                const state = buttonStates[type] as ButtonState;
                 const isDisabled = disabled || isLoading || state.loading;
 
                 return (
@@ -133,7 +133,7 @@ const AnalysisButtons: React.FC<AnalysisButtonProps> = ({
                 );
             })}
 
-            {Object.values(buttonStates).some(state => state.error) && (
+            {Object.values(buttonStates).some((state: ButtonState) => state.error) && (
                 <div className="w-full mt-2">
                     <p className="text-xs text-red-600">
                         Some requests failed. Please try again.

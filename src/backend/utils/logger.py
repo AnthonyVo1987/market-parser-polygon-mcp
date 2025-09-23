@@ -65,7 +65,11 @@ def log_api_response(
 
 
 def log_mcp_operation(
-    logger, operation: str, duration: float, success: bool, error_message: Optional[str] = None  # pylint: disable=unused-argument
+    logger,
+    operation: str,
+    duration: float,  # pylint: disable=unused-argument
+    success: bool,
+    error_message: Optional[str] = None,
 ):
     """Minimal MCP operation logging - errors only."""
     if not success:

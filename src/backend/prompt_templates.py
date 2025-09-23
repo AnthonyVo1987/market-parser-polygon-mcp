@@ -15,10 +15,7 @@ Features:
 """
 
 import logging
-import re
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict
 
 # PromptType enum removed as part of direct prompt migration
 
@@ -51,7 +48,7 @@ def run_prompt_consistency_tests() -> Dict[str, Any]:
         "summary": {
             "total_prompts_generated": 0,
             "total_issues": 0,
-            "consistency_rating": "DISABLED"
+            "consistency_rating": "DISABLED",
         },
     }
 
@@ -72,7 +69,11 @@ def test_dual_mode_behavior() -> Dict[str, Any]:
     return {
         "dual_mode_tests": {},
         "mode_detection_tests": {},
-        "system_prompt_tests": {"conversational_mode_different": False, "has_conversational_instructions": False, "enhanced_successfully": False},
+        "system_prompt_tests": {
+            "conversational_mode_different": False,
+            "has_conversational_instructions": False,
+            "enhanced_successfully": False,
+        },
         "overall_success": True,
     }
 

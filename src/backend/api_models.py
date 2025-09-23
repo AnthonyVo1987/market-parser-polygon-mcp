@@ -7,10 +7,11 @@ for the FastAPI endpoints that expose PromptTemplateManager functionality.
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from .direct_prompts import AnalysisIntent
 
 # AnalysisType enum removed as part of direct prompt migration
 
@@ -24,9 +25,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
 class PromptTemplateInfo(BaseModel):
     """Information about a prompt template"""
 
-    template_type: AnalysisType = Field(alias="templateId")
+    template_type: AnalysisIntent = Field(alias="templateId")
     available: bool = True
-    mode: PromptMode = PromptMode.CONVERSATIONAL
     enhanced_formatting: bool = True
     description: Optional[str] = None
 
@@ -73,7 +73,7 @@ class FollowUpQuestionsResponse(BaseModel):
 
     questions: List[str]
     context: Optional[str] = None
-    analysis_type: Optional[AnalysisType] = None
+    analysis_type: Optional[AnalysisIntent] = None
 
 
 # System Status Models
@@ -93,7 +93,7 @@ class SystemMetrics(BaseModel):
 
     api_version: str = "1.0.0"
     prompt_templates_loaded: int
-    supported_analysis_types: List[AnalysisType]
+    supported_analysis_types: List[AnalysisIntent]
     uptime_seconds: Optional[float] = None
     last_restart: Optional[datetime] = None
 
