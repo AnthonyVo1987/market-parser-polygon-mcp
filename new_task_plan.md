@@ -49,7 +49,8 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-- Review entire project docs to understand the current Lint\PyLint\ESLint commands and configuration for the project
-- After understanding the current project config, run comprhensive Lint, PyLint, & ESLint and fix ALL issues
-- This step will serve as a pre-testing step after the completion of all 3x Phases of Implementing the Direct Prompt Migration Feature
-- Once all the lint issues are resolved, User than then perfrom his own PHASE 4: TESTING & VALIDATION TBD
+We will move forward with using ExecuteAutomation Playwright MCP.
+
+1. Fetch backup Playwright MCP docs & analyze and how to setup  and configure for both Cursor IDE & Claude Code
+2. Config my Cursor IDE for ExecuteAutomation Playwright MCP config: '/home/1000211866/.cursor/mcp.json'
+3. Config my Claude Code for ExecuteAutomation Playwright MCP config: '.mcp.json' (this is located in our root level project folder)
