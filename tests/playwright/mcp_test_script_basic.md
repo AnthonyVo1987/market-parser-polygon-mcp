@@ -313,7 +313,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
 - **TIMEOUT:** > 120 seconds (test failure)
 
 **Recording Performance:**
-Document actual response time for performance classification and optimization insights.
+Document actual performance classification for optimization insights.
 
 ### 4.3 Two-Phase Detection Process
 
@@ -425,7 +425,7 @@ Document actual response time for performance classification and optimization in
 
 **Recording Requirements:**
 
-- Document actual response time from submission to detection
+- Document actual performance classification from submission to detection
 - Classify as SUCCESS/SLOW_PERFORMANCE/TIMEOUT
 - Note any detection method used (text pattern)
 
@@ -439,7 +439,7 @@ Document actual response time for performance classification and optimization in
 **Required Report Elements:**
 
 1. Test execution timestamp and duration
-2. Performance classification and actual timing
+2. Performance classification and detection details
 3. Auto-retry detection success/failure details
 4. Content validation results
 5. Any errors encountered and resolution steps

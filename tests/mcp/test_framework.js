@@ -173,7 +173,7 @@ class PlaywrightMCPTestFramework {
         report += `**Passed**: ${passedTests} ✅\n`;
         report += `**Failed**: ${failedTests} ❌\n`;
         report += `**Success Rate**: ${totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : 0}%\n`;
-        report += `**Average Response Time**: ${(avgDuration / 1000).toFixed(1)} seconds\n\n`;
+        report += `**Average Test Duration**: ${(avgDuration / 1000).toFixed(1)} seconds\n\n`;
 
         // Priority Tests Results
         const priorityTests = this.testResults.filter(t => t.id.startsWith('TEST-P'));

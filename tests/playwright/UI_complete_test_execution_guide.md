@@ -506,7 +506,6 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Status: ✅ PASS
   - Test Input: Exact message used
   - Test Output: Complete AI response text
-  - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
   - Model Used: gpt-5-nano
   - Execution Time: Start and end times
@@ -520,7 +519,6 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Status: ✅ PASS
   - Test Input: Exact NVDA message used
   - Test Output: Complete AI response text
-  - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
   - Model Used: gpt-5-nano
   - Execution Time: Start and end times
@@ -534,7 +532,6 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Status: ✅ PASS
   - Test Input: Button-triggered template message
   - Test Output: Complete AI response text
-  - Response Time: Actual time recorded
   - Performance Classification: SLOW_PERFORMANCE (45-120s)
   - Model Used: gpt-5-nano
   - Execution Time: Start and end times
@@ -549,8 +546,8 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Successful Tests: 3
   - Failed Tests: 0
   - Success Rate: 100%
-  - Response Time Analysis: All individual times
-  - Average Response Time: Calculated average
+  - Performance Analysis: All individual classifications
+  - Average Performance: Calculated average
   - Total Execution Time: Sum of all times
 
 ### **Step 55: Write Performance Classifications Section**

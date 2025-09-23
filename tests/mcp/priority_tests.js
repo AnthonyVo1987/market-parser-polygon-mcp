@@ -39,7 +39,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             }
             
             return {
-                responseTime: Date.now() - this.testStartTime,
                 response: response,
                 validation: validation,
                 hasStructuredContent: validation.hasStructuredContent,
@@ -73,7 +72,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             }
             
             return {
-                responseTime: Date.now() - this.testStartTime,
                 response: response,
                 validation: validation,
                 ticker: 'NVDA',
@@ -108,7 +106,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             }
             
             return {
-                responseTime: Date.now() - this.testStartTime,
                 response: response,
                 validation: validation,
                 ticker: 'SPY',
@@ -143,7 +140,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             }
             
             return {
-                responseTime: Date.now() - this.testStartTime,
                 response: response,
                 validation: validation,
                 ticker: 'GME',
@@ -178,7 +174,6 @@ class PriorityTestsSuite extends PlaywrightMCPTestFramework {
             }
             
             return {
-                responseTime: Date.now() - this.testStartTime,
                 response: response,
                 validation: validation,
                 expectedTickers: ['NVDA', 'SPY', 'QQQ', 'IWM'],

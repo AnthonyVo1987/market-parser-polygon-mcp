@@ -46,7 +46,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     results.push({
                         ticker: test.ticker,
                         button: test.button.replace('click', '').replace('Button', ''),
-                        responseTime: responseTime,
                         expectedMax: test.expectedMax,
                         withinExpected: responseTime <= test.expectedMax,
                         performance: responseTime <= test.expectedMax / 2 ? 'excellent' : 
@@ -56,7 +55,6 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     results.push({
                         ticker: test.ticker,
                         button: test.button.replace('click', '').replace('Button', ''),
-                        responseTime: this.timeouts.apiResponse,
                         expectedMax: test.expectedMax,
                         withinExpected: false,
                         performance: 'timeout',
@@ -67,7 +65,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 await this.browser.sleep(2000);
             }
             
-            const avgResponseTime = results.reduce((sum, r) => sum + r.responseTime, 0) / results.length;
+            const avgResponseTime = results.reduce((sum, r) => sum + (r.withinExpected ? 1 : 0), 0) / results.length;
             const allWithinExpected = results.every(r => r.withinExpected);
             
             // Store for overall performance tracking
@@ -79,12 +77,12 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
             
             return {
                 benchmarkResults: results,
-                averageResponseTime: avgResponseTime,
+                averagePerformance: avgResponseTime,
                 allWithinExpected: allWithinExpected,
                 performanceBaseline: {
-                    snapshot: results.find(r => r.button === 'StockSnapshot')?.responseTime || 0,
-                    supportResistance: results.find(r => r.button === 'SupportResistance')?.responseTime || 0,
-                    technical: results.find(r => r.button === 'TechnicalAnalysis')?.responseTime || 0
+                    snapshot: results.find(r => r.button === 'StockSnapshot')?.performance || 'unknown',
+                    supportResistance: results.find(r => r.button === 'SupportResistance')?.performance || 'unknown',
+                    technical: results.find(r => r.button === 'TechnicalAnalysis')?.performance || 'unknown'
                 }
             };
         });
@@ -158,18 +156,18 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 const endTime = Date.now();
                 const finalMemory = await this.getMemoryUsage();
                 
-                const responseTime = endTime - startTime;
+                const processingTime = endTime - startTime;
                 const responseSize = response.length;
                 const memoryUsed = finalMemory - initialMemory;
                 
                 // Check if system handled large dataset efficiently
-                const performanceAcceptable = responseTime <= 120000; // 2 minutes max
+                const performanceAcceptable = processingTime <= 120000; // 2 minutes max
                 const memoryEfficient = memoryUsed <= 200; // Max 200MB increase
                 const dataComplete = responseSize > 10000; // Substantial response expected
                 
                 return {
                     tickerCount: largeTickers.split(',').length,
-                    responseTime: responseTime,
+                    processingTime: processingTime,
                     responseSize: responseSize,
                     memoryUsed: memoryUsed,
                     performanceAcceptable: performanceAcceptable,
@@ -234,13 +232,12 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
             const pageResponsive = await this.browser.getPageTitle().then(() => true).catch(() => false);
             
             return {
-                concurrentOperations: concurrentOperations.length,
-                totalTime: totalTime,
-                systemStable: systemStable,
-                pageResponsive: pageResponsive,
-                concurrentHandling: systemStable && pageResponsive ? 'handled' : 'issues',
-                averageOperationTime: totalTime / concurrentOperations.length,
-                operations: concurrentOperations
+            concurrentOperations: concurrentOperations.length,
+            totalTime: totalTime,
+            systemStable: systemStable,
+            pageResponsive: pageResponsive,
+            concurrentHandling: systemStable && pageResponsive ? 'handled' : 'issues',
+            operations: concurrentOperations
             };
         });
     }

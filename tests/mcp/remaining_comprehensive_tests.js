@@ -197,7 +197,6 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
                 return {
                     apiAccessible: true,
                     healthStatus: healthStatus,
-                    responseTime: 45, // milliseconds
                     servicesHealthy: true
                 };
             } catch (error) {
@@ -298,8 +297,7 @@ class RemainingComprehensiveTests extends PlaywrightMCPTestFramework {
                     
                     rapidRequests.push({
                         requestNumber: i + 1,
-                        successful: true,
-                        responseTime: responseTime
+                        successful: true
                     });
                 } catch (error) {
                     rapidRequests.push({

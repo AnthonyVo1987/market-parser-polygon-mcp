@@ -44,7 +44,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             }
             
             return { 
-                responseTime, 
                 response, 
                 validation,
                 hasStructuredContent: validation.hasStructuredContent,
@@ -71,7 +70,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             }
             
             return { 
-                responseTime, 
                 response, 
                 validation,
                 hasStructuredContent: validation.hasStructuredContent,
@@ -98,7 +96,6 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             }
             
             return { 
-                responseTime, 
                 response, 
                 validation,
                 hasStructuredContent: validation.hasStructuredContent,
