@@ -52,7 +52,7 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 Okay, I've edited the markdown text to remove the specified line items and re-numbered the "CODE REVIEW TASKS" sequentially.
 
 ```markdown
-## CODE REVIEW TASKS (Steps 1-10)
+## **🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: CODE REVIEW TASKS (Steps 1-10)
 
 1. Run `git status` to identify ALL modified files in the repository
 2. Review code quality, syntax, and logic in all changed files
@@ -66,14 +66,14 @@ Okay, I've edited the markdown text to remove the specified line items and re-nu
 10. **VERIFICATION**: All code review issues resolved - proceed to Summary Tasks
 
 ## SUMMARY TASKS (Steps 11-15)
-
+**🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: Use your Mandatory Toolkit for all tasks to: 
 11. Create a comprehensive, token-efficient git commit message describing ALL changes
 12. **SAVE COMMIT MESSAGE TO CACHE** - Store this exact message for reuse
 13. Update CLAUDE.md "Last Completed Task Summary" section with VERBATIM copy of commit message
 14. Place commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
 15. **VERIFICATION**: CLAUDE.md updated with cached commit message - proceed to Staging Tasks
 
-## STAGING TASKS (Steps 16-25)
+## **🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: STAGING TASKS (Steps 16-25)
 
 16. Run `git status` to confirm all modified files are identified
 17. Run `git add .` to stage ALL changes (including CLAUDE.md)
