@@ -76,7 +76,6 @@ right tool for the right operation
 
 ## New Task Details
 
-- Review project docs, configuration, and commands to run full Lint,
-  PyLint, ESLint
-- After reviewing run and fix all Lint, Pylint, ESlint Errors AND
-  Warnings as well. I want zero lint warnings
+- Use Context7 Tools, Sequential-Thinking Tools, Serena Tools, & Filesystem Tools to perform research & to Update the docs/implementation_plans/cli_performance_optimization_plan.md with a more granular detailed implementation TODO Checklist Task plan to fully implement the plan.  The Plan will be implemented by an AI Agent, so be sure to include as much context & background as needed for an AI Agent to correctly follow annd implement the plan
+
+- Use Context7 Tools, Sequential-Thinking Tools, Serena Tools, & Filesystem Tools to perform research & to Update the docs/implementation_plans/cli_performance_optimization_plan.md with a more granular detailed implementation TODO Checklist Task plan to fully implement the plan.  The Plan will be implemented by an AI Agent, so be sure to include as much context & background as needed for an AI Agent to correctly follow annd implement the plan

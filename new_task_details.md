@@ -76,5 +76,4 @@ right tool for the right operation
 
 ## New Task Details
 
-- Perform comprhensive code review and audit of JUST the CLI code for any potential performance optimizations. Do NOT fix anything yourself yet
-- Based on your analysis, scope out and generate a plan to address the potential performance optmizations and Save the scoping to a new .md doc in "docs/implementation_plans" folder
+- Use Context7 Tools, Sequential-Thinking Tools, Serena Tools, & Filesystem Tools to perform research & to Update the docs/implementation_plans/cli_performance_optimization_plan.md with a more granular detailed implementation TODO Checklist Task plan to fully implement the plan.  The Plan will be implemented by an AI Agent, so be sure to include as much context & background as needed for an AI Agent to correctly follow annd implement the plan
