@@ -76,6 +76,15 @@ right tool for the right operation
 
 ## New Task Details
 
-- Use Context7 Tools, Sequential-Thinking Tools, Serena Tools, & Filesystem Tools to perform research & to Update the docs/implementation_plans/cli_performance_optimization_plan.md with a more granular detailed implementation TODO Checklist Task plan to fully implement the plan.  The Plan will be implemented by an AI Agent, so be sure to include as much context & background as needed for an AI Agent to correctly follow annd implement the plan
+Perform research and scope out some more independent CLI\GUI Performance Optmizations.  No New Docs needed yet for the scoping:
 
-- Use Context7 Tools, Sequential-Thinking Tools, Serena Tools, & Filesystem Tools to perform research & to Update the docs/implementation_plans/cli_performance_optimization_plan.md with a more granular detailed implementation TODO Checklist Task plan to fully implement the plan.  The Plan will be implemented by an AI Agent, so be sure to include as much context & background as needed for an AI Agent to correctly follow annd implement the plan
+## Scope Task 1. Use Toolkit to scope out removing all appended "Footer Data" & Footer Code from AI Response from both CLI & UI
+
+- Current code is appeneding footer data to every AI Response that should be removed to improve response times: AI Model Name, Timestamp, Response Time
+- Need to also completely remove the code that would try and detect and append AI Model name to responses.  We still want to keep AI Model Selector feature, so be careful not to remove core business critical functionality
+- Need to also completely remove the code that would try and detect and calculate response times from BOTH the CLI & GUI code. The response time will be re-implemented at a later date for a better implementation
+- Need to also completely remove the code that would generate timestamp
+
+## Scope Task 2. Use Toolkit to scope out Completely removing the BUTTON PROMPT STOCK TICKER Input Validation code.  Input validation will be re-implemented better in the future TBD, but for now, we can remove it.  We will NOT perform any BUTTON PROMPT STOCK TICKER Input Validation at the moment, but for now just set a max number of characters of 5 characters MAX for the input, which should cover most ticker names.  All of the Button Prompts should now be active and available to click no matter what is input in the BUTTON PROMPT STOCK TICKER Input.  Input Validation wil now be handled implicitly from the AI Agent Response.  Valid tickers will have AI Agent correctly respond, and the for invalid tickers, the AI Agent will already respond that the ticker is Invalid and\or Not Found
+
+## Scope Task 3. Use Toolkit to scope out Completely removing the GUI Response Times code and component display since we will NOT calculate response times currently and will just rely on the the new integrated performance monitoring tools for response time performance analysis
