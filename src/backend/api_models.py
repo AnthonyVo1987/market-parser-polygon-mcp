@@ -11,7 +11,10 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .direct_prompts import AnalysisIntent
+try:
+    from .direct_prompts import AnalysisIntent
+except ImportError:
+    from direct_prompts import AnalysisIntent
 
 # AnalysisType enum removed as part of direct prompt migration
 

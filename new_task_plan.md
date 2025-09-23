@@ -1,3 +1,5 @@
+# Task Plan: Standardized Test Prompts Documentation Update
+
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
@@ -49,10 +51,16 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-- Investigate and fix App NOT correctly working because NO Polygon Tools are being called in the app by the AI Agent to perform ANY STOCK ANLAYSIS
-- App is utterly broken.  Any User Input or Button Prompts ARE NOT CALLING ANY POLYGON Tools to perform any analysis
-- There could be a wiring issue from CLI to the Frontend GUI where Frontend GUI AI Chat is NOT using any Tools and\or the Polygon MCP Server Tools may not be wired correctly
-- Use Playwright Tools to test and validate
-- Use Playwright Docs Fetch if you need more details on how to use the Playwright Tools correctly
-- Read docs/implementation_plans/direct_prompt_migration_implementation_plan.md for more context on what broke the app from our recent changes
-- Validate your fixes by running PHASE 4: TESTING & VALIDATION from docs/implementation_plans/direct_prompt_migration_implementation_plan.md
+Update all project docs and any testing docs  that from now on for initial testing, use any of the following example prompts only for CLI or GUI chatbot input messages.  THese examples prompts are refined for quick responses for quick regression testing to avoid too complex of prompts that can cause a false failure because the prompts response took too long. DO NOT COMMIT ANYTHING YET:
+
+Use these test prompts ONLY for testing CLI and\or AI Chatbot Input Messages. Most responses are expected to take 30 - 60 seconds.
+
+1. "Quick Response Needed with minimal tool calls: What is the current Market Status?"
+2. "Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
+3. "Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"
+4. "Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"
+5. "Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"
+6. "Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"
+7. "Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"
+8. "Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"
+9. "Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"

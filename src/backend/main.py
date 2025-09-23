@@ -57,8 +57,23 @@ try:
     )
 except ImportError:
     # Fallback to absolute imports (when run directly)
-    # Note: This fallback is not needed for the direct prompt migration
-    pass
+    from api_models import (
+        AIModel,
+        AIModelId,
+        ModelListResponse,
+        ModelSelectionResponse,
+        ResponseMetadata,
+        SystemHealthResponse,
+        SystemMetrics,
+        SystemStatusResponse,
+    )
+    from direct_prompts import DirectPromptManager
+    from utils.logger import (
+        get_logger,
+        log_api_request,
+        log_api_response,
+        log_mcp_operation,
+    )
 
 load_dotenv()
 

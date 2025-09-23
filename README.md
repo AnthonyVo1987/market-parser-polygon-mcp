@@ -2,6 +2,33 @@
 
 A Python CLI and React web application for natural language financial queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI GPT-5-mini via the Pydantic AI Agent Framework. Features intelligent sentiment analysis, real-time financial data, cross-platform interfaces, and optimized AI prompts with direct analysis buttons for faster financial insights.
 
+## STANDARDIZED TEST PROMPTS
+
+**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+
+### Quick Response Test Prompts (Use These Only)
+
+1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+
+**MANDATORY RULES:**
+
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
+
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
+
 ## Features
 
 ### 🚀 **Optimized AI Prompts**
@@ -120,7 +147,7 @@ npm run start:app:xterm    # XTerm version
 
 **Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
-## Features
+## Application Features
 
 ### ⚡ High-Performance UI
 

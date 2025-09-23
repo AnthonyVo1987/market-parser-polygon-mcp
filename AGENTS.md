@@ -1,3 +1,5 @@
+# AI Agent Instructions
+
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
@@ -44,6 +46,33 @@ SUCCESS CRITERIA:
 - No rigid sequencing - only logical tool usage based on task requirements
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
+
+## STANDARDIZED TEST PROMPTS
+
+**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+
+### Quick Response Test Prompts (Use These Only)
+
+1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+
+**MANDATORY RULES:**
+
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
+
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
 
 ## Quick Start
 

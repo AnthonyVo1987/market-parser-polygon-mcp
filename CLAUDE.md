@@ -9,33 +9,63 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-fix: Restore MCP server integration with dynamic agent creation
+feat: Add standardized test prompts documentation system
 
-🔧 MCP Integration Fixes:
-- Restore dynamic agent creation in chat_endpoint with mcp_servers=[shared_mcp_server]
-- Fix Runner.run call to use session=shared_session instead of context=context
-- Initialize result variable to prevent "referenced before assignment" error
-- Update cli_async function with same dynamic agent pattern
-- Add openai-agents-mcp>=0.0.8 dependency to pyproject.toml
+📋 Documentation Standardization:
+- Create tests/playwright/test_prompts.md as single source of truth for all test prompts
+- Add 10 standardized test prompts designed for 30-60 second responses
+- Include usage guidelines, performance classification, and integration notes
 
-📊 Functionality Restored:
-- Polygon MCP tools now accessible to AI agent (confirmed with AAPL query)
-- Real-time market data integration working correctly
-- Persistent MCP server state maintained through FastAPI lifespan
-- Both CLI and API endpoints using proper MCP server integration
+📚 Main Documentation Updates:
+- Update CLAUDE.md, AGENTS.md, README.md with standardized prompts
+- Add both individual prompts and references to test_prompts.md
+- Ensure consistent formatting across all documentation files
 
-✅ Testing Results:
-- AAPL query returned real market data: $256.08 current price
-- MCP server initialization and shutdown working properly
-- No more "referenced before assignment" errors
+🧪 Test Documentation Updates:
+- Update tests/playwright/mcp_test_script_basic.md with prompts + reference
+- Update tests/playwright/complete_test_execution_guide.md with prompts + reference  
+- Update tests/playwright/UI_complete_test_execution_guide.md with prompts + reference
+- Maintain dual documentation approach for quick reference and comprehensive docs
 
-Files Modified:
-- src/backend/main.py (MCP integration fixes)
-- pyproject.toml (added openai-agents-mcp dependency)
-- new_task_plan.md (updated task details)
+🔧 Backend Import Fixes:
+- Fix ImportError handling in src/backend/main.py with proper fallback imports
+- Fix ImportError handling in src/backend/api_models.py for AnalysisIntent import
+- Ensure both relative and absolute imports work correctly
 
-Status: MCP server integration fully restored and working
+🎨 Linting Fixes:
+- Fix markdown linting issues (H1 headings, ordered list numbering)
+- Fix duplicate heading in README.md (Features → Application Features)
+- Fix emphasis-as-heading issues in test documentation files
+
+✅ Result: Standardized test prompts ensure consistent 30-60 second response times and prevent false failures from complex prompts across all Market Parser testing scenarios
 <!-- LAST_COMPLETED_TASK_END -->
+
+## STANDARDIZED TEST PROMPTS
+
+**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+
+### Quick Response Test Prompts (Use These Only)
+
+1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+
+**MANDATORY RULES:**
+
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
+
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴
 
@@ -302,4 +332,3 @@ netstat -tlnp | grep :8000
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-

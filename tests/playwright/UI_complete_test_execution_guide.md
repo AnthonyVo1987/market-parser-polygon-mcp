@@ -11,6 +11,35 @@
 
 ---
 
+## **STANDARDIZED TEST PROMPTS**
+
+**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+
+### Quick Response Test Prompts (Use These Only)
+
+1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+
+**MANDATORY RULES:**
+
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
+
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
+
+---
+
 ## **PHASE 1: PREREQUISITES & SETUP (Steps 1-13)**
 
 ### **Step 1: Kill All Existing Servers**
@@ -55,22 +84,26 @@ curl -s http://127.0.0.1:8000/health && curl -s http://127.0.0.1:3000 | head -3
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const aiInput = document.querySelector('[data-testid=\"chat-input\"]'); const tickerInput = document.querySelector('[data-testid=\"ticker-input\"]'); const analysisButtons = document.querySelector('[data-testid=\"analysis-buttons\"]'); const debugPanel = document.querySelector('[data-testid=\"debug-panel\"]'); const result = { aiInputPresent: !!aiInput, tickerInputPresent: !!tickerInput, analysisButtonsPresent: !!analysisButtons, debugPanelPresent: !!debugPanel, allUIElementsPresent: !!(aiInput && tickerInput && analysisButtons && debugPanel) }; console.log('UI Enhancements Verification:', result); result;"
   }
   ```
+
 - **Expected Result**: All UI enhancement elements are present and visible
 
 ### **Step 7: Verify Correct Input Field Before Filling**
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const chatInput = document.querySelector('[data-testid=\"chat-input-textarea\"]'); const chatInputTitle = document.querySelector('.chat-input-title'); const isCorrectInput = chatInput && chatInputTitle && chatInputTitle.textContent.includes('AI CHATBOT INPUT'); console.log('Input Field Verification:', { chatInputPresent: !!chatInput, titlePresent: !!chatInputTitle, titleText: chatInputTitle ? chatInputTitle.textContent : null, isCorrectInput }); { isCorrectInput };"
   }
   ```
+
 - **Expected Result**: Confirms we're using the correct "AI CHATBOT INPUT" field
 
 ### **Step 8: Fill Input Field for Test 1**
@@ -97,11 +130,13 @@ curl -s http://127.0.0.1:8000/health && curl -s http://127.0.0.1:3000 | head -3
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const overlay = document.querySelector('.message-sent-overlay'); const overlayText = document.querySelector('.message-sent-text h3'); const hasOverlay = !!overlay; const hasCorrectText = overlayText && overlayText.textContent.includes('MESSAGE SENT'); console.log('Loading Overlay Check:', { hasOverlay, hasCorrectText, overlayText: overlayText ? overlayText.textContent : null }); { hasOverlay, hasCorrectText };"
   }
   ```
+
 - **Expected Result**: MESSAGE SENT overlay appears (if loading state is working)
 
 ### **Step 11: Wait 30 Seconds (Poll 1 for Test 1)**
@@ -174,11 +209,13 @@ sleep 30
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const chatInput = document.querySelector('[data-testid=\"chat-input-textarea\"]'); const chatInputTitle = document.querySelector('.chat-input-title'); const isCorrectInput = chatInput && chatInputTitle && chatInputTitle.textContent.includes('AI CHATBOT INPUT'); console.log('Test 2 Input Field Verification:', { isCorrectInput }); { isCorrectInput };"
   }
   ```
+
 - **Expected Result**: Confirms we're using the correct "AI CHATBOT INPUT" field
 
 ### **Step 20: Fill Input Field for Test 2**
@@ -205,11 +242,13 @@ sleep 30
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const overlay = document.querySelector('.message-sent-overlay'); const hasOverlay = !!overlay; console.log('Test 2 Loading Overlay Check:', { hasOverlay }); { hasOverlay };"
   }
   ```
+
 - **Expected Result**: MESSAGE SENT overlay appears (if loading state is working)
 
 ### **Step 23: Wait 30 Seconds (Poll 1 for Test 2)**
@@ -278,11 +317,13 @@ sleep 30
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const analysisButtons = document.querySelector('[data-testid=\"analysis-buttons\"]'); const snapshotButton = document.querySelector('[data-testid=\"analysis-button-snapshot\"]'); const supportButton = document.querySelector('[data-testid=\"analysis-button-support-resistance\"]'); const technicalButton = document.querySelector('[data-testid=\"analysis-button-technical\"]'); const allButtonsVisible = !!(analysisButtons && snapshotButton && supportButton && technicalButton); console.log('Analysis Buttons Verification:', { allButtonsVisible, snapshotButtonPresent: !!snapshotButton }); { allButtonsVisible, snapshotButtonPresent: !!snapshotButton };"
   }
   ```
+
 - **Expected Result**: All analysis buttons are visible in static layout
 
 ### **Step 32: Fill Input Field with Ticker Symbol for Test 3**
@@ -316,11 +357,13 @@ sleep 30
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const textarea = document.querySelector('[data-testid=\"chat-input-textarea\"]'); const inputValue = textarea ? textarea.value : ''; const hasTemplateContent = inputValue.includes('Snapshot') || inputValue.includes('analysis') || inputValue.length > 50; console.log('Button Click Verification:', { inputValue: inputValue.substring(0, 100), hasTemplateContent, inputLength: inputValue.length }); { hasTemplateContent, inputLength: inputValue.length };"
   }
   ```
+
 - **Expected Result**: Input field contains comprehensive template content
 
 ### **Step 35: Send Message for Test 3**
@@ -333,11 +376,13 @@ sleep 30
 
 - **Tool**: `mcp_playwright-backup_playwright_evaluate`
 - **Parameters**:
+
   ```json
   {
     "script": "const overlay = document.querySelector('.message-sent-overlay'); const hasOverlay = !!overlay; console.log('Test 3 Loading Overlay Check:', { hasOverlay }); { hasOverlay };"
   }
   ```
+
 - **Expected Result**: MESSAGE SENT overlay appears (if loading state is working)
 
 ### **Step 37: Wait 30 Seconds (Poll 1 for Test 3)**

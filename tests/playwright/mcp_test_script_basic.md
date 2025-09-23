@@ -13,24 +13,28 @@
 **CRITICAL SUCCESS FACTORS** (Apply to all future testing):
 
 ### 1. **Mandatory Context Protection Protocol**
+
 - **Always instruct specialists to READ this test plan file FIRST** before any execution
 - **Prevent context-loss substitutions** by explicitly requiring verbatim procedure following
 - **Include full file paths in specialist instructions** to ensure proper document access
 - **Never assume specialists retain context** from previous conversations
 
 ### 2. **Orchestration Requirements for Complex Testing**
+
 - **Use tech-lead-orchestrator for multi-phase testing** to prevent coordination failures
 - **Sequential phase execution with completion confirmation** before proceeding to next phase
 - **Explicit specialist assignments** with clear deliverable expectations
 - **TodoWrite tool usage** for progress tracking and user visibility
 
 ### 3. **Test Plan Adherence Standards**
+
 - **"User-specified test plans are sacred"** - enforce ZERO deviations policy
 - **Verbatim message usage** - exact text strings must be preserved exactly
 - **Timeout parameter compliance** - always use `time: 120` for MCP wait operations
 - **Template compliance verification** as standard practice for all reports
 
 ### 4. **Communication & Execution Protocols**
+
 - **Address user concerns immediately** (example: "why haven't you started testing?")
 - **Don't wait for user prompting** when servers are confirmed ready
 - **Complete all phases sequentially** without gaps or delays
@@ -38,12 +42,42 @@
 - **Always create test result files** - don't just provide results in conversation
 
 ### 5. **Anti-Patterns to Avoid**
+
 - **Never substitute AI-generated test procedures** for user-specified plans
 - **Prevent context loss through explicit file reading instructions** in all specialist prompts
 - **Don't assume "equivalent" procedures are acceptable** - follow exact specifications
 - **Avoid execution gaps** between confirmed server readiness and test start
 
 **SUCCESS INDICATOR:** Following these corrective actions should achieve 100% first-try success rate with complete coverage and proper documentation for all future testing requests.
+
+---
+
+## STANDARDIZED TEST PROMPTS
+
+**CRITICAL:** All testing MUST use these standardized prompts to ensure consistent, quick responses (30-60 seconds) and avoid false failures from complex prompts.
+
+### Quick Response Test Prompts (Use These Only)
+
+1. **"Quick Response Needed with minimal tool calls: What is the current Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"**
+
+**MANDATORY RULES:**
+
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
+
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts documentation, see `tests/playwright/test_prompts.md`
 
 ---
 
@@ -66,6 +100,7 @@
 ### 1.1 Essential Tool Requirements
 
 **REQUIRED MCP Tools Available:**
+
 - `mcp__playwright__browser_navigate` - Page navigation with error handling
 - `mcp__playwright__browser_snapshot` - Accessibility snapshots for element detection  
 - `mcp__playwright__browser_type` - Text input into form elements
@@ -80,10 +115,12 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ### 1.2 Server Requirements
 
 **REQUIRED Servers Running:**
-- **Backend FastAPI:** http://127.0.0.1:8000 (application backend)
-- **Frontend React:** http://127.0.0.1:3000 (or auto-detected port 3001, 3002, etc.)
+
+- **Backend FastAPI:** <http://127.0.0.1:8000> (application backend)
+- **Frontend React:** <http://127.0.0.1:3000> (or auto-detected port 3001, 3002, etc.)
 
 **Server Verification Procedure:**
+
 ```
 1. Backend Health Check:
    - Expected response: {"status": "healthy"} from http://127.0.0.1:8000/health
@@ -98,6 +135,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ### 1.3 Environment Verification
 
 **Pre-Test Validation Checklist:**
+
 - [ ] All required MCP tools respond correctly
 - [ ] Backend server returns healthy status
 - [ ] Frontend server loads React application  
@@ -112,11 +150,13 @@ If any of these tools are unavailable, STOP and request tool access before proce
 **CRITICAL UNDERSTANDING:** MCP tools have independent timeout parameters separate from application configuration.
 
 **REQUIRED Timeout Configuration:**
+
 - **MCP Tool Parameter:** `time: 120` (120 seconds for AI response detection)
 - **Why 120 seconds:** AI responses typically take 30-120 seconds to complete
 - **Parameter Format:** Always specify as integer `120`, NOT `120000` or `"120s"`
 
 **Example Correct Usage:**
+
 ```json
 {
   "tool": "mcp__playwright__browser_wait_for",
@@ -132,11 +172,13 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ### 2.2 Configuration Scope Distinction
 
 **MCP Tool Parameters (THIS DOCUMENT):**
+
 - `time: 120` - Tool-specific timeout for waiting operations
 - Applies to individual tool calls
 - Independent of application configuration
 
 **Application Configuration (SEPARATE):**
+
 - `120000ms` timeouts in helper files (different scope)
 - Playwright test timeouts (different scope)
 - Do NOT confuse these with MCP tool parameters
@@ -150,6 +192,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ### 3.1 Test Initialization
 
 **Step 1: Navigate to Frontend**
+
 ```json
 {
   "tool": "mcp__playwright__browser_navigate",
@@ -158,22 +201,26 @@ If any of these tools are unavailable, STOP and request tool access before proce
   }
 }
 ```
+
 **Expected Result:** Page loads successfully with React application
 **Error Handling:** If navigation fails, verify servers are running
 
 **Step 2: Capture Initial State**
+
 ```json
 {
   "tool": "mcp__playwright__browser_snapshot",
   "parameters": {}
 }
 ```
+
 **Expected Result:** Accessibility tree snapshot with element references
 **Purpose:** Identify message input field and UI elements
 
 ### 3.2 Message Input and Submission
 
 **Step 3: Input Test Message**
+
 ```json
 {
   "tool": "mcp__playwright__browser_type",
@@ -184,10 +231,12 @@ If any of these tools are unavailable, STOP and request tool access before proce
   }
 }
 ```
+
 **Expected Result:** Message text entered into input field
 **Critical Note:** Use multiple selector fallbacks in `ref` parameter
 
 **Step 4: Submit Message**
+
 ```json
 {
   "tool": "mcp__playwright__browser_press_key",
@@ -196,11 +245,13 @@ If any of these tools are unavailable, STOP and request tool access before proce
   }
 }
 ```
+
 **Expected Result:** Message submitted, AI processing begins
 
 ### 3.3 Auto-Retry Response Detection
 
 **Step 5: Wait for AI Response (CRITICAL STEP)**
+
 ```json
 {
   "tool": "mcp__playwright__browser_wait_for",
@@ -212,12 +263,14 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ```
 
 **CRITICAL SUCCESS FACTORS:**
+
 - **Timeout:** Always use `time: 120` for AI responses
 - **Detection Text:** Look for response indicators like "KEY TAKEAWAYS"
 - **Auto-Retry:** Tool automatically retries until detected or timeout
 - **NO Manual Polling:** Tool handles retry logic internally
 
 **Alternative Detection Patterns:**
+
 ```json
 // For market data responses
 {"text": "MARKET", "time": 120}
@@ -236,12 +289,14 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ### 4.1 Understanding Auto-Retry vs Polling
 
 **Auto-Retry Detection (CURRENT METHOD):**
+
 - Built into `mcp__playwright__browser_wait_for` tool
 - Automatically retries until condition met or timeout
 - NO manual loop required
 - Performance: Immediate detection when condition satisfied
 
 **Polling (OUTDATED METHOD - DO NOT USE):**
+
 - Manual retry loops with fixed intervals
 - Artificial delays even after condition met  
 - Complexity in implementation
@@ -252,6 +307,7 @@ If any of these tools are unavailable, STOP and request tool access before proce
 ### 4.2 Performance Classification
 
 **Response Time Categories:**
+
 - **SUCCESS:** < 45 seconds (excellent performance)
 - **SLOW_PERFORMANCE:** 45-120 seconds (acceptable for AI responses)
 - **TIMEOUT:** > 120 seconds (test failure)
@@ -262,11 +318,13 @@ Document actual response time for performance classification and optimization in
 ### 4.3 Two-Phase Detection Process
 
 **Phase 1: Response Detection**
+
 - Tool detects ANY response content using specified text pattern
 - Immediate notification when condition satisfied
 - Eliminates waiting beyond necessary time
 
 **Phase 2: Content Validation (Manual)**
+
 - After detection, validate response content quality
 - Check for expected financial data and format
 - Verify emoji indicators and structured output
@@ -280,6 +338,7 @@ Document actual response time for performance classification and optimization in
 **Error:** "Tool timeout after 5 seconds"
 **Cause:** Missing `time: 120` parameter
 **Solution:** Always specify explicit timeout for AI responses
+
 ```json
 // WRONG:
 {"tool": "mcp__playwright__browser_wait_for", "parameters": {"text": "response"}}
@@ -291,6 +350,7 @@ Document actual response time for performance classification and optimization in
 **Error:** "Element not found"
 **Cause:** Incorrect element selector
 **Solution:** Use multiple fallback selectors in `ref` parameter
+
 ```json
 "ref": "textarea[placeholder*='message'], .chat-input textarea, input[type='text'], #message-input"
 ```
@@ -299,6 +359,7 @@ Document actual response time for performance classification and optimization in
 
 **Error:** "Navigation failed" or "Connection refused"
 **Diagnosis Steps:**
+
 1. Verify backend: `curl http://127.0.0.1:8000/health`
 2. Verify frontend: `curl http://127.0.0.1:3000/`
 3. Check for port conflicts or server crashes
@@ -309,11 +370,13 @@ Document actual response time for performance classification and optimization in
 
 **Error:** "Wait timeout after 120 seconds"
 **Possible Causes:**
+
 1. Server processing issues (check server logs)
 2. Incorrect detection text pattern
 3. UI changes affecting response format
 
 **Troubleshooting Steps:**
+
 1. Take snapshot to examine actual response content
 2. Try alternative detection patterns (MARKET, ANALYSIS, DETAILED ANALYSIS)
 3. Verify server health and processing status
@@ -322,6 +385,7 @@ Document actual response time for performance classification and optimization in
 
 **Error:** "Browser not responding" or "Page unresponsive"
 **Solution:** Browser state may be corrupted
+
 ```json
 {
   "tool": "mcp__playwright__browser_navigate",
@@ -330,6 +394,7 @@ Document actual response time for performance classification and optimization in
   }
 }
 ```
+
 **Purpose:** Refresh browser state and restart test sequence
 
 ---
@@ -339,12 +404,14 @@ Document actual response time for performance classification and optimization in
 ### 6.1 Response Content Validation
 
 **Required Validation Checks:**
+
 1. **Response Detection:** Verify auto-retry successfully detected response
 2. **Content Quality:** Check for financial data and analysis
 3. **Format Compliance:** Verify structured sections (KEY TAKEAWAYS, DETAILED ANALYSIS, DISCLAIMER)
 4. **Completeness:** Ensure response addresses original query
 
 **Validation Tool Usage:**
+
 ```json
 {
   "tool": "mcp__playwright__browser_evaluate",
@@ -357,17 +424,20 @@ Document actual response time for performance classification and optimization in
 ### 6.2 Performance Classification
 
 **Recording Requirements:**
+
 - Document actual response time from submission to detection
 - Classify as SUCCESS/SLOW_PERFORMANCE/TIMEOUT
 - Note any detection method used (text pattern)
 
 **Success Criteria:**
+
 - **PASS:** Response detected within 120 seconds AND content validation successful
 - **FAIL:** Timeout exceeded OR content validation failed
 
 ### 6.3 Test Report Generation
 
 **Required Report Elements:**
+
 1. Test execution timestamp and duration
 2. Performance classification and actual timing
 3. Auto-retry detection success/failure details
@@ -383,6 +453,7 @@ Document actual response time for performance classification and optimization in
 ### 7.1 Critical Mistakes to Avoid
 
 **NEVER Do These Actions:**
+
 1. **Use Polling Methodology** - Auto-retry detection replaces all polling
 2. **Omit Tool Timeout Parameters** - Always specify `time: 120`
 3. **Mix MCP vs CLI Methods** - This document covers ONLY MCP method
@@ -392,6 +463,7 @@ Document actual response time for performance classification and optimization in
 ### 7.2 Documentation Hierarchy
 
 **Priority Order for AI Agents:**
+
 1. **THIS DOCUMENT** - Primary source of truth for MCP testing
 2. **Official MCP Tools Usage Guides** - For tool parameter specifications
 3. **Project-Specific Plans** - Secondary reference only
@@ -416,6 +488,7 @@ Document actual response time for performance classification and optimization in
 ### 8.1 MCP Method Status
 
 **Current Status:** VALIDATED and PRODUCTION-READY
+
 - Successfully tested with B001 market status test (49.6s response)
 - Auto-retry detection proven effective
 - Performance classification confirmed functional
@@ -424,6 +497,7 @@ Document actual response time for performance classification and optimization in
 ### 8.2 CLI Method Status  
 
 **Current Status:** AUTO-RETRY NOT YET TESTED
+
 - CLI method using `npx playwright test` commands exists
 - Auto-retry detection methodology NOT validated for CLI
 - Results pending future validation task assignment
@@ -432,11 +506,13 @@ Document actual response time for performance classification and optimization in
 ### 8.3 Testing Scope Limitations
 
 **This Document Covers:**
+
 - MCP method testing using `mcp__playwright__browser_*` tools
 - Auto-retry detection methodology
 - Basic market status and ticker analysis testing
 
 **This Document Does NOT Cover:**
+
 - CLI method testing procedures
 - Advanced multi-button interaction sequences  
 - Comprehensive test suite execution (B001-B016)
@@ -504,6 +580,7 @@ Document actual response time for performance classification and optimization in
 ```
 
 **Expected Results:**
+
 - Navigation: Page loaded successfully
 - Snapshot: Element references identified
 - Input: Message entered correctly
