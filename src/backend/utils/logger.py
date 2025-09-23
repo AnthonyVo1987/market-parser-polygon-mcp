@@ -55,13 +55,12 @@ def log_api_request(
 def log_api_response(
     logger,
     status_code: int,
-    response_time: float,
     token_count: Optional[int] = None,  # pylint: disable=unused-argument
     request_id: Optional[str] = None,  # pylint: disable=unused-argument
 ):
     """Minimal API response logging - errors only."""
     if status_code >= 400:
-        logger.error(f"API Error: {status_code} in {response_time:.3f}s")
+        logger.error(f"API Error: {status_code}")
 
 
 def log_mcp_operation(

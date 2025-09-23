@@ -577,7 +577,6 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     global shared_mcp_server, shared_session
 
     request_id = str(uuid.uuid4())[:8]
-    start_time = time.time()
 
     log_api_request(logger, "POST", "/chat", request.message, request_id)
 
@@ -644,11 +643,9 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             logger.error(f"AI model call failed: {e}")
             response_text = f"Error: Unable to process request. {str(e)}"
 
-        response_time = time.time() - start_time
-
         # Log performance metrics for baseline measurement and monitoring
         logger.info(
-            f"Performance metrics - Response time: {response_time:.3f}s, Request ID: {request_id}"
+            f"Performance metrics - Request processed, Request ID: {request_id}"
         )
 
         # Log token usage if available in metadata
@@ -657,22 +654,20 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 f"Token usage - Input: {result.metadata.get('inputTokens', 'N/A')}, Output: {result.metadata.get('outputTokens', 'N/A')}, Total: {result.metadata.get('tokenCount', 'N/A')}"
             )
 
-        log_api_response(logger, 200, response_time, request_id=request_id)
+        log_api_response(logger, 200, request_id=request_id)
 
         return ChatResponse(response=response_text)
 
     except HTTPException:
         raise
     except Exception as e:
-        response_time = time.time() - start_time
-        log_api_response(logger, 500, response_time, request_id=request_id)
+        log_api_response(logger, 500, request_id=request_id)
         logger.error(
             f"💥 Unhandled exception in chat endpoint",
             {
                 "request_id": request_id,
                 "error_type": type(e).__name__,
                 "error_message": str(e),
-                "response_time": f"{response_time:.3f}s",
             },
         )
         raise HTTPException(

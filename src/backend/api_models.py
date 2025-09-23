@@ -206,7 +206,6 @@ class ResponseMetadata(BaseModel):
 
     model: str
     timestamp: str
-    response_time: str
     processing_time: Optional[float] = None
     request_id: Optional[str] = None
     token_count: Optional[int] = None
