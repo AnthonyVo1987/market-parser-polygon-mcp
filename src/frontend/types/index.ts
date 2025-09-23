@@ -10,7 +10,6 @@ export interface Message {
   sender: 'user' | 'ai';
   timestamp: Date;
   metadata?: {
-    processingTime?: number;
     isError?: boolean;
   };
 }

@@ -1,5 +1,8 @@
-## **AI Agent Assignment Prompt for Phase 1 Implementation**
+Here's the exact prompt for Phase 2 implementation:
 
+## **AI Agent Assignment Prompt for Phase 2 Implementation**
+
+```
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! ��
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
@@ -47,14 +50,21 @@ SUCCESS CRITERIA:
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## Task Details: AI Agent will read docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md, and fully perform Implementation Phase 1: CLI Performance Optimizations
+## Task Details: AI Agent will read docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md, and fully perform Implementation Phase 2: GUI Response Time Removal
 
 **INSTRUCTIONS:**
-
 1. Read the implementation plan document: `docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md`
-2. Locate Implementation Phase 1: CLI Performance Optimizations
+2. Locate Implementation Phase 2: GUI Response Time Removal
 3. Follow ALL implementation steps exactly as specified in the plan
-4. Complete Task 1.1: Remove CLI Response Time Calculation
+4. Complete all tasks in Phase 2:
+   - Task 2.1: Remove Response Time from Message Formatting
+   - Task 2.2: Remove Response Time from ChatInterface Component
+   - Task 2.3: Remove Response Time from ChatMessage Component
+   - Task 2.4: Update Type Definitions
+   - Task 2.5: Update CSS Styling
 5. Perform all validation and testing steps
 6. Document results and verify success criteria
 7. Use mandatory toolkit throughout entire process
+```
+
+This is the exact prompt you can use to assign an AI Agent to perform Phase 2 implementation.

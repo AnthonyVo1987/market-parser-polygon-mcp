@@ -13,7 +13,6 @@ export interface MessageFormattingOptions {
   content: string;
   timestamp: Date;
   metadata?: {
-    processingTime?: number;
     isError?: boolean;
     errorType?: string;
   };
@@ -26,7 +25,6 @@ export interface FormattedMessage {
   timestamp: Date;
   relativeTime: string;
   absoluteTime: string;
-  processingTime?: string;
   isError: boolean;
   errorType?: string;
   cssClass: string;
@@ -158,9 +156,6 @@ export function formatMessage(
   const { type, content, timestamp, metadata = {} } = options;
 
   const isError = metadata.isError || type === 'error';
-  const processingTime = metadata.processingTime
-    ? `${metadata.processingTime.toFixed(1)}s`
-    : undefined;
 
   return {
     type,
@@ -169,7 +164,6 @@ export function formatMessage(
     timestamp,
     relativeTime: formatRelativeTime(timestamp),
     absoluteTime: formatAbsoluteTime(timestamp),
-    processingTime,
     isError,
     errorType: metadata.errorType,
     cssClass: getMessageTypeClass(type),

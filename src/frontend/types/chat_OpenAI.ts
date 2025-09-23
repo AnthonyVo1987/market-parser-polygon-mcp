@@ -14,7 +14,6 @@ export type MessageSender = 'user' | 'ai';
 export interface MessageMetadata {
   readonly isError?: boolean;
   readonly tokenCount?: number;
-  readonly processingTime?: number;
   readonly model?: string;
 }
 
@@ -29,11 +28,9 @@ export interface ChatResponse {
 // Response metadata for tracking and analytics
 export interface ResponseMetadata {
   readonly requestId?: string;
-  readonly processingTime?: number;
   readonly tokenCount?: number;
   readonly model?: string;
   readonly timestamp?: string;
-  readonly response_time?: string;
 }
 
 // API Error interface with enhanced error details

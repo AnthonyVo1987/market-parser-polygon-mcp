@@ -30,7 +30,6 @@ interface ChatState {
   error: string | null;
   inputValue: string;
   sharedTicker: string;
-  latestResponseTime: number | null;
   isMobileSidebarOpen: boolean;
 }
 
@@ -38,17 +37,16 @@ interface ChatState {
 type ChatAction =
   | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
   | {
-      type: 'SEND_MESSAGE_SUCCESS';
-      payload: { aiMessage: Message; responseTime: number };
-    }
+    type: 'SEND_MESSAGE_SUCCESS';
+    payload: { aiMessage: Message };
+  }
   | {
-      type: 'SEND_MESSAGE_ERROR';
-      payload: {
-        errorMessage: string;
-        aiMessage: Message;
-        responseTime: number;
-      };
-    }
+    type: 'SEND_MESSAGE_ERROR';
+    payload: {
+      errorMessage: string;
+      aiMessage: Message;
+    };
+  }
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'UPDATE_TICKER'; payload: string }
   | { type: 'CLEAR_ERROR' }
@@ -63,7 +61,6 @@ const initialChatState: ChatState = {
   error: null,
   inputValue: '',
   sharedTicker: 'NVDA',
-  latestResponseTime: null,
   isMobileSidebarOpen: false,
 };
 
@@ -82,7 +79,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         isLoading: false,
         messages: [...state.messages, action.payload.aiMessage],
-        latestResponseTime: action.payload.responseTime,
       };
     case 'SEND_MESSAGE_ERROR':
       return {
@@ -90,7 +86,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         isLoading: false,
         error: action.payload.errorMessage,
         messages: [...state.messages, action.payload.aiMessage],
-        latestResponseTime: action.payload.responseTime,
       };
     case 'UPDATE_INPUT':
       return {
@@ -149,7 +144,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     error,
     inputValue,
     sharedTicker,
-    latestResponseTime,
     isMobileSidebarOpen,
   } = state;
 
@@ -259,14 +253,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           currentModel || undefined
         );
 
-        // Extract response time from backend metadata
-        const responseTime = apiResponse.metadata?.response_time
-          ? parseFloat(apiResponse.metadata.response_time.replace('s', ''))
-          : 0;
-
         logger.info('✅ API response received', {
           messageId,
-          processingTime: `${responseTime}s`,
           responseLength: apiResponse.response.length,
         });
         logger.groupEnd();
@@ -277,26 +265,22 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           content: apiResponse.response,
           sender: 'ai',
           timestamp: new Date(),
-          metadata: { processingTime: responseTime },
         };
 
         dispatch({
           type: 'SEND_MESSAGE_SUCCESS',
-          payload: { aiMessage, responseTime },
+          payload: { aiMessage },
         });
 
         // End performance timing
         endTiming('message_processing');
       } catch (err: unknown) {
-        // For errors, we don't have backend response time, so use 0 as fallback
-        const responseTime = 0;
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to send message';
 
         logger.group('❌ API Request Failed');
         logger.error('API request failed', {
           messageId,
-          processingTime: `${responseTime}s`,
           errorType: err instanceof Error ? err.constructor.name : 'Unknown',
           errorMessage:
             errorMessage.slice(0, 200) +
@@ -310,12 +294,12 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           content: `Error: ${errorMessage}`,
           sender: 'ai',
           timestamp: new Date(),
-          metadata: { processingTime: responseTime, isError: true },
+          metadata: { isError: true },
         };
 
         dispatch({
           type: 'SEND_MESSAGE_ERROR',
-          payload: { errorMessage, aiMessage, responseTime },
+          payload: { errorMessage, aiMessage },
         });
 
         // End performance timing even on error
@@ -672,7 +656,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           aria-label='Debug information'
         >
           <DebugPanel
-            responseTime={latestResponseTime || 0}
             messageCount={messages.length}
             lastUpdate={new Date()}
             isConnected={true}
@@ -680,25 +663,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         </section>
       </div>
 
-      {/* BOTTOM CONTROL PANEL: Response Time and Message Count */}
+      {/* BOTTOM CONTROL PANEL: Message Count */}
       <div className='bottom-control-panel' role='status' aria-live='polite'>
-        <div className='response-time-display'>
-          <span className='response-time-label'>Response Time:</span>
-          <span
-            className={`response-time-value ${
-              latestResponseTime
-                ? latestResponseTime < 5
-                  ? 'response-time--fast'
-                  : latestResponseTime < 15
-                    ? 'response-time--medium'
-                    : 'response-time--slow'
-                : ''
-            }`}
-            aria-label={`Response time: ${latestResponseTime ? `${latestResponseTime.toFixed(2)} seconds` : 'Not available'}`}
-          >
-            {latestResponseTime ? `${latestResponseTime.toFixed(2)}s` : 'N/A'}
-          </span>
-        </div>
         <div className='message-count-display'>
           <span className='message-count-label'>Messages:</span>
           <span

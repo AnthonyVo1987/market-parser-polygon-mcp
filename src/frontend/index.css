@@ -669,8 +669,7 @@ body {
   font-family: var(--font-body);
 }
 
-/* Response Time and Message Count - Enhanced Typography */
-.response-time-display,
+/* Message Count - Enhanced Typography */
 .message-count-display,
 .status-info {
   display: flex;
@@ -680,34 +679,18 @@ body {
   font-family: var(--font-body);
 }
 
-.response-time-label,
 .message-count-label,
 .status-label {
   color: var(--text-secondary);
   font-weight: 500;
 }
 
-.response-time-value,
 .message-count-value,
 .status-value {
   color: var(--text-primary);
   font-weight: 600;
 }
 
-.response-time--fast {
-  color: var(--accent-success);
-  /* text-shadow: 0 0 8px rgba(16, 185, 129, 0.3); removed for performance */
-}
-
-.response-time--medium {
-  color: #f59e0b;
-  /* text-shadow: 0 0 8px rgba(245, 158, 11, 0.3); removed for performance */
-}
-
-.response-time--slow {
-  color: var(--accent-error);
-  /* text-shadow: 0 0 8px rgba(239, 68, 68, 0.3); removed for performance */
-}
 
 .status--loading {
   color: var(--accent-info);
@@ -972,11 +955,11 @@ body {
   z-index: 1;
 }
 
-.performance-toggle__input:checked + .performance-toggle__slider::before {
+.performance-toggle__input:checked+.performance-toggle__slider::before {
   /* transform: translateX(88px); removed for performance */
 }
 
-.performance-toggle__input:checked + .performance-toggle__slider {
+.performance-toggle__input:checked+.performance-toggle__slider {
   background: var(--success-color);
 }
 
