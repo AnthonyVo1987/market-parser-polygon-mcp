@@ -1,9 +1,7 @@
 import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react';
 import { FC, memo, useCallback, useEffect, useState } from 'react';
-import { useInputValidation } from '../hooks/useInputValidation';
 import { ChatInputProps } from '../types';
 import { getChatPlaceholder } from '../utils/placeholderText';
-import { ValidationRule } from '../utils/validation';
 
 const ChatInput_OpenAI: FC<ChatInputProps> = memo(
   ({ onSendMessage, disabled = false, placeholder, value = '', onChange }) => {
@@ -13,55 +11,33 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
     const dynamicPlaceholder =
       placeholder || getChatPlaceholder(disabled ? 'loading' : 'idle');
 
-    // Enhanced validation rules for chat input
-    const validationRules: ValidationRule = {
-      required: true,
-      minLength: 1,
-      maxLength: 2000,
-      pattern: /^[\s\S]*$/, // Allow any characters including newlines
-    };
-
-    // Use enhanced validation hook
-    const {
-      value: message,
-      setValue: setMessage,
-      isTouched,
-      isValid,
-      errorMessage,
-      handleChange: handleValidationChange,
-      handleBlur,
-      handleFocus,
-    } = useInputValidation({
-      rules: validationRules,
-      initialValue: value,
-      validateOnChange: true,
-      validateOnBlur: true,
-    });
+    // Simple state management without validation
+    const [message, setMessage] = useState(value);
 
     // Sync with parent component value
     useEffect(() => {
       setMessage(value);
-    }, [value, setMessage]);
+    }, [value]);
 
     const handleSubmit = useCallback(
       (e: FormEvent) => {
         e.preventDefault();
-        if (message.trim() && !disabled && !isComposing && isValid) {
+        if (message.trim() && !disabled && !isComposing) {
           onSendMessage(message.trim());
           // Note: Parent component handles clearing the input via onChange
         }
       },
-      [message, onSendMessage, disabled, isComposing, isValid]
+      [message, onSendMessage, disabled, isComposing]
     );
 
     const handleKeyDown = useCallback(
       (e: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === 'Enter' && !e.shiftKey && !isComposing && isValid) {
+        if (e.key === 'Enter' && !e.shiftKey && !isComposing) {
           e.preventDefault();
           handleSubmit(e);
         }
       },
-      [handleSubmit, isComposing, isValid]
+      [handleSubmit, isComposing]
     );
 
     const handleCompositionStart = useCallback(() => {
@@ -74,12 +50,12 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
 
     const handleChange = useCallback(
       (e: ChangeEvent<HTMLTextAreaElement>) => {
-        handleValidationChange(e);
+        setMessage(e.target.value);
         if (onChange) {
           onChange(e.target.value);
         }
       },
-      [handleValidationChange, onChange]
+      [onChange]
     );
 
     return (
@@ -99,22 +75,13 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
               onKeyDown={handleKeyDown}
               onCompositionStart={handleCompositionStart}
               onCompositionEnd={handleCompositionEnd}
-              onBlur={handleBlur}
-              onFocus={handleFocus}
               placeholder={dynamicPlaceholder}
               disabled={disabled}
-              className={`chat-input-textarea ${
-                isTouched && !isValid ? 'chat-input-textarea--invalid' : ''
-              } ${isTouched && isValid ? 'chat-input-textarea--valid' : ''}`}
+              className='chat-input-textarea'
               rows={6}
               data-testid='chat-input-textarea'
               aria-label='AI Chatbot Input - Type your financial questions here'
-              aria-invalid={isTouched && !isValid}
-              aria-describedby={
-                isTouched && !isValid
-                  ? 'chat-input-error'
-                  : 'chat-input-character-count'
-              }
+              aria-describedby='chat-input-character-count'
               aria-required='true'
               role='textbox'
               aria-multiline='true'
@@ -122,7 +89,7 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
             />
             <button
               type='submit'
-              disabled={disabled || !message.trim() || isComposing || !isValid}
+              disabled={disabled || !message.trim() || isComposing}
               className='chat-input-send-button'
               data-testid='chat-input-send-button'
               aria-label='Send message to AI chatbot'
@@ -141,18 +108,6 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
             </button>
           </div>
 
-          {/* Enhanced validation error display */}
-          {isTouched && !isValid && errorMessage && (
-            <div
-              id='chat-input-error'
-              className='chat-input-error'
-              data-testid='chat-input-error'
-              role='alert'
-              aria-live='polite'
-            >
-              {errorMessage}
-            </div>
-          )}
 
           {/* Character count display */}
           <div

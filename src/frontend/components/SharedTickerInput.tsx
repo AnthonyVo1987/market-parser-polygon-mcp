@@ -1,75 +1,49 @@
 import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react';
-import { FC, memo, useCallback, useEffect } from 'react';
-import { useInputValidation } from '../hooks/useInputValidation';
+import { FC, memo, useCallback, useEffect, useState } from 'react';
 import { TickerInputProps } from '../types';
 import { getTickerPlaceholder } from '../utils/placeholderText';
-import { ValidationRule, validateTicker } from '../utils/validation';
 
 const SharedTickerInput: FC<TickerInputProps> = memo(
   ({ value, onChange, onSearch, disabled = false, placeholder }) => {
     // Enhanced placeholder text based on user state
     const dynamicPlaceholder =
       placeholder || getTickerPlaceholder(disabled ? 'loading' : 'idle');
-    // Enhanced validation rules for ticker input
-    const validationRules: ValidationRule = {
-      required: false, // Ticker is optional
-      minLength: 1,
-      maxLength: 5,
-      custom: val => validateTicker(val),
-    };
-
-    // Use enhanced validation hook
-    const {
-      value: ticker,
-      setValue: setTicker,
-      isTouched,
-      isValid,
-      errorMessage,
-      handleChange: handleValidationChange,
-      handleBlur,
-      handleFocus,
-    } = useInputValidation({
-      rules: validationRules,
-      initialValue: value,
-      validateOnChange: true,
-      validateOnBlur: true,
-    });
+    
+    // Simple state management without validation
+    const [ticker, setTicker] = useState(value);
 
     // Sync with parent component value
     useEffect(() => {
       setTicker(value);
-    }, [value, setTicker]);
+    }, [value]);
 
     const handleChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value.toUpperCase();
-        handleValidationChange({
-          ...e,
-          target: { ...e.target, value: newValue },
-        });
+        setTicker(newValue);
         onChange(newValue);
       },
-      [handleValidationChange, onChange]
+      [onChange]
     );
 
     const handleSubmit = useCallback(
       (e: FormEvent) => {
         e.preventDefault();
-        if (ticker.trim() && !disabled && isValid) {
+        if (ticker.trim() && !disabled) {
           onSearch?.();
         }
       },
-      [ticker, onSearch, disabled, isValid]
+      [ticker, onSearch, disabled]
     );
 
     const handleKeyDown = useCallback(
       (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && !disabled && isValid) {
+        if (e.key === 'Enter' && !disabled) {
           e.preventDefault();
           handleSubmit(e);
         }
       },
-      [handleSubmit, disabled, isValid]
+      [handleSubmit, disabled]
     );
 
     return (
@@ -88,19 +62,11 @@ const SharedTickerInput: FC<TickerInputProps> = memo(
               value={ticker}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
-              onBlur={handleBlur}
-              onFocus={handleFocus}
               placeholder={dynamicPlaceholder}
               disabled={disabled}
-              className={`ticker-input-field ${
-                isTouched && !isValid ? 'ticker-input-field--invalid' : ''
-              } ${isTouched && isValid ? 'ticker-input-field--valid' : ''}`}
+              className='ticker-input-field'
               data-testid='ticker-input-field'
               aria-label='Stock ticker input - Enter stock symbol for analysis'
-              aria-invalid={isTouched && !isValid}
-              aria-describedby={
-                isTouched && !isValid ? 'ticker-input-error' : undefined
-              }
               aria-required='false'
               role='textbox'
               aria-autocomplete='none'
@@ -108,7 +74,7 @@ const SharedTickerInput: FC<TickerInputProps> = memo(
             />
             <button
               type='submit'
-              disabled={disabled || !ticker.trim() || !isValid}
+              disabled={disabled || !ticker.trim()}
               className='ticker-input-search-button'
               data-testid='ticker-input-search-button'
               aria-label='Search for stock ticker'
@@ -129,18 +95,6 @@ const SharedTickerInput: FC<TickerInputProps> = memo(
               </svg>
             </button>
           </div>
-          {/* Enhanced validation error display */}
-          {isTouched && !isValid && errorMessage && (
-            <div
-              id='ticker-input-error'
-              className='ticker-input-error'
-              data-testid='ticker-input-error'
-              role='alert'
-              aria-live='polite'
-            >
-              {errorMessage}
-            </div>
-          )}
         </form>
       </div>
     );
