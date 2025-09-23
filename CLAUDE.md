@@ -9,37 +9,32 @@ Market Parser is a Python CLI and React web application for natural language fin
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-fix: Resolve TypeScript warnings and improve type safety
+fix: Restore MCP server integration with dynamic agent creation
 
-🔧 TypeScript Type Safety Improvements:
-- Fix mapped type definition in AnalysisButtons component (interface → type)
-- Add explicit type assertions for buttonStates access to resolve unsafe member access warnings
-- Resolve unsafe assignment warnings in button rendering logic
-- Add proper type annotation for Object.values callback
+🔧 MCP Integration Fixes:
+- Restore dynamic agent creation in chat_endpoint with mcp_servers=[shared_mcp_server]
+- Fix Runner.run call to use session=shared_session instead of context=context
+- Initialize result variable to prevent "referenced before assignment" error
+- Update cli_async function with same dynamic agent pattern
+- Add openai-agents-mcp>=0.0.8 dependency to pyproject.toml
 
-📊 Linting Results:
-- ESLint warnings reduced from 67 to 54 (13 warnings fixed)
-- All critical type safety issues resolved
-- Remaining warnings are acceptable (browser APIs, debugging code)
-- Python linting maintains 9.96/10 score
-- TypeScript compilation passes without errors
+📊 Functionality Restored:
+- Polygon MCP tools now accessible to AI agent (confirmed with AAPL query)
+- Real-time market data integration working correctly
+- Persistent MCP server state maintained through FastAPI lifespan
+- Both CLI and API endpoints using proper MCP server integration
 
-✅ Code Quality:
-- Improved type safety without changing functionality
-- Better TypeScript compliance and error prevention
-- Maintained backward compatibility
-- All tests and checks passing
+✅ Testing Results:
+- AAPL query returned real market data: $256.08 current price
+- MCP server initialization and shutdown working properly
+- No more "referenced before assignment" errors
 
 Files Modified:
-- src/frontend/components/AnalysisButtons.tsx (type safety improvements)
-- src/backend/main.py (quote consistency)
-- src/backend/api_models.py (import cleanup)
-- src/backend/direct_prompts.py (formatting)
-- src/backend/direct_prompts_backup.py (formatting)
-- src/backend/prompt_templates.py (import cleanup)
-- src/backend/utils/logger.py (parameter ordering)
+- src/backend/main.py (MCP integration fixes)
+- pyproject.toml (added openai-agents-mcp dependency)
+- new_task_plan.md (updated task details)
 
-Status: TypeScript warnings analysis and fixes complete - ready for production
+Status: MCP server integration fully restored and working
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! 🔴

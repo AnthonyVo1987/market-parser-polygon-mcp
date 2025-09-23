@@ -587,6 +587,10 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             detail="Query cannot be empty or contain only whitespace. Please enter a valid financial question.",
         )
 
+    # Initialize result variable
+    result = None
+    response_text = ""
+
     try:
         # Use shared instances instead of creating new ones
         # Detect analysis intent
@@ -602,17 +606,20 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
         # Call the AI model with the direct prompt
         try:
-            # Create context with MCP server for market data access
-            context = {
-                "mcp_server": shared_mcp_server,
-                "session": shared_session,
-                "temperature": settings.temperature,
-                "model": settings.available_models[0],
-            }
+            # Create dynamic agent with MCP server for market data access
+            analysis_agent = Agent(
+                name="Financial Analysis Agent",
+                instructions="""You are a professional financial analyst with access to real-time market data.
+                Provide accurate, data-driven financial analysis and insights.
+                Use the available tools to gather current market information.
+                Focus on actionable insights and clear explanations.""",
+                tools=[save_analysis_report],
+                mcp_servers=[shared_mcp_server],
+            )
 
             # Run the financial analysis agent with the direct prompt
             result = await Runner.run(
-                finance_analysis_agent, prompt_data["user_prompt"], context=context
+                analysis_agent, prompt_data["user_prompt"], session=shared_session
             )
 
             # Extract the response
@@ -630,7 +637,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         )
 
         # Log token usage if available in metadata
-        if hasattr(result, "metadata") and result.metadata and result.metadata.get("tokenCount"):
+        if result and hasattr(result, "metadata") and result.metadata and result.metadata.get("tokenCount"):
             logger.info(
                 f"Token usage - Input: {result.metadata.get('inputTokens', 'N/A')}, Output: {result.metadata.get('outputTokens', 'N/A')}, Total: {result.metadata.get('tokenCount', 'N/A')}"
             )
@@ -907,17 +914,20 @@ async def cli_async():
 
                     # Call the AI model with the direct prompt
                     try:
-                        # Create context with MCP server for market data access
-                        context = {
-                            "mcp_server": server,
-                            "session": None,  # CLI doesn't use persistent session
-                            "temperature": settings.temperature,
-                            "model": settings.available_models[0],
-                        }
+                        # Create dynamic agent with MCP server for market data access
+                        analysis_agent = Agent(
+                            name="Financial Analysis Agent",
+                            instructions="""You are a professional financial analyst with access to real-time market data.
+                            Provide accurate, data-driven financial analysis and insights.
+                            Use the available tools to gather current market information.
+                            Focus on actionable insights and clear explanations.""",
+                            tools=[save_analysis_report],
+                            mcp_servers=[server],
+                        )
 
                         # Run the financial analysis agent with the direct prompt
                         result = await Runner.run(
-                            finance_analysis_agent, prompt_data["user_prompt"], context=context
+                            analysis_agent, prompt_data["user_prompt"], session=None
                         )
 
                         # Extract the response
@@ -927,27 +937,17 @@ async def cli_async():
                         print_error(e, "AI Model Error")
                         response_text = f"Error: Unable to process request. {str(e)}"
 
-                    print("\r", end="")
+                    # Display the response
+                    print_response(response_text)
 
-                    # Create a mock output object for print_response compatibility
-                    class MockOutput:
-                        """Mock output object for print_response compatibility."""
-
-                        def __init__(self, response):
-                            self.final_output = response
-
-                    print_response(MockOutput(response_text))
-
-                except (EOFError, KeyboardInterrupt):
+                except KeyboardInterrupt:
                     print("\nGoodbye!")
                     break
                 except Exception as e:
                     print_error(e, "Unexpected Error")
 
     except Exception as e:
-        print_error(e, "Setup Error")
-    finally:
-        print("Market Analysis Agent shutdown complete")
+        print_error(e, "Startup Error")
 
 
 if __name__ == "__main__":

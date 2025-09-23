@@ -49,8 +49,10 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-We will move forward with using ExecuteAutomation Playwright MCP.
-
-1. Fetch backup Playwright MCP docs & analyze and how to setup  and configure for both Cursor IDE & Claude Code
-2. Config my Cursor IDE for ExecuteAutomation Playwright MCP config: '/home/1000211866/.cursor/mcp.json'
-3. Config my Claude Code for ExecuteAutomation Playwright MCP config: '.mcp.json' (this is located in our root level project folder)
+- Investigate and fix App NOT correctly working because NO Polygon Tools are being called in the app by the AI Agent to perform ANY STOCK ANLAYSIS
+- App is utterly broken.  Any User Input or Button Prompts ARE NOT CALLING ANY POLYGON Tools to perform any analysis
+- There could be a wiring issue from CLI to the Frontend GUI where Frontend GUI AI Chat is NOT using any Tools and\or the Polygon MCP Server Tools may not be wired correctly
+- Use Playwright Tools to test and validate
+- Use Playwright Docs Fetch if you need more details on how to use the Playwright Tools correctly
+- Read docs/implementation_plans/direct_prompt_migration_implementation_plan.md for more context on what broke the app from our recent changes
+- Validate your fixes by running PHASE 4: TESTING & VALIDATION from docs/implementation_plans/direct_prompt_migration_implementation_plan.md
