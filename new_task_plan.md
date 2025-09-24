@@ -1,9 +1,4 @@
-Here's the exact prompt for the comprehensive review task:
-
-## **AI Agent Assignment Prompt for Comprehensive Review and Audit**
-
-```
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!!
+# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
@@ -50,14 +45,9 @@ SUCCESS CRITERIA:
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## Task Details: AI Agent will read docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md then perform the new tasks below:
+## New Task Details
 
-**INSTRUCTIONS:**
-1. Read the implementation plan document: `docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md`
-2. Perform Comprehensive Systematic granular Code\Doc Audit & Code\Review Review to verify ALL Tasks have been correctly implemented from Phases 1 - Phase 5
-3. Fix any tasks that may not have been correctly implemented
-4. Mark off correctly completed tasks with green checks in docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md
-5. Use mandatory toolkit throughout entire process
-```
-
-This is the exact prompt you can use to assign an AI Agent to perform the comprehensive review and audit task.
+- Use mcp-playwright Docs tools to understand Playwright Tools for Testing
+- Read & understand the Phases 1-5 that have been implemented, and pending Phase 6: Final Validation and Testing from docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md
+- Generate a test plan .md doc in docs/implementation_plans/ folder to perform Phase 6: Final Validation and Testing
+- DO NOT START TESTING OR COMMITTING NEW TEST PLAN DOC YET SO USER CAN REVIEW
