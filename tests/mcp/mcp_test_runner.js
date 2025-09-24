@@ -29,17 +29,17 @@ class MCPPlaywrightTestRunner {
      */
     async initialize() {
         if (this.isInitialized) return;
-        
+
         try {
             // Navigate to application using MCP Playwright
             await this.mcpNavigate(this.baseUrl);
-            
+
             // Take initial snapshot to understand page structure
             await this.mcpTakeSnapshot();
-            
+
             // Verify core elements are present
             await this.mcpWaitForElement('button, input, textarea');
-            
+
             this.isInitialized = true;
         } catch (error) {
             throw new Error(`Test Runner initialization failed: ${error.message}`);
@@ -52,7 +52,7 @@ class MCPPlaywrightTestRunner {
     async mcpNavigate(url) {
         // This uses the actual MCP Playwright navigation tool
         // await mcp__playwright__browser_navigate({ url: url });
-        
+
         // For implementation: Replace with actual MCP call
         // Wait for page load
         await this.mcpWaitForPageLoad();
@@ -65,7 +65,7 @@ class MCPPlaywrightTestRunner {
         // This uses the actual MCP Playwright snapshot tool
         // const snapshot = await mcp__playwright__browser_snapshot({});
         // return snapshot;
-        
+
 
         return { timestamp: new Date().toISOString() };
     }
@@ -76,7 +76,7 @@ class MCPPlaywrightTestRunner {
     async mcpInputMessage(message) {
         // Clear existing input first
         await this.mcpClearInput();
-        
+
         // Type message using MCP Playwright
         // await mcp__playwright__browser_type({
         //     element: 'chat input field',
@@ -143,28 +143,28 @@ class MCPPlaywrightTestRunner {
     async mcpWaitForResponse(timeout = 120000) {
         const startTime = Date.now();
         const endTime = startTime + timeout;
-        
+
         while (Date.now() < endTime) {
             try {
                 // Check for JSON response using MCP evaluation
                 const responseContent = await this.mcpExtractResponseContent();
-                
+
                 if (responseContent && responseContent.trim().length > 0) {
                     // Check if it contains JSON
                     if (responseContent.includes('{') && responseContent.includes('}')) {
-                        const responseTime = Date.now() - startTime;
+                        const testDuration = Date.now() - startTime;
                         return responseContent;
                     }
                 }
-                
+
                 // Wait 1 second before next check
                 await this.mcpSleep(1000);
-                
+
             } catch (error) {
                 await this.mcpSleep(1000);
             }
         }
-        
+
         throw new Error(`MCP Timeout waiting for response after ${timeout}ms`);
     }
 
@@ -178,7 +178,7 @@ class MCPPlaywrightTestRunner {
         //     function: '() => { const selectors = [".response-container", ".json-output", ".chat-message:last-child", "pre", "code"]; for (const sel of selectors) { const el = document.querySelector(sel); if (el && el.textContent.trim()) return el.textContent; } return null; }'
         // });
         // return content;
-        
+
         // Placeholder for implementation
         return null;
     }
@@ -193,7 +193,7 @@ class MCPPlaywrightTestRunner {
             //     function: `() => document.querySelector("${selector}") !== null`
             // });
             // return exists;
-            
+
             return true; // Placeholder
         } catch (error) {
             return false;
@@ -240,7 +240,7 @@ class MCPPlaywrightTestRunner {
      */
     async runPriorityTests() {
         await this.initialize();
-        
+
         const priorityTests = [
             {
                 id: 'TEST-P001',
@@ -295,14 +295,14 @@ class MCPPlaywrightTestRunner {
         ];
 
         const results = [];
-        
+
         for (const test of priorityTests) {
             const result = await this.executeTest(test.id, test.name, test.execute);
             results.push(result);
         }
 
         const priorityPassRate = results.filter(r => r.status === 'PASS').length / results.length * 100;
-        
+
         return results;
     }
 
@@ -317,7 +317,7 @@ class MCPPlaywrightTestRunner {
             // 1. Priority Tests (5 tests) - MUST pass for continuation
             const priorityResults = await this.runPriorityTests();
             allResults = allResults.concat(priorityResults);
-            
+
             const priorityPassRate = priorityResults.filter(r => r.status === 'PASS').length / priorityResults.length;
             if (priorityPassRate < 1.0) {
                 return this.generateFinalReport(allResults, suiteStartTime);
@@ -478,10 +478,10 @@ class MCPPlaywrightTestRunner {
         // Check for ticker information if specified
         if (expectedTicker) {
             const tickers = expectedTicker.split(',').map(t => t.trim());
-            validation.tickersFound = tickers.filter(ticker => 
+            validation.tickersFound = tickers.filter(ticker =>
                 response.toLowerCase().includes(ticker.toLowerCase())
             );
-            
+
             if (validation.tickersFound.length === 0) {
                 // Response may not contain information about expected ticker(s)
             }
@@ -496,9 +496,9 @@ class MCPPlaywrightTestRunner {
         }
         feedback.push(`📋 Response format: ${validation.format} (all formats acceptable)`);
 
-        return { 
-            response, 
-            validation, 
+        return {
+            response,
+            validation,
             feedback,
             requestType,
             success: true
@@ -510,7 +510,7 @@ class MCPPlaywrightTestRunner {
         try {
             const jsonStart = responseText.indexOf('{');
             const jsonEnd = responseText.lastIndexOf('}') + 1;
-            
+
             if (jsonStart !== -1 && jsonEnd > jsonStart) {
                 const jsonString = responseText.substring(jsonStart, jsonEnd);
                 return { success: true, data: JSON.parse(jsonString) };
@@ -519,9 +519,9 @@ class MCPPlaywrightTestRunner {
             }
         } catch (error) {
             // JSON parsing failure is acceptable - any format is valid
-            return { 
-                success: false, 
-                error: error.message, 
+            return {
+                success: false,
+                error: error.message,
                 note: 'JSON parsing failed but any response format is acceptable'
             };
         }
@@ -574,7 +574,7 @@ class MCPPlaywrightTestRunner {
 
         // Success Criteria Assessment
         const priorityPassRate = priorityTests.length > 0 ? (priorityTests.filter(t => t.status === 'PASS').length / priorityTests.length) * 100 : 0;
-        
+
         report += `## Success Criteria Assessment\n\n`;
         report += `**Priority Tests**: ${priorityPassRate.toFixed(1)}% pass rate (Target: 100%) ${priorityPassRate >= 100 ? '✅' : '❌'}\n`;
         report += `**System Validation**: ${priorityPassRate >= 100 ? 'PASSED ✅' : 'FAILED ❌'}\n`;

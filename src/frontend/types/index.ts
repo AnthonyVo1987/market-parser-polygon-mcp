@@ -33,7 +33,6 @@ export interface TickerInputProps {
 }
 
 export interface DebugPanelProps {
-  responseTime?: number;
   messageCount?: number;
   lastUpdate?: Date;
   isConnected?: boolean;

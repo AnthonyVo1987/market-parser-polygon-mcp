@@ -1384,15 +1384,6 @@ export const interfaceStyles = `
     box-shadow: var(--border-glow-debug-hover);
   }
 
-  .response-time-display {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--neutral-200);
-    font-size: var(--text-sm);
-    font-family: var(--font-inter);
-    font-weight: 500;
-  }
 
   .message-count-display {
     display: flex;
@@ -1423,7 +1414,6 @@ export const interfaceStyles = `
       gap: 4px;
     }
 
-    .response-time-display,
     .message-count-display,
     .status-info {
       font-size: var(--text-xs);

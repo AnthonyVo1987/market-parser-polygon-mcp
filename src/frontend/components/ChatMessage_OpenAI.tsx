@@ -207,7 +207,6 @@ const ChatMessage_OpenAI = memo(
     // const messageMetadata = useMemo(
     //   () => ({
     //     hasMetadata: !!message.metadata,
-    //     processingTime: message.metadata?.processingTime,
     //     isError: message.metadata?.isError,
     //     formattedTime: message.timestamp.toLocaleTimeString(),
     //   }),

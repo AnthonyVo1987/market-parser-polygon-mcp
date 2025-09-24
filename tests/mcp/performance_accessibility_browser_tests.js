@@ -24,32 +24,32 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testF001_ResponseTimeBenchmarking() {
         return this.executeTest('TEST-F001', 'Response Time Benchmarking', async () => {
             await this.browser.initialize();
-            
+
             const benchmarkTests = [
                 { ticker: 'AAPL', button: 'clickStockSnapshotButton', expectedMax: 30000 },
                 { ticker: 'MSFT', button: 'clickSupportResistanceButton', expectedMax: 45000 },
                 { ticker: 'GOOGL', button: 'clickTechnicalAnalysisButton', expectedMax: 60000 }
             ];
-            
+
             const results = [];
-            
+
             for (const test of benchmarkTests) {
                 await this.browser.inputMessage(test.ticker);
-                
+
                 const startTime = Date.now();
                 await this.browser[test.button]();
-                
+
                 try {
                     await this.browser.waitForResponse(this.timeouts.apiResponse);
-                    const responseTime = Date.now() - startTime;
-                    
+                    const testDuration = Date.now() - startTime;
+
                     results.push({
                         ticker: test.ticker,
                         button: test.button.replace('click', '').replace('Button', ''),
                         expectedMax: test.expectedMax,
-                        withinExpected: responseTime <= test.expectedMax,
-                        performance: responseTime <= test.expectedMax / 2 ? 'excellent' : 
-                                   responseTime <= test.expectedMax ? 'acceptable' : 'slow'
+                        withinExpected: testDuration <= test.expectedMax,
+                        performance: testDuration <= test.expectedMax / 2 ? 'excellent' :
+                            testDuration <= test.expectedMax ? 'acceptable' : 'slow'
                     });
                 } catch (error) {
                     results.push({
@@ -61,20 +61,20 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                         error: error.message
                     });
                 }
-                
+
                 await this.browser.sleep(2000);
             }
-            
+
             const avgResponseTime = results.reduce((sum, r) => sum + (r.withinExpected ? 1 : 0), 0) / results.length;
             const allWithinExpected = results.every(r => r.withinExpected);
-            
+
             // Store for overall performance tracking
             this.performanceMetrics.push({
                 test: 'ResponseTime',
                 average: avgResponseTime,
                 results: results
             });
-            
+
             return {
                 benchmarkResults: results,
                 averagePerformance: avgResponseTime,
@@ -91,16 +91,16 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testF002_MemoryUsageMonitoring() {
         return this.executeTest('TEST-F002', 'Memory Usage Monitoring', async () => {
             await this.browser.initialize();
-            
+
             // Simulate memory usage monitoring
             const initialMemory = await this.getMemoryUsage();
-            
+
             // Perform memory-intensive operations
             const operations = [];
             for (let i = 0; i < 10; i++) {
                 await this.browser.inputMessage(`MEMORY_TEST_${i}`);
                 await this.browser.clickStockSnapshotButton();
-                
+
                 try {
                     await this.browser.waitForResponse(30000);
                     const currentMemory = await this.getMemoryUsage();
@@ -117,14 +117,14 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                         error: error.message
                     });
                 }
-                
+
                 await this.browser.sleep(1000);
             }
-            
+
             const finalMemory = await this.getMemoryUsage();
             const memoryIncrease = finalMemory - initialMemory;
             const memoryLeakSuspected = memoryIncrease > 100; // MB threshold
-            
+
             return {
                 initialMemory: initialMemory,
                 finalMemory: finalMemory,
@@ -140,31 +140,31 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testF003_LargeDatasetHandling() {
         return this.executeTest('TEST-F003', 'Large Dataset Handling', async () => {
             await this.browser.initialize();
-            
+
             // Test with many tickers to generate large dataset
             const largeTickers = 'AAPL,MSFT,GOOGL,AMZN,TSLA,META,NFLX,NVDA,AMD,INTC,CRM,ORCL,ADBE,NOW,SHOP,ZM,DOCU,PLTR,SNOW,DDOG';
-            
+
             await this.browser.inputMessage(largeTickers);
-            
+
             const startTime = Date.now();
             const initialMemory = await this.getMemoryUsage();
-            
+
             await this.browser.clickStockSnapshotButton();
-            
+
             try {
                 const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
                 const endTime = Date.now();
                 const finalMemory = await this.getMemoryUsage();
-                
+
                 const processingTime = endTime - startTime;
                 const responseSize = response.length;
                 const memoryUsed = finalMemory - initialMemory;
-                
+
                 // Check if system handled large dataset efficiently
                 const performanceAcceptable = processingTime <= 120000; // 2 minutes max
                 const memoryEfficient = memoryUsed <= 200; // Max 200MB increase
                 const dataComplete = responseSize > 10000; // Substantial response expected
-                
+
                 return {
                     tickerCount: largeTickers.split(',').length,
                     processingTime: processingTime,
@@ -191,22 +191,22 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testF004_ConcurrentUserSimulation() {
         return this.executeTest('TEST-F004', 'Concurrent User Simulation', async () => {
             await this.browser.initialize();
-            
+
             // Simulate concurrent operations (simplified for single browser instance)
             const concurrentOperations = [];
             const startTime = Date.now();
-            
+
             // Simulate 5 "concurrent" operations with slight delays
             for (let i = 0; i < 5; i++) {
                 const operationStart = Date.now();
-                
+
                 try {
                     await this.browser.inputMessage(`CONCURRENT_${i}_AAPL`);
                     await this.browser.clickStockSnapshotButton();
-                    
+
                     // Don't wait for response to simulate concurrent behavior
                     await this.browser.sleep(200); // Small delay to simulate concurrent timing
-                    
+
                     concurrentOperations.push({
                         operationId: i,
                         startTime: operationStart,
@@ -223,21 +223,21 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     });
                 }
             }
-            
+
             // Wait for all operations to potentially complete
             await this.browser.sleep(30000);
-            
+
             const totalTime = Date.now() - startTime;
             const systemStable = await this.browser.elementExists('button[title*="Stock"]');
             const pageResponsive = await this.browser.getPageTitle().then(() => true).catch(() => false);
-            
+
             return {
-            concurrentOperations: concurrentOperations.length,
-            totalTime: totalTime,
-            systemStable: systemStable,
-            pageResponsive: pageResponsive,
-            concurrentHandling: systemStable && pageResponsive ? 'handled' : 'issues',
-            operations: concurrentOperations
+                concurrentOperations: concurrentOperations.length,
+                totalTime: totalTime,
+                systemStable: systemStable,
+                pageResponsive: pageResponsive,
+                concurrentHandling: systemStable && pageResponsive ? 'handled' : 'issues',
+                operations: concurrentOperations
             };
         });
     }
@@ -249,7 +249,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testC001_KeyboardNavigation() {
         return this.executeTest('TEST-C001', 'Keyboard Navigation', async () => {
             await this.browser.initialize();
-            
+
             // Test keyboard navigation
             const keyboardElements = [
                 'input, textarea',
@@ -258,13 +258,13 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 'button[title*="Technical"]',
                 'button[type="submit"]'
             ];
-            
+
             const navigationResults = [];
-            
+
             for (const selector of keyboardElements) {
                 const elementExists = await this.browser.elementExists(selector);
                 const elementAccessible = elementExists; // Simplified check
-                
+
                 navigationResults.push({
                     element: selector,
                     exists: elementExists,
@@ -272,17 +272,17 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     tabIndex: elementAccessible ? 'appropriate' : 'missing'
                 });
             }
-            
+
             const allAccessible = navigationResults.every(r => r.keyboardAccessible);
             const accessibilityScore = navigationResults.filter(r => r.keyboardAccessible).length / navigationResults.length;
-            
+
             return {
                 elementsTestedCount: keyboardElements.length,
                 navigationResults: navigationResults,
                 allKeyboardAccessible: allAccessible,
                 accessibilityScore: accessibilityScore,
-                keyboardNavigationGrade: accessibilityScore >= 0.9 ? 'excellent' : 
-                                        accessibilityScore >= 0.7 ? 'good' : 'needs_improvement'
+                keyboardNavigationGrade: accessibilityScore >= 0.9 ? 'excellent' :
+                    accessibilityScore >= 0.7 ? 'good' : 'needs_improvement'
             };
         });
     }
@@ -290,7 +290,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testC002_ScreenReaderCompatibility() {
         return this.executeTest('TEST-C002', 'Screen Reader Compatibility', async () => {
             await this.browser.initialize();
-            
+
             // Test ARIA labels and semantic elements
             const ariaElements = [
                 'button[aria-label], button[title]',
@@ -299,9 +299,9 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 'h1, h2, h3, h4, h5, h6',
                 '[aria-describedby], [aria-labelledby]'
             ];
-            
+
             const ariaResults = [];
-            
+
             for (const selector of ariaElements) {
                 const elementExists = await this.browser.elementExists(selector);
                 ariaResults.push({
@@ -310,15 +310,15 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     screenReaderFriendly: elementExists
                 });
             }
-            
+
             const semanticScore = ariaResults.filter(r => r.screenReaderFriendly).length / ariaResults.length;
-            
+
             return {
                 ariaElementsChecked: ariaElements.length,
                 ariaResults: ariaResults,
                 semanticScore: semanticScore,
-                screenReaderCompatibility: semanticScore >= 0.8 ? 'excellent' : 
-                                          semanticScore >= 0.6 ? 'good' : 'needs_improvement',
+                screenReaderCompatibility: semanticScore >= 0.8 ? 'excellent' :
+                    semanticScore >= 0.6 ? 'good' : 'needs_improvement',
                 recommendationCompliance: semanticScore >= 0.8
             };
         });
@@ -327,7 +327,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testC003_HighContrastMode() {
         return this.executeTest('TEST-C003', 'High Contrast Mode', async () => {
             await this.browser.initialize();
-            
+
             // Test high contrast readability
             const criticalElements = [
                 'button[title*="Stock"], button[title*="Support"], button[title*="Technical"]',
@@ -335,16 +335,16 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 '.response-container, .json-output, .chat-message',
                 'body, main, .container'
             ];
-            
+
             const contrastResults = [];
-            
+
             for (const selector of criticalElements) {
                 const elementExists = await this.browser.elementExists(selector);
-                
+
                 // Simulate high contrast check (would normally use color analysis)
                 const hasGoodContrast = elementExists; // Simplified assumption
                 const isReadable = elementExists; // Simplified assumption
-                
+
                 contrastResults.push({
                     element: selector,
                     exists: elementExists,
@@ -352,15 +352,15 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     contrastRatio: hasGoodContrast ? '4.5:1+' : 'unknown'
                 });
             }
-            
+
             const readabilityScore = contrastResults.filter(r => r.highContrastReadable).length / contrastResults.length;
-            
+
             return {
                 elementsChecked: criticalElements.length,
                 contrastResults: contrastResults,
                 readabilityScore: readabilityScore,
-                highContrastSupport: readabilityScore >= 0.9 ? 'excellent' : 
-                                   readabilityScore >= 0.7 ? 'acceptable' : 'poor',
+                highContrastSupport: readabilityScore >= 0.9 ? 'excellent' :
+                    readabilityScore >= 0.7 ? 'acceptable' : 'poor',
                 accessibilityCompliant: readabilityScore >= 0.9
             };
         });
@@ -369,28 +369,28 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testC004_FocusManagement() {
         return this.executeTest('TEST-C004', 'Focus Management', async () => {
             await this.browser.initialize();
-            
+
             // Test focus management during interactions
             await this.browser.inputMessage("AAPL");
-            
+
             // Check initial focus
             const initialFocusVisible = await this.browser.elementExists(':focus, .focused, [data-focused="true"]');
-            
+
             // Trigger interaction and check focus management
             await this.browser.clickStockSnapshotButton();
-            
+
             // Wait a moment for focus changes
             await this.browser.sleep(1000);
-            
+
             // Check if focus is properly managed
             const focusDuringProcessing = await this.browser.elementExists(':focus, .focused, [data-focused="true"]');
-            
+
             // Wait for response to complete
             try {
                 await this.browser.waitForResponse(30000);
-                
+
                 const focusAfterResponse = await this.browser.elementExists(':focus, .focused, [data-focused="true"]');
-                
+
                 return {
                     initialFocusVisible: initialFocusVisible,
                     focusDuringProcessing: focusDuringProcessing,
@@ -414,7 +414,7 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
     async testC005_AlternativeTextValidation() {
         return this.executeTest('TEST-C005', 'Alternative Text Validation', async () => {
             await this.browser.initialize();
-            
+
             // Check for images and ensure they have alt text
             const imageElements = [
                 'img',
@@ -423,16 +423,16 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                 'button[title*="Stock"], button[title*="Support"], button[title*="Technical"]', // Icon buttons
                 '.icon, .emoji, [class*="icon"]'
             ];
-            
+
             const altTextResults = [];
-            
+
             for (const selector of imageElements) {
                 const elementExists = await this.browser.elementExists(selector);
-                
+
                 if (elementExists) {
                     // Check for alt text or equivalent
                     const hasAltText = await this.browser.elementExists(`${selector}[alt], ${selector}[aria-label], ${selector}[title]`);
-                    
+
                     altTextResults.push({
                         element: selector,
                         exists: true,
@@ -441,10 +441,10 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
                     });
                 }
             }
-            
-            const altTextScore = altTextResults.length > 0 ? 
+
+            const altTextScore = altTextResults.length > 0 ?
                 altTextResults.filter(r => r.hasAlternativeText).length / altTextResults.length : 1;
-            
+
             return {
                 imageElementsFound: altTextResults.length,
                 altTextResults: altTextResults,
@@ -464,9 +464,9 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-B001', 'Chrome Compatibility Testing', async () => {
             // Note: In actual implementation, this would switch to Chrome browser
             await this.browser.initialize();
-            
+
             const chromeFeatures = await this.testBrowserFeatures('Chrome');
-            
+
             return {
                 browser: 'Chrome',
                 compatibilityResults: chromeFeatures,
@@ -481,9 +481,9 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-B002', 'Firefox Compatibility Testing', async () => {
             // Note: In actual implementation, this would switch to Firefox browser
             await this.browser.initialize();
-            
+
             const firefoxFeatures = await this.testBrowserFeatures('Firefox');
-            
+
             return {
                 browser: 'Firefox',
                 compatibilityResults: firefoxFeatures,
@@ -498,9 +498,9 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-B003', 'Safari/WebKit Compatibility Testing', async () => {
             // Note: In actual implementation, this would switch to WebKit browser
             await this.browser.initialize();
-            
+
             const webkitFeatures = await this.testBrowserFeatures('Safari/WebKit');
-            
+
             return {
                 browser: 'Safari/WebKit',
                 compatibilityResults: webkitFeatures,
@@ -562,11 +562,11 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
             this.testF003_LargeDatasetHandling(),
             this.testF004_ConcurrentUserSimulation()
         ];
-        
+
         const results = await Promise.all(tests);
-        
+
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        
+
         return results;
     }
 
@@ -581,11 +581,11 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
             this.testC004_FocusManagement(),
             this.testC005_AlternativeTextValidation()
         ];
-        
+
         const results = await Promise.all(tests);
-        
+
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        
+
         return results;
     }
 
@@ -598,11 +598,11 @@ class FinalTestCategories extends PlaywrightMCPTestFramework {
             this.testB002_FirefoxCompatibility(),
             this.testB003_SafariWebKitCompatibility()
         ];
-        
+
         const results = await Promise.all(tests);
-        
+
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        
+
         return results;
     }
 }

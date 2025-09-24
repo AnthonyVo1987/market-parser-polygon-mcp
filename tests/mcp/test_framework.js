@@ -46,9 +46,9 @@ class PlaywrightMCPTestFramework {
             contentStructure: {
                 requiredSections: ['KEY TAKEAWAYS', 'DETAILED ANALYSIS', 'DISCLAIMER'],
                 hasStructure: (response) => {
-                    return /KEY\s*TAKEAWAYS/i.test(response) || 
-                           /DETAILED\s*ANALYSIS/i.test(response) || 
-                           /DISCLAIMER/i.test(response);
+                    return /KEY\s*TAKEAWAYS/i.test(response) ||
+                        /DETAILED\s*ANALYSIS/i.test(response) ||
+                        /DISCLAIMER/i.test(response);
                 }
             }
         };
@@ -208,7 +208,7 @@ class PlaywrightMCPTestFramework {
             if (categoryTests.length > 0) {
                 const categoryPassed = categoryTests.filter(t => t.status === 'PASS').length;
                 const categoryTotal = categoryTests.length;
-                
+
                 report += `## ${category.name} (${categoryPassed}/${categoryTotal})\n\n`;
                 categoryTests.forEach(test => {
                     const statusIcon = test.status === 'PASS' ? '✅' : '❌';
@@ -226,10 +226,10 @@ class PlaywrightMCPTestFramework {
         if (this.testResults.length > 0) {
             const successfulTests = this.testResults.filter(t => t.status === 'PASS' && t.duration);
             if (successfulTests.length > 0) {
-                const responseTimes = successfulTests.map(t => t.duration);
-                const minTime = Math.min(...responseTimes);
-                const maxTime = Math.max(...responseTimes);
-                
+                const testDurations = successfulTests.map(t => t.duration);
+                const minTime = Math.min(...testDurations);
+                const maxTime = Math.max(...testDurations);
+
                 report += `## Performance Metrics\n\n`;
                 report += `- Average Response Time: ${(avgDuration / 1000).toFixed(1)} seconds\n`;
                 report += `- Minimum Response Time: ${(minTime / 1000).toFixed(1)} seconds\n`;
@@ -258,7 +258,7 @@ class PlaywrightMCPTestFramework {
         report += `## Success Criteria Assessment\n\n`;
         const priorityPassRate = priorityTests.length > 0 ? (priorityTests.filter(t => t.status === 'PASS').length / priorityTests.length) * 100 : 0;
         const comprehensivePassRate = totalTests > 5 ? ((passedTests - priorityTests.filter(t => t.status === 'PASS').length) / (totalTests - priorityTests.length)) * 100 : 0;
-        
+
         report += `**Priority Tests**: ${priorityPassRate.toFixed(1)}% pass rate (Target: 100%) ${priorityPassRate >= 100 ? '✅' : '❌'}\n`;
         report += `**Comprehensive Tests**: ${comprehensivePassRate.toFixed(1)}% pass rate (Target: 90%) ${comprehensivePassRate >= 90 ? '✅' : '❌'}\n`;
         report += `**Overall System Status**: ${(priorityPassRate >= 100 && comprehensivePassRate >= 90) ? 'HEALTHY ✅' : 'ISSUES DETECTED ❌'}\n\n`;

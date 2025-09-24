@@ -30,24 +30,24 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-T001', 'Snapshot Button Response Time', async () => {
             await this.browser.initialize();
             await this.browser.inputMessage("AAPL");
-            
+
             const startTime = Date.now();
             await this.browser.clickStockSnapshotButton();
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            const responseTime = Date.now() - startTime;
-            
+            const testDuration = Date.now() - startTime;
+
             // Validate basic functionality (any format acceptable)
             const validation = this.validateBasicFunctionality(response, 'AAPL', 'ticker_snapshot');
-            
+
             if (!validation.success) {
                 throw new Error(`Basic functionality validation failed: ${validation.errors.join(', ')}`);
             }
-            
-            return { 
-                response, 
+
+            return {
+                response,
                 validation,
                 hasStructuredContent: validation.hasStructuredContent,
-                responseFormat: validation.responseFormat 
+                responseFormat: validation.responseFormat
             };
         });
     }
@@ -56,24 +56,24 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-T002', 'Support & Resistance Button Response Time', async () => {
             await this.browser.initialize();
             await this.browser.inputMessage("TSLA");
-            
+
             const startTime = Date.now();
             await this.browser.clickSupportResistanceButton();
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            const responseTime = Date.now() - startTime;
-            
+            const testDuration = Date.now() - startTime;
+
             // Validate basic functionality (any format acceptable)
             const validation = this.validateBasicFunctionality(response, 'TSLA', 'support_resistance');
-            
+
             if (!validation.success) {
                 throw new Error(`Basic functionality validation failed: ${validation.errors.join(', ')}`);
             }
-            
-            return { 
-                response, 
+
+            return {
+                response,
                 validation,
                 hasStructuredContent: validation.hasStructuredContent,
-                responseFormat: validation.responseFormat 
+                responseFormat: validation.responseFormat
             };
         });
     }
@@ -82,24 +82,24 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-T003', 'Technical Analysis Button Response Time', async () => {
             await this.browser.initialize();
             await this.browser.inputMessage("MSFT");
-            
+
             const startTime = Date.now();
             await this.browser.clickTechnicalAnalysisButton();
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            const responseTime = Date.now() - startTime;
-            
+            const testDuration = Date.now() - startTime;
+
             // Validate basic functionality (any format acceptable)
             const validation = this.validateBasicFunctionality(response, 'MSFT', 'technical_analysis');
-            
+
             if (!validation.success) {
                 throw new Error(`Basic functionality validation failed: ${validation.errors.join(', ')}`);
             }
-            
-            return { 
-                response, 
+
+            return {
+                response,
                 validation,
                 hasStructuredContent: validation.hasStructuredContent,
-                responseFormat: validation.responseFormat 
+                responseFormat: validation.responseFormat
             };
         });
     }
@@ -108,18 +108,18 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-T004', 'Button State During Processing', async () => {
             await this.browser.initialize();
             await this.browser.inputMessage("AAPL");
-            
+
             // Click button and immediately check state
             await this.browser.clickStockSnapshotButton();
-            
+
             // Check if button shows processing state
             const isDisabled = await this.browser.elementExists('button[disabled]');
             const hasLoadingText = await this.browser.elementExists('*[text*="Loading"], *[text*="Processing"]');
-            
+
             // Wait for response to complete
             await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
-            return { 
+
+            return {
                 buttonDisabledDuringProcessing: isDisabled,
                 hasLoadingIndicator: hasLoadingText,
                 processingStateDetected: isDisabled || hasLoadingText
@@ -131,22 +131,22 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-T005', 'Multiple Button Clicks Sequential', async () => {
             await this.browser.initialize();
             await this.browser.inputMessage("AAPL");
-            
+
             // First click - Snapshot
             await this.browser.clickStockSnapshotButton();
             const response1 = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             // Wait a moment between requests
             await this.browser.sleep(2000);
-            
+
             // Second click - Support & Resistance
             await this.browser.clickSupportResistanceButton();
             const response2 = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             // Validate basic functionality for both responses
             const validation1 = this.validateBasicFunctionality(response1, 'AAPL', 'ticker_snapshot');
             const validation2 = this.validateBasicFunctionality(response2, 'AAPL', 'support_resistance');
-            
+
             return {
                 firstResponse: { data: response1, validation: validation1 },
                 secondResponse: { data: response2, validation: validation2 },
@@ -158,15 +158,15 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
     async testT006_ButtonClickWithoutInput() {
         return this.executeTest('TEST-T006', 'Button Click Without Input', async () => {
             await this.browser.initialize();
-            
+
             // Clear input and click button
             await this.browser.clearChatInput();
             await this.browser.clickStockSnapshotButton();
-            
+
             try {
                 const response = await this.browser.waitForResponse(30000); // Shorter timeout for error case
-                return { 
-                    hasResponse: true, 
+                return {
+                    hasResponse: true,
                     response: response,
                     handledGracefully: true
                 };
@@ -187,13 +187,13 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.initialize();
             await this.browser.inputMessage("INVALID123");
             await this.browser.clickStockSnapshotButton();
-            
+
             try {
                 const response = await this.browser.waitForResponse(60000);
-                
+
                 // Check if response contains error information
                 const hasErrorField = response.includes('"error"') || response.includes('"message"');
-                
+
                 return {
                     hasResponse: true,
                     response: response,
@@ -215,17 +215,17 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
     async testT008_ButtonVisualFeedback() {
         return this.executeTest('TEST-T008', 'Button Visual Feedback', async () => {
             await this.browser.initialize();
-            
+
             // Test button states
             const buttons = ['snapshot-button', 'support-button', 'technical-button'];
             const results = {};
-            
+
             for (const buttonId of buttons) {
                 // Check if button exists and is clickable
                 const exists = await this.browser.elementExists(`button[id*="${buttonId}"]`);
                 results[buttonId] = { exists, interactive: exists };
             }
-            
+
             return {
                 buttonStates: results,
                 allButtonsFound: Object.values(results).every(r => r.exists),
@@ -243,13 +243,13 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.initialize();
             await this.browser.inputMessage("What's the current price of Apple stock?");
             await this.browser.sendMessage();
-            
+
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             // Check if response relates to AAPL
-            const mentionsApple = response.toLowerCase().includes('aapl') || 
-                                 response.toLowerCase().includes('apple');
-            
+            const mentionsApple = response.toLowerCase().includes('aapl') ||
+                response.toLowerCase().includes('apple');
+
             return {
                 response: response,
                 relatedToQuery: mentionsApple,
@@ -263,14 +263,14 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.initialize();
             await this.browser.inputMessage("AAPL MSFT GOOGL");
             await this.browser.clickStockSnapshotButton();
-            
+
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             // Check if response includes data for multiple tickers
             const includesAAPL = response.includes('AAPL');
             const includesMSFT = response.includes('MSFT');
             const includesGOOGL = response.includes('GOOGL');
-            
+
             return {
                 response: response,
                 includesAAPL,
@@ -286,14 +286,14 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.initialize();
             await this.browser.inputMessage("aapl"); // lowercase
             await this.browser.clickStockSnapshotButton();
-            
+
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             try {
                 const jsonData = this.parseJSONFromResponse(response);
-                const normalizedToUppercase = jsonData.metadata && 
+                const normalizedToUppercase = jsonData.metadata &&
                     jsonData.metadata.ticker_symbol === 'AAPL';
-                
+
                 return {
                     response: response,
                     jsonData: jsonData,
@@ -314,11 +314,11 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-M004', 'Special Characters in Input', async () => {
             await this.browser.initialize();
             await this.browser.inputMessage("AAPL; DROP TABLE;");
-            
+
             try {
                 await this.browser.clickStockSnapshotButton();
                 const response = await this.browser.waitForResponse(60000);
-                
+
                 return {
                     response: response,
                     systemStable: true,
@@ -342,14 +342,14 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-M005', 'Empty Message Handling', async () => {
             await this.browser.initialize();
             await this.browser.clearChatInput();
-            
+
             try {
                 await this.browser.sendMessage();
                 await this.browser.sleep(5000);
-                
+
                 const hasErrorMessage = await this.browser.elementExists('.error-message, .warning');
                 const pageTitle = await this.browser.getPageTitle();
-                
+
                 return {
                     systemStable: pageTitle.includes('Market Parser'),
                     errorMessageShown: hasErrorMessage,
@@ -367,16 +367,16 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
     async testM006_LongMessageInput() {
         return this.executeTest('TEST-M006', 'Long Message Input', async () => {
             await this.browser.initialize();
-            
+
             // Create 500+ character message
             const longMessage = "Please analyze the following stocks with comprehensive technical analysis including moving averages, RSI, MACD, Bollinger Bands, and support resistance levels for AAPL, MSFT, GOOGL, AMZN, TSLA, META, NFLX, NVDA, AMD, INTC considering market conditions and recent earnings reports with detailed explanations of each indicator and how they interact with each other in the current market environment and what this means for short-term and long-term investment strategies.";
-            
+
             await this.browser.inputMessage(longMessage);
-            
+
             try {
                 await this.browser.sendMessage();
                 const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-                
+
                 return {
                     messageLength: longMessage.length,
                     response: response.substring(0, 500) + '...', // Truncate for report
@@ -404,10 +404,10 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.inputMessage("AAPL");
             await this.browser.clickStockSnapshotButton();
             await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             // Look for copy button and click it
             const copyButtonExists = await this.browser.elementExists('button[title*="Copy"], .copy-button, button[aria-label*="copy"]');
-            
+
             if (copyButtonExists) {
                 // Simulate copy functionality test
                 return {
@@ -431,14 +431,14 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.inputMessage("AAPL");
             await this.browser.clickStockSnapshotButton();
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             try {
                 const jsonData = this.parseJSONFromResponse(response);
                 const jsonString = JSON.stringify(jsonData, null, 2);
-                
+
                 // Validate that JSON can be parsed again
                 const reparsed = JSON.parse(jsonString);
-                
+
                 return {
                     originalResponse: response,
                     parsedSuccessfully: true,
@@ -461,23 +461,23 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         return this.executeTest('TEST-E003', 'Multiple Analysis Export', async () => {
             await this.browser.initialize();
             const results = {};
-            
+
             // Test all three analysis types
             const analyses = [
                 { button: 'clickStockSnapshotButton', schema: 'snapshot', name: 'snapshot' },
                 { button: 'clickSupportResistanceButton', schema: 'supportResistance', name: 'support' },
                 { button: 'clickTechnicalAnalysisButton', schema: 'technical', name: 'technical' }
             ];
-            
+
             for (const analysis of analyses) {
                 await this.browser.inputMessage("AAPL");
                 await this.browser[analysis.button]();
-                
+
                 try {
                     const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
                     const jsonData = this.parseJSONFromResponse(response);
                     const validation = this.validateSchema(jsonData, analysis.schema);
-                    
+
                     results[analysis.name] = {
                         successful: validation.success,
                         exportable: validation.success,
@@ -490,12 +490,12 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
                         errors: [error.message]
                     };
                 }
-                
+
                 await this.browser.sleep(2000); // Wait between requests
             }
-            
+
             const allExportable = Object.values(results).every(r => r.exportable);
-            
+
             return { results, allExportable };
         });
     }
@@ -505,9 +505,9 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.initialize();
             await this.browser.inputMessage("NVDA, SPY, QQQ, IWM, AAPL, MSFT, GOOGL");
             await this.browser.clickStockSnapshotButton();
-            
+
             const response = await this.browser.waitForResponse(this.timeouts.apiResponse);
-            
+
             return {
                 responseSize: response.length,
                 isLargeResponse: response.length > 5000,
@@ -522,14 +522,14 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             await this.browser.initialize();
             await this.browser.inputMessage("INVALID_TICKER");
             await this.browser.clickStockSnapshotButton();
-            
+
             try {
                 const response = await this.browser.waitForResponse(60000);
-                
+
                 // Check if error response is still exportable
                 const isJSON = response.includes('{') && response.includes('}');
                 const containsError = response.includes('error') || response.includes('Error');
-                
+
                 return {
                     response: response.substring(0, 500) + '...',
                     isStructured: isJSON,
@@ -553,7 +553,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
         try {
             const jsonStart = responseText.indexOf('{');
             const jsonEnd = responseText.lastIndexOf('}') + 1;
-            
+
             if (jsonStart !== -1 && jsonEnd > jsonStart) {
                 const jsonString = responseText.substring(jsonStart, jsonEnd);
                 return JSON.parse(jsonString);
@@ -579,7 +579,7 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             this.testT006_ButtonClickWithoutInput(),
             this.testT007_ButtonClickWithInvalidTicker(),
             this.testT008_ButtonVisualFeedback(),
-            
+
             // Message Input Variations
             this.testM001_NaturalLanguageQueryProcessing(),
             this.testM002_MultipleTickerInputParsing(),
@@ -588,11 +588,11 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             this.testM005_EmptyMessageHandling(),
             this.testM006_LongMessageInput()
         ];
-        
+
         const results = await Promise.all(tests);
-        
+
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        
+
         return results;
     }
 
@@ -607,11 +607,11 @@ class ComprehensiveTestSuite extends PlaywrightMCPTestFramework {
             this.testE004_LargeResponseExport(),
             this.testE005_ExportErrorHandling()
         ];
-        
+
         const results = await Promise.all(tests);
-        
+
         const passedTests = results.filter(r => r.status === 'PASS').length;
-        
+
         return results;
     }
 }

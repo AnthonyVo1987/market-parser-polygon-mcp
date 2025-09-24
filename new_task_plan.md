@@ -1,9 +1,9 @@
-Here's the exact prompt for Phase 2 implementation:
+Here's the exact prompt for the comprehensive review task:
 
-## **AI Agent Assignment Prompt for Phase 2 Implementation**
+## **AI Agent Assignment Prompt for Comprehensive Review and Audit**
 
 ```
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!! ��
+## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!!
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
@@ -23,7 +23,7 @@ MANDATORY TOOL USAGE PATTERNS:
 4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
 5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
 6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
-7. �� REPEAT any tool as needed throughout the process
+7. REPEAT any tool as needed throughout the process
 8. 🔴 NEVER stop using tools - continue using them until task completion
 
 TOOL OVERLAP RESOLUTION:
@@ -50,21 +50,14 @@ SUCCESS CRITERIA:
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## Task Details: AI Agent will read docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md, and fully perform Implementation Phase 2: GUI Response Time Removal
+## Task Details: AI Agent will read docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md then perform the new tasks below:
 
 **INSTRUCTIONS:**
 1. Read the implementation plan document: `docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md`
-2. Locate Implementation Phase 2: GUI Response Time Removal
-3. Follow ALL implementation steps exactly as specified in the plan
-4. Complete all tasks in Phase 2:
-   - Task 2.1: Remove Response Time from Message Formatting
-   - Task 2.2: Remove Response Time from ChatInterface Component
-   - Task 2.3: Remove Response Time from ChatMessage Component
-   - Task 2.4: Update Type Definitions
-   - Task 2.5: Update CSS Styling
-5. Perform all validation and testing steps
-6. Document results and verify success criteria
-7. Use mandatory toolkit throughout entire process
+2. Perform Comprehensive Systematic granular Code\Doc Audit & Code\Review Review to verify ALL Tasks have been correctly implemented from Phases 1 - Phase 5
+3. Fix any tasks that may not have been correctly implemented
+4. Mark off correctly completed tasks with green checks in docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md
+5. Use mandatory toolkit throughout entire process
 ```
 
-This is the exact prompt you can use to assign an AI Agent to perform Phase 2 implementation.
+This is the exact prompt you can use to assign an AI Agent to perform the comprehensive review and audit task.
