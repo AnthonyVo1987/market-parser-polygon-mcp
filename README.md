@@ -68,8 +68,11 @@ documentation, see `tests/playwright/test_prompts.md`
 ### 📊 **Enhanced Performance**
 
 - **Performance monitoring** with response time and token usage logging
+- **Real-time response timing** with FastAPI middleware for precise performance measurement
+- **Token counting** with OpenAI response metadata extraction for cost tracking
+- **CLI performance metrics** display with Rich console formatting
 - **Optimized user workflow** reduced from 3 steps to 1 step
-- **Real-time market data** integration with Polygon.io MCP server v4.1.0
+- **Real-time market data** integration with Polygon.io MCP server v0.4.1
 - **Cross-platform compatibility** with CLI and web interfaces
 - **GPT-5 Model Optimization** - Proper model specification prevents rate limiting errors
 - **Quick Response System** - All AI agents prioritize speed with minimal tool calls
@@ -223,8 +226,17 @@ DETAILED ANALYSIS
 uv run src/backend/main.py
 
 > Tesla stock analysis
+✅ Query processed successfully!
+Agent Response:
+
 KEY TAKEAWAYS
 • TSLA showing bullish momentum...
+
+📊 Performance Metrics:
+   🔢  Tokens Used: 1,247 (Input: 156, Output: 1,091)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
 ```
 
 ## Performance Optimizations
@@ -270,9 +282,11 @@ maintaining visual quality:
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
 - **AI Models**: GPT-5 Nano (200K TPM) and GPT-5 Mini (500K TPM) with proper rate limiting
+- **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
 - **Testing**: Playwright E2E test suite with standardized quick response prompts
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 - **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
+- **Report Management**: GUI Copy/Export buttons replace CLI report saving functionality
 
 ## Development
 

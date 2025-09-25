@@ -5,6 +5,41 @@ All notable changes to the Market Parser application are documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-01-09
+
+### 🚀 Major Features
+
+#### Performance Monitoring & Response Timing
+
+- **NEW**: FastAPI middleware for automated response timing measurement
+- **NEW**: OpenAI response metadata extraction for token counting
+- **NEW**: CLI performance metrics display with Rich console formatting
+- **ENHANCED**: Real-time performance monitoring for both CLI and GUI
+- **IMPROVED**: Cost tracking with detailed token usage breakdown
+
+#### Report Management Modernization
+
+- **REMOVED**: CLI backend report saving functionality (superseded by GUI)
+- **ENHANCED**: GUI Copy/Export buttons now handle all report management
+- **SIMPLIFIED**: Agent tools configuration without report saving overhead
+- **IMPROVED**: Streamlined user experience with modern GUI controls
+
+### 🔧 Technical Improvements
+
+#### Backend Performance Enhancements
+
+- **ADDED**: `time.perf_counter()` middleware for precise timing measurement
+- **ENHANCED**: ResponseMetadata model with processing_time and token_count fields
+- **IMPROVED**: Token extraction from OpenAI response metadata
+- **OPTIMIZED**: Agent configuration without unnecessary report saving tools
+
+#### CLI User Experience
+
+- **ENHANCED**: Rich console display with performance metrics footer
+- **NEW**: Token usage display with input/output breakdown
+- **IMPROVED**: Model information display in CLI responses
+- **STREAMLINED**: Removed report saving prompts and functionality
+
 ## [2.0.0] - 2025-01-09
 
 ### 🚀 Major Features

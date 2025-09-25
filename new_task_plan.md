@@ -47,17 +47,11 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Implement Response Timing & Token Counting based on your Context7 & OpenAI Cookbook research with the requested methods
+## Task 1. Research using Context7 Tools & openAI Cookbook tools to Investigate and scope out consoldating ALL Prompts to be in a single file to be easier to edit and change
 
-- FastAPI Middleware, OpenAI Response Metadata , CLI Display (Footer Approach)
-- This should ensure that the GUI remains for the most part untouched because GUI will inherit all the new metrics from CLI code and responses:
-- I.E.  Performance Metrics:
-        Response Time: 1.234s
-        Tokens Used: 1,247 (Input: 156, Output: 1,091)
-        Model: gpt-5-nano
-
-## Task 2. Currently the CLI Backend has a tool to save reports and would ask the user if they want to save reports in .md file, but this feature has already been superceded with all the Copy\Export buttons from the GUI, so just retire\remove it Completely. Update all docs to reflect the new app behavior
-
-## Task 3. Comprehensive Doc updates to reflect the latest changes and functionality
-
-## Task 4. Use Serena Tools to update memory
+- We will optimize our prompts frequently, BUT I can see we have a very convoluted prompt files: src/backend/main.py, src/backend/optimized_agent_instructions.py, src/backend/direct_prompts.py
+- Just right now, we fixed a bug because we had to make a fix in the correct prompt file, but this architecture can cause alot of issues in the future
+- We need to keep the core prompt messaging the same, but it makes no sense to have THREE different files just to handle prompts.
+- The most optimal outcome is that to edit prompts, we ONLY have to edit the CLI backend prompt\file, which the GUI will then inherit
+- So consolidate and come up with a way to re-architecture our prompt system because right now it is unmanagable
+- NO NEW CODE YET - THIS IS JUST RESEARCHING AND SCOPING TASK(S)

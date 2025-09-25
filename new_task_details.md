@@ -49,7 +49,7 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 NO CODING IS REQUESTED FOR ANY OF THESE STRICTLY RESEARCH AND DOCUMENTATION TASKS
 
-## Task 1. Review an older plan to improve CLI performance 'docs/implementation_plans/cli_performance_optimization_plan.md' that was generated a while ago on an older version of the app that did NOT have all the extensive enhancements and performance optmizations we have been implementing
+## Task 1. Review an older plan to improve CLI performance from 'docs/implementation_plans/cli_performance_optimization_plan.md' that was generated a while ago on an older version of the app that did NOT have all the extensive enhancements and performance optmizations we have been implementing
 
 ## Task 2. Based on your review of the old plan, analyze the entire codebase in order to now update\correct\revise docs/implementation_plans/cli_performance_optimization_plan.md to reflect the latest changes in the app
 

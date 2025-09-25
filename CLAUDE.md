@@ -12,39 +12,19 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-fix: Align direct_prompts.py system prompts with core messaging elements
+fix: CLI footer data display and prompt optimization improvements
 
-## Prompt Consistency Enhancement
-- Added core messaging elements to all system prompts in direct_prompts.py
-- Ensured consistency with main.py and optimized_agent_instructions.py
-- Aligned all prompt files with GPT-5 optimization standards
+- Fix CLI footer data display by passing full result object to print_response()
+  instead of just response text, enabling performance metrics display
+- Add EOFError handling for piped input to prevent infinite loops
+- Update direct prompts with "Quick Response Needed with minimal tool calls" prefix
+- Add low verbosity instructions to all system prompts for concise responses
+- Update optimized agent instructions with core messaging elements
+- Fix unused variable warning in CLI response handling
+- Ensure both CLI and GUI inherit improved behavior with proper footer data
 
-## Core Messaging Elements Added
-- Real-time tools access: "TOOLS: Polygon.io MCP server for live market data"
-- Quick responses: "RESPOND: Quickly with minimal tool calls for faster analysis"
-- Consistent structure across all analysis types (SNAPSHOT, SUPPORT_RESISTANCE, TECHNICAL, GENERAL)
-- Maintained existing low verbosity and structured output format
-
-## Analysis Types Updated
-- SNAPSHOT: Market snapshots with real-time data access
-- SUPPORT_RESISTANCE: Technical analysis with real-time tools
-- TECHNICAL: Comprehensive analysis with minimal tool calls
-- GENERAL: Financial analysis with optimized response speed
-
-## Integration Verification
-- All three prompt files now consistently include core messaging elements
-- Maintains GPT-5 optimization with 60% verbosity reduction
-- Preserves structured output format (KEY TAKEAWAYS → DETAILED ANALYSIS)
-- Ensures quick responses with minimal tool calls across all analysis types
-
-## Files Modified
-- src/backend/direct_prompts.py: Enhanced system prompts with core messaging elements
-
-## Impact
-- Consistent AI behavior across all prompt systems
-- Improved response speed with minimal tool calls
-- Enhanced real-time data access awareness
-- Maintained GPT-5 optimization standards
+Resolves footer data not showing in GUI chat exports and verbosity issues.
+Improves response speed with minimal tool calls and concise output format.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## STANDARDIZED TEST PROMPTS
