@@ -1,26 +1,4 @@
-# Phase 5 Implementation Prompt
-
-Here's the exact prompt for Phase 5 implementation:
-
-## **AI Agent Assignment Prompt for Phase 5 Implementation**
-
-```text
-## Task Details: AI Agent will read docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md, and fully perform Implementation Phase 5: Backend API Updates
-
-**INSTRUCTIONS:**
-1. Read the implementation plan document: `docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md`
-2. Locate Implementation Phase 5: Backend API Updates
-3. Follow ALL implementation steps exactly as specified in the plan
-4. Complete all tasks in Phase 5:
-   - Task 5.1: Update Backend API Models
-   - Task 5.2: Update Chat Endpoint
-   - Task 5.3: Update Logger Configuration
-   - Task 5.4: Update API Documentation
-5. Perform all validation and testing steps
-6. Document results and verify success criteria
-7. MUST Use mandatory toolkit throughout entire process following MANDATORY TOOL USAGE PATTERNS below:
-
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion!!!!
+# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
@@ -34,14 +12,14 @@ TOOL USAGE REQUIREMENTS:
 
 MANDATORY TOOL USAGE PATTERNS:
 
-- START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-- Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
-- Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-- Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
-- Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-- Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
-- REPEAT any tool as needed throughout the process
-- 🔴 NEVER stop using tools - continue using them until task completion
+1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
+3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
+5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
+7. REPEAT any tool as needed throughout the process
+8. 🔴 NEVER stop using tools - continue using them until task completion
 
 TOOL OVERLAP RESOLUTION:
 
@@ -66,6 +44,17 @@ SUCCESS CRITERIA:
 - No rigid sequencing - only logical tool usage based on task requirements
 
 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
-```text
 
-This is the exact prompt you can use to assign an AI Agent to perform Phase 5 implementation.
+## New Task Details
+
+NO CODING IS REQUESTED FOR ANY OF THESE STRICTLY RESEARCH AND DOCUMENTATION TASKS
+
+## Task 1. Review an older plan to improve CLI performance 'docs/implementation_plans/cli_performance_optimization_plan.md' that was generated a while ago on an older version of the app that did NOT have all the extensive enhancements and performance optmizations we have been implementing
+
+## Task 2. Based on your review of the old plan, analyze the entire codebase in order to now update\correct\revise docs/implementation_plans/cli_performance_optimization_plan.md to reflect the latest changes in the app
+
+## Task 3. Perform an in depth code audit and review for any potential performance optimizations in the CLI backend path to reduce AI response latency and performance
+
+## Task 4. Update 'docs/implementation_plans/cli_performance_optimization_plan.md' with the new CLI performance optimization findings
+
+## Task 5. Use Serena Tools to update Memories
