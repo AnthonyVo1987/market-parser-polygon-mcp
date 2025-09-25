@@ -55,3 +55,5 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 - The most optimal outcome is that to edit prompts, we ONLY have to edit the CLI backend prompt\file, which the GUI will then inherit
 - So consolidate and come up with a way to re-architecture our prompt system because right now it is unmanagable
 - NO NEW CODE YET - THIS IS JUST RESEARCHING AND SCOPING TASK(S)
+
+## Task 2. Based on your research, generate a detailed granular TODO Task Checklist Implementation plan for an AI Agent to implement.  DO NOT CREATE ANY DOCS YET SO USER CAN FIRST REVIEW THE PLAN
