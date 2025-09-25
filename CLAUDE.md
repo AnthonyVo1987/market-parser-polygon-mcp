@@ -362,18 +362,20 @@ decisions. Use for informational purposes only.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-docs: Create comprehensive OpenAI GPT-5 prompting guide
+feat: Standardize all AI prompts with new DATA FIRST output format
 
-- Add comprehensive OpenAI GPT-5 prompting guide based on extensive research
-- Include findings from OpenAI Cookbook, Context7 libraries, and web research
-- Document advanced optimization techniques: P.C.A.T.R. framework, router nudge phrases, XML structure
-- Add financial analysis specific prompting techniques and market data patterns
-- Include performance optimization strategies and prompt coding style principles
-- Analyze current implementation with strengths and optimization opportunities
-- Provide practical implementation guidelines and phase-based rollout plan
-- Create reference document for future prompt development and optimization
+- Implement standardized output format across all AnalysisIntent prompts
+- Add "A. DATA FIRST" section with bullet point format and 2 decimal points max
+- Add "B. DETAILED ANALYSIS" section with max 3 key takeaways/insights
+- Update SNAPSHOT prompt to focus on STOCK/OPTIONS snapshots specifically
+- Update TECHNICAL prompt to include only RSI-14, MACD, EMA 20/50/200, SMA 20/50/200
+- Remove redundant analysis descriptions and focus on data-driven responses
+- Convert JSON response attributes to user-friendly terms
+- Maintain quick response optimization and minimal tool call requirements
+- Preserve real-time data access and current date/time context functionality
+- Update main.py get_enhanced_agent_instructions() with new standardized format
 
-Enhances prompt engineering capabilities with research-based best practices and implementation guidance.
+Improves response consistency and data presentation across all analysis types.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## License

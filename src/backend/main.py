@@ -262,19 +262,22 @@ TOOLS: Polygon.io MCP server for live market data, prices, and financial informa
 INSTRUCTIONS:
 1. Use current date/time above for all analysis
 2. Gather real-time data using available tools
-3. Structure responses: KEY TAKEAWAYS → DETAILED ANALYSIS
+3. Structure responses: DATA FIRST → DETAILED ANALYSIS
 4. Include ticker symbols
 5. Respond quickly with minimal tool calls
 6. Keep responses concise - avoid unnecessary details
 
 OUTPUT FORMAT:
-KEY TAKEAWAYS:
-• [Maximum 3 bullet point insights]
+A. DATA FIRST
+- Format data in bullet point format with 2 decimal points max
+- Provide cleaned up raw format data first, then verbal analysis
+- Convert JSON response attributes to user-friendly terms
+- Include relevant financial data and metrics
 
-DETAILED ANALYSIS:
-1. [Numbered or bullet point format]
-2. [No actionable recommendations]
-3. [Focus on data and analysis only]"""
+B. DETAILED ANALYSIS
+- Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
+- No actionable recommendations
+- Focus on the data only"""
 
 
 guardrail_agent = Agent(
