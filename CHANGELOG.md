@@ -161,9 +161,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Updated Dependencies
 
-- **UPDATED**: Polygon MCP server to v4.1.0
+- **UPDATED**: Polygon MCP server to v0.4.1
 - **ENHANCED**: OpenAI API integration
-- **IMPROVED**: Pydantic AI Agent Framework usage
+- **IMPROVED**: OpenAI Agents SDK v0.2.9 integration
 - **OPTIMIZED**: Configuration management
 
 #### New Dependencies

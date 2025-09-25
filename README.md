@@ -2,7 +2,7 @@
 
 A Python CLI and React web application for natural language financial
 queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI
-GPT-5 models via the Pydantic AI Agent Framework. Features intelligent
+GPT-5 models via the OpenAI Agents SDK. Features intelligent
 sentiment analysis, real-time financial data, cross-platform interfaces,
 optimized AI prompts with direct analysis buttons, and **enhanced performance
 with GPT-5 model-specific rate limiting and quick response optimization** for
@@ -267,7 +267,7 @@ maintaining visual quality:
 
 ## Architecture
 
-- **Backend**: FastAPI with OpenAI Agents SDK and Polygon.io MCP integration v4.1.0
+- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
 - **AI Models**: GPT-5 Nano (200K TPM) and GPT-5 Mini (500K TPM) with proper rate limiting
 - **Testing**: Playwright E2E test suite with standardized quick response prompts

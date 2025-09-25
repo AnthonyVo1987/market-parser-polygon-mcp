@@ -2,14 +2,14 @@
 
 ## Project Description
 
-Market Parser is a Python CLI and React web application for natural language financial queries using the Polygon.io MCP server and OpenAI GPT-5 models via the Pydantic AI Agent Framework. Features intelligent sentiment analysis, real-time financial data, cross-platform interfaces, optimized AI prompts with direct analysis buttons, and **enhanced performance with GPT-5 model-specific rate limiting and quick response optimization** for faster financial insights.
+Market Parser is a Python CLI and React web application for natural language financial queries using the Polygon.io MCP server and OpenAI GPT-5 models via the OpenAI Agents SDK v0.2.9. Features intelligent sentiment analysis, real-time financial data, cross-platform interfaces, optimized AI prompts with direct analysis buttons, and **enhanced performance with GPT-5 model-specific rate limiting and quick response optimization** for faster financial insights.
 
 ## Current Architecture
 
-- **Backend**: FastAPI with Python, OpenAI Agents SDK, Polygon MCP server v4.1.0 integration
+- **Backend**: FastAPI with Python, OpenAI Agents SDK v0.2.9, Polygon MCP server v0.4.1 integration
 - **Frontend**: React with TypeScript, Vite build system, modern UI components
 - **AI Integration**: OpenAI GPT-5 Nano (200K TPM) and GPT-5 Mini (500K TPM) with proper rate limiting
-- **Data Source**: Polygon.io MCP server v4.1.0 for enhanced real-time financial data
+- **Data Source**: Polygon.io MCP server v0.4.1 for enhanced real-time financial data
 - **Database**: SQLite for session management and caching
 - **Performance**: Quick response optimization with 20-40% faster response times
 
@@ -80,8 +80,8 @@ Market Parser is a Python CLI and React web application for natural language fin
 
 - **Backend**: Python 3.11+, FastAPI, Pydantic, OpenAI Agents SDK
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
-- **AI**: OpenAI GPT-5 Nano/Mini, Pydantic AI Agent Framework
-- **Data**: Polygon.io MCP server v4.1.0, SQLite
+- **AI**: OpenAI GPT-5 Nano/Mini, OpenAI Agents SDK v0.2.9
+- **Data**: Polygon.io MCP server v0.4.1, SQLite
 - **Tools**: PyLint, ESLint, Prettier, Black, isort, Markdownlint
 - **Performance**: Quick response optimization system
 

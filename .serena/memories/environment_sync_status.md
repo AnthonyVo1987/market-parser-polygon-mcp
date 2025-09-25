@@ -8,7 +8,7 @@
 ## Development Environment
 ### Backend Environment
 - **Python Version**: 3.11+
-- **Dependencies**: FastAPI, Pydantic, OpenAI Agents SDK, Polygon MCP
+- **Dependencies**: FastAPI, Pydantic, OpenAI Agents SDK v0.2.9, Polygon MCP v0.4.1
 - **Linting Tools**: PyLint, Black, isort
 - **Status**: ✅ Fully configured and optimized
 - **Issues Resolved**: All import errors, syntax issues, and type warnings

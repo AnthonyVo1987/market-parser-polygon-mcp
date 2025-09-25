@@ -47,16 +47,16 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-1. Use OpenAI Cookbook Doc Tools to fetch and research the "OpenAI GPT-5 Prompting Guide" for some tasks related to prompts optmizations for our project
+Task 1. Use OpenAI Cookbook Doc Tools to fetch and research the "OpenAI GPT-5 Prompting Guide" for some tasks related to prompts optmizations for our project
 
-2. Based on OpenAI GPT-5 Prompting Guide" and Context7 Research, update and optimize ALL of our prompts using the techniques and strategies from the prompting guide with some requirments & adjustments:
+Task 2. Based on OpenAI GPT-5 Prompting Guide" and Context7 Research, update and optimize ALL of our prompts using the techniques and strategies from the prompting guide with some requirments & adjustments:
 
 - Enforce LOW Verbosity for all responses
-- Ensure that the existing core goals of prompts do not get accidentally removed as part of the optmizations, such as making sure to keep business critical logic such: Using accurate date and time, quick responses with minimal tool calls, ensuring AI Agent knows it has all tools for real-time data etc.
+- Ensure that the existing core goals of prompts do not get accidentally removed as part of the optimizations, such as making sure to keep business critical logic such: Using accurate date and time, quick responses with minimal tool calls, ensuring AI Agent knows it has all tools for real-time data etc.
 - The core goals of the prompts may be optimized better, BUT the core messaging should still be the same for keep the same functionality
 
-3. Update project to use latest OpenAI Agents SDK version
+Task 3. Update project to use latest OpenAI Agents SDK version
 
-4. Search for ALL docs and Fix and update ALL docs to reflect OpenAI Agents SDK version and remove the incorrect Pydantic AI statements since Pydantic AI is NOT part of our app's stack at all
+Task 4. Search for ALL docs and Fix and update ALL docs to reflect OpenAI Agents SDK version and remove the incorrect Pydantic AI statements since Pydantic AI is NOT part of our app's stack at all
 
-5. Update Serena memories with the latest enhancements to the Prompt Optimizations
+Task 5. Update Serena memories with the latest enhancements to the Prompt Optimizations

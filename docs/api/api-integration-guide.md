@@ -33,8 +33,8 @@ graph TB
     end
     
     subgraph "Backend Services"
-        AI[Pydantic AI Agent]
-        PG[Polygon.io MCP v4.1.0]
+        AI[OpenAI Agents SDK]
+        PG[Polygon.io MCP v0.4.1]
         OA[OpenAI GPT-5 Models]
         RL[Rate Limiting System]
     end
@@ -118,7 +118,7 @@ async def process_chat(request: ChatRequest):
     if request.source == "button" and not request.ticker:
         raise HTTPException(400, "Ticker required for button analysis")
     
-    # 2. Process through Pydantic AI Agent
+    # 2. Process through OpenAI Agents SDK
     result = await process_financial_query(
         request.message, 
         session, 
@@ -956,4 +956,4 @@ This integration guide provides a comprehensive foundation for implementing clea
 - **Maintainability**: Consistent patterns, comprehensive testing, and clear documentation
 - **Scalability**: Modular design that can grow with your application needs
 
-The API contracts are designed to work seamlessly with your existing Pydantic AI Agent Framework while providing the flexibility needed for future enhancements and optimizations.
+The API contracts are designed to work seamlessly with your existing OpenAI Agents SDK while providing the flexibility needed for future enhancements and optimizations.
