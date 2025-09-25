@@ -12,50 +12,39 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: GPT-5 prompt optimization, OpenAI Agents SDK v0.2.9 update, and comprehensive documentation corrections
+fix: Align direct_prompts.py system prompts with core messaging elements
 
-## GPT-5 Prompt Optimization
-- Applied GPT-5 optimization techniques from OpenAI Cookbook
-- Achieved 60% reduction in prompt verbosity while preserving core functionality
-- Optimized all system prompts for faster response times (20-40% improvement)
-- Updated get_enhanced_agent_instructions() with streamlined structure
-- Enhanced direct_prompts.py with GPT-5 optimized prompts
-- Improved optimized_agent_instructions.py with concise templates
+## Prompt Consistency Enhancement
+- Added core messaging elements to all system prompts in direct_prompts.py
+- Ensured consistency with main.py and optimized_agent_instructions.py
+- Aligned all prompt files with GPT-5 optimization standards
 
-## OpenAI Agents SDK Update
-- Updated from v0.2.8 to v0.2.9 in pyproject.toml
-- Ensured latest features and bug fixes from OpenAI
+## Core Messaging Elements Added
+- Real-time tools access: "TOOLS: Polygon.io MCP server for live market data"
+- Quick responses: "RESPOND: Quickly with minimal tool calls for faster analysis"
+- Consistent structure across all analysis types (SNAPSHOT, SUPPORT_RESISTANCE, TECHNICAL, GENERAL)
+- Maintained existing low verbosity and structured output format
 
-## Documentation Corrections
-- Fixed all incorrect Pydantic AI references throughout documentation
-- Updated to proper OpenAI Agents SDK v0.2.9 terminology
-- Corrected version numbers for consistency (Polygon MCP v0.4.1)
-- Updated README.md, CHANGELOG.md, CLAUDE.md, and API integration guide
-- Fixed architecture diagrams and technology stack references
+## Analysis Types Updated
+- SNAPSHOT: Market snapshots with real-time data access
+- SUPPORT_RESISTANCE: Technical analysis with real-time tools
+- TECHNICAL: Comprehensive analysis with minimal tool calls
+- GENERAL: Financial analysis with optimized response speed
 
-## Serena Memory Updates
-- Created comprehensive memory updates using proper Serena tools
-- Added project_overview_updated.md with current architecture
-- Created gpt5_prompt_optimization_guide.md with implementation details
-- Added openai_agents_sdk_integration.md with correct usage patterns
-- Created latest_implementation_summary.md with complete overview
-
-## Performance Impact
-- 60% reduction in prompt token usage
-- 20-40% faster AI response times
-- Improved instruction clarity and focus
-- Standardized prompt structure across all analysis types
+## Integration Verification
+- All three prompt files now consistently include core messaging elements
+- Maintains GPT-5 optimization with 60% verbosity reduction
+- Preserves structured output format (KEY TAKEAWAYS → DETAILED ANALYSIS)
+- Ensures quick responses with minimal tool calls across all analysis types
 
 ## Files Modified
-- src/backend/main.py: GPT-5 optimized agent instructions
-- src/backend/direct_prompts.py: Streamlined system prompts
-- src/backend/optimized_agent_instructions.py: Enhanced templates
-- pyproject.toml: OpenAI Agents SDK v0.2.9 update
-- README.md: Corrected technology stack and versions
-- CHANGELOG.md: Updated with latest changes
-- CLAUDE.md: Fixed project description and architecture
-- docs/api/api-integration-guide.md: Corrected SDK references
-- .serena/memories/: Comprehensive memory updates (4 new files)
+- src/backend/direct_prompts.py: Enhanced system prompts with core messaging elements
+
+## Impact
+- Consistent AI behavior across all prompt systems
+- Improved response speed with minimal tool calls
+- Enhanced real-time data access awareness
+- Maintained GPT-5 optimization standards
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## STANDARDIZED TEST PROMPTS
