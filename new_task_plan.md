@@ -47,16 +47,17 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-Task 1. Use OpenAI Cookbook Doc Tools to fetch and research the "OpenAI GPT-5 Prompting Guide" for some tasks related to prompts optmizations for our project
+## Task 1. Implement Response Timing & Token Counting based on your Context7 & OpenAI Cookbook research with the requested methods
 
-Task 2. Based on OpenAI GPT-5 Prompting Guide" and Context7 Research, update and optimize ALL of our prompts using the techniques and strategies from the prompting guide with some requirments & adjustments:
+- FastAPI Middleware, OpenAI Response Metadata , CLI Display (Footer Approach)
+- This should ensure that the GUI remains for the most part untouched because GUI will inherit all the new metrics from CLI code and responses:
+- I.E.  Performance Metrics:
+        Response Time: 1.234s
+        Tokens Used: 1,247 (Input: 156, Output: 1,091)
+        Model: gpt-5-nano
 
-- Enforce LOW Verbosity for all responses
-- Ensure that the existing core goals of prompts do not get accidentally removed as part of the optimizations, such as making sure to keep business critical logic such: Using accurate date and time, quick responses with minimal tool calls, ensuring AI Agent knows it has all tools for real-time data etc.
-- The core goals of the prompts may be optimized better, BUT the core messaging should still be the same for keep the same functionality
+## Task 2. Currently the CLI Backend has a tool to save reports and would ask the user if they want to save reports in .md file, but this feature has already been superceded with all the Copy\Export buttons from the GUI, so just retire\remove it Completely. Update all docs to reflect the new app behavior
 
-Task 3. Update project to use latest OpenAI Agents SDK version
+## Task 3. Comprehensive Doc updates to reflect the latest changes and functionality
 
-Task 4. Search for ALL docs and Fix and update ALL docs to reflect OpenAI Agents SDK version and remove the incorrect Pydantic AI statements since Pydantic AI is NOT part of our app's stack at all
-
-Task 5. Update Serena memories with the latest enhancements to the Prompt Optimizations
+## Task 4. Use Serena Tools to update memory
