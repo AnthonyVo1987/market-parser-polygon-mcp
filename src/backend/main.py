@@ -262,18 +262,19 @@ TOOLS: Polygon.io MCP server for live market data, prices, and financial informa
 INSTRUCTIONS:
 1. Use current date/time above for all analysis
 2. Gather real-time data using available tools
-3. Provide data-driven insights with actionable recommendations
-4. Structure responses: KEY TAKEAWAYS → DETAILED ANALYSIS
-5. Include ticker symbols and specific metrics
-6. Respond quickly with minimal tool calls
-7. Keep responses concise and actionable - avoid unnecessary details
+3. Structure responses: KEY TAKEAWAYS → DETAILED ANALYSIS
+4. Include ticker symbols
+5. Respond quickly with minimal tool calls
+6. Keep responses concise - avoid unnecessary details
 
 OUTPUT FORMAT:
 KEY TAKEAWAYS:
-• [Bullet point insights]
+• [Maximum 3 bullet point insights]
 
 DETAILED ANALYSIS:
-[Specific data, metrics, and actionable recommendations]"""
+1. [Numbered or bullet point format]
+2. [No actionable recommendations]
+3. [Focus on data and analysis only]"""
 
 
 guardrail_agent = Agent(
@@ -472,6 +473,10 @@ def print_response(result):
     if hasattr(result, "metadata") and result.metadata:
         console.print("\n[bold cyan]📊 Performance Metrics:[/bold cyan]")
         
+        # Display processing time if available
+        if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
+            console.print(f"   ⏱️  Response Time: {result.metadata.processing_time:.3f}s")
+        
         # Extract token information
         token_count = None
         input_tokens = None
@@ -489,6 +494,8 @@ def print_response(result):
                 input_tokens = usage.prompt_tokens
             if hasattr(usage, "completion_tokens"):
                 output_tokens = usage.completion_tokens
+        elif hasattr(result.metadata, "token_count"):
+            token_count = result.metadata.token_count
         
         # Display token information
         if token_count:
@@ -1026,6 +1033,9 @@ async def cli_async():
 
                     # Call the AI model with the direct prompt
                     try:
+                        # Start timing for performance metrics
+                        start_time = time.perf_counter()
+                        
                         # Create dynamic agent with MCP server for market data access
                         analysis_agent = Agent(
                             name="Financial Analysis Agent",
@@ -1039,6 +1049,42 @@ async def cli_async():
                         result = await Runner.run(
                             analysis_agent, prompt_data["user_prompt"], session=None
                         )
+
+                        # Calculate processing time
+                        processing_time = time.perf_counter() - start_time
+                        
+                        # Extract token information from OpenAI response metadata
+                        token_count = None
+                        input_tokens = None
+                        output_tokens = None
+                        
+                        if hasattr(result, "metadata") and result.metadata:
+                            # Try to extract token information from OpenAI response metadata
+                            if hasattr(result.metadata, "get"):
+                                token_count = result.metadata.get("tokenCount")
+                                input_tokens = result.metadata.get("inputTokens")
+                                output_tokens = result.metadata.get("outputTokens")
+                            elif hasattr(result.metadata, "usage"):
+                                # Handle OpenAI usage object format
+                                usage = result.metadata.usage
+                                if hasattr(usage, "total_tokens"):
+                                    token_count = usage.total_tokens
+                                if hasattr(usage, "prompt_tokens"):
+                                    input_tokens = usage.prompt_tokens
+                                if hasattr(usage, "completion_tokens"):
+                                    output_tokens = usage.completion_tokens
+                        
+                        # Create metadata object for CLI response
+                        cli_metadata = ResponseMetadata(
+                            model=settings.available_models[0],
+                            timestamp=datetime.now().isoformat(),
+                            processing_time=processing_time,
+                            request_id=None,  # CLI doesn't use request IDs
+                            token_count=token_count
+                        )
+                        
+                        # Attach metadata to result object
+                        result.metadata = cli_metadata
 
                         # Extract the response (stored in result object for print_response)
                         _ = str(result.final_output)

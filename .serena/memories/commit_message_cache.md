@@ -1,14 +1,13 @@
-feat: Add comprehensive Serena system health check and optional tools documentation
+feat: Optimize AI prompts for performance and response efficiency
 
-- Add serena_check command for systematic health verification
-- Create comprehensive health check report with all tool categories tested
-- Add optional tools reference guide with usage patterns and safety guidelines
-- Add setup guide for enabling Serena optional tools in project configuration
-- Add troubleshooting guide for common Serena issues and solutions
-- Add main documentation guide for Serena optional tools configuration
-- Update .serena/project.yml with enhanced configuration and stats tracking
-- Fix all markdown linting issues across documentation files
-- Ensure proper formatting and structure for all new documentation
+- Remove "Provide data-driven insights with actionable recommendations" from all prompts
+- Remove "and specific metrics" requirement from prompt instructions  
+- Enforce maximum 3 Key Takeaways in all response formats
+- Change Detailed Analysis format to numbered/bullet points only
+- Remove all actionable recommendations from response templates
+- Update main.py get_enhanced_agent_instructions() with optimized format
+- Update direct_prompts.py DirectPromptManager system prompts for all analysis types
+- Maintain quick response optimization and minimal tool call requirements
+- Preserve real-time data access and current date/time context functionality
 
-All Serena tools tested and verified functional with 100% success rate.
-System health status: ✅ ALL SYSTEMS HEALTHY
+Improves response efficiency by reducing verbosity and focusing on data analysis over recommendations.

@@ -47,14 +47,9 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-NO CODING IS REQUESTED FOR ANY OF THESE STRICTLY RESEARCH AND DOCUMENTATION TASKS
+## Task 1 Update ALL AI Prompts with the following changes for some performance optimizations
 
-## Task 1. Review an older plan to improve CLI performance from 'docs/implementation_plans/cli_performance_optimization_plan.md' that was generated a while ago on an older version of the app that did NOT have all the extensive enhancements and performance optmizations we have been implementing
-
-## Task 2. Based on your review of the old plan, analyze the entire codebase in order to now update\correct\revise docs/implementation_plans/cli_performance_optimization_plan.md to reflect the latest changes in the app
-
-## Task 3. Perform an in depth code audit and review for any potential performance optimizations in the CLI backend path to reduce AI response latency and performance
-
-## Task 4. Update 'docs/implementation_plans/cli_performance_optimization_plan.md' with the new CLI performance optimization findings
-
-## Task 5. Use Serena Tools to update Memories
+- Remove 'Provide data-driven insights with actionable recommendations'
+- ' .. and specific metrics"
+- Enforce max of 3 Key Takeaways
+- Enforce Detailed analysis to be in numbered\bullet point format

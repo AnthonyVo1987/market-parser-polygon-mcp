@@ -47,13 +47,15 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Research using Context7 Tools & openAI Cookbook tools to Investigate and scope out consoldating ALL Prompts to be in a single file to be easier to edit and change
+## Task 1 Update ALL AI Prompts with the following changes for some performance optimizations
 
-- We will optimize our prompts frequently, BUT I can see we have a very convoluted prompt files: src/backend/main.py, src/backend/optimized_agent_instructions.py, src/backend/direct_prompts.py
-- Just right now, we fixed a bug because we had to make a fix in the correct prompt file, but this architecture can cause alot of issues in the future
-- We need to keep the core prompt messaging the same, but it makes no sense to have THREE different files just to handle prompts.
-- The most optimal outcome is that to edit prompts, we ONLY have to edit the CLI backend prompt\file, which the GUI will then inherit
-- So consolidate and come up with a way to re-architecture our prompt system because right now it is unmanagable
-- NO NEW CODE YET - THIS IS JUST RESEARCHING AND SCOPING TASK(S)
+- Remove 'Provide data-driven insights with actionable recommendations'
+- Remove ' .. and specific metrics"
+- Enforce max of 3 Key Takeaways and no longer actionable recommendations
+- Enforce Detailed analysis to be in numbered\bullet point format and no longer actionable recommendations
 
-## Task 2. Based on your research, generate a detailed granular TODO Task Checklist Implementation plan for an AI Agent to implement.  DO NOT CREATE ANY DOCS YET SO USER CAN FIRST REVIEW THE PLAN
+## Task 2 Validate fixes by testing the CLI with some test prompts to capture the footer data: uv run src/backend/main.py
+
+Test Prompt 1: "Current Market Status"
+Test Prompt 2: "Single Stock Snapshot NVDA"
+Test Prompt 3: "NVDA Support & Resistance Levels"

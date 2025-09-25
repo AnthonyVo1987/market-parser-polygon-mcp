@@ -362,15 +362,19 @@ decisions. Use for informational purposes only.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-docs: Update CLI performance optimization plan formatting and add analysis memory
+feat: Optimize AI prompts for performance and response efficiency
 
-- Fix markdown formatting by adding blank lines after section headers in CLI performance plan
-- Add comprehensive CLI performance analysis memory with critical findings
-- Document CLI vs FastAPI architectural inconsistency and optimization strategy
-- Include technical details and next steps for CLI performance improvements
-- Maintain document structure and readability improvements
+- Remove "Provide data-driven insights with actionable recommendations" from all prompts
+- Remove "and specific metrics" requirement from prompt instructions  
+- Enforce maximum 3 Key Takeaways in all response formats
+- Change Detailed Analysis format to numbered/bullet points only
+- Remove all actionable recommendations from response templates
+- Update main.py get_enhanced_agent_instructions() with optimized format
+- Update direct_prompts.py DirectPromptManager system prompts for all analysis types
+- Maintain quick response optimization and minimal tool call requirements
+- Preserve real-time data access and current date/time context functionality
 
-Improves documentation formatting and preserves analysis findings for future reference.
+Improves response efficiency by reducing verbosity and focusing on data analysis over recommendations.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## License
