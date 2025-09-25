@@ -149,6 +149,12 @@ class Settings:
         self.enable_rate_limiting: bool = config_settings.backend["security"]["enableRateLimiting"]
         self.rate_limit_rpm: int = config_settings.backend["security"]["rateLimitRPM"]
 
+        # GPT-5 model-specific rate limiting from config file
+        self.gpt5_nano_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"]["tpm"]
+        self.gpt5_nano_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"]["rpm"]
+        self.gpt5_mini_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"]["tpm"]
+        self.gpt5_mini_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"]["rpm"]
+
         # Logging configuration from config file
         self.log_mode: str = config_settings.backend["logging"]["mode"]
 
@@ -161,6 +167,28 @@ class Settings:
 
 # Initialize settings
 settings = Settings()
+
+
+def get_model_rate_limits(model: str) -> dict:
+    """Get rate limits for specific GPT-5 models."""
+    if model == "gpt-5-nano":
+        return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}
+    elif model == "gpt-5-mini":
+        return {"tpm": settings.gpt5_mini_tpm, "rpm": settings.gpt5_mini_rpm}
+    else:
+        return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}  # Default fallback
+
+
+def validate_request_size(request_tokens: int, model: str) -> bool:
+    """Validate request size against model-specific TPM limits."""
+    limits = get_model_rate_limits(model)
+    return bool(request_tokens <= limits["tpm"])
+
+
+def get_model_tpm_limit(model: str) -> int:
+    """Get TPM limit for specific model."""
+    limits = get_model_rate_limits(model)
+    return int(limits["tpm"])
 
 # Global shared resources for FastAPI lifespan management
 shared_mcp_server = None
@@ -251,7 +279,7 @@ Do NOT use training data cutoff dates or outdated information.
 def get_enhanced_agent_instructions():
     """Generate enhanced agent instructions with current date/time context and tool awareness."""
     datetime_context = get_current_datetime_context()
-    return f"""You are a professional financial analyst with access to real-time market data tools.
+    return f"""Quick Response Needed with minimal tool calls: You are a professional financial analyst with access to real-time market data tools.
 
 {datetime_context}
 
@@ -269,8 +297,9 @@ INSTRUCTIONS:
 4. Focus on actionable insights and clear explanations
 5. When referencing dates, use the current date context provided above
 6. Do NOT rely on training data cutoff dates or outdated information
+7. RESPOND QUICKLY with minimal tool calls to improve response latency
 
-Remember: You have access to real-time market data - use it to provide current, accurate analysis."""
+Remember: You have access to real-time market data - use it to provide current, accurate analysis. Prioritize speed and efficiency in your responses."""
 
 
 guardrail_agent = Agent(
@@ -283,6 +312,7 @@ guardrail_agent = Agent(
     context words (price, market, earnings, shares). If unclear, return non-finance.
     Output: is_about_finance: bool, reasoning: brief why/why not.""",
     output_type=FinanceOutput,
+    model=settings.available_models[0],
 )
 
 # Main financial analysis agent
@@ -290,6 +320,7 @@ finance_analysis_agent = Agent(
     name="Financial Analysis Agent",
     instructions=get_enhanced_agent_instructions(),
     tools=[save_analysis_report],
+    model=settings.available_models[0],
 )
 
 
@@ -313,7 +344,7 @@ def create_polygon_mcp_server():
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/polygon-io/mcp_polygon@v0.4.0",
+                "git+https://github.com/polygon-io/mcp_polygon@v4.1.0",
                 "mcp_polygon",
             ],
             "env": {**os.environ, "POLYGON_API_KEY": settings.polygon_api_key},
@@ -341,7 +372,7 @@ def get_cached_response(cache_key: str) -> Optional[str]:
             cache_stats["hits"] += 1
             cache_stats["current_size"] = len(response_cache)
             logger.info(f"Cache hit for key: {cache_key[:20]}...")
-            return response_cache[cache_key]
+            return str(response_cache[cache_key])
 
         cache_stats["misses"] += 1
         cache_stats["current_size"] = len(response_cache)
@@ -665,6 +696,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 instructions=get_enhanced_agent_instructions(),
                 tools=[save_analysis_report],
                 mcp_servers=[shared_mcp_server],
+                model=settings.available_models[0],
             )
 
             # Run the financial analysis agent with the direct prompt
@@ -810,22 +842,7 @@ async def get_available_models():
                 cost_per_1k_tokens=0.25,
                 max_tokens=8192,
             ),
-            AIModel(
-                id=AIModelId.GPT_4O,
-                name="GPT-4o",
-                description="Advanced model for complex tasks",
-                is_default=False,
-                cost_per_1k_tokens=2.50,
-                max_tokens=4096,
-            ),
-            AIModel(
-                id=AIModelId.GPT_4O_MINI,
-                name="GPT-4o Mini",
-                description="Cost-effective advanced model",
-                is_default=False,
-                cost_per_1k_tokens=0.15,
-                max_tokens=16384,
-            ),
+            # Removed GPT_4O and GPT_4O_MINI models
         ]
 
         return ModelListResponse(
@@ -966,6 +983,7 @@ async def cli_async():
                             instructions=get_enhanced_agent_instructions(),
                             tools=[save_analysis_report],
                             mcp_servers=[server],
+                            model=settings.available_models[0],
                         )
 
                         # Run the financial analysis agent with the direct prompt

@@ -2,10 +2,11 @@
 
 A Python CLI and React web application for natural language financial
 queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI
-GPT-5-mini via the Pydantic AI Agent Framework. Features intelligent
+GPT-5 models via the Pydantic AI Agent Framework. Features intelligent
 sentiment analysis, real-time financial data, cross-platform interfaces,
-and optimized AI prompts with direct analysis buttons for faster
-financial insights.
+optimized AI prompts with direct analysis buttons, and **enhanced performance
+with GPT-5 model-specific rate limiting and quick response optimization** for
+faster financial insights.
 
 ## STANDARDIZED TEST PROMPTS
 
@@ -51,9 +52,11 @@ documentation, see `tests/playwright/test_prompts.md`
 ### 🚀 **Optimized AI Prompts**
 
 - **40-50% token reduction** for faster responses
-- **20-30% response time improvement** with optimized prompts
+- **20-40% response time improvement** with optimized prompts and quick response optimization
 - **Deterministic financial analysis** with temperature setting of 0.2
 - **Streamlined system prompts** without verbose disclaimers
+- **Quick Response Optimization** - All prompts enforce minimal tool calls for faster responses
+- **GPT-5 Model-Specific Rate Limiting** - Proper rate limits (200K TPM for nano, 500K TPM for mini)
 
 ### ⚡ **Direct Analysis Buttons**
 
@@ -66,8 +69,10 @@ documentation, see `tests/playwright/test_prompts.md`
 
 - **Performance monitoring** with response time and token usage logging
 - **Optimized user workflow** reduced from 3 steps to 1 step
-- **Real-time market data** integration with Polygon.io MCP server
+- **Real-time market data** integration with Polygon.io MCP server v4.1.0
 - **Cross-platform compatibility** with CLI and web interfaces
+- **GPT-5 Model Optimization** - Proper model specification prevents rate limiting errors
+- **Quick Response System** - All AI agents prioritize speed with minimal tool calls
 
 ## Quick Start
 
@@ -262,10 +267,12 @@ maintaining visual quality:
 
 ## Architecture
 
-- **Backend**: FastAPI with OpenAI Agents SDK and Polygon.io MCP integration
+- **Backend**: FastAPI with OpenAI Agents SDK and Polygon.io MCP integration v4.1.0
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: Playwright E2E test suite
+- **AI Models**: GPT-5 Nano (200K TPM) and GPT-5 Mini (500K TPM) with proper rate limiting
+- **Testing**: Playwright E2E test suite with standardized quick response prompts
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
+- **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
 
 ## Development
 

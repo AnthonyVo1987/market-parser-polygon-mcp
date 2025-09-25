@@ -25,7 +25,7 @@ class OptimizedAgentInstructions:
         self._cache_timestamp: float = 0.0
         
         # Pre-generate static parts of instructions
-        self._static_instructions = """You are a professional financial analyst with access to real-time market data tools.
+        self._static_instructions = """Quick Response Needed with minimal tool calls: You are a professional financial analyst with access to real-time market data tools.
 
 {datetime_context}
 
@@ -43,8 +43,9 @@ INSTRUCTIONS:
 4. Focus on actionable insights and clear explanations
 5. When referencing dates, use the current date context provided above
 6. Do NOT rely on training data cutoff dates or outdated information
+7. RESPOND QUICKLY with minimal tool calls to improve response latency
 
-Remember: You have access to real-time market data - use it to provide current, accurate analysis."""
+Remember: You have access to real-time market data - use it to provide current, accurate analysis. Prioritize speed and efficiency in your responses."""
     
     def _get_cached_datetime_context(self) -> str:
         """Get datetime context with intelligent caching."""
@@ -56,13 +57,13 @@ Remember: You have access to real-time market data - use it to provide current, 
             return self._cached_context
         
         # Generate new context
-        now = datetime.now()
+        current_datetime = datetime.now()
         self._cached_context = f"""
 CURRENT DATE AND TIME CONTEXT:
-- Today's date: {now.strftime('%A, %B %d, %Y')}
-- Current time: {now.strftime('%I:%M %p %Z')}
-- ISO format: {now.strftime('%Y-%m-%d %H:%M:%S')}
-- Market status: {'Open' if now.weekday() < 5 and 9 <= now.hour < 16 else 'Closed'}
+- Today's date: {current_datetime.strftime('%A, %B %d, %Y')}
+- Current time: {current_datetime.strftime('%I:%M %p %Z')}
+- ISO format: {current_datetime.strftime('%Y-%m-%d %H:%M:%S')}
+- Market status: {'Open' if current_datetime.weekday() < 5 and 9 <= current_datetime.hour < 16 else 'Closed'}
 
 IMPORTANT: Always use the current date and time above for all financial analysis. 
 Do NOT use training data cutoff dates or outdated information.
@@ -72,8 +73,8 @@ Do NOT use training data cutoff dates or outdated information.
     
     def get_enhanced_agent_instructions(self) -> str:
         """Get enhanced agent instructions with cached datetime context."""
-        datetime_context = self._get_cached_datetime_context()
-        return self._static_instructions.format(datetime_context=datetime_context)
+        cached_datetime_context = self._get_cached_datetime_context()
+        return self._static_instructions.format(datetime_context=cached_datetime_context)
     
     def clear_cache(self):
         """Clear the datetime context cache."""
@@ -115,13 +116,13 @@ def get_enhanced_agent_instructions_cached() -> str:
     WARNING: This caches indefinitely, so datetime will be stale after first call.
     Only use for testing or if you don't need current datetime.
     """
-    now = datetime.now()
-    datetime_context = f"""
+    current_time = datetime.now()
+    static_datetime_context = f"""
 CURRENT DATE AND TIME CONTEXT:
-- Today's date: {now.strftime('%A, %B %d, %Y')}
-- Current time: {now.strftime('%I:%M %p %Z')}
-- ISO format: {now.strftime('%Y-%m-%d %H:%M:%S')}
-- Market status: {'Open' if now.weekday() < 5 and 9 <= now.hour < 16 else 'Closed'}
+- Today's date: {current_time.strftime('%A, %B %d, %Y')}
+- Current time: {current_time.strftime('%I:%M %p %Z')}
+- ISO format: {current_time.strftime('%Y-%m-%d %H:%M:%S')}
+- Market status: {'Open' if current_time.weekday() < 5 and 9 <= current_time.hour < 16 else 'Closed'}
 
 IMPORTANT: Always use the current date and time above for all financial analysis. 
 Do NOT use training data cutoff dates or outdated information.
@@ -129,7 +130,7 @@ Do NOT use training data cutoff dates or outdated information.
     
     return f"""You are a professional financial analyst with access to real-time market data tools.
 
-{datetime_context}
+{static_datetime_context}
 
 TOOL AVAILABILITY:
 You have access to the following real-time data tools:

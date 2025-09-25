@@ -27,12 +27,22 @@
       "reportsDirectory": "test-reports"
     },
     "mcp": {
-      "version": "v0.4.0",
+      "version": "v4.1.0",
       "timeoutSeconds": 120
     },
     "security": {
       "enableRateLimiting": true,
       "rateLimitRPM": 500,
+      "rateLimiting": {
+        "gpt5Nano": {
+          "tpm": 200000,
+          "rpm": 500
+        },
+        "gpt5Mini": {
+          "tpm": 500000,
+          "rpm": 500
+        }
+      },
       "cors": {
         "origins": [
           "http://127.0.0.1:3000",

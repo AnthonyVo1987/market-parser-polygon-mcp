@@ -193,12 +193,11 @@ class CustomModel(BaseModel):
 
 
 class AIModelId(str, Enum):
-    """Enum for available AI models"""
+    """Enum for available AI models (GPT-5 only)"""
 
     GPT_5_NANO = "gpt-5-nano"
     GPT_5_MINI = "gpt-5-mini"
-    GPT_4O = "gpt-4o"
-    GPT_4O_MINI = "gpt-4o-mini"
+    # Removed GPT_4O and GPT_4O_MINI
 
 
 class ResponseMetadata(BaseModel):

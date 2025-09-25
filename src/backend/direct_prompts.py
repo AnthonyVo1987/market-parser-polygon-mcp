@@ -152,12 +152,12 @@ class DirectPromptManager:
 
         for match in matches:
             if match in known_tickers:
-                return match
+                return str(match)
 
         # Then look for other potential tickers
         for match in matches:
             if match not in false_positives and len(match) >= 2:
-                return match
+                return str(match)
 
         return None
 
@@ -189,34 +189,34 @@ class DirectPromptManager:
         - Removed verbose disclaimers and emoji instructions
         """
         return {
-            AnalysisIntent.SNAPSHOT: """You are a financial analyst specializing in stock market snapshots.
+            AnalysisIntent.SNAPSHOT: """Quick Response Needed with minimal tool calls: You are a financial analyst specializing in stock market snapshots.
 Provide comprehensive, real-time market analysis with current price data, volume analysis, and key performance metrics.
 Always include ticker symbols and structure responses with:
 KEY TAKEAWAYS (bullet points)
 DETAILED ANALYSIS (price, volume, trends)
 
-Focus on actionable insights for investors.""",
-            AnalysisIntent.SUPPORT_RESISTANCE: """You are a technical analyst specializing in support and resistance levels.
+Focus on actionable insights for investors. Respond quickly with minimal tool usage.""",
+            AnalysisIntent.SUPPORT_RESISTANCE: """Quick Response Needed with minimal tool calls: You are a technical analyst specializing in support and resistance levels.
 Analyze key price levels where stocks find support (price floors) and resistance (price ceilings).
 Always include ticker symbols and structure responses with:
 KEY TAKEAWAYS (bullet points)
 DETAILED ANALYSIS (support/resistance levels with explanations)
 
-Provide actionable trading insights based on technical analysis.""",
-            AnalysisIntent.TECHNICAL: """You are a technical analyst specializing in comprehensive technical analysis.
+Provide actionable trading insights based on technical analysis. Respond quickly with minimal tool usage.""",
+            AnalysisIntent.TECHNICAL: """Quick Response Needed with minimal tool calls: You are a technical analyst specializing in comprehensive technical analysis.
 Use key indicators like RSI, MACD, and moving averages to analyze momentum and trend direction.
 Always include ticker symbols and structure responses with:
 KEY TAKEAWAYS (bullet points)
 DETAILED ANALYSIS (technical indicators and signals)
 
-Keep analysis concise but comprehensive, focusing on essential indicators.""",
-            AnalysisIntent.GENERAL: """You are a financial assistant helping with general financial queries.
+Keep analysis concise but comprehensive, focusing on essential indicators. Respond quickly with minimal tool usage.""",
+            AnalysisIntent.GENERAL: """Quick Response Needed with minimal tool calls: You are a financial assistant helping with general financial queries.
 Provide helpful, informative responses about stocks, market data, financial analysis, and economic indicators.
 Always include ticker symbols when relevant and structure responses with:
 KEY TAKEAWAYS (bullet points)
 DETAILED ANALYSIS (relevant financial information)
 
-Make responses educational and actionable for investors.""",
+Make responses educational and actionable for investors. Respond quickly with minimal tool usage.""",
         }
 
     def _build_user_prompts(self) -> Dict[AnalysisIntent, str]:

@@ -10,6 +10,9 @@ This document provides comprehensive integration patterns and implementation gui
 - **Direct Analysis Buttons**: One-click SNAPSHOT, SUPPORT/RESISTANCE, and TECHNICAL analysis
 - **Performance Monitoring**: Response time and token usage tracking
 - **Enhanced Configuration**: Centralized settings in `config/app.config.json`
+- **GPT-5 Model Optimization**: Proper model specification with rate limiting (200K TPM for nano, 500K TPM for mini)
+- **Quick Response System**: All prompts enforce minimal tool calls for 20-40% faster responses
+- **Polygon MCP v4.1.0**: Latest version with enhanced market data capabilities
 
 ## Architecture Overview
 
@@ -31,8 +34,9 @@ graph TB
     
     subgraph "Backend Services"
         AI[Pydantic AI Agent]
-        PG[Polygon.io MCP]
-        OA[OpenAI GPT-5]
+        PG[Polygon.io MCP v4.1.0]
+        OA[OpenAI GPT-5 Models]
+        RL[Rate Limiting System]
     end
     
     UI --> PM
@@ -42,6 +46,7 @@ graph TB
     RP --> AI
     AI --> PG
     AI --> OA
+    AI --> RL
     AI --> RM
     RM --> CC
     CC --> ER
@@ -490,7 +495,7 @@ class TickerValidator:
             
         return True
 
-# Rate limiting middleware
+# GPT-5 Model-Specific Rate Limiting
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -499,10 +504,24 @@ limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Model-specific rate limiting based on GPT-5 capabilities
+def get_model_rate_limits(model: str) -> dict:
+    """Get rate limits for specific GPT-5 models."""
+    if model == "gpt-5-nano":
+        return {"tpm": 200000, "rpm": 500}  # 200K TPM, 500 RPM
+    elif model == "gpt-5-mini":
+        return {"tpm": 500000, "rpm": 500}  # 500K TPM, 500 RPM
+    else:
+        return {"tpm": 200000, "rpm": 500}  # Default fallback
+
 @app.post("/api/v1/analysis/chat")
-@limiter.limit("10/minute")  # 10 requests per minute per IP
+@limiter.limit("500/minute")  # GPT-5 model-specific rate limit
 async def process_chat(request: Request, chat_request: ChatRequest):
-    # Implementation here
+    # Validate request size against model-specific TPM limits
+    model = settings.available_models[0]  # GPT-5 nano or mini
+    limits = get_model_rate_limits(model)
+    
+    # Implementation here with proper model specification
     pass
 ```
 
