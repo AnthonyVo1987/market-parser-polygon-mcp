@@ -33,55 +33,55 @@ processing that could cause timeouts
 
 #### Test Prompt 1: Market Status Query
 
-"Quick Response Needed with minimal tool calls: What is the current Market Status?"
+"Current Market Status"
 
 ### 2. Single Stock Snapshot
 
 #### Test Prompt 2: Single Stock Snapshot
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
+"Single Stock Snapshot NVDA"
 
 ### 3. Full Market Snapshot
 
 #### Test Prompt 3: Full Market Snapshot
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"
+"Full Market Snapshot: SPY, QQQ, IWM"
 
 ### 4. Closing Price Query
 
 #### Test Prompt 4: Closing Price Query
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"
+"GME closing price today"
 
 ### 5. Performance Analysis
 
 #### Test Prompt 5: Performance Analysis
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"
+"SOUN performance this week"
 
-### 6. Top Gainers
+### 6. Support & Resistance
 
-#### Test Prompt 6: Top Gainers
+#### Test Prompt 6: Support & Resistance
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"
+"NVDA Support & Resistance Levels"
 
-### 7. Top Losers
+### 7. Technical Analysis
 
-#### Test Prompt 7: Top Losers
+#### Test Prompt 7: Technical Analysis
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"
+"SPY Technical Analysis"
 
-### 8. Support & Resistance
+### 8. Top Gainers
 
-#### Test Prompt 8: Support & Resistance
+#### Test Prompt 8: Top Gainers
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"
+"Top 5 Market Movers Today for Gainers"
 
-### 9. Technical Analysis
+### 9. Top Losers
 
-#### Test Prompt 9: Technical Analysis
+#### Test Prompt 9: Top Losers
 
-"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"
+"Top 5 Market Movers Today for Losers"
 
 ---
 
