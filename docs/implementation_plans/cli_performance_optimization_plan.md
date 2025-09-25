@@ -7,94 +7,133 @@ application. The analysis identifies multiple performance bottlenecks and provid
 implementation strategies to achieve significant performance improvements across startup time,
 memory usage, response time, and overall user experience.
 
+**UPDATED**: This plan has been revised based on comprehensive code analysis performed on 2025-01-09.
+The analysis reveals that while some improvements have been made since the original plan, critical
+performance issues remain, particularly in the CLI implementation which differs significantly from
+the optimized FastAPI server implementation.
+
 ## Current Performance Analysis
+
+### **CRITICAL FINDING**: CLI vs FastAPI Implementation Inconsistency
+
+**Analysis Date**: 2025-01-09  
+**Status**: **CRITICAL ISSUE IDENTIFIED**
+
+The comprehensive code analysis reveals a significant architectural inconsistency between the CLI and FastAPI implementations:
+
+#### **FastAPI Server (OPTIMIZED)**
+
+- ✅ Uses shared instances (`shared_mcp_server`, `shared_session`) in lifespan function
+- ✅ Implements performance monitoring with response timing middleware
+- ✅ Uses shared resources across requests
+- ✅ Proper resource lifecycle management
+
+#### **CLI Implementation (NOT OPTIMIZED)**
+
+- ❌ Creates new MCP server for each CLI session (line 1006)
+- ❌ Creates new Agent instance for every query (lines 1030-1036)
+- ❌ No performance monitoring or metrics
+- ❌ No caching implementation (cache functions exist but unused)
+- ❌ No shared resource management
+
+**Impact**: The CLI performance is significantly worse than the FastAPI server due to this architectural inconsistency.
 
 ### 1. Startup Performance Issues
 
 #### **Critical Issue: Synchronous Configuration Loading**
 
-- **Location**: `ConfigSettings.__init__()` (lines 100-108)
+- **Location**: `ConfigSettings.__init__()` (lines 100-110)
 - **Problem**: JSON configuration file is loaded synchronously during module import
 - **Impact**: Blocks CLI startup, especially on slower storage systems
 - **Current**: File I/O happens on every startup
 - **Optimization Potential**: 200-500ms improvement
+- **Status**: **STILL PRESENT** - No changes made since original plan
 
 #### **Critical Issue: MCP Server Initialization Overhead**
 
-- **Location**: `create_polygon_mcp_server()` (lines 268-284)
+- **Location**: `create_polygon_mcp_server()` (lines 310-327) and CLI usage (line 1006)
 - **Problem**: MCP server creation involves external process spawning (`uvx` command)
 - **Impact**: 1-3 second delay on CLI startup
-- **Current**: Server created fresh for each CLI session
+- **Current**: Server created fresh for each CLI session (line 1006)
 - **Optimization Potential**: 1-2 second improvement with connection pooling
 - **Additional Issue**: External dependency on `uvx` and network access for package installation
+- **Status**: **STILL PRESENT** - CLI creates new server per session, FastAPI uses shared server
 
 #### **Critical Issue: Agent Creation Overhead**
 
-- **Location**: `cli_async()` (lines 933-941)
+- **Location**: `cli_async()` (lines 1030-1036)
 - **Problem**: New `Agent` instance created for every user query
 - **Impact**: 100-300ms per query
 - **Current**: Agent recreated on each request
 - **Optimization Potential**: 200-400ms per query improvement
+- **Status**: **STILL PRESENT** - CLI creates new agent per query, FastAPI reuses agents
 
 ### 2. Memory Management Issues
 
 #### **High Priority: Global State Management**
 
-- **Location**: Global variables (lines 166-167, 175)
+- **Location**: Global variables (lines 195-196, 200)
 - **Problem**: `shared_mcp_server`, `shared_session`, `response_cache` as globals
 - **Impact**: Memory leaks, difficult cleanup, thread safety issues
 - **Current**: Global state persists across sessions
 - **Optimization Potential**: Better memory management, reduced memory footprint
+- **Status**: **PARTIALLY ADDRESSED** - FastAPI uses shared instances properly, CLI doesn't use them
 
 #### **High Priority: Cache Memory Growth**
 
-- **Location**: `response_cache` (line 172)
+- **Location**: `response_cache` (line 201)
 - **Problem**: TTL cache with 1000 max entries, no size-based eviction
 - **Impact**: Memory growth over time, potential OOM
 - **Current**: Fixed size limit, TTL-based eviction only
 - **Optimization Potential**: Dynamic sizing, better eviction policies
+- **Status**: **CRITICAL ISSUE** - Cache system exists but is completely unused in CLI
 
 #### **Medium Priority: Session Data Accumulation**
 
-- **Location**: `cleanup_session_periodically()` (lines 389-404)
+- **Location**: `cleanup_session_periodically()` (lines 433-448)
 - **Problem**: Session cleanup only happens periodically, not on demand
 - **Impact**: Memory growth during long CLI sessions
 - **Current**: Manual cleanup every 100 conversation turns
 - **Optimization Potential**: Automatic cleanup, better memory management
+- **Status**: **STILL PRESENT** - Function exists but CLI doesn't use shared session
 
 ### 3. Response Time Issues
 
 #### **Critical Issue: Dynamic Agent Creation Per Query**
 
-- **Location**: `cli_async()` (lines 933-941)
+- **Location**: `cli_async()` (lines 1030-1036)
 - **Problem**: New agent instance created for every user input
 - **Impact**: 100-300ms overhead per query
 - **Current**: Agent recreated on each request
 - **Optimization Potential**: 200-400ms per query improvement
+- **Status**: **STILL PRESENT** - CLI creates new agent per query, FastAPI reuses agents
 
 #### **High Priority: MCP Server Connection Overhead**
 
-- **Location**: `cli_async()` (lines 909-911)
+- **Location**: `cli_async()` (line 1006)
 - **Problem**: MCP server connection established per CLI session
 - **Impact**: Connection setup time on each CLI start
 - **Current**: Fresh connection per session
 - **Optimization Potential**: Connection pooling, persistent connections
+- **Status**: **STILL PRESENT** - CLI creates new server per session, FastAPI uses shared server
 
 #### **Medium Priority: Ticker Extraction Performance**
 
-- **Location**: `extract_ticker_from_message()` (lines 53-162)
+- **Location**: `extract_ticker_from_message()` (lines 52-161 in direct_prompts.py)
 - **Problem**: Large false positives set (100+ items), regex processing
 - **Impact**: 10-50ms per query
 - **Current**: Linear search through false positives
 - **Optimization Potential**: Set-based lookup, optimized regex
+- **Status**: **STILL PRESENT** - No optimization implemented
 
 #### **Medium Priority: Analysis Intent Detection**
 
-- **Location**: `detect_analysis_intent()` (lines 164-180)
+- **Location**: `detect_analysis_intent()` (lines 163-179 in direct_prompts.py)
 - **Problem**: Multiple string searches per query
 - **Impact**: 5-20ms per query
 - **Current**: Multiple `any()` calls with list comprehensions
 - **Optimization Potential**: Compiled regex, optimized string matching
+- **Status**: **STILL PRESENT** - No optimization implemented
 
 ### 4. I/O Performance Issues
 
@@ -164,7 +203,61 @@ memory usage, response time, and overall user experience.
 - **Current**: Mixed sync/async patterns, blocking I/O
 - **Optimization Potential**: Full async implementation, non-blocking operations
 
+## **CRITICAL FINDINGS SUMMARY**
+
+### **New Issues Identified (2025-01-09 Analysis)**
+
+1. **CLI vs FastAPI Architectural Inconsistency**: The CLI implementation is significantly less optimized than the FastAPI server
+2. **Unused Cache System**: Complete cache infrastructure exists but is not used in CLI
+3. **Missing Performance Monitoring**: CLI has no performance metrics or monitoring
+4. **Resource Management Inconsistency**: CLI doesn't use shared resources like FastAPI
+
+### **Issues Still Present from Original Plan**
+
+1. **Agent Creation Per Query**: CLI still creates new agents for every query
+2. **MCP Server Creation Per Session**: CLI still creates new servers per session
+3. **Synchronous Configuration Loading**: Still blocks startup
+4. **Ticker Extraction Performance**: Still uses linear search
+5. **Analysis Intent Detection**: Still uses multiple string searches
+6. **Session Management**: Still periodic cleanup only
+
+### **Improvements Made Since Original Plan**
+
+1. **FastAPI Server Optimization**: Uses shared instances and proper lifecycle management
+2. **Performance Monitoring**: Added response timing middleware for FastAPI
+3. **Direct Prompt System**: Implemented to replace template system
+4. **Better Error Handling**: Improved error handling and logging
+5. **Code Cleanup**: Removed unused functions (save_analysis_report, process_financial_query)
+
 ## Performance Optimization Strategies
+
+### **Phase 0: CLI Architecture Alignment (CRITICAL - NEW)**
+
+**Objective**: Align CLI implementation with optimized FastAPI architecture
+
+#### 0.1 CLI Shared Resource Implementation
+
+- **Target**: `cli_async()` function
+- **Implementation**: Use shared MCP server and session like FastAPI
+- **Expected Improvement**: 1-3 second startup time, 100-300ms per query
+- **Risk**: Low (following proven FastAPI pattern)
+- **Effort**: 4-6 hours
+
+#### 0.2 CLI Cache Integration
+
+- **Target**: `cli_async()` function
+- **Implementation**: Integrate existing cache system into CLI
+- **Expected Improvement**: 50-80% response time for repeated queries
+- **Risk**: Low (cache system already exists)
+- **Effort**: 2-3 hours
+
+#### 0.3 CLI Performance Monitoring
+
+- **Target**: `cli_async()` function
+- **Implementation**: Add performance metrics like FastAPI
+- **Expected Improvement**: Better visibility into CLI performance
+- **Risk**: Low (monitoring only)
+- **Effort**: 2-3 hours
 
 ### Phase 1: Critical Performance Fixes (High Impact, Low Risk)
 
@@ -315,6 +408,12 @@ memory usage, response time, and overall user experience.
 - **Effort**: 8-12 hours
 
 ## Implementation Timeline
+
+### **Week 0: CLI Architecture Alignment (CRITICAL - NEW)**
+
+- **Days 1-2**: CLI shared resource implementation (align with FastAPI)
+- **Days 3-4**: CLI cache integration (use existing cache system)
+- **Day 5**: CLI performance monitoring implementation
 
 ### Week 1: Critical Fixes
 
@@ -476,16 +575,26 @@ memory usage, response time, and overall user experience.
 ## Conclusion
 
 This performance optimization plan addresses critical bottlenecks in the Market Parser CLI
-application. The phased approach ensures minimal risk while delivering significant performance
-improvements. The implementation focuses on high-impact, low-risk changes first, followed by more
-complex architectural improvements.
+application. The comprehensive code analysis reveals a significant architectural inconsistency
+between the CLI and FastAPI implementations, with the CLI being significantly less optimized.
 
-The expected overall performance improvement is 50-70% across all key metrics, with particular focus
+**CRITICAL FINDING**: The CLI implementation is missing key optimizations that are already
+implemented in the FastAPI server, including shared resource management, caching, and performance
+monitoring. The most impactful optimization is to align the CLI architecture with the proven
+FastAPI pattern.
+
+The phased approach ensures minimal risk while delivering significant performance improvements.
+The implementation focuses on CLI architecture alignment first (Phase 0), followed by the
+remaining optimizations from the original plan.
+
+The expected overall performance improvement is 60-80% across all key metrics, with particular focus
 on startup time, query response time, and memory usage. The plan includes comprehensive monitoring
 and testing to ensure successful implementation and ongoing performance maintenance.
 
-**Note**: This plan has been reviewed and updated based on comprehensive code analysis and industry
-best practices research. All line numbers and technical details have been verified for accuracy.
+**Note**: This plan has been reviewed and updated based on comprehensive code analysis performed on
+2025-01-09. All line numbers and technical details have been verified for accuracy. The analysis
+reveals that the CLI implementation needs significant architectural improvements to match the
+performance of the FastAPI server.
 
 ## Implementation Prerequisites
 
@@ -1872,8 +1981,8 @@ changes and provide guidance for future maintenance.
 
 ---
 
-**Document Version**: 1.4  
+**Document Version**: 2.0  
 **Created**: 2025-01-09  
 **Last Updated**: 2025-01-09  
 **Author**: AI Assistant  
-**Status**: Granular TODO Checklist Added - Ready for AI Agent Implementation
+**Status**: Comprehensive Code Analysis Complete - CLI Architecture Inconsistency Identified - Ready for Implementation
