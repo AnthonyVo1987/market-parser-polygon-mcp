@@ -54,7 +54,7 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 - Enforce max of 3 Key Takeaways and no longer actionable recommendations
 - Enforce Detailed analysis to be in numbered\bullet point format and no longer actionable recommendations
 
-## Task 2 Validate fixes by testing the CLI with some test prompts to capture the footer data: uv run src/backend/main.py
+## Task 2 Validate fixes by testing the CLI with some test prompts ONE AT A TIME to capture the footer data: uv run src/backend/main.py
 
 Test Prompt 1: "Current Market Status"
 Test Prompt 2: "Single Stock Snapshot NVDA"
