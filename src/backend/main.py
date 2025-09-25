@@ -344,7 +344,7 @@ def create_polygon_mcp_server():
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/polygon-io/mcp_polygon@v4.1.0",
+                "git+https://github.com/polygon-io/mcp_polygon@v0.4.1",
                 "mcp_polygon",
             ],
             "env": {**os.environ, "POLYGON_API_KEY": settings.polygon_api_key},

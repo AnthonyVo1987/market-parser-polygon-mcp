@@ -27,7 +27,7 @@
       "reportsDirectory": "test-reports"
     },
     "mcp": {
-      "version": "v4.1.0",
+      "version": "v0.4.1",
       "timeoutSeconds": 120
     },
     "security": {
