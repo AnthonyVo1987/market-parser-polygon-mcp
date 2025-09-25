@@ -233,6 +233,46 @@ async def save_analysis_report(
     return f"Report saved: {filepath}"
 
 
+def get_current_datetime_context():
+    """Generate current date/time context for AI agent prompts."""
+    now = datetime.now()
+    return f"""
+CURRENT DATE AND TIME CONTEXT:
+- Today's date: {now.strftime('%A, %B %d, %Y')}
+- Current time: {now.strftime('%I:%M %p %Z')}
+- ISO format: {now.strftime('%Y-%m-%d %H:%M:%S')}
+- Market status: {'Open' if now.weekday() < 5 and 9 <= now.hour < 16 else 'Closed'}
+
+IMPORTANT: Always use the current date and time above for all financial analysis. 
+Do NOT use training data cutoff dates or outdated information.
+"""
+
+
+def get_enhanced_agent_instructions():
+    """Generate enhanced agent instructions with current date/time context and tool awareness."""
+    datetime_context = get_current_datetime_context()
+    return f"""You are a professional financial analyst with access to real-time market data tools.
+
+{datetime_context}
+
+TOOL AVAILABILITY:
+You have access to the following real-time data tools:
+- Polygon.io MCP server for live market data, stock prices, and financial information
+- Real-time price quotes, market snapshots, and historical data
+- Current market status and trading hours information
+- Live financial news and market updates
+
+INSTRUCTIONS:
+1. ALWAYS use the current date and time provided above for all analysis
+2. Use the available real-time data tools to gather current market information
+3. Provide accurate, data-driven financial analysis and insights
+4. Focus on actionable insights and clear explanations
+5. When referencing dates, use the current date context provided above
+6. Do NOT rely on training data cutoff dates or outdated information
+
+Remember: You have access to real-time market data - use it to provide current, accurate analysis."""
+
+
 guardrail_agent = Agent(
     name="Guardrail check",
     instructions="""Classify if the user query is finance-related.
@@ -248,10 +288,7 @@ guardrail_agent = Agent(
 # Main financial analysis agent
 finance_analysis_agent = Agent(
     name="Financial Analysis Agent",
-    instructions="""You are a professional financial analyst with access to real-time market data.
-    Provide accurate, data-driven financial analysis and insights.
-    Use the available tools to gather current market information.
-    Focus on actionable insights and clear explanations.""",
+    instructions=get_enhanced_agent_instructions(),
     tools=[save_analysis_report],
 )
 
@@ -283,6 +320,8 @@ def create_polygon_mcp_server():
         },
         client_session_timeout_seconds=settings.mcp_timeout_seconds,
     )
+
+
 
 
 def generate_cache_key(query: str, ticker: str = "") -> str:
@@ -623,10 +662,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             # Create dynamic agent with MCP server for market data access
             analysis_agent = Agent(
                 name="Financial Analysis Agent",
-                instructions="""You are a professional financial analyst with access to real-time market data.
-                Provide accurate, data-driven financial analysis and insights.
-                Use the available tools to gather current market information.
-                Focus on actionable insights and clear explanations.""",
+                instructions=get_enhanced_agent_instructions(),
                 tools=[save_analysis_report],
                 mcp_servers=[shared_mcp_server],
             )
@@ -927,10 +963,7 @@ async def cli_async():
                         # Create dynamic agent with MCP server for market data access
                         analysis_agent = Agent(
                             name="Financial Analysis Agent",
-                            instructions="""You are a professional financial analyst with access to real-time market data.
-                            Provide accurate, data-driven financial analysis and insights.
-                            Use the available tools to gather current market information.
-                            Focus on actionable insights and clear explanations.""",
+                            instructions=get_enhanced_agent_instructions(),
                             tools=[save_analysis_report],
                             mcp_servers=[server],
                         )

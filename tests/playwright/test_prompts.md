@@ -39,57 +39,49 @@ processing that could cause timeouts
 
 #### Test Prompt 2: Single Stock Snapshot
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, Single Stock Snapshot NVDA"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
 
 ### 3. Full Market Snapshot
 
 #### Test Prompt 3: Full Market Snapshot
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, Full Market Snapshot: SPY, QQQ, IWM"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"
 
 ### 4. Closing Price Query
 
 #### Test Prompt 4: Closing Price Query
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, what was the closing price of GME today?"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"
 
 ### 5. Performance Analysis
 
 #### Test Prompt 5: Performance Analysis
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, how is SOUN performance doing this week?"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"
 
 ### 6. Top Gainers
 
 #### Test Prompt 6: Top Gainers
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, Top Market Movers Today for Gainers"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Gainers"
 
 ### 7. Top Losers
 
 #### Test Prompt 7: Top Losers
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, Top Market Movers Today for Losers"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, Top Market Movers Today for Losers"
 
 ### 8. Support & Resistance
 
 #### Test Prompt 8: Support & Resistance
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, Support & Resistance Levels NVDA"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"
 
 ### 9. Technical Analysis
 
 #### Test Prompt 9: Technical Analysis
 
-"Quick Response Needed with minimal tool calls: Based on Market Status
-Date, Technical Analysis SPY"
+"Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"
 
 ---
 

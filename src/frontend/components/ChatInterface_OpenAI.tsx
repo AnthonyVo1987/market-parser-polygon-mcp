@@ -79,6 +79,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         isLoading: false,
         messages: [...state.messages, action.payload.aiMessage],
+        inputValue: '', // Clear input after successful message send
       };
     case 'SEND_MESSAGE_ERROR':
       return {
@@ -91,6 +92,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
       return {
         ...state,
         inputValue: action.payload,
+      };
+    case 'CLEAR_INPUT':
+      return {
+        ...state,
+        inputValue: '',
       };
     case 'UPDATE_TICKER':
       return {

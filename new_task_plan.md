@@ -47,7 +47,10 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-- Use mcp-playwright Docs tools to understand Playwright Tools for Testing
-- Read & understand the Phases 1-5 that have been implemented, and pending Phase 6: Final Validation and Testing from docs/implementation_plans/cli_gui_performance_optimization_implementation_plan.md
-- Generate a test plan .md doc in docs/implementation_plans/ folder to perform Phase 6: Final Validation and Testing
-- DO NOT START TESTING OR COMMITTING NEW TEST PLAN DOC YET SO USER CAN REVIEW
+- Investigate and fix all of the follow bugs reported by user testing of latest CLI-GUI Optmizations
+
+1. Chat input not cleared after sending a chat
+
+2. AI Agent not correctly using real world time and date. Incorrectly thinks "now, this week, yesterday, today etc" refers to the date of its knowledge training data cutoff, and incorrectly uses data, prices from outdated time period.  Need to enforce that for Financial Analysis, AI Agents are NOT ALLOWED TO USE KNOWLEDGE DATA TRAINING CUTOFF BECAUSE Financial Analysis alwasy requires up to date data. For example, requesting for "How did NVDA performance do last week?" and/or "What was closing price of NVDA today?", the AI Agent would incorrectly use dates and prices from back in it's knowledcge data cutoff from ~2024 to respond, BUT obviously this makes no sense because the current year is 2025!  SO the response gives completely inocrrect prices and data because AI Agent is confused between "now, this week, yesterday, today etc" and thinks that means the data of it's knowledge data cutoff dates
+
+3. AI Agent incorrectly thinks it does not have tools to retreive real time prices\data and\or data "now".  AI Agents should use "Snapshot Tools", for anything related to realtime and\or now data\prices.  A 15 minutes quote\data delay is sufficient to meet "Real-time now data".  AI Agents already have ALL the tools needed from the Polygon MCP Server to always give real-time \ now prices\data.  AI Agents should NEVER respond with saying it does NOT have the tools to retreive real-time-data \ quotes because AI Agents DO have all the tools needed.
