@@ -1,0 +1,224 @@
+CONSOLIDATED TEST RESULTS - Fri Sep 26 11:58:54 PDT 2025
+=====================================
+
+TEST 1: Market_Status_Query
+Prompt: Current Market Status
+----------------------------------------
+Status: PASSED
+Response Time: 36.538s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/26/25 11:58:57] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 11:59:08] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/26/25 11:59:09] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Market status: Open                                                          
+ • Server time (local ET): 2025-09-26 14:59:08 -04:00                           
+ • Major U.S. exchanges: NASDAQ Open; NYSE Open; OTC Open                       
+ • Major indices status: S&P 500 Open; Dow Jones Open; NASDAQ Open              
+ • Market segments status: Crypto Open; FX Open                                 
+ • Pre/Post-market: After Hours False; Early Hours False                        
+ • Ticker/Index references:                                                     
+    • S&P 500: SPX (Open)                                                       
+    • Dow Jones: DJI (Open)                                                     
+    • NASDAQ Composite: IXIC (Open)                                             
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Broad market activity: All primary U.S. equity exchanges and the main indices
+   (S&P 500, Dow, NASDAQ) are currently open, indicating ongoing intraday price 
+   discovery and liquidity.                                                     
+ 2 After-hours status: No after-hours or pre-market trading underway at this    
+   moment, suggesting the current price action is driven by regular-session     
+   activity.                                                                    
+ 3 Cross-asset activity: Crypto and FX markets are also reported as open,       
+   signaling active trading across major asset classes alongside equities.      
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 36.538s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 2: Single_Stock_Snapshot
+Prompt: Single Stock Snapshot NVDA
+----------------------------------------
+Status: PASSED
+Response Time: 47.052s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/26/25 11:59:43] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 12:00:04] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/26/25 12:00:05] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: NVDA (Nvidia Corp) — US Stocks, XNAS                                 
+ • Snapshot time: 2025-09-26 11:59 (Market Open)                                
+ • Last Price: N/A (real-time price data not accessible under current plan)     
+ • Bid: N/A                                                                     
+ • Ask: N/A                                                                     
+ • Last Trade Size: N/A                                                         
+ • Last Trade Time: N/A                                                         
+ • Previous Close: N/A                                                          
+ • 52-Week High: N/A                                                            
+ • 52-Week Low: N/A                                                             
+ • Market Cap: $4,326,218,430,000.00                                            
+ • Shares Outstanding: 24,300,000,000                                           
+ • Employees: 36,000                                                            
+ • Listing Date: 1999-01-22                                                     
+ • Primary Exchange: XNAS (Nasdaq)                                              
+ • Sector/Industry: Semiconductors & AI GPUs                                    
+ • Headquarters: Santa Clara, CA 95051                                          
+ • Website: https://www.nvidia.com                                              
+ • Description: Nvidia is a leading developer of graphics processing units      
+   (GPUs) with strong AI compute platforms (CUDA), expanding data center        
+   networking, and AI model deployment capabilities.                            
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 NVDA remains a dominant AI compute player with massive scale                 
+
+ • Market Cap ≈ $4.326 trillion indicates one of the largest public tech        
+   companies, reflecting leadership in GPUs, AI workloads, and data center      
+   solutions.                                                                   
+ • Large workforce (about 36k) supported by extensive product ecosystem (GPUs,  
+   software platform CUDA, data center networking).                             
+
+ 2 Real-time price data access is currently unavailable in this session         
+
+ • Unable to display last price, bid, ask, or intraday movement due to access   
+   restrictions.                                                                
+ • For a complete snapshot, intraday metrics (last price, daily change, volume, 
+   spread) would be essential.                                                  
+
+ 3 Fundamental snapshot is robust, but intraday context is missing              
+
+ • Listing since 1999-01-22 confirms long-standing market presence.             
+ • 52-week high/low and daily range are not available here, limiting assessment 
+   of recent volatility.                                                        
+ • Company profile suggests strong secular tailwinds from AI adoption and       
+   hyperscale compute demand, but intraday momentum cannot be inferred from the 
+   current data.                                                                
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 47.052s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 3: Full_Market_Snapshot
+Prompt: Full Market Snapshot: SPY, QQQ, IWM
+----------------------------------------
+Status: PASSED
+Response Time: 37.562s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/26/25 12:00:38] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 12:00:52] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/26/25 12:00:53] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • SPY (SPDR S&P 500 ETF)                                                       
+    • Last price: 661.88                                                        
+    • Change today: +3.74 (+0.57%)                                              
+    • Day range: 657.88 – 662.37                                                
+    • Open: 659.51                                                              
+    • Previous close: 658.05                                                    
+    • Volume (today): 47,678,258                                                
+    • VWAP: 660.14                                                              
+ • QQQ (Invesco QQQ Trust)                                                      
+    • Last price: 595.99                                                        
+    • Change today: +2.30 (+0.39%)                                              
+    • Day range: 591.06 – 596.30                                                
+    • Open: 594.35                                                              
+    • Previous close: 593.53                                                    
+    • Volume (today): 44,045,569                                                
+    • VWAP: 594.01                                                              
+ • IWM (iShares Russell 2000 ETF)                                               
+    • Last price: 241.21                                                        
+    • Change today: +1.96 (+0.82%)                                              
+    • Day range: 239.33 – 241.68                                                
+    • Open: 239.62                                                              
+    • Previous close: 239.29                                                    
+    • Volume (today): 21,581,397                                                
+    • VWAP: 240.39                                                              
+ • Market status: Open (as of 12:00 PM ET on 2025-09-26)                        
+ • Quick snapshot context                                                       
+    • All three are trading within their intraday highs, with IWM showing the   
+      strongest intraday percent gain so far.                                   
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Intraday performance leadership                                              
+
+ • IWM +0.82% leads the group, SPY +0.57%, QQQ +0.39%. Indicates a risk-on tilt 
+   favoring small caps among these three, at this snapshot.                     
+
+ 2 Price levels near intraday highs                                             
+
+ • SPY near day high (662.37), QQQ near day high (596.30), IWM near day high    
+   (241.68). The trio is broadly printing near their peak levels for the        
+   session.                                                                     
+
+ 3 Liquidity signals                                                            
+
+ • SPY and QQQ show higher trading volumes (SPY ~47.7M, QQQ ~44.0M) vs IWM      
+   (~21.6M), suggesting better liquidity for SPY/QQQ at this time.              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 37.562s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 4: Closing_Price_Query
+Prompt: GME closing price today
+----------------------------------------
