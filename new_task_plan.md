@@ -47,10 +47,4 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Read, Review, and Understand the project's Lint\PyLInt\ESLint tools\commands\config
-
-## Task 2. Based on your research from Task 1, run comprehensive Lint\PyLInt\ESLint and fix ALL errors and warnings
-
-## Task 3. Validate fixes by running test_consolidated.sh and ensuring all tests passed.  fix anything if needed to make the test_consolidated.sh all pass
-
-## Task 4. If no more lint issues and all tests pass, then Use serena tools to update memories
+## Task 1. Run test_consolidated.sh 3x times and generate a consolidated .md report with granular test details for EACH run, and add section to analyze and average out all 3x runs

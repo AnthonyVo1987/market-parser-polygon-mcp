@@ -1,0 +1,497 @@
+CONSOLIDATED TEST RESULTS - Thu Sep 25 22:20:48 PDT 2025
+=====================================
+
+TEST 1: Market_Status_Query
+Prompt: Current Market Status
+----------------------------------------
+Status: PASSED
+Response Time: 41.894s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:20:51] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:21:10] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/25/25 22:21:11] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Market status: Closed (as of 2025-09-25 22:20:51 local time)                 
+ • Primary US exchanges: NYSE closed, NASDAQ closed                             
+ • After-hours trading: Not active                                              
+ • FX market: Open                                                              
+ • Crypto market: Open                                                          
+ • Indices snapshot (US equities): S&P 500 closed, Dow Jones closed, Nasdaq     
+   Composite closed                                                             
+ • Last traded prices (SPY, QQQ, DIA): N/A (data access not authorized on       
+   current plan)                                                                
+ • Notes: Real-time last-trade data requires a higher-tier subscription         
+
+B. DETAILED ANALYSIS                                                            
+
+ •  1 Current state of the market                                               
+    • All primary US equity venues are closed. This means no new intraday price 
+      formation for SPY/QQQ/DIA until the next session opens.                   
+ •  2 Non-equity markets status                                                 
+    • FX and crypto markets remain open, offering liquidity and price discovery 
+      outside US equities. This can influence risk sentiment and cross-asset    
+      correlations even when stocks are dark.                                   
+ •  3 Data accessibility context                                                
+    • Real-time last-trade data for major equity ETFs (e.g., SPY, QQQ, DIA) is  
+      not accessible under the current plan, limiting precise intraday technical
+      readouts (e.g., current price, intraday range) at this moment. This       
+      constrains the ability to quantify near-term momentum from market open to 
+      close. If needed, a plan upgrade or alternative data feeds could enable   
+      those datapoints.                                                         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 41.894s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 2: Single_Stock_Snapshot
+Prompt: Single Stock Snapshot NVDA
+----------------------------------------
+Status: PASSED
+Response Time: 37.312s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:21:41] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:21:55] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • NVDA Last Trade Price: N/A (not authorized for real-time last trade data on  
+   this plan)                                                                   
+ • NVDA Last Quote: N/A (not authorized for real-time bid/ask data on this plan)
+ • Prev Close (2025-09-24): $176.97                                             
+ • Open (2025-09-24): $179.77                                                   
+ • High (2025-09-24): $179.78                                                   
+ • Low (2025-09-24): $175.40                                                    
+ • Volume (2025-09-24): 143.56 M                                                
+ • After Hours Price: $176.52                                                   
+ • Pre-Market Price: $179.40                                                    
+ • Market Cap: $4.31 T                                                          
+ • Company: Nvidia Corp (NVDA)                                                  
+ • Primary Exchange: NASDAQ (XNAS)                                              
+ • Data date reference: 2025-09-24 (OHLC snapshot)                              
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Recent daily snapshot context                                                
+
+ • The prior-day candle opened at 179.77, reached a high of 179.78, dipped to   
+   175.40, and closed at 176.97 on 2025-09-24 with substantial volume (143.56M).
+   This indicates a wide intraday range and strong trading activity for the     
+   session.                                                                     
+
+ 2 After-hours and pre-market signals                                           
+
+ • After-hours traded at 176.52 and pre-market at 179.40, suggesting after-hours
+   weakness relative to the pre-market session and potential re-pricing when the
+   regular session resumes. The gap between pre-market and after-hours implies  
+   differing sentiment or information flow across sessions.                     
+
+ 3 Scale and accessibility notes                                                
+
+ • NVDA’s reported market cap is around $4.31T, highlighting its immense size   
+   within the tech and AI GPU space. Note that real-time last trade and live    
+   quote data are restricted on this plan, which can limit the immediacy of     
+   intraday decision-making. The available OHLC data provides a solid           
+   completed-session view, but live price/quote granularity is not accessible   
+   here.                                                                        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 37.312s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 3: Full_Market_Snapshot
+Prompt: Full Market Snapshot: SPY, QQQ, IWM
+----------------------------------------
+Status: PASSED
+Response Time: 54.049s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:22:27] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:22:39] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:22:56] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/25/25 22:22:57] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • SPY (ETF)                                                                    
+    • Date reference: 2025-09-24                                                
+    • Open: 664.51                                                              
+    • High: 664.61                                                              
+    • Low: 659.67                                                               
+    • Close: 661.10                                                             
+    • After Hours: 661.71                                                       
+    • Pre-Market: 663.60                                                        
+    • Volume (day): 68,082,229                                                  
+ • QQQ (ETF)                                                                    
+    • Date reference: 2025-09-24                                                
+    • Open: 599.58                                                              
+    • High: 599.90                                                              
+    • Low: 593.36                                                               
+    • Close: 596.10                                                             
+    • After Hours: 596.47                                                       
+    • Pre-Market: 599.81                                                        
+    • Volume (day): 49,850,301                                                  
+ • IWM (ETF)                                                                    
+    • Date reference: 2025-09-24                                                
+    • Open: 243.90                                                              
+    • High: 244.61                                                              
+    • Low: 241.56                                                               
+    • Close: 241.60                                                             
+    • After Hours: 242.07                                                       
+    • Pre-Market: 244.14                                                        
+    • Volume (day): 36,002,182                                                  
+
+Notes:                                                                          
+
+ • Data reflects the last completed trading day (2025-09-24) with after-hours   
+   and pre-market levels provided.                                              
+ • Market status currently: Closed.                                             
+
+B. DETAILED ANALYSIS                                                            
+
+ •  1 After-hours movement vs prior close (estimate)                            
+    • SPY: after-hours 661.71 vs close 661.10 = +0.61 (+0.09%)                  
+    • QQQ: after-hours 596.47 vs close 596.10 = +0.37 (+0.06%)                  
+    • IWM: after-hours 242.07 vs close 241.60 = +0.47 (+0.19%)                  
+ •  2 Intraday range dynamics on 2025-09-24                                     
+    • SPY traded from 664.51 (open) to as low as 659.67 and closed at 661.10, a 
+      daily move of about -0.51% from open to close.                            
+    • QQQ traded from 599.58 (open) to as low as 593.36 and closed at 596.10, a 
+      daily move of about -0.58% from open to close.                            
+    • IWM traded from 243.90 (open) to as low as 241.56 and closed at 241.60, a 
+      daily move of about -0.94% from open to close.                            
+ •  3 Relative positioning snapshot                                             
+    • All three ETFs ended the trading day with negative intraday moves from    
+      open to close, but all showed modest after-hours price upticks relative to
+      their 2025-09-24 close, suggesting slight after-hours demand re-emergence 
+      despite the intraday pullback.                                            
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 54.049s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 4: Closing_Price_Query
+Prompt: GME closing price today
+----------------------------------------
+Status: PASSED
+Response Time: 28.154s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:23:30] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:23:43] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: GME                                                                  
+ • Date: 2025-09-25                                                             
+ • Open: 25.93                                                                  
+ • High: 26.34                                                                  
+ • Low: 25.27                                                                   
+ • Close: 25.27                                                                 
+ • VWAP: 25.69                                                                  
+ • Volume: 8,210,199                                                            
+ • Trades: 64,837                                                               
+ • Interpretation: Closing price today is 25.27 USD.                            
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Today’s close vs open: 25.27 vs 25.93 — decline of approximately 2.54%       
+   intraday.                                                                    
+ 2 Daily range: High 26.34, Low 25.27, closing price near the day’s low and     
+   below the session VWAP (25.69), suggesting selling pressure into close.      
+ 3 Volume activity: 8,210,199 shares traded, with 64,837 trades, indicating a   
+   moderately active day relative to typical in-session volume.                 
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 28.154s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 5: Performance_Analysis
+Prompt: SOUN performance this week
+----------------------------------------
+Status: PASSED
+Response Time: 42.267s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:24:07] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:24:23] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: SOUN                                                                 
+ • Week range: 2025-09-22 to 2025-09-25 (as of 2025-09-25 22:24 UTC)            
+ • Daily close data (week):                                                     
+    • 2025-09-22: 17.31                                                         
+    • 2025-09-23: 18.05                                                         
+    • 2025-09-24: 17.78                                                         
+    • 2025-09-25: 16.35                                                         
+ • Week high: 19.33 (2025-09-23)                                                
+ • Week low: 15.82 (2025-09-25)                                                 
+ • Week start close: 17.31                                                      
+ • Week end close: 16.35                                                        
+ • Week % change: -5.55%                                                        
+ • Weekly volume: 345.71M (345,712,057 shares)                                  
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Price action overview: SOUN moved up from 17.31 on 2025-09-22 to a week high 
+   of 19.33 on 2025-09-23, then trended lower to 16.35 by 2025-09-25, yielding a
+   weekly decline of about 5.55%.                                               
+ 2 Intraday dynamics: After opening at 16.00 on 09-22 and 17.78 on 09-24, the   
+   stock closed higher than open on two days but finished the week lower than   
+   the start, signaling net negative sentiment by week’s end.                   
+ 3 Volume pattern: Highest daily volume occurred on 2025-09-23 (around 120.3M), 
+   with lower but substantial volume on the other days, suggesting heavier      
+   trading activity early in the week followed by steadier, lighter turnover.   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 42.267s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 6: Support_Resistance
+Prompt: NVDA Support & Resistance Levels
+----------------------------------------
+Status: PASSED
+Response Time: 35.371s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:24:58] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:25:13] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: NVDA                                                                 
+ • Date used for levels: 2025-09-24 (yesterday's daily OHLC)                    
+ • Yesterday's OHLC:                                                            
+    • Open: 179.77                                                              
+    • High: 179.78                                                              
+    • Low: 175.40                                                               
+    • Close: 176.97                                                             
+ • Pivot Point (midpoint reference): 177.38                                     
+ • Resistance levels:                                                           
+    • R1: 179.37                                                                
+    • R2: 181.76                                                                
+ • Support levels:                                                              
+    • S1: 174.99                                                                
+    • S2: 172.00                                                                
+ • Day's range (High - Low): 4.38                                               
+ • After-hours price: 176.52                                                    
+ • Pre-market price: 179.40                                                     
+
+B. DETAILED ANALYSIS                                                            
+
+ •  1 Key levels context: Pivot around 177.38 sits between yesterday’s high and 
+      close, with resistance near 179.37 and support near 174.99. These levels  
+      mark the near-term battlegrounds for NVDA based on yesterday’s range.     
+ •  2 Momentum indicators from yesterday: The intraday range of 4.38 and the    
+      close at 176.97 (below pivot) suggest the price finished the day closer to
+      the lower side of the range, potentially signaling more downside pressure 
+      relative to pivot if similar dynamics repeat.                             
+ •  3 Near-term directional cues: Pre-market price at 179.40 touches R1 level,  
+      and after-hours trading around 176.52 sits near the lower end of          
+      yesterday’s range. If price continues to trade around or above R1,        
+      resistance near 181.76 could come into play; if it moves lower, support   
+      near 174.99 and 172.00 become reference points.                           
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 35.371s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+TEST 7: Technical_Analysis
+Prompt: SPY Technical Analysis
+----------------------------------------
+Status: PASSED
+Response Time: 38.069s
+Model: gpt-5-nano
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+> [09/25/25 22:25:42] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/25/25 22:25:57] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: SPY                                                                  
+ • Market status: Closed (as of 2025-09-25 22:25 ET)                            
+ • Last price: N/A (real-time last trade data not authorized for this session)  
+ • Previous close (adjusted): 658.05                                            
+ • Open: 657.94                                                                 
+ • High: 659.41                                                                 
+ • Low: 654.41                                                                  
+ • VWAP (avg price for the session): 657.57                                     
+ • Volume (previous session): 89.62M                                            
+ • Day range (previous session): 654.41 – 659.41                                
+
+Notes                                                                           
+
+ • Data reflects the prior trading session since the market is closed; real-time
+   intraday price is not accessible under the current access level.             
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Intraday range vs close                                                      
+
+ • The prior session saw SPY trade within a 5.00-point range (654.41 to 659.41) 
+   around a close of 658.05, yielding roughly a 0.76% intraday spread from low  
+   to high.                                                                     
+
+ 2 Price relative to VWAP                                                       
+
+ • Close at 658.05 sits about 0.48 above the session VWAP (657.57), indicating a
+   neutral-to-lightly-bullish bias relative to the average price of the day,    
+   though no intraday action is available due to market closure.                
+
+ 3 Key levels to watch (next session)                                           
+
+ • Support: 654.41                                                              
+ • Resistance: 659.41                                                           
+ • If the next open moves decisively beyond these levels, it would imply a      
+   directional shift relative to the previous session’s range and VWAP          
+   reference.                                                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 38.069s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Input stream ended. Goodbye!
+
+========================================
+
+SUMMARY
+=======
+Total Tests: 7
+Passed: 7
+Failed: 0
+Success Rate: 100%
+Timestamp: Thu Sep 25 22:26:22 PDT 2025
