@@ -81,6 +81,8 @@ credentials.json
 scripts/
 *.log
 logs/
+!logs/.gitkeep
+!.serena/logs/
 json_workflow_debug.log
 node_modules
 
