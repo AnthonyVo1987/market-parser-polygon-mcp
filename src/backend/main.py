@@ -18,12 +18,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
-from agents import (
+from agents import (  # function_tool,  # Removed - no longer needed after removing save_analysis_report
     Agent,
     GuardrailFunctionOutput,
     Runner,
     SQLiteSession,
-    # function_tool,  # Removed - no longer needed after removing save_analysis_report
 )
 from agents.mcp import MCPServerStdio
 from cachetools import TTLCache
@@ -151,10 +150,18 @@ class Settings:
         self.rate_limit_rpm: int = config_settings.backend["security"]["rateLimitRPM"]
 
         # GPT-5 model-specific rate limiting from config file
-        self.gpt5_nano_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"]["tpm"]
-        self.gpt5_nano_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"]["rpm"]
-        self.gpt5_mini_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"]["tpm"]
-        self.gpt5_mini_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"]["rpm"]
+        self.gpt5_nano_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"][
+            "tpm"
+        ]
+        self.gpt5_nano_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"][
+            "rpm"
+        ]
+        self.gpt5_mini_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"][
+            "tpm"
+        ]
+        self.gpt5_mini_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"][
+            "rpm"
+        ]
 
         # Logging configuration from config file
         self.log_mode: str = config_settings.backend["logging"]["mode"]
@@ -174,10 +181,9 @@ def get_model_rate_limits(model: str) -> dict:
     """Get rate limits for specific GPT-5 models."""
     if model == "gpt-5-nano":
         return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}
-    elif model == "gpt-5-mini":
+    if model == "gpt-5-mini":
         return {"tpm": settings.gpt5_mini_tpm, "rpm": settings.gpt5_mini_rpm}
-    else:
-        return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}  # Default fallback
+    return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}  # Default fallback
 
 
 def validate_request_size(request_tokens: int, model: str) -> bool:
@@ -190,6 +196,7 @@ def get_model_tpm_limit(model: str) -> int:
     """Get TPM limit for specific model."""
     limits = get_model_rate_limits(model)
     return int(limits["tpm"])
+
 
 # Global shared resources for FastAPI lifespan management
 shared_mcp_server = None
@@ -329,8 +336,6 @@ def create_polygon_mcp_server():
         },
         client_session_timeout_seconds=settings.mcp_timeout_seconds,
     )
-
-
 
 
 def generate_cache_key(query: str, ticker: str = "") -> str:
@@ -475,16 +480,16 @@ def print_response(result):
     # Display performance metrics if available
     if hasattr(result, "metadata") and result.metadata:
         console.print("\n[bold cyan]📊 Performance Metrics:[/bold cyan]")
-        
+
         # Display processing time if available
         if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
             console.print(f"   ⏱️  Response Time: {result.metadata.processing_time:.3f}s")
-        
+
         # Extract token information
         token_count = None
         input_tokens = None
         output_tokens = None
-        
+
         if hasattr(result.metadata, "get"):
             token_count = result.metadata.get("tokenCount")
             input_tokens = result.metadata.get("inputTokens")
@@ -499,14 +504,14 @@ def print_response(result):
                 output_tokens = usage.completion_tokens
         elif hasattr(result.metadata, "token_count"):
             token_count = result.metadata.token_count
-        
+
         # Display token information
         if token_count:
             token_display = f"   🔢  Tokens Used: {token_count:,}"
             if input_tokens and output_tokens:
                 token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
             console.print(token_display)
-        
+
         # Display model information
         if hasattr(result.metadata, "model"):
             console.print(f"   🤖  Model: {result.metadata.model}")
@@ -637,6 +642,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 # Add response timing middleware
 @app.middleware("http")
 async def add_process_time_header(request, call_next):
@@ -646,6 +652,7 @@ async def add_process_time_header(request, call_next):
     process_time = time.perf_counter() - start_time
     response.headers["X-Process-Time"] = str(process_time)
     return response
+
 
 # Dynamic CORS configuration using settings
 # Supports both explicit origins and regex for development flexibility
@@ -744,7 +751,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         token_count = None
         input_tokens = None
         output_tokens = None
-        
+
         if result and hasattr(result, "metadata") and result.metadata:
             # Try to extract token information from OpenAI response metadata
             if hasattr(result.metadata, "get"):
@@ -767,13 +774,11 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             timestamp=datetime.now().isoformat(),
             processing_time=None,  # Will be set by middleware
             request_id=request_id,
-            token_count=token_count
+            token_count=token_count,
         )
 
         # Log performance metrics for baseline measurement and monitoring
-        logger.info(
-            f"Performance metrics - Request processed, Request ID: {request_id}"
-        )
+        logger.info(f"Performance metrics - Request processed, Request ID: {request_id}")
 
         # Log token usage if available in metadata
         if token_count:
@@ -790,8 +795,10 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     except Exception as e:
         log_api_response(logger, 500, request_id=request_id)
         logger.error(
-            f"💥 Unhandled exception in chat endpoint",
-            {
+            "💥 Unhandled exception in chat endpoint: %s - %s",
+            type(e).__name__,
+            str(e),
+            extra={
                 "request_id": request_id,
                 "error_type": type(e).__name__,
                 "error_message": str(e),
@@ -1038,7 +1045,7 @@ async def cli_async():
                     try:
                         # Start timing for performance metrics
                         start_time = time.perf_counter()
-                        
+
                         # Create dynamic agent with MCP server for market data access
                         analysis_agent = Agent(
                             name="Financial Analysis Agent",
@@ -1055,37 +1062,29 @@ async def cli_async():
 
                         # Calculate processing time
                         processing_time = time.perf_counter() - start_time
-                        
+
                         # Extract token information from OpenAI response metadata
                         token_count = None
-                        input_tokens = None
-                        output_tokens = None
-                        
+
                         if hasattr(result, "metadata") and result.metadata:
                             # Try to extract token information from OpenAI response metadata
                             if hasattr(result.metadata, "get"):
                                 token_count = result.metadata.get("tokenCount")
-                                input_tokens = result.metadata.get("inputTokens")
-                                output_tokens = result.metadata.get("outputTokens")
                             elif hasattr(result.metadata, "usage"):
                                 # Handle OpenAI usage object format
                                 usage = result.metadata.usage
                                 if hasattr(usage, "total_tokens"):
                                     token_count = usage.total_tokens
-                                if hasattr(usage, "prompt_tokens"):
-                                    input_tokens = usage.prompt_tokens
-                                if hasattr(usage, "completion_tokens"):
-                                    output_tokens = usage.completion_tokens
-                        
+
                         # Create metadata object for CLI response
                         cli_metadata = ResponseMetadata(
                             model=settings.available_models[0],
                             timestamp=datetime.now().isoformat(),
                             processing_time=processing_time,
                             request_id=None,  # CLI doesn't use request IDs
-                            token_count=token_count
+                            token_count=token_count,
                         )
-                        
+
                         # Attach metadata to result object
                         result.metadata = cli_metadata
 
@@ -1094,11 +1093,13 @@ async def cli_async():
 
                     except Exception as e:
                         print_error(e, "AI Model Error")
+
                         # Create a mock result object for error cases
                         class MockResult:
                             def __init__(self, error_msg):
                                 self.final_output = error_msg
                                 self.metadata = None
+
                         result = MockResult(f"Error: Unable to process request. {str(e)}")
 
                     # Display the response with full result object for metadata

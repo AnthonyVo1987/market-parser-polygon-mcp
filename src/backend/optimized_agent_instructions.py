@@ -12,18 +12,18 @@ from typing import Optional
 
 class OptimizedAgentInstructions:
     """Optimized agent instructions with intelligent caching."""
-    
+
     def __init__(self, cache_ttl_seconds: int = 60):
         """
         Initialize with configurable cache TTL.
-        
+
         Args:
             cache_ttl_seconds: How long to cache the datetime context (default: 60 seconds)
         """
         self.cache_ttl = cache_ttl_seconds
         self._cached_context: Optional[str] = None
         self._cache_timestamp: float = 0.0
-        
+
         # Pre-generate static parts of instructions
         self._static_instructions = """Quick Response Needed with minimal tool calls: You are a financial analyst with real-time market data access.
 
@@ -46,16 +46,18 @@ KEY TAKEAWAYS:
 
 DETAILED ANALYSIS:
 [Specific data, metrics, and actionable recommendations]"""
-    
+
     def _get_cached_datetime_context(self) -> str:
         """Get datetime context with intelligent caching."""
         current_time = time.time()
-        
+
         # Check if cache is still valid
-        if (self._cached_context is not None and 
-            current_time - self._cache_timestamp < self.cache_ttl):
+        if (
+            self._cached_context is not None
+            and current_time - self._cache_timestamp < self.cache_ttl
+        ):
             return self._cached_context
-        
+
         # Generate new context
         current_datetime = datetime.now()
         self._cached_context = f"""
@@ -70,12 +72,12 @@ Do NOT use training data cutoff dates or outdated information.
 """
         self._cache_timestamp = current_time
         return self._cached_context
-    
+
     def get_enhanced_agent_instructions(self) -> str:
         """Get enhanced agent instructions with cached datetime context."""
         cached_datetime_context = self._get_cached_datetime_context()
         return self._static_instructions.format(datetime_context=cached_datetime_context)
-    
+
     def clear_cache(self):
         """Clear the datetime context cache."""
         self._cached_context = None
@@ -89,7 +91,7 @@ _optimized_instructions = OptimizedAgentInstructions()
 def get_enhanced_agent_instructions_optimized() -> str:
     """
     Optimized version of get_enhanced_agent_instructions with caching.
-    
+
     This version caches the datetime context for 60 seconds, significantly
     reducing overhead for high-frequency requests while maintaining accuracy.
     """
@@ -99,7 +101,7 @@ def get_enhanced_agent_instructions_optimized() -> str:
 def get_enhanced_agent_instructions_ultra_fast() -> str:
     """
     Ultra-fast version that caches the entire instruction string.
-    
+
     WARNING: This version caches the complete instructions for 60 seconds,
     which means the datetime context may be up to 60 seconds old.
     Only use this if you can tolerate slightly stale datetime information.
@@ -112,7 +114,7 @@ def get_enhanced_agent_instructions_ultra_fast() -> str:
 def get_enhanced_agent_instructions_cached() -> str:
     """
     Simple LRU cache version (caches for the entire application lifetime).
-    
+
     WARNING: This caches indefinitely, so datetime will be stale after first call.
     Only use for testing or if you don't need current datetime.
     """
@@ -127,7 +129,7 @@ CURRENT DATE AND TIME CONTEXT:
 IMPORTANT: Always use the current date and time above for all financial analysis. 
 Do NOT use training data cutoff dates or outdated information.
 """
-    
+
     return f"""Quick Response Needed with minimal tool calls: You are a financial analyst with real-time market data access.
 
 {static_datetime_context}
@@ -154,7 +156,7 @@ DETAILED ANALYSIS:
 if __name__ == "__main__":
     # Test the optimized versions
     print("Testing optimized agent instructions...")
-    
+
     # Test 1: Original version
     start = time.perf_counter()
     for _ in range(1000):
@@ -171,13 +173,15 @@ IMPORTANT: Always use the current date and time above for all financial analysis
 Do NOT use training data cutoff dates or outdated information.
 """
     original_time = (time.perf_counter() - start) * 1000
-    
+
     # Test 2: Optimized version
     start = time.perf_counter()
     for _ in range(1000):
         get_enhanced_agent_instructions_optimized()
     optimized_time = (time.perf_counter() - start) * 1000
-    
+
     print(f"Original version (1000 calls): {original_time:.3f}ms")
     print(f"Optimized version (1000 calls): {optimized_time:.3f}ms")
-    print(f"Performance improvement: {((original_time - optimized_time) / original_time * 100):.1f}%")
+    print(
+        f"Performance improvement: {((original_time - optimized_time) / original_time * 100):.1f}%"
+    )
