@@ -12,57 +12,59 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: implement shared persistent agent architecture with session persistence and caching
+feat: complete Phase 0 dead code cleanup for shared persistent agent implementation
 
-- Add CLI session persistence using SQLiteSession for conversation memory
-- Implement AgentCache class with TTL-based caching for both CLI and GUI
-- Add PerformanceMonitor and PerformanceMetrics for comprehensive monitoring
-- Implement MCPServerMonitor and MCPServerResourceManager for health management
-- Update configuration with session management and monitoring settings
-- Add robust error handling and recovery mechanisms
-- Create comprehensive code review report documenting implementation
+- Remove unused guardrail_agent and finance_analysis_agent from main.py
+- Remove unused finance_guardrail() function and GuardrailFunctionOutput import
+- Delete entire optimized_agent_instructions.py file (never used)
+- Update __init__.py to remove dead function imports and exports
+- Clean up all references to removed code across codebase
+- Fix PerformanceMetrics constructor to accept keyword arguments
+- Resolve all linting errors and ensure code compilation
 
-Performance improvements:
-- 0.4-2.0s faster response times for subsequent requests via agent caching
-- Persistent conversation memory across CLI sessions
-- Bounded memory usage with automatic cache cleanup
-- Comprehensive performance metrics and health monitoring
+Code quality improvements:
+
+- Eliminated 3 unused agent definitions and 1 unused function
+- Removed 1 entire unused module file
+- Cleaned up import statements and package exports
+- Fixed constructor parameter issues
+- Maintained all existing functionality
 
 Files modified:
-- src/backend/main.py: Core implementation with new classes and integration
-- config/app.config.json: Configuration updates for new features
-- docs/code_review_reports/: Comprehensive review documentation
-- .serena/memories/: Implementation memory updates
+
+- src/backend/main.py: Removed dead code and fixed constructor
+- src/backend/__init__.py: Updated imports and exports
+- src/backend/optimized_agent_instructions.py: DELETED (entire file)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## STANDARDIZED TEST PROMPTS
 
-**CRITICAL:** All testing MUST use these standardized prompts to ensure
+__CRITICAL:__ All testing MUST use these standardized prompts to ensure
 consistent, quick responses (30-60 seconds) and avoid false failures from
 complex prompts.
 
 ### Quick Response Test Prompts (Use These Only)
 
-1. **"Quick Response Needed with minimal tool calls: What is the current
-   Market Status?"**
-2. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Single Stock Snapshot NVDA"**
-3. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Full Market Snapshot: SPY, QQQ, IWM"**
-4. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, what was the closing price of GME today?"**
-5. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, how is SOUN performance doing this week?"**
-6. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Gainers"**
-7. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Losers"**
-8. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Support & Resistance Levels NVDA"**
-9. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Technical Analysis SPY"**
+1. __"Quick Response Needed with minimal tool calls: What is the current
+   Market Status?"__
+2. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Single Stock Snapshot NVDA"__
+3. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Full Market Snapshot: SPY, QQQ, IWM"__
+4. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, what was the closing price of GME today?"__
+5. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, how is SOUN performance doing this week?"__
+6. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Gainers"__
+7. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Losers"__
+8. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Support & Resistance Levels NVDA"__
+9. __"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Technical Analysis SPY"__
 
-**MANDATORY RULES:**
+__MANDATORY RULES:__
 
 - ✅ Use ONLY these prompts for testing
 - ✅ Copy prompts EXACTLY as written
@@ -71,7 +73,7 @@ complex prompts.
 - ❌ DO NOT modify these prompts
 - ❌ DO NOT use complex, open-ended queries
 
-**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test
+__📋 COMPLETE PROMPT REFERENCE:__ For the full standardized test
 prompts documentation, see `tests/playwright/test_prompts.md`
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop
@@ -148,38 +150,38 @@ right tool for the right operation
 
 ## Quick Start
 
-**One-Click Application Startup (Recommended):**
+__One-Click Application Startup (Recommended):__
 
-The startup scripts automatically START all development servers BUT **DOES
-NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
+The startup scripts automatically START all development servers BUT __DOES
+NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
 
 ```bash
 # Option 1: Main startup script (recommended)
 ./start-app.sh
 ```
 
-**Prerequisites:** uv, Node.js 18+, API keys in .env
+__Prerequisites:__ uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
 ### start-app.sh (Main Script)
 
-- **Terminal Support**: Tries `gnome-terminal` first, falls back to `xterm`
-- **Cross-Platform**: Works on most Linux distributions and macOS
-- **Automatic Fallback**: Gracefully handles missing terminal emulators
+- __Terminal Support__: Tries `gnome-terminal` first, falls back to `xterm`
+- __Cross-Platform__: Works on most Linux distributions and macOS
+- __Automatic Fallback__: Gracefully handles missing terminal emulators
 
 ## What the Scripts Do
 
 ### 🔄 Server Cleanup
 
 - Kills existing development servers (uvicorn, vite)
-- **Preserves MCP servers** - does not interfere with MCP processes
+- __Preserves MCP servers__ - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
 
-- **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
+- __Backend__: Starts FastAPI server on `http://127.0.0.1:8000`
+- __Frontend__: Starts Vite dev server on `http://127.0.0.1:3000`
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent hard-coded ports (no dynamic allocation)
 
@@ -192,19 +194,19 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ### 🌐 Browser Launch
 
-- **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
+- __NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY__
 
-**Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+__Access:__ <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
 ## Features
 
 ### ⚡ High-Performance UI
 
-- **Lightning Fast Loading**: 85%+ improvement in Core Web Vitals
-- **Optimized Performance**: 256ms First Contentful Paint (FCP)
-- **Smooth Interactions**: All UI interactions are instant and responsive
-- **Memory Efficient**: Optimized memory usage with 13.8MB heap size
-- **Accessibility First**: Full WCAG 2.1 AA compliance
+- __Lightning Fast Loading__: 85%+ improvement in Core Web Vitals
+- __Optimized Performance__: 256ms First Contentful Paint (FCP)
+- __Smooth Interactions__: All UI interactions are instant and responsive
+- __Memory Efficient__: Optimized memory usage with 13.8MB heap size
+- __Accessibility First__: Full WCAG 2.1 AA compliance
 
 ### Natural Language Financial Queries
 
@@ -230,9 +232,9 @@ DETAILED ANALYSIS
 
 ### Multiple Interfaces
 
-- **React Web App** - Modern responsive interface with real-time chat
-- **Enhanced CLI** - Terminal interface with rich formatting
-- **API Endpoints** - RESTful API for integration
+- __React Web App__ - Modern responsive interface with real-time chat
+- __Enhanced CLI__ - Terminal interface with rich formatting
+- __API Endpoints__ - RESTful API for integration
 
 ## Example Usage
 
@@ -261,41 +263,41 @@ maintaining visual quality:
 
 #### Core Web Vitals
 
-- **First Contentful Paint (FCP)**: 256ms (85% better than target)
-- **Largest Contentful Paint (LCP)**: < 500ms (80%+ improvement)
-- **Cumulative Layout Shift (CLS)**: < 0.1 (50%+ improvement)
-- **Time to Interactive (TTI)**: < 1s (70%+ improvement)
+- __First Contentful Paint (FCP)__: 256ms (85% better than target)
+- __Largest Contentful Paint (LCP)__: < 500ms (80%+ improvement)
+- __Cumulative Layout Shift (CLS)__: < 0.1 (50%+ improvement)
+- __Time to Interactive (TTI)__: < 1s (70%+ improvement)
 
 #### Optimization Techniques
 
-- **CSS Minification**: Automated CSS optimization with cssnano
-- **Removed High-Impact Effects**: Eliminated backdrop filters, complex
+- __CSS Minification__: Automated CSS optimization with cssnano
+- __Removed High-Impact Effects__: Eliminated backdrop filters, complex
   shadows, gradients
-- **Simplified Transitions**: Optimized to simple opacity and color transitions
-- **Container Query Replacement**: Replaced with efficient media queries
-- **Bundle Optimization**: Vite build optimizations with tree shaking
-- **Memory Management**: Efficient JavaScript heap usage
+- __Simplified Transitions__: Optimized to simple opacity and color transitions
+- __Container Query Replacement__: Replaced with efficient media queries
+- __Bundle Optimization__: Vite build optimizations with tree shaking
+- __Memory Management__: Efficient JavaScript heap usage
 
 #### Performance Monitoring
 
-- **Real-time Metrics**: Live performance monitoring in the UI
-- **Core Web Vitals Tracking**: Continuous monitoring of key metrics
-- **Memory Usage**: Real-time memory usage display
-- **Response Time**: API response time monitoring
+- __Real-time Metrics__: Live performance monitoring in the UI
+- __Core Web Vitals Tracking__: Continuous monitoring of key metrics
+- __Memory Usage__: Real-time memory usage display
+- __Response Time__: API response time monitoring
 
 ### Performance Testing
 
-- **Lighthouse CI**: Automated performance testing
-- **Visual Regression Testing**: Ensures visual consistency
-- **User Acceptance Testing**: Validates user experience
-- **Cross-browser Testing**: Ensures compatibility
+- __Lighthouse CI__: Automated performance testing
+- __Visual Regression Testing__: Ensures visual consistency
+- __User Acceptance Testing__: Validates user experience
+- __Cross-browser Testing__: Ensures compatibility
 
 ## Architecture
 
-- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
-- **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: Playwright E2E test suite
-- **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
+- __Backend__: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
+- __Frontend__: React 18.2+ with Vite 5.2+ and TypeScript
+- __Testing__: Playwright E2E test suite
+- __Deployment__: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
 
@@ -335,7 +337,7 @@ tests/playwright/        # E2E test suite
 
 ### Common Issues
 
-**Backend not starting:**
+__Backend not starting:__
 
 ```bash
 # Check .env file has API keys
@@ -345,7 +347,7 @@ cat .env | grep API_KEY
 uv install
 ```
 
-**Frontend connection errors:**
+__Frontend connection errors:__
 
 ```bash
 # Verify backend is running
@@ -355,14 +357,14 @@ curl http://127.0.0.1:8000/health
 netstat -tlnp | grep :8000
 ```
 
-**API key issues:**
+__API key issues:__
 
 - Ensure both `POLYGON_API_KEY` and `OPENAI_API_KEY` are set in `.env`
 - Verify API keys are valid and have sufficient credits
 
 ## Disclaimer
 
-**Warning:** This application uses AI and large language models.
+__Warning:__ This application uses AI and large language models.
 Outputs may contain inaccuracies and should not be treated as financial
 advice. Always verify information independently before making financial
 decisions. Use for informational purposes only.

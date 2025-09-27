@@ -20,7 +20,6 @@ from typing import Any, Dict, List, Optional
 
 from agents import (  # function_tool,  # Removed - no longer needed after removing save_analysis_report
     Agent,
-    GuardrailFunctionOutput,
     Runner,
     SQLiteSession,
 )
@@ -615,36 +614,9 @@ B. DETAILED ANALYSIS
 - Focus on the data only"""
 
 
-guardrail_agent = Agent(
-    name="Guardrail check",
-    instructions="""Classify if the user query is finance-related.
-    Include: stocks, ETFs, crypto, forex, market news, fundamentals, economic
-    indicators, ROI calcs, corporate actions.
-    Exclude: non-financial topics (cooking, general trivia, unrelated tech).
-    Disambiguate: if term (e.g., Apple, Tesla) could be both, check for finance
-    context words (price, market, earnings, shares). If unclear, return non-finance.
-    Output: is_about_finance: bool, reasoning: brief why/why not.""",
-    output_type=FinanceOutput,
-    model=settings.available_models[0],
-)
-
-# Main financial analysis agent
-finance_analysis_agent = Agent(
-    name="Financial Analysis Agent",
-    instructions=get_enhanced_agent_instructions(),
-    tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
-    model=settings.available_models[0],
-)
 
 
-async def finance_guardrail(context, agent, input_data):  # pylint: disable=unused-argument
-    """Validate that the prompt is finance-related before running the agent."""
-    result = await Runner.run(guardrail_agent, input_data, context=context)
-    final_output = result.final_output_as(FinanceOutput)
-    return GuardrailFunctionOutput(
-        output_info=final_output,
-        tripwire_triggered=not final_output.is_about_finance,
-    )
+
 
 
 def create_polygon_mcp_server():
