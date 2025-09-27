@@ -161,10 +161,10 @@ echo -e "${CYAN}============================${NC}"
 
 if [ ${#response_times[@]} -gt 0 ]; then
     # Calculate statistics
-    local min_time=${response_times[0]}
-    local max_time=${response_times[0]}
-    local total_time=0
-    local count=0
+    min_time=${response_times[0]}
+    max_time=${response_times[0]}
+    total_time=0
+    count=0
     
     for time in "${response_times[@]}"; do
         if (( $(echo "$time < $min_time" | bc -l 2>/dev/null || echo "0") )); then
@@ -177,7 +177,7 @@ if [ ${#response_times[@]} -gt 0 ]; then
         ((count++))
     done
     
-    local avg_time=$(echo "scale=2; $total_time / $count" | bc -l 2>/dev/null || echo "0")
+    avg_time=$(echo "scale=2; $total_time / $count" | bc -l 2>/dev/null || echo "0")
     
     echo -e "📊 Response Time Statistics:"
     echo -e "   Min: ${min_time}s"
@@ -186,7 +186,7 @@ if [ ${#response_times[@]} -gt 0 ]; then
     echo -e "   Count: $count tests"
     
     # Performance assessment
-    local performance_rating="GOOD"
+    performance_rating="GOOD"
     if (( $(echo "$avg_time > 60" | bc -l 2>/dev/null || echo "0") )); then
         performance_rating="SLOW"
     elif (( $(echo "$avg_time < 30" | bc -l 2>/dev/null || echo "0") )); then
@@ -197,9 +197,9 @@ if [ ${#response_times[@]} -gt 0 ]; then
     
     # Check for performance degradation
     if [ ${#response_times[@]} -ge 2 ]; then
-        local first_time=${response_times[0]}
-        local last_time=${response_times[-1]}
-        local degradation=$(echo "$last_time - $first_time" | bc -l 2>/dev/null || echo "0")
+        first_time=${response_times[0]}
+        last_time=${response_times[-1]}
+        degradation=$(echo "$last_time - $first_time" | bc -l 2>/dev/null || echo "0")
         
         if (( $(echo "$degradation > 10" | bc -l 2>/dev/null || echo "0") )); then
             echo -e "${YELLOW}⚠️  Performance degradation detected: +${degradation}s${NC}"

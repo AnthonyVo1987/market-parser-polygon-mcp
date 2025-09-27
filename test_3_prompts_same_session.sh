@@ -12,7 +12,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # Test configuration
-TIMEOUT=120
+TIMEOUT=180
 CLI_CMD="uv run src/backend/main.py"
 RESULTS_DIR="test_results"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")

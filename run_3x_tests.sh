@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# 5x Test Runs Script
-# Runs test_consolidated.sh 5 times and captures each result
+# 3x Test Runs Script
+# Runs test_consolidated.sh 3 times and captures each result
 
 echo "🚀 Starting 3x Test Runs Analysis"
 echo "================================="
@@ -9,15 +9,16 @@ echo "================================="
 # Create results directory
 mkdir -p test_results/consolidated_3x_runs
 
-# Run 5 tests
-for i in {1..5}; do
+# Run 3 tests
+for i in {1..3}; do
     echo "📋 Starting Run $i of 3..."
     echo "Timestamp: $(date)"
     
     # Run the test with timeout
     timeout 120 ./test_consolidated.sh
     
-    # Copy the result immediately
+    # Wait for the file to be created and copy the result
+    sleep 2
     if [ -f test_results/consolidated_test_results_*.txt ]; then
         cp test_results/consolidated_test_results_*.txt test_results/consolidated_3x_runs/run_${i}_results.txt
         echo "✅ Run $i completed and saved"
@@ -26,7 +27,7 @@ for i in {1..5}; do
     fi
     
     # Wait between runs
-    if [ $i -lt 5 ]; then
+    if [ $i -lt 3 ]; then
         echo "⏳ Waiting 10s before next run..."
         sleep 10
     fi

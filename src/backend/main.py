@@ -56,7 +56,23 @@ try:
     )
 except ImportError:
     # Fallback to absolute imports (when run directly)
-    pass  # ImportError handling - imports already defined in try block
+    from backend.api_models import (
+        AIModel,
+        AIModelId,
+        ModelListResponse,
+        ModelSelectionResponse,
+        ResponseMetadata,
+        SystemHealthResponse,
+        SystemMetrics,
+        SystemStatusResponse,
+    )
+    from backend.direct_prompts import DirectPromptManager
+    from backend.utils.logger import (
+        get_logger,
+        log_api_request,
+        log_api_response,
+        log_mcp_operation,
+    )
 
 load_dotenv()
 
