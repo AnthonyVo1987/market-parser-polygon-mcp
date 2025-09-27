@@ -12,22 +12,20 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Update startup script documentation to prioritize working start-app-xterm.sh
+feat: Migrate sidebar UI components to bottom panels for full-width chat
 
-- Update START_SCRIPT_README.md to prioritize start-app-xterm.sh as RECOMMENDED option
-- Mark start-app.sh as BROKEN with clear warnings and DO NOT USE instructions
-- Update README.md Quick Start section to use start-app-xterm.sh as primary option
-- Update CLAUDE.md and AGENTS.md with consistent startup script recommendations
-- Add status indicators: ✅ WORKING for start-app-xterm.sh, ❌ BROKEN for start-app.sh
-- Include test validation results: "5/5 successful tests with Playwright validation"
-- Fix gnome-terminal syntax in start-app.sh (-- to -e) but keep marked as broken
-- Remove duplicate sections and fix linting errors in START_SCRIPT_README.md
-- Add language specifications to fenced code blocks for markdown compliance
-- Create Serena memories documenting startup script status and documentation updates
+- Restructure ChatInterface_OpenAI layout from two-panel grid to full-width main content
+- Move all sidebar components (ticker input, analysis buttons, export buttons, debug panel, status info, performance metrics) to bottom control panels
+- Eliminate right sidebar panel entirely to give AI chat window full screen width
+- Update CSS from grid-template-columns: 1fr 350px to flexbox layout
+- Maintain all existing functionality while improving user experience
+- Enable vertical scrolling for bottom panels instead of horizontal sidebar
+- Preserve responsive design for different screen sizes
+- Test all button functionality (Snapshot, Technical, Support/Resistance) - all working correctly
+- Test ticker input functionality - working correctly
+- Create comprehensive task completion documentation in Serena memory
 
-This ensures users are guided to the working start-app-xterm.sh script while keeping
-the broken start-app.sh file for future debugging. All documentation is now consistent
-across the project with clear warnings about the non-functional script.
+This change provides users with full-width AI chat interface while keeping all analysis tools accessible via bottom panels that can be scrolled or ignored as needed.
 <!-- LAST_COMPLETED_TASK_END -->
 - **User Experience**: Comprehensive guide for system usage
 - **Developer Experience**: Complete architecture reference

@@ -332,27 +332,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     [logInteraction, sharedTicker]
   );
 
-  // Phase 4: Mobile Sidebar Toggle Handlers
-  const handleToggleMobileSidebar = useCallback(() => {
-    dispatch({ type: 'TOGGLE_MOBILE_SIDEBAR' });
-
-    startTransition(() => {
-      logInteraction('mobile_sidebar_toggle', 'mobile_ui', {
-        isOpen: !isMobileSidebarOpen,
-      });
-    });
-  }, [logInteraction, isMobileSidebarOpen]);
-
-  const handleCloseMobileSidebar = useCallback(() => {
-    dispatch({ type: 'CLOSE_MOBILE_SIDEBAR' });
-
-    startTransition(() => {
-      logInteraction('mobile_sidebar_close', 'mobile_ui', {
-        isOpen: false,
-      });
-    });
-  }, [logInteraction]);
-
   // Handle analysis button clicks
   const handleAnalysisButtonClick = useCallback(
     async (buttonType: AnalysisButtonType, ticker?: string) => {
@@ -423,7 +402,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         {error ? `Error: ${error}` : ''}
       </div>
 
-      {/* MAIN CONTENT PANEL: Header, Messages, Chat Input */}
+      {/* MAIN CONTENT PANEL: Header, Messages, Chat Input - NOW FULL WIDTH */}
       <div className='main-content-panel'>
         {/* SECTION 1: Header - Clean title only */}
         <header className='chat-header' role='banner'>
@@ -524,68 +503,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         </section>
       </div>
 
-      {/* Phase 4: Mobile Sidebar Toggle Button */}
-      <button
-        className='mobile-sidebar-toggle'
-        onClick={handleToggleMobileSidebar}
-        aria-label='Toggle sidebar'
-        aria-expanded={isMobileSidebarOpen}
-        data-testid='mobile-sidebar-toggle'
-      >
-        <svg
-          width='24'
-          height='24'
-          viewBox='0 0 24 24'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <path
-            d='M3 12h18M3 6h18M3 18h18'
-            stroke='currentColor'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-          />
-        </svg>
-      </button>
-
-      {/* Phase 4: Mobile Sidebar Overlay */}
-      {isMobileSidebarOpen && (
-        <div
-          className='mobile-sidebar-overlay'
-          onClick={handleCloseMobileSidebar}
-          aria-hidden='true'
-        />
-      )}
-
-      {/* RIGHT SIDEBAR PANEL: Ticker Input, Analysis Buttons, Export Buttons, Debug */}
-      <div
-        className={`right-sidebar-panel ${isMobileSidebarOpen ? 'open' : ''}`}
-      >
-        {/* Phase 4: Mobile Sidebar Close Button */}
-        <button
-          className='mobile-sidebar-close'
-          onClick={handleCloseMobileSidebar}
-          aria-label='Close sidebar'
-          data-testid='mobile-sidebar-close'
-        >
-          <svg
-            width='24'
-            height='24'
-            viewBox='0 0 24 24'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              d='M18 6L6 18M6 6l12 12'
-              stroke='currentColor'
-              strokeWidth='2'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-            />
-          </svg>
-        </button>
-
+      {/* BOTTOM CONTROL PANELS: All former sidebar components moved here */}
+      <div className='bottom-control-panels' role='complementary'>
         {/* SECTION 4: Ticker Input */}
         <section
           className='ticker-input-section'
@@ -667,85 +586,85 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
             isConnected={true}
           />
         </section>
-      </div>
 
-      {/* BOTTOM CONTROL PANEL: Message Count */}
-      <div className='bottom-control-panel' role='status' aria-live='polite'>
-        <div className='message-count-display'>
-          <span className='message-count-label'>Messages:</span>
-          <span
-            className='message-count-value'
-            aria-label={`Total messages: ${messages.length}`}
-          >
-            {messages.length}
-          </span>
-        </div>
-        <div className='status-info'>
-          <span className='status-label'>Status:</span>
-          <span
-            className={`status-value ${isLoading ? 'status--loading' : 'status--ready'}`}
-            aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
-          >
-            {isLoading ? 'Processing...' : 'Ready'}
-          </span>
-        </div>
-      </div>
+        {/* SECTION 8: Message Count and Status */}
+        <section className='status-section' role='status' aria-live='polite'>
+          <div className='message-count-display'>
+            <span className='message-count-label'>Messages:</span>
+            <span
+              className='message-count-value'
+              aria-label={`Total messages: ${messages.length}`}
+            >
+              {messages.length}
+            </span>
+          </div>
+          <div className='status-info'>
+            <span className='status-label'>Status:</span>
+            <span
+              className={`status-value ${isLoading ? 'status--loading' : 'status--ready'}`}
+              aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
+            >
+              {isLoading ? 'Processing...' : 'Ready'}
+            </span>
+          </div>
+        </section>
 
-      {/* Phase 4: Performance Monitoring Display - Enhanced */}
-      <div
-        className='performance-indicator'
-        data-testid='performance-indicator'
-      >
-        <div className='performance-header'>
-          <h4>Performance Metrics</h4>
-        </div>
-        <div className='performance-metrics-grid'>
-          <div className='performance-metric'>
-            <span className='metric-label'>FCP:</span>
-            <span
-              className={
-                performanceMetrics.fcp && performanceMetrics.fcp < 1500
-                  ? 'good'
-                  : 'warning'
-              }
-            >
-              {performanceMetrics.fcp
-                ? `${performanceMetrics.fcp.toFixed(0)}ms`
-                : 'Calculating...'}
-            </span>
+        {/* SECTION 9: Performance Monitoring Display */}
+        <section
+          className='performance-section'
+          data-testid='performance-indicator'
+        >
+          <div className='performance-header'>
+            <h4>Performance Metrics</h4>
           </div>
-          <div className='performance-metric'>
-            <span className='metric-label'>LCP:</span>
-            <span
-              className={
-                performanceMetrics.lcp && performanceMetrics.lcp < 2500
-                  ? 'good'
-                  : 'warning'
-              }
-            >
-              {performanceMetrics.lcp
-                ? `${performanceMetrics.lcp.toFixed(0)}ms`
-                : 'Calculating...'}
-            </span>
+          <div className='performance-metrics-grid'>
+            <div className='performance-metric'>
+              <span className='metric-label'>FCP:</span>
+              <span
+                className={
+                  performanceMetrics.fcp && performanceMetrics.fcp < 1500
+                    ? 'good'
+                    : 'warning'
+                }
+              >
+                {performanceMetrics.fcp
+                  ? `${performanceMetrics.fcp.toFixed(0)}ms`
+                  : 'Calculating...'}
+              </span>
+            </div>
+            <div className='performance-metric'>
+              <span className='metric-label'>LCP:</span>
+              <span
+                className={
+                  performanceMetrics.lcp && performanceMetrics.lcp < 2500
+                    ? 'good'
+                    : 'warning'
+                }
+              >
+                {performanceMetrics.lcp
+                  ? `${performanceMetrics.lcp.toFixed(0)}ms`
+                  : 'Calculating...'}
+              </span>
+            </div>
+            <div className='performance-metric'>
+              <span className='metric-label'>CLS:</span>
+              <span
+                className={
+                  performanceMetrics.cls && performanceMetrics.cls < 0.1
+                    ? 'good'
+                    : 'warning'
+                }
+              >
+                {performanceMetrics.cls
+                  ? performanceMetrics.cls.toFixed(3)
+                  : 'Calculating...'}
+              </span>
+            </div>
           </div>
-          <div className='performance-metric'>
-            <span className='metric-label'>CLS:</span>
-            <span
-              className={
-                performanceMetrics.cls && performanceMetrics.cls < 0.1
-                  ? 'good'
-                  : 'warning'
-              }
-            >
-              {performanceMetrics.cls
-                ? performanceMetrics.cls.toFixed(3)
-                : 'Calculating...'}
-            </span>
+          <div className='performance-note'>
+            <small>Metrics update after user interaction</small>
           </div>
-        </div>
-        <div className='performance-note'>
-          <small>Metrics update after user interaction</small>
-        </div>
+        </section>
       </div>
     </div>
   );
@@ -790,22 +709,15 @@ export const interfaceStyles = `
     border: 0;
   }
   
-  /* TWO-PANEL LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
+  /* FULL-WIDTH LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
   .chat-interface {
-    display: grid;
-    /* Two-panel layout with bottom control panel */
-    grid-template-columns: 1fr 350px; /* Main content + 350px sidebar */
-    grid-template-rows: 1fr auto; /* Main content + bottom control panel */
-    grid-template-areas: 
-      "main-content sidebar"
-      "bottom-control bottom-control";
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
     background: var(--glass-surface-medium);
-    /* backdrop-filter removed for performance */
     color: var(--neutral-100);
     overflow: hidden; /* Prevent page-level scrolling */
-    gap: 0; /* No gaps between sections for seamless design */
     position: relative;
   }
   
@@ -816,53 +728,31 @@ export const interfaceStyles = `
     left: 0;
     right: 0;
     bottom: 0;
-    /* linear-gradient removed for performance */
     background: var(--neutral-900);
     opacity: 0.05;
     pointer-events: none;
     z-index: -1;
   }
   
-  /* Tablet layout adjustments */
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .chat-interface {
-      grid-template-columns: 1fr 300px; /* Main content + 300px sidebar */
-    }
-  }
-
-  /* Mobile viewport optimizations with stable grid layout */
-  @media (max-width: 768px) {
-    .chat-interface {
-      height: 100vh;
-      height: 100svh; /* Small viewport height for mobile browsers */
-      /* Mobile-optimized two-panel layout */
-      grid-template-areas: 
-        "main-content"
-        "sidebar"
-        "bottom-control";
-      grid-template-columns: 1fr; /* Single column on mobile */
-      grid-template-rows: 1fr auto auto; /* Main content + sidebar + bottom control */
-    }
-  }
-  
-  /* MAIN CONTENT PANEL - Contains header, messages, and chat input */
+  /* MAIN CONTENT PANEL - Now takes full width */
   .main-content-panel {
-    grid-area: main-content;
+    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    width: 100%;
   }
 
-  /* RIGHT SIDEBAR PANEL - Contains ticker input, analysis buttons, export buttons, debug */
-  .right-sidebar-panel {
-    grid-area: sidebar;
+  /* BOTTOM CONTROL PANELS - All former sidebar components */
+  .bottom-control-panels {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    max-height: 50vh; /* Limit height to allow scrolling */
     overflow-y: auto;
     overflow-x: hidden;
-    gap: 0;
+    background: var(--glass-surface-medium);
+    border-top: 1px solid var(--glass-border-highlight);
   }
 
   /* SECTION 1: Header - Professional Fintech Glassmorphic Header with Blue Chat Theme */
@@ -870,17 +760,15 @@ export const interfaceStyles = `
     flex-shrink: 0;
     position: relative;
     background: var(--glass-surface-chat);
-    /* backdrop-filter removed for performance */
     padding: var(--space-4);
     border: var(--border-chat);
     border-bottom: var(--border-chat);
     box-shadow: var(--border-glow-chat);
     text-align: center;
-    min-height: 70px; /* Prevent layout shifts */
+    min-height: 70px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Transition removed for performance */
   }
   
   .chat-header:hover {
@@ -910,7 +798,6 @@ export const interfaceStyles = `
   
   .error-banner {
     background: var(--glass-surface-light);
-    /* backdrop-filter removed for performance */
     border: 1px solid var(--error-500);
     color: var(--error-100);
     padding: var(--space-2) var(--space-4);
@@ -923,23 +810,19 @@ export const interfaceStyles = `
   .messages-section {
     flex: 1;
     overflow-y: auto;
-    overflow-x: hidden; /* Prevent horizontal page scroll */
+    overflow-x: hidden;
     padding: var(--space-4);
     width: 100%;
-    max-width: 100%; /* Remove 800px limit for better mobile */
+    max-width: 100%;
     margin: 0 auto;
-    /* Enhanced focus management - SMOOTH SCROLLING REMOVED FOR PERFORMANCE */
     scroll-behavior: auto;
-    min-height: 0; /* Allow shrinking in flex layout */
-    /* Custom scrollbar for glassmorphic look */
+    min-height: 0;
     scrollbar-width: thin;
     scrollbar-color: var(--neutral-400) transparent;
-    /* Blue Chat Theme Enhancement - Tasks 4 & 6 */
     background: var(--glass-surface-chat);
     border-left: var(--border-chat);
     border-right: var(--border-chat);
     box-shadow: var(--border-glow-chat);
-    /* Transition removed for performance */
   }
   
   .messages-section:hover {
@@ -962,7 +845,6 @@ export const interfaceStyles = `
   
   .messages-section::-webkit-scrollbar-thumb {
     background: var(--glass-surface-light);
-    /* backdrop-filter removed for performance */
     border: 1px solid var(--glass-border-highlight);
     border-radius: var(--radius-full);
   }
@@ -980,7 +862,7 @@ export const interfaceStyles = `
     }
     
     .messages-section::-webkit-scrollbar {
-      width: 10px; /* Thicker scrollbars on mobile */
+      width: 10px;
     }
     
     .welcome-content {
@@ -993,30 +875,6 @@ export const interfaceStyles = `
     
     .welcome-description {
       font-size: 14px;
-    }
-  }
-  
-  /* Tablet adjustments */
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .messages-section {
-      max-width: 900px;
-      padding: 20px;
-    }
-  }
-  
-  /* Desktop optimizations */
-  @media (min-width: 1025px) {
-    .messages-section {
-      max-width: 1000px;
-      padding: 24px;
-    }
-    
-    .welcome-title {
-      font-size: 28px;
-    }
-    
-    .welcome-description {
-      font-size: 18px;
     }
   }
   
@@ -1051,10 +909,6 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
   }
   
-  .welcome-buttons {
-    margin: 0 0 24px 0;
-  }
-  
   .getting-started {
     margin: 0;
     font-size: var(--text-sm);
@@ -1063,10 +917,6 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
   }
   
-  /* ==========================================================================
-     PHASE 3: LOADING STATE ENHANCEMENT - MESSAGE SENT OVERLAY
-     ========================================================================== */
-
   /* MESSAGE SENT Overlay - Prominent loading state */
   .message-sent-overlay {
     position: fixed;
@@ -1075,12 +925,10 @@ export const interfaceStyles = `
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
-    /* backdrop-filter removed for performance */
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    /* animation: fadeIn 0.3s ease-out; removed for performance */
   }
 
   .message-sent-content {
@@ -1090,7 +938,6 @@ export const interfaceStyles = `
     gap: var(--space-4);
     padding: var(--space-8);
     background: var(--glass-surface-chat);
-    /* backdrop-filter removed for performance */
     border: var(--glass-border-highlight);
     border-radius: var(--radius-2xl);
     box-shadow: var(--glass-shadow-2xl);
@@ -1103,7 +950,6 @@ export const interfaceStyles = `
     width: 64px;
     height: 64px;
     color: var(--success-500);
-    /* animation: pulse 2s infinite; removed for performance */
   }
 
   .message-sent-icon svg {
@@ -1128,8 +974,6 @@ export const interfaceStyles = `
     font-weight: 500;
     letter-spacing: 0.02em;
   }
-
-  /* Animations for MESSAGE SENT overlay - removed for performance */
 
   /* Mobile responsive adjustments for MESSAGE SENT overlay */
   @media (max-width: 768px) {
@@ -1156,18 +1000,16 @@ export const interfaceStyles = `
   .chat-input-section {
     flex-shrink: 0;
     background: var(--glass-surface-chat);
-    /* backdrop-filter removed for performance */
     border: var(--border-chat);
     border-top: var(--border-chat);
     border-bottom: var(--border-chat);
     box-shadow: var(--border-glow-chat);
     padding: var(--space-4);
-    min-height: 90px; /* Fixed minimum height prevents jumping */
-    max-height: 150px; /* Prevent excessive expansion */
+    min-height: 90px;
+    max-height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Transition removed for performance */
   }
   
   .chat-input-section:hover {
@@ -1181,24 +1023,12 @@ export const interfaceStyles = `
     margin: 0 auto;
     width: 100%;
   }
-  
 
-  
   /* Mobile input adjustments */
   @media (max-width: 768px) {
     .chat-input-section {
       padding: 12px 8px;
       min-height: 70px;
-    }
-    
-
-  }
-  
-  /* Tablet and desktop input optimizations */
-  @media (min-width: 769px) {
-    .chat-input-section {
-      padding: 20px;
-      min-height: 80px;
     }
   }
   
@@ -1206,7 +1036,6 @@ export const interfaceStyles = `
   .ticker-input-section {
     flex-shrink: 0;
     background: var(--glass-surface-analysis);
-    /* backdrop-filter removed for performance */
     border: var(--border-analysis);
     border-top: var(--border-analysis);
     border-bottom: var(--border-analysis);
@@ -1228,87 +1057,42 @@ export const interfaceStyles = `
   .analysis-buttons-section {
     flex-shrink: 0;
     background: var(--glass-surface-analysis);
-    /* backdrop-filter removed for performance */
     border: var(--border-analysis);
     border-top: var(--border-analysis);
     border-bottom: var(--border-analysis);
     box-shadow: var(--border-glow-analysis);
     padding: var(--space-2) var(--space-4);
-    /* Increased height to accommodate integrated ticker input - no scrolling */
     min-height: 180px; 
     max-height: 280px; 
-    overflow-y: visible; /* Show all content without scrolling */
-    overflow-x: hidden; /* Prevent horizontal overflow */
+    overflow-y: visible;
+    overflow-x: hidden;
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    /* Contain layout changes during loading states */
     contain: layout style;
-    /* Transition removed for performance */
   }
   
   .analysis-buttons-section:hover {
     box-shadow: var(--border-glow-analysis-hover);
   }
   
-
-  
-  .fixed-analysis-buttons {
-    margin: 0;
-    border: none;
-    background: transparent;
-    width: 100%;
-    max-width: 1000px;
-    padding: 0;
-  }
-  
-  .analysis-loading {
-    min-height: 80px;
-    background: #2d3748; /* Dark loading background */
-    border-radius: 8px;
-    margin: 8px 0;
-    color: #cbd5e0; /* Light loading text */
-  }
-  
-  /* Mobile analysis buttons adjustments */
-  @media (max-width: 768px) {
-    .analysis-buttons-section {
-      padding: 6px 8px;
-      min-height: 150px;
-      max-height: 240px;
-    }
-  }
-  
-  /* Tablet and desktop analysis buttons optimizations */
-  @media (min-width: 769px) {
-    .analysis-buttons-section {
-      padding: 12px 20px;
-      min-height: 160px;
-      max-height: 260px;
-    }
-  }
-  
   /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities with Green Export Theme */
   .export-buttons-section {
     flex-shrink: 0;
     background: var(--glass-surface-export);
-    /* backdrop-filter removed for performance */
     border: var(--border-export);
     border-top: var(--border-export);
     border-bottom: var(--border-export);
     box-shadow: var(--border-glow-export);
     padding: var(--space-3) var(--space-4);
-    /* Grid minmax() now controls height - these ensure consistent behavior */
     min-height: 70px; 
     max-height: 120px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-y: auto; /* Enable scrolling if content exceeds bounds */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    /* Contain layout changes during loading states */
+    overflow-y: auto;
+    overflow-x: hidden;
     contain: layout style;
-    /* Transition removed for performance */
   }
   
   .export-buttons-section:hover {
@@ -1324,54 +1108,32 @@ export const interfaceStyles = `
     align-items: center;
   }
   
-  /* Mobile export-recent container adjustments */
-  @media (max-width: 768px) {
-    .export-recent-container {
-      gap: 6px;
-    }
-  }
-  
   /* SECTION 7: Debug Panel - Professional glassmorphic developer information with Orange/Amber Debug Theme */
   .debug-section {
     flex-shrink: 0;
     background: var(--glass-surface-debug);
-    /* backdrop-filter removed for performance */
     border: var(--border-debug);
     border-top: var(--border-debug);
     box-shadow: var(--border-glow-debug);
     padding: var(--space-3) var(--space-4);
-    /* Grid minmax() now controls height - these ensure consistent behavior */
     min-height: 80px; 
     max-height: 120px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-y: auto; /* Enable scrolling if content exceeds bounds */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    /* Contain layout changes during loading states */
+    overflow-y: auto;
+    overflow-x: hidden;
     contain: layout style;
-    /* Transition removed for performance */
   }
   
   .debug-section:hover {
     box-shadow: var(--border-glow-debug-hover);
   }
-  
-  .main-debug-panel {
-    margin: 0;
-    border: none;
-    background: transparent;
-    width: 100%;
-    max-width: 1000px;
-    padding: 0;
-    box-shadow: none;
-  }
 
-  /* BOTTOM CONTROL PANEL - Response Time and Message Count Display */
-  .bottom-control-panel {
-    grid-area: bottom-control;
+  /* SECTION 8: Status Section - Message Count and Status */
+  .status-section {
+    flex-shrink: 0;
     background: var(--glass-surface-debug);
-    /* backdrop-filter removed for performance */
     border: var(--border-debug);
     border-top: var(--border-debug);
     box-shadow: var(--border-glow-debug);
@@ -1386,10 +1148,9 @@ export const interfaceStyles = `
     contain: layout style;
   }
 
-  .bottom-control-panel:hover {
+  .status-section:hover {
     box-shadow: var(--border-glow-debug-hover);
   }
-
 
   .message-count-display {
     display: flex;
@@ -1410,14 +1171,107 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
   }
 
-  /* Mobile bottom control panel adjustments */
+  /* SECTION 9: Performance Section */
+  .performance-section {
+    flex-shrink: 0;
+    background: var(--glass-surface-debug);
+    border: var(--border-debug);
+    border-top: var(--border-debug);
+    box-shadow: var(--border-glow-debug);
+    padding: var(--space-3) var(--space-4);
+    min-height: 80px;
+    max-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    contain: layout style;
+  }
+
+  .performance-section:hover {
+    box-shadow: var(--border-glow-debug-hover);
+  }
+
+  .performance-header h4 {
+    margin: 0 0 var(--space-2) 0;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--neutral-200);
+    font-family: var(--font-inter);
+  }
+
+  .performance-metrics-grid {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .performance-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .metric-label {
+    font-size: var(--text-xs);
+    color: var(--neutral-400);
+    font-family: var(--font-inter);
+  }
+
+  .performance-metric span:last-child {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    font-family: var(--font-inter);
+  }
+
+  .performance-metric .good {
+    color: var(--success-500);
+  }
+
+  .performance-metric .warning {
+    color: var(--warning-500);
+  }
+
+  .performance-note {
+    margin-top: var(--space-2);
+  }
+
+  .performance-note small {
+    font-size: var(--text-xs);
+    color: var(--neutral-500);
+    font-family: var(--font-inter);
+  }
+
+  /* Mobile responsive adjustments */
   @media (max-width: 768px) {
-    .bottom-control-panel {
+    .bottom-control-panels {
+      max-height: 40vh;
+    }
+
+    .ticker-input-section,
+    .analysis-buttons-section,
+    .export-buttons-section,
+    .debug-section,
+    .status-section,
+    .performance-section {
       padding: 8px 12px;
-      min-height: 50px;
-      max-height: 70px;
-      flex-direction: column;
-      gap: 4px;
+      min-height: 60px;
+    }
+
+    .analysis-buttons-section {
+      min-height: 120px;
+      max-height: 200px;
+    }
+
+    .performance-metrics-grid {
+      gap: var(--space-2);
+    }
+
+    .performance-metric {
+      gap: 2px;
     }
 
     .message-count-display,
@@ -1425,126 +1279,8 @@ export const interfaceStyles = `
       font-size: var(--text-xs);
     }
   }
-  
-  /* Mobile export and debug section adjustments */
-  @media (max-width: 768px) {
-    .export-buttons-section {
-      padding: 8px 12px;
-      min-height: 60px;
-      max-height: 100px; /* Increased for both button sets */
-    }
-    
-    .debug-section {
-      padding: 8px 12px;
-      min-height: 50px;
-      max-height: 80px;
-    }
-  }
-  
-  /* Tablet and desktop export and debug section optimizations */
-  @media (min-width: 769px) {
-    .export-buttons-section {
-      padding: 16px 20px;
-      min-height: 70px;
-      max-height: 110px; /* Increased for both button sets */
-    }
-    
-    .debug-section {
-      padding: 16px 20px;
-      min-height: 70px;
-      max-height: 100px;
-    }
-  }
-  
-  /* Export and debug section focus management - DARK MODE */
-  .export-buttons-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  .debug-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  /* Export buttons responsive layout */
-  @media (max-width: 768px) {
-    .export-buttons-grid,
-    .recent-message-buttons {
-      gap: 6px;
-    }
-  }
-  
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
-    .chat-interface {
-      border: 2px solid;
-    }
-    
-    .message-bubble {
-      border: 1px solid;
-    }
-  }
-  
-  /* Modern Grid Layout Stability Enhancements */
-  .chat-interface {
-    /* container-type: inline-size; removed for performance */
-  }
-  
-  /* Media query for ultra-responsive design */
-  @media (max-width: 500px) {
-    .inputs-container {
-      gap: 8px;
-    }
-    
-    .user-inputs-section {
-      min-height: 90px;
-    }
-    
-    .analysis-buttons-section {
-      min-height: 130px;
-    }
-  }
-  
-  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
-  @media (prefers-reduced-motion: reduce) {
-    /* All animations already removed */
-  }
-  
-  /* Focus visible improvements with modern focus rings - DARK MODE */
-  .chat-interface *:focus-visible {
-    outline: 2px solid #63b3ed; /* Light blue focus ring for dark mode */
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-  
-  /* Enhanced section focus management - DARK MODE */
-  .messages-section:focus-within,
-  .chat-input-section:focus-within,
-  .ticker-input-section:focus-within,
-  .analysis-buttons-section:focus-within,
-  .export-buttons-section:focus-within {
-    background-color: rgba(99, 179, 237, 0.1); /* Light blue overlay for dark mode */
-    /* Transition removed for performance */
-  }
-  
-  /* Modern focus indicators for sections - DARK MODE */
-  .chat-input-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  .ticker-input-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-  
-  .analysis-buttons-section:focus-within {
-    border-color: #63b3ed; /* Light blue border for dark mode */
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
 
-  /* Component loading states - Professional glassmorphic loading with layout containment */
+  /* Component loading states */
   .component-loading {
     display: flex;
     align-items: center;
@@ -1555,13 +1291,11 @@ export const interfaceStyles = `
     font-style: italic;
     font-family: var(--font-inter);
     background: var(--glass-surface-light);
-    /* backdrop-filter removed for performance */
     border-radius: var(--radius-lg);
     margin: var(--space-2) 0;
     min-height: 40px;
-    max-height: 60px; /* Prevent loading states from growing too large */
+    max-height: 60px;
     border: var(--glass-border-highlight);
-    /* Ensure loading states don't affect parent section dimensions */
     contain: layout size;
     overflow: hidden;
   }
@@ -1572,304 +1306,48 @@ export const interfaceStyles = `
     flex-shrink: 0;
     font-size: 16px;
     color: var(--primary-400);
-    /* Spinner animation removed for performance */
   }
 
-  /* Loading state variations for different locations */
-  .chat-header .component-loading {
-    margin: 4px 0;
-    min-height: 32px;
-    font-size: 12px;
+  /* Focus visible improvements */
+  .chat-interface *:focus-visible {
+    outline: 2px solid #63b3ed;
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
-  .welcome-buttons .component-loading {
-    margin: 16px 0;
-    min-height: 60px;
-    font-size: 14px;
+  /* Enhanced section focus management */
+  .messages-section:focus-within,
+  .chat-input-section:focus-within,
+  .ticker-input-section:focus-within,
+  .analysis-buttons-section:focus-within,
+  .export-buttons-section:focus-within {
+    background-color: rgba(99, 179, 237, 0.1);
   }
 
-  .conversation-buttons .component-loading {
-    margin: 0;
-    border-radius: 0;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
+  .chat-input-section:focus-within {
+    border-color: #63b3ed;
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
 
-  /* High DPI and Retina Display Support */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  .ticker-input-section:focus-within {
+    border-color: #63b3ed;
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
+  }
+
+  .analysis-buttons-section:focus-within {
+    border-color: #63b3ed;
+    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
     .chat-interface {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    
-    .messages-section::-webkit-scrollbar-thumb,
-    .analysis-buttons-section::-webkit-scrollbar-thumb {
-      border-radius: 4px;
+      border: 2px solid;
     }
   }
-  
-  /* Dark mode is now the default theme - no media queries needed */
-  
-  /* Reduced motion support - ALL ANIMATIONS ALREADY REMOVED FOR PERFORMANCE */
+
+  /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     /* All animations already removed */
   }
-  
-  /* ==========================================================================
-     PHASE 2: INPUT DIFFERENTIATION & LABELING - Enhanced Input Components
-     ========================================================================== */
-
-  /* Chat Input Container - AI CHATBOT INPUT */
-  .chat-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    background: var(--glass-surface-chat);
-    /* backdrop-filter removed for performance */
-    border: var(--glass-border-highlight);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--glass-shadow-lg);
-  }
-
-  .chat-input-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .chat-input-title {
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--primary-500);
-    margin: 0;
-    font-family: var(--font-inter);
-  }
-
-  .chat-input-subtitle {
-    font-size: var(--text-sm);
-    color: var(--neutral-400);
-    margin: 0;
-    font-family: var(--font-inter);
-  }
-
-  .chat-input-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .chat-input-wrapper {
-    display: flex;
-    gap: var(--space-3);
-    align-items: flex-end;
-  }
-
-  .chat-input-textarea {
-    flex: 1;
-    min-height: 120px; /* 6 rows * 20px per row */
-    padding: var(--space-3);
-    background: var(--glass-surface-input);
-    /* backdrop-filter removed for performance */
-    border: var(--glass-border-subtle);
-    border-radius: var(--radius-lg);
-    color: var(--neutral-100);
-    font-size: var(--text-base);
-    font-family: var(--font-inter);
-    resize: vertical;
-    outline: none;
-    transition: opacity 0.2s ease;
-  }
-
-  .chat-input-textarea:focus {
-    border-color: var(--primary-500);
-    /* Complex multi-layer box-shadow simplified for performance */
-    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
-  }
-
-  .chat-input-textarea::placeholder {
-    color: var(--neutral-400);
-  }
-
-  .chat-input-send-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: var(--primary-500);
-    border: none;
-    border-radius: var(--radius-lg);
-    color: white;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .chat-input-send-button:hover:not(:disabled) {
-    background: var(--primary-600);
-    /* transform: translateY(-1px); removed for performance */
-    box-shadow: var(--glass-shadow-lg);
-  }
-
-  .chat-input-send-button:disabled {
-    background: var(--neutral-600);
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .chat-input-send-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Ticker Input Container - BUTTON PROMPT STOCK TICKER */
-  .ticker-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-4);
-    background: var(--glass-surface-ticker);
-    /* backdrop-filter removed for performance */
-    border: var(--glass-border-highlight);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--glass-shadow-lg);
-  }
-
-  .ticker-input-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .ticker-input-title {
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--accent-500);
-    margin: 0;
-    font-family: var(--font-inter);
-  }
-
-  .ticker-input-subtitle {
-    font-size: var(--text-sm);
-    color: var(--neutral-400);
-    margin: 0;
-    font-family: var(--font-inter);
-  }
-
-  .ticker-input-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .ticker-input-wrapper {
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-  }
-
-  .ticker-input-field {
-    flex: 1;
-    height: 48px;
-    padding: var(--space-3);
-    background: var(--glass-surface-input);
-    /* backdrop-filter removed for performance */
-    border: var(--glass-border-subtle);
-    border-radius: var(--radius-lg);
-    color: var(--neutral-100);
-    font-size: var(--text-base);
-    font-family: var(--font-inter);
-    text-transform: uppercase;
-    outline: none;
-    transition: opacity 0.2s ease;
-  }
-
-  .ticker-input-field:focus {
-    border-color: var(--accent-500);
-    /* Complex multi-layer box-shadow simplified for performance */
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-  }
-
-  .ticker-input-field::placeholder {
-    color: var(--neutral-400);
-    text-transform: none;
-  }
-
-  .ticker-input-field.invalid {
-    border-color: var(--error-500);
-    /* Complex multi-layer box-shadow simplified for performance */
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-  }
-
-  .ticker-input-search-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: var(--accent-500);
-    border: none;
-    border-radius: var(--radius-lg);
-    color: white;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .ticker-input-search-button:hover:not(:disabled) {
-    background: var(--accent-600);
-    /* transform: translateY(-1px); removed for performance */
-    box-shadow: var(--glass-shadow-lg);
-  }
-
-  .ticker-input-search-button:disabled {
-    background: var(--neutral-600);
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  .ticker-input-search-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .ticker-input-error {
-    font-size: var(--text-sm);
-    color: var(--error-500);
-    margin-top: var(--space-1);
-    font-family: var(--font-inter);
-  }
-
-  /* Mobile responsive adjustments for input components */
-  @media (max-width: 768px) {
-    .chat-input-container,
-    .ticker-input-container {
-      padding: var(--space-3);
-    }
-
-    .chat-input-title,
-    .ticker-input-title {
-      font-size: var(--text-base);
-    }
-
-    .chat-input-textarea {
-      min-height: 100px; /* Reduced for mobile */
-    }
-
-    .chat-input-wrapper,
-    .ticker-input-wrapper {
-      gap: var(--space-2);
-    }
-
-    .chat-input-send-button,
-    .ticker-input-search-button {
-      width: 44px;
-      height: 44px;
-    }
-  }
-
-  /* Note: Component-specific styles are now included within each lazy-loaded component */
-  /* Import SharedTickerInput styles for seamless integration */
-  @import url('./SharedTickerInput.css');
 `;
