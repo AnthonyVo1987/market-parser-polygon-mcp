@@ -56,23 +56,7 @@ try:
     )
 except ImportError:
     # Fallback to absolute imports (when run directly)
-    from api_models import (
-        AIModel,
-        AIModelId,
-        ModelListResponse,
-        ModelSelectionResponse,
-        ResponseMetadata,
-        SystemHealthResponse,
-        SystemMetrics,
-        SystemStatusResponse,
-    )
-    from direct_prompts import DirectPromptManager
-    from utils.logger import (
-        get_logger,
-        log_api_request,
-        log_api_response,
-        log_mcp_operation,
-    )
+    pass  # ImportError handling - imports already defined in try block
 
 load_dotenv()
 
@@ -238,7 +222,7 @@ class AgentCache:
     """Agent cache for reusing agents with same parameters."""
 
     def __init__(self, cache_ttl: int = 300, max_size: int = 50):
-        self.cache = {}
+        self.cache: Dict[str, Any] = {}
         self.cache_ttl = cache_ttl  # 5 minutes default
         self.max_size = max_size
         self.hit_count = 0
@@ -490,7 +474,7 @@ class PerformanceMetrics:
         mcp_server_response_time: float = 0.0,
         cache_hit_rate: float = 0.0,
         memory_usage: float = 0.0,
-        timestamp: float = None,
+        timestamp: Optional[float] = None,
     ):
         self.agent_creation_time = agent_creation_time
         self.session_access_time = session_access_time
@@ -672,31 +656,21 @@ def get_enhanced_agent_instructions(user_input: str = ""):
     except ImportError:
         # Fallback to static prompt for backward compatibility
         datetime_context = get_current_datetime_context()
-        return f"""Quick Response Needed with minimal tool calls: You are a financial analyst with real-time market data access.
+        return f"""You are a financial analyst with real-time market data access.
 
 {datetime_context}
 
-TOOLS: Polygon.io MCP server for live market data, prices, and financial information.
+TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
+🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
 
 INSTRUCTIONS:
 1. Use current date/time above for all analysis
 2. Gather real-time data using available tools
-3. Structure responses: DATA FIRST → DETAILED ANALYSIS
+3. Structure responses: Format data in bullet point format with 2 decimal points max
 4. Include ticker symbols
 5. Respond quickly with minimal tool calls
 6. Keep responses concise - avoid unnecessary details
-
-OUTPUT FORMAT:
-A. DATA FIRST
-- Format data in bullet point format with 2 decimal points max
-- Provide cleaned up raw format data first, then verbal analysis
-- Convert JSON response attributes to user-friendly terms
-- Include relevant financial data and metrics
-
-B. DETAILED ANALYSIS
-- Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
-- No actionable recommendations
-- Focus on the data only"""
+7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations"""
 
 
 def create_polygon_mcp_server():

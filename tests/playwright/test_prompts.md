@@ -34,43 +34,43 @@ efficiency and quick response optimization system
 
 #### Test Prompt 1: Market Status Query
 
-"Current Market Status" [minimal] [minimal tools] [bullet points] [technical]
+"What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?"
 
 ### 2. Single Stock Snapshot
 
 #### Test Prompt 2: Single Stock Snapshot Price
 
-"Single Stock Snapshot Price NVDA" [minimal] [minimal tools] [bullet points] [technical]
+"Single Stock Snapshot Price NVDA"
 
 ### 3. Full Market Snapshot Price
 
 #### Test Prompt 3: Full Market Snapshot
 
-"[minimal] [minimal tools] [bullet points] [technical] Full Market Snapshot Price: SPY, QQQ, IWM" [minimal] [minimal tools] [bullet points] [technical]
+"Full Market Snapshot Price: SPY, QQQ, IWM"
 
 ### 4. Closing Price Query
 
 #### Test Prompt 4: Closing Price Query
 
-"[minimal] [minimal tools] [bullet points] [technical] GME closing price today" [minimal] [minimal tools] [bullet points] [technical]
+"GME closing price today"
 
 ### 5. Performance Analysis
 
 #### Test Prompt 5: Performance Analysis
 
-"SOUN Price performance this week" [minimal] [minimal tools] [bullet points] [technical]
+"SOUN Price performance this week"
 
 ### 6. Support & Resistance
 
 #### Test Prompt 6: Support & Resistance
 
-"NVDA Price Support & Resistance Levels" [minimal] [minimal tools] [bullet points] [technical]
+"NVDA Price Support & Resistance Levels"
 
 ### 7. Technical Analysis
 
 #### Test Prompt 7: Technical Analysis
 
-"SPY Price Technical Analysis" [minimal] [minimal tools] [bullet points] [technical]
+"SPY Price Technical Analysis"
 
 ---
 

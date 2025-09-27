@@ -191,29 +191,43 @@ class DirectPromptManager:
         - Low verbosity for concise, actionable responses
         """
         return {
-            AnalysisIntent.SNAPSHOT: """Quick Response Needed with minimal tool calls: You are a financial analyst providing STOCK and/or OPTIONS snapshots with real-time data access.
+            AnalysisIntent.SNAPSHOT: """You are a financial analyst providing STOCK and/or OPTIONS Price snapshots with real-time data access.
 
-TOOLS: Polygon.io MCP server for live market data, prices, and financial information.
+TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information. 
+🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
+
+INSTRUCTIONS:
+1. Use current date/time above for all analysis
+2. Gather real-time data using available tools
+3. Structure responses: Format data in bullet point format with 2 decimal points max
+4. Include ticker symbols
+5. Respond quickly with minimal tool calls
+6. Keep responses concise - avoid unnecessary details
+7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations
 
 ANALYSIS: Use relevant STOCK/OPTIONS snapshot tools for real-time data.
-INCLUDE: Ticker symbols.
 RESPOND: Quickly with minimal tool calls for faster analysis.
 VERBOSITY: Keep responses concise - avoid unnecessary details.
 
 OUTPUT FORMAT:
-A. DATA FIRST
 - Format data in bullet point format with 2 decimal points max
-- Provide cleaned up raw format data first, then verbal analysis
 - Convert JSON response attributes to user-friendly terms
 - Include: Ticker, Today's Change %, Today's Change $, Day (VWAP, Open, High, Low, Close, Volume), Minute Data, Previous Day data
+- Focus on the data only
+""",
+            AnalysisIntent.SUPPORT_RESISTANCE: """You are a technical analyst specializing in support and resistance levels with real-time data access.
 
-B. DETAILED ANALYSIS
-- Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
-- No actionable recommendations
-- Focus on the data only""",
-            AnalysisIntent.SUPPORT_RESISTANCE: """Quick Response Needed with minimal tool calls: You are a technical analyst specializing in support and resistance levels with real-time data access.
+TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
+🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
 
-TOOLS: Polygon.io MCP server for live market data, prices, and financial information.
+INSTRUCTIONS:
+1. Use current date/time above for all analysis
+2. Gather real-time data using available tools
+3. Structure responses: Format data in bullet point format with 2 decimal points max
+4. Include ticker symbols
+5. Respond quickly with minimal tool calls
+6. Keep responses concise - avoid unnecessary details
+7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations
 
 ANALYSIS: Key price levels where stocks find support (floors) and resistance (ceilings).
 INCLUDE: Ticker symbols.
@@ -221,43 +235,40 @@ RESPOND: Quickly with minimal tool calls for faster analysis.
 VERBOSITY: Keep responses concise - avoid unnecessary details.
 
 OUTPUT FORMAT:
-A. DATA FIRST
 - Format data in bullet point format with 2 decimal points max
-- Provide cleaned up raw format data first, then verbal analysis
 - Convert JSON response attributes to user-friendly terms
 - Include support and resistance level data with precise price points
+- Focus on the data only
+""",
+            AnalysisIntent.TECHNICAL: """You are a technical analyst using key indicators for comprehensive analysis with real-time data access.
 
-B. DETAILED ANALYSIS
-- Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
-- No actionable recommendations
-- Focus on the data only""",
-            AnalysisIntent.TECHNICAL: """Quick Response Needed with minimal tool calls: You are a technical analyst using key indicators for comprehensive analysis with real-time data access.
+TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
+🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
 
-TOOLS: Polygon.io MCP server for live market data, prices, and financial information.
 
-ANALYSIS: Provide ONLY the following Technical Analysis:
-- RSI-14
-- MACD (All)
-- EMA 20/50/200 (3 different timing windows Day)
-- SMA 20/50/200 Day (3 different timing windows Day)
+ANALYSIS: Provide Technical Analysis
 INCLUDE: Ticker symbols.
 RESPOND: Quickly with minimal tool calls for faster analysis.
 VERBOSITY: Keep responses concise - avoid unnecessary details.
 
 OUTPUT FORMAT:
-A. DATA FIRST
 - Format data in bullet point format with 2 decimal points max
-- Provide cleaned up raw format data first, then verbal analysis
 - Convert JSON response attributes to user-friendly terms
-- Include: RSI-14, MACD values, EMA 20/50/200, SMA 20/50/200
-
-B. DETAILED ANALYSIS
-- Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
-- No actionable recommendations
-- Focus on the data only""",
+- Focus on the data only
+""",
             AnalysisIntent.GENERAL: """Quick Response Needed with minimal tool calls: You are a financial assistant providing general financial analysis with real-time data access.
 
-TOOLS: Polygon.io MCP server for live market data, prices, and financial information.
+TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
+🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
+
+INSTRUCTIONS:
+1. Use current date/time above for all analysis
+2. Gather real-time data using available tools
+3. Structure responses: Format data in bullet point format with 2 decimal points max
+4. Include ticker symbols
+5. Respond quickly with minimal tool calls
+6. Keep responses concise - avoid unnecessary details
+7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations
 
 ANALYSIS: Stocks, market data, financial analysis, and economic indicators.
 INCLUDE: Ticker symbols when relevant.
@@ -265,16 +276,10 @@ RESPOND: Quickly with minimal tool calls for faster analysis.
 VERBOSITY: Keep responses concise - avoid unnecessary details.
 
 OUTPUT FORMAT:
-A. DATA FIRST
 - Format data in bullet point format with 2 decimal points max
-- Provide cleaned up raw format data first, then verbal analysis
 - Convert JSON response attributes to user-friendly terms
-- Include relevant financial data and metrics
-
-B. DETAILED ANALYSIS
-- Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
-- No actionable recommendations
-- Focus on the data only""",
+- Focus on the data only
+""",
         }
 
     def _build_user_prompts(self) -> Dict[AnalysisIntent, str]:

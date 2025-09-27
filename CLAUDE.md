@@ -12,59 +12,52 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Add comprehensive Dynamic Adaptive Prompting System documentation and architecture memory
+feat: optimize all prompts for performance with GPT-5 quick response patterns
 
-## New Documentation
-- **Usage Guide**: Created comprehensive user guide (`docs/dynamic_prompting_usage_guide.md`)
-  - Complete system overview and quick start guide
-  - Detailed customization options (verbosity, tool usage, output format, response style)
-  - Real-world examples and best practices
-  - Integration examples for CLI and GUI usage
-  - Error handling and troubleshooting guidance
+- Add "Quick Response Needed with minimal tool calls" prefix to all AI prompts
+- Update direct_prompts.py with optimized prompt templates for faster responses
+- Enhance dynamic_prompt_manager.py with performance-optimized prompt generation
+- Improve dynamic_prompt_integration.py with streamlined prompt assembly
+- Update test_prompts.md to reflect new quick response optimization approach
+- Fix linting issues: resolve duplicate imports, add type annotations, fix timestamp parameter
+- Maintain backward compatibility while improving response times
+- Optimize prompt structure for minimal tool usage and faster AI agent responses
 
-## Architecture Memory
-- **System Memory**: Created comprehensive architecture memory (`.serena/memories/dynamic_adaptive_prompting_system_architecture.md`)
-  - Complete system component breakdown
-  - User customization options and patterns
-  - Integration architecture details
-  - Security features and performance optimization
-  - File structure and implementation status
+Performance improvements:
 
-## Documentation Features
-- **User-Friendly Format**: Clear tables, examples, and practical use cases
-- **Comprehensive Coverage**: Every aspect of the system explained
-- **Practical Examples**: Real-world scenarios users will encounter
-- **Best Practices**: Guidance on effective usage patterns
-- **Integration Ready**: Examples for both CLI and GUI usage
+- Reduced prompt verbosity for faster processing
+- Streamlined tool call instructions for minimal overhead
+- Enhanced prompt templates for GPT-5 model efficiency
+- Maintained all existing functionality while improving speed
 
-## Technical Improvements
-- **Markdown Quality**: Fixed all linting issues (fenced code blocks, formatting)
-- **Content Organization**: Logical structure with clear sections
-- **Cross-References**: Links to related documentation
-- **Professional Standards**: High-quality documentation following best practices
+Files modified:
 
-## Files Added
-- `docs/dynamic_prompting_usage_guide.md` - Complete user guide (10,287 bytes)
-- `.serena/memories/dynamic_adaptive_prompting_system_architecture.md` - System architecture memory (7,184 bytes)
-
-## Impact
+- src/backend/direct_prompts.py: Updated all prompt templates with quick response optimization
+- src/backend/dynamic_prompt_manager.py: Enhanced prompt generation with performance patterns
+- src/backend/dynamic_prompt_integration.py: Improved prompt assembly and integration
+- src/backend/main.py: Fixed linting issues and import problems
+- tests/playwright/test_prompts.md: Updated documentation for new optimization approach
+<!-- LAST_COMPLETED_TASK_END -->
 - **User Experience**: Comprehensive guide for system usage
 - **Developer Experience**: Complete architecture reference
 - **Documentation Quality**: Professional-grade documentation
 - **System Knowledge**: Preserved architecture knowledge for future development
 
 The Dynamic Adaptive Prompting System now has complete documentation covering both user-facing functionality and technical architecture, enabling effective usage and future development.
+
 - **Type Annotations**: Added proper type hints and documentation
 - **Import Optimization**: Removed unused imports (Enum, List)
 - **Error Handling**: Enhanced exception handling and validation
 
 ## Project Memories
+
 - **Serena Memory Updates**: Comprehensive project documentation in .serena/memories/
 - **Implementation Summary**: Complete technical documentation and architecture details
 - **Test Analysis**: Detailed test results and performance characteristics
 - **Deployment Guidelines**: Production deployment procedures and best practices
 
 ## Files Added/Modified
+
 - **Core System**: dynamic_prompts.py, dynamic_prompt_manager.py, dynamic_prompt_integration.py
 - **Security**: security_features.py, secure_prompt_manager.py, advanced_prompting_features.py
 - **Tests**: test_dynamic_prompting_system.py, test_integration.py, test_user_acceptance.py
@@ -73,6 +66,7 @@ The Dynamic Adaptive Prompting System now has complete documentation covering bo
 - **Project Memory**: 4 Serena memory files with complete project documentation
 
 ## Production Readiness
+
 - **System Stability**: 100% success rate across all test scenarios
 - **Memory Management**: Excellent resource utilization and cleanup
 - **Performance**: Consistent and acceptable response times (23-51s range)
@@ -86,32 +80,32 @@ This implementation represents a significant advancement in the Market Parser Po
 
 ## STANDARDIZED TEST PROMPTS
 
-__CRITICAL:__ All testing MUST use these standardized prompts to ensure
+**CRITICAL:** All testing MUST use these standardized prompts to ensure
 consistent, quick responses (30-60 seconds) and avoid false failures from
 complex prompts.
 
 ### Quick Response Test Prompts (Use These Only)
 
-1. __"Quick Response Needed with minimal tool calls: What is the current
-   Market Status?"__
-2. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Single Stock Snapshot NVDA"__
-3. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Full Market Snapshot: SPY, QQQ, IWM"__
-4. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, what was the closing price of GME today?"__
-5. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, how is SOUN performance doing this week?"__
-6. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Gainers"__
-7. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Losers"__
-8. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Support & Resistance Levels NVDA"__
-9. __"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Technical Analysis SPY"__
+1. **"Quick Response Needed with minimal tool calls: What is the current
+   Market Status?"**
+2. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Single Stock Snapshot NVDA"**
+3. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Full Market Snapshot: SPY, QQQ, IWM"**
+4. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, what was the closing price of GME today?"**
+5. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, how is SOUN performance doing this week?"**
+6. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Gainers"**
+7. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Top Market Movers Today for Losers"**
+8. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Support & Resistance Levels NVDA"**
+9. **"Quick Response Needed with minimal tool calls: Based on Market Status
+   Date, Technical Analysis SPY"**
 
-__MANDATORY RULES:__
+**MANDATORY RULES:**
 
 - ✅ Use ONLY these prompts for testing
 - ✅ Copy prompts EXACTLY as written
@@ -120,7 +114,7 @@ __MANDATORY RULES:__
 - ❌ DO NOT modify these prompts
 - ❌ DO NOT use complex, open-ended queries
 
-__📋 COMPLETE PROMPT REFERENCE:__ For the full standardized test
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test
 prompts documentation, see `tests/playwright/test_prompts.md`
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop
@@ -197,38 +191,38 @@ right tool for the right operation
 
 ## Quick Start
 
-__One-Click Application Startup (Recommended):__
+**One-Click Application Startup (Recommended):**
 
-The startup scripts automatically START all development servers BUT __DOES
-NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
+The startup scripts automatically START all development servers BUT **DOES
+NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
 # Option 1: Main startup script (recommended)
 ./start-app.sh
 ```
 
-__Prerequisites:__ uv, Node.js 18+, API keys in .env
+**Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
 ### start-app.sh (Main Script)
 
-- __Terminal Support__: Tries `gnome-terminal` first, falls back to `xterm`
-- __Cross-Platform__: Works on most Linux distributions and macOS
-- __Automatic Fallback__: Gracefully handles missing terminal emulators
+- **Terminal Support**: Tries `gnome-terminal` first, falls back to `xterm`
+- **Cross-Platform**: Works on most Linux distributions and macOS
+- **Automatic Fallback**: Gracefully handles missing terminal emulators
 
 ## What the Scripts Do
 
 ### 🔄 Server Cleanup
 
 - Kills existing development servers (uvicorn, vite)
-- __Preserves MCP servers__ - does not interfere with MCP processes
+- **Preserves MCP servers** - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
 
-- __Backend__: Starts FastAPI server on `http://127.0.0.1:8000`
-- __Frontend__: Starts Vite dev server on `http://127.0.0.1:3000`
+- **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
+- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent hard-coded ports (no dynamic allocation)
 
@@ -241,19 +235,19 @@ __Prerequisites:__ uv, Node.js 18+, API keys in .env
 
 ### 🌐 Browser Launch
 
-- __NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY__
+- **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
 
-__Access:__ <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+**Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
 ## Features
 
 ### ⚡ High-Performance UI
 
-- __Lightning Fast Loading__: 85%+ improvement in Core Web Vitals
-- __Optimized Performance__: 256ms First Contentful Paint (FCP)
-- __Smooth Interactions__: All UI interactions are instant and responsive
-- __Memory Efficient__: Optimized memory usage with 13.8MB heap size
-- __Accessibility First__: Full WCAG 2.1 AA compliance
+- **Lightning Fast Loading**: 85%+ improvement in Core Web Vitals
+- **Optimized Performance**: 256ms First Contentful Paint (FCP)
+- **Smooth Interactions**: All UI interactions are instant and responsive
+- **Memory Efficient**: Optimized memory usage with 13.8MB heap size
+- **Accessibility First**: Full WCAG 2.1 AA compliance
 
 ### Natural Language Financial Queries
 
@@ -279,9 +273,9 @@ DETAILED ANALYSIS
 
 ### Multiple Interfaces
 
-- __React Web App__ - Modern responsive interface with real-time chat
-- __Enhanced CLI__ - Terminal interface with rich formatting
-- __API Endpoints__ - RESTful API for integration
+- **React Web App** - Modern responsive interface with real-time chat
+- **Enhanced CLI** - Terminal interface with rich formatting
+- **API Endpoints** - RESTful API for integration
 
 ## Example Usage
 
@@ -310,41 +304,41 @@ maintaining visual quality:
 
 #### Core Web Vitals
 
-- __First Contentful Paint (FCP)__: 256ms (85% better than target)
-- __Largest Contentful Paint (LCP)__: < 500ms (80%+ improvement)
-- __Cumulative Layout Shift (CLS)__: < 0.1 (50%+ improvement)
-- __Time to Interactive (TTI)__: < 1s (70%+ improvement)
+- **First Contentful Paint (FCP)**: 256ms (85% better than target)
+- **Largest Contentful Paint (LCP)**: < 500ms (80%+ improvement)
+- **Cumulative Layout Shift (CLS)**: < 0.1 (50%+ improvement)
+- **Time to Interactive (TTI)**: < 1s (70%+ improvement)
 
 #### Optimization Techniques
 
-- __CSS Minification__: Automated CSS optimization with cssnano
-- __Removed High-Impact Effects__: Eliminated backdrop filters, complex
+- **CSS Minification**: Automated CSS optimization with cssnano
+- **Removed High-Impact Effects**: Eliminated backdrop filters, complex
   shadows, gradients
-- __Simplified Transitions__: Optimized to simple opacity and color transitions
-- __Container Query Replacement__: Replaced with efficient media queries
-- __Bundle Optimization__: Vite build optimizations with tree shaking
-- __Memory Management__: Efficient JavaScript heap usage
+- **Simplified Transitions**: Optimized to simple opacity and color transitions
+- **Container Query Replacement**: Replaced with efficient media queries
+- **Bundle Optimization**: Vite build optimizations with tree shaking
+- **Memory Management**: Efficient JavaScript heap usage
 
 #### Performance Monitoring
 
-- __Real-time Metrics__: Live performance monitoring in the UI
-- __Core Web Vitals Tracking__: Continuous monitoring of key metrics
-- __Memory Usage__: Real-time memory usage display
-- __Response Time__: API response time monitoring
+- **Real-time Metrics**: Live performance monitoring in the UI
+- **Core Web Vitals Tracking**: Continuous monitoring of key metrics
+- **Memory Usage**: Real-time memory usage display
+- **Response Time**: API response time monitoring
 
 ### Performance Testing
 
-- __Lighthouse CI__: Automated performance testing
-- __Visual Regression Testing__: Ensures visual consistency
-- __User Acceptance Testing__: Validates user experience
-- __Cross-browser Testing__: Ensures compatibility
+- **Lighthouse CI**: Automated performance testing
+- **Visual Regression Testing**: Ensures visual consistency
+- **User Acceptance Testing**: Validates user experience
+- **Cross-browser Testing**: Ensures compatibility
 
 ## Architecture
 
-- __Backend__: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
-- __Frontend__: React 18.2+ with Vite 5.2+ and TypeScript
-- __Testing__: Playwright E2E test suite
-- __Deployment__: Fixed ports (8000/3000/5500) with one-click startup
+- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
+- **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
+- **Testing**: Playwright E2E test suite
+- **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
 
@@ -384,7 +378,7 @@ tests/playwright/        # E2E test suite
 
 ### Common Issues
 
-__Backend not starting:__
+**Backend not starting:**
 
 ```bash
 # Check .env file has API keys
@@ -394,7 +388,7 @@ cat .env | grep API_KEY
 uv install
 ```
 
-__Frontend connection errors:__
+**Frontend connection errors:**
 
 ```bash
 # Verify backend is running
@@ -404,14 +398,14 @@ curl http://127.0.0.1:8000/health
 netstat -tlnp | grep :8000
 ```
 
-__API key issues:__
+**API key issues:**
 
 - Ensure both `POLYGON_API_KEY` and `OPENAI_API_KEY` are set in `.env`
 - Verify API keys are valid and have sufficient credits
 
 ## Disclaimer
 
-__Warning:__ This application uses AI and large language models.
+**Warning:** This application uses AI and large language models.
 Outputs may contain inaccuracies and should not be treated as financial
 advice. Always verify information independently before making financial
 decisions. Use for informational purposes only.
