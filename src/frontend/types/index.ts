@@ -22,15 +22,6 @@ export interface ChatInputProps {
   onChange?: (value: string) => void;
 }
 
-export interface TickerInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  onAnalyze: () => void;
-  onSearch?: () => void;
-  placeholder?: string;
-  disabled?: boolean;
-  required?: boolean;
-}
 
 export interface DebugPanelProps {
   messageCount?: number;

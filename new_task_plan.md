@@ -47,8 +47,19 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Migrate the current sidebar UI Components, Buttons, and Code to now only be part of the bottom row panels.  End result is that we will no longer have any side bars\panels so that the Ai Chat window has the full screen real estate for the user.  And anything else from the sidebars, needs to now work in the new locations of being in the bottom row panels.  Basically, it will just need alot of vertical scrolling up and down to see and use all the features and buttons, but at least the main window AI chat has full screen width use.  This also cleans up the UI because if user does not care about the buttons  or metrics, they can choose to ignore and NOT scrool down to see those items
+## Task 1. Completely remove and retire the UI Quick Analysis Button Prompts and User Input ticker functionality.  This feature will be re-worked in the future, so let's just retire the current implementation for now to clean up the app and set the scaffolding for the future features
 
-## Task 2. Validate and test new UI changes using 'start-app-xterm.sh' to start the dev servers, and then use playwright tools to perform testing to verify new UI layout, and perform basic tests by pressing each of the buttons to verify functionality
+Requirements:
 
-## Task 3.  use serena to update memories
+- No More user input ticker box and all code removed
+- All 3x buttons for Snapshot, Support Resistance, Technical Anlaysis and code removed
+- Removal and consolidation of All prompts to now only have a single source of truth for the prompts: main.py is the main system prompt and agent instructions
+- CLI backend chat prompts remains unchanged since it already uses main.py
+- GUI user AI chat input will now inherit prompt from CLI backend main.py - End result is no duplicate redudant prompts for CLI user input vs GUI user input
+- App is now streamlined with less complex AI Chatbot functionality with single common consolidated system prompt and agent instructions
+
+## Task 2.  use Playwright Tools to perform testing and validation
+
+## Task 3.  Search for ALL docs to update the new app behavior
+
+## Task 4. use serena to update memories

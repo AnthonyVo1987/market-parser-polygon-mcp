@@ -58,12 +58,12 @@ documentation, see `tests/playwright/test_prompts.md`
 - **Quick Response Optimization** - All prompts enforce minimal tool calls for faster responses
 - **GPT-5 Model-Specific Rate Limiting** - Proper rate limits (200K TPM for nano, 500K TPM for mini)
 
-### ⚡ **Direct Analysis Buttons**
+### ⚡ **Streamlined Chat Interface**
 
-- **One-click analysis** for SNAPSHOT, SUPPORT/RESISTANCE, and TECHNICAL analysis
-- **Automatic ticker detection** from current context
-- **Direct message sending** without intermediate steps
-- **Real-time button states** with loading, success, and error indicators
+- **Direct financial queries** through natural language chat
+- **Simplified user experience** with single input method
+- **Real-time AI responses** with structured financial analysis
+- **Consolidated prompt system** for consistent AI behavior
 
 ### 📊 **Enhanced Performance**
 
@@ -71,7 +71,7 @@ documentation, see `tests/playwright/test_prompts.md`
 - **Real-time response timing** with FastAPI middleware for precise performance measurement
 - **Token counting** with OpenAI response metadata extraction for cost tracking
 - **CLI performance metrics** display with Rich console formatting
-- **Optimized user workflow** reduced from 3 steps to 1 step
+- **Streamlined user workflow** with direct chat interface
 - **Real-time market data** integration with Polygon.io MCP server v0.4.1
 - **Cross-platform compatibility** with CLI and web interfaces
 - **GPT-5 Model Optimization** - Proper model specification prevents rate limiting errors

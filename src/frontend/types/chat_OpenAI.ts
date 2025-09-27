@@ -41,26 +41,6 @@ export interface ApiError {
   details?: Record<string, unknown>;
 }
 
-// Analysis button types
-export type AnalysisButtonType =
-  | 'SNAPSHOT'
-  | 'SUPPORT_RESISTANCE'
-  | 'TECHNICAL';
-
-// Analysis button props interface
-export interface AnalysisButtonProps {
-  onButtonClick: (buttonType: AnalysisButtonType, ticker?: string) => void;
-  isLoading: boolean;
-  currentTicker?: string;
-  disabled?: boolean;
-}
-
-// Button state interface
-export interface ButtonState {
-  loading: boolean;
-  success: boolean;
-  error: string | null;
-}
 
 // Component prop interfaces for better type safety
 export interface ChatInputProps {

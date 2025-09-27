@@ -4,11 +4,10 @@ import {
   memo,
   startTransition,
   useCallback,
-  useDeferredValue,
   useEffect,
   useMemo,
   useReducer,
-  useRef,
+  useRef
 } from 'react';
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
@@ -18,10 +17,9 @@ import {
 } from '../hooks/useDebugLog';
 import { sendChatMessage } from '../services/api_OpenAI';
 import { AIModelId } from '../types/ai_models';
-import { AnalysisButtonType, Message } from '../types/chat_OpenAI';
+import { Message } from '../types/chat_OpenAI';
 import { logger } from '../utils/logger';
 import { usePerformanceMonitoring } from '../utils/performance';
-import AnalysisButtons from './AnalysisButtons';
 
 // Consolidated state interface for useReducer
 interface ChatState {
@@ -29,7 +27,6 @@ interface ChatState {
   isLoading: boolean;
   error: string | null;
   inputValue: string;
-  sharedTicker: string;
   isMobileSidebarOpen: boolean;
 }
 
@@ -48,7 +45,6 @@ type ChatAction =
     };
   }
   | { type: 'UPDATE_INPUT'; payload: string }
-  | { type: 'UPDATE_TICKER'; payload: string }
   | { type: 'CLEAR_ERROR' }
   | { type: 'TOGGLE_MOBILE_SIDEBAR' }
   | { type: 'CLOSE_MOBILE_SIDEBAR' }
@@ -60,7 +56,6 @@ const initialChatState: ChatState = {
   isLoading: false,
   error: null,
   inputValue: '',
-  sharedTicker: 'NVDA',
   isMobileSidebarOpen: false,
 };
 
@@ -98,11 +93,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         inputValue: '',
       };
-    case 'UPDATE_TICKER':
-      return {
-        ...state,
-        sharedTicker: action.payload,
-      };
     case 'CLEAR_ERROR':
       return {
         ...state,
@@ -128,7 +118,6 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import DebugPanel from './DebugPanel';
-import SharedTickerInput from './SharedTickerInput';
 
 // Lazy load secondary components for better performance
 const ExportButtons = lazy(() =>
@@ -149,7 +138,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     isLoading,
     error,
     inputValue,
-    sharedTicker,
     isMobileSidebarOpen,
   } = state;
 
@@ -163,15 +151,13 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // } = useAIModel();
   const currentModel: AIModelId = 'gpt-5-nano' as AIModelId;
 
-  // Use deferred values for non-urgent UI updates to improve responsiveness
-  const deferredSharedTicker = useDeferredValue(sharedTicker);
 
   // Optimize useMemo - Only memoize expensive calculations
   const hasMessages = messages.length > 0;
   const placeholderText = useMemo(
     () =>
-      `Ask about ${sharedTicker} or any financial question... (Shift+Enter for new line)`,
-    [sharedTicker]
+      `Ask any financial question... (Shift+Enter for new line)`,
+    []
   );
 
   // Performance and interaction tracking
@@ -315,66 +301,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     [startTiming, endTiming, logInteraction, currentModel]
   ); // Include currentModel dependency
 
-  const handleTickerChange = useCallback(
-    (newTicker: string) => {
-      // Immediate ticker update using reducer dispatch
-      dispatch({ type: 'UPDATE_TICKER', payload: newTicker });
 
-      // Use startTransition for non-critical logging
-      startTransition(() => {
-        logInteraction('ticker_change', 'analysis_buttons', {
-          oldTicker: sharedTicker,
-          newTicker,
-          source: 'analysis_buttons',
-        });
-      });
-    },
-    [logInteraction, sharedTicker]
-  );
-
-  // Handle analysis button clicks
-  const handleAnalysisButtonClick = useCallback(
-    async (buttonType: AnalysisButtonType, ticker?: string) => {
-      const targetTicker = ticker || sharedTicker;
-
-      if (!targetTicker) {
-        // If no ticker available, send a general message
-        await handleSendMessage(
-          `Please provide ${buttonType.toLowerCase()} analysis`
-        );
-        return;
-      }
-
-      // Create the appropriate message based on button type
-      let message = '';
-      switch (buttonType) {
-        case 'SNAPSHOT':
-          message = `Provide a snapshot analysis for ${targetTicker}`;
-          break;
-        case 'SUPPORT_RESISTANCE':
-          message = `Find support and resistance levels for ${targetTicker}`;
-          break;
-        case 'TECHNICAL':
-          message = `Technical analysis for ${targetTicker}`;
-          break;
-        default:
-          message = `Analyze ${targetTicker}`;
-      }
-
-      // Send the message directly
-      await handleSendMessage(message);
-
-      // Log the interaction
-      startTransition(() => {
-        logInteraction('analysis_button_click', 'analysis_buttons', {
-          buttonType,
-          ticker: targetTicker,
-          message,
-        });
-      });
-    },
-    [handleSendMessage, sharedTicker, logInteraction]
-  );
 
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
   // Removed handleDebugAction as it's now handled internally by DebugPanel
@@ -432,13 +359,11 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
                   Welcome to Financial Analysis Chat
                 </h2>
                 <p className='welcome-description'>
-                  Get instant financial insights powered by AI. Use the ticker
-                  input and quick analysis tools below or type your own
-                  questions.
+                  Get instant financial insights powered by AI. Type your own
+                  questions about stocks, market data, or financial analysis.
                 </p>
                 <p className='getting-started'>
-                  Start by entering a ticker symbol and using the analysis
-                  buttons, or type a message directly.
+                  Start by typing a message directly about any financial topic.
                 </p>
               </div>
             </div>
@@ -505,44 +430,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
       {/* BOTTOM CONTROL PANELS: All former sidebar components moved here */}
       <div className='bottom-control-panels' role='complementary'>
-        {/* SECTION 4: Ticker Input */}
-        <section
-          className='ticker-input-section'
-          role='complementary'
-          aria-label='Stock ticker input'
-        >
-          <Suspense
-            fallback={
-              <div className='component-loading'>Loading ticker input...</div>
-            }
-          >
-            <SharedTickerInput
-              value={deferredSharedTicker}
-              onChange={handleTickerChange}
-              onAnalyze={() =>
-                dispatch({
-                  type: 'UPDATE_INPUT',
-                  payload: `analyze ${deferredSharedTicker}`,
-                })
-              }
-              disabled={isLoading}
-            />
-          </Suspense>
-        </section>
-
-        {/* SECTION 5: Analysis Buttons */}
-        <section
-          className='analysis-buttons-section'
-          role='complementary'
-          aria-label='Quick analysis buttons'
-        >
-          <AnalysisButtons
-            onButtonClick={handleAnalysisButtonClick}
-            isLoading={isLoading}
-            currentTicker={deferredSharedTicker}
-            disabled={isLoading}
-          />
-        </section>
 
         {/* SECTION 6: Export/Recent Buttons */}
         <section
@@ -1032,49 +919,6 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 4: Ticker Input - Professional glassmorphic ticker input with Purple Analysis Theme */
-  .ticker-input-section {
-    flex-shrink: 0;
-    background: var(--glass-surface-analysis);
-    border: var(--border-analysis);
-    border-top: var(--border-analysis);
-    border-bottom: var(--border-analysis);
-    box-shadow: var(--border-glow-analysis);
-    padding: var(--space-2) var(--space-4);
-    min-height: 80px;
-    max-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    contain: layout style;
-  }
-
-  .ticker-input-section:hover {
-    box-shadow: var(--border-glow-analysis-hover);
-  }
-
-  /* SECTION 5: Analysis Buttons - Professional glassmorphic analysis tools with Purple Analysis Theme */
-  .analysis-buttons-section {
-    flex-shrink: 0;
-    background: var(--glass-surface-analysis);
-    border: var(--border-analysis);
-    border-top: var(--border-analysis);
-    border-bottom: var(--border-analysis);
-    box-shadow: var(--border-glow-analysis);
-    padding: var(--space-2) var(--space-4);
-    min-height: 180px; 
-    max-height: 280px; 
-    overflow-y: visible;
-    overflow-x: hidden;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    contain: layout style;
-  }
-  
-  .analysis-buttons-section:hover {
-    box-shadow: var(--border-glow-analysis-hover);
-  }
   
   /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities with Green Export Theme */
   .export-buttons-section {
@@ -1251,8 +1095,6 @@ export const interfaceStyles = `
       max-height: 40vh;
     }
 
-    .ticker-input-section,
-    .analysis-buttons-section,
     .export-buttons-section,
     .debug-section,
     .status-section,
@@ -1261,10 +1103,6 @@ export const interfaceStyles = `
       min-height: 60px;
     }
 
-    .analysis-buttons-section {
-      min-height: 120px;
-      max-height: 200px;
-    }
 
     .performance-metrics-grid {
       gap: var(--space-2);
@@ -1318,8 +1156,6 @@ export const interfaceStyles = `
   /* Enhanced section focus management */
   .messages-section:focus-within,
   .chat-input-section:focus-within,
-  .ticker-input-section:focus-within,
-  .analysis-buttons-section:focus-within,
   .export-buttons-section:focus-within {
     background-color: rgba(99, 179, 237, 0.1);
   }
@@ -1329,15 +1165,6 @@ export const interfaceStyles = `
     box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
   }
 
-  .ticker-input-section:focus-within {
-    border-color: #63b3ed;
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
-
-  .analysis-buttons-section:focus-within {
-    border-color: #63b3ed;
-    box-shadow: inset 0 0 0 1px rgba(99, 179, 237, 0.3);
-  }
 
   /* High contrast mode support */
   @media (prefers-contrast: high) {

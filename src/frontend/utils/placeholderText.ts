@@ -1,7 +1,7 @@
 // Placeholder text utility system for consistent user experience
 
 export interface PlaceholderTextOptions {
-  context?: 'chat' | 'ticker' | 'email' | 'url' | 'general';
+  context?: 'chat' | 'email' | 'url' | 'general';
   userState?: 'idle' | 'typing' | 'loading' | 'error';
   isRequired?: boolean;
   maxLength?: number;
@@ -15,11 +15,6 @@ export const PLACEHOLDER_TEXTS = {
   CHAT_LOADING: 'AI is processing your request...',
   CHAT_ERROR: 'Please try again with a different question...',
 
-  // Ticker input placeholders
-  TICKER_IDLE: 'Enter stock ticker (e.g., AAPL, MSFT, GOOGL)',
-  TICKER_TYPING: 'Enter 1-5 letters for stock symbol...',
-  TICKER_LOADING: 'Searching for stock information...',
-  TICKER_ERROR: 'Please enter a valid stock ticker...',
 
   // Email input placeholders
   EMAIL_IDLE: 'Enter your email address',
@@ -58,31 +53,25 @@ export function getPlaceholderText(
     case 'chat':
       baseText =
         PLACEHOLDER_TEXTS[
-          `CHAT_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
-        ];
-      break;
-    case 'ticker':
-      baseText =
-        PLACEHOLDER_TEXTS[
-          `TICKER_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+        `CHAT_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
       break;
     case 'email':
       baseText =
         PLACEHOLDER_TEXTS[
-          `EMAIL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+        `EMAIL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
       break;
     case 'url':
       baseText =
         PLACEHOLDER_TEXTS[
-          `URL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+        `URL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
       break;
     default:
       baseText =
         PLACEHOLDER_TEXTS[
-          `GENERAL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+        `GENERAL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
   }
 
@@ -112,15 +101,6 @@ export function getChatPlaceholder(
   return getPlaceholderText({ context: 'chat', userState });
 }
 
-export function getTickerPlaceholder(
-  userState: PlaceholderTextOptions['userState'] = 'idle'
-): string {
-  return getPlaceholderText({
-    context: 'ticker',
-    userState,
-    examples: ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA'],
-  });
-}
 
 export function getEmailPlaceholder(
   userState: PlaceholderTextOptions['userState'] = 'idle'
