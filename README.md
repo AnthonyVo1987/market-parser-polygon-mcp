@@ -118,26 +118,27 @@ The startup scripts automatically manage all development servers and
 **open the application in your browser**.
 
 ```bash
-# Option 1: Main startup script (recommended)
-./start-app.sh
-
-# Option 2: XTerm version for better terminal compatibility
+# Option 1: XTerm startup script (RECOMMENDED - WORKING)
 ./start-app-xterm.sh
 
+# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
+# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
+
 # Option 3: Use npm scripts
-npm run start:app          # Main script
-npm run start:app:xterm    # XTerm version
+npm run start:app:xterm    # XTerm version (RECOMMENDED)
+npm run start:app          # Main script (CURRENTLY BROKEN)
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
-### start-app.sh (Main Script)
+### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
 
-- **Terminal Support**: Tries `gnome-terminal` first, falls back to `xterm`
-- **Cross-Platform**: Works on most Linux distributions and macOS
-- **Automatic Fallback**: Gracefully handles missing terminal emulators
+- **Status**: ❌ BROKEN - Script gets stuck and blocks execution
+- **Issue**: Cannot proceed to sleep 15 or Playwright testing
+- **Action**: Keep script file but do not use until fixed
+- **Alternative**: Use start-app-xterm.sh instead
 
 ### start-app-xterm.sh (XTerm Version)
 

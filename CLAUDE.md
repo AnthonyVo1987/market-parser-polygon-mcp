@@ -12,43 +12,22 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Fix Python import issues and validate all test scripts
+feat: Update startup script documentation to prioritize working start-app-xterm.sh
 
-- Fix critical Python import error in main.py (get_logger not defined)
-  - Add proper fallback imports for both relative and absolute import paths
-  - Resolve CLI mode startup failures affecting all test scripts
+- Update START_SCRIPT_README.md to prioritize start-app-xterm.sh as RECOMMENDED option
+- Mark start-app.sh as BROKEN with clear warnings and DO NOT USE instructions
+- Update README.md Quick Start section to use start-app-xterm.sh as primary option
+- Update CLAUDE.md and AGENTS.md with consistent startup script recommendations
+- Add status indicators: ✅ WORKING for start-app-xterm.sh, ❌ BROKEN for start-app.sh
+- Include test validation results: "5/5 successful tests with Playwright validation"
+- Fix gnome-terminal syntax in start-app.sh (-- to -e) but keep marked as broken
+- Remove duplicate sections and fix linting errors in START_SCRIPT_README.md
+- Add language specifications to fenced code blocks for markdown compliance
+- Create Serena memories documenting startup script status and documentation updates
 
-- Fix bash script syntax errors across multiple test files
-  - Remove 'local' variables outside functions in test_load_performance.sh
-  - Increase timeout from 120s to 180s in test_3_prompts_same_session.sh
-  - Fix loop logic in run_3x_tests.sh (was running 5 tests instead of 3)
-
-- Create comprehensive 7-prompt test script
-  - Add test_7_prompts_comprehensive.sh with 90s timeout per test
-  - Implement granular response time tracking and performance classification
-  - Achieve 100% success rate (7/7 tests passing)
-
-- Validate all existing test scripts (8/8 working)
-  - test_conversation_memory.sh: ✅ Working
-  - test_load_performance.sh: ✅ Fixed and working
-  - test_3_prompts_same_session.sh: ✅ Fixed and working
-  - test_agent_caching.sh: ✅ Working
-  - test_memory_usage.sh: ✅ Working
-  - test_session_persistence.sh: ✅ Working
-  - test_consolidated.sh: ✅ Working (7/7 tests passing)
-  - run_3x_tests.sh: ✅ Fixed and working
-
-- Add comprehensive test reports and documentation
-  - Generate detailed test results in test-reports/ directory
-  - Create Serena memories for test results and lessons learned
-  - Document Python import fix and script development process
-
-- Performance validation
-  - All tests completing within 20-70s response time range
-  - 100% success rate across all test scripts
-  - Proper timeout handling and error management
-
-This commit resolves the critical import issue that was preventing all CLI test scripts from working and establishes a robust testing infrastructure for the Market Parser application.
+This ensures users are guided to the working start-app-xterm.sh script while keeping
+the broken start-app.sh file for future debugging. All documentation is now consistent
+across the project with clear warnings about the non-functional script.
 <!-- LAST_COMPLETED_TASK_END -->
 - **User Experience**: Comprehensive guide for system usage
 - **Developer Experience**: Complete architecture reference
@@ -209,19 +188,23 @@ The startup scripts automatically START all development servers BUT **DOES
 NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
-# Option 1: Main startup script (recommended)
-./start-app.sh
+# Option 1: XTerm startup script (RECOMMENDED - WORKING)
+./start-app-xterm.sh
+
+# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
+# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
-### start-app.sh (Main Script)
+### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
 
-- **Terminal Support**: Tries `gnome-terminal` first, falls back to `xterm`
-- **Cross-Platform**: Works on most Linux distributions and macOS
-- **Automatic Fallback**: Gracefully handles missing terminal emulators
+- **Status**: ❌ BROKEN - Script gets stuck and blocks execution
+- **Issue**: Cannot proceed to sleep 15 or Playwright testing
+- **Action**: Keep script file but do not use until fixed
+- **Alternative**: Use start-app-xterm.sh instead
 
 ## What the Scripts Do
 

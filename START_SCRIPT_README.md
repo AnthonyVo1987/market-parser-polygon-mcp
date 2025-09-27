@@ -10,34 +10,36 @@ __One-Click Application Startup (Recommended):__
 The startup scripts automatically START all development servers BUT
 __DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
 
-```bash
-# Option 1: Main startup script (recommended)
-./start-app.sh
-
-# Option 2: XTerm version for better terminal compatibility
+```textbash
+# Option 1: XTerm startup script (RECOMMENDED - WORKING)
 ./start-app-xterm.sh
 
+# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
+# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
+
 # Option 3: Use npm scripts
-npm run start:app          # Main script
-npm run start:app:xterm    # XTerm version
-```
+npm run start:app:xterm    # XTerm version (RECOMMENDED)
+npm run start:app          # Main script (CURRENTLY BROKEN)
+```text
 
 __Prerequisites:__ uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
-### start-app.sh (Main Script)
+### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
 
-- __Terminal Support__: Tries `gnome-terminal` first, falls back to `xterm`
-- __Cross-Platform__: Works on most Linux distributions and macOS
-- __Automatic Fallback__: Gracefully handles missing terminal emulators
+- __Status__: ❌ BROKEN - Script gets stuck and blocks execution
+- __Issue__: Cannot proceed to sleep 15 or Playwright testing
+- __Action__: Keep script file but do not use until fixed
+- __Alternative__: Use start-app-xterm.sh instead
 
-### start-app-xterm.sh (XTerm Version)
+### start-app-xterm.sh (RECOMMENDED - WORKING)
 
 - __XTerm Focused__: Specifically designed for xterm users
 - __Window Positioning__: Places backend and frontend terminals side-by-side
 - __Font Configuration__: Uses readable DejaVu Sans Mono font
 - __Enhanced Display__: Better window titles and layout
+- __Status__: ✅ FULLY TESTED - 5/5 successful tests with Playwright validation
 
 ## What the Scripts Do
 
@@ -67,30 +69,15 @@ __Prerequisites:__ uv, Node.js 18+, API keys in .env
 
 __Access:__ <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
-## Script Variants
-
-### start-app.sh (Main Script)
-
-- __Terminal Support__: Tries `gnome-terminal` first, falls back to `xterm`
-- __Cross-Platform__: Works on most Linux distributions and macOS
-- __Automatic Fallback__: Gracefully handles missing terminal emulators
-
-### start-app-xterm.sh (XTerm Version)
-
-- __XTerm Focused__: Specifically designed for xterm users
-- __Window Positioning__: Places backend and frontend terminals side-by-side
-- __Font Configuration__: Uses readable DejaVu Sans Mono font
-- __Enhanced Display__: Better window titles and layout
-
 ## Configuration
 
 The scripts use __centralized configuration__ from `config/app.config.json` for consistency:
 
-```bash
+```textbash
 # Configuration is loaded from config/app.config.json
 # Backend: 127.0.0.1:8000
 # Frontend: 127.0.0.1:3000
-```
+```text
 
 This ensures:
 
@@ -120,35 +107,35 @@ The scripts provide comprehensive error handling:
 
 ### Port Conflicts
 
-```
+```text
 ❌ Failed to start all servers within timeout period.
 🔍 Troubleshooting:
   • Backend: Check if port 8000 is available
   • Frontend: Check if port 3000 is available
-```
+```text
 
 ### Missing Dependencies
 
-```
+```text
 ❌ No suitable terminal emulator found (gnome-terminal or xterm)
 Please install gnome-terminal or xterm to use this script
-```
+```text
 
 ### Server Startup Issues
 
-```
+```text
 🔍 Troubleshooting:
   • Backend: Verify Python dependencies are installed (uv install)
   • Backend: Check .env file has required API keys
   • Frontend: Verify Node.js dependencies are installed (npm install)
   • Frontend: Check if Node.js >= 18.0.0 is installed
-```
+```text
 
 ## Manual Cleanup
 
 If you need to manually stop servers:
 
-```bash
+```textbash
 # Kill backend server
 pkill -f "uvicorn src.backend.main:app"
 
@@ -157,19 +144,19 @@ pkill -f "npm run frontend:dev"
 pkill -f "vite.*--mode development"
 
 # Or close the terminal windows directly
-```
+```text
 
 ## Troubleshooting
 
 ### Script Won't Run
 
-```bash
+```textbash
 # Make sure scripts are executable
 chmod +x start-app.sh start-app-xterm.sh
 
 # Check script syntax
 bash -n start-app.sh
-```
+```text
 
 ### Servers Start But Health Checks Fail
 
@@ -187,7 +174,7 @@ bash -n start-app.sh
 
 When everything works correctly, you'll see:
 
-```
+```text
 🎯 Market Parser One-Click Startup
 Backend:  http://127.0.0.1:8000
 Frontend: http://127.0.0.1:3000
@@ -207,4 +194,4 @@ Frontend: http://127.0.0.1:3000
 
 💡 Tip: Keep both terminal windows open to see server logs
 🛑 To stop servers: Close both terminal windows or use Ctrl+C in each
-```
+```text

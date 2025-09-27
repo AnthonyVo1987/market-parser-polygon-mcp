@@ -119,21 +119,23 @@ The startup scripts automatically START all development servers BUT **DOES
 NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
-# Option 1: Main startup script (recommended)
-./start-app.sh
+# Option 1: XTerm startup script (RECOMMENDED - WORKING)
+./start-app-xterm.sh
+
+# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
+# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
-### start-app.sh (Main Script)
+### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
 
-- **Terminal Support**: Tries `gnome-terminal` first, falls back to
-  `xterm`
-- **Cross-Platform**: Works on most Linux distributions and macOS
-- **Automatic Fallback**: Gracefully handles missing terminal
-  emulators
+- **Status**: ❌ BROKEN - Script gets stuck and blocks execution
+- **Issue**: Cannot proceed to sleep 15 or Playwright testing
+- **Action**: Keep script file but do not use until fixed
+- **Alternative**: Use start-app-xterm.sh instead
 
 ## What the Scripts Do
 

@@ -27,10 +27,12 @@ pkill -f "npm run frontend:dev" 2>/dev/null
 sleep 2
 echo "✅ Cleanup complete"
 
-# Step B: Start servers in separate terminals
+# Step B: Start servers in separate terminals or background
 echo "🚀 Starting backend server..."
-if command -v gnome-terminal >/dev/null 2>&1; then
-    gnome-terminal --title="Backend Server - Market Parser" -- bash -c "
+
+# Check if we can use terminal emulators (X display available)
+if [ -n "$DISPLAY" ] && command -v gnome-terminal >/dev/null 2>&1; then
+    gnome-terminal --title="Backend Server - Market Parser" -e bash -c "
         echo '🔧 Starting FastAPI backend server...'
         echo 'Host: $BACKEND_HOST'
         echo 'Port: $BACKEND_PORT'
@@ -41,7 +43,7 @@ if command -v gnome-terminal >/dev/null 2>&1; then
         read
     " &
     BACKEND_PID=$!
-elif command -v xterm >/dev/null 2>&1; then
+elif [ -n "$DISPLAY" ] && command -v xterm >/dev/null 2>&1; then
     xterm -T "Backend Server - Market Parser" -e bash -c "
         echo '🔧 Starting FastAPI backend server...'
         echo 'Host: $BACKEND_HOST'
@@ -54,16 +56,19 @@ elif command -v xterm >/dev/null 2>&1; then
     " &
     BACKEND_PID=$!
 else
-    echo "❌ No suitable terminal emulator found (gnome-terminal or xterm)"
-    echo "Please install gnome-terminal or xterm to use this script"
-    exit 1
+    # No X display available (WSL2 without X11 forwarding) - start in background
+    echo "⚠️  No X display available - starting servers in background"
+    echo "   Backend logs will be written to backend.log"
+    nohup uv run uvicorn src.backend.main:app --host $BACKEND_HOST --port $BACKEND_PORT --reload > backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo "   Backend PID: $BACKEND_PID"
 fi
 
 sleep 3  # Wait for backend to initialize
 
 echo "🚀 Starting frontend server..."
-if command -v gnome-terminal >/dev/null 2>&1; then
-    gnome-terminal --title="Frontend Server - Market Parser" -- bash -c "
+if [ -n "$DISPLAY" ] && command -v gnome-terminal >/dev/null 2>&1; then
+    gnome-terminal --title="Frontend Server - Market Parser" -e bash -c "
         echo '🔧 Starting Vite frontend server...'
         echo 'Host: $FRONTEND_HOST'
         echo 'Port: $FRONTEND_PORT'
@@ -74,7 +79,7 @@ if command -v gnome-terminal >/dev/null 2>&1; then
         read
     " &
     FRONTEND_PID=$!
-elif command -v xterm >/dev/null 2>&1; then
+elif [ -n "$DISPLAY" ] && command -v xterm >/dev/null 2>&1; then
     xterm -T "Frontend Server - Market Parser" -e bash -c "
         echo '🔧 Starting Vite frontend server...'
         echo 'Host: $FRONTEND_HOST'
@@ -86,6 +91,12 @@ elif command -v xterm >/dev/null 2>&1; then
         read
     " &
     FRONTEND_PID=$!
+else
+    # No X display available (WSL2 without X11 forwarding) - start in background
+    echo "   Frontend logs will be written to frontend.log"
+    nohup npm run frontend:dev > frontend.log 2>&1 &
+    FRONTEND_PID=$!
+    echo "   Frontend PID: $FRONTEND_PID"
 fi
 
 sleep 5  # Wait for frontend to initialize
@@ -133,14 +144,24 @@ if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
     echo ""
     echo "🎉 All servers are running successfully!"
     echo ""
-    echo "⚠️  IMPORTANT: Both servers are now running in separate terminal windows"
-    echo "   • Backend Server: Running in one terminal window"
-    echo "   • Frontend Server: Running in another terminal window"
-    echo ""
-    echo "🔴 CRITICAL: BOTH servers MUST remain running for the app to work!"
-    echo "   • Keep both terminal windows open at all times"
-    echo "   • Do NOT close the terminal windows while using the app"
-    echo "   • To stop servers: Close both terminal windows or use Ctrl+C in each"
+    if [ -n "$DISPLAY" ]; then
+        echo "⚠️  IMPORTANT: Both servers are now running in separate terminal windows"
+        echo "   • Backend Server: Running in one terminal window"
+        echo "   • Frontend Server: Running in another terminal window"
+        echo ""
+        echo "🔴 CRITICAL: BOTH servers MUST remain running for the app to work!"
+        echo "   • Keep both terminal windows open at all times"
+        echo "   • Do NOT close the terminal windows while using the app"
+        echo "   • To stop servers: Close both terminal windows or use Ctrl+C in each"
+    else
+        echo "⚠️  IMPORTANT: Both servers are now running in the background"
+        echo "   • Backend Server: PID $BACKEND_PID (logs in backend.log)"
+        echo "   • Frontend Server: PID $FRONTEND_PID (logs in frontend.log)"
+        echo ""
+        echo "🔴 CRITICAL: BOTH servers MUST remain running for the app to work!"
+        echo "   • To stop servers: kill $BACKEND_PID $FRONTEND_PID"
+        echo "   • To view logs: tail -f backend.log frontend.log"
+    fi
     echo ""
     echo "🌐 MANUAL BROWSER LAUNCH REQUIRED:"
     echo "   This script does NOT launch the actual application"

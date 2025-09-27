@@ -1,14 +1,16 @@
-feat: Standardize all AI prompts with new DATA FIRST output format
+feat: Update startup script documentation to prioritize working start-app-xterm.sh
 
-- Implement standardized output format across all AnalysisIntent prompts
-- Add "A. DATA FIRST" section with bullet point format and 2 decimal points max
-- Add "B. DETAILED ANALYSIS" section with max 3 key takeaways/insights
-- Update SNAPSHOT prompt to focus on STOCK/OPTIONS snapshots specifically
-- Update TECHNICAL prompt to include only RSI-14, MACD, EMA 20/50/200, SMA 20/50/200
-- Remove redundant analysis descriptions and focus on data-driven responses
-- Convert JSON response attributes to user-friendly terms
-- Maintain quick response optimization and minimal tool call requirements
-- Preserve real-time data access and current date/time context functionality
-- Update main.py get_enhanced_agent_instructions() with new standardized format
+- Update START_SCRIPT_README.md to prioritize start-app-xterm.sh as RECOMMENDED option
+- Mark start-app.sh as BROKEN with clear warnings and DO NOT USE instructions
+- Update README.md Quick Start section to use start-app-xterm.sh as primary option
+- Update CLAUDE.md and AGENTS.md with consistent startup script recommendations
+- Add status indicators: ✅ WORKING for start-app-xterm.sh, ❌ BROKEN for start-app.sh
+- Include test validation results: "5/5 successful tests with Playwright validation"
+- Fix gnome-terminal syntax in start-app.sh (-- to -e) but keep marked as broken
+- Remove duplicate sections and fix linting errors in START_SCRIPT_README.md
+- Add language specifications to fenced code blocks for markdown compliance
+- Create Serena memories documenting startup script status and documentation updates
 
-Improves response consistency and data presentation across all analysis types.
+This ensures users are guided to the working start-app-xterm.sh script while keeping
+the broken start-app.sh file for future debugging. All documentation is now consistent
+across the project with clear warnings about the non-functional script.

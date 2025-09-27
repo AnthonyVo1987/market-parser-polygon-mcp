@@ -47,10 +47,8 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-New Performan testing:
+## Task 1. Migrate the current sidebar UI Components, Buttons, and Code to now only be part of the bottom row panels.  End result is that we will no longer have any side bars\panels so that the Ai Chat window has the full screen real estate for the user.  And anything else from the sidebars, needs to now work in the new locations of being in the bottom row panels.  Basically, it will just need alot of vertical scrolling up and down to see and use all the features and buttons, but at least the main window AI chat has full screen width use.  This also cleans up the UI because if user does not care about the buttons  or metrics, they can choose to ignore and NOT scrool down to see those items
 
-## Task 1. Generate a new .sh test script that will run all 7x tests in tests/playwright/test_prompts.md in the same session sequentially using CLI version 'uv run src/backend/main.py'.  Set a max timeout of 60s PER test.  I.E. 7 Tests x 60s = MAX run time of 420s = 7 minutes.  output results into a single .txt file and save in test-reports folder and include granular test result details for all 7x tests, including the response time
+## Task 2. Validate and test new UI changes using 'start-app-xterm.sh' to start the dev servers, and then use playwright tools to perform testing to verify new UI layout, and perform basic tests by pressing each of the buttons to verify functionality
 
-## Task 2. Based on the .sh script from Task 1, run and test the script and capture data for all 7x tests.  Fix any issues in the script until you get 7/7 passing tests wiht a single output .txt test result
-
-## Task 3. Use serena tools to update memories
+## Task 3.  use serena to update memories
