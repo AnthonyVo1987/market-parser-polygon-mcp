@@ -72,18 +72,6 @@ efficiency and quick response optimization system
 
 "SPY Technical Analysis"
 
-### 8. Top Gainers
-
-#### Test Prompt 8: Top Gainers
-
-"Top 5 Market Movers Today for Gainers"
-
-### 9. Top Losers
-
-#### Test Prompt 9: Top Losers
-
-"Top 5 Market Movers Today for Losers"
-
 ---
 
 ## Usage Guidelines
