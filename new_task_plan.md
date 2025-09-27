@@ -72,20 +72,49 @@ Let's make some adjustments to our system prompts that will be used for both the
 
 ## New Tasks details
 
-## Task 1. After reviewing the New Feature Requirements\ User Story Context\Background above, use Context7 tools, OPenAi cookbook tools, and any other mandatory toolkit tools to scope out the requiremnts to implement the new feature from the New Feature Requirements\ User Story Context\Background.  generate a initial scoping doc .md file and save to 'docs/implementation_plans' folder
+You are tasked with implementing a Dynamic Adaptive Prompting System for the Market Parser Polygon MCP application.
 
-## Task 2. use Context7 tools, OPenAi cookbook tools, and any other mandatory toolkit tools to generate a detailed granular TODO Checklist Tsk Implementation PLan for an AI Agent to implement the new feature.  DO NOT CREATE NEW DOCS FOR THE PLAN YET SO USER CAN REVIEW
+**CRITICAL REQUIREMENT**: You MUST first READ the complete implementation plan document at `docs/implementation_plans/dynamic_adaptive_prompting_system_implementation_plan.md` to understand all requirements, technical specifications, and implementation details. Do NOT proceed with implementation until you have thoroughly read and understood this document.
 
-## Task 3. Review #1: use Context7 tools, OPenAi cookbook tools, and any other mandatory toolkit tools to perform a comprehensive review of the detailed granular TODO Checklist Tsk Implementation PLan for an AI Agent to implement the new feature.  Fix any issues you find.  DO NOT CREATE NEW DOCS FOR THE PLAN YET SO USER CAN REVIEW
+**Implementation Scope:**
 
-## Task 4. Review #2:  use Context7 tools, OPenAi cookbook tools, and any other mandatory toolkit tools to perform a comprehensive review of the detailed granular TODO Checklist Tsk Implementation PLan for an AI Agent to implement the new feature.  Fix any issues you find.  DO NOT CREATE NEW DOCS FOR THE PLAN YET SO USER CAN REVIEW
+- Implement a dynamic prompting system that allows users to customize AI interactions
+- Make CLI and GUI system prompts identical and dynamic
+- Preserve existing button prompt functionality
+- Add user customization for verbosity, tool usage, output format, and response style
+- Implement comprehensive security, validation, and error handling
 
-## Task 5. Review #3:  use Context7 tools, OPenAi cookbook tools, and any other mandatory toolkit tools to perform a comprehensive review of the detailed granular TODO Checklist Tsk Implementation PLan for an AI Agent to implement the new feature.  Fix any issues you find.  DO NOT CREATE NEW DOCS FOR THE PLAN YET SO USER CAN REVIEW
+**Key Requirements:**
 
-## Task 6. Use mandatory tools toolkit to create a new .md doc file in 'docs/implementation_plans' of the new detailed granular TODO Checklist Tsk Implementation PLan for an AI Agent to implement the new feature
+1. **Read the Implementation Plan**: Start by reading `docs/implementation_plans/dynamic_adaptive_prompting_system_implementation_plan.md` completely
+2. **Follow the Phased Approach**: Implement according to the 7-phase plan outlined in the document
+3. **Maintain Security**: Implement all security specifications and validation requirements
+4. **Preserve Functionality**: Ensure existing button prompts remain unchanged
+5. **Performance Targets**: Meet all performance benchmarks specified in the plan
+6. **Testing**: Implement comprehensive testing as specified in the plan
 
-## Task 7. Doc Review: use Context7 tools, OpenAi cookbook tools, and any other mandatory toolkit tools to perform a comprehensive review of the detailed granular TODO Checklist Tsk Implementation PLan doc created in Task 6. Fix any issues you find
+**Implementation Process:**
 
-## Task 8. Provide User a prompt - no docs needed, for user to copy and paste and have an AI Agent implement the full feature with mandatory toolkit tool use for all tasks in the plan generated from the reviewed new plan doc from task 7
+1. Read the complete implementation plan document first
+2. Follow the detailed task checklist for each phase
+3. Implement all technical specifications exactly as documented
+4. Test each component according to the testing specifications
+5. Validate security requirements and performance benchmarks
+6. Update documentation as specified in the plan
 
-## Task 9. Use Serena tools to update project memories
+**Success Criteria:**
+
+- All functional and non-functional requirements met
+- Performance benchmarks achieved
+- Security specifications implemented
+- Testing coverage >90%
+- Existing functionality preserved
+
+**Important Notes:**
+
+- The implementation plan contains all necessary technical details, class structures, and specifications
+- Refer back to the plan document whenever you need clarification on requirements
+- If context gets overloaded, re-read the plan document to maintain focus
+- Follow the exact implementation approach outlined in the plan
+
+Begin by reading the implementation plan document, then proceed with the implementation according to the detailed specifications provided.

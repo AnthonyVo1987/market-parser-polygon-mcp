@@ -584,10 +584,30 @@ Do NOT use training data cutoff dates or outdated information.
 """
 
 
-def get_enhanced_agent_instructions():
-    """Generate enhanced agent instructions with current date/time context and tool awareness."""
-    datetime_context = get_current_datetime_context()
-    return f"""Quick Response Needed with minimal tool calls: You are a financial analyst with real-time market data access.
+def get_enhanced_agent_instructions(user_input: str = ""):
+    """
+    Generate enhanced agent instructions with dynamic customization support.
+    
+    This function replaces the static get_enhanced_agent_instructions function
+    with a dynamic version that supports user customization while maintaining
+    backward compatibility.
+    
+    Args:
+        user_input: Optional user input for customization
+        
+    Returns:
+        Enhanced agent instructions string
+    """
+    try:
+        # Import the dynamic prompt integration
+        from .dynamic_prompt_integration import (
+            get_enhanced_agent_instructions as dynamic_get_instructions,
+        )
+        return dynamic_get_instructions(user_input)
+    except ImportError:
+        # Fallback to static prompt for backward compatibility
+        datetime_context = get_current_datetime_context()
+        return f"""Quick Response Needed with minimal tool calls: You are a financial analyst with real-time market data access.
 
 {datetime_context}
 
@@ -1112,8 +1132,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             
             # Log cache hit rate
             if settings.enable_agent_caching and gui_agent_cache:
-                cache_stats = gui_agent_cache.get_cache_stats()
-                performance_monitor.log_cache_hit_rate(cache_stats["hit_rate"])
+                gui_cache_stats = gui_agent_cache.get_cache_stats()
+                performance_monitor.log_cache_hit_rate(gui_cache_stats["hit_rate"])
 
             # Run the financial analysis agent with the direct prompt
             result = await Runner.run(
@@ -1481,8 +1501,8 @@ async def cli_async():
                         
                         # Log cache hit rate
                         if settings.enable_agent_caching and cli_agent_cache:
-                            cache_stats = cli_agent_cache.get_cache_stats()
-                            performance_monitor.log_cache_hit_rate(cache_stats["hit_rate"])
+                            cli_cache_stats = cli_agent_cache.get_cache_stats()
+                            performance_monitor.log_cache_hit_rate(cli_cache_stats["hit_rate"])
 
                         # Run the financial analysis agent with the direct prompt
                         result = await Runner.run(
@@ -1555,8 +1575,8 @@ async def cli_async():
                 print("📊 CLI session cleaned up")
             
             if 'cli_agent_cache' in globals() and cli_agent_cache:
-                cache_stats = cli_agent_cache.get_cache_stats()
-                print(f"🚀 CLI agent cache stats: {cache_stats['hit_rate']}% hit rate, {cache_stats['cache_size']} entries")
+                cli_cache_stats = cli_agent_cache.get_cache_stats()
+                print(f"🚀 CLI agent cache stats: {cli_cache_stats['hit_rate']}% hit rate, {cli_cache_stats['cache_size']} entries")
                 cli_agent_cache.clear_cache()
                 print("🚀 CLI agent cache cleaned up")
         except Exception as cleanup_error:
