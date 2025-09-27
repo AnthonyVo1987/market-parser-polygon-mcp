@@ -506,13 +506,13 @@ export function withPerformanceMonitoring<P extends object>(
 }
 
 // Phase 4: Lazy Loading Utilities
-export function createLazyComponent<T extends React.ComponentType<any>>(
+export function createLazyComponent<T extends React.ComponentType<unknown>>(
     importFunc: () => Promise<{ default: T }>,
     fallback?: React.ReactNode
-): React.ComponentType<any> {
+): React.ComponentType<unknown> {
     const LazyComponent = lazy(importFunc);
 
-    const LazyWrapper = (props: any) => (
+    const LazyWrapper = (props: React.ComponentProps<T>) => (
         <Suspense fallback={fallback || <div>Loading...</div>}>
             <LazyComponent {...props} />
         </Suspense>

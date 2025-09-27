@@ -131,13 +131,19 @@ class Settings:
         self.mcp_timeout_seconds: float = config_settings.backend["mcp"]["timeoutSeconds"]
         self.agent_session_name: str = config_settings.backend["agent"]["sessionName"]
         self.reports_directory: str = config_settings.backend["agent"]["reportsDirectory"]
-        
+
         # Session management configuration
         self.cli_session_name: str = config_settings.backend["agent"]["cliSessionName"]
-        self.session_timeout_minutes: int = config_settings.backend["agent"]["sessionTimeoutMinutes"]
-        self.session_cleanup_interval_minutes: int = config_settings.backend["agent"]["sessionCleanupIntervalMinutes"]
+        self.session_timeout_minutes: int = config_settings.backend["agent"][
+            "sessionTimeoutMinutes"
+        ]
+        self.session_cleanup_interval_minutes: int = config_settings.backend["agent"][
+            "sessionCleanupIntervalMinutes"
+        ]
         self.max_session_size: int = config_settings.backend["agent"]["maxSessionSize"]
-        self.enable_session_persistence: bool = config_settings.backend["agent"]["enableSessionPersistence"]
+        self.enable_session_persistence: bool = config_settings.backend["agent"][
+            "enableSessionPersistence"
+        ]
         self.enable_agent_caching: bool = config_settings.backend["agent"]["enableAgentCaching"]
         self.agent_cache_ttl: int = config_settings.backend["agent"]["agentCacheTTL"]
         self.max_cache_size: int = config_settings.backend["agent"]["maxCacheSize"]
@@ -176,11 +182,19 @@ class Settings:
         self.log_mode: str = config_settings.backend["logging"]["mode"]
 
         # Monitoring configuration
-        self.enable_performance_monitoring: bool = config_settings.backend["monitoring"]["enablePerformanceMonitoring"]
-        self.enable_error_tracking: bool = config_settings.backend["monitoring"]["enableErrorTracking"]
-        self.enable_resource_monitoring: bool = config_settings.backend["monitoring"]["enableResourceMonitoring"]
+        self.enable_performance_monitoring: bool = config_settings.backend["monitoring"][
+            "enablePerformanceMonitoring"
+        ]
+        self.enable_error_tracking: bool = config_settings.backend["monitoring"][
+            "enableErrorTracking"
+        ]
+        self.enable_resource_monitoring: bool = config_settings.backend["monitoring"][
+            "enableResourceMonitoring"
+        ]
         self.monitoring_log_level: str = config_settings.backend["monitoring"]["logLevel"]
-        self.metrics_retention_days: int = config_settings.backend["monitoring"]["metricsRetentionDays"]
+        self.metrics_retention_days: int = config_settings.backend["monitoring"][
+            "metricsRetentionDays"
+        ]
 
         # MCP configuration from config file
         self.polygon_mcp_version: str = config_settings.backend["mcp"]["version"]
@@ -218,28 +232,29 @@ def get_model_tpm_limit(model: str) -> int:
 shared_mcp_server = None
 shared_session = None
 
+
 # Agent caching for performance optimization
 class AgentCache:
     """Agent cache for reusing agents with same parameters."""
-    
+
     def __init__(self, cache_ttl: int = 300, max_size: int = 50):
         self.cache = {}
         self.cache_ttl = cache_ttl  # 5 minutes default
         self.max_size = max_size
         self.hit_count = 0
         self.miss_count = 0
-    
+
     def _generate_cache_key(self, model: str, instructions: str, mcp_servers: list) -> str:
         """Generate a unique cache key for agent parameters."""
         # Create a hash of the parameters
         mcp_servers_str = str([str(server) for server in mcp_servers])
         key_string = f"{model}:{instructions}:{mcp_servers_str}"
         return str(hash(key_string))
-    
+
     def get_cached_agent(self, model: str, instructions: str, mcp_servers: list):
         """Get cached agent if available and not expired."""
         cache_key = self._generate_cache_key(model, instructions, mcp_servers)
-        
+
         if cache_key in self.cache:
             cached_agent, timestamp = self.cache[cache_key]
             if time.time() - timestamp < self.cache_ttl:
@@ -249,51 +264,51 @@ class AgentCache:
             else:
                 # Remove expired entry
                 del self.cache[cache_key]
-        
+
         self.miss_count += 1
         logger.debug(f"Agent cache miss: {cache_key[:20]}...")
         return None
-    
+
     def cache_agent(self, model: str, instructions: str, mcp_servers: list, agent):
         """Cache an agent with its parameters."""
         cache_key = self._generate_cache_key(model, instructions, mcp_servers)
-        
+
         # Clean up cache if it's getting too large
         if len(self.cache) >= self.max_size:
             self._cleanup_cache()
-        
+
         self.cache[cache_key] = (agent, time.time())
         logger.debug(f"Agent cached: {cache_key[:20]}...")
-    
+
     def _cleanup_cache(self):
         """Remove oldest entries from cache."""
         if not self.cache:
             return
-        
+
         # Sort by timestamp and remove oldest 25%
         sorted_items = sorted(self.cache.items(), key=lambda x: x[1][1])
         items_to_remove = len(sorted_items) // 4  # Remove 25%
-        
+
         for i in range(items_to_remove):
             key = sorted_items[i][0]
             del self.cache[key]
-        
+
         logger.debug(f"Agent cache cleaned up: removed {items_to_remove} entries")
-    
+
     def get_cache_stats(self) -> dict:
         """Get cache statistics."""
         total_requests = self.hit_count + self.miss_count
         hit_rate = (self.hit_count / total_requests * 100) if total_requests > 0 else 0
-        
+
         return {
             "cache_size": len(self.cache),
             "max_size": self.max_size,
             "hit_count": self.hit_count,
             "miss_count": self.miss_count,
             "hit_rate": round(hit_rate, 2),
-            "cache_ttl": self.cache_ttl
+            "cache_ttl": self.cache_ttl,
         }
-    
+
     def clear_cache(self):
         """Clear all cached agents."""
         cleared_count = len(self.cache)
@@ -303,131 +318,155 @@ class AgentCache:
         logger.info(f"Agent cache cleared: {cleared_count} entries removed")
         return cleared_count
 
+
 # Global agent cache instances
 gui_agent_cache = None
 cli_agent_cache = None
 
+
 # MCP Server monitoring and health management
 class MCPServerMonitor:
     """Monitor MCP server health and performance."""
-    
+
     def __init__(self):
         self.health_checks = []
         self.error_count = 0
         self.last_health_check = None
         self.performance_metrics = []
-    
+
     def log_health_check(self, server_name: str, is_healthy: bool, response_time: float = 0.0):
         """Log MCP server health check results."""
-        self.health_checks.append({
-            "server_name": server_name,
-            "is_healthy": is_healthy,
-            "response_time": response_time,
-            "timestamp": time.time()
-        })
+        self.health_checks.append(
+            {
+                "server_name": server_name,
+                "is_healthy": is_healthy,
+                "response_time": response_time,
+                "timestamp": time.time(),
+            }
+        )
         self.last_health_check = time.time()
-        
+
         if not is_healthy:
             self.error_count += 1
             logger.warning(f"MCP server {server_name} health check failed")
         else:
             logger.debug(f"MCP server {server_name} health check passed in {response_time:.3f}s")
-    
-    def log_performance_metric(self, server_name: str, operation: str, duration: float, success: bool):
+
+    def log_performance_metric(
+        self, server_name: str, operation: str, duration: float, success: bool
+    ):
         """Log MCP server performance metrics."""
-        self.performance_metrics.append({
-            "server_name": server_name,
-            "operation": operation,
-            "duration": duration,
-            "success": success,
-            "timestamp": time.time()
-        })
-        
+        self.performance_metrics.append(
+            {
+                "server_name": server_name,
+                "operation": operation,
+                "duration": duration,
+                "success": success,
+                "timestamp": time.time(),
+            }
+        )
+
         if not success:
             self.error_count += 1
-            logger.error(f"MCP server {server_name} operation '{operation}' failed after {duration:.3f}s")
+            logger.error(
+                f"MCP server {server_name} operation '{operation}' failed after {duration:.3f}s"
+            )
         else:
-            logger.debug(f"MCP server {server_name} operation '{operation}' completed in {duration:.3f}s")
-    
+            logger.debug(
+                f"MCP server {server_name} operation '{operation}' completed in {duration:.3f}s"
+            )
+
     def get_health_summary(self) -> dict:
         """Get MCP server health summary."""
         if not self.health_checks:
             return {"status": "unknown", "error_count": self.error_count}
-        
-        recent_checks = [check for check in self.health_checks 
-                        if time.time() - check["timestamp"] < 3600]  # Last hour
-        
+
+        recent_checks = [
+            check for check in self.health_checks if time.time() - check["timestamp"] < 3600
+        ]  # Last hour
+
         if not recent_checks:
             return {"status": "unknown", "error_count": self.error_count}
-        
+
         healthy_count = sum(1 for check in recent_checks if check["is_healthy"])
         total_count = len(recent_checks)
         health_rate = (healthy_count / total_count) * 100
-        
+
         avg_response_time = sum(check["response_time"] for check in recent_checks) / total_count
-        
+
         return {
-            "status": "healthy" if health_rate > 90 else "degraded" if health_rate > 70 else "unhealthy",
+            "status": (
+                "healthy" if health_rate > 90 else "degraded" if health_rate > 70 else "unhealthy"
+            ),
             "health_rate": round(health_rate, 2),
             "avg_response_time": round(avg_response_time, 3),
             "error_count": self.error_count,
-            "total_checks": total_count
+            "total_checks": total_count,
         }
-    
+
     def get_performance_summary(self) -> dict:
         """Get MCP server performance summary."""
         if not self.performance_metrics:
             return {}
-        
-        recent_metrics = [metric for metric in self.performance_metrics 
-                         if time.time() - metric["timestamp"] < 3600]  # Last hour
-        
+
+        recent_metrics = [
+            metric
+            for metric in self.performance_metrics
+            if time.time() - metric["timestamp"] < 3600
+        ]  # Last hour
+
         if not recent_metrics:
             return {}
-        
+
         successful_ops = [m for m in recent_metrics if m["success"]]
-        avg_duration = sum(m["duration"] for m in successful_ops) / len(successful_ops) if successful_ops else 0
+        avg_duration = (
+            sum(m["duration"] for m in successful_ops) / len(successful_ops)
+            if successful_ops
+            else 0
+        )
         success_rate = (len(successful_ops) / len(recent_metrics)) * 100
-        
+
         return {
             "avg_operation_duration": round(avg_duration, 3),
             "success_rate": round(success_rate, 2),
             "total_operations": len(recent_metrics),
-            "failed_operations": len(recent_metrics) - len(successful_ops)
+            "failed_operations": len(recent_metrics) - len(successful_ops),
         }
+
 
 # Global MCP server monitor
 mcp_server_monitor = MCPServerMonitor()
 
+
 # MCP Server resource management
 class MCPServerResourceManager:
     """Manage MCP server resources and memory."""
-    
+
     def __init__(self):
         self.active_connections = 0
         self.max_connections = 10
         self.connection_pool = []
         self.memory_usage = 0
-    
+
     def get_connection_stats(self) -> dict:
         """Get connection pool statistics."""
         return {
             "active_connections": self.active_connections,
             "max_connections": self.max_connections,
             "pool_size": len(self.connection_pool),
-            "memory_usage_mb": round(self.memory_usage / 1024 / 1024, 2)
+            "memory_usage_mb": round(self.memory_usage / 1024 / 1024, 2),
         }
-    
+
     def check_resource_limits(self) -> bool:
         """Check if we're within resource limits."""
         return self.active_connections < self.max_connections
-    
+
     def log_memory_usage(self, usage_bytes: int):
         """Log memory usage for monitoring."""
         self.memory_usage = usage_bytes
         if usage_bytes > 100 * 1024 * 1024:  # 100MB threshold
             logger.warning(f"MCP server memory usage high: {usage_bytes / 1024 / 1024:.2f}MB")
-    
+
     def cleanup_resources(self):
         """Clean up MCP server resources."""
         self.connection_pool.clear()
@@ -435,16 +474,24 @@ class MCPServerResourceManager:
         self.memory_usage = 0
         logger.info("MCP server resources cleaned up")
 
+
 # Global MCP server resource manager
 mcp_resource_manager = MCPServerResourceManager()
+
 
 # Performance monitoring and metrics
 class PerformanceMetrics:
     """Performance metrics for monitoring system health."""
-    
-    def __init__(self, agent_creation_time: float = 0.0, session_access_time: float = 0.0, 
-                 mcp_server_response_time: float = 0.0, cache_hit_rate: float = 0.0, 
-                 memory_usage: float = 0.0, timestamp: float = None):
+
+    def __init__(
+        self,
+        agent_creation_time: float = 0.0,
+        session_access_time: float = 0.0,
+        mcp_server_response_time: float = 0.0,
+        cache_hit_rate: float = 0.0,
+        memory_usage: float = 0.0,
+        timestamp: float = None,
+    ):
         self.agent_creation_time = agent_creation_time
         self.session_access_time = session_access_time
         self.mcp_server_response_time = mcp_server_response_time
@@ -452,79 +499,96 @@ class PerformanceMetrics:
         self.memory_usage = memory_usage
         self.timestamp = timestamp or time.time()
 
+
 class PerformanceMonitor:
     """Monitor system performance and health."""
-    
+
     def __init__(self):
         self.metrics: List[PerformanceMetrics] = []
         self.error_count = 0
         self.last_cleanup = time.time()
-    
+
     def log_agent_creation_time(self, creation_time: float):
         """Log agent creation time for performance analysis."""
-        self.metrics.append(PerformanceMetrics(
-            agent_creation_time=creation_time,
-            timestamp=time.time()
-        ))
+        self.metrics.append(
+            PerformanceMetrics(agent_creation_time=creation_time, timestamp=time.time())
+        )
         logger.debug(f"Agent creation time logged: {creation_time:.3f}s")
-    
+
     def log_session_access_time(self, access_time: float):
         """Log session access time for performance analysis."""
         if self.metrics:
             self.metrics[-1].session_access_time = access_time
         logger.debug(f"Session access time logged: {access_time:.3f}s")
-    
+
     def log_mcp_server_response_time(self, response_time: float):
         """Log MCP server response time for performance analysis."""
         if self.metrics:
             self.metrics[-1].mcp_server_response_time = response_time
         logger.debug(f"MCP server response time logged: {response_time:.3f}s")
-    
+
     def log_cache_hit_rate(self, hit_rate: float):
         """Log cache hit rate for performance analysis."""
         if self.metrics:
             self.metrics[-1].cache_hit_rate = hit_rate
         logger.debug(f"Cache hit rate logged: {hit_rate:.2f}%")
-    
+
     def log_memory_usage(self, memory_usage: float):
         """Log memory usage for performance analysis."""
         if self.metrics:
             self.metrics[-1].memory_usage = memory_usage
         logger.debug(f"Memory usage logged: {memory_usage:.2f}MB")
-    
+
     def log_error(self, error_type: str, error_message: str):
         """Log system errors for monitoring."""
         self.error_count += 1
         logger.error(f"System error [{error_type}]: {error_message}")
-    
+
     def get_performance_summary(self) -> Dict[str, Any]:
         """Get comprehensive performance summary."""
         if not self.metrics:
             return {"status": "no_data", "error_count": self.error_count}
-        
+
         recent_metrics = [m for m in self.metrics if time.time() - m.timestamp < 3600]  # Last hour
-        
+
         if not recent_metrics:
             return {"status": "no_recent_data", "error_count": self.error_count}
-        
+
         return {
-            "avg_agent_creation_time": round(sum(m.agent_creation_time for m in recent_metrics) / len(recent_metrics), 3),
-            "avg_session_access_time": round(sum(m.session_access_time for m in recent_metrics) / len(recent_metrics), 3),
-            "avg_mcp_server_response_time": round(sum(m.mcp_server_response_time for m in recent_metrics) / len(recent_metrics), 3),
-            "avg_cache_hit_rate": round(sum(m.cache_hit_rate for m in recent_metrics) / len(recent_metrics), 2),
-            "avg_memory_usage": round(sum(m.memory_usage for m in recent_metrics) / len(recent_metrics), 2),
+            "avg_agent_creation_time": round(
+                sum(m.agent_creation_time for m in recent_metrics) / len(recent_metrics), 3
+            ),
+            "avg_session_access_time": round(
+                sum(m.session_access_time for m in recent_metrics) / len(recent_metrics), 3
+            ),
+            "avg_mcp_server_response_time": round(
+                sum(m.mcp_server_response_time for m in recent_metrics) / len(recent_metrics), 3
+            ),
+            "avg_cache_hit_rate": round(
+                sum(m.cache_hit_rate for m in recent_metrics) / len(recent_metrics), 2
+            ),
+            "avg_memory_usage": round(
+                sum(m.memory_usage for m in recent_metrics) / len(recent_metrics), 2
+            ),
             "total_requests": len(recent_metrics),
             "error_count": self.error_count,
-            "status": "healthy" if self.error_count < 5 else "degraded" if self.error_count < 20 else "unhealthy"
+            "status": (
+                "healthy"
+                if self.error_count < 5
+                else "degraded" if self.error_count < 20 else "unhealthy"
+            ),
         }
-    
+
     def cleanup_old_metrics(self):
         """Clean up old metrics to prevent memory growth."""
         current_time = time.time()
         if current_time - self.last_cleanup > 3600:  # Clean up every hour
-            self.metrics = [m for m in self.metrics if current_time - m.timestamp < 86400]  # Keep last 24 hours
+            self.metrics = [
+                m for m in self.metrics if current_time - m.timestamp < 86400
+            ]  # Keep last 24 hours
             self.last_cleanup = current_time
             logger.debug(f"Performance metrics cleaned up, {len(self.metrics)} entries remaining")
+
 
 # Global performance monitor
 performance_monitor = PerformanceMonitor()
@@ -587,14 +651,14 @@ Do NOT use training data cutoff dates or outdated information.
 def get_enhanced_agent_instructions(user_input: str = ""):
     """
     Generate enhanced agent instructions with dynamic customization support.
-    
+
     This function replaces the static get_enhanced_agent_instructions function
     with a dynamic version that supports user customization while maintaining
     backward compatibility.
-    
+
     Args:
         user_input: Optional user input for customization
-        
+
     Returns:
         Enhanced agent instructions string
     """
@@ -603,6 +667,7 @@ def get_enhanced_agent_instructions(user_input: str = ""):
         from .dynamic_prompt_integration import (
             get_enhanced_agent_instructions as dynamic_get_instructions,
         )
+
         return dynamic_get_instructions(user_input)
     except ImportError:
         # Fallback to static prompt for backward compatibility
@@ -632,11 +697,6 @@ B. DETAILED ANALYSIS
 - Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
 - No actionable recommendations
 - Focus on the data only"""
-
-
-
-
-
 
 
 def create_polygon_mcp_server():
@@ -780,18 +840,18 @@ def cleanup_session_periodically():
                     del session_data[key]
 
                 logger.info(f"Cleaned up {len(keys_to_remove)} old session entries")
-        
+
         # Session health monitoring
         if hasattr(shared_session, "_session_data"):
             session_size = len(getattr(shared_session, "_session_data", {}))
             logger.debug(f"Session health: {session_size} entries")
-            
+
             # Session error recovery - reset if corrupted
             if session_size > 1000:  # Unusually large session
                 logger.warning("Session size exceeded threshold, resetting session")
                 shared_session = SQLiteSession(settings.agent_session_name)
                 logger.info("Session reset completed")
-                
+
     except Exception as e:
         logger.error(f"Session cleanup error: {e}")
         # Session error recovery - recreate session on error
@@ -921,8 +981,7 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
         # Initialize agent cache for GUI
         if settings.enable_agent_caching:
             gui_agent_cache = AgentCache(
-                cache_ttl=settings.agent_cache_ttl,
-                max_size=settings.max_cache_size
+                cache_ttl=settings.agent_cache_ttl, max_size=settings.max_cache_size
             )
             logger.debug("🚀 GUI agent cache initialized")
 
@@ -932,7 +991,7 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
         await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
         mcp_time = time.time() - mcp_start
         log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
-        
+
         # Log MCP server health check
         mcp_server_monitor.log_health_check("shared_mcp_server", True, mcp_time)
 
@@ -969,9 +1028,11 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
             await shared_mcp_server.__aexit__(None, None, None)
             mcp_shutdown_time = time.time() - mcp_shutdown_start
             log_mcp_operation(logger, "MCP server shutdown", mcp_shutdown_time, True)
-            
+
             # Log MCP server shutdown performance
-            mcp_server_monitor.log_performance_metric("shared_mcp_server", "shutdown", mcp_shutdown_time, True)
+            mcp_server_monitor.log_performance_metric(
+                "shared_mcp_server", "shutdown", mcp_shutdown_time, True
+            )
 
         shutdown_time = time.time() - shutdown_start
         logger.info(
@@ -1087,15 +1148,17 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         try:
             # Start performance monitoring
             agent_creation_start = time.perf_counter()
-            
+
             # MCP server health check and error recovery
             if shared_mcp_server is None:
                 logger.error("MCP server is None, attempting recovery")
-                performance_monitor.log_error("mcp_server_recovery", "MCP server was None, attempting recovery")
+                performance_monitor.log_error(
+                    "mcp_server_recovery", "MCP server was None, attempting recovery"
+                )
                 shared_mcp_server = create_polygon_mcp_server()
                 await shared_mcp_server.__aenter__()
                 mcp_server_monitor.log_health_check("shared_mcp_server", True, 0.0)
-            
+
             # Get or create agent with caching
             analysis_agent = None
             if settings.enable_agent_caching and gui_agent_cache:
@@ -1104,9 +1167,9 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 analysis_agent = gui_agent_cache.get_cached_agent(
                     model=settings.available_models[0],
                     instructions=instructions,
-                    mcp_servers=[shared_mcp_server]
+                    mcp_servers=[shared_mcp_server],
                 )
-            
+
             if analysis_agent is None:
                 # Create new agent
                 analysis_agent = Agent(
@@ -1116,20 +1179,20 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                     mcp_servers=[shared_mcp_server],
                     model=settings.available_models[0],
                 )
-                
+
                 # Cache the new agent
                 if settings.enable_agent_caching and gui_agent_cache:
                     gui_agent_cache.cache_agent(
                         model=settings.available_models[0],
                         instructions=get_enhanced_agent_instructions(),
                         mcp_servers=[shared_mcp_server],
-                        agent=analysis_agent
+                        agent=analysis_agent,
                     )
-            
+
             # Log agent creation time
             agent_creation_time = time.perf_counter() - agent_creation_start
             performance_monitor.log_agent_creation_time(agent_creation_time)
-            
+
             # Log cache hit rate
             if settings.enable_agent_caching and gui_agent_cache:
                 gui_cache_stats = gui_agent_cache.get_cache_stats()
@@ -1424,18 +1487,17 @@ async def cli_async():
         # Initialize persistent CLI session for conversation memory
         cli_session = SQLiteSession(settings.cli_session_name)
         print(f"📊 CLI session '{settings.cli_session_name}' initialized for conversation memory")
-        
+
         # Initialize CLI agent cache
         global cli_agent_cache
         if settings.enable_agent_caching:
             cli_agent_cache = AgentCache(
-                cache_ttl=settings.agent_cache_ttl,
-                max_size=settings.max_cache_size
+                cache_ttl=settings.agent_cache_ttl, max_size=settings.max_cache_size
             )
             print("🚀 CLI agent cache initialized")
-        
+
         server = create_polygon_mcp_server()
-        
+
         # Log CLI MCP server initialization
         mcp_start = time.time()
         async with server:
@@ -1473,9 +1535,9 @@ async def cli_async():
                             analysis_agent = cli_agent_cache.get_cached_agent(
                                 model=settings.available_models[0],
                                 instructions=instructions,
-                                mcp_servers=[server]
+                                mcp_servers=[server],
                             )
-                        
+
                         if analysis_agent is None:
                             # Create new agent
                             analysis_agent = Agent(
@@ -1485,20 +1547,20 @@ async def cli_async():
                                 mcp_servers=[server],
                                 model=settings.available_models[0],
                             )
-                            
+
                             # Cache the new agent
                             if settings.enable_agent_caching and cli_agent_cache:
                                 cli_agent_cache.cache_agent(
                                     model=settings.available_models[0],
                                     instructions=get_enhanced_agent_instructions(),
                                     mcp_servers=[server],
-                                    agent=analysis_agent
+                                    agent=analysis_agent,
                                 )
-                        
+
                         # Log agent creation time
                         agent_creation_time = time.perf_counter() - agent_creation_start
                         performance_monitor.log_agent_creation_time(agent_creation_time)
-                        
+
                         # Log cache hit rate
                         if settings.enable_agent_caching and cli_agent_cache:
                             cli_cache_stats = cli_agent_cache.get_cache_stats()
@@ -1542,7 +1604,9 @@ async def cli_async():
 
                     except Exception as e:
                         print_error(e, "AI Model Error")
-                        performance_monitor.log_error("cli_ai_model_call", f"CLI AI model call failed: {str(e)}")
+                        performance_monitor.log_error(
+                            "cli_ai_model_call", f"CLI AI model call failed: {str(e)}"
+                        )
 
                         # Create a mock result object for error cases
                         class MockResult:
@@ -1570,13 +1634,15 @@ async def cli_async():
     finally:
         # Clean up CLI session and agent cache on exit
         try:
-            if 'cli_session' in locals():
+            if "cli_session" in locals():
                 # Session cleanup is handled automatically by SQLiteSession
                 print("📊 CLI session cleaned up")
-            
-            if 'cli_agent_cache' in globals() and cli_agent_cache:
+
+            if "cli_agent_cache" in globals() and cli_agent_cache:
                 cli_cache_stats = cli_agent_cache.get_cache_stats()
-                print(f"🚀 CLI agent cache stats: {cli_cache_stats['hit_rate']}% hit rate, {cli_cache_stats['cache_size']} entries")
+                print(
+                    f"🚀 CLI agent cache stats: {cli_cache_stats['hit_rate']}% hit rate, {cli_cache_stats['cache_size']} entries"
+                )
                 cli_agent_cache.clear_cache()
                 print("🚀 CLI agent cache cleaned up")
         except Exception as cleanup_error:

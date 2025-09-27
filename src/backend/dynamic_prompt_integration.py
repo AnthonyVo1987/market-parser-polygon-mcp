@@ -16,8 +16,8 @@ Date: September 26, 2025
 """
 
 import logging
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict
 
 from .dynamic_prompt_manager import get_dynamic_prompt_manager
 from .secure_prompt_manager import SecureDynamicPromptManager
@@ -29,27 +29,27 @@ logger = logging.getLogger(__name__)
 def get_enhanced_agent_instructions(user_input: str = "") -> str:
     """
     Enhanced agent instructions with dynamic customization support.
-    
+
     This function replaces the static get_enhanced_agent_instructions function
     with a dynamic version that supports user customization while maintaining
     backward compatibility.
-    
+
     Args:
         user_input: Optional user input for customization
-        
+
     Returns:
         Enhanced agent instructions string
     """
     try:
         # Get the dynamic prompt manager
         manager = get_dynamic_prompt_manager()
-        
+
         # Generate dynamic instructions
         return manager.get_enhanced_agent_instructions(user_input)
-        
+
     except Exception as e:
         logger.error(f"Error generating dynamic prompt: {e}")
-        
+
         # Fallback to static prompt for backward compatibility
         return _get_static_fallback_prompt()
 
@@ -57,7 +57,7 @@ def get_enhanced_agent_instructions(user_input: str = "") -> str:
 def get_secure_prompt_manager() -> SecureDynamicPromptManager:
     """
     Get a secure dynamic prompt manager instance.
-    
+
     Returns:
         SecureDynamicPromptManager instance with security features enabled
     """
@@ -67,64 +67,66 @@ def get_secure_prompt_manager() -> SecureDynamicPromptManager:
         enable_input_validation=True,
         enable_audit_logging=True,
         enable_circuit_breaker=True,
-        max_input_length=5000
+        max_input_length=5000,
     )
-    
+
     # Get base template
     base_template = _get_static_fallback_prompt()
-    
+
     # Create secure manager
     return SecureDynamicPromptManager(
         base_template=base_template,
         config={"cache_size": 100, "cache_ttl": 3600},
-        security_config=security_config
+        security_config=security_config,
     )
 
 
-def get_enhanced_agent_instructions_secure(user_input: str = "", user_id: str = "anonymous", ip_address: str = "127.0.0.1") -> Dict[str, Any]:
+def get_enhanced_agent_instructions_secure(
+    user_input: str = "", user_id: str = "anonymous", ip_address: str = "127.0.0.1"
+) -> Dict[str, Any]:
     """
     Enhanced agent instructions with full security features.
-    
+
     Args:
         user_input: Optional user input for customization
         user_id: User identifier for security tracking
         ip_address: Client IP address for security validation
-        
+
     Returns:
         Dictionary containing prompt and security information
     """
     try:
         # Get the secure prompt manager
         manager = get_secure_prompt_manager()
-        
+
         # Generate secure prompt with validation
         return manager.generate_prompt(
             user_input=user_input,
             context={"datetime_context": _get_current_datetime_context()},
             user_id=user_id,
-            ip_address=ip_address
+            ip_address=ip_address,
         )
-        
+
     except Exception as e:
         logger.error(f"Error generating secure prompt: {e}")
-        
+
         # Return error response
         return {
-            'success': False,
-            'prompt': _get_static_fallback_prompt(),
-            'security_info': {
-                'validated': False,
-                'sanitized': False,
-                'threats_detected': [str(e)],
-                'rate_limited': False
+            "success": False,
+            "prompt": _get_static_fallback_prompt(),
+            "security_info": {
+                "validated": False,
+                "sanitized": False,
+                "threats_detected": [str(e)],
+                "rate_limited": False,
             },
-            'errors': [str(e)],
-            'metadata': {
-                'user_id': user_id,
-                'ip_address': ip_address,
-                'timestamp': datetime.now().timestamp(),
-                'processing_time': 0.0
-            }
+            "errors": [str(e)],
+            "metadata": {
+                "user_id": user_id,
+                "ip_address": ip_address,
+                "timestamp": datetime.now().timestamp(),
+                "processing_time": 0.0,
+            },
         }
 
 

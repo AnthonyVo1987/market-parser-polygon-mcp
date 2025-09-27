@@ -46,7 +46,18 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
         titleColor: 'red',
         diffNameColor: 'orange',
         diffPathColor: 'gray',
-        notifier: (options: any) => {
+        notifier: (options: {
+          Component?: React.ComponentType<unknown>;
+          displayName?: string;
+          hookName?: string;
+          prevProps?: unknown;
+          prevState?: unknown;
+          prevHookResult?: unknown;
+          nextProps?: unknown;
+          nextState?: unknown;
+          nextHookResult?: unknown;
+          reason?: string;
+        }) => {
           const {
             Component,
             displayName,

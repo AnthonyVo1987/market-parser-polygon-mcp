@@ -17,10 +17,10 @@ Date: September 26, 2025
 """
 
 import logging
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict
 
-from .dynamic_prompts import DynamicPromptManager, create_dynamic_prompt_manager
+from .dynamic_prompts import create_dynamic_prompt_manager
 
 logger = logging.getLogger(__name__)
 
@@ -28,18 +28,18 @@ logger = logging.getLogger(__name__)
 class MarketParserDynamicPromptManager:
     """
     Integration layer for DynamicPromptManager in the Market Parser system.
-    
+
     This class provides a seamless interface between the dynamic prompting system
     and the existing Market Parser architecture, maintaining backward compatibility
     while adding dynamic customization capabilities.
     """
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.base_template = self._create_base_template()
         self.config = self._create_config()
         self.dynamic_manager = create_dynamic_prompt_manager(self.base_template, self.config)
-    
+
     def _create_base_template(self) -> str:
         """Create the base template for financial analysis prompts"""
         return """Quick Response Needed with minimal tool calls: You are a financial analyst with real-time market data access.
@@ -72,67 +72,79 @@ B. DETAILED ANALYSIS
 - Provide Maximum of 3 KEY TAKEAWAYS/INSIGHTS in numbered/bullet point format
 - No actionable recommendations
 - Focus on the data only"""
-    
+
     def _create_config(self) -> Dict[str, Any]:
         """Create configuration for the dynamic prompt manager"""
         return {
-            'cache_size': 100,
-            'security_rules': {
-                'max_input_length': 1000,
-                'rate_limit': 10,
-                'allowed_verbs': ['verbose', 'minimal', 'standard', 'detailed', 'brief', 'concise'],
-                'allowed_tools': ['get_snapshot_ticker', 'get_market_status', 'get_full_market_snapshot', 
-                                'get_support_resistance_levels', 'get_technical_analysis'],
-                'allowed_formats': ['structured', 'narrative', 'bullet points', 'json', 'markdown', 'plain'],
-                'allowed_styles': ['formal', 'casual', 'technical', 'professional', 'friendly']
-            }
+            "cache_size": 100,
+            "security_rules": {
+                "max_input_length": 1000,
+                "rate_limit": 10,
+                "allowed_verbs": ["verbose", "minimal", "standard", "detailed", "brief", "concise"],
+                "allowed_tools": [
+                    "get_snapshot_ticker",
+                    "get_market_status",
+                    "get_full_market_snapshot",
+                    "get_support_resistance_levels",
+                    "get_technical_analysis",
+                ],
+                "allowed_formats": [
+                    "structured",
+                    "narrative",
+                    "bullet points",
+                    "json",
+                    "markdown",
+                    "plain",
+                ],
+                "allowed_styles": ["formal", "casual", "technical", "professional", "friendly"],
+            },
         }
-    
+
     def get_enhanced_agent_instructions(self, user_input: str = "") -> str:
         """
         Generate enhanced agent instructions with dynamic customization.
-        
+
         This method replaces the static get_enhanced_agent_instructions function
         with a dynamic version that allows user customization while maintaining
         backward compatibility.
-        
+
         Args:
             user_input: Optional user input for customization
-            
+
         Returns:
             Enhanced agent instructions string
         """
         try:
             # Get current datetime context
             datetime_context = self._get_current_datetime_context()
-            
+
             # Create context for template processing
             context = {
-                'datetime_context': datetime_context,
-                'verbosity_instruction': 'Provide balanced information with moderate detail.',
-                'tool_restriction': '',
-                'format_instruction': 'Format your response in a structured format with clear sections and bullet points.',
-                'style_instruction': 'Use a professional, business-appropriate tone.'
+                "datetime_context": datetime_context,
+                "verbosity_instruction": "Provide balanced information with moderate detail.",
+                "tool_restriction": "",
+                "format_instruction": "Format your response in a structured format with clear sections and bullet points.",
+                "style_instruction": "Use a professional, business-appropriate tone.",
             }
-            
+
             # If user input is provided, generate dynamic prompt
             if user_input and user_input.strip():
                 return self.dynamic_manager.generate_prompt(user_input, context)
             else:
                 # Return base template with default values for backward compatibility
                 return self.base_template.format(**context)
-                
+
         except Exception as e:
             self.logger.error(f"Error generating dynamic prompt: {e}")
             # Fallback to base template
             return self.base_template.format(
                 datetime_context=self._get_current_datetime_context(),
-                verbosity_instruction='Provide balanced information with moderate detail.',
-                tool_restriction='',
-                format_instruction='Format your response in a structured format with clear sections and bullet points.',
-                style_instruction='Use a professional, business-appropriate tone.'
+                verbosity_instruction="Provide balanced information with moderate detail.",
+                tool_restriction="",
+                format_instruction="Format your response in a structured format with clear sections and bullet points.",
+                style_instruction="Use a professional, business-appropriate tone.",
             )
-    
+
     def _get_current_datetime_context(self) -> str:
         """Generate current date/time context for AI agent prompts"""
         now = datetime.now()
@@ -146,20 +158,20 @@ CURRENT DATE AND TIME CONTEXT:
 IMPORTANT: Always use the current date and time above for all financial analysis. 
 Do NOT use training data cutoff dates or outdated information.
 """
-    
+
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics for monitoring"""
         return {
-            'cache_size': len(self.dynamic_manager.cache.cache),
-            'max_size': self.dynamic_manager.cache.max_size,
-            'hit_rate': self._calculate_hit_rate()
+            "cache_size": len(self.dynamic_manager.cache.cache),
+            "max_size": self.dynamic_manager.cache.max_size,
+            "hit_rate": self._calculate_hit_rate(),
         }
-    
+
     def _calculate_hit_rate(self) -> float:
         """Calculate cache hit rate (simplified implementation)"""
         # This would be implemented with proper hit/miss tracking
         return 0.0
-    
+
     def clear_cache(self) -> None:
         """Clear the prompt cache"""
         self.dynamic_manager.cache.cache.clear()
@@ -181,14 +193,14 @@ def get_dynamic_prompt_manager() -> MarketParserDynamicPromptManager:
 def get_enhanced_agent_instructions(user_input: str = "") -> str:
     """
     Enhanced agent instructions with dynamic customization support.
-    
+
     This function replaces the static get_enhanced_agent_instructions function
     with a dynamic version that supports user customization while maintaining
     backward compatibility.
-    
+
     Args:
         user_input: Optional user input for customization
-        
+
     Returns:
         Enhanced agent instructions string
     """
