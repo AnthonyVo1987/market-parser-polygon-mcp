@@ -24,6 +24,14 @@
     },
     "agent": {
       "sessionName": "finance_conversation",
+      "cliSessionName": "cli_session",
+      "sessionTimeoutMinutes": 60,
+      "sessionCleanupIntervalMinutes": 30,
+      "maxSessionSize": 100,
+      "enableSessionPersistence": true,
+      "enableAgentCaching": true,
+      "agentCacheTTL": 300,
+      "maxCacheSize": 50,
       "reportsDirectory": "test-reports"
     },
     "mcp": {
@@ -52,6 +60,13 @@
     },
     "logging": {
       "mode": "DEBUG"
+    },
+    "monitoring": {
+      "enablePerformanceMonitoring": true,
+      "enableErrorTracking": true,
+      "enableResourceMonitoring": true,
+      "logLevel": "INFO",
+      "metricsRetentionDays": 30
     }
   },
   "frontend": {

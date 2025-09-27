@@ -49,17 +49,17 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ---
 
-# **🚀 AI Agent Implementation Prompt: Shared Persistent Agent Implementation Plan**
+# **🚀 AI Agent Implementation Prompt: Shared Persistent Agent Implementation Plan - Phases 1-4**
 
 ## **📋 MISSION BRIEF**
 
-You are tasked with implementing the **Shared Persistent Agent Implementation Plan** for the Market Parser application. This is a **7-day, 6-phase implementation** that will optimize the application through **Session Persistence + Agent Caching** architecture, improving response times by **4-20 seconds per session** and implementing essential chatbot functionality.
+You are tasked with implementing **Phases 1-4** of the Shared Persistent Agent Implementation Plan for the Market Parser application. This is a **4-day implementation** that will optimize the application through **Session Persistence + Agent Caching + MCP Server Optimization + Error Handling** architecture, improving response times by **4-20 seconds per session** and implementing essential chatbot functionality.
 
 ## **🎯 CRITICAL SUCCESS FACTORS**
 
 - **Performance Target:** 4-20s improvement per session (10-40% faster for multi-message sessions)
 - **User Experience:** Implement essential conversation memory (CRITICAL for chatbot functionality)
-- **Code Quality:** Remove dead code and improve architecture
+- **Code Quality:** Improve architecture with session persistence and agent caching
 - **Risk Management:** Implement comprehensive error handling and monitoring
 - **Testing:** Ensure 100% functionality preservation
 
@@ -68,18 +68,16 @@ You are tasked with implementing the **Shared Persistent Agent Implementation Pl
 **MANDATORY:** Read and understand the complete implementation plan at:
 `docs/implementation_plans/shared_persistent_agent_implementation_plan.md`
 
-This document contains:
+**FOCUS ON PHASES 1-4 ONLY:**
 
-- **6 Phases** with detailed task breakdowns
-- **25+ Granular Tasks** with specific implementation details
-- **Code Examples** and configuration updates
-- **Testing Strategies** and validation procedures
-- **Rollback Procedures** for each phase
-- **Success Metrics** and performance targets
+- **Phase 1:** Session Persistence Implementation (Days 1-2)
+- **Phase 2:** Agent Caching & Optimization (Days 2-3)
+- **Phase 3:** MCP Server Optimization (Days 3-4)
+- **Phase 4:** Error Handling & Recovery (Days 4-5)
 
 ## **🔧 TECHNICAL REQUIREMENTS**
 
-### **Prerequisites:**6
+### **Prerequisites:**
 
 - OpenAI Agents SDK v0.2.9+
 - SQLiteSession for conversation persistence
@@ -92,57 +90,207 @@ This document contains:
 
 - `src/backend/main.py` (primary implementation file)
 - `app.config.json` (configuration updates)
-- `src/backend/optimized_agent_instructions.py` (remove - dead code)
-- Test files and documentation
 
-## **📅 IMPLEMENTATION PHASES**
-
-### **Phase 0: Dead Code Cleanup (Day 1)**
-
-- Remove `guardrail_agent` (lines 290-301)
-- Remove `finance_analysis_agent` (lines 304-309)
-- Remove `finance_guardrail()` function (lines 312-319)
-- Remove entire `optimized_agent_instructions.py` file
-- Remove unused imports and dependencies
-- **Validation:** Run linting, tests, verify no broken references
+## **📅 IMPLEMENTATION PHASES (1-4 ONLY)**
 
 ### **Phase 1: Session Persistence Implementation (Days 1-2)**
 
-- **CLI:** Create persistent SQLiteSession, replace `session=None`
-- **GUI:** Optimize existing `shared_session` management
-- **Configuration:** Update session management settings
-- **Implementation:** Follow exact code examples in the plan
+#### **Task 1.1: Implement CLI Session Persistence**
+
+- [ ] **1.1.1** Create persistent SQLiteSession for CLI ("cli_session")
+- [ ] **1.1.2** Replace `session=None` with persistent session in CLI (line 1060)
+- [ ] **1.1.3** Add CLI session cleanup on exit
+- [ ] **1.1.4** Add CLI session persistence across restarts
+- [ ] **1.1.5** Add CLI session size limits and cleanup
+
+**Implementation Details:**
+
+```python
+# Current CLI (line 1060):
+result = await Runner.run(analysis_agent, prompt_data["user_prompt"], session=None)
+
+# New CLI:
+cli_session = SQLiteSession("cli_session")
+result = await Runner.run(analysis_agent, prompt_data["user_prompt"], session=cli_session)
+```
+
+#### **Task 1.2: Optimize GUI Session Management**
+
+- [ ] **1.2.1** Keep existing `shared_session` for GUI (already optimized)
+- [ ] **1.2.2** Integrate with existing `cleanup_session_periodically()`
+- [ ] **1.2.3** Add session health monitoring
+- [ ] **1.2.4** Add session error recovery
+- [ ] **1.2.5** Add session performance monitoring
+
+#### **Task 1.3: Session Configuration Management**
+
+- [ ] **1.3.1** Update configuration for CLI session management
+- [ ] **1.3.2** Add session timeout configuration
+- [ ] **1.3.3** Add session cleanup interval configuration
+- [ ] **1.3.4** Add session size limit configuration
+- [ ] **1.3.5** Add session monitoring configuration
+
+**Configuration Updates:**
+
+```json
+{
+  "agent": {
+    "sessionName": "finance_conversation",
+    "cliSessionName": "cli_session",
+    "sessionTimeoutMinutes": 60,
+    "sessionCleanupIntervalMinutes": 30,
+    "maxSessionSize": 100,
+    "enableSessionPersistence": true,
+    "enableAgentCaching": true,
+    "agentCacheTTL": 300,
+    "maxCacheSize": 50
+  },
+  "monitoring": {
+    "enablePerformanceMonitoring": true,
+    "enableErrorTracking": true,
+    "enableResourceMonitoring": true,
+    "logLevel": "INFO",
+    "metricsRetentionDays": 30
+  }
+}
+```
 
 ### **Phase 2: Agent Caching & Optimization (Days 2-3)**
 
-- **GUI:** Implement agent cache with same parameters
-- **CLI:** Implement agent cache for CLI sessions
-- **Dynamic Instructions:** Update date/time context for each request
-- **Performance:** Add caching with TTL and cleanup
+#### **Task 2.1: Implement Agent Caching for GUI**
+
+- [ ] **2.1.1** Create agent cache for GUI requests
+- [ ] **2.1.2** Cache agents with same parameters (model, instructions, MCP server)
+- [ ] **2.1.3** Add agent cache invalidation on configuration changes
+- [ ] **2.1.4** Add agent cache cleanup and memory management
+- [ ] **2.1.5** Add agent cache performance monitoring
+
+#### **Task 2.2: Implement Agent Caching for CLI**
+
+- [ ] **2.2.1** Create agent cache for CLI sessions
+- [ ] **2.2.2** Cache agents with same parameters (model, instructions, MCP server)
+- [ ] **2.2.3** Add agent cache invalidation on session changes
+- [ ] **2.2.4** Add agent cache cleanup on CLI exit
+- [ ] **2.2.5** Add agent cache performance monitoring
+
+**Implementation Details:**
+
+```python
+class AgentCache:
+    def __init__(self):
+        self.cache = {}
+        self.cache_ttl = 300  # 5 minutes
+    
+    def get_cached_agent(self, model, instructions, mcp_servers):
+        cache_key = self._generate_cache_key(model, instructions, mcp_servers)
+        if cache_key in self.cache:
+            cached_agent, timestamp = self.cache[cache_key]
+            if time.time() - timestamp < self.cache_ttl:
+                return cached_agent
+        return None
+    
+    def cache_agent(self, model, instructions, mcp_servers, agent):
+        cache_key = self._generate_cache_key(model, instructions, mcp_servers)
+        self.cache[cache_key] = (agent, time.time())
+```
+
+#### **Task 2.3: Dynamic Instruction Updates**
+
+- [ ] **2.3.1** Modify agent creation to use dynamic date/time context
+- [ ] **2.3.2** Update instructions for each request to include current date/time
+- [ ] **2.3.3** Add instruction caching with TTL (time-to-live)
+- [ ] **2.3.4** Add instruction update monitoring
+- [ ] **2.3.5** Add instruction performance optimization
 
 ### **Phase 3: MCP Server Optimization (Days 3-4)**
 
-- **GUI:** Optimize existing `shared_mcp_server`
-- **CLI:** Create persistent MCP server for CLI sessions
-- **Resource Management:** Add monitoring and connection pooling
+#### **Task 3.1: Optimize GUI MCP Server Usage**
+
+- [ ] **3.1.1** Keep existing `shared_mcp_server` (already optimized)
+- [ ] **3.1.2** Add MCP server health monitoring
+- [ ] **3.1.3** Add MCP server error recovery
+- [ ] **3.1.4** Add MCP server performance monitoring
+
+#### **Task 3.2: Optimize CLI MCP Server Usage**
+
+- [ ] **3.2.1** Create persistent MCP server for CLI sessions
+- [ ] **3.2.2** Reuse MCP server across CLI messages
+- [ ] **3.2.3** Add MCP server health monitoring for CLI
+- [ ] **3.2.4** Add MCP server error recovery for CLI
+
+**Implementation Details:**
+
+```python
+# Current CLI MCP server creation (per request):
+server = create_polygon_mcp_server()
+
+# New CLI MCP server (persistent):
+cli_mcp_server = create_polygon_mcp_server()
+# Reuse cli_mcp_server across all CLI messages in session
+```
+
+#### **Task 3.3: MCP Server Resource Management**
+
+- [ ] **3.3.1** Add MCP server resource monitoring
+- [ ] **3.3.2** Add MCP server memory management
+- [ ] **3.3.3** Add MCP server connection pooling
+- [ ] **3.3.4** Add MCP server performance optimization
 
 ### **Phase 4: Error Handling & Recovery (Days 4-5)**
 
-- **Robust Error Handling:** Agent creation, session corruption, MCP server failures
-- **Monitoring & Alerting:** Performance monitoring, health checks, memory usage
-- **Recovery Procedures:** Automatic recovery and fallback mechanisms
+#### **Task 4.1: Robust Error Handling**
 
-### **Phase 5: Testing & Validation (Days 5-6)**
+- [ ] **4.1.1** Add agent creation failure detection and recovery
+- [ ] **4.1.2** Add session corruption detection and recovery
+- [ ] **4.1.3** Add MCP server failure handling
+- [ ] **4.1.4** Add cache corruption detection and recovery
 
-- **Functionality Testing:** Session persistence, agent caching, conversation memory
-- **Performance Testing:** Measure 4-20s improvement per session
-- **Integration Testing:** End-to-end validation
+#### **Task 4.2: Monitoring & Alerting**
 
-### **Phase 6: Documentation & Deployment (Days 6-7)**
+- [ ] **4.2.1** Add agent cache performance monitoring
+- [ ] **4.2.2** Add session activity monitoring
+- [ ] **4.2.3** Add MCP server health monitoring
+- [ ] **4.2.4** Add memory usage monitoring
 
-- **Documentation:** Update all relevant docs
-- **Configuration:** Update deployment instructions
-- **Monitoring:** Setup monitoring and alerting
+**Implementation Details:**
+
+```python
+class PerformanceMetrics:
+    def __init__(self):
+        self.agent_creation_time = 0.0
+        self.session_access_time = 0.0
+        self.mcp_server_response_time = 0.0
+        self.cache_hit_rate = 0.0
+        self.memory_usage = 0.0
+        self.timestamp = time.time()
+
+class PerformanceMonitor:
+    def __init__(self):
+        self.metrics: List[PerformanceMetrics] = []
+    
+    def log_agent_creation_time(self, creation_time: float):
+        """Log agent creation time for performance analysis."""
+        self.metrics.append(PerformanceMetrics(
+            agent_creation_time=creation_time,
+            timestamp=time.time()
+        ))
+    
+    def get_performance_summary(self) -> Dict[str, Any]:
+        """Get comprehensive performance summary."""
+        if not self.metrics:
+            return {}
+        
+        recent_metrics = [m for m in self.metrics if time.time() - m.timestamp < 3600]  # Last hour
+        
+        return {
+            "avg_agent_creation_time": sum(m.agent_creation_time for m in recent_metrics) / len(recent_metrics),
+            "avg_session_access_time": sum(m.session_access_time for m in recent_metrics) / len(recent_metrics),
+            "avg_mcp_server_response_time": sum(m.mcp_server_response_time for m in recent_metrics) / len(recent_metrics),
+            "avg_cache_hit_rate": sum(m.cache_hit_rate for m in recent_metrics) / len(recent_metrics),
+            "avg_memory_usage": sum(m.memory_usage for m in recent_metrics) / len(recent_metrics),
+            "total_requests": len(recent_metrics)
+        }
+```
 
 ## **⚠️ CRITICAL IMPLEMENTATION RULES**
 
@@ -170,10 +318,9 @@ This document contains:
 
 - **MANDATORY:** Implement comprehensive error handling
 - **MANDATORY:** Add monitoring and alerting
-- **MANDATORY:** Implement rollback procedures
 - **MANDATORY:** Handle edge cases and failures gracefully
 
-## **🎯 SUCCESS METRICS**
+## **🎯 SUCCESS METRICS (Phases 1-4)**
 
 ### **Performance Targets:**
 
@@ -187,19 +334,16 @@ This document contains:
 - **Conversation Memory:** Agents remember previous queries across messages
 - **Session Persistence:** Conversation history maintained across restarts
 - **Contextual Responses:** Natural follow-up question handling
-- **Code Quality:** 100% dead code removal, cleaner architecture
+- **Code Quality:** Improved architecture with proper error handling
 
 ## **🚨 ROLLBACK PROCEDURES**
 
 **MANDATORY:** Implement rollback capability for each phase:
 
-- **Phase 0:** Restore removed dead code from git history
 - **Phase 1:** Revert session changes, restore `session=None`
 - **Phase 2:** Disable agent caching, restore original agent creation
 - **Phase 3:** Revert MCP server changes, restore original patterns
 - **Phase 4:** Remove monitoring, restore original error handling
-- **Phase 5:** Revert test changes, restore original test suite
-- **Phase 6:** Revert documentation, restore original docs
 
 ## **📝 DELIVERABLES**
 
@@ -211,32 +355,29 @@ This document contains:
 4. **Issues/Deviations** documentation
 5. **Next Phase Preparation** checklist
 
-### **Final Deliverables:**
+### **Final Deliverables (After Phase 4):**
 
-1. **Complete Implementation** following all 6 phases
+1. **Complete Implementation** following all 4 phases
 2. **Performance Validation** showing 4-20s improvement per session
 3. **Functionality Validation** showing conversation memory works
-4. **Updated Documentation** reflecting all changes
-5. **Monitoring Setup** with alerts and dashboards
+4. **Error Handling** with comprehensive monitoring
+5. **Documentation** reflecting all changes
 
 ## **🔍 VALIDATION CHECKLIST**
 
 Before considering implementation complete:
 
-- [ ] All 6 phases completed successfully
+- [ ] All 4 phases completed successfully
 - [ ] Performance improvement of 4-20s per session achieved
 - [ ] Conversation memory works across messages and restarts
 - [ ] All existing functionality preserved
-- [ ] Dead code completely removed
 - [ ] Comprehensive error handling implemented
 - [ ] Monitoring and alerting setup
-- [ ] Documentation updated
-- [ ] Rollback procedures tested
 - [ ] All tests passing
 
 ## **💡 IMPLEMENTATION TIPS**
 
-1. **Start with Phase 0** - Dead code cleanup is low-risk and provides immediate value
+1. **Start with Phase 1** - Session persistence provides immediate user value
 2. **Follow Code Examples** - The plan contains exact code snippets to implement
 3. **Test Frequently** - Run tests after each significant change
 4. **Document Everything** - Keep detailed logs of all changes and decisions
@@ -247,15 +388,15 @@ Before considering implementation complete:
 
 **Implementation is successful when:**
 
-- ✅ All 6 phases completed per the detailed plan
+- ✅ All 4 phases completed per the detailed plan
 - ✅ 4-20s performance improvement per session achieved
 - ✅ Conversation memory works seamlessly
 - ✅ All existing functionality preserved
 - ✅ Comprehensive monitoring and error handling in place
-- ✅ Documentation updated and deployment ready
+- ✅ Ready for Phase 5 (Testing & Validation)
 
-**Remember:** This is implementing **essential chatbot functionality** that users expect, not just a performance optimization. The 7-day investment is absolutely justified for the massive performance gains and critical user experience improvements.
+**Remember:** This is implementing **essential chatbot functionality** that users expect, not just a performance optimization. The 4-day investment is absolutely justified for the massive performance gains and critical user experience improvements.
 
 ---
 
-**🚀 BEGIN IMPLEMENTATION: Start with Phase 0 and work through all 6 phases systematically. Good luck!**
+**🚀 BEGIN IMPLEMENTATION: Start with Phase 1 and work through all 4 phases systematically. Good luck!**
