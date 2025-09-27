@@ -1,0 +1,148 @@
+# Dynamic Adaptive Prompting System - Deployment Configuration
+
+# Deployment environment
+environment: staging  # staging, production
+
+# Backup configuration
+backup:
+  enabled: true
+  path: backups
+  retention_days: 30
+
+# Services configuration
+services:
+  backend:
+    enabled: true
+    restart_required: true
+    health_check_url: http://localhost:8000/health
+    startup_timeout: 30
+  
+  frontend:
+    enabled: true
+    restart_required: true
+    health_check_url: http://localhost:3000
+    startup_timeout: 30
+
+# Dynamic prompting configuration
+dynamic_prompting:
+  enabled: true
+  cache_size: 100
+  rate_limit: 10
+  debug_mode: false
+
+# Security configuration
+security:
+  max_input_length: 1000
+  enable_audit_logging: true
+  enable_circuit_breaker: true
+  rate_limit_window: 60  # seconds
+  max_requests_per_window: 10
+
+# Performance configuration
+performance:
+  cache_ttl: 3600  # seconds
+  background_processing: true
+  max_concurrent_requests: 50
+  request_timeout: 30  # seconds
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  health_check_interval: 30  # seconds
+  metrics_collection: true
+  log_level: INFO
+  log_retention_days: 7
+
+# Database configuration (if applicable)
+database:
+  enabled: false
+  connection_string: ""
+  backup_enabled: false
+
+# External services
+external_services:
+  polygon_api:
+    enabled: true
+    timeout: 10
+    retry_attempts: 3
+  
+  openai_api:
+    enabled: true
+    timeout: 30
+    retry_attempts: 2
+
+# Deployment settings
+deployment:
+  strategy: rolling  # rolling, blue-green, canary
+  max_unavailable: 1
+  max_surge: 1
+  readiness_probe:
+    initial_delay: 10
+    period: 5
+    timeout: 3
+    success_threshold: 1
+    failure_threshold: 3
+  liveness_probe:
+    initial_delay: 30
+    period: 10
+    timeout: 5
+    success_threshold: 1
+    failure_threshold: 3
+
+# Rollback configuration
+rollback:
+  enabled: true
+  automatic_rollback: false
+  rollback_threshold: 5  # failed health checks
+  rollback_timeout: 300  # seconds
+
+# Testing configuration
+testing:
+  enabled: true
+  unit_tests: true
+  integration_tests: true
+  performance_tests: true
+  test_timeout: 300  # seconds
+
+# Notification configuration
+notifications:
+  enabled: false
+  email:
+    enabled: false
+    recipients: []
+    smtp_server: ""
+    smtp_port: 587
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#deployments"
+  webhook:
+    enabled: false
+    url: ""
+    timeout: 10
+
+# Environment-specific overrides
+environments:
+  staging:
+    dynamic_prompting:
+      cache_size: 50
+      rate_limit: 5
+    security:
+      max_input_length: 500
+    monitoring:
+      log_level: DEBUG
+  
+  production:
+    dynamic_prompting:
+      cache_size: 200
+      rate_limit: 20
+    security:
+      max_input_length: 2000
+      enable_audit_logging: true
+    monitoring:
+      log_level: INFO
+      metrics_collection: true
+    backup:
+      retention_days: 90
+    notifications:
+      enabled: true

@@ -21,20 +21,17 @@ import logging
 import re
 import time
 from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
 
 class ValidationError(Exception):
     """Custom exception for validation errors"""
-    pass
 
 
 class TemplateError(Exception):
     """Custom exception for template processing errors"""
-    pass
 
 
 @dataclass
@@ -166,7 +163,16 @@ class InstructionParser:
             matches = re.findall(pattern, user_input, re.IGNORECASE)
             if matches:
                 if isinstance(matches[0], tuple):
-                    preferences[key] = matches[0][1] if len(matches[0]) > 1 else matches[0][0]
+                    # For tool_usage, preserve the full instruction for template processing
+                    if key == 'tool_usage':
+                        # Reconstruct the full instruction from the original input
+                        full_match = matches[0]
+                        if len(full_match) > 1 and full_match[1]:
+                            preferences[key] = f"{full_match[0]} {full_match[1]}"
+                        else:
+                            preferences[key] = full_match[0]
+                    else:
+                        preferences[key] = matches[0][1] if len(matches[0]) > 1 and matches[0][1] else matches[0][0]
                 else:
                     preferences[key] = matches[0]
         return preferences
@@ -188,13 +194,13 @@ class TemplateEngine:
             'response_style': self._get_response_style_template
         }
     
-    def apply_preferences(self, base_template: str, preferences: UserPreferences, context: Dict[str, Any]) -> str:
+    def apply_preferences(self, base_template: str, preferences: Any, context: Dict[str, Any]) -> str:
         """
         Apply user preferences to the base template.
         
         Args:
             base_template: The base prompt template
-            preferences: User preferences to apply
+            preferences: User preferences to apply (UserPreferences object or dict)
             context: Additional context for template processing
             
         Returns:
@@ -202,25 +208,43 @@ class TemplateEngine:
         """
         template = base_template
         
-        # Apply verbosity customization
-        if preferences.verbosity:
-            template = self.template_vars['verbosity'](template, preferences.verbosity, context)
-        
-        # Apply tool usage customization
-        if preferences.tool_usage:
-            template = self.template_vars['tool_usage'](template, preferences.tool_usage, context)
-        
-        # Apply output format customization
-        if preferences.output_format:
-            template = self.template_vars['output_format'](template, preferences.output_format, context)
-        
-        # Apply response style customization
-        if preferences.response_style:
-            template = self.template_vars['response_style'](template, preferences.response_style, context)
+        # Handle both UserPreferences object and dict
+        if isinstance(preferences, dict):
+            # Apply verbosity customization
+            if preferences.get('verbosity'):
+                template = self.template_vars['verbosity'](template, preferences['verbosity'], context)
+            
+            # Apply tool usage customization
+            if preferences.get('tool_usage'):
+                template = self.template_vars['tool_usage'](template, preferences['tool_usage'], context)
+            
+            # Apply output format customization
+            if preferences.get('output_format'):
+                template = self.template_vars['output_format'](template, preferences['output_format'], context)
+            
+            # Apply response style customization
+            if preferences.get('response_style'):
+                template = self.template_vars['response_style'](template, preferences['response_style'], context)
+        else:
+            # Apply verbosity customization
+            if preferences.verbosity:
+                template = self.template_vars['verbosity'](template, preferences.verbosity, context)
+            
+            # Apply tool usage customization
+            if preferences.tool_usage:
+                template = self.template_vars['tool_usage'](template, preferences.tool_usage, context)
+            
+            # Apply output format customization
+            if preferences.output_format:
+                template = self.template_vars['output_format'](template, preferences.output_format, context)
+            
+            # Apply response style customization
+            if preferences.response_style:
+                template = self.template_vars['response_style'](template, preferences.response_style, context)
         
         return template
     
-    def _get_verbosity_template(self, template: str, verbosity: str, context: Dict[str, Any]) -> str:
+    def _get_verbosity_template(self, template: str, verbosity: str, _context: Dict[str, Any]) -> str:
         """Apply verbosity customization to template"""
         verbosity_instructions = {
             'minimal': 'Provide only essential information with minimal explanation.',
@@ -233,7 +257,7 @@ class TemplateEngine:
         instruction = verbosity_instructions.get(verbosity, verbosity_instructions['standard'])
         return template.replace('{verbosity_instruction}', instruction)
     
-    def _get_tool_usage_template(self, template: str, tool_usage: str, context: Dict[str, Any]) -> str:
+    def _get_tool_usage_template(self, template: str, tool_usage: str, _context: Dict[str, Any]) -> str:
         """Apply tool usage customization to template"""
         if 'use only' in tool_usage.lower():
             tools = tool_usage.lower().replace('use only', '').strip()
@@ -245,7 +269,7 @@ class TemplateEngine:
             return template.replace('{tool_restriction}', 'Use the minimum number of tools necessary to complete the task')
         return template
     
-    def _get_output_format_template(self, template: str, output_format: str, context: Dict[str, Any]) -> str:
+    def _get_output_format_template(self, template: str, output_format: str, _context: Dict[str, Any]) -> str:
         """Apply output format customization to template"""
         format_instructions = {
             'structured': 'Format your response in a structured format with clear sections and bullet points.',
@@ -258,7 +282,7 @@ class TemplateEngine:
         instruction = format_instructions.get(output_format, format_instructions['structured'])
         return template.replace('{format_instruction}', instruction)
     
-    def _get_response_style_template(self, template: str, response_style: str, context: Dict[str, Any]) -> str:
+    def _get_response_style_template(self, template: str, response_style: str, _context: Dict[str, Any]) -> str:
         """Apply response style customization to template"""
         style_instructions = {
             'formal': 'Use a formal, professional tone in your response.',
@@ -287,17 +311,26 @@ class InputValidator:
         self.allowed_formats = ['structured', 'narrative', 'bullet points', 'json', 'markdown', 'plain']
         self.allowed_styles = ['formal', 'casual', 'technical', 'professional', 'friendly']
     
-    def validate_preferences(self, preferences: Dict[str, Any]) -> None:
+    def validate_preferences(self, preferences: Any) -> None:
         """
         Validate user preferences against allowed values.
         
         Args:
-            preferences: User preferences to validate
+            preferences: User preferences to validate (dict or UserPreferences object)
             
         Raises:
             ValidationError: If preferences contain invalid values
         """
-        for key, value in preferences.items():
+        # Handle both dict and UserPreferences object
+        if isinstance(preferences, dict):
+            items = list(preferences.items())
+        else:
+            # UserPreferences object
+            items = [(key, getattr(preferences, key)) for key in ['verbosity', 'tool_usage', 'output_format', 'response_style'] if hasattr(preferences, key)]
+        
+        for key, value in items:
+            if value is None:
+                continue  # Skip None values
             if key == 'verbosity' and value not in self.allowed_verbs:
                 raise ValidationError(f"Invalid verbosity level: {value}")
             elif key == 'tool_usage' and not self._validate_tool_usage(value):
@@ -309,11 +342,15 @@ class InputValidator:
     
     def _validate_tool_usage(self, tool_usage: str) -> bool:
         """Validate tool usage instructions"""
-        if 'use only' in tool_usage.lower():
-            tools = tool_usage.lower().replace('use only', '').strip().split(',')
+        if not tool_usage:
+            return True
+        
+        tool_usage_lower = tool_usage.lower()
+        if 'use only' in tool_usage_lower:
+            tools = tool_usage_lower.replace('use only', '').strip().split(',')
             return all(tool.strip() in self.allowed_tools for tool in tools)
-        elif 'avoid' in tool_usage.lower():
-            tools = tool_usage.lower().replace('avoid', '').strip().split(',')
+        elif 'avoid' in tool_usage_lower:
+            tools = tool_usage_lower.replace('avoid', '').strip().split(',')
             return all(tool.strip() in self.allowed_tools for tool in tools)
         return True
     
@@ -331,7 +368,7 @@ class InputValidator:
         for key, value in preferences.items():
             if isinstance(value, str):
                 # Remove potentially dangerous characters
-                sanitized_value = re.sub(r'[<>"\'<>]', '', value).strip()
+                sanitized_value = re.sub(r'[<>"\']+', '', value).strip()
                 setattr(sanitized, key, sanitized_value)
             else:
                 setattr(sanitized, key, value)
@@ -347,9 +384,9 @@ class PromptCache:
     """
     
     def __init__(self, max_size: int = 100):
-        self.cache = {}
+        self.cache: Dict[str, str] = {}
         self.max_size = max_size
-        self.access_times = {}
+        self.access_times: Dict[str, float] = {}
     
     def store(self, key: str, value: str) -> None:
         """
@@ -387,7 +424,7 @@ class PromptCache:
             del self.access_times[oldest_key]
 
 
-def create_dynamic_prompt_manager(base_template: str, config: Dict[str, Any] = None) -> DynamicPromptManager:
+def create_dynamic_prompt_manager(base_template: str, config: Optional[Dict[str, Any]] = None) -> DynamicPromptManager:
     """
     Factory function to create a DynamicPromptManager instance.
     

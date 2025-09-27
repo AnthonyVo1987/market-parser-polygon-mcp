@@ -1,0 +1,282 @@
+=== Test 1: First_Market_Status ===
+Prompt: Current Market Status
+Duration: 0s
+Response Time: 45.183s
+Initial Memory: System=5.9Gi 17Gi, Process=0.4 108484
+Final Memory: System=6.9Gi 16Gi, Process=0.4 108484
+Cache Stats: 🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+🚀 CLI agent cache initialized
+> [09/26/25 21:59:32] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 21:59:51] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/26/25 21:59:52] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Market status (regular session): Closed                                      
+ • Next regular session open: Monday, 2025-09-29 at 09:30 ET                    
+ • Exchanges status:                                                            
+    • NYSE: Closed                                                              
+    • NASDAQ: Closed                                                            
+    • OTC: Closed                                                               
+ • Major indices status (regular session): S&P 500 index: Closed; Dow Jones     
+   index: Closed                                                                
+ • FX market status (per feed): Closed                                          
+ • Time reference (context): 2025-09-26 21:59 ET                                
+
+Notes:                                                                          
+
+ • Tickers referenced: NYSE, NASDAQ, S&P 500 (SPX), Dow Jones (DJI), OTC        
+ • Feed indicates no after-hours session currently in effect                    
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Regular session is not in progress; liquidity and intraday price moves are   
+   nil for the US equity market today.                                          
+ 2 The next opportunity for trading is the next regular session on Monday at    
+   09:30 ET; potential weekend-driven gaps could occur at open.                 
+ 3 Market status for major venues and indices shows a consolidated closure in   
+   this feed (NYSE/NASDAQ/SPX/DJI), with FX not active in this data snapshot;   
+   cross-check with alternate feeds if you need FX or global market context.    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 45.183s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+🚀 CLI agent cache cleaned up
+
+=== END TEST 1 ===
+
+=== Test 2: First_NVDA_Snapshot ===
+Prompt: Single Stock Snapshot NVDA
+Duration: 0s
+Response Time: 45.137s
+Initial Memory: System=6.9Gi 16Gi, Process=0.4 108484
+Final Memory: System=5.9Gi 17Gi, Process=0.4 108484
+Cache Stats: 🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+🚀 CLI agent cache initialized
+> [09/26/25 22:00:24] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 22:00:38] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: NVDA                                                                 
+ • Last price: 178.19                                                           
+ • Todays change (reported): -0.05                                              
+ • Todays change % (reported): -2.81%                                           
+ • Day open: 178.17                                                             
+ • Day high: 179.77                                                             
+ • Day low: 174.93                                                              
+ • Previous close: 177.69                                                       
+ • Volume today: 148,843,144                                                    
+ • VWAP today: 177.05                                                           
+ • Last update: 2025-09-26 00:00 UTC                                            
+ • Market status: Closed                                                        
+ • Data source status: OK                                                       
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Intraday range and current level                                             
+
+ • Day range spans from 174.93 to 179.77, a 4.84 swing. Current price of 178.19 
+   sits near the upper end of the range, indicating a strong intraday session   
+   with a recent pullback from the high.                                        
+
+ 2 Momentum versus prior close                                                  
+
+ • Price vs prior close: 178.19 − 177.69 = +0.50, or +0.28% relative to the     
+   previous close. This suggests a modest positive drift versus the prior       
+   session, even though the platform’s intraday percent field Showed a negative 
+   daily change.                                                                
+
+ 3 Liquidity and intraday activity                                              
+
+ • Volume today about 148.8 million shares indicates active trading and solid   
+   liquidity for NVDA in this snapshot. VWAP is 177.05, close to prior close,   
+   suggesting the session traded around the mid-to-upper price area on average. 
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 45.137s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+🚀 CLI agent cache cleaned up
+
+=== END TEST 2 ===
+
+=== Test 3: Second_Market_Status_Cache ===
+Prompt: Current Market Status
+Duration: 0s
+Response Time: 51.088s
+Initial Memory: System=5.9Gi 17Gi, Process=0.4 108484
+Final Memory: System=5.8Gi 17Gi, Process=0.4 108484
+Cache Stats: 🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+🚀 CLI agent cache initialized
+> [09/26/25 22:01:17] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 22:01:39] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/26/25 22:01:40] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Market status (as of context time 2025-09-26 22:01 ET): Closed               
+ • Server time (ET): 2025-09-27 01:01:40                                        
+ • NYSE: Closed                                                                 
+ • NASDAQ: Closed                                                               
+ • OTC Markets: Closed                                                          
+ • S&P 500 index: Closed                                                        
+ • Dow Jones index: Closed                                                      
+ • SPY last trade: N/A (Not Authorized)                                         
+ • QQQ last trade: N/A (Not Authorized)                                         
+ • After-hours trading: Off                                                     
+ • Crypto markets: Open                                                         
+ • FX markets: Closed                                                           
+
+Verbal summary: The U.S. equity market is fully shut for the regular session    
+with no after-hours activity indicated. Price data for key ETFs (SPY, QQQ) is   
+not available due to access restrictions. Crypto markets are indicated as open, 
+while FX markets are closed per the data feed.                                  
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Current status takeaway                                                      
+
+ • The market is clearly in a closed state across major equity venues (NYSE,    
+   NASDAQ), with end-of-day conditions in effect and no after-hours activity    
+   reported.                                                                    
+
+ 2 Data access note                                                             
+
+ • Real-time last-trade prices for SPY and QQQ are not accessible under the     
+   current plan, so price-level context for these assets cannot be provided     
+   here. Upgrading would enable retrieval of live price data.                   
+
+ 3 Time/context alignment                                                       
+
+ • Server timestamp shows ET 01:01:40 on 2025-09-27, which may differ from the  
+   local context time (2025-09-26 22:01). Rely on the server time for status    
+   checks and ensure alignment when interpreting after-hours or cross-date      
+   signals.                                                                     
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 51.088s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+🚀 CLI agent cache cleaned up
+
+=== END TEST 3 ===
+
+=== Test 4: Second_NVDA_Snapshot_Cache ===
+Prompt: Single Stock Snapshot NVDA
+Duration: 0s
+Response Time: 39.688s
+Initial Memory: System=6.7Gi 16Gi, Process=0.4 108484
+Final Memory: System=5.9Gi 17Gi, Process=0.4 108484
+Cache Stats: 🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+🚀 CLI agent cache initialized
+> [09/26/25 22:02:15] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/26/25 22:02:29] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+A. DATA FIRST                                                                   
+
+ • Ticker: NVDA (Stock)                                                         
+ • Latest price: 178.19 USD                                                     
+ • Prev close: 177.69 USD                                                       
+ • Day change: +0.50 USD (+0.28%)                                               
+ • Day open: 178.17 USD                                                         
+ • Day high: 179.77 USD                                                         
+ • Day low: 174.93 USD                                                          
+ • Volume (today): 148,843,144 shares                                           
+ • VWAP: 177.05 USD                                                             
+ • Market status: Closed                                                        
+ • Last update (snapshot timestamp): 2025-09-26 22:02                           
+
+B. DETAILED ANALYSIS                                                            
+
+ 1 Intraday action snapshot                                                     
+
+ • NVDA traded in a wide range today (174.93 to 179.77) and closed at 178.19,   
+   indicating intraday volatility with a modest net gain from the prior close.  
+
+ 2 Price momentum vs prior session                                              
+
+ • Close was 0.50 higher than the previous close of 177.69, a 0.28% advance,    
+   suggesting light positive momentum into the close.                           
+
+ 3 Liquidity context                                                            
+
+ • Today’s volume was 148.8M shares, indicating solid liquidity for NVDA, though
+   it was lower than the prior session’s 191.6M, implying comparatively lighter 
+   turnover this session. Market status is currently closed.                    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 39.688s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+🚀 CLI agent cache stats: 0.0% hit rate, 1 entries
+🚀 CLI agent cache cleaned up
+
+=== END TEST 4 ===
+

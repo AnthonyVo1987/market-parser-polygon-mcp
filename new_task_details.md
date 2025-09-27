@@ -47,9 +47,6 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1 Update ALL AI Prompts with the following changes for some performance optimizations
+## Task 1 Review and understand the current project's LINT\PyLint\ESLint Config and Commands
 
-- Remove 'Provide data-driven insights with actionable recommendations'
-- ' .. and specific metrics"
-- Enforce max of 3 Key Takeaways
-- Enforce Detailed analysis to be in numbered\bullet point format
+## Task 2 Run comprehensive LINT\PyLint\ESLint for entire code base, and fix all issues

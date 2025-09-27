@@ -1,0 +1,316 @@
+# Dynamic Adaptive Prompting System - Staging Configuration
+
+# Staging environment settings
+staging:
+  backend_url: http://localhost:8000
+  frontend_url: http://localhost:3000
+  timeout: 30
+  retry_attempts: 3
+  health_check_interval: 60
+
+# Validation settings
+validation:
+  enabled: true
+  
+  # Test categories
+  tests:
+    unit_tests: true
+    integration_tests: true
+    performance_tests: true
+    security_tests: true
+    user_acceptance_tests: true
+    load_tests: false
+    stress_tests: false
+  
+  # Test timeouts
+  timeouts:
+    unit_tests: 300  # seconds
+    integration_tests: 600  # seconds
+    performance_tests: 900  # seconds
+    security_tests: 300  # seconds
+    user_acceptance_tests: 600  # seconds
+
+# Performance thresholds
+thresholds:
+  # Response time thresholds
+  response_time_ms: 1000
+  p95_response_time_ms: 2000
+  p99_response_time_ms: 5000
+  
+  # Error rate thresholds
+  error_rate_percent: 1
+  critical_error_rate_percent: 0.1
+  
+  # Availability thresholds
+  availability_percent: 99
+  uptime_percent: 99.5
+  
+  # Resource usage thresholds
+  memory_usage_percent: 80
+  cpu_usage_percent: 80
+  disk_usage_percent: 90
+  
+  # Dynamic prompting specific thresholds
+  prompt_generation_time_ms: 100
+  cache_hit_rate_percent: 70
+  validation_error_rate_percent: 1
+
+# Test data configuration
+test_data:
+  # Sample user inputs for testing
+  user_inputs:
+    basic:
+      - "[verbose] Get market data"
+      - "[minimal] Quick update"
+      - "[standard] Regular analysis"
+    
+    combined:
+      - "[verbose] [json] [formal] Comprehensive market analysis"
+      - "[minimal] [bullet points] [casual] Quick summary"
+      - "[standard] [markdown] [technical] Technical report"
+    
+    tool_usage:
+      - "[use only get_snapshot_ticker] Get AAPL data"
+      - "[avoid get_technical_analysis] Simple market check"
+      - "[minimal tools] Quick portfolio update"
+    
+    edge_cases:
+      - ""
+      - "[invalid_preference] Get data"
+      - "Very long input " * 100
+      - "[verbose] Analyse marché français 🇫🇷"
+  
+  # Malicious inputs for security testing
+  security_inputs:
+    xss:
+      - "<script>alert('xss')</script>"
+      - "javascript:alert('xss')"
+      - "<img src=x onerror=alert('xss')>"
+    
+    sql_injection:
+      - "'; DROP TABLE users; --"
+      - "' OR '1'='1"
+      - "'; INSERT INTO users VALUES ('hacker', 'password'); --"
+    
+    path_traversal:
+      - "../../etc/passwd"
+      - "..\\..\\windows\\system32\\drivers\\etc\\hosts"
+      - "/etc/shadow"
+    
+    template_injection:
+      - "{{7*7}}"
+      - "${7*7}"
+      - "#{7*7}"
+
+# Load testing configuration
+load_testing:
+  enabled: false
+  
+  # Load test scenarios
+  scenarios:
+    normal_load:
+      users: 10
+      duration: 300  # seconds
+      ramp_up: 60  # seconds
+    
+    high_load:
+      users: 50
+      duration: 600  # seconds
+      ramp_up: 120  # seconds
+    
+    stress_test:
+      users: 100
+      duration: 900  # seconds
+      ramp_up: 180  # seconds
+  
+  # Load test thresholds
+  thresholds:
+    max_response_time_ms: 2000
+    max_error_rate_percent: 5
+    min_throughput_rps: 10
+
+# Security testing configuration
+security_testing:
+  enabled: true
+  
+  # Security test categories
+  tests:
+    input_validation: true
+    xss_protection: true
+    sql_injection_protection: true
+    path_traversal_protection: true
+    rate_limiting: true
+    authentication: false  # If applicable
+    authorization: false   # If applicable
+  
+  # Security test parameters
+  parameters:
+    rate_limit_test_requests: 20
+    rate_limit_window_seconds: 60
+    xss_test_payloads: 10
+    sql_injection_test_payloads: 10
+
+# Performance testing configuration
+performance_testing:
+  enabled: true
+  
+  # Performance test scenarios
+  scenarios:
+    baseline:
+      description: "Baseline performance test"
+      requests: 100
+      concurrency: 1
+      duration: 60  # seconds
+    
+    concurrent_users:
+      description: "Concurrent users test"
+      requests: 1000
+      concurrency: 10
+      duration: 120  # seconds
+    
+    sustained_load:
+      description: "Sustained load test"
+      requests: 5000
+      concurrency: 20
+      duration: 600  # seconds
+  
+  # Performance metrics to collect
+  metrics:
+    response_time: true
+    throughput: true
+    error_rate: true
+    resource_usage: true
+    cache_performance: true
+
+# User acceptance testing configuration
+user_acceptance_testing:
+  enabled: true
+  
+  # User scenarios to test
+  scenarios:
+    basic_usage:
+      description: "Basic user interactions"
+      test_cases:
+        - verbosity_control
+        - output_format_control
+        - response_style_control
+        - tool_usage_control
+    
+    advanced_usage:
+      description: "Advanced user interactions"
+      test_cases:
+        - combined_preferences
+        - complex_instructions
+        - edge_cases
+        - error_handling
+    
+    integration_usage:
+      description: "Integration scenarios"
+      test_cases:
+        - cli_integration
+        - gui_integration
+        - button_prompt_preservation
+        - fallback_behavior
+  
+  # Acceptance criteria
+  criteria:
+    functionality: 100  # All features must work
+    performance: 95     # 95% of requests under threshold
+    usability: 90       # 90% of scenarios must be intuitive
+    reliability: 99     # 99% uptime during testing
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  
+  # Metrics to monitor during testing
+  metrics:
+    system:
+      cpu_usage: true
+      memory_usage: true
+      disk_usage: true
+      network_io: true
+    
+    application:
+      response_times: true
+      error_rates: true
+      throughput: true
+      active_connections: true
+    
+    dynamic_prompting:
+      prompt_generation_time: true
+      cache_performance: true
+      validation_errors: true
+      user_preferences: true
+  
+  # Alerting during testing
+  alerts:
+    enabled: true
+    thresholds:
+      cpu_usage_percent: 90
+      memory_usage_percent: 90
+      error_rate_percent: 5
+      response_time_ms: 5000
+
+# Reporting configuration
+reporting:
+  enabled: true
+  
+  # Report formats
+  formats:
+    json: true
+    html: true
+    pdf: false
+    csv: true
+  
+  # Report content
+  content:
+    executive_summary: true
+    detailed_results: true
+    performance_metrics: true
+    security_findings: true
+    recommendations: true
+  
+  # Report output
+  output:
+    directory: logs/staging_reports
+    filename_template: "staging_validation_{timestamp}.{format}"
+    include_timestamp: true
+
+# Environment-specific overrides
+environments:
+  development:
+    staging:
+      backend_url: http://localhost:8000
+      frontend_url: http://localhost:3000
+    thresholds:
+      response_time_ms: 2000
+      error_rate_percent: 5
+    validation:
+      tests:
+        load_tests: false
+        stress_tests: false
+  
+  staging:
+    staging:
+      backend_url: http://staging.example.com:8000
+      frontend_url: http://staging.example.com:3000
+    thresholds:
+      response_time_ms: 1000
+      error_rate_percent: 1
+    validation:
+      tests:
+        load_tests: true
+        stress_tests: false
+  
+  production:
+    staging:
+      backend_url: http://production.example.com:8000
+      frontend_url: http://production.example.com:3000
+    thresholds:
+      response_time_ms: 500
+      error_rate_percent: 0.1
+    validation:
+      tests:
+        load_tests: true
+        stress_tests: true

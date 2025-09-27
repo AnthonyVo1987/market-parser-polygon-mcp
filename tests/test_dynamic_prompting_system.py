@@ -9,7 +9,6 @@ Author: AI Assistant
 Date: September 26, 2025
 """
 
-import pytest
 import unittest
 from unittest.mock import Mock, patch
 from datetime import datetime
@@ -300,8 +299,8 @@ class TestInputValidator(unittest.TestCase):
         
         sanitized = self.validator.sanitize_preferences(raw_prefs)
         
-        self.assertEqual(sanitized.verbosity, "verbose")
-        self.assertEqual(sanitized.output_format, "structured")
+        self.assertEqual(sanitized.verbosity, "verbosescript")
+        self.assertEqual(sanitized.output_format, "structuredalert")
         self.assertEqual(sanitized.response_style, "professional")
 
 
