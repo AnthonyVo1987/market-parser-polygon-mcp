@@ -47,55 +47,87 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
----
+## AI Agent Task: Phase 5 Testing & Validation for Shared Persistent Agent Implementation
 
-**PROMPT FOR AI AGENT:**
+You are tasked with performing **Phase 5: Testing & Validation** for the Shared Persistent Agent Implementation. This involves comprehensive testing of the shared persistent agent architecture across functionality, performance, and integration testing.
 
-```
-Use ALL your Mandatory Toolkit Tools to systematically implement Phase 0: Dead Code Cleanup from docs/implementation_plans/shared_persistent_agent_implementation_plan.md.
+**CRITICAL REQUIREMENTS:**
 
-CRITICAL REQUIREMENTS:
-- Read the implementation plan document first to understand the exact requirements
-- Follow the Phase 0 tasks in exact order (0.1.1 through 0.1.6)
-- Use comprehensive verification tools to ensure no code is removed that's actually being used
-- Test after each removal to ensure functionality remains intact
+- Complete ALL Phase 5 tasks as specified in the implementation plan
+- Use the 3 test prompts as an ADDITIONAL validation layer
+- Generate comprehensive test reports for each task
+- Use ALL mandatory tools throughout the process
 
-PHASE 0 TASKS TO IMPLEMENT:
-1. Remove `guardrail_agent` (line 617) - never used
-2. Remove `finance_analysis_agent` (line 631) - never used  
-3. Remove `finance_guardrail()` function (lines 639-646) - exported but never called
-4. Remove entire `optimized_agent_instructions.py` file - never used
-5. Remove unused imports and dependencies
-6. Update `src/backend/__init__.py` to remove `finance_guardrail` import/export
-7. Verify no broken references after cleanup
+## **Task 5.1: Functionality Testing**
 
-VALIDATION REQUIREMENTS:
-- Run linting to ensure no broken imports
-- Run tests to verify functionality remains intact
-- Check for any remaining references to removed code
-- Verify no circular import dependencies
-- Confirm all test cases pass
-- Check for any runtime errors in both CLI and GUI
-- Validate that removed code doesn't affect existing functionality
+**5.1.1** Test CLI session persistence
+**5.1.2** Test GUI session management  
+**5.1.3** Test agent caching functionality
+**5.1.4** Test conversation memory across messages
 
-MANDATORY TOOL USAGE:
-- Use sequential thinking for task analysis and planning
-- Use code analysis tools to verify each removal is safe
-- Use search tools to find all references before removing
-- Use testing tools to validate after each change
-- Use git tools to track changes
-- Continue using tools throughout the entire process
+**Test Scenarios:**
 
-SUCCESS CRITERIA:
-- All dead code removed without breaking functionality
-- No broken imports or references
-- All tests pass
-- Clean, maintainable codebase ready for Phase 5 & 6
-- Single atomic commit with all changes
+- CLI Session Persistence: Start CLI session, send "Current Market Status", then "What about NVDA?", verify message 2 references message 1 context
+- GUI Session Management: Start GUI session, send multiple messages, verify conversation memory works
+- Agent Caching: Send multiple similar requests, verify agent creation time decreases, verify cache hit rate increases
 
-Execute this implementation systematically and verify each step before proceeding to the next.
+## **Task 5.2: Performance Testing**
+
+**5.2.1** Measure response time improvements (target: 4-20s faster per session)
+**5.2.2** Test memory usage with caching
+**5.2.3** Test performance under load
+**5.2.4** Validate conversation memory functionality
+
+**Performance Test with 7 Prompts:**
+
+```text
+"Current Market Status"
+"Single Stock Snapshot NVDA" 
+"Full Market Snapshot: SPY, QQQ, IWM"
+"GME closing price today"
+"SOUN performance this week"
+"NVDA Support & Resistance Levels"
+"SPY Technical Analysis"
 ```
 
----
+## **Task 5.3: Integration Testing**
 
-This prompt provides clear instructions for implementing Phase 0 with comprehensive verification and testing requirements.
+**5.3.1** Test dead code removal doesn't break functionality
+**5.3.2** Test session persistence integration
+**5.3.3** Test agent caching integration
+**5.3.4** Test MCP server optimization
+
+## **ADDITIONAL VALIDATION: 3 Test Prompts in Same Session**
+
+**CRITICAL:** As an additional validation layer, test these 3 prompts in the SAME CLI session sequentially with 120s timeout per prompt:
+
+1. **Test Prompt 1:** `Current Market Status`
+2. **Test Prompt 2:** `Single Stock Snapshot NVDA`  
+3. **Test Prompt 3:** `Full Market Snapshot: SPY, QQQ, IWM`
+
+**Expected Performance Improvements:**
+
+- First prompt: ~30-60s (agent creation + MCP server setup)
+- Second prompt: ~20-40s (cached agent reuse)
+- Third prompt: ~20-40s (cached agent reuse)
+- **Target:** 4-20s faster per session (10-40% improvement)
+
+**DELIVERABLES:**
+
+1. Functionality test results for all 5.1 tasks
+2. Performance test results with timing data for all 5.2 tasks
+3. Integration test results for all 5.3 tasks
+4. Additional validation report for the 3 test prompts
+5. Comprehensive .md test report summarizing all results
+
+**MANDATORY TOOL USAGE:**
+Use ALL available tools throughout the testing process:
+
+- Sequential-Thinking for test planning and analysis
+- Terminal commands for CLI/GUI execution
+- File operations for report generation
+- Serena tools for code analysis and validation
+- Context7 for research if issues arise
+- Performance monitoring tools for metrics collection
+
+Execute Phase 5 testing systematically and provide comprehensive validation results for the shared persistent agent implementation.
