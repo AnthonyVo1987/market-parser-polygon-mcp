@@ -50,7 +50,7 @@ const CollapsiblePanel: FC<CollapsiblePanelProps> = ({
                 </button>
             </div>
             {isExpanded && (
-                <div className="collapsible-panel-content">
+                <div className="collapsible-panel-content expanded-content">
                     {children}
                 </div>
             )}

@@ -60,13 +60,6 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
 
     return (
       <div className='chat-input-container' data-testid='chat-input'>
-        <div className='chat-input-header'>
-          <h3 className='chat-input-title'>AI CHATBOT INPUT</h3>
-          <div className='chat-input-subtitle'>
-            Type your financial questions here
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit} className='chat-input-form'>
           <div className='chat-input-wrapper'>
             <textarea
@@ -78,7 +71,7 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
               placeholder={dynamicPlaceholder}
               disabled={disabled}
               className='chat-input-textarea'
-              rows={6}
+              rows={3}
               data-testid='chat-input-textarea'
               aria-label='AI Chatbot Input - Type your financial questions here'
               aria-describedby='chat-input-character-count'
@@ -107,7 +100,6 @@ const ChatInput_OpenAI: FC<ChatInputProps> = memo(
               </svg>
             </button>
           </div>
-
 
           {/* Character count display */}
           <div

@@ -389,21 +389,20 @@ export const messageStyles = `
   
   .footer-metrics {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    font-size: var(--text-xs);
-    color: var(--neutral-400);
-    font-family: var(--font-mono);
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin-top: 8px;
   }
   
   .footer-metric {
-    display: inline-flex;
-    align-items: center;
-    padding: var(--space-1) var(--space-2);
-    background: var(--glass-surface-light);
-    border: var(--glass-border-subtle);
-    border-radius: var(--radius-sm);
+    display: block;
+    padding: 4px 0;
     font-weight: 500;
+    line-height: 1.4;
+    color: #cbd5e1;
   }
   
   .ai-bubble .footer-metric {

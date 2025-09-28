@@ -47,20 +47,6 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. OPEN and view the image from 'screenshots/image.png' to investigate and implement the following change requests for the UI in later tasks. you cannot proceed with later tasks until you actual view and analyze the image to identify the issues
+## Task 1. OPEN and view the image from 'screenshots/image.png' to investigate latest UI for any additional potential issues to fix and\or areas of improvement.  Provide some scoping only and do NOT fix anything on your own yet so user can review and approve your new proposals and scope.  no new docs needed
 
-🔴 CRITICAL: *PERFORM PLAYWRIGHT TOOLS BROWSER TESTING AND VALIDATION ONLY AFTER TASK 7 TO TEST APP WITH ALL CHANGES IMPLEMENTED - DO NOT TEST APP IF NOT ALL CHANGES HAVE BEEN IMPLEMENTED*
-
-## Task 2. UI Fix: Fix incorrect ChatInput_OpenAI user input text box. Text box size is incorrectly sized now
-
-## Task 3. UI Fix: Fix incorrecty app borders\layout\grid because now UI components are no longer properly placed evenly due to teh removed sidebars and buttons.  Things look shifted all over the place
-
-## Task 4. UI Enhancement: Add Expand\Collapse feature to show\hide any of the bottom panel cards, such as the debug panel, performance metrics panels etc
-
-## Task 5. Fix GUI AI Chat responses incorrectly NOT providing the Footer Data for Performance Metrics I.E. Response Time: 23.214s, Model: gpt-5-nano etc.  The CLI version is able to respond with correct footer data and performance metrics, but the GUI, which is supposed to inherit from CLI prompt, is NOT providing the footer data in chat responses for some reason
-
-## Task 6. Update, fix, correct any UI locator names to reflect the new UI that removed Button Prompts and sidebar. This should make it easier fot PLaywright Tools testing to have teh corrected locators
-
-## Task 7. Review and understand the project's current Lint\PYlint\ESLint commands and configuration, and then Run comprehensive Lint\PYlint\ESLint commands for entire project and fix all Lint\PYlint\ESLint issues
-
-## Task 8. Use Playwright Tools to test app in browser. Fix any issues from your testing and re-test until passing
+## Task 2. 🔴 CRITICAL:: DO NOT TEST OR VALIDATE ON YOUR OWN - ASK USER TO TEST & VALIDATE the UI FIX(ES)

@@ -217,9 +217,10 @@ body {
 
 .chat-input-wrapper {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
+  flex-direction: row;
+  gap: 8px;
   width: 100%;
+  align-items: flex-end;
 }
 
 /* Chat Input - Enhanced Styling */
@@ -228,48 +229,50 @@ body {
   width: 100%;
   min-height: 60px;
   max-height: 120px;
-  padding: var(--spacing-md);
-  border: var(--glass-border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--glass-surface-light);
-  /* backdrop-filter removed for performance */
-  color: var(--text-primary);
-  font-size: var(--font-size-body);
-  font-family: var(--font-body);
+  padding: 12px;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  background: #334155;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   resize: vertical;
   outline: none;
-  transition: opacity 0.2s ease;
-  box-shadow: var(--glass-shadow-sm);
+  transition: border-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .chat-input-textarea:focus {
-  border-color: var(--accent-info);
-  /* Complex multi-layer box-shadow simplified for performance */
+  border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background: var(--glass-surface-medium);
+  background: #475569;
 }
 
 .chat-input-textarea::placeholder {
-  color: var(--text-muted);
+  color: #94a3b8;
   font-style: italic;
 }
 
-/* Send Button - Enhanced Glassmorphic Design */
+/* Send Button - Enhanced Design */
 .chat-input-send-button {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--gradient-trust);
-  color: var(--text-primary);
+  padding: 12px 16px;
+  background: #3b82f6;
+  color: #ffffff;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: 8px;
   cursor: pointer;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-body);
-  transition: opacity 0.2s ease;
-  box-shadow: var(--glass-shadow-md);
-  /* backdrop-filter removed for performance */
+  font-size: 14px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
+  min-width: 60px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chat-input-send-button::before {
@@ -289,30 +292,27 @@ body {
 }
 
 .chat-input-send-button:hover:not(:disabled) {
-  background: var(--gradient-success);
-  /* transform: translateY(-1px); removed for performance */
-  box-shadow: var(--glass-shadow-lg);
+  background: #2563eb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .chat-input-send-button:active:not(:disabled) {
-  /* transform: translateY(0); removed for performance */
-  box-shadow: var(--glass-shadow-sm);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .chat-input-send-button:disabled {
-  background: var(--accent-trust-disabled);
+  background: #64748b;
   cursor: not-allowed;
   opacity: 0.6;
-  /* transform: none; removed for performance */
 }
 
 /* Character Count - Enhanced Typography */
 .chat-input-character-count {
-  font-size: var(--font-size-small);
-  color: var(--text-muted);
+  font-size: 12px;
+  color: #94a3b8;
   text-align: right;
-  margin-top: var(--spacing-xs);
-  font-family: var(--font-body);
+  margin-top: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Ticker Input - Enhanced Glassmorphic Design */
@@ -513,35 +513,42 @@ body {
 }
 
 .debug-metrics-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+  gap: 16px;
+    justify-content: flex-start;
+    align-items: center;
+  }
 
 .debug-metric {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--font-size-small);
-  padding: var(--spacing-xs) 0;
-  border-bottom: 1px solid var(--glass-border-subtle);
-}
-
-.debug-metric:last-child {
-  border-bottom: none;
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+font-size: 12px;
+padding: 8px 12px;
+background: #475569;
+  border-radius: 6px;
+    min-width: 120px;
+  flex-shrink: 0;
 }
 
 .debug-label {
-  color: var(--text-secondary);
-  font-weight: 500;
-  font-family: var(--font-body);
+color: #94a3b8;
+font-weight: 500;
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin-bottom: 4px;
+    font-size: 10px;
+  text-transform: uppercase;
+letter-spacing: 0.05em;
 }
 
 .debug-value {
-  color: var(--text-primary);
-  font-weight: 600;
-  font-family: var(--font-body);
-}
+    color: #ffffff;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
+  }
 
 .debug-value.connected {
   color: var(--accent-success);
@@ -590,23 +597,34 @@ body {
 }
 
 .performance-metrics-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+  gap: 16px;
+    justify-content: flex-start;
+    align-items: center;
+  }
 
 .performance-metric {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-xs) 0;
-}
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 8px 12px;
+  background: #475569;
+    border-radius: 6px;
+    min-width: 100px;
+    flex-shrink: 0;
+  }
 
 .metric-label {
-  font-weight: 500;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-}
+font-weight: 500;
+color: #94a3b8;
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
 
 .performance-metric .good {
   color: var(--accent-success);
@@ -842,54 +860,55 @@ body {
   background: var(--success-color);
 }
 
-/* Collapsible Panel Styles */
+/* Collapsible Panel Styles - Fixed Layout */
 .collapsible-panel {
-  background: var(--glass-surface-debug);
-  border: var(--border-debug);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--border-glow-debug);
-  margin-bottom: var(--spacing-sm);
-  overflow: hidden;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 8px;
+  overflow: visible;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .collapsible-panel:hover {
-  box-shadow: var(--border-glow-debug-hover);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .collapsible-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--glass-surface-debug);
-  border-bottom: 1px solid var(--glass-border-subtle);
+  padding: 12px 16px;
+  background: #1e293b;
+  border-bottom: 1px solid #475569;
   cursor: pointer;
   user-select: none;
   transition: background-color 0.2s ease;
 }
 
 .collapsible-panel-header:hover {
-  background: var(--glass-surface-medium);
+  background: #334155;
 }
 
 .collapsible-panel-title {
   margin: 0;
-  font-size: var(--font-size-small);
+  font-size: 12px;
   font-weight: 700;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  letter-spacing: var(--letter-spacing-wide);
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .collapsible-panel-toggle {
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: #ffffff;
   cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--radius-sm);
+  padding: 4px;
+  border-radius: 4px;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -897,11 +916,11 @@ body {
 }
 
 .collapsible-panel-toggle:hover {
-  background: var(--glass-surface-light);
+  background: #475569;
 }
 
 .collapsible-panel-toggle:focus-visible {
-  outline: 2px solid var(--focus-ring);
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
@@ -920,8 +939,16 @@ body {
 }
 
 .collapsible-panel-content {
-  padding: var(--spacing-lg);
-  background: var(--glass-surface-light);
+  padding: 16px;
+  background: #334155;
+  overflow: visible;
+  min-height: auto;
+}
+
+.expanded-content {
+  display: block !important;
+  overflow: visible !important;
+  max-height: none !important;
 }
 
 .collapsible-panel.collapsed .collapsible-panel-content {

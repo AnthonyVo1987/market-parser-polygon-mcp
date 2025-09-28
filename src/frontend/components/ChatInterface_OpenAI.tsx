@@ -317,9 +317,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         {error ? `Error: ${error}` : ''}
       </div>
 
-      {/* MAIN CONTENT PANEL: Header, Messages, Chat Input - NOW FULL WIDTH */}
-      <div className='main-content-panel'>
-        {/* SECTION 1: Header - Clean title only */}
+      {/* SIMPLIFIED LAYOUT: Fixed structure to prevent UI jumping */}
+      <div className='chat-layout-container'>
+        {/* Header - Fixed position */}
         <header className='chat-header' role='banner'>
           <h1 id='chat-title'>OpenAI Chat Interface</h1>
           {error && (
@@ -333,7 +333,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           )}
         </header>
 
-        {/* SECTION 2: Messages Container */}
+        {/* Messages Container - Flexible height */}
         <main
           className='messages-section'
           role='log'
@@ -364,39 +364,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               <div ref={messagesEndRef} aria-hidden='true' />
             </>
           )}
-          {/* MESSAGE SENT OVERLAY - Phase 3 Implementation */}
-          {isLoading && (
-            <div
-              className='message-sent-overlay'
-              role='status'
-              aria-label='Message sent, waiting for AI response'
-            >
-              <div className='message-sent-content'>
-                <div className='message-sent-icon'>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-                      stroke='currentColor'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </div>
-                <div className='message-sent-text'>
-                  <h3>MESSAGE SENT</h3>
-                  <p>PLEASE WAIT FOR AI RESPONSE</p>
-                </div>
-              </div>
-            </div>
-          )}
         </main>
 
-        {/* SECTION 3: Chat Input */}
+        {/* Chat Input - Fixed position at bottom */}
         <section
           className='chat-input-section'
           role='complementary'
@@ -416,13 +386,43 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         </section>
       </div>
 
-      {/* BOTTOM CONTROL PANELS: All former sidebar components moved here */}
-      <div className='bottom-control-panels' role='complementary'>
+      {/* Loading overlay - Fixed positioning */}
+      {isLoading && (
+        <div
+          className='message-sent-overlay'
+          role='status'
+          aria-label='Message sent, waiting for AI response'
+        >
+          <div className='message-sent-content'>
+            <div className='message-sent-icon'>
+              <svg
+                viewBox='0 0 24 24'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path
+                  d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </svg>
+            </div>
+            <div className='message-sent-text'>
+              <h3>MESSAGE SENT</h3>
+              <p>PLEASE WAIT FOR AI RESPONSE</p>
+            </div>
+          </div>
+        </div>
+      )}
 
-        {/* SECTION 6: Export/Recent Buttons */}
+      {/* Bottom Control Panels - Collapsible and stable */}
+      <div className='bottom-control-panels' role='complementary'>
+        {/* Export/Recent Buttons */}
         <CollapsiblePanel
           title="Export & Recent Messages"
-          defaultExpanded={true}
+          defaultExpanded={false}
           data-testid="export-recent-panel"
         >
           <div className='export-recent-container'>
@@ -449,7 +449,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           </div>
         </CollapsiblePanel>
 
-        {/* SECTION 7: Debug Panel */}
+        {/* Debug Panel */}
         <CollapsiblePanel
           title="Debug Information"
           defaultExpanded={false}
@@ -462,10 +462,10 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           />
         </CollapsiblePanel>
 
-        {/* SECTION 8: Message Count and Status */}
+        {/* Status Information */}
         <CollapsiblePanel
           title="Status Information"
-          defaultExpanded={true}
+          defaultExpanded={false}
           data-testid="status-panel"
         >
           <div className='message-count-display'>
@@ -488,7 +488,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           </div>
         </CollapsiblePanel>
 
-        {/* SECTION 9: Performance Monitoring Display */}
+        {/* Performance Monitoring */}
         <CollapsiblePanel
           title="Performance Metrics"
           defaultExpanded={false}
@@ -586,15 +586,15 @@ export const interfaceStyles = `
     border: 0;
   }
   
-  /* FULL-WIDTH LAYOUT: Professional Fintech Glassmorphic Implementation with Layout Stability */
+  /* FIXED LAYOUT: Stable structure to prevent UI jumping */
   .chat-interface {
     display: flex;
     flex-direction: column;
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
-    background: var(--glass-surface-medium);
-    color: var(--neutral-100);
-    overflow: hidden; /* Prevent page-level scrolling */
+    background: #1e293b;
+    color: #ffffff;
+    overflow: hidden;
     position: relative;
   }
   
@@ -605,51 +605,48 @@ export const interfaceStyles = `
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--neutral-900);
-    opacity: 0.05;
+    background: transparent;
     pointer-events: none;
     z-index: -1;
   }
   
-  /* MAIN CONTENT PANEL - Now takes full width */
-  .main-content-panel {
-    flex: 1;
+  /* CHAT LAYOUT CONTAINER - Fixed structure */
+  .chat-layout-container {
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
     width: 100%;
+    position: relative;
   }
 
-  /* BOTTOM CONTROL PANELS - All former sidebar components */
+  /* BOTTOM CONTROL PANELS - Fixed layout to prevent overlapping */
   .bottom-control-panels {
     display: flex;
     flex-direction: column;
-    max-height: 50vh; /* Limit height to allow scrolling */
+    max-height: 50vh;
     overflow-y: auto;
     overflow-x: hidden;
-    background: var(--glass-surface-medium);
-    border-top: 1px solid var(--glass-border-highlight);
+    background: #1e293b;
+    border-top: 1px solid #475569;
+    flex-shrink: 0;
+    gap: 8px;
+    padding: 8px;
   }
 
-  /* SECTION 1: Header - Professional Fintech Glassmorphic Header with Blue Chat Theme */
+  /* Header - Fixed position and stable */
   .chat-header {
     flex-shrink: 0;
-    position: relative;
-    background: var(--glass-surface-chat);
-    padding: var(--space-4);
-    border: var(--border-chat);
-    border-bottom: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
+    background: #1e293b;
+    padding: 16px;
+    border-bottom: 1px solid #475569;
     text-align: center;
-    min-height: 70px;
+    min-height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-  }
-  
-  .chat-header:hover {
-    box-shadow: var(--border-glow-chat-hover);
+    position: relative;
+    z-index: 10;
   }
   
   /* Mobile header adjustments */
@@ -661,16 +658,16 @@ export const interfaceStyles = `
     
     .chat-header h1 {
       font-size: 1.25rem;
-      margin: 0 0 8px 0;
+      margin: 0;
     }
   }
   
   .chat-header h1 {
-    margin: 0 0 var(--space-2) 0;
-    font-size: var(--text-xl);
-    font-weight: var(--font-semibold);
-    color: var(--neutral-50);
-    font-family: var(--font-inter);
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
   .error-banner {
@@ -683,31 +680,24 @@ export const interfaceStyles = `
     font-size: var(--text-sm);
   }
   
-  /* SECTION 2: Messages - Flexible height with glassmorphic scrolling and Blue Chat Theme */
+  /* Messages Section - Flexible height with stable positioning */
   .messages-section {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: var(--space-4);
+    padding: 16px;
     width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
+    margin: 0;
     scroll-behavior: auto;
     min-height: 0;
     scrollbar-width: thin;
-    scrollbar-color: var(--neutral-400) transparent;
-    background: var(--glass-surface-chat);
-    border-left: var(--border-chat);
-    border-right: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
-  }
-  
-  .messages-section:hover {
-    box-shadow: var(--border-glow-chat-hover);
+    scrollbar-color: #64748b transparent;
+    background: #1e293b;
+    position: relative;
   }
   
   .messages-section:focus {
-    outline: 2px solid #007bff;
+    outline: 2px solid #3b82f6;
     outline-offset: -2px;
   }
   
@@ -794,7 +784,7 @@ export const interfaceStyles = `
     font-family: var(--font-inter);
   }
   
-  /* MESSAGE SENT Overlay - Prominent loading state */
+  /* Loading Overlay - Fixed positioning to prevent layout shifts */
   .message-sent-overlay {
     position: fixed;
     top: 0;
@@ -806,6 +796,7 @@ export const interfaceStyles = `
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    pointer-events: all;
   }
 
   .message-sent-content {
@@ -873,24 +864,19 @@ export const interfaceStyles = `
     }
   }
   
-  /* SECTION 3: Chat Input - Professional glassmorphic input section with Blue Chat Theme */
+  /* Chat Input Section - Fixed position at bottom */
   .chat-input-section {
     flex-shrink: 0;
-    background: var(--glass-surface-chat);
-    border: var(--border-chat);
-    border-top: var(--border-chat);
-    border-bottom: var(--border-chat);
-    box-shadow: var(--border-glow-chat);
-    padding: var(--space-4);
-    min-height: 90px;
-    max-height: 150px;
+    background: #1e293b;
+    border-top: 1px solid #475569;
+    padding: 16px;
+    min-height: 80px;
+    max-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-  }
-  
-  .chat-input-section:hover {
-    box-shadow: var(--border-glow-chat-hover);
+    position: relative;
+    z-index: 10;
   }
   
   .chat-input-container {

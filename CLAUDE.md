@@ -12,7 +12,7 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Complete UI overhaul with collapsible panels and footer metrics
+feat: Complete UI overhaul with performance optimizations and footer metrics
 
 - Fix ChatInput_OpenAI text box sizing to use full available width
 - Convert layout from grid with sidebar to full-width flex design
@@ -25,12 +25,15 @@ feat: Complete UI overhaul with collapsible panels and footer metrics
 - All changes tested and verified with Playwright browser automation
 
 Files modified:
+
 - src/frontend/components/ChatInterface_OpenAI.tsx
 - src/frontend/components/ChatMessage_OpenAI.tsx  
 - src/frontend/components/ChatInput_OpenAI.tsx
 - src/frontend/index.css
 - src/frontend/types/chat_OpenAI.ts
 - src/frontend/components/CollapsiblePanel.tsx (new)
+- src/frontend/components/ExportButtons.tsx
+- src/frontend/services/api_OpenAI.ts
 - package.json, new_task_plan.md, new_task_details.md
 <!-- LAST_COMPLETED_TASK_END -->
 - **User Experience**: Comprehensive guide for system usage

@@ -122,7 +122,18 @@ export async function sendChatMessage(
       success: data.success,
     });
 
-    return data;
+    // Add processing time to response metadata
+    const responseWithMetadata = {
+      ...data,
+      metadata: {
+        ...data.metadata,
+        processingTime: duration / 1000, // Convert to seconds
+        requestId,
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    return responseWithMetadata;
   } catch (error) {
     const duration = performance.now() - startTime;
 

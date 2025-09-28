@@ -315,11 +315,14 @@ export const exportButtonStyles = `
   }
   
   .export-buttons-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--spacing-2);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
     max-width: 100%;
     padding: 0;
+    justify-content: flex-start;
+    align-items: center;
   }
   
   /* Professional Export Button Base Styling */
