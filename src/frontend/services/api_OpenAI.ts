@@ -14,7 +14,7 @@ export async function sendChatMessage(
   message: string,
   model?: AIModelId
 ): Promise<ChatResponse> {
-  const endpoint = '/chat';
+  const endpoint = '/api/v1/chat/';
 
   try {
     const response = await fetch(endpoint, {

@@ -47,4 +47,23 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Use Mandatory Toolkit to THINK LONG and Perform a focused, incremental, comprehensive, systematic, deep dive codebase audit and review to investigate and analyze any potential code
+<Research, Investigation, Analysis, Scoping Task(s)>
+Use Context7 for Research and Perform a focused, incremental, comprehensive, systematic, deep dive codebase audit and code review to investigate, analyze, & provide some scoping for the modularization and refactor of the current monolithic backend main.py file.  Currently the "core code path" lies in the main.py file, which is inherited by the GUI frontend. But the current main.py has gotten too large and complex, so it is time to break down and modularize main.py.  So you need to modularize this using the latest most up to date robest practices to implemented the refactor for a better cleaned up modularized and orgranized backend .py folder\file structure etc
+
+<Planning Task>
+Based on the Research, Analysis & Scoping from previous task(s), delete the current 'TODO_task_plan.md' and then Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
+
+<Implementation Task>
+Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
+
+<Lint Task>
+Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
+
+<CLI Testing Task>
+Perform some testing of CLI version executing test_7_prompts_comprehensive.sh (uv run src/backend/main.py), fix any issues
+
+<Task GUI Testing Task>
+Perform some testing of GUI version using Playwright Tools and executing tests/playwright/test_prompts.md, fix any issues
+
+<Serena Update Memories Task>
+Use Serena Tools to update project memories

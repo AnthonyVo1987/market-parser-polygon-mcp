@@ -12,75 +12,60 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: complete removal of all caching features to eliminate over-engineering
+feat: complete backend modularization with 71% code reduction and full testing validation
 
-- Remove AgentCache class and all agent caching logic from main.py
-- Remove TTL response cache infrastructure (TTLCache, cache functions, API endpoints)
-- Remove caching configuration from Settings class and app.config.json
-- Remove cachetools dependency from pyproject.toml
-- Update create_agent() function to always create fresh agents
-- Remove cache initialization and cleanup logic from GUI/CLI paths
-- Remove cache management API endpoints (/api/v1/cache/*)
-- Clean up unused imports (Dict, Any) and empty lines
-- Add comprehensive TODO_task_plan.md implementation documentation
-- Create caching_removal_completion_2025_09_28.md memory documentation
+- Refactor monolithic main.py (500+ lines → 144 lines) into modular architecture
+- Extract Settings class to config.py for centralized configuration management
+- Create dependencies.py for shared resource management and dependency injection
+- Implement router modules: chat.py, health.py, system.py, models.py for API endpoints
+- Add service layer: mcp_service.py, agent_service.py for business logic encapsulation
+- Create utils modules: response_utils.py, datetime_utils.py for reusable functions
+- Extract CLI functionality to cli.py for separation of concerns
+- Fix frontend API endpoint routing (/chat → /api/v1/chat/) for proper communication
+- Implement proper dependency injection pattern to eliminate circular imports
+- Add comprehensive error handling and logging throughout modular structure
 
-Testing: CLI (7/7 tests passed), GUI (Playwright validation successful)
-Linting: 9.94/10 Python score maintained, no critical issues
-Impact: Simplified codebase ready for future OpenAI native prompt caching
-
-BREAKING CHANGE: All caching features completely removed
+Testing: CLI (7/7 tests passed), GUI (7/7 tests passed via Playwright)
+Performance: No degradation, response times consistent (14-50s range)
+Architecture: Clean separation of concerns, improved maintainability and scalability
 <!-- LAST_COMPLETED_TASK_END -->
 
-## STANDARDIZED TEST PROMPTS
+# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
-**CRITICAL:** All testing MUST use these standardized prompts to ensure
-consistent, quick responses (30-60 seconds) and avoid false failures from
-complex prompts.
-
-### Quick Response Test Prompts (Use These Only)
-
-**MANDATORY RULES:**
-
-- ✅ Use ONLY these prompts for testing
-- ✅ Copy prompts EXACTLY as written
-- ✅ Expected response time: 30-60 seconds
-- ❌ DO NOT create custom prompts
-- ❌ DO NOT modify these prompts
-- ❌ DO NOT use complex, open-ended queries
-
-**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test
-prompts documentation, see `tests/playwright/test_prompts.md`
-
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop
-
-using tools - continue using them until tasks completion!!!! 🔴
-
-CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout
-the entire task execution. This is NOT a one-time checklist - you must
-continuously use tools throughout the process.
+CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
 TOOL USAGE REQUIREMENTS:
 
 - Use tools in ANY ORDER as needed for the specific task
 - Use the SAME tool MULTIPLE TIMES if needed
 - NEVER treat tool lists as a rigid sequence
-- ALWAYS use tools when they would be helpful, even if you've used them
-  before
-- Use tools for investigation, analysis, verification, and implementation
-  at every step
+- ALWAYS use tools when they would be helpful, even if you've used them before
+- Use tools for investigation, analysis, verification, and implementation at every step
 
-7. 🔴 REPEAT any tool as needed throughout the process
+MANDATORY TOOL USAGE PATTERNS:
+
+1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
+2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
+3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
+5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
+6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
+7. REPEAT any tool as needed throughout the process
 8. 🔴 NEVER stop using tools - continue using them until task completion
+
+TOOL OVERLAP RESOLUTION:
+
+- Filesystem Tools: Use for 3+ file operations, batch processing, project management, metadata analysis, comprehensive project operations
+- Standard Read/Write/Edit: Use for single-file modifications, simple edits, direct file operations
+- Serena Tools: Use for complex code analysis, symbol manipulation, pattern search with context
+- When in doubt: Use Filesystem for batch/complex operations, Standard for simple single-file operations
 
 VIOLATION PENALTIES:
 
 - If you use tools only once and stop, you're failing
-- If you follow a rigid order instead of using tools as needed, you're
-  failing
+- If you follow a rigid order instead of using tools as needed, you're failing
 - If you don't use tools throughout the entire process, you're failing
-- If you use wrong tool for the operation (e.g., Standard for batch
-  operations), you're failing
+- If you use wrong tool for the operation (e.g., Standard for batch operations), you're failing
 
 SUCCESS CRITERIA:
 
@@ -90,11 +75,19 @@ SUCCESS CRITERIA:
 - Correct tool selection based on operation type
 - No rigid sequencing - only logical tool usage based on task requirements
 
-REMEMBER: The tool list is your toolkit - use every tool as often as
-needed, in any order, throughout the entire task execution. Choose the
-right tool for the right operation
+REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
 ## Quick Start
+
+### CLI Interface
+
+```bash
+uv run src/backend/main.py
+
+> Tesla stock analysis
+KEY TAKEAWAYS
+• TSLA showing bullish momentum...
+```
 
 **One-Click Application Startup (Recommended):**
 
@@ -107,16 +100,6 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 # Option 2: Main startup script (NOW WORKING - FIXED)
 ./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
-```
-
-### CLI Interface
-
-```bash
-uv run src/backend/main.py
-
-> Tesla stock analysis
-KEY TAKEAWAYS
-• TSLA showing bullish momentum...
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env

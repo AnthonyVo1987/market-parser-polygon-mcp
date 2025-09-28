@@ -7,454 +7,70 @@ removed as it's now handled by the GUI Copy/Export buttons.
 """
 
 import asyncio
-import json
-import os
+import sys
 import time
-import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime
-from pathlib import Path
-from typing import List, Optional
 
-from agents import (  # function_tool,  # Removed - no longer needed after removing save_analysis_report
-    Agent,
-    Runner,
-    SQLiteSession,
-)
-from agents.mcp import MCPServerStdio
+from agents import SQLiteSession
 from dotenv import load_dotenv
 
 # FastAPI imports
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from pydantic_settings import BaseSettings
-from rich.console import Console
-from rich.markdown import Markdown
 
+# Import configuration from separate module
 try:
     # Try relative imports first (when run as module)
-    from .api_models import (
-        AIModel,
-        AIModelId,
-        ModelListResponse,
-        ModelSelectionResponse,
-        ResponseMetadata,
-        SystemHealthResponse,
-        SystemMetrics,
-        SystemStatusResponse,
-    )
+    from .cli import cli_async
+    from .config import settings
+    from .dependencies import set_shared_resources
+    from .routers import chat_router, health_router, models_router, system_router
+    from .services import create_polygon_mcp_server
 except ImportError:
     # Fallback to absolute imports (when run directly)
-    from backend.api_models import (
-        AIModel,
-        AIModelId,
-        ModelListResponse,
-        ModelSelectionResponse,
-        ResponseMetadata,
-        SystemHealthResponse,
-        SystemMetrics,
-        SystemStatusResponse,
-    )
+    from backend.cli import cli_async
+    from backend.config import settings
+    from backend.dependencies import set_shared_resources
+    from backend.routers import chat_router, health_router, models_router, system_router
+    from backend.services import create_polygon_mcp_server
 
 load_dotenv()
-
-console = Console()
-
-
-# ====== CONFIGURATION SETTINGS ======
-
-
-class Settings(BaseSettings):
-    """Consolidated application configuration with environment and JSON-based settings."""
-
-    # API Keys (from environment)
-    polygon_api_key: str
-    openai_api_key: str
-
-    # Server configuration
-    fastapi_host: str = "127.0.0.1"
-    fastapi_port: int = 8000
-
-    # MCP configuration
-    mcp_timeout_seconds: float = 30.0
-    polygon_mcp_version: str = "0.4.1"
-
-    # Agent configuration
-    agent_session_name: str = "financial_analysis_session"
-    reports_directory: str = "reports"
-    cli_session_name: str = "cli_financial_analysis_session"
-    session_timeout_minutes: int = 30
-    session_cleanup_interval_minutes: int = 5
-    max_session_size: int = 1000
-    enable_session_persistence: bool = True
-
-    # CORS configuration
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
-
-    # AI configuration
-    available_models: List[str] = ["gpt-5-mini"]
-    max_context_length: int = 128000
-    temperature: float = 0.1
-    ai_pricing: dict = {}
-
-    # Security configuration
-    enable_rate_limiting: bool = True
-    rate_limit_rpm: int = 60
-
-    # GPT-5 model-specific rate limiting
-    gpt5_nano_tpm: int = 10000
-    gpt5_nano_rpm: int = 100
-    gpt5_mini_tpm: int = 20000
-    gpt5_mini_rpm: int = 200
-
-    # Logging configuration
-    log_mode: str = "info"
-
-    # Monitoring configuration
-    enable_performance_monitoring: bool = True
-    enable_error_tracking: bool = True
-    enable_resource_monitoring: bool = True
-    monitoring_log_level: str = "info"
-    metrics_retention_days: int = 7
-
-    # Frontend configuration
-    frontend_config: dict = {}
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-        extra = "ignore"
-
-    def __init__(self):
-        super().__init__()
-
-        # Load configuration from JSON file and override defaults
-        config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
-        with open(config_path, encoding="utf-8") as f:
-            config = json.load(f)
-
-        # Extract backend and frontend configs
-        backend_config = config["backend"]
-        frontend_config = config["frontend"]
-
-        # Override defaults with config file values
-        self.fastapi_host = backend_config["server"]["host"]
-        self.fastapi_port = backend_config["server"]["port"]
-        self.mcp_timeout_seconds = backend_config["mcp"]["timeoutSeconds"]
-        self.polygon_mcp_version = backend_config["mcp"]["version"]
-
-        # Agent configuration
-        agent_config = backend_config["agent"]
-        self.agent_session_name = agent_config["sessionName"]
-        self.reports_directory = agent_config["reportsDirectory"]
-        self.cli_session_name = agent_config["cliSessionName"]
-        self.session_timeout_minutes = agent_config["sessionTimeoutMinutes"]
-        self.session_cleanup_interval_minutes = agent_config["sessionCleanupIntervalMinutes"]
-        self.max_session_size = agent_config["maxSessionSize"]
-        self.enable_session_persistence = agent_config["enableSessionPersistence"]
-
-        # CORS configuration
-        cors_origins_list = backend_config["security"]["cors"]["origins"]
-        self.cors_origins = ",".join(cors_origins_list)
-
-        # AI configuration
-        ai_config = backend_config["ai"]
-        self.available_models = ai_config["availableModels"]
-        self.max_context_length = ai_config["maxContextLength"]
-        self.temperature = ai_config["temperature"]
-        self.ai_pricing = ai_config["pricing"]
-
-        # Security configuration
-        security_config = backend_config["security"]
-        self.enable_rate_limiting = security_config["enableRateLimiting"]
-        self.rate_limit_rpm = security_config["rateLimitRPM"]
-
-        # GPT-5 model-specific rate limiting
-        rate_limiting = security_config["rateLimiting"]
-        self.gpt5_nano_tpm = rate_limiting["gpt5Nano"]["tpm"]
-        self.gpt5_nano_rpm = rate_limiting["gpt5Nano"]["rpm"]
-        self.gpt5_mini_tpm = rate_limiting["gpt5Mini"]["tpm"]
-        self.gpt5_mini_rpm = rate_limiting["gpt5Mini"]["rpm"]
-
-        # Logging configuration
-        self.log_mode = backend_config["logging"]["mode"]
-
-        # Monitoring configuration
-        monitoring_config = backend_config["monitoring"]
-        self.enable_performance_monitoring = monitoring_config["enablePerformanceMonitoring"]
-        self.enable_error_tracking = monitoring_config["enableErrorTracking"]
-        self.enable_resource_monitoring = monitoring_config["enableResourceMonitoring"]
-        self.monitoring_log_level = monitoring_config["logLevel"]
-        self.metrics_retention_days = monitoring_config["metricsRetentionDays"]
-
-        # Frontend configuration
-        self.frontend_config = frontend_config
-
-
-# Initialize settings
-settings = Settings()
-
-
-def get_model_rate_limits(model: str) -> dict:
-    """Get rate limits for specific GPT-5 models."""
-    if model == "gpt-5-nano":
-        return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}
-    if model == "gpt-5-mini":
-        return {"tpm": settings.gpt5_mini_tpm, "rpm": settings.gpt5_mini_rpm}
-    return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}  # Default fallback
-
 
 # Global shared resources for FastAPI lifespan management
 shared_mcp_server = None
 shared_session = None
 
 
-
-
-
-
-# MCP Server monitoring and health management
-
-
-# MCP Server resource management
-
-
-# Performance monitoring and metrics
-
-
-
-# Request tracking for logging removed
-
-
-# Models
-
-
-# Legacy models for backward compatibility
-class ChatRequest(BaseModel):
-    """Request model for chat endpoint."""
-
-    message: str
-    model: Optional[str] = None
-
-
-class ChatResponse(BaseModel):
-    """Response model for chat endpoint."""
-
-    response: str
-    success: bool = True
-    error: Optional[str] = None
-    metadata: Optional[ResponseMetadata] = None
-
-
-# save_analysis_report function removed - superseded by GUI Copy/Export buttons
-
-
-def get_current_datetime_context():
-    """Generate current date/time context for AI agent prompts."""
-    now = datetime.now()
-    return f"""
-CURRENT DATE AND TIME CONTEXT:
-- Today's date: {now.strftime('%A, %B %d, %Y')}
-- Current time: {now.strftime('%I:%M %p %Z')}
-- ISO format: {now.strftime('%Y-%m-%d %H:%M:%S')}
-- Market status: {'Open' if now.weekday() < 5 and 9 <= now.hour < 16 else 'Closed'}
-
-IMPORTANT: Always use the current date and time above for all financial analysis.
-Do NOT use training data cutoff dates or outdated information.
-"""
-
-
-def get_enhanced_agent_instructions():
-    """
-    Generate enhanced agent instructions for financial analysis.
-
-    Returns:
-        Enhanced agent instructions string
-    """
-    datetime_context = get_current_datetime_context()
-    return f"""You are a financial analyst with real-time market data access.
-
-{datetime_context}
-
-TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
-🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
-
-INSTRUCTIONS:
-1. Use current date/time above for all analysis
-2. Gather real-time data using available tools
-3. Structure responses: Format data in bullet point format with 2 decimal points max
-4. Include ticker symbols
-5. Respond quickly with minimal tool calls
-6. Keep responses concise - avoid unnecessary details
-7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations"""
-
-
-def create_polygon_mcp_server():
-    """Create a stdio MCP server instance configured with POLYGON_API_KEY."""
-    if not settings.polygon_api_key:
-        raise ValueError("POLYGON_API_KEY not set in environment.")
-
-    return MCPServerStdio(
-        params={
-            "command": "uvx",
-            "args": [
-                "--from",
-                "git+https://github.com/polygon-io/mcp_polygon@v0.4.1",
-                "mcp_polygon",
-            ],
-            "env": {**os.environ, "POLYGON_API_KEY": settings.polygon_api_key},
-        },
-        client_session_timeout_seconds=settings.mcp_timeout_seconds,
-    )
-
-
-def create_agent(mcp_server):
-    """Create a financial analysis agent.
-
-    Args:
-        mcp_server (MCPServerStdio): The MCP server instance to use
-
-    Returns:
-        Agent: The financial analysis agent
-    """
-    analysis_agent = Agent(
-        name="Financial Analysis Agent",
-        instructions=get_enhanced_agent_instructions(),
-        tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
-        mcp_servers=[mcp_server],
-        model=settings.available_models[0],
-    )
-
-    return analysis_agent
-
-
-
-
-
-
-
-
-
-
-
-
-# Session recovery error handling removed
-
-
-# Output functions
-def print_response(result):
-    """Simplified response renderer with emoji support and performance metrics."""
-    console.print("\n[bold green]✅ Query processed successfully![/bold green]")
-    console.print("[bold]Agent Response:[/bold]\n")
-
-    # Extract content
-    final_output = getattr(result, "final_output", result)
-    final_text = str(final_output)
-
-    # Check if content has markdown-like formatting
-    has_markdown = any(tag in final_text for tag in ["#", "*", "`", "-", ">"])
-
-    if has_markdown:
-        # Use Markdown rendering for structured content
-        console.print(Markdown(final_text))
-    else:
-        # Use direct printing with Rich markup for better emoji support
-        console.print(final_text)
-
-    # Display performance metrics if available
-    if hasattr(result, "metadata") and result.metadata:
-        console.print("\n[bold cyan]📊 Performance Metrics:[/bold cyan]")
-
-        # Display processing time if available
-        if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
-            console.print(f"   ⏱️  Response Time: {result.metadata.processing_time:.3f}s")
-
-        # Extract token information
-        token_count = None
-        input_tokens = None
-        output_tokens = None
-
-        if hasattr(result.metadata, "get"):
-            token_count = result.metadata.get("tokenCount")
-            input_tokens = result.metadata.get("inputTokens")
-            output_tokens = result.metadata.get("outputTokens")
-        elif hasattr(result.metadata, "usage"):
-            usage = result.metadata.usage
-            if hasattr(usage, "total_tokens"):
-                token_count = usage.total_tokens
-            if hasattr(usage, "prompt_tokens"):
-                input_tokens = usage.prompt_tokens
-            if hasattr(usage, "completion_tokens"):
-                output_tokens = usage.completion_tokens
-        elif hasattr(result.metadata, "token_count"):
-            token_count = result.metadata.token_count
-
-        # Display token information
-        if token_count:
-            token_display = f"   🔢  Tokens Used: {token_count:,}"
-            if input_tokens and output_tokens:
-                token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
-            console.print(token_display)
-
-        # Display model information
-        if hasattr(result.metadata, "model"):
-            console.print(f"   🤖  Model: {result.metadata.model}")
-        elif hasattr(result, "model"):
-            console.print(f"   🤖  Model: {result.model}")
-
-    # Enhanced separator with emoji
-    console.print("\n[dim]" + "─" * 50 + "[/dim]\n")
-
-
-def print_error(error, error_type="Error"):
-    """Display errors in a consistent, readable format for the CLI."""
-    console.print(f"\n[bold red]!!! {error_type} !!![/bold red]")
-    console.print(str(error).strip())
-    console.print("------------------\n")
-
-
-# process_financial_query function removed as part of direct prompt migration
-
-
-# Direct prompt system removed - using unified prompt system
-
-
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
     """FastAPI lifespan management for shared MCP server and session instances."""
-    global shared_mcp_server, shared_session, gui_agent_cache
+    global shared_mcp_server, shared_session
 
     # Startup: Create shared instances
     try:
-        # Server initialization
-
         # Initialize session
         shared_session = SQLiteSession(settings.agent_session_name)
-
 
         # Initialize MCP server
         shared_mcp_server = create_polygon_mcp_server()
         await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
 
-        # Log MCP server health check
+        # Set shared resources for dependency injection
+        set_shared_resources(shared_mcp_server, shared_session)
 
         # Initialization complete
     except Exception as e:
         # Log initialization error and re-raise
-        console.print(f"[bold red]Initialization failed: {e}[/bold red]")
+        print(f"Initialization failed: {e}")
         raise
 
     yield
 
     # Cleanup: Close shared instances
-
     try:
         # Shutting down MCP server
         if shared_mcp_server:
             await shared_mcp_server.__aexit__(None, None, None)
-
-            # Log MCP server shutdown performance
 
         # Resources cleaned up
     except Exception:
@@ -469,7 +85,6 @@ app = FastAPI(
     description="API for financial queries using Polygon.io data and prompt templates",
     version="1.0.0",
 )
-
 
 # Add response timing middleware
 @app.middleware("http")
@@ -504,370 +119,19 @@ else:
         allow_headers=["*"],
     )
 
-
-@app.post("/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest) -> ChatResponse:
-    """Process a financial query and return the response using direct prompts."""
-    global shared_mcp_server, shared_session
-
-    request_id = str(uuid.uuid4())[:8]
-
-    # Enhanced input validation for empty and whitespace-only inputs
-    if not request.message:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Query cannot be empty. Please enter a financial question.",
-        )
-
-    stripped_message = request.message.strip()
-    if len(stripped_message) < 2:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Query must be at least 2 characters long. Please enter a valid financial question.",
-        )
-
-    # Check for whitespace-only or control character inputs
-    if not stripped_message or stripped_message.isspace():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Query cannot be empty or contain only whitespace. Please enter a valid financial question.",
-        )
-
-    # Initialize result variable
-    result = None
-    response_text = ""
-
-    # Start timing for performance metrics
-    start_time = time.perf_counter()
-
-    try:
-        # Use shared instances instead of creating new ones
-        # Call the AI model with the unified prompt system
-        try:
-
-            # MCP server health check and error recovery
-            if shared_mcp_server is None:
-                shared_mcp_server = create_polygon_mcp_server()
-                await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
-
-            # Get or create agent using factory function
-            analysis_agent = create_agent(shared_mcp_server)
-
-            # Run the financial analysis agent with the user message
-            result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
-
-            # Extract the response
-            response_text = str(result.final_output)
-
-        except Exception as e:
-            response_text = f"Error: Unable to process request. {str(e)}"
-
-        # Extract token count from OpenAI response metadata
-        token_count = None
-
-        if result and hasattr(result, "metadata") and result.metadata:
-            # Try to extract token information from OpenAI response metadata
-            if hasattr(result.metadata, "get"):
-                token_count = result.metadata.get("tokenCount")
-            elif hasattr(result.metadata, "usage"):
-                # Handle OpenAI usage object format
-                usage = result.metadata.usage
-                if hasattr(usage, "total_tokens"):
-                    token_count = usage.total_tokens
-                # Token usage tracking removed for performance
-
-        # Calculate processing time
-        processing_time = time.perf_counter() - start_time
-
-        # Create response metadata with timing and token information
-        response_metadata = ResponseMetadata(
-            model=settings.available_models[0],
-            timestamp=datetime.now().isoformat(),
-            processingTime=processing_time,
-            requestId=request_id,
-            tokenCount=token_count,
-        )
-
-        # Log performance metrics for baseline measurement and monitoring
-
-        # Log token usage if available in metadata
-        # Token usage logging removed for performance
-
-        return ChatResponse(response=response_text, metadata=response_metadata)
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Server error: {str(e)}"
-        ) from e
-
-
-# ====== PROMPT TEMPLATES API ENDPOINTS REMOVED ======
-
-
-# ====== BUTTON ANALYSIS ENDPOINTS REMOVED ======
-
-
-# ====== ENHANCED CHAT ANALYSIS ENDPOINT REMOVED ======
-
-
-# ====== SYSTEM STATUS ENDPOINTS ======
-
-
-@app.get("/api/v1/system/status", response_model=SystemStatusResponse)
-async def get_system_status():
-    """Get detailed system status and metrics."""
-    try:
-        metrics = SystemMetrics(
-            api_version="1.0.0",
-            prompt_templates_loaded=0,  # Direct prompts implemented
-            supported_analysis_types=[],  # Direct prompts don't use predefined types
-        )
-
-        return SystemStatusResponse(status="operational", metrics=metrics)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve system status: {str(e)}",
-        ) from e
-
-
-# ====== LEGACY COMPATIBILITY ENDPOINTS REMOVED ======
-
-
-# ====== HEALTH CHECK ENDPOINTS ======
-
-
-@app.get("/health", response_model=SystemHealthResponse)
-@app.get("/api/v1/health", response_model=SystemHealthResponse)
-async def health_check():
-    """Health check endpoint."""
-    return SystemHealthResponse(
-        status="healthy", message="Financial Analysis API is running", version="1.0.0"
-    )
-
-
-# ====== AI MODEL MANAGEMENT ENDPOINTS ======
-
-
-# Dependency for validating model selection
-async def valid_model_id(model_id: AIModelId) -> AIModelId:
-    """Validate that the requested model exists and is available"""
-    if model_id.value not in settings.available_models:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid model ID: {model_id.value}"
-        )
-    return model_id
-
-
-# Model management router
-model_router = APIRouter(prefix="/api/v1/models", tags=["AI Models"])
-
-
-@model_router.get(
-    "",
-    response_model=ModelListResponse,
-    summary="List available AI models",
-    description="Get list of all available AI models with current selection",
-    responses={
-        status.HTTP_200_OK: {
-            "model": ModelListResponse,
-            "description": "Successfully retrieved model list",
-        },
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Failed to retrieve models"},
-    },
-)
-async def get_available_models():
-    """Get list of available AI models"""
-    try:
-        models = [
-            AIModel(
-                id=AIModelId.GPT_5_NANO,
-                name="GPT-5 Nano",
-                description="Fast and efficient model for quick responses",
-                is_default=True,
-                cost_per_1k_tokens=0.15,
-                max_tokens=4096,
-            ),
-            AIModel(
-                id=AIModelId.GPT_5_MINI,
-                name="GPT-5 Mini",
-                description="Balanced performance model",
-                is_default=False,
-                cost_per_1k_tokens=0.25,
-                max_tokens=8192,
-            ),
-            # Removed GPT_4O and GPT_4O_MINI models
-        ]
-
-        return ModelListResponse(
-            models=models,
-            current_model=AIModelId(settings.available_models[0]),
-            total_count=len(models),
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve models: {str(e)}",
-        ) from e
-
-
-@model_router.post(
-    "/select",
-    response_model=ModelSelectionResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Select an AI model",
-    description="Change the active AI model for subsequent requests",
-    responses={
-        status.HTTP_200_OK: {
-            "model": ModelSelectionResponse,
-            "description": "Model successfully selected",
-        },
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid model ID provided"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "Failed to select model"},
-    },
-)
-async def select_model(model_id: AIModelId = Depends(valid_model_id)):
-    """Select an AI model for use"""
-    try:
-        # Note: Model selection is now managed by the AI Model Selector feature
-        # This endpoint is kept for backward compatibility but doesn't change global settings
-        return ModelSelectionResponse(
-            success=True,
-            message=f"Model {model_id.value} selected for this request",
-            selected_model=model_id,
-            previous_model=None,
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to select model: {str(e)}",
-        ) from e
-
-
-# Add router to app
-app.include_router(model_router)
-
-
-
-
-
-# Main CLI
-async def cli_async():
-    """Run the interactive CLI loop."""
-    print("Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.")
-
-    try:
-        # Initialize persistent CLI session for conversation memory
-        cli_session = SQLiteSession(settings.cli_session_name)
-        print(f"📊 CLI session '{settings.cli_session_name}' initialized for conversation memory")
-
-
-        server = create_polygon_mcp_server()
-
-        # Initialize CLI MCP server
-        async with server:
-            while True:
-                try:
-                    user_input = input("> ").strip()
-                    if user_input.lower() == "exit":
-                        print("Goodbye!")
-                        break
-
-                    if not user_input or len(user_input.strip()) < 2:
-                        print("Please enter a valid query (at least 2 characters).")
-                        continue
-
-                    # Use unified prompt system
-                    # Call the AI model with the unified prompt system
-                    try:
-                        # Start timing for performance metrics
-                        start_time = time.perf_counter()
-
-                        # Get or create agent using factory function
-                        analysis_agent = create_agent(server)
-
-                        # Run the financial analysis agent with the user message
-                        result = await Runner.run(analysis_agent, user_input, session=cli_session)
-
-                        # Calculate processing time
-                        processing_time = time.perf_counter() - start_time
-
-                        # Extract token information from OpenAI response metadata
-                        token_count = None
-
-                        if hasattr(result, "metadata") and result.metadata:
-                            # Try to extract token information from OpenAI response metadata
-                            if hasattr(result.metadata, "get"):
-                                token_count = result.metadata.get("tokenCount")
-                            elif hasattr(result.metadata, "usage"):
-                                # Handle OpenAI usage object format
-                                usage = result.metadata.usage
-                                if hasattr(usage, "total_tokens"):
-                                    token_count = usage.total_tokens
-
-                        # Create metadata object for CLI response
-                        cli_metadata = ResponseMetadata(
-                            model=settings.available_models[0],
-                            timestamp=datetime.now().isoformat(),
-                            processing_time=processing_time,
-                            request_id=None,  # CLI doesn't use request IDs
-                            token_count=token_count,
-                        )
-
-                        # Attach metadata to result object
-                        result.metadata = cli_metadata
-
-                        # Extract the response (stored in result object for print_response)
-                        _ = str(result.final_output)
-
-                    except Exception as e:
-                        print_error(e, "AI Model Error")
-
-                        # Create a mock result object for error cases
-                        class MockResult:
-                            def __init__(self, error_msg):
-                                self.final_output = error_msg
-                                self.metadata = None
-
-                        result = MockResult(f"Error: Unable to process request. {str(e)}")
-
-                    # Display the response with full result object for metadata
-                    print_response(result)
-
-                except KeyboardInterrupt:
-                    print("\nGoodbye!")
-                    break
-                except EOFError:
-                    # Handle end of input stream (e.g., when piping input)
-                    print("\nInput stream ended. Goodbye!")
-                    break
-                except Exception as e:
-                    print_error(e, "Unexpected Error")
-
-    except Exception as e:
-        print_error(e, "Startup Error")
-    finally:
-        # Clean up CLI session and agent cache on exit
-        try:
-            if "cli_session" in locals():
-                # Session cleanup is handled automatically by SQLiteSession
-                print("📊 CLI session cleaned up")
-
-        except Exception as cleanup_error:
-            print(f"Warning: Cleanup failed: {cleanup_error}")
+# Include all routers
+app.include_router(chat_router)
+app.include_router(health_router)
+app.include_router(models_router)
+app.include_router(system_router)
 
 
 if __name__ == "__main__":
-    import sys
-
     if len(sys.argv) > 1 and sys.argv[1] == "--server":
         # Run as FastAPI server
         import uvicorn
 
         # Starting FastAPI server
-
         uvicorn.run(
             "main:app",
             host=settings.fastapi_host,
