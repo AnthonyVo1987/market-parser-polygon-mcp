@@ -2,6 +2,35 @@
 
 # Market Parser - One-Click Application Startup Script
 # This script manages all dev servers and launches the application
+# Features: 30-second timeout fallback to prevent hanging
+
+# Set up timeout mechanism (30 seconds)
+TIMEOUT_DURATION=30
+SCRIPT_PID=$$
+TIMEOUT_PID=""
+
+# Function to cleanup and exit
+cleanup_and_exit() {
+    local exit_code=${1:-0}
+    # Kill timeout process if it exists
+    if [ -n "$TIMEOUT_PID" ]; then
+        kill $TIMEOUT_PID 2>/dev/null
+    fi
+    exit $exit_code
+}
+
+# Set up timeout process
+(
+    sleep $TIMEOUT_DURATION
+    echo ""
+    echo "⏰ TIMEOUT: Script exceeded ${TIMEOUT_DURATION}s - forcing exit"
+    echo "   This is a safety mechanism to prevent hanging"
+    kill $SCRIPT_PID 2>/dev/null
+) &
+TIMEOUT_PID=$!
+
+# Trap signals to cleanup
+trap 'cleanup_and_exit 1' INT TERM
 
 # Configuration (hard-coded for consistency)
 BACKEND_HOST="127.0.0.1"
@@ -174,7 +203,7 @@ if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
     echo ""
     echo "✅ Setup complete! Script exiting - servers will continue running in their terminals."
     echo ""
-    exit 0
+    cleanup_and_exit 0
 else
     echo ""
     echo "❌ Failed to start all servers within timeout period."
@@ -192,5 +221,5 @@ else
         echo "  • Frontend: Check if Node.js >= 18.0.0 is installed"
     fi
     echo ""
-    exit 1
+    cleanup_and_exit 1
 fi

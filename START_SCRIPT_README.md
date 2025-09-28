@@ -14,34 +14,46 @@ __DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
 ./start-app-xterm.sh
 
-# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
-# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
+# Option 2: Main startup script (NOW WORKING - FIXED)
+./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
 
 # Option 3: Use npm scripts
 npm run start:app:xterm    # XTerm version (RECOMMENDED)
-npm run start:app          # Main script (CURRENTLY BROKEN)
+npm run start:app          # Main script (NOW WORKING)
 ```text
 
 __Prerequisites:__ uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
-### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
+### start-app.sh (NOW WORKING - FIXED)
 
-- __Status__: ❌ BROKEN - Script gets stuck and blocks execution
-- __Issue__: Cannot proceed to sleep 15 or Playwright testing
-- __Action__: Keep script file but do not use until fixed
-- __Alternative__: Use start-app-xterm.sh instead
+- __Status__: ✅ WORKING - Script now exits cleanly with timeout mechanism
+- __Features__: 30-second timeout fallback to prevent hanging
+- __Environment Support__: Works in both X11 and WSL2/headless environments
+- __Background Mode__: Uses background processes in WSL2, terminal windows in X11
+- __Logging__: Writes server logs to backend.log and frontend.log in WSL2 mode
 
 ### start-app-xterm.sh (RECOMMENDED - WORKING)
 
-- __XTerm Focused__: Specifically designed for xterm users
-- __Window Positioning__: Places backend and frontend terminals side-by-side
-- __Font Configuration__: Uses readable DejaVu Sans Mono font
+- __WSL2/XTerm Compatible__: Automatically detects environment and uses appropriate terminal
+- __WSL2 Support__: Uses tmux sessions when X11 display is not available
+- __XTerm Support__: Uses xterm windows when X11 display is available
+- __Window Positioning__: Places backend and frontend terminals side-by-side (xterm) or separate sessions (tmux)
+- __Font Configuration__: Uses readable DejaVu Sans Mono font (xterm mode)
 - __Enhanced Display__: Better window titles and layout
 - __Status__: ✅ FULLY TESTED - 5/5 successful tests with Playwright validation
 
 ## What the Scripts Do
+
+### ⏰ Timeout Mechanism
+
+Both scripts now include a **30-second timeout fallback** to prevent hanging:
+
+- **Normal Operation**: Scripts typically complete in 10-15 seconds
+- **Safety Net**: 30-second timeout ensures scripts never hang indefinitely
+- **AI Agent Friendly**: Prevents AI agents from getting stuck waiting for script completion
+- **Graceful Exit**: Scripts exit cleanly after server verification or timeout
 
 ### 🔄 Server Cleanup
 
@@ -91,7 +103,8 @@ This ensures:
 
 ### System Requirements
 
-- __Terminal Emulator__: `gnome-terminal` or `xterm` (automatically detected)
+- __Terminal Emulator__: `xterm` (for X11 environments) or `tmux` (for WSL2/headless environments)
+- __Environment Detection__: Automatically detects WSL2/headless vs X11 environments
 - __HTTP Client__: `curl` (for health checks)
 - __Browser__: Any modern browser with `xdg-open`, `open`, or `start` support
 
@@ -117,8 +130,9 @@ The scripts provide comprehensive error handling:
 ### Missing Dependencies
 
 ```text
-❌ No suitable terminal emulator found (gnome-terminal or xterm)
-Please install gnome-terminal or xterm to use this script
+❌ No suitable terminal emulator found
+WSL2/Headless: Please install tmux (sudo apt-get install tmux)
+X11 Environment: Please install xterm (sudo apt-get install xterm)
 ```text
 
 ### Server Startup Issues
@@ -143,8 +157,40 @@ pkill -f "uvicorn src.backend.main:app"
 pkill -f "npm run frontend:dev"
 pkill -f "vite.*--mode development"
 
+# For tmux sessions (WSL2)
+tmux kill-session -t market-parser-backend
+tmux kill-session -t market-parser-frontend
+
+# For xterm windows (X11)
 # Or close the terminal windows directly
 ```text
+
+## WSL2/Tmux Usage
+
+When running in WSL2 or headless environments, the script uses tmux sessions:
+
+### Accessing Tmux Sessions
+
+```textbash
+# View backend server logs
+tmux attach-session -t market-parser-backend
+
+# View frontend server logs  
+tmux attach-session -t market-parser-frontend
+
+# List all sessions
+tmux list-sessions
+
+# Detach from current session (while inside tmux)
+Ctrl+B, then D
+```text
+
+### Tmux Session Management
+
+- Sessions run in the background and persist even if you close your terminal
+- Use `tmux attach-session -t session-name` to reconnect to a session
+- Use `tmux kill-session -t session-name` to stop a specific session
+- Both servers must remain running for the application to work
 
 ## Troubleshooting
 

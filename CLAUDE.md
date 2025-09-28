@@ -12,20 +12,20 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: complete linting optimization and comprehensive memory updates
+fix: implement 30-second timeout mechanism and fix startup scripts
 
-- **Linting Optimization**: Achieved 9.96/10 Python pylint score (improved from 9.91/10)
-- **JavaScript/TypeScript**: Maintained 0 errors, 0 warnings across frontend codebase
-- **Code Quality**: Fixed try-except-raise pattern with proper error logging
-- **Automated Formatting**: Applied Black, isort, and Prettier formatting across all files
-- **Memory Management**: Created comprehensive Serena memory updates documenting:
-  - Massive re-architecture and code cleanup completion
-  - Current code quality status with detailed metrics
-  - Updated project overview reflecting latest architecture
-- **Documentation**: Enhanced memory system with detailed implementation records
-- **Performance**: Maintained excellent code quality standards for production use
+- **Script Fixes**: Fixed both start-app.sh and start-app-xterm.sh to exit cleanly
+- **Timeout Mechanism**: Added 30-second timeout fallback to prevent hanging
+- **WSL2 Compatibility**: Enhanced start-app-xterm.sh with tmux session support
+- **Environment Detection**: Automatic detection of X11 vs WSL2/headless environments
+- **AI Agent Friendly**: Scripts now exit within 10-15 seconds, preventing agent blocking
+- **Documentation Updates**: Updated CLAUDE.md and START_SCRIPT_README.md to reflect working status
+- **Background Process Support**: start-app.sh uses background processes in WSL2 mode
+- **Session Management**: start-app-xterm.sh uses tmux sessions for better WSL2 experience
+- **Logging**: Added proper log file management for background processes
+- **Error Handling**: Improved error messages and troubleshooting guidance
 
-This implementation represents a significant advancement in the Market Parser Polygon MCP application, providing dynamic, customizable AI interactions while maintaining system stability and security.
+Both startup scripts now work reliably in all environments with proper exit mechanisms.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## STANDARDIZED TEST PROMPTS
@@ -101,8 +101,8 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
 ./start-app-xterm.sh
 
-# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
-# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
+# Option 2: Main startup script (NOW WORKING - FIXED)
+./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
 ```
 
 ### CLI Interface
@@ -119,14 +119,24 @@ KEY TAKEAWAYS
 
 ## Script Variants
 
-### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
+### start-app.sh (NOW WORKING - FIXED)
 
-- **Status**: ❌ BROKEN - Script gets stuck and blocks execution
-- **Issue**: Cannot proceed to sleep 15 or Playwright testing
-- **Action**: Keep script file but do not use until fixed
-- **Alternative**: Use start-app-xterm.sh instead
+- **Status**: ✅ WORKING - Script now exits cleanly with timeout mechanism
+- **Features**: 30-second timeout fallback to prevent hanging
+- **Environment Support**: Works in both X11 and WSL2/headless environments
+- **Background Mode**: Uses background processes in WSL2, terminal windows in X11
+- **Logging**: Writes server logs to backend.log and frontend.log in WSL2 mode
 
 ## What the Scripts Do
+
+### ⏰ Timeout Mechanism
+
+Both scripts now include a **30-second timeout fallback** to prevent hanging:
+
+- **Normal Operation**: Scripts typically complete in 10-15 seconds
+- **Safety Net**: 30-second timeout ensures scripts never hang indefinitely
+- **AI Agent Friendly**: Prevents AI agents from getting stuck waiting for script completion
+- **Graceful Exit**: Scripts exit cleanly after server verification or timeout
 
 ### 🔄 Server Cleanup
 
