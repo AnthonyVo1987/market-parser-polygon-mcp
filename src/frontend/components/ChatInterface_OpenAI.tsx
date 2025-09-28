@@ -138,7 +138,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     isLoading,
     error,
     inputValue,
-    isMobileSidebarOpen,
+    isMobileSidebarOpen: _isMobileSidebarOpen,
   } = state;
 
   // AI Model management - temporarily disabled to fix React Hook order error
