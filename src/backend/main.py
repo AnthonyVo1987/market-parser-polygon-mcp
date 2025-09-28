@@ -66,124 +66,137 @@ console = Console()
 # ====== CONFIGURATION SETTINGS ======
 
 
-class EnvironmentSettings(BaseSettings):
-    """Environment-only settings for API keys."""
+class Settings(BaseSettings):
+    """Consolidated application configuration with environment and JSON-based settings."""
 
-    # API Keys (from environment only)
+    # API Keys (from environment)
     polygon_api_key: str
     openai_api_key: str
+
+    # Server configuration
+    fastapi_host: str = "127.0.0.1"
+    fastapi_port: int = 8000
+
+    # MCP configuration
+    mcp_timeout_seconds: float = 30.0
+    polygon_mcp_version: str = "0.4.1"
+
+    # Agent configuration
+    agent_session_name: str = "financial_analysis_session"
+    reports_directory: str = "reports"
+    cli_session_name: str = "cli_financial_analysis_session"
+    session_timeout_minutes: int = 30
+    session_cleanup_interval_minutes: int = 5
+    max_session_size: int = 1000
+    enable_session_persistence: bool = True
+    enable_agent_caching: bool = True
+    agent_cache_ttl: int = 300
+    max_cache_size: int = 50
+
+    # CORS configuration
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+
+    # AI configuration
+    available_models: List[str] = ["gpt-5-mini"]
+    max_context_length: int = 128000
+    temperature: float = 0.1
+    ai_pricing: dict = {}
+
+    # Security configuration
+    enable_rate_limiting: bool = True
+    rate_limit_rpm: int = 60
+
+    # GPT-5 model-specific rate limiting
+    gpt5_nano_tpm: int = 10000
+    gpt5_nano_rpm: int = 100
+    gpt5_mini_tpm: int = 20000
+    gpt5_mini_rpm: int = 200
+
+    # Logging configuration
+    log_mode: str = "info"
+
+    # Monitoring configuration
+    enable_performance_monitoring: bool = True
+    enable_error_tracking: bool = True
+    enable_resource_monitoring: bool = True
+    monitoring_log_level: str = "info"
+    metrics_retention_days: int = 7
+
+    # Frontend configuration
+    frontend_config: dict = {}
 
     class Config:
         env_file = ".env"
         case_sensitive = False
         extra = "ignore"
 
-
-class ConfigSettings:
-    """Configuration settings loaded from config/app.config.json."""
-
     def __init__(self):
+        super().__init__()
+
+        # Load configuration from JSON file and override defaults
         config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
         with open(config_path, encoding="utf-8") as f:
-            self.config = json.load(f)
+            config = json.load(f)
 
-        # Backend settings
-        self.backend = self.config["backend"]
-        self.frontend = self.config["frontend"]
+        # Extract backend and frontend configs
+        backend_config = config["backend"]
+        frontend_config = config["frontend"]
 
+        # Override defaults with config file values
+        self.fastapi_host = backend_config["server"]["host"]
+        self.fastapi_port = backend_config["server"]["port"]
+        self.mcp_timeout_seconds = backend_config["mcp"]["timeoutSeconds"]
+        self.polygon_mcp_version = backend_config["mcp"]["version"]
 
-class Settings:
-    """Application configuration with JSON-based configuration."""
+        # Agent configuration
+        agent_config = backend_config["agent"]
+        self.agent_session_name = agent_config["sessionName"]
+        self.reports_directory = agent_config["reportsDirectory"]
+        self.cli_session_name = agent_config["cliSessionName"]
+        self.session_timeout_minutes = agent_config["sessionTimeoutMinutes"]
+        self.session_cleanup_interval_minutes = agent_config["sessionCleanupIntervalMinutes"]
+        self.max_session_size = agent_config["maxSessionSize"]
+        self.enable_session_persistence = agent_config["enableSessionPersistence"]
+        self.enable_agent_caching = agent_config["enableAgentCaching"]
+        self.agent_cache_ttl = agent_config["agentCacheTTL"]
+        self.max_cache_size = agent_config["maxCacheSize"]
 
-    def __init__(self):
-        # Load environment settings for API keys
-        env_settings = EnvironmentSettings()
+        # CORS configuration
+        cors_origins_list = backend_config["security"]["cors"]["origins"]
+        self.cors_origins = ",".join(cors_origins_list)
 
-        # Load configuration from JSON file
-        config_settings = ConfigSettings()
+        # AI configuration
+        ai_config = backend_config["ai"]
+        self.available_models = ai_config["availableModels"]
+        self.max_context_length = ai_config["maxContextLength"]
+        self.temperature = ai_config["temperature"]
+        self.ai_pricing = ai_config["pricing"]
 
-        # Server configuration from config file
-        self.fastapi_host: str = config_settings.backend["server"]["host"]
-        self.fastapi_port: int = config_settings.backend["server"]["port"]
+        # Security configuration
+        security_config = backend_config["security"]
+        self.enable_rate_limiting = security_config["enableRateLimiting"]
+        self.rate_limit_rpm = security_config["rateLimitRPM"]
 
-        # API Keys from environment
-        self.polygon_api_key: str = env_settings.polygon_api_key
-        self.openai_api_key: str = env_settings.openai_api_key
+        # GPT-5 model-specific rate limiting
+        rate_limiting = security_config["rateLimiting"]
+        self.gpt5_nano_tpm = rate_limiting["gpt5Nano"]["tpm"]
+        self.gpt5_nano_rpm = rate_limiting["gpt5Nano"]["rpm"]
+        self.gpt5_mini_tpm = rate_limiting["gpt5Mini"]["tpm"]
+        self.gpt5_mini_rpm = rate_limiting["gpt5Mini"]["rpm"]
 
-        # Application configuration from config file
-        self.mcp_timeout_seconds: float = config_settings.backend["mcp"]["timeoutSeconds"]
-        self.agent_session_name: str = config_settings.backend["agent"]["sessionName"]
-        self.reports_directory: str = config_settings.backend["agent"]["reportsDirectory"]
-
-        # Session management configuration
-        self.cli_session_name: str = config_settings.backend["agent"]["cliSessionName"]
-        self.session_timeout_minutes: int = config_settings.backend["agent"][
-            "sessionTimeoutMinutes"
-        ]
-        self.session_cleanup_interval_minutes: int = config_settings.backend["agent"][
-            "sessionCleanupIntervalMinutes"
-        ]
-        self.max_session_size: int = config_settings.backend["agent"]["maxSessionSize"]
-        self.enable_session_persistence: bool = config_settings.backend["agent"][
-            "enableSessionPersistence"
-        ]
-        self.enable_agent_caching: bool = config_settings.backend["agent"]["enableAgentCaching"]
-        self.agent_cache_ttl: int = config_settings.backend["agent"]["agentCacheTTL"]
-        self.max_cache_size: int = config_settings.backend["agent"]["maxCacheSize"]
-
-        # CORS configuration from config file
-        cors_origins_list = config_settings.backend["security"]["cors"]["origins"]
-        self.cors_origins: str = ",".join(cors_origins_list)
-
-        # Available models from config file
-        self.available_models: List[str] = config_settings.backend["ai"]["availableModels"]
-
-        # AI configuration from config file
-        self.max_context_length: int = config_settings.backend["ai"]["maxContextLength"]
-        self.temperature: float = config_settings.backend["ai"]["temperature"]
-        self.ai_pricing: dict = config_settings.backend["ai"]["pricing"]
-
-        # Security configuration from config file
-        self.enable_rate_limiting: bool = config_settings.backend["security"]["enableRateLimiting"]
-        self.rate_limit_rpm: int = config_settings.backend["security"]["rateLimitRPM"]
-
-        # GPT-5 model-specific rate limiting from config file
-        self.gpt5_nano_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"][
-            "tpm"
-        ]
-        self.gpt5_nano_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Nano"][
-            "rpm"
-        ]
-        self.gpt5_mini_tpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"][
-            "tpm"
-        ]
-        self.gpt5_mini_rpm: int = config_settings.backend["security"]["rateLimiting"]["gpt5Mini"][
-            "rpm"
-        ]
-
-        # Logging configuration from config file
-        self.log_mode: str = config_settings.backend["logging"]["mode"]
+        # Logging configuration
+        self.log_mode = backend_config["logging"]["mode"]
 
         # Monitoring configuration
-        self.enable_performance_monitoring: bool = config_settings.backend["monitoring"][
-            "enablePerformanceMonitoring"
-        ]
-        self.enable_error_tracking: bool = config_settings.backend["monitoring"][
-            "enableErrorTracking"
-        ]
-        self.enable_resource_monitoring: bool = config_settings.backend["monitoring"][
-            "enableResourceMonitoring"
-        ]
-        self.monitoring_log_level: str = config_settings.backend["monitoring"]["logLevel"]
-        self.metrics_retention_days: int = config_settings.backend["monitoring"][
-            "metricsRetentionDays"
-        ]
+        monitoring_config = backend_config["monitoring"]
+        self.enable_performance_monitoring = monitoring_config["enablePerformanceMonitoring"]
+        self.enable_error_tracking = monitoring_config["enableErrorTracking"]
+        self.enable_resource_monitoring = monitoring_config["enableResourceMonitoring"]
+        self.monitoring_log_level = monitoring_config["logLevel"]
+        self.metrics_retention_days = monitoring_config["metricsRetentionDays"]
 
-        # MCP configuration from config file
-        self.polygon_mcp_version: str = config_settings.backend["mcp"]["version"]
-
-        # Frontend configuration from config file
-        self.frontend_config = config_settings.frontend
+        # Frontend configuration
+        self.frontend_config = frontend_config
 
 
 # Initialize settings
@@ -288,7 +301,7 @@ class AgentCache:
         return cleared_count
 
 
-# Global agent cache instances
+# Global agent cache instances - will be initialized in lifespan
 gui_agent_cache = None
 cli_agent_cache = None
 
@@ -296,13 +309,11 @@ cli_agent_cache = None
 # MCP Server monitoring and health management
 
 
-# Global MCP server monitor removed
 
 
 # MCP Server resource management
 
 
-# Global MCP server resource manager removed
 
 
 # Performance monitoring and metrics
@@ -310,7 +321,6 @@ cli_agent_cache = None
 
 
 
-# Global performance monitor removed
 
 # Secure response cache for financial queries with automatic size and TTL management
 CACHE_TTL_SECONDS = 900  # 15 minutes in seconds
@@ -356,7 +366,7 @@ CURRENT DATE AND TIME CONTEXT:
 - ISO format: {now.strftime('%Y-%m-%d %H:%M:%S')}
 - Market status: {'Open' if now.weekday() < 5 and 9 <= now.hour < 16 else 'Closed'}
 
-IMPORTANT: Always use the current date and time above for all financial analysis. 
+IMPORTANT: Always use the current date and time above for all financial analysis.
 Do NOT use training data cutoff dates or outdated information.
 """
 
@@ -403,6 +413,49 @@ def create_polygon_mcp_server():
         },
         client_session_timeout_seconds=settings.mcp_timeout_seconds,
     )
+
+
+def create_agent(mcp_server, agent_cache=None):
+    """Create or retrieve a cached financial analysis agent.
+
+    Args:
+        mcp_server (MCPServerStdio): The MCP server instance to use
+        agent_cache (AgentCache, optional): The agent cache instance
+
+    Returns:
+        Agent: The financial analysis agent
+    """
+    analysis_agent = None
+
+    # Try to get cached agent if caching is enabled
+    if settings.enable_agent_caching and agent_cache:
+        instructions = get_enhanced_agent_instructions()
+        analysis_agent = agent_cache.get_cached_agent(
+            model=settings.available_models[0],
+            instructions=instructions,
+            mcp_servers=[mcp_server],
+        )
+
+    # Create new agent if not cached
+    if analysis_agent is None:
+        analysis_agent = Agent(
+            name="Financial Analysis Agent",
+            instructions=get_enhanced_agent_instructions(),
+            tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
+            mcp_servers=[mcp_server],
+            model=settings.available_models[0],
+        )
+
+        # Cache the new agent if caching is enabled
+        if settings.enable_agent_caching and agent_cache:
+            agent_cache.cache_agent(
+                model=settings.available_models[0],
+                instructions=get_enhanced_agent_instructions(),
+                mcp_servers=[mcp_server],
+                agent=analysis_agent,
+            )
+
+    return analysis_agent
 
 
 def generate_cache_key(query: str, ticker: str = "") -> str:
@@ -453,7 +506,8 @@ def cache_response(cache_key: str, response: str):
             response_cache[cache_key] = response
             cache_stats["current_size"] = len(response_cache)
         except Exception:
-            pass  # Cache error handling removed
+            # Cache operation failed, continue without caching
+            cache_stats["errors"] = cache_stats.get("errors", 0) + 1
 
 
 def invalidate_cache_by_ticker(ticker: str) -> int:
@@ -622,7 +676,7 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
         # Resources cleaned up
     except Exception:
         # Ignore cleanup errors during shutdown
-        pass
+        pass  # This is intentional - we don't want to raise during shutdown
 
 
 # FastAPI App Setup
@@ -701,6 +755,9 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     result = None
     response_text = ""
 
+    # Start timing for performance metrics
+    start_time = time.perf_counter()
+
     try:
         # Use shared instances instead of creating new ones
         # Call the AI model with the unified prompt system
@@ -711,35 +768,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 shared_mcp_server = create_polygon_mcp_server()
                 await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
 
-            # Get or create agent with caching
-            analysis_agent = None
-            if settings.enable_agent_caching and gui_agent_cache:
-                # Try to get cached agent
-                instructions = get_enhanced_agent_instructions()
-                analysis_agent = gui_agent_cache.get_cached_agent(
-                    model=settings.available_models[0],
-                    instructions=instructions,
-                    mcp_servers=[shared_mcp_server],
-                )
-
-            if analysis_agent is None:
-                # Create new agent
-                analysis_agent = Agent(
-                    name="Financial Analysis Agent",
-                    instructions=get_enhanced_agent_instructions(),
-                    tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
-                    mcp_servers=[shared_mcp_server],
-                    model=settings.available_models[0],
-                )
-
-                # Cache the new agent
-                if settings.enable_agent_caching and gui_agent_cache:
-                    gui_agent_cache.cache_agent(
-                        model=settings.available_models[0],
-                        instructions=get_enhanced_agent_instructions(),
-                        mcp_servers=[shared_mcp_server],
-                        agent=analysis_agent,
-                    )
+            # Get or create agent with caching using factory function
+            analysis_agent = create_agent(shared_mcp_server, gui_agent_cache)
 
 
 
@@ -766,13 +796,16 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                     token_count = usage.total_tokens
                 # Token usage tracking removed for performance
 
+        # Calculate processing time
+        processing_time = time.perf_counter() - start_time
+
         # Create response metadata with timing and token information
         response_metadata = ResponseMetadata(
             model=settings.available_models[0],
             timestamp=datetime.now().isoformat(),
-            processing_time=None,  # Will be set by middleware
-            request_id=request_id,
-            token_count=token_count,
+            processingTime=processing_time,
+            requestId=request_id,
+            tokenCount=token_count,
         )
 
         # Log performance metrics for baseline measurement and monitoring
@@ -1029,35 +1062,8 @@ async def cli_async():
                         # Start timing for performance metrics
                         start_time = time.perf_counter()
 
-                        # Get or create agent with caching
-                        analysis_agent = None
-                        if settings.enable_agent_caching and cli_agent_cache:
-                            # Try to get cached agent
-                            instructions = get_enhanced_agent_instructions()
-                            analysis_agent = cli_agent_cache.get_cached_agent(
-                                model=settings.available_models[0],
-                                instructions=instructions,
-                                mcp_servers=[server],
-                            )
-
-                        if analysis_agent is None:
-                            # Create new agent
-                            analysis_agent = Agent(
-                                name="Financial Analysis Agent",
-                                instructions=get_enhanced_agent_instructions(),
-                                tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
-                                mcp_servers=[server],
-                                model=settings.available_models[0],
-                            )
-
-                            # Cache the new agent
-                            if settings.enable_agent_caching and cli_agent_cache:
-                                cli_agent_cache.cache_agent(
-                                    model=settings.available_models[0],
-                                    instructions=get_enhanced_agent_instructions(),
-                                    mcp_servers=[server],
-                                    agent=analysis_agent,
-                                )
+                        # Get or create agent with caching using factory function
+                        analysis_agent = create_agent(server, cli_agent_cache)
 
 
 

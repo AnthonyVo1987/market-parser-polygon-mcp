@@ -1,282 +1,286 @@
-# 🔴 CRITICAL: MANDATORY TOOL USAGE Implementation Plan - Market Parser Polygon MCP Code Cleanup
+# 🔴 CRITICAL: MANDATORY TOOL USAGE Implementation Plan - TODO Task Checklist
 
-## Executive Summary
-This implementation plan addresses the comprehensive code audit findings from the market-parser-polygon-mcp project. The codebase has undergone a "direct prompt migration" that removed the template system but left behind substantial dead code, unused functions, and redundant implementations.
+**CRITICAL:** This implementation plan MUST be executed using ALL mandatory toolkit tools systematically throughout the entire process.
 
-## Estimated Impact
-- **Lines of Code Reduction**: ~500-800 lines
-- **File Reduction**: 2-3 files can be completely removed
-- **Maintainability**: Significant improvement
-- **Performance**: Minor improvement from reduced imports
-- **Complexity**: Major reduction in unused complexity
+## 📋 **TASK 2: Generate Granular Detailed Implementation Plan**
+
+### **Phase 1: Quick Wins (1-2 days) - HIGH ROI, LOW RISK**
+
+#### **1.1 Dead Code Cleanup**
+- [ ] **1.1.1** Remove all "removed" comments and empty blocks from `src/backend/main.py`
+  - [ ] Clean up lines 299, 305, 313 (empty comment blocks)
+  - [ ] Remove unused global variables (`gui_agent_cache`, `cli_agent_cache`)
+  - [ ] Remove dead code comments throughout the file
+  - **Risk**: LOW | **ROI**: MEDIUM | **Files**: `src/backend/main.py`
+
+- [ ] **1.1.2** Remove unused imports from `src/backend/main.py`
+  - [ ] Remove unused imports (APIRouter, Depends)
+  - [ ] Clean up any other unused imports
+  - **Risk**: LOW | **ROI**: LOW | **Files**: `src/backend/main.py`
+
+- [ ] **1.1.3** Clean up empty pass statements
+  - [ ] Replace empty pass statements with proper error handling
+  - [ ] Add meaningful comments where pass statements are intentional
+  - **Risk**: LOW | **ROI**: MEDIUM | **Files**: `src/backend/main.py`
+
+#### **1.2 Extract Agent Creation Logic**
+- [ ] **1.2.1** Create factory function for agent creation
+  - [ ] Extract duplicate agent creation logic (lines 714-742 vs 1033-1060)
+  - [ ] Create `create_agent()` factory function
+  - [ ] Update both GUI and CLI paths to use factory function
+  - **Risk**: LOW | **ROI**: HIGH | **Files**: `src/backend/main.py`
+  - **Impact**: Eliminates ~50 lines of duplicate code
+
+#### **1.3 Frontend CSS Optimization**
+- [ ] **1.3.1** Optimize `src/frontend/index.css` (19.98 KB)
+  - [ ] Remove unused CSS rules
+  - [ ] Optimize performance-related CSS
+  - [ ] Remove "removed for performance" comments
+  - **Risk**: LOW | **ROI**: MEDIUM | **Files**: `src/frontend/index.css`
+
+### **Phase 2: Structural Improvements (3-5 days) - MEDIUM ROI, MEDIUM RISK**
+
+#### **2.1 Consolidate Configuration Management**
+- [ ] **2.1.1** Merge configuration classes
+  - [ ] Consolidate `EnvironmentSettings`, `ConfigSettings`, `Settings` classes
+  - [ ] Create single, well-structured configuration class
+  - [ ] Update all configuration references
+  - **Risk**: MEDIUM | **ROI**: HIGH | **Files**: `src/backend/main.py` lines 69-190
+  - **Impact**: Reduces complexity, improves maintainability
+
+#### **2.2 Split Large main.py File**
+- [ ] **2.2.1** Extract classes into separate modules
+  - [ ] Create `src/backend/config.py` for configuration classes
+  - [ ] Create `src/backend/agents.py` for agent-related functionality
+  - [ ] Create `src/backend/utils.py` for utility functions
+  - [ ] Update imports and references
+  - **Risk**: MEDIUM | **ROI**: MEDIUM | **Files**: `src/backend/main.py` → multiple files
+  - **Impact**: Improves maintainability, reduces file size
+
+#### **2.3 Standardize Error Handling**
+- [ ] **2.3.1** Create consistent error handling patterns
+  - [ ] Standardize exception handling across all functions
+  - [ ] Create custom exception classes
+  - [ ] Implement consistent error response formatting
+  - **Risk**: MEDIUM | **ROI**: MEDIUM | **Files**: Throughout backend
+  - **Impact**: Improves reliability and debugging
+
+### **Phase 3: Optimization (2-3 days) - LOW ROI, LOW RISK**
+
+#### **3.1 Improve Documentation**
+- [ ] **3.1.1** Add proper docstrings
+  - [ ] Add docstrings to all functions and classes
+  - [ ] Update existing documentation
+  - [ ] Ensure consistent documentation format
+  - **Risk**: LOW | **ROI**: LOW | **Files**: Throughout codebase
+
+#### **3.2 Final Testing and Validation**
+- [ ] **3.2.1** Comprehensive testing
+  - [ ] Run all existing tests
+  - [ ] Add new tests for refactored code
+  - [ ] Performance testing
+  - **Risk**: LOW | **ROI**: LOW | **Files**: Throughout codebase
+
+## 📋 **TASK 3: Implement the Granular Detailed Implementation Plan**
+
+### **Implementation Order (Critical Path)**
+1. **Start with Phase 1** - Quick wins with highest ROI and lowest risk
+2. **Test after each major change** - Ensure no regressions
+3. **Move to Phase 2** - Structural improvements
+4. **Final Phase 3** - Documentation and optimization
+
+### **Implementation Guidelines**
+- [ ] **3.1** Use all mandatory toolkit tools throughout implementation
+- [ ] **3.2** Test after each major change
+- [ ] **3.3** Document all changes
+- [ ] **3.4** Maintain comprehensive test coverage
+- [ ] **3.5** Use feature flags for risky changes if needed
+
+## 📋 **TASK 4: Review and Fix Linting Issues**
+
+### **4.1 Python Linting (Pylint)**
+- [ ] **4.1.1** Review current Pylint configuration (`.pylintrc`)
+- [ ] **4.1.2** Run `npm run lint:python` and analyze results
+- [ ] **4.1.3** Fix identified issues:
+  - [ ] Fix `W0706: The except handler raises immediately (try-except-raise)` in `src/backend/main.py:608`
+  - [ ] Fix `R1702: Too many nested blocks (6/5)` in `src/backend/main.py:1015`
+  - [ ] Fix `R0915: Too many statements (71/50)` in `src/backend/main.py:994`
+  - [ ] Fix `R0801: Similar lines in 2 files` in test files
+- [ ] **4.1.4** Re-run linting to verify fixes
+- **Files**: `src/backend/`, `tests/`
+
+### **4.2 JavaScript/TypeScript Linting (ESLint)**
+- [ ] **4.2.1** Review current ESLint configuration (`.eslintrc.cjs`)
+- [ ] **4.2.2** Run `npm run lint:js` and analyze results
+- [ ] **4.2.3** Fix identified issues:
+  - [ ] Fix unused imports and variables
+  - [ ] Fix TypeScript type issues
+  - [ ] Fix React-specific issues
+  - [ ] Fix any other ESLint warnings/errors
+- [ ] **4.2.4** Re-run linting to verify fixes
+- **Files**: `src/frontend/`
+
+### **4.3 Linting Configuration Review**
+- [ ] **4.3.1** Review and optimize `.pylintrc` configuration
+- [ ] **4.3.2** Review and optimize `.eslintrc.cjs` configuration
+- [ ] **4.3.3** Ensure linting rules are appropriate for the project
+- [ ] **4.3.4** Update package.json linting scripts if needed
+
+## 📋 **TASK 5: CLI Regression Testing**
+
+### **5.1 Run Comprehensive CLI Tests**
+- [ ] **5.1.1** Execute `test_7_prompts_comprehensive.sh`
+- [ ] **5.1.2** Monitor test execution and results
+- [ ] **5.1.3** Analyze test performance and response times
+- [ ] **5.1.4** Verify all 7 standardized test prompts work correctly
+
+### **5.2 Generate and Save Test Report**
+- [ ] **5.2.1** Ensure test report is saved in `test-reports/` folder
+- [ ] **5.2.2** Review test report for any failures or issues
+- [ ] **5.2.3** Document any test failures and their causes
+- [ ] **5.2.4** Verify test report format and completeness
+
+### **5.3 Test Analysis and Documentation**
+- [ ] **5.3.1** Analyze response times and performance metrics
+- [ ] **5.3.2** Document performance improvements or regressions
+- [ ] **5.3.3** Create summary of CLI testing results
+- [ ] **5.3.4** Update documentation with test results
+
+## 📋 **TASK 6: GUI Regression Testing with Playwright**
+
+### **6.1 Setup Playwright Testing Environment**
+- [ ] **6.1.1** Ensure Playwright tools are available and configured
+- [ ] **6.1.2** Verify test environment setup
+- [ ] **6.1.3** Check browser automation capabilities
+
+### **6.2 Execute GUI Test Plan**
+- [ ] **6.2.1** Read and understand test plan from `tests/playwright/test_prompts.md`
+- [ ] **6.2.2** Execute all standardized test prompts using Playwright
+- [ ] **6.2.3** Test GUI functionality and user interactions
+- [ ] **6.2.4** Verify frontend performance and responsiveness
+
+### **6.3 Generate and Save GUI Test Report**
+- [ ] **6.3.1** Generate comprehensive GUI test report
+- [ ] **6.3.2** Save test report in `test-reports/` folder
+- [ ] **6.3.3** Include screenshots and performance metrics
+- [ ] **6.3.4** Document any GUI issues or failures
+
+### **6.4 GUI Test Analysis**
+- [ ] **6.4.1** Analyze GUI test results and performance
+- [ ] **6.4.2** Compare GUI performance with CLI performance
+- [ ] **6.4.3** Document any GUI-specific issues
+- [ ] **6.4.4** Create summary of GUI testing results
+
+## 📋 **TASK 7: Comprehensive Documentation Update**
+
+### **7.1 Review Current Documentation**
+- [ ] **7.1.1** Review `README.md` for outdated information
+- [ ] **7.1.2** Review `CLAUDE.md` for accuracy
+- [ ] **7.1.3** Review `AGENTS.md` for current instructions
+- [ ] **7.1.4** Review all other documentation files
+
+### **7.2 Update Documentation**
+- [ ] **7.2.1** Remove outdated information from all docs
+- [ ] **7.2.2** Update installation and setup instructions
+- [ ] **7.2.3** Update API documentation if needed
+- [ ] **7.2.4** Update testing instructions and procedures
+
+### **7.3 Clean Up Documentation**
+- [ ] **7.3.1** Remove references to removed features
+- [ ] **7.3.2** Update code examples and snippets
+- [ ] **7.3.3** Ensure all links and references are current
+- [ ] **7.3.4** Standardize documentation format and style
+
+### **7.4 Create New Documentation**
+- [ ] **7.4.1** Document refactoring changes
+- [ ] **7.4.2** Create architecture documentation
+- [ ] **7.4.3** Update development guidelines
+- [ ] **7.4.4** Create troubleshooting guides
+
+## 📋 **TASK 8: Update Serena Memories**
+
+### **8.1 Analyze Current Memories**
+- [ ] **8.1.1** Review existing Serena memories
+- [ ] **8.1.2** Identify outdated or incorrect information
+- [ ] **8.1.3** Determine what new information needs to be stored
+
+### **8.2 Update Memories**
+- [ ] **8.2.1** Update existing memories with current information
+- [ ] **8.2.2** Create new memories for refactoring changes
+- [ ] **8.2.3** Document implementation patterns and best practices
+- [ ] **8.2.4** Store testing procedures and results
+
+### **8.3 Memory Organization**
+- [ ] **8.3.1** Organize memories by category and importance
+- [ ] **8.3.2** Ensure memories are easily searchable
+- [ ] **8.3.3** Remove obsolete memories
+- [ ] **8.3.4** Verify memory accuracy and completeness
+
+## 🎯 **SUCCESS CRITERIA**
+
+### **Overall Success Metrics**
+- [ ] All Phase 1 tasks completed (Quick Wins)
+- [ ] All Phase 2 tasks completed (Structural Improvements)
+- [ ] All Phase 3 tasks completed (Optimization)
+- [ ] All linting issues resolved
+- [ ] CLI regression tests pass with good performance
+- [ ] GUI regression tests pass with good performance
+- [ ] Documentation is updated and accurate
+- [ ] Serena memories are current and comprehensive
+
+### **Quality Metrics**
+- [ ] Code quality score improved (Pylint rating)
+- [ ] No linting errors or warnings
+- [ ] Test coverage maintained or improved
+- [ ] Performance metrics within acceptable ranges
+- [ ] Documentation completeness and accuracy
+
+### **Risk Mitigation**
+- [ ] All changes tested thoroughly
+- [ ] Rollback procedures documented
+- [ ] No breaking changes introduced
+- [ ] Backward compatibility maintained
+
+## ⚠️ **RISK ASSESSMENT & MITIGATION**
+
+### **LOW RISK CHANGES** (Implement First)
+- Dead code cleanup
+- Unused import removal
+- Documentation improvements
+- CSS optimization
+
+### **MEDIUM RISK CHANGES** (Require Careful Testing)
+- Configuration consolidation
+- File splitting
+- Error handling standardization
+
+### **HIGH RISK CHANGES** (Require Extensive Testing)
+- Major architectural changes
+- API endpoint modifications
+- Database schema changes
+
+## 📅 **IMPLEMENTATION TIMELINE**
+
+### **Day 1-2: Phase 1 (Quick Wins)**
+- Dead code cleanup
+- Agent creation extraction
+- CSS optimization
+
+### **Day 3-5: Phase 2 (Structural Improvements)**
+- Configuration consolidation
+- File splitting
+- Error handling standardization
+
+### **Day 6-7: Phase 3 (Optimization)**
+- Documentation updates
+- Final testing
+- Memory updates
+
+### **Day 8: Final Validation**
+- Complete linting fixes
+- Regression testing
+- Final documentation review
 
 ---
 
-## 🚨 HIGH PRIORITY TASKS (Immediate Cleanup)
-
-### Task 1: Remove Completely Dead Files
-- [ ] **1.1** Delete `src/backend/prompt_templates.py` (111 lines of disabled code)
-- [ ] **1.2** Delete `src/backend/utils/__init__.py` (empty file)
-- [ ] **1.3** Verify no imports reference these files
-- [ ] **1.4** Update any documentation that references these files
-
-### Task 2: Remove Dead Functions from main.py
-- [ ] **2.1** Remove `validate_request_size()` function (lines 202-205)
-- [ ] **2.2** Remove `get_model_tpm_limit()` function (lines 208-211)
-- [ ] **2.3** Remove `cleanup_session_periodically()` function (lines 722-756)
-- [ ] **2.4** Remove `print_guardrail_error()` function (lines 830-841) - only exported, never used
-- [ ] **2.5** Verify no references to these functions exist
-
-### Task 3: Remove Dead Variables and Classes
-- [ ] **3.1** Remove `active_requests` global variable (line 540)
-- [ ] **3.2** Remove `FinanceOutput` class (lines 544-548) - only exported, never used
-- [ ] **3.3** Remove `PromptTemplateInfo` class from api_models.py (lines 25-31)
-- [ ] **3.4** Remove `FollowUpQuestionsResponse` class from api_models.py (lines 71-77) - only exported
-- [ ] **3.5** Remove `TickerContextInfo` class from api_models.py (lines 40-48) - only used in one other model
-
-### Task 4: Remove Over-engineered Monitoring Classes
-- [ ] **4.1** Remove `MCPServerMonitor` class (lines 305-402) - methods never called
-- [ ] **4.2** Remove `MCPServerResourceManager` class (lines 409-445) - methods never called
-- [ ] **4.3** Remove `PerformanceMonitor` class (lines 469-529) - methods never called
-- [ ] **4.4** Remove associated global instances: `mcp_server_monitor`, `mcp_resource_manager`, `performance_monitor`
-- [ ] **4.5** Remove `PerformanceMetrics` class (lines 449-467) - only used by removed classes
-
-### Task 5: Clean Up Removed Code Comments and Empty Pass Statements
-- [ ] **5.1** Remove all "Removed as part of direct prompt migration" comment blocks
-- [ ] **5.2** Remove empty pass statements and replace with proper error handling:
-  - Line 435: `pass  # Memory usage monitoring removed`
-  - Line 678: `pass  # Cache error handling removed`
-  - Line 698: `pass  # Cache invalidation logging removed`
-  - Line 755: `pass  # Session recovery error handling removed`
-  - Line 891: `pass` in exception handler
-  - Line 1048: `pass  # Token usage logging removed`
-- [ ] **5.3** Remove GPT_4O and GPT_4O_MINI model references
-- [ ] **5.4** Clean up multiple API endpoint removal comments
-
----
-
-## 🔄 MEDIUM PRIORITY TASKS (Refactoring)
-
-### Task 6: Consolidate Agent Creation Logic
-- [ ] **6.1** Create shared `create_analysis_agent()` function
-- [ ] **6.2** Extract common agent creation code from CLI and GUI endpoints
-- [ ] **6.3** Consolidate caching logic into shared function
-- [ ] **6.4** Consolidate error handling for agent creation
-- [ ] **6.5** Update both CLI and GUI to use shared functions
-
-### Task 7: Consolidate Token Extraction Logic
-- [ ] **7.1** Create shared `extract_token_info()` function
-- [ ] **7.2** Extract common token extraction code from multiple locations
-- [ ] **7.3** Consolidate metadata handling logic
-- [ ] **7.4** Update all locations to use shared function
-
-### Task 8: Simplify Configuration Management
-- [ ] **8.1** Review and consolidate `EnvironmentSettings`, `ConfigSettings`, and `Settings` classes
-- [ ] **8.2** Remove redundant configuration loading
-- [ ] **8.3** Simplify settings initialization
-- [ ] **8.4** Remove unused configuration options
-
-### Task 9: Clean Up Import Statements
-- [ ] **9.1** Remove unused imports from main.py
-- [ ] **9.2** Remove unused imports from api_models.py
-- [ ] **9.3** Organize imports according to PEP 8
-- [ ] **9.4** Remove unused imports from __init__.py files
-
----
-
-## 🔧 LOW PRIORITY TASKS (Optimization)
-
-### Task 10: Review and Clean Frontend Dependencies
-- [ ] **10.1** Analyze package.json for unused dependencies
-- [ ] **10.2** Remove unused frontend dependencies
-- [ ] **10.3** Update package-lock.json
-- [ ] **10.4** Verify all dependencies are actually used
-
-### Task 11: Optimize Package.json Scripts
-- [ ] **11.1** Review all npm scripts for redundancy
-- [ ] **11.2** Remove unused or duplicate scripts
-- [ ] **11.3** Consolidate similar scripts
-- [ ] **11.4** Update documentation for remaining scripts
-
-### Task 12: Remove Development Artifacts
-- [ ] **12.1** Clean up unused test files
-- [ ] **12.2** Remove unused configuration files
-- [ ] **12.3** Clean up temporary files
-- [ ] **12.4** Remove unused documentation files
-
----
-
-## 📚 DOCUMENTATION UPDATES
-
-### Task 13: Update README.md
-- [ ] **13.1** Remove references to removed template system
-- [ ] **13.2** Update API documentation
-- [ ] **13.3** Update installation instructions
-- [ ] **13.4** Update usage examples
-- [ ] **13.5** Remove outdated feature descriptions
-
-### Task 14: Update API Documentation
-- [ ] **14.1** Remove documentation for removed endpoints
-- [ ] **14.2** Update remaining endpoint documentation
-- [ ] **14.3** Update model documentation
-- [ ] **14.4** Update error handling documentation
-
-### Task 15: Update Configuration Documentation
-- [ ] **15.1** Update config file documentation
-- [ ] **15.2** Remove references to removed configuration options
-- [ ] **15.3** Update environment variable documentation
-- [ ] **15.4** Update deployment documentation
-
----
-
-## 🧪 TESTING AND VALIDATION
-
-### Task 16: Run Comprehensive Linting
-- [ ] **16.1** Run Python linting (pylint, flake8, black, isort)
-- [ ] **16.2** Run JavaScript/TypeScript linting (ESLint, Prettier)
-- [ ] **16.3** Fix all linting issues
-- [ ] **16.4** Configure pre-commit hooks
-- [ ] **16.5** Run vulture for dead code detection
-
-### Task 17: Test CLI Version
-- [ ] **17.1** Test basic CLI functionality
-- [ ] **17.2** Test error handling
-- [ ] **17.3** Test configuration loading
-- [ ] **17.4** Test agent creation and caching
-- [ ] **17.5** Fix any issues found
-
-### Task 18: Test GUI Version with Playwright
-- [ ] **18.1** Start application servers
-- [ ] **18.2** Navigate to GUI with Playwright
-- [ ] **18.3** Test basic functionality
-- [ ] **18.4** Test error handling
-- [ ] **18.5** Take screenshots for documentation
-- [ ] **18.6** Fix any issues found
-
-### Task 19: Integration Testing
-- [ ] **19.1** Test end-to-end functionality
-- [ ] **19.2** Test API endpoints
-- [ ] **19.3** Test error scenarios
-- [ ] **19.4** Test performance
-- [ ] **19.5** Verify all features work correctly
-
----
-
-## 📝 MEMORY AND DOCUMENTATION
-
-### Task 20: Update Project Memories
-- [ ] **20.1** Document completed cleanup tasks
-- [ ] **20.2** Update project architecture documentation
-- [ ] **20.3** Document any issues found and resolved
-- [ ] **20.4** Update best practices documentation
-- [ ] **20.5** Create cleanup summary report
-
----
-
-## 🎯 SUCCESS CRITERIA
-
-### Code Quality Metrics
-- [ ] **CQ1** All dead code removed (verified with vulture)
-- [ ] **CQ2** All linting issues resolved
-- [ ] **CQ3** No unused imports remaining
-- [ ] **CQ4** No unused variables or functions
-- [ ] **CQ5** Code complexity reduced
-
-### Functionality Metrics
-- [ ] **F1** CLI version works correctly
-- [ ] **F2** GUI version works correctly
-- [ ] **F3** All API endpoints functional
-- [ ] **F4** Error handling works properly
-- [ ] **F5** Performance maintained or improved
-
-### Documentation Metrics
-- [ ] **D1** README.md updated and accurate
-- [ ] **D2** API documentation current
-- [ ] **D3** Configuration documentation updated
-- [ ] **D4** All outdated information removed
-- [ ] **D5** Installation and usage instructions accurate
-
----
-
-## 🔄 EXECUTION STRATEGY
-
-### Phase 1: High Priority Cleanup (Tasks 1-5)
-- Remove all dead code and unused functionality
-- Focus on immediate impact and risk reduction
-- Verify no breaking changes
-
-### Phase 2: Refactoring (Tasks 6-9)
-- Consolidate duplicate code
-- Improve code organization
-- Maintain functionality while improving structure
-
-### Phase 3: Optimization (Tasks 10-12)
-- Clean up dependencies and configuration
-- Remove development artifacts
-- Optimize build and deployment
-
-### Phase 4: Documentation (Tasks 13-15)
-- Update all documentation
-- Remove outdated information
-- Ensure accuracy and completeness
-
-### Phase 5: Testing and Validation (Tasks 16-19)
-- Comprehensive testing
-- Linting and code quality checks
-- Performance validation
-
-### Phase 6: Finalization (Task 20)
-- Update memories and documentation
-- Create summary reports
-- Prepare for deployment
-
----
-
-## ⚠️ RISK MITIGATION
-
-### Backup Strategy
-- [ ] Create git branch before starting cleanup
-- [ ] Commit changes incrementally
-- [ ] Test after each major change
-- [ ] Maintain rollback capability
-
-### Testing Strategy
-- [ ] Test after each task completion
-- [ ] Maintain test coverage
-- [ ] Verify functionality at each phase
-- [ ] Document any issues found
-
-### Communication Strategy
-- [ ] Document all changes made
-- [ ] Update project status regularly
-- [ ] Report any issues immediately
-- [ ] Maintain change log
-
----
-
-## 📊 PROGRESS TRACKING
-
-### Daily Progress
-- [ ] Update task completion status
-- [ ] Document any issues encountered
-- [ ] Update time estimates
-- [ ] Report progress to stakeholders
-
-### Weekly Review
-- [ ] Review completed tasks
-- [ ] Assess remaining work
-- [ ] Adjust timeline if needed
-- [ ] Update success criteria
-
-### Final Review
-- [ ] Verify all tasks completed
-- [ ] Validate success criteria met
-- [ ] Document lessons learned
-- [ ] Prepare final report
-
----
-
-**Total Estimated Tasks**: 20 major tasks with 100+ subtasks
-**Estimated Timeline**: 3-5 days of focused work
-**Priority**: HIGH - Critical for maintainability and performance
-**Risk Level**: LOW - Well-defined scope with clear rollback strategy
+**CRITICAL REMINDER:** This implementation plan MUST be executed using ALL mandatory toolkit tools systematically throughout the entire process. Use tools in ANY ORDER as needed, use the SAME tool MULTIPLE TIMES if needed, and NEVER stop using tools until all tasks are completed.

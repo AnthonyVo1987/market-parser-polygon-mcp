@@ -60,3 +60,239 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 ## Task 4. Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
 
 ## Task 5. Use Serena to update memories
+
+## Context & Background
+
+Here was the previous results from the research tasks to provide more background and context:
+
+## 🔍 **COMPREHENSIVE CODEBASE AUDIT & REFACTORING PROPOSAL**
+
+### **Task 1: Systematic Codebase Analysis Complete**
+
+I have performed a thorough analysis using:
+
+- ✅ **Sequential-Thinking** for task analysis and planning
+- ✅ **Context7** for code quality best practices research  
+- ✅ **Serena Tools** for detailed code analysis and pattern detection
+- ✅ **Filesystem Tools** for project structure analysis
+- ✅ **Standard Read/Write/Edit** for file examination
+
+---
+
+## **📊 AUDIT FINDINGS**
+
+### **🔴 HIGH RISK ISSUES**
+
+#### **1. Code Duplication & Redundancy**
+
+- **Risk Level**: HIGH
+- **ROI Impact**: HIGH
+- **Location**: `src/backend/main.py` (39.65 KB - largest file)
+- **Issues Found**:
+  - Duplicate agent creation logic in both GUI and CLI paths (lines 714-742 vs 1033-1060)
+  - Repeated cache management patterns
+  - Duplicate error handling structures
+  - Multiple similar configuration loading patterns
+
+#### **2. Over-Engineered Monitoring Classes (Already Partially Removed)**
+
+- **Risk Level**: MEDIUM  
+- **ROI Impact**: HIGH
+- **Status**: Partially cleaned up but remnants remain
+- **Issues Found**:
+  - Empty comment blocks indicating removed classes (lines 299, 305, 313)
+  - Unused global variables (`gui_agent_cache`, `cli_agent_cache`)
+  - Dead code comments throughout the file
+
+#### **3. Complex Configuration Management**
+
+- **Risk Level**: MEDIUM
+- **ROI Impact**: MEDIUM
+- **Location**: `src/backend/main.py` lines 69-190
+- **Issues Found**:
+  - Three separate configuration classes (`EnvironmentSettings`, `ConfigSettings`, `Settings`)
+  - Overly complex nested configuration loading
+  - Potential for configuration conflicts
+
+### **🟡 MEDIUM RISK ISSUES**
+
+#### **4. Frontend Performance Issues**
+
+- **Risk Level**: MEDIUM
+- **ROI Impact**: HIGH
+- **Location**: `src/frontend/index.css` (19.98 KB)
+- **Issues Found**:
+  - Extensive CSS with performance comments indicating removed optimizations
+  - Multiple "removed for performance" comments suggest ongoing performance issues
+  - Large CSS file with potential for optimization
+
+#### **5. Unused Imports & Dependencies**
+
+- **Risk Level**: LOW
+- **ROI Impact**: MEDIUM
+- **Location**: Multiple files
+- **Issues Found**:
+  - Unused imports in `src/backend/main.py` (APIRouter, Depends)
+  - Potential unused dependencies in package.json
+  - Empty utils directory structure
+
+#### **6. Error Handling Inconsistencies**
+
+- **Risk Level**: MEDIUM
+- **ROI Impact**: MEDIUM
+- **Location**: Throughout backend
+- **Issues Found**:
+  - Mixed exception handling patterns
+  - Some functions have proper error handling, others use bare `except Exception`
+  - Inconsistent error response formatting
+
+### **🟢 LOW RISK ISSUES**
+
+#### **7. Code Comments & Documentation**
+
+- **Risk Level**: LOW
+- **ROI Impact**: LOW
+- **Issues Found**:
+  - Numerous "removed" comments indicating incomplete cleanup
+  - Some functions lack proper docstrings
+  - Inconsistent comment formatting
+
+#### **8. File Organization**
+
+- **Risk Level**: LOW
+- **ROI Impact**: LOW
+- **Issues Found**:
+  - Empty utils directory
+  - Large main.py file could be split
+  - Some files are larger than recommended
+
+---
+
+## **🎯 REFACTORING RECOMMENDATIONS**
+
+### **PRIORITY 1: HIGH ROI, LOW-MEDIUM RISK**
+
+#### **1. Extract Agent Creation Logic**
+
+- **Risk**: LOW
+- **ROI**: HIGH
+- **Action**: Create a factory function for agent creation
+- **Impact**: Eliminates ~50 lines of duplicate code
+- **Files**: `src/backend/main.py`
+
+#### **2. Consolidate Configuration Management**
+
+- **Risk**: MEDIUM
+- **ROI**: HIGH
+- **Action**: Merge configuration classes into a single, well-structured class
+- **Impact**: Reduces complexity, improves maintainability
+- **Files**: `src/backend/main.py`
+
+#### **3. Clean Up Dead Code Comments**
+
+- **Risk**: LOW
+- **ROI**: MEDIUM
+- **Action**: Remove all "removed" comments and empty blocks
+- **Impact**: Improves code readability
+- **Files**: `src/backend/main.py`, `src/backend/api_models.py`
+
+### **PRIORITY 2: MEDIUM ROI, MEDIUM RISK**
+
+#### **4. Split Large main.py File**
+
+- **Risk**: MEDIUM
+- **ROI**: MEDIUM
+- **Action**: Extract classes and functions into separate modules
+- **Impact**: Improves maintainability, reduces file size
+- **Files**: `src/backend/main.py` → multiple files
+
+#### **5. Standardize Error Handling**
+
+- **Risk**: MEDIUM
+- **ROI**: MEDIUM
+- **Action**: Create consistent error handling patterns
+- **Impact**: Improves reliability and debugging
+- **Files**: Throughout backend
+
+#### **6. Optimize Frontend CSS**
+
+- **Risk**: LOW
+- **ROI**: MEDIUM
+- **Action**: Remove unused CSS, optimize performance
+- **Impact**: Improves frontend performance
+- **Files**: `src/frontend/index.css`
+
+### **PRIORITY 3: LOW ROI, LOW RISK**
+
+#### **7. Remove Unused Imports**
+
+- **Risk**: LOW
+- **ROI**: LOW
+- **Action**: Clean up unused imports
+- **Impact**: Reduces bundle size
+- **Files**: Multiple
+
+#### **8. Improve Documentation**
+
+- **Risk**: LOW
+- **ROI**: LOW
+- **Action**: Add proper docstrings and comments
+- **Impact**: Improves maintainability
+- **Files**: Throughout codebase
+
+---
+
+## **📋 IMPLEMENTATION PLAN**
+
+### **Phase 1: Quick Wins (1-2 days)**
+
+1. Clean up dead code comments
+2. Remove unused imports
+3. Extract agent creation factory function
+
+### **Phase 2: Structural Improvements (3-5 days)**
+
+1. Consolidate configuration management
+2. Split main.py into logical modules
+3. Standardize error handling
+
+### **Phase 3: Optimization (2-3 days)**
+
+1. Optimize frontend CSS
+2. Improve documentation
+3. Final testing and validation
+
+---
+
+## **⚠️ RISK ASSESSMENT**
+
+### **LOW RISK CHANGES** (Recommended to implement first)
+
+- Dead code cleanup
+- Unused import removal
+- Documentation improvements
+- CSS optimization
+
+### **MEDIUM RISK CHANGES** (Require careful testing)
+
+- Configuration consolidation
+- File splitting
+- Error handling standardization
+
+### **HIGH RISK CHANGES** (Require extensive testing)
+
+- Major architectural changes
+- Database schema modifications
+- API endpoint changes
+
+---
+
+## **💡 RECOMMENDED NEXT STEPS**
+
+1. **Start with Priority 1 items** - they offer the best ROI with lowest risk
+2. **Implement changes incrementally** - test after each major change
+3. **Maintain comprehensive test coverage** throughout refactoring
+4. **Document all changes** for future reference
+5. **Consider using feature flags** for risky changes
+
+This analysis provides a clear roadmap for improving code quality, maintainability, and performance while minimizing risk. The recommendations are prioritized by ROI and risk level to ensure the most impactful changes are implemented first.

@@ -174,9 +174,11 @@ class ResponseMetadata(BaseModel):
 
     model: str
     timestamp: str
-    processing_time: Optional[float] = None
-    request_id: Optional[str] = None
-    token_count: Optional[int] = None
+    processing_time: Optional[float] = Field(None, alias="processingTime")
+    request_id: Optional[str] = Field(None, alias="requestId")
+    token_count: Optional[int] = Field(None, alias="tokenCount")
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=None)
 
 
 class AIModel(CustomModel):
