@@ -47,24 +47,19 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Investigate, Research, and Scope out details to fully consolidate & streamline the AI Chat Prompts to only have a single common System Prompt & Agent instructions for CLI & GUI to only use prompts from src/backend/main.py
+## Task 1. In our Codebase, Investigate, Research, and Plan out the complete removal and retirement of any Legacy logging that the app added.  For performance optimizations, we will rely on JUST the default console\logs being generated from web console and dev server logs.  If we need to add addtional console messages and\or logs, we will add on a case by case basis.  Even with the complete removal of any additional logging, there are STILL default console\logs in web browsers and dev servers, so let's try NOT to add any extra overhed by adding extra debug info
 
-- Need to completely remove and retire the dynamic prompt manager with the enhanced user instructions IE verbosity_instruction, tool_restriction, format_instruction, style_instruction etc
-- Need to ensure that GUI will fully inherit and use the prompts from CLI version main.py
-- Need to also search entire docs and remove and update any docs the reflect the new app architecture
+- src/backend/utils/logger.py, src/frontend/utils/logger.ts, src/frontend/hooks/useDebugLog.ts are examples of some of the legacy logging code that you need to check if we can remove and there could be other files too
+- Expected Outcome: No addtional Debug, production, Staging verbose, detailed console\logs etc.  We will debug JUST as is with no app specific logging and rely on built in logs and traces from our frameworks.
 
-Expected Outcomes:
+## Task 2. Based on the Investigation, Research, & Analysis from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to implement task 1
 
-- Single Streamlined System Prompt & Agent Instructions.
-- No dynamic or enhanced prompts anymore
-- GUI chat does NOT have it's own duplicate redundant System Prompt or Agent Instructions
-- No responses enforce "Data first, Detailed Analysis" anymore because main.py prompts have updated and removed that prompt
-- No unused dead code and files referencing the removed dynamic prompt system anymore
+## Task 3. Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
-## Task 2. Generate a granular detailed TODO Task Checklist for you to implement task 1
+## Task 4. Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
 
-## Task 3. Implement the plan from the granular detailed TODO Task Checklist you generated from Task 2
+## Task 5. Perform some quick testing of CLI version (uv run src/backend/main.py), fix any issues
 
-## Task 4. REview projects Lint\ESLint\PYlint commands and config, and run full Lint\ESLint\PYlint and fix all issues
+## Task 6. Perform some quick testing of GUI version using Playwright Tools, fix any issues
 
-## Task 5. Perform testing initial testing with Playright Tools
+## Task 7. Use Serena to update memories
