@@ -47,6 +47,14 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Re-run full Lint\ESLint\PYLint and fix ALL errors and warnings
+## Task 1. Perform a focused, incremental, comprehensive, systematic, deep dive codebase audit and code review to investigate, analyze, & provide some scoping to for the removal and retirement of ALL Caching features in the code base.  There is a Agent creation cache and a TTL response caching. There will be a later re-implementation and re-architecture utilizing the native support of OpenAI prompt caching features as part of their official API and SDK. So, we will not keep the current 3rd party caching features implemented in our app. So for now, let's just completely and utterly remove the caching since it is a little bit of over engineering and a little bit of over complexity
 
-## Task 2. Use Serena tools to perform comprhensive memory update to reflect the massive re-architecture and code clean up we performed
+## Task 2. Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
+
+## Task 3. Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
+
+## Task 4. Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
+
+## Task 5. Perform some testing of CLI version executing test_7_prompts_comprehensive.sh (uv run src/backend/main.py), fix any issues
+
+## Task 6. Perform some testing of GUI version using Playwright Tools and executing tests/playwright/test_prompts.md, fix any issues
