@@ -47,17 +47,16 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 2. Based on the Investigation, Research, & Analysis from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to
+## Task 2. Based on the Investigation, Research, & Analysis from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' with the following details
 
-1. Implement ALL items from High, Medium, and Low
-2. Comprehensive Documentation Update, Cleanup, removal etc to reflect the latest udpates to app to remove outdated info
+- Implement ALL Phases 1, 2, & 3
+- Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
+- Regression testing for CLI version first by running 'test_7_prompts_comprehensive.sh' and generating ans saving detailed test report in test-reports folder
+- Regression testing for GUI version second using Playwright Browser Tools and executing test plan from 'tests/playwright/test_prompts.md' and generating ans saving detailed test report in test-reports folder
+- Comprehensive Documentation Update, Cleanup, removal etc to reflect the latest udpates to app to remove outdated info
 
 ## Task 3. Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
 ## Task 4. Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
 
-## Task 5. Perform some quick testing of CLI version (uv run src/backend/main.py), fix any issues
-
-## Task 6. Perform some quick testing of GUI version using Playwright Tools, fix any issues
-
-## Task 7. Use Serena to update memories
+## Task 5. Use Serena to update memories
