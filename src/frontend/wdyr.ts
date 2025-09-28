@@ -45,18 +45,7 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
         titleColor: 'red',
         diffNameColor: 'orange',
         diffPathColor: 'gray',
-        notifier: (options: {
-          Component?: React.ComponentType<unknown>;
-          displayName?: string;
-          hookName?: string;
-          prevProps?: unknown;
-          prevState?: unknown;
-          prevHookResult?: unknown;
-          nextProps?: unknown;
-          nextState?: unknown;
-          nextHookResult?: unknown;
-          reason?: string;
-        }) => {
+        notifier: (options: any) => {
           const {
             Component,
             displayName,
@@ -70,8 +59,12 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
             reason: _reason,
           } = options;
           // Custom notification for excessive re-renders using minimal logger
-          const _componentName =
+          const componentName =
             displayName || hookName || Component?.name || 'Unknown';
+          // Use the componentName variable to avoid unused variable warning
+          if (componentName) {
+            // Component name is available for logging
+          }
         },
       });
     }

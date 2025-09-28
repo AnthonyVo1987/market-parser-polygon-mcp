@@ -6,7 +6,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useRef
+  useRef,
 } from 'react';
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
@@ -27,16 +27,16 @@ interface ChatState {
 type ChatAction =
   | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
   | {
-    type: 'SEND_MESSAGE_SUCCESS';
-    payload: { aiMessage: Message };
-  }
+      type: 'SEND_MESSAGE_SUCCESS';
+      payload: { aiMessage: Message };
+    }
   | {
-    type: 'SEND_MESSAGE_ERROR';
-    payload: {
-      errorMessage: string;
-      aiMessage: Message;
-    };
-  }
+      type: 'SEND_MESSAGE_ERROR';
+      payload: {
+        errorMessage: string;
+        aiMessage: Message;
+      };
+    }
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'CLEAR_ERROR' }
   | { type: 'RESET_STATE' };
@@ -109,12 +109,7 @@ const RecentMessageButtons = lazy(() =>
 const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // Consolidated state management using useReducer for performance optimization
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
-  const {
-    messages,
-    isLoading,
-    error,
-    inputValue,
-  } = state;
+  const { messages, isLoading, error, inputValue } = state;
 
   // AI Model management - temporarily disabled to fix React Hook order error
   // const {
@@ -126,18 +121,14 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // } = useAIModel();
   const currentModel: AIModelId = 'gpt-5-nano' as AIModelId;
 
-
   // Optimize useMemo - Only memoize expensive calculations
   const hasMessages = messages.length > 0;
   const placeholderText = useMemo(
-    () =>
-      `Ask any financial question... (Shift+Enter for new line)`,
+    () => `Ask any financial question... (Shift+Enter for new line)`,
     []
   );
 
   // Performance and interaction tracking
-
-
 
   // Phase 4: Performance Monitoring
   const { metrics: performanceMetrics } = usePerformanceMonitoring();
@@ -188,15 +179,12 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         payload: { userMessage },
       });
 
-
       try {
-
         // Send to API and get response
         const apiResponse = await sendChatMessage(
           messageContent,
           currentModel || undefined
         );
-
 
         // Create AI message and dispatch success action
         const aiMessage: Message = {
@@ -204,13 +192,15 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           content: apiResponse.response,
           sender: 'ai',
           timestamp: new Date(),
-          metadata: apiResponse.metadata ? {
-            tokenCount: apiResponse.metadata.tokenCount,
-            model: apiResponse.metadata.model,
-            processingTime: apiResponse.metadata.processingTime,
-            requestId: apiResponse.metadata.requestId,
-            timestamp: apiResponse.metadata.timestamp,
-          } : undefined,
+          metadata: apiResponse.metadata
+            ? {
+                tokenCount: apiResponse.metadata.tokenCount,
+                model: apiResponse.metadata.model,
+                processingTime: apiResponse.metadata.processingTime,
+                requestId: apiResponse.metadata.requestId,
+                timestamp: apiResponse.metadata.timestamp,
+              }
+            : undefined,
         };
 
         dispatch({
@@ -222,7 +212,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to send message';
-
 
         // Create error AI message and dispatch error action
         const aiMessage: Message = {
@@ -243,8 +232,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     },
     [currentModel]
   ); // Include currentModel dependency
-
-
 
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
   // Removed handleDebugAction as it's now handled internally by DebugPanel
@@ -376,9 +363,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       <div className='bottom-control-panels' role='complementary'>
         {/* Export/Recent Buttons */}
         <CollapsiblePanel
-          title="Export & Recent Messages"
+          title='Export & Recent Messages'
           defaultExpanded={false}
-          data-testid="export-recent-panel"
+          data-testid='export-recent-panel'
         >
           <div className='export-recent-container'>
             {hasMessages && (
@@ -406,9 +393,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
         {/* Debug Panel */}
         <CollapsiblePanel
-          title="Debug Information"
+          title='Debug Information'
           defaultExpanded={false}
-          data-testid="debug-panel"
+          data-testid='debug-panel'
         >
           <DebugPanel
             messageCount={messages.length}
@@ -419,9 +406,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
         {/* Status Information */}
         <CollapsiblePanel
-          title="Status Information"
+          title='Status Information'
           defaultExpanded={false}
-          data-testid="status-panel"
+          data-testid='status-panel'
         >
           <div className='message-count-display'>
             <span className='message-count-label'>Messages:</span>
@@ -445,9 +432,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
         {/* Performance Monitoring */}
         <CollapsiblePanel
-          title="Performance Metrics"
+          title='Performance Metrics'
           defaultExpanded={false}
-          data-testid="performance-panel"
+          data-testid='performance-panel'
         >
           <div className='performance-metrics-grid'>
             <div className='performance-metric'>

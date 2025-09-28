@@ -62,7 +62,7 @@ Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint
 <CLI Testing Task>
 Perform some testing of CLI version executing test_7_prompts_comprehensive.sh (uv run src/backend/main.py), fix any issues
 
-<Task GUI Testing Task>
+<GUI Testing Task>
 Perform some testing of GUI version using Playwright Tools and executing tests/playwright/test_prompts.md, fix any issues
 
 <Serena Update Memories Task>

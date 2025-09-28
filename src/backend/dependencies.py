@@ -21,10 +21,10 @@ def set_shared_resources(mcp_server: MCPServerStdio, session: SQLiteSession):
 
 def get_model_rate_limits(model: str) -> Dict[str, int]:
     """Get rate limits for specific GPT-5 models.
-    
+
     Args:
         model: The model name to get rate limits for
-        
+
     Returns:
         Dictionary containing TPM and RPM limits
     """
@@ -37,7 +37,7 @@ def get_model_rate_limits(model: str) -> Dict[str, int]:
 
 def get_mcp_server() -> Optional[MCPServerStdio]:
     """Get shared MCP server instance.
-    
+
     Returns:
         MCPServerStdio instance or None if not set
     """
@@ -46,7 +46,7 @@ def get_mcp_server() -> Optional[MCPServerStdio]:
 
 def get_session() -> Optional[SQLiteSession]:
     """Get shared session instance.
-    
+
     Returns:
         SQLiteSession instance or None if not set
     """

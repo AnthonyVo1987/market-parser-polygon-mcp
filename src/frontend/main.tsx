@@ -52,8 +52,7 @@ async function registerServiceWorker() {
         onNeedRefresh() {
           // Auto-update strategy - no user prompt needed
         },
-        onOfflineReady() {
-        },
+        onOfflineReady() {},
         onRegistered(_registration: ServiceWorkerRegistration) {
           // Service worker registered successfully
         },

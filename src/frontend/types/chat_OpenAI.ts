@@ -45,7 +45,6 @@ export interface ApiError {
   details?: Record<string, unknown>;
 }
 
-
 // Component prop interfaces for better type safety
 export interface ChatInputProps {
   onSendMessage: (message: string) => void | Promise<void>;

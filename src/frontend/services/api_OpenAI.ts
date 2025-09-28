@@ -48,7 +48,8 @@ export async function sendChatMessage(
       ...data,
       metadata: {
         ...data.metadata,
-        requestId: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        requestId:
+          Date.now().toString() + Math.random().toString(36).substr(2, 9),
         timestamp: new Date().toISOString(),
       },
     };
@@ -102,7 +103,9 @@ export async function fetchModels(): Promise<ModelListResponse> {
   }
 }
 
-export async function selectModel(modelId: AIModelId): Promise<ModelSelectionResponse> {
+export async function selectModel(
+  modelId: AIModelId
+): Promise<ModelSelectionResponse> {
   const endpoint = `${API_BASE_URL}${MODEL_API_ENDPOINTS.SELECT}`;
 
   try {

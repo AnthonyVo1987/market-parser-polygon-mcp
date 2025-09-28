@@ -22,7 +22,6 @@ export interface ChatInputProps {
   onChange?: (value: string) => void;
 }
 
-
 export interface DebugPanelProps {
   messageCount?: number;
   lastUpdate?: Date;

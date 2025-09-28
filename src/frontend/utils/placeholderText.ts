@@ -15,7 +15,6 @@ export const PLACEHOLDER_TEXTS = {
   CHAT_LOADING: 'AI is processing your request...',
   CHAT_ERROR: 'Please try again with a different question...',
 
-
   // Email input placeholders
   EMAIL_IDLE: 'Enter your email address',
   EMAIL_TYPING: 'Enter a valid email address...',
@@ -53,25 +52,25 @@ export function getPlaceholderText(
     case 'chat':
       baseText =
         PLACEHOLDER_TEXTS[
-        `CHAT_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+          `CHAT_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
       break;
     case 'email':
       baseText =
         PLACEHOLDER_TEXTS[
-        `EMAIL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+          `EMAIL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
       break;
     case 'url':
       baseText =
         PLACEHOLDER_TEXTS[
-        `URL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+          `URL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
       break;
     default:
       baseText =
         PLACEHOLDER_TEXTS[
-        `GENERAL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
+          `GENERAL_${userState.toUpperCase()}` as keyof typeof PLACEHOLDER_TEXTS
         ];
   }
 
@@ -100,7 +99,6 @@ export function getChatPlaceholder(
 ): string {
   return getPlaceholderText({ context: 'chat', userState });
 }
-
 
 export function getEmailPlaceholder(
   userState: PlaceholderTextOptions['userState'] = 'idle'

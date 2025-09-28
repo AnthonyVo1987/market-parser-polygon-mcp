@@ -221,14 +221,16 @@ const ChatMessage_OpenAI = memo(
 
     return (
       <div
-        className={`${formattedMessage.cssClass} ${isVisible ? 'message-visible' : 'message-hidden'
-          } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
+        className={`${formattedMessage.cssClass} ${
+          isVisible ? 'message-visible' : 'message-hidden'
+        } ${isLoaded ? 'message-loaded' : 'message-loading'}`}
         role='article'
         aria-label={formattedMessage.ariaLabel}
       >
         <div
-          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'} ${formattedMessage.isError ? 'message-bubble--error' : ''
-            }`}
+          className={`message-bubble ${isUser ? 'user-bubble' : 'ai-bubble'} ${
+            formattedMessage.isError ? 'message-bubble--error' : ''
+          }`}
         >
           <MessageCopyButton message={message} />
           <div className='message-content'>
@@ -298,7 +300,7 @@ const ChatMessage_OpenAI = memo(
       prevMessage.sender === nextMessage.sender &&
       prevMessage.timestamp.getTime() === nextMessage.timestamp.getTime() &&
       JSON.stringify(prevMessage.metadata) ===
-      JSON.stringify(nextMessage.metadata)
+        JSON.stringify(nextMessage.metadata)
     );
   }
 );
