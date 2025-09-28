@@ -22,14 +22,10 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 # Template Management Models
 
 
-
-
 # TemplateListResponse removed as part of direct prompt migration
 
 
 # GeneratePromptRequest removed as part of direct prompt migration
-
-
 
 
 # GeneratePromptResponse removed as part of direct prompt migration
@@ -50,8 +46,6 @@ class ChatMessage(BaseModel):
 
 
 # ChatAnalysisResponse removed as part of direct prompt migration
-
-
 
 
 # System Status Models
@@ -135,8 +129,6 @@ class TickerExtractionRequest(BaseModel):
 
     text: str = Field(..., min_length=1)
     chat_history: Optional[List[ChatMessage]] = None
-
-
 
 
 # Success Response Models

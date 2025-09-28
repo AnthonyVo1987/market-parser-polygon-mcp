@@ -212,10 +212,6 @@ def get_model_rate_limits(model: str) -> dict:
     return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}  # Default fallback
 
 
-
-
-
-
 # Global shared resources for FastAPI lifespan management
 shared_mcp_server = None
 shared_session = None
@@ -277,7 +273,6 @@ class AgentCache:
             key = sorted_items[i][0]
             del self.cache[key]
 
-
     def get_cache_stats(self) -> dict:
         """Get cache statistics."""
         total_requests = self.hit_count + self.miss_count
@@ -309,17 +304,10 @@ cli_agent_cache = None
 # MCP Server monitoring and health management
 
 
-
-
 # MCP Server resource management
 
 
-
-
 # Performance monitoring and metrics
-
-
-
 
 
 # Secure response cache for financial queries with automatic size and TTL management
@@ -496,7 +484,6 @@ def cache_response(cache_key: str, response: str):
         response_cache[cache_key] = response
         cache_stats["current_size"] = len(response_cache)
 
-
     except MemoryError:
         response_cache.clear()
         cache_stats["evictions"] += 1
@@ -550,7 +537,7 @@ def clear_all_cache() -> int:
         return 0
 
 
-  # Session recovery error handling removed
+# Session recovery error handling removed
 
 
 # Output functions
@@ -625,8 +612,6 @@ def print_error(error, error_type="Error"):
     console.print("------------------\n")
 
 
-
-
 # process_financial_query function removed as part of direct prompt migration
 
 
@@ -637,7 +622,6 @@ def print_error(error, error_type="Error"):
 async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
     """FastAPI lifespan management for shared MCP server and session instances."""
     global shared_mcp_server, shared_session, gui_agent_cache
-
 
     # Startup: Create shared instances
     try:
@@ -659,7 +643,9 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
         # Log MCP server health check
 
         # Initialization complete
-    except Exception:
+    except Exception as e:
+        # Log initialization error and re-raise
+        console.print(f"[bold red]Initialization failed: {e}[/bold red]")
         raise
 
     yield
@@ -729,7 +715,6 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     request_id = str(uuid.uuid4())[:8]
 
-
     # Enhanced input validation for empty and whitespace-only inputs
     if not request.message:
         raise HTTPException(
@@ -771,8 +756,6 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             # Get or create agent with caching using factory function
             analysis_agent = create_agent(shared_mcp_server, gui_agent_cache)
 
-
-
             # Run the financial analysis agent with the user message
             result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
 
@@ -812,7 +795,6 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
         # Log token usage if available in metadata
         # Token usage logging removed for performance
-
 
         return ChatResponse(response=response_text, metadata=response_metadata)
 
@@ -1064,8 +1046,6 @@ async def cli_async():
 
                         # Get or create agent with caching using factory function
                         analysis_agent = create_agent(server, cli_agent_cache)
-
-
 
                         # Run the financial analysis agent with the user message
                         result = await Runner.run(analysis_agent, user_input, session=cli_session)
