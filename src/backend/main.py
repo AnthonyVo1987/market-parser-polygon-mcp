@@ -14,7 +14,7 @@ import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from agents import (  # function_tool,  # Removed - no longer needed after removing save_analysis_report
     Agent,
@@ -22,7 +22,6 @@ from agents import (  # function_tool,  # Removed - no longer needed after remov
     SQLiteSession,
 )
 from agents.mcp import MCPServerStdio
-from cachetools import TTLCache
 from dotenv import load_dotenv
 
 # FastAPI imports
@@ -89,9 +88,6 @@ class Settings(BaseSettings):
     session_cleanup_interval_minutes: int = 5
     max_session_size: int = 1000
     enable_session_persistence: bool = True
-    enable_agent_caching: bool = True
-    agent_cache_ttl: int = 300
-    max_cache_size: int = 50
 
     # CORS configuration
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
@@ -157,9 +153,6 @@ class Settings(BaseSettings):
         self.session_cleanup_interval_minutes = agent_config["sessionCleanupIntervalMinutes"]
         self.max_session_size = agent_config["maxSessionSize"]
         self.enable_session_persistence = agent_config["enableSessionPersistence"]
-        self.enable_agent_caching = agent_config["enableAgentCaching"]
-        self.agent_cache_ttl = agent_config["agentCacheTTL"]
-        self.max_cache_size = agent_config["maxCacheSize"]
 
         # CORS configuration
         cors_origins_list = backend_config["security"]["cors"]["origins"]
@@ -217,88 +210,8 @@ shared_mcp_server = None
 shared_session = None
 
 
-# Agent caching for performance optimization
-class AgentCache:
-    """Agent cache for reusing agents with same parameters."""
-
-    def __init__(self, cache_ttl: int = 300, max_size: int = 50):
-        self.cache: Dict[str, Any] = {}
-        self.cache_ttl = cache_ttl  # 5 minutes default
-        self.max_size = max_size
-        self.hit_count = 0
-        self.miss_count = 0
-
-    def _generate_cache_key(self, model: str, instructions: str, mcp_servers: list) -> str:
-        """Generate a unique cache key for agent parameters."""
-        # Create a hash of the parameters
-        mcp_servers_str = str([str(server) for server in mcp_servers])
-        key_string = f"{model}:{instructions}:{mcp_servers_str}"
-        return str(hash(key_string))
-
-    def get_cached_agent(self, model: str, instructions: str, mcp_servers: list):
-        """Get cached agent if available and not expired."""
-        cache_key = self._generate_cache_key(model, instructions, mcp_servers)
-
-        if cache_key in self.cache:
-            cached_agent, timestamp = self.cache[cache_key]
-            if time.time() - timestamp < self.cache_ttl:
-                self.hit_count += 1
-                return cached_agent
-            # Remove expired entry
-            del self.cache[cache_key]
-
-        self.miss_count += 1
-        return None
-
-    def cache_agent(self, model: str, instructions: str, mcp_servers: list, agent):
-        """Cache an agent with its parameters."""
-        cache_key = self._generate_cache_key(model, instructions, mcp_servers)
-
-        # Clean up cache if it's getting too large
-        if len(self.cache) >= self.max_size:
-            self._cleanup_cache()
-
-        self.cache[cache_key] = (agent, time.time())
-
-    def _cleanup_cache(self):
-        """Remove oldest entries from cache."""
-        if not self.cache:
-            return
-
-        # Sort by timestamp and remove oldest 25%
-        sorted_items = sorted(self.cache.items(), key=lambda x: x[1][1])
-        items_to_remove = len(sorted_items) // 4  # Remove 25%
-
-        for i in range(items_to_remove):
-            key = sorted_items[i][0]
-            del self.cache[key]
-
-    def get_cache_stats(self) -> dict:
-        """Get cache statistics."""
-        total_requests = self.hit_count + self.miss_count
-        hit_rate = (self.hit_count / total_requests * 100) if total_requests > 0 else 0
-
-        return {
-            "cache_size": len(self.cache),
-            "max_size": self.max_size,
-            "hit_count": self.hit_count,
-            "miss_count": self.miss_count,
-            "hit_rate": round(hit_rate, 2),
-            "cache_ttl": self.cache_ttl,
-        }
-
-    def clear_cache(self):
-        """Clear all cached agents."""
-        cleared_count = len(self.cache)
-        self.cache.clear()
-        self.hit_count = 0
-        self.miss_count = 0
-        return cleared_count
 
 
-# Global agent cache instances - will be initialized in lifespan
-gui_agent_cache = None
-cli_agent_cache = None
 
 
 # MCP Server monitoring and health management
@@ -310,13 +223,6 @@ cli_agent_cache = None
 # Performance monitoring and metrics
 
 
-# Secure response cache for financial queries with automatic size and TTL management
-CACHE_TTL_SECONDS = 900  # 15 minutes in seconds
-CACHE_MAX_SIZE = 1000  # Maximum number of cached responses
-response_cache = TTLCache(maxsize=CACHE_MAX_SIZE, ttl=CACHE_TTL_SECONDS)
-
-# Cache statistics for monitoring
-cache_stats = {"hits": 0, "misses": 0, "evictions": 0, "current_size": 0}
 
 # Request tracking for logging removed
 
@@ -403,138 +309,34 @@ def create_polygon_mcp_server():
     )
 
 
-def create_agent(mcp_server, agent_cache=None):
-    """Create or retrieve a cached financial analysis agent.
+def create_agent(mcp_server):
+    """Create a financial analysis agent.
 
     Args:
         mcp_server (MCPServerStdio): The MCP server instance to use
-        agent_cache (AgentCache, optional): The agent cache instance
 
     Returns:
         Agent: The financial analysis agent
     """
-    analysis_agent = None
-
-    # Try to get cached agent if caching is enabled
-    if settings.enable_agent_caching and agent_cache:
-        instructions = get_enhanced_agent_instructions()
-        analysis_agent = agent_cache.get_cached_agent(
-            model=settings.available_models[0],
-            instructions=instructions,
-            mcp_servers=[mcp_server],
-        )
-
-    # Create new agent if not cached
-    if analysis_agent is None:
-        analysis_agent = Agent(
-            name="Financial Analysis Agent",
-            instructions=get_enhanced_agent_instructions(),
-            tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
-            mcp_servers=[mcp_server],
-            model=settings.available_models[0],
-        )
-
-        # Cache the new agent if caching is enabled
-        if settings.enable_agent_caching and agent_cache:
-            agent_cache.cache_agent(
-                model=settings.available_models[0],
-                instructions=get_enhanced_agent_instructions(),
-                mcp_servers=[mcp_server],
-                agent=analysis_agent,
-            )
+    analysis_agent = Agent(
+        name="Financial Analysis Agent",
+        instructions=get_enhanced_agent_instructions(),
+        tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
+        mcp_servers=[mcp_server],
+        model=settings.available_models[0],
+    )
 
     return analysis_agent
 
 
-def generate_cache_key(query: str, ticker: str = "") -> str:
-    """Generate a consistent cache key for financial queries.
-
-    Optimized implementation without crypto overhead as recommended by security review.
-    """
-    return f"{query.lower().strip()}:{ticker.upper().strip()}"
 
 
-def get_cached_response(cache_key: str) -> Optional[str]:
-    """Get cached response if still valid with proper error handling."""
-    global cache_stats
-
-    try:
-        if cache_key in response_cache:
-            cache_stats["hits"] += 1
-            cache_stats["current_size"] = len(response_cache)
-            return str(response_cache[cache_key])
-
-        cache_stats["misses"] += 1
-        cache_stats["current_size"] = len(response_cache)
-        return None
-    except Exception:  # pylint: disable=broad-exception-caught
-        cache_stats["misses"] += 1
-        return None
 
 
-def cache_response(cache_key: str, response: str):
-    """Cache a response with proper error handling and monitoring."""
-    global cache_stats
-
-    try:
-        # Check if this will cause an eviction
-        if len(response_cache) >= CACHE_MAX_SIZE and cache_key not in response_cache:
-            cache_stats["evictions"] += 1
-
-        response_cache[cache_key] = response
-        cache_stats["current_size"] = len(response_cache)
-
-    except MemoryError:
-        response_cache.clear()
-        cache_stats["evictions"] += 1
-        cache_stats["current_size"] = 0
-        # Try caching again after clearing
-        try:
-            response_cache[cache_key] = response
-            cache_stats["current_size"] = len(response_cache)
-        except Exception:
-            # Cache operation failed, continue without caching
-            cache_stats["errors"] = cache_stats.get("errors", 0) + 1
 
 
-def invalidate_cache_by_ticker(ticker: str) -> int:
-    """Invalidate all cache entries for a specific ticker."""
-    global cache_stats
-
-    try:
-        ticker_upper = ticker.upper().strip()
-        keys_to_remove = [key for key in response_cache.keys() if key.endswith(f":{ticker_upper}")]
-
-        for key in keys_to_remove:
-            try:
-                del response_cache[key]
-            except KeyError:
-                continue  # Already removed by TTL
-
-        cache_stats["current_size"] = len(response_cache)
-
-        # Cache invalidation logging removed for performance
-
-        return len(keys_to_remove)
-
-    except Exception:
-        return 0
 
 
-def clear_all_cache() -> int:
-    """Clear all cache entries and return count of cleared items."""
-    global cache_stats
-
-    try:
-        cleared_count = len(response_cache)
-        response_cache.clear()
-        cache_stats["current_size"] = 0
-        cache_stats["evictions"] += cleared_count
-
-        return cleared_count
-
-    except Exception:
-        return 0
 
 
 # Session recovery error handling removed
@@ -630,11 +432,6 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
         # Initialize session
         shared_session = SQLiteSession(settings.agent_session_name)
 
-        # Initialize agent cache for GUI
-        if settings.enable_agent_caching:
-            gui_agent_cache = AgentCache(
-                cache_ttl=settings.agent_cache_ttl, max_size=settings.max_cache_size
-            )
 
         # Initialize MCP server
         shared_mcp_server = create_polygon_mcp_server()
@@ -753,8 +550,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 shared_mcp_server = create_polygon_mcp_server()
                 await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
 
-            # Get or create agent with caching using factory function
-            analysis_agent = create_agent(shared_mcp_server, gui_agent_cache)
+            # Get or create agent using factory function
+            analysis_agent = create_agent(shared_mcp_server)
 
             # Run the financial analysis agent with the user message
             result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
@@ -952,57 +749,8 @@ async def select_model(model_id: AIModelId = Depends(valid_model_id)):
 # Add router to app
 app.include_router(model_router)
 
-# Cache Management API Endpoints (Security Review Priority 1 fixes)
 
 
-@app.get("/api/v1/cache/metrics")
-async def get_cache_metrics():
-    """Get cache performance metrics and statistics."""
-    global cache_stats
-
-    return {
-        "cache_stats": cache_stats,
-        "cache_config": {
-            "max_size": CACHE_MAX_SIZE,
-            "ttl_seconds": CACHE_TTL_SECONDS,
-        },
-        "status": "healthy",
-    }
-
-
-@app.delete("/api/v1/cache/ticker/{ticker}")
-async def invalidate_ticker_cache(ticker: str):
-    """Invalidate all cache entries for a specific ticker symbol."""
-    try:
-        cleared_count = invalidate_cache_by_ticker(ticker)
-        return {
-            "success": True,
-            "message": f"Invalidated {cleared_count} cache entries for ticker {ticker.upper()}",
-            "cleared_count": cleared_count,
-            "ticker": ticker.upper(),
-        }
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to invalidate cache: {str(e)}",
-        ) from e
-
-
-@app.delete("/api/v1/cache/all")
-async def clear_all_cache_endpoint():
-    """Clear all cached responses. Use with caution."""
-    try:
-        cleared_count = clear_all_cache()
-        return {
-            "success": True,
-            "message": f"Cleared all {cleared_count} cache entries",
-            "cleared_count": cleared_count,
-        }
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to clear cache: {str(e)}",
-        ) from e
 
 
 # Main CLI
@@ -1015,13 +763,6 @@ async def cli_async():
         cli_session = SQLiteSession(settings.cli_session_name)
         print(f"📊 CLI session '{settings.cli_session_name}' initialized for conversation memory")
 
-        # Initialize CLI agent cache
-        global cli_agent_cache
-        if settings.enable_agent_caching:
-            cli_agent_cache = AgentCache(
-                cache_ttl=settings.agent_cache_ttl, max_size=settings.max_cache_size
-            )
-            print("🚀 CLI agent cache initialized")
 
         server = create_polygon_mcp_server()
 
@@ -1044,8 +785,8 @@ async def cli_async():
                         # Start timing for performance metrics
                         start_time = time.perf_counter()
 
-                        # Get or create agent with caching using factory function
-                        analysis_agent = create_agent(server, cli_agent_cache)
+                        # Get or create agent using factory function
+                        analysis_agent = create_agent(server)
 
                         # Run the financial analysis agent with the user message
                         result = await Runner.run(analysis_agent, user_input, session=cli_session)
@@ -1114,13 +855,6 @@ async def cli_async():
                 # Session cleanup is handled automatically by SQLiteSession
                 print("📊 CLI session cleaned up")
 
-            if "cli_agent_cache" in globals() and cli_agent_cache:
-                cli_cache_stats = cli_agent_cache.get_cache_stats()
-                print(
-                    f"🚀 CLI agent cache stats: {cli_cache_stats['hit_rate']}% hit rate, {cli_cache_stats['cache_size']} entries"
-                )
-                cli_agent_cache.clear_cache()
-                print("🚀 CLI agent cache cleaned up")
         except Exception as cleanup_error:
             print(f"Warning: Cleanup failed: {cleanup_error}")
 

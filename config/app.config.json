@@ -29,9 +29,6 @@
       "sessionCleanupIntervalMinutes": 30,
       "maxSessionSize": 100,
       "enableSessionPersistence": true,
-      "enableAgentCaching": true,
-      "agentCacheTTL": 300,
-      "maxCacheSize": 50,
       "reportsDirectory": "test-reports"
     },
     "mcp": {

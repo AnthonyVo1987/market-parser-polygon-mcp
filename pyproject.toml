@@ -16,7 +16,6 @@ dependencies = [
   "openai>=1.99.0,<1.100.0",
   "fastapi",
   "uvicorn[standard]",
-  "cachetools>=6.2.0",
   "aiofiles>=24.1.0",
   "python-lsp-server[all]>=1.13.1",
   "openai-agents-mcp>=0.0.8",

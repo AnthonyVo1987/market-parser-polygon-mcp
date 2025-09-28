@@ -1,4 +1,52 @@
-# AI Agent Instructions
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working
+with code in this repository.
+
+## Project Overview
+
+Market Parser is a Python CLI and React web application for natural
+language financial queries using the Polygon.io MCP server and OpenAI
+GPT-5-nano via the OpenAI Agents SDK v0.2.9.
+
+## Last Completed Task Summary
+
+<!-- LAST_COMPLETED_TASK_START -->
+fix: implement 30-second timeout mechanism and fix startup scripts
+
+- **Script Fixes**: Fixed both start-app.sh and start-app-xterm.sh to exit cleanly
+- **Timeout Mechanism**: Added 30-second timeout fallback to prevent hanging
+- **WSL2 Compatibility**: Enhanced start-app-xterm.sh with tmux session support
+- **Environment Detection**: Automatic detection of X11 vs WSL2/headless environments
+- **AI Agent Friendly**: Scripts now exit within 10-15 seconds, preventing agent blocking
+- **Documentation Updates**: Updated CLAUDE.md and START_SCRIPT_README.md to reflect working status
+- **Background Process Support**: start-app.sh uses background processes in WSL2 mode
+- **Session Management**: start-app-xterm.sh uses tmux sessions for better WSL2 experience
+- **Logging**: Added proper log file management for background processes
+- **Error Handling**: Improved error messages and troubleshooting guidance
+
+Both startup scripts now work reliably in all environments with proper exit mechanisms.
+<!-- LAST_COMPLETED_TASK_END -->
+
+## STANDARDIZED TEST PROMPTS
+
+**CRITICAL:** All testing MUST use these standardized prompts to ensure
+consistent, quick responses (30-60 seconds) and avoid false failures from
+complex prompts.
+
+### Quick Response Test Prompts (Use These Only)
+
+**MANDATORY RULES:**
+
+- ✅ Use ONLY these prompts for testing
+- ✅ Copy prompts EXACTLY as written
+- ✅ Expected response time: 30-60 seconds
+- ❌ DO NOT create custom prompts
+- ❌ DO NOT modify these prompts
+- ❌ DO NOT use complex, open-ended queries
+
+**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test
+prompts documentation, see `tests/playwright/test_prompts.md`
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop
 
@@ -13,43 +61,13 @@ TOOL USAGE REQUIREMENTS:
 - Use tools in ANY ORDER as needed for the specific task
 - Use the SAME tool MULTIPLE TIMES if needed
 - NEVER treat tool lists as a rigid sequence
-- ALWAYS use tools when they would be helpful, even if you've used them before
+- ALWAYS use tools when they would be helpful, even if you've used them
+  before
 - Use tools for investigation, analysis, verification, and implementation
   at every step
 
-MANDATORY TOOL USAGE PATTERNS:
-
-1. START with Sequential-Thinking for task analysis, Investigation,
-   Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-2. Use Context7 for research and best up to date Implementation Practices
-   & Library documentation lookups
-3. Use Serena Tools for code analysis, symbol manipulation, pattern search
-   with context, and memory management for complex financial algorithm
-   development and refactoring; Use standard Read/Write/Edit for simple file
-   content modifications
-4. Use Filesystem Tools for Batch File operations (3+), file discovery,
-   configuration management, metadata analysis, project organization, project
-   structure analysis, and documentation generation for comprehensive project
-   management; Use standard Read/Write/Edit for single-file content
-   modifications
-5. Use Standard Read/Write/Edit for single-file content modifications,
-   simple edits, and direct file operations; use Serena/Filesystem for
-   complex analysis, batch operations, and project management
-6. Use Playwright Tools for Testing with Browser automation for React GUI
-   & App Validation
 7. 🔴 REPEAT any tool as needed throughout the process
 8. 🔴 NEVER stop using tools - continue using them until task completion
-
-TOOL OVERLAP RESOLUTION:
-
-- Filesystem Tools: Use for 3+ file operations, batch processing, project
-  management, metadata analysis, comprehensive project operations
-- Standard Read/Write/Edit: Use for single-file modifications, simple
-  edits, direct file operations
-- Serena Tools: Use for complex code analysis, symbol manipulation,
-  pattern search with context
-- When in doubt: Use Filesystem for batch/complex operations, Standard
-  for simple single-file operations
 
 VIOLATION PENALTIES:
 
@@ -72,45 +90,6 @@ REMEMBER: The tool list is your toolkit - use every tool as often as
 needed, in any order, throughout the entire task execution. Choose the
 right tool for the right operation
 
-## STANDARDIZED TEST PROMPTS
-
-**CRITICAL:** All testing MUST use these standardized prompts to ensure
-consistent, quick responses (30-60 seconds) and avoid false failures from
-complex prompts.
-
-### Quick Response Test Prompts (Use These Only)
-
-1. **"Quick Response Needed with minimal tool calls: What is the current
-   Market Status?"**
-2. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Single Stock Snapshot NVDA"**
-3. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Full Market Snapshot: SPY, QQQ, IWM"**
-4. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, what was the closing price of GME today?"**
-5. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, how is SOUN performance doing this week?"**
-6. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Gainers"**
-7. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Losers"**
-8. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Support & Resistance Levels NVDA"**
-9. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Technical Analysis SPY"**
-
-**MANDATORY RULES:**
-
-- ✅ Use ONLY these prompts for testing
-- ✅ Copy prompts EXACTLY as written
-- ✅ Expected response time: 30-60 seconds
-- ❌ DO NOT create custom prompts
-- ❌ DO NOT modify these prompts
-- ❌ DO NOT use complex, open-ended queries
-
-**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts
-documentation, see `tests/playwright/test_prompts.md`
-
 ## Quick Start
 
 **One-Click Application Startup (Recommended):**
@@ -122,22 +101,42 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
 ./start-app-xterm.sh
 
-# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
-# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
+# Option 2: Main startup script (NOW WORKING - FIXED)
+./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
+```
+
+### CLI Interface
+
+```bash
+uv run src/backend/main.py
+
+> Tesla stock analysis
+KEY TAKEAWAYS
+• TSLA showing bullish momentum...
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
 
-### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
+### start-app.sh (NOW WORKING - FIXED)
 
-- **Status**: ❌ BROKEN - Script gets stuck and blocks execution
-- **Issue**: Cannot proceed to sleep 15 or Playwright testing
-- **Action**: Keep script file but do not use until fixed
-- **Alternative**: Use start-app-xterm.sh instead
+- **Status**: ✅ WORKING - Script now exits cleanly with timeout mechanism
+- **Features**: 30-second timeout fallback to prevent hanging
+- **Environment Support**: Works in both X11 and WSL2/headless environments
+- **Background Mode**: Uses background processes in WSL2, terminal windows in X11
+- **Logging**: Writes server logs to backend.log and frontend.log in WSL2 mode
 
 ## What the Scripts Do
+
+### ⏰ Timeout Mechanism
+
+Both scripts now include a **30-second timeout fallback** to prevent hanging:
+
+- **Normal Operation**: Scripts typically complete in 10-15 seconds
+- **Safety Net**: 30-second timeout ensures scripts never hang indefinitely
+- **AI Agent Friendly**: Prevents AI agents from getting stuck waiting for script completion
+- **Graceful Exit**: Scripts exit cleanly after server verification or timeout
 
 ### 🔄 Server Cleanup
 
@@ -164,3 +163,116 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 - **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
 
 **Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+
+## Features
+
+### ⚡ High-Performance UI
+
+- **Lightning Fast Loading**: 85%+ improvement in Core Web Vitals
+- **Optimized Performance**: 256ms First Contentful Paint (FCP)
+- **Smooth Interactions**: All UI interactions are instant and responsive
+- **Memory Efficient**: Optimized memory usage with 13.8MB heap size
+- **Accessibility First**: Full WCAG 2.1 AA compliance
+
+### Natural Language Financial Queries
+
+Ask questions like:
+
+- `Tesla stock price analysis`
+- `AAPL volume trends this week`
+- `Show me MSFT support and resistance levels`
+
+### Multiple Interfaces
+
+- **React Web App** - Modern responsive interface with real-time chat
+- **Enhanced CLI** - Terminal interface with rich formatting
+- **API Endpoints** - RESTful API for integration
+
+## Example Usage
+
+### Web Interface
+
+1. Open <http://127.0.0.1:3000>
+2. Type your financial query
+3. Get instant structured responses with sentiment analysis
+
+## Architecture
+
+- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
+- **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
+- **Testing**: Playwright E2E test suite
+- **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
+
+## Development
+
+### Available Commands
+
+```bash
+# Application startup
+npm run start:app          # One-click startup
+npm run frontend:dev       # Frontend development
+npm run build             # Production build
+
+# Testing with Playwright MCP Tools only - see `/tests/playwright/mcp_test_script_basic.md`
+
+# Code quality
+npm run lint              # All linting
+npm run type-check        # TypeScript validation
+```
+
+### Project Structure
+
+```text
+src/
+├── backend/              # FastAPI backend
+│   ├── main.py          # Main application
+│   ├── api_models.py    # API schemas
+│   └── prompt_templates.py # Analysis templates
+├── frontend/            # React frontend
+│   ├── components/      # React components
+│   ├── hooks/          # Custom hooks
+│   └── config/         # Configuration loader
+config/                  # Centralized configuration
+│   └── app.config.json # Non-sensitive settings
+tests/playwright/        # E2E test suite
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Backend not starting:**
+
+```bash
+# Check .env file has API keys
+cat .env | grep API_KEY
+
+# Verify dependencies
+uv install
+```
+
+**Frontend connection errors:**
+
+```bash
+# Verify backend is running
+curl http://127.0.0.1:8000/health
+
+# Check ports are available
+netstat -tlnp | grep :8000
+```
+
+**API key issues:**
+
+- Ensure both `POLYGON_API_KEY` and `OPENAI_API_KEY` are set in `.env`
+- Verify API keys are valid and have sufficient credits
+
+## Disclaimer
+
+**Warning:** This application uses AI and large language models.
+Outputs may contain inaccuracies and should not be treated as financial
+advice. Always verify information independently before making financial
+decisions. Use for informational purposes only.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
