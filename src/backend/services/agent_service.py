@@ -1,7 +1,8 @@
 """Agent management for the Market Parser application."""
 
-from agents import Agent
+from agents import Agent, ModelSettings
 from agents.mcp import MCPServerStdio
+from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..utils.datetime_utils import get_current_datetime_context
@@ -32,14 +33,31 @@ INSTRUCTIONS:
 7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations"""
 
 
+def get_optimized_model_settings():
+    """Get optimized ModelSettings for GPT-5 financial analysis.
+
+    Returns:
+        ModelSettings: Optimized configuration for GPT-5 models
+    """
+    return ModelSettings(
+        reasoning=Reasoning(effort="low"),
+        verbosity="low",
+        max_tokens=128000,
+        extra_args={
+            "service_tier": "flex",
+            "user": "financial_analysis_agent"
+        }
+    )
+
+
 def create_agent(mcp_server: MCPServerStdio):
-    """Create a financial analysis agent.
+    """Create a financial analysis agent with optimized GPT-5 configuration.
 
     Args:
         mcp_server (MCPServerStdio): The MCP server instance to use
 
     Returns:
-        Agent: The financial analysis agent
+        Agent: The financial analysis agent with optimized settings
     """
     analysis_agent = Agent(
         name="Financial Analysis Agent",
@@ -47,6 +65,7 @@ def create_agent(mcp_server: MCPServerStdio):
         tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
         mcp_servers=[mcp_server],
         model=settings.available_models[0],
+        model_settings=get_optimized_model_settings(),
     )
 
     return analysis_agent

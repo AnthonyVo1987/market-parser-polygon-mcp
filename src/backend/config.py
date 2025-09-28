@@ -36,19 +36,9 @@ class Settings(BaseSettings):
 
     # AI configuration
     available_models: List[str] = ["gpt-5-mini"]
-    max_context_length: int = 128000
-    temperature: float = 0.1
+    max_context_length: int = 400000
+    temperature: float = 0.2
     ai_pricing: dict = {}
-
-    # Security configuration
-    enable_rate_limiting: bool = True
-    rate_limit_rpm: int = 60
-
-    # GPT-5 model-specific rate limiting
-    gpt5_nano_tpm: int = 10000
-    gpt5_nano_rpm: int = 100
-    gpt5_mini_tpm: int = 20000
-    gpt5_mini_rpm: int = 200
 
     # Logging configuration
     log_mode: str = "info"
@@ -107,17 +97,8 @@ class Settings(BaseSettings):
         self.temperature = ai_config["temperature"]
         self.ai_pricing = ai_config["pricing"]
 
-        # Security configuration
-        security_config = backend_config["security"]
-        self.enable_rate_limiting = security_config["enableRateLimiting"]
-        self.rate_limit_rpm = security_config["rateLimitRPM"]
-
-        # GPT-5 model-specific rate limiting
-        rate_limiting = security_config["rateLimiting"]
-        self.gpt5_nano_tpm = rate_limiting["gpt5Nano"]["tpm"]
-        self.gpt5_nano_rpm = rate_limiting["gpt5Nano"]["rpm"]
-        self.gpt5_mini_tpm = rate_limiting["gpt5Mini"]["tpm"]
-        self.gpt5_mini_rpm = rate_limiting["gpt5Mini"]["rpm"]
+        # Security configuration (rate limiting removed for maximum performance)
+        # Only CORS configuration remains
 
         # Logging configuration
         self.log_mode = backend_config["logging"]["mode"]

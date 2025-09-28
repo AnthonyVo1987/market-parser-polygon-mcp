@@ -9,7 +9,7 @@
         "gpt-5-nano",
         "gpt-5-mini"
       ],
-      "maxContextLength": 128000,
+      "maxContextLength": 400000,
       "temperature": 0.2,
       "pricing": {
         "gpt-5-nano": {
@@ -36,18 +36,6 @@
       "timeoutSeconds": 120
     },
     "security": {
-      "enableRateLimiting": true,
-      "rateLimitRPM": 500,
-      "rateLimiting": {
-        "gpt5Nano": {
-          "tpm": 200000,
-          "rpm": 500
-        },
-        "gpt5Mini": {
-          "tpm": 500000,
-          "rpm": 500
-        }
-      },
       "cors": {
         "origins": [
           "http://127.0.0.1:3000",

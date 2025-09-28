@@ -12,8 +12,6 @@ export interface AppConfig {
     agent: { sessionName: string; reportsDirectory: string };
     mcp: { version: string; timeoutSeconds: number };
     security: {
-      enableRateLimiting: boolean;
-      rateLimitRPM: number;
       cors: { origins: string[] };
     };
     logging: { mode: string };
