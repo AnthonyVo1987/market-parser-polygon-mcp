@@ -199,16 +199,8 @@ def get_model_rate_limits(model: str) -> dict:
     return {"tpm": settings.gpt5_nano_tpm, "rpm": settings.gpt5_nano_rpm}  # Default fallback
 
 
-def validate_request_size(request_tokens: int, model: str) -> bool:
-    """Validate request size against model-specific TPM limits."""
-    limits = get_model_rate_limits(model)
-    return bool(request_tokens <= limits["tpm"])
 
 
-def get_model_tpm_limit(model: str) -> int:
-    """Get TPM limit for specific model."""
-    limits = get_model_rate_limits(model)
-    return int(limits["tpm"])
 
 
 # Global shared resources for FastAPI lifespan management
@@ -302,231 +294,23 @@ cli_agent_cache = None
 
 
 # MCP Server monitoring and health management
-class MCPServerMonitor:
-    """Monitor MCP server health and performance."""
-
-    def __init__(self):
-        self.health_checks = []
-        self.error_count = 0
-        self.last_health_check = None
-        self.performance_metrics = []
-
-    def log_health_check(self, server_name: str, is_healthy: bool, response_time: float = 0.0):
-        """Log MCP server health check results."""
-        self.health_checks.append(
-            {
-                "server_name": server_name,
-                "is_healthy": is_healthy,
-                "response_time": response_time,
-                "timestamp": time.time(),
-            }
-        )
-        self.last_health_check = time.time()
-
-        if not is_healthy:
-            self.error_count += 1
-
-    def log_performance_metric(
-        self, server_name: str, operation: str, duration: float, success: bool
-    ):
-        """Log MCP server performance metrics."""
-        self.performance_metrics.append(
-            {
-                "server_name": server_name,
-                "operation": operation,
-                "duration": duration,
-                "success": success,
-                "timestamp": time.time(),
-            }
-        )
-
-        if not success:
-            self.error_count += 1
-
-    def get_health_summary(self) -> dict:
-        """Get MCP server health summary."""
-        if not self.health_checks:
-            return {"status": "unknown", "error_count": self.error_count}
-
-        recent_checks = [
-            check for check in self.health_checks if time.time() - check["timestamp"] < 3600
-        ]  # Last hour
-
-        if not recent_checks:
-            return {"status": "unknown", "error_count": self.error_count}
-
-        healthy_count = sum(1 for check in recent_checks if check["is_healthy"])
-        total_count = len(recent_checks)
-        health_rate = (healthy_count / total_count) * 100
-
-        avg_response_time = sum(check["response_time"] for check in recent_checks) / total_count
-
-        return {
-            "status": (
-                "healthy" if health_rate > 90 else "degraded" if health_rate > 70 else "unhealthy"
-            ),
-            "health_rate": round(health_rate, 2),
-            "avg_response_time": round(avg_response_time, 3),
-            "error_count": self.error_count,
-            "total_checks": total_count,
-        }
-
-    def get_performance_summary(self) -> dict:
-        """Get MCP server performance summary."""
-        if not self.performance_metrics:
-            return {}
-
-        recent_metrics = [
-            metric
-            for metric in self.performance_metrics
-            if time.time() - metric["timestamp"] < 3600
-        ]  # Last hour
-
-        if not recent_metrics:
-            return {}
-
-        successful_ops = [m for m in recent_metrics if m["success"]]
-        avg_duration = (
-            sum(m["duration"] for m in successful_ops) / len(successful_ops)
-            if successful_ops
-            else 0
-        )
-        success_rate = (len(successful_ops) / len(recent_metrics)) * 100
-
-        return {
-            "avg_operation_duration": round(avg_duration, 3),
-            "success_rate": round(success_rate, 2),
-            "total_operations": len(recent_metrics),
-            "failed_operations": len(recent_metrics) - len(successful_ops),
-        }
 
 
-# Global MCP server monitor
-mcp_server_monitor = MCPServerMonitor()
+# Global MCP server monitor removed
 
 
 # MCP Server resource management
-class MCPServerResourceManager:
-    """Manage MCP server resources and memory."""
-
-    def __init__(self):
-        self.active_connections = 0
-        self.max_connections = 10
-        self.connection_pool = []
-        self.memory_usage = 0
-
-    def get_connection_stats(self) -> dict:
-        """Get connection pool statistics."""
-        return {
-            "active_connections": self.active_connections,
-            "max_connections": self.max_connections,
-            "pool_size": len(self.connection_pool),
-            "memory_usage_mb": round(self.memory_usage / 1024 / 1024, 2),
-        }
-
-    def check_resource_limits(self) -> bool:
-        """Check if we're within resource limits."""
-        return self.active_connections < self.max_connections
-
-    def log_memory_usage(self, usage_bytes: int):
-        """Log memory usage for monitoring."""
-        self.memory_usage = usage_bytes
-        if usage_bytes > 100 * 1024 * 1024:  # 100MB threshold
-            pass  # Memory usage monitoring removed
-
-    def cleanup_resources(self):
-        """Clean up MCP server resources."""
-        self.connection_pool.clear()
-        self.active_connections = 0
-        self.memory_usage = 0
 
 
-# Global MCP server resource manager
-mcp_resource_manager = MCPServerResourceManager()
+# Global MCP server resource manager removed
 
 
 # Performance monitoring and metrics
-class PerformanceMetrics:
-    """Performance metrics for monitoring system health."""
-
-    def __init__(
-        self,
-        agent_creation_time: float = 0.0,
-        session_access_time: float = 0.0,
-        mcp_server_response_time: float = 0.0,
-        cache_hit_rate: float = 0.0,
-        memory_usage: float = 0.0,
-        timestamp: Optional[float] = None,
-    ):
-        self.agent_creation_time = agent_creation_time
-        self.session_access_time = session_access_time
-        self.mcp_server_response_time = mcp_server_response_time
-        self.cache_hit_rate = cache_hit_rate
-        self.memory_usage = memory_usage
-        self.timestamp = timestamp or time.time()
-
-
-class PerformanceMonitor:
-    """Monitor system performance and health."""
-
-    def __init__(self):
-        self.metrics: List[PerformanceMetrics] = []
-        self.error_count = 0
-        self.last_cleanup = time.time()
 
 
 
 
-
-
-
-    def get_performance_summary(self) -> Dict[str, Any]:
-        """Get comprehensive performance summary."""
-        if not self.metrics:
-            return {"status": "no_data", "error_count": self.error_count}
-
-        recent_metrics = [m for m in self.metrics if time.time() - m.timestamp < 3600]  # Last hour
-
-        if not recent_metrics:
-            return {"status": "no_recent_data", "error_count": self.error_count}
-
-        return {
-            "avg_agent_creation_time": round(
-                sum(m.agent_creation_time for m in recent_metrics) / len(recent_metrics), 3
-            ),
-            "avg_session_access_time": round(
-                sum(m.session_access_time for m in recent_metrics) / len(recent_metrics), 3
-            ),
-            "avg_mcp_server_response_time": round(
-                sum(m.mcp_server_response_time for m in recent_metrics) / len(recent_metrics), 3
-            ),
-            "avg_cache_hit_rate": round(
-                sum(m.cache_hit_rate for m in recent_metrics) / len(recent_metrics), 2
-            ),
-            "avg_memory_usage": round(
-                sum(m.memory_usage for m in recent_metrics) / len(recent_metrics), 2
-            ),
-            "total_requests": len(recent_metrics),
-            "error_count": self.error_count,
-            "status": (
-                "healthy"
-                if self.error_count < 5
-                else "degraded" if self.error_count < 20 else "unhealthy"
-            ),
-        }
-
-    def cleanup_old_metrics(self):
-        """Clean up old metrics to prevent memory growth."""
-        current_time = time.time()
-        if current_time - self.last_cleanup > 3600:  # Clean up every hour
-            self.metrics = [
-                m for m in self.metrics if current_time - m.timestamp < 86400
-            ]  # Keep last 24 hours
-            self.last_cleanup = current_time
-
-
-# Global performance monitor
-performance_monitor = PerformanceMonitor()
+# Global performance monitor removed
 
 # Secure response cache for financial queries with automatic size and TTL management
 CACHE_TTL_SECONDS = 900  # 15 minutes in seconds
@@ -536,16 +320,10 @@ response_cache = TTLCache(maxsize=CACHE_MAX_SIZE, ttl=CACHE_TTL_SECONDS)
 # Cache statistics for monitoring
 cache_stats = {"hits": 0, "misses": 0, "evictions": 0, "current_size": 0}
 
-# Request tracking for logging
-active_requests: dict[str, dict] = {}
+# Request tracking for logging removed
 
 
 # Models
-class FinanceOutput(BaseModel):
-    """Structured result from the guardrail check."""
-
-    is_about_finance: bool
-    reasoning: str
 
 
 # Legacy models for backward compatibility
@@ -690,12 +468,11 @@ def invalidate_cache_by_ticker(ticker: str) -> int:
             try:
                 del response_cache[key]
             except KeyError:
-                pass  # Already removed by TTL
+                continue  # Already removed by TTL
 
         cache_stats["current_size"] = len(response_cache)
 
-        if keys_to_remove:
-            pass  # Cache invalidation logging removed
+        # Cache invalidation logging removed for performance
 
         return len(keys_to_remove)
 
@@ -719,40 +496,7 @@ def clear_all_cache() -> int:
         return 0
 
 
-def cleanup_session_periodically():
-    """Clean up old session data to prevent memory leaks."""
-    global shared_session
-
-    try:
-        if shared_session is None:
-            return
-
-        if hasattr(shared_session, "_session_data"):
-            # Keep only last 100 conversation turns to prevent memory growth
-            session_data = getattr(shared_session, "_session_data", {})
-            if isinstance(session_data, dict) and len(session_data) > 100:
-                # Keep only the most recent entries
-                sorted_keys = sorted(session_data.keys())
-                keys_to_remove = sorted_keys[:-50]  # Keep last 50 entries
-
-                for key in keys_to_remove:
-                    del session_data[key]
-
-
-        # Session health monitoring
-        if hasattr(shared_session, "_session_data"):
-            session_size = len(getattr(shared_session, "_session_data", {}))
-
-            # Session error recovery - reset if corrupted
-            if session_size > 1000:  # Unusually large session
-                shared_session = SQLiteSession(settings.agent_session_name)
-
-    except Exception:
-        # Session error recovery - recreate session on error
-        try:
-            shared_session = SQLiteSession(settings.agent_session_name)
-        except Exception:
-            pass  # Session recovery error handling removed
+  # Session recovery error handling removed
 
 
 # Output functions
@@ -827,17 +571,6 @@ def print_error(error, error_type="Error"):
     console.print("------------------\n")
 
 
-def print_guardrail_error(exception):
-    """Explain why a prompt was blocked by the finance guardrail."""
-    console.print("\n[bold yellow]⚠ Guardrail Triggered[/bold yellow]")
-    console.print("[yellow]This query is not related to finance.[/yellow]")
-    if hasattr(exception, "output_info") and exception.output_info:
-        console.print(f"[dim]Reasoning: {exception.output_info.reasoning}[/dim]")
-    console.print(
-        "[dim]Please ask about stock prices, market data, financial analysis, "
-        "economic indicators, or company financials.[/dim]"
-    )
-    console.print("------------------\n")
 
 
 # process_financial_query function removed as part of direct prompt migration
@@ -888,6 +621,7 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
 
         # Resources cleaned up
     except Exception:
+        # Ignore cleanup errors during shutdown
         pass
 
 
@@ -1044,8 +778,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         # Log performance metrics for baseline measurement and monitoring
 
         # Log token usage if available in metadata
-        if token_count:
-            pass  # Token usage logging removed
+        # Token usage logging removed for performance
 
 
         return ChatResponse(response=response_text, metadata=response_metadata)
@@ -1059,15 +792,12 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
 
 # ====== PROMPT TEMPLATES API ENDPOINTS REMOVED ======
-# Removed as part of direct prompt migration
 
 
 # ====== BUTTON ANALYSIS ENDPOINTS REMOVED ======
-# Removed as part of direct prompt migration
 
 
 # ====== ENHANCED CHAT ANALYSIS ENDPOINT REMOVED ======
-# Removed as part of direct prompt migration
 
 
 # ====== SYSTEM STATUS ENDPOINTS ======
@@ -1092,7 +822,6 @@ async def get_system_status():
 
 
 # ====== LEGACY COMPATIBILITY ENDPOINTS REMOVED ======
-# Removed as part of direct prompt migration
 
 
 # ====== HEALTH CHECK ENDPOINTS ======

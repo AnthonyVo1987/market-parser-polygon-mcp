@@ -61,16 +61,16 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
             Component,
             displayName,
             hookName,
-            prevProps,
-            prevState,
-            prevHookResult,
-            nextProps,
-            nextState,
-            nextHookResult,
-            reason,
+            prevProps: _prevProps,
+            prevState: _prevState,
+            prevHookResult: _prevHookResult,
+            nextProps: _nextProps,
+            nextState: _nextState,
+            nextHookResult: _nextHookResult,
+            reason: _reason,
           } = options;
           // Custom notification for excessive re-renders using minimal logger
-          const componentName =
+          const _componentName =
             displayName || hookName || Component?.name || 'Unknown';
         },
       });

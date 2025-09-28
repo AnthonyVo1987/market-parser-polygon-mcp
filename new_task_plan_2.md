@@ -47,17 +47,6 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 2. Based on the Investigation, Research, & Analysis from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to
+## Task 1. Use Mandatory Toolkit to THINK LONG and Perform a focused, incremental, comprehensive, systematic, deep dive codebase audit and review to investigate and analyze any potential code to refactor, clean up, and\or consolidate
 
-1. Implement ALL items from High, Medium, and Low
-2. Comprehensive Documentation Update, Cleanup, removal etc to reflect the latest udpates to app to remove outdated info
-
-## Task 3. Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
-
-## Task 4. Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
-
-## Task 5. Perform some quick testing of CLI version (uv run src/backend/main.py), fix any issues
-
-## Task 6. Perform some quick testing of GUI version using Playwright Tools, fix any issues
-
-## Task 7. Use Serena to update memories
+## Task 2. Based on the analysis, provide a proposal and scope for user to review and approve any items to fix with Categorized them by Low, Med, High Risk Changes first, and then after it is categorized by risk level, add on a supporting metric to categorize with Low, Med, High ROI Impact if we chose to implement.  Provide some recommendations what should be tackled first and\or prioritized first, where the best recommendations would be Low(er) Risk AND High(er) ROI, and high risk and low ROi would be the least optimal. FIRST - DO NOT CREATE NEW DOCS YET so user can review

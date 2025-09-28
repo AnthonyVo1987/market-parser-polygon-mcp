@@ -1,198 +1,282 @@
-# TODO Task Plan: Complete Legacy Logging Removal
+# 🔴 CRITICAL: MANDATORY TOOL USAGE Implementation Plan - Market Parser Polygon MCP Code Cleanup
 
-## Overview
+## Executive Summary
+This implementation plan addresses the comprehensive code audit findings from the market-parser-polygon-mcp project. The codebase has undergone a "direct prompt migration" that removed the template system but left behind substantial dead code, unused functions, and redundant implementations.
 
-This document provides a granular, step-by-step implementation plan for completely removing all legacy logging code from the Market Parser Polygon MCP application. The goal is to rely solely on default console logs and dev server logs for performance optimization.
+## Estimated Impact
+- **Lines of Code Reduction**: ~500-800 lines
+- **File Reduction**: 2-3 files can be completely removed
+- **Maintainability**: Significant improvement
+- **Performance**: Minor improvement from reduced imports
+- **Complexity**: Major reduction in unused complexity
 
-## Investigation Summary
+---
 
-Based on comprehensive analysis, the following legacy logging components were identified:
+## 🚨 HIGH PRIORITY TASKS (Immediate Cleanup)
 
-### Backend Logging
+### Task 1: Remove Completely Dead Files
+- [ ] **1.1** Delete `src/backend/prompt_templates.py` (111 lines of disabled code)
+- [ ] **1.2** Delete `src/backend/utils/__init__.py` (empty file)
+- [ ] **1.3** Verify no imports reference these files
+- [ ] **1.4** Update any documentation that references these files
 
-- **File**: `src/backend/utils/logger.py` (85 lines)
-- **Functions**: `get_logger`, `log_api_request`, `log_api_response`, `log_mcp_operation`, `log_agent_processing`
-- **Usage**: Extensively used in `src/backend/main.py` (427+ references)
+### Task 2: Remove Dead Functions from main.py
+- [ ] **2.1** Remove `validate_request_size()` function (lines 202-205)
+- [ ] **2.2** Remove `get_model_tpm_limit()` function (lines 208-211)
+- [ ] **2.3** Remove `cleanup_session_periodically()` function (lines 722-756)
+- [ ] **2.4** Remove `print_guardrail_error()` function (lines 830-841) - only exported, never used
+- [ ] **2.5** Verify no references to these functions exist
 
-### Frontend Logging
+### Task 3: Remove Dead Variables and Classes
+- [ ] **3.1** Remove `active_requests` global variable (line 540)
+- [ ] **3.2** Remove `FinanceOutput` class (lines 544-548) - only exported, never used
+- [ ] **3.3** Remove `PromptTemplateInfo` class from api_models.py (lines 25-31)
+- [ ] **3.4** Remove `FollowUpQuestionsResponse` class from api_models.py (lines 71-77) - only exported
+- [ ] **3.5** Remove `TickerContextInfo` class from api_models.py (lines 40-48) - only used in one other model
 
-- **File**: `src/frontend/utils/logger.ts` (585 lines)
-- **Features**: Complex logging system with multiple modes, performance tracking, React integration
-- **Usage**: Used in `ChatInterface_OpenAI.tsx`, `api_OpenAI.ts`, `main.tsx`, `wdyr.ts`
+### Task 4: Remove Over-engineered Monitoring Classes
+- [ ] **4.1** Remove `MCPServerMonitor` class (lines 305-402) - methods never called
+- [ ] **4.2** Remove `MCPServerResourceManager` class (lines 409-445) - methods never called
+- [ ] **4.3** Remove `PerformanceMonitor` class (lines 469-529) - methods never called
+- [ ] **4.4** Remove associated global instances: `mcp_server_monitor`, `mcp_resource_manager`, `performance_monitor`
+- [ ] **4.5** Remove `PerformanceMetrics` class (lines 449-467) - only used by removed classes
 
-### Frontend Debug Hooks
+### Task 5: Clean Up Removed Code Comments and Empty Pass Statements
+- [ ] **5.1** Remove all "Removed as part of direct prompt migration" comment blocks
+- [ ] **5.2** Remove empty pass statements and replace with proper error handling:
+  - Line 435: `pass  # Memory usage monitoring removed`
+  - Line 678: `pass  # Cache error handling removed`
+  - Line 698: `pass  # Cache invalidation logging removed`
+  - Line 755: `pass  # Session recovery error handling removed`
+  - Line 891: `pass` in exception handler
+  - Line 1048: `pass  # Token usage logging removed`
+- [ ] **5.3** Remove GPT_4O and GPT_4O_MINI model references
+- [ ] **5.4** Clean up multiple API endpoint removal comments
 
-- **File**: `src/frontend/hooks/useDebugLog.ts` (386 lines)
-- **Hooks**: `useComponentLogger`, `useStateLogger`, `useEffectLogger`, `useInteractionLogger`, etc.
-- **Usage**: Used in `ChatInterface_OpenAI.tsx`
+---
 
-## Implementation Plan
+## 🔄 MEDIUM PRIORITY TASKS (Refactoring)
 
-### Phase 1: Backend Logging Removal
+### Task 6: Consolidate Agent Creation Logic
+- [ ] **6.1** Create shared `create_analysis_agent()` function
+- [ ] **6.2** Extract common agent creation code from CLI and GUI endpoints
+- [ ] **6.3** Consolidate caching logic into shared function
+- [ ] **6.4** Consolidate error handling for agent creation
+- [ ] **6.5** Update both CLI and GUI to use shared functions
 
-#### Step 1.1: Remove Backend Logger Imports and Usage
+### Task 7: Consolidate Token Extraction Logic
+- [ ] **7.1** Create shared `extract_token_info()` function
+- [ ] **7.2** Extract common token extraction code from multiple locations
+- [ ] **7.3** Consolidate metadata handling logic
+- [ ] **7.4** Update all locations to use shared function
 
-- [ ] **1.1.1** Remove logger imports from `src/backend/main.py`
-  - Remove: `from .utils.logger import (get_logger, log_api_request, log_api_response, log_mcp_operation, log_agent_processing)`
-  - Remove: `from backend.utils.logger import (get_logger, log_api_request, log_api_response, log_mcp_operation, log_agent_processing)`
+### Task 8: Simplify Configuration Management
+- [ ] **8.1** Review and consolidate `EnvironmentSettings`, `ConfigSettings`, and `Settings` classes
+- [ ] **8.2** Remove redundant configuration loading
+- [ ] **8.3** Simplify settings initialization
+- [ ] **8.4** Remove unused configuration options
 
-- [ ] **1.1.2** Remove logger variable declarations in `src/backend/main.py`
-  - Remove: `logger = get_logger(__name__)`
+### Task 9: Clean Up Import Statements
+- [ ] **9.1** Remove unused imports from main.py
+- [ ] **9.2** Remove unused imports from api_models.py
+- [ ] **9.3** Organize imports according to PEP 8
+- [ ] **9.4** Remove unused imports from __init__.py files
 
-- [ ] **1.1.3** Remove all logger function calls in `src/backend/main.py`
-  - Remove all `logger.debug()`, `logger.info()`, `logger.warning()`, `logger.error()` calls
-  - Remove all `log_api_request()`, `log_api_response()`, `log_mcp_operation()`, `log_agent_processing()` calls
-  - Keep only essential error handling without logging
+---
 
-#### Step 1.2: Delete Backend Logger File
+## 🔧 LOW PRIORITY TASKS (Optimization)
 
-- [ ] **1.2.1** Delete `src/backend/utils/logger.py` completely
+### Task 10: Review and Clean Frontend Dependencies
+- [ ] **10.1** Analyze package.json for unused dependencies
+- [ ] **10.2** Remove unused frontend dependencies
+- [ ] **10.3** Update package-lock.json
+- [ ] **10.4** Verify all dependencies are actually used
 
-#### Step 1.3: Clean Up Backend Dependencies
+### Task 11: Optimize Package.json Scripts
+- [ ] **11.1** Review all npm scripts for redundancy
+- [ ] **11.2** Remove unused or duplicate scripts
+- [ ] **11.3** Consolidate similar scripts
+- [ ] **11.4** Update documentation for remaining scripts
 
-- [ ] **1.3.1** Check for any remaining logging imports in backend files
-- [ ] **1.3.2** Remove any unused logging-related imports
+### Task 12: Remove Development Artifacts
+- [ ] **12.1** Clean up unused test files
+- [ ] **12.2** Remove unused configuration files
+- [ ] **12.3** Clean up temporary files
+- [ ] **12.4** Remove unused documentation files
 
-### Phase 2: Frontend Logging Removal
+---
 
-#### Step 2.1: Remove Frontend Logger Imports and Usage
+## 📚 DOCUMENTATION UPDATES
 
-- [ ] **2.1.1** Remove logger imports from `src/frontend/components/ChatInterface_OpenAI.tsx`
-  - Remove: `import { logger } from '../utils/logger';`
-  - Remove all logger function calls in the component
+### Task 13: Update README.md
+- [ ] **13.1** Remove references to removed template system
+- [ ] **13.2** Update API documentation
+- [ ] **13.3** Update installation instructions
+- [ ] **13.4** Update usage examples
+- [ ] **13.5** Remove outdated feature descriptions
 
-- [ ] **2.1.2** Remove logger imports from `src/frontend/services/api_OpenAI.ts`
-  - Remove: `import { logger } from '../utils/logger';`
-  - Remove all logger function calls in the service
+### Task 14: Update API Documentation
+- [ ] **14.1** Remove documentation for removed endpoints
+- [ ] **14.2** Update remaining endpoint documentation
+- [ ] **14.3** Update model documentation
+- [ ] **14.4** Update error handling documentation
 
-- [ ] **2.1.3** Remove logger imports from `src/frontend/main.tsx`
-  - Remove: `import { logger } from './utils/logger';`
-  - Remove all logger function calls
+### Task 15: Update Configuration Documentation
+- [ ] **15.1** Update config file documentation
+- [ ] **15.2** Remove references to removed configuration options
+- [ ] **15.3** Update environment variable documentation
+- [ ] **15.4** Update deployment documentation
 
-- [ ] **2.1.4** Remove logger imports from `src/frontend/wdyr.ts`
-  - Remove: `import { logger } from './utils/logger';`
-  - Remove all logger function calls
+---
 
-#### Step 2.2: Remove Frontend Debug Hooks Usage
+## 🧪 TESTING AND VALIDATION
 
-- [ ] **2.2.1** Remove debug hook imports from `src/frontend/components/ChatInterface_OpenAI.tsx`
-  - Remove: `import { useComponentLogger, useStateLogger, useEffectLogger, useInteractionLogger, usePerformanceLogger, useAPILogger, useConditionalLogger, useRenderLogger, useDebouncedLogger, usePropsLogger } from '../hooks/useDebugLog';`
+### Task 16: Run Comprehensive Linting
+- [ ] **16.1** Run Python linting (pylint, flake8, black, isort)
+- [ ] **16.2** Run JavaScript/TypeScript linting (ESLint, Prettier)
+- [ ] **16.3** Fix all linting issues
+- [ ] **16.4** Configure pre-commit hooks
+- [ ] **16.5** Run vulture for dead code detection
 
-- [ ] **2.2.2** Remove all debug hook usage from `src/frontend/components/ChatInterface_OpenAI.tsx`
-  - Remove all `useComponentLogger()`, `useStateLogger()`, `useEffectLogger()`, etc. calls
+### Task 17: Test CLI Version
+- [ ] **17.1** Test basic CLI functionality
+- [ ] **17.2** Test error handling
+- [ ] **17.3** Test configuration loading
+- [ ] **17.4** Test agent creation and caching
+- [ ] **17.5** Fix any issues found
 
-#### Step 2.3: Delete Frontend Logger Files
+### Task 18: Test GUI Version with Playwright
+- [ ] **18.1** Start application servers
+- [ ] **18.2** Navigate to GUI with Playwright
+- [ ] **18.3** Test basic functionality
+- [ ] **18.4** Test error handling
+- [ ] **18.5** Take screenshots for documentation
+- [ ] **18.6** Fix any issues found
 
-- [ ] **2.3.1** Delete `src/frontend/utils/logger.ts` completely
-- [ ] **2.3.2** Delete `src/frontend/hooks/useDebugLog.ts` completely
+### Task 19: Integration Testing
+- [ ] **19.1** Test end-to-end functionality
+- [ ] **19.2** Test API endpoints
+- [ ] **19.3** Test error scenarios
+- [ ] **19.4** Test performance
+- [ ] **19.5** Verify all features work correctly
 
-#### Step 2.4: Clean Up Frontend Dependencies
+---
 
-- [ ] **2.4.1** Check for any remaining logging imports in frontend files
-- [ ] **2.4.2** Remove any unused logging-related imports
-- [ ] **2.4.3** Check for any logging-related dependencies in `package.json`
+## 📝 MEMORY AND DOCUMENTATION
 
-### Phase 3: Configuration and Environment Cleanup
+### Task 20: Update Project Memories
+- [ ] **20.1** Document completed cleanup tasks
+- [ ] **20.2** Update project architecture documentation
+- [ ] **20.3** Document any issues found and resolved
+- [ ] **20.4** Update best practices documentation
+- [ ] **20.5** Create cleanup summary report
 
-#### Step 3.1: Remove Logging Configuration
+---
 
-- [ ] **3.1.1** Check for logging configuration in environment files
-- [ ] **3.1.2** Remove any logging-related environment variables
-- [ ] **3.1.3** Check for logging configuration in config files
+## 🎯 SUCCESS CRITERIA
 
-#### Step 3.2: Clean Up Log Files
+### Code Quality Metrics
+- [ ] **CQ1** All dead code removed (verified with vulture)
+- [ ] **CQ2** All linting issues resolved
+- [ ] **CQ3** No unused imports remaining
+- [ ] **CQ4** No unused variables or functions
+- [ ] **CQ5** Code complexity reduced
 
-- [ ] **3.2.1** Remove any existing log files (`backend.log`, `frontend.log`, etc.)
-- [ ] **3.2.2** Update `.gitignore` to exclude log files if needed
+### Functionality Metrics
+- [ ] **F1** CLI version works correctly
+- [ ] **F2** GUI version works correctly
+- [ ] **F3** All API endpoints functional
+- [ ] **F4** Error handling works properly
+- [ ] **F5** Performance maintained or improved
 
-### Phase 4: Code Quality and Testing
+### Documentation Metrics
+- [ ] **D1** README.md updated and accurate
+- [ ] **D2** API documentation current
+- [ ] **D3** Configuration documentation updated
+- [ ] **D4** All outdated information removed
+- [ ] **D5** Installation and usage instructions accurate
 
-#### Step 4.1: Linting and Code Quality
+---
 
-- [ ] **4.1.1** Run ESLint on frontend code and fix any issues
-- [ ] **4.1.2** Run PyLint on backend code and fix any issues
-- [ ] **4.1.3** Run TypeScript compiler to check for type errors
-- [ ] **4.1.4** Fix any import errors or missing dependencies
+## 🔄 EXECUTION STRATEGY
 
-#### Step 4.2: Backend Testing
+### Phase 1: High Priority Cleanup (Tasks 1-5)
+- Remove all dead code and unused functionality
+- Focus on immediate impact and risk reduction
+- Verify no breaking changes
 
-- [ ] **4.2.1** Test CLI version: `uv run src/backend/main.py`
-- [ ] **4.2.2** Verify backend starts without errors
-- [ ] **4.2.3** Test basic API endpoints
-- [ ] **4.2.4** Fix any runtime errors
+### Phase 2: Refactoring (Tasks 6-9)
+- Consolidate duplicate code
+- Improve code organization
+- Maintain functionality while improving structure
 
-#### Step 4.3: Frontend Testing
+### Phase 3: Optimization (Tasks 10-12)
+- Clean up dependencies and configuration
+- Remove development artifacts
+- Optimize build and deployment
 
-- [ ] **4.3.1** Test frontend build: `npm run build`
-- [ ] **4.3.2** Test frontend dev server: `npm run dev`
-- [ ] **4.3.3** Verify React components render without errors
-- [ ] **4.3.4** Test basic user interactions
+### Phase 4: Documentation (Tasks 13-15)
+- Update all documentation
+- Remove outdated information
+- Ensure accuracy and completeness
 
-#### Step 4.4: Integration Testing
+### Phase 5: Testing and Validation (Tasks 16-19)
+- Comprehensive testing
+- Linting and code quality checks
+- Performance validation
 
-- [ ] **4.4.1** Test full application startup
-- [ ] **4.4.2** Test API communication between frontend and backend
-- [ ] **4.4.3** Test core functionality (chat interface, API calls)
-- [ ] **4.4.4** Use Playwright for automated GUI testing
+### Phase 6: Finalization (Task 20)
+- Update memories and documentation
+- Create summary reports
+- Prepare for deployment
 
-### Phase 5: Documentation and Cleanup
+---
 
-#### Step 5.1: Update Documentation
+## ⚠️ RISK MITIGATION
 
-- [ ] **5.1.1** Update README.md to reflect logging removal
-- [ ] **5.1.2** Update any development documentation
-- [ ] **5.1.3** Remove logging-related documentation
-
-#### Step 5.2: Final Verification
-
-- [ ] **5.2.1** Verify no logging code remains in the codebase
-- [ ] **5.2.2** Verify application works with only default console logs
-- [ ] **5.2.3** Verify performance improvement (if measurable)
-- [ ] **5.2.4** Update project memories with Serena
-
-## Risk Assessment and Mitigation
-
-### High Risk Areas
-
-1. **Backend main.py**: Extensive logging usage (427+ references)
-   - **Mitigation**: Systematic removal with testing after each major section
-
-2. **Frontend ChatInterface**: Complex component with multiple logging hooks
-   - **Mitigation**: Remove hooks first, then logger calls, test after each step
-
-3. **API Service Layer**: Critical for frontend-backend communication
-   - **Mitigation**: Test API calls thoroughly after logging removal
+### Backup Strategy
+- [ ] Create git branch before starting cleanup
+- [ ] Commit changes incrementally
+- [ ] Test after each major change
+- [ ] Maintain rollback capability
 
 ### Testing Strategy
+- [ ] Test after each task completion
+- [ ] Maintain test coverage
+- [ ] Verify functionality at each phase
+- [ ] Document any issues found
 
-- Test after each phase completion
-- Use both CLI and GUI testing approaches
-- Verify core functionality remains intact
-- Check for any runtime errors or missing dependencies
+### Communication Strategy
+- [ ] Document all changes made
+- [ ] Update project status regularly
+- [ ] Report any issues immediately
+- [ ] Maintain change log
 
-## Success Criteria
+---
 
-- [ ] All legacy logging files deleted
-- [ ] No logging imports or function calls remain
-- [ ] Application starts and runs without errors
-- [ ] Core functionality works as expected
-- [ ] Only default console logs and dev server logs are present
-- [ ] No linting errors
-- [ ] All tests pass
+## 📊 PROGRESS TRACKING
 
-## Estimated Timeline
+### Daily Progress
+- [ ] Update task completion status
+- [ ] Document any issues encountered
+- [ ] Update time estimates
+- [ ] Report progress to stakeholders
 
-- **Phase 1 (Backend)**: 2-3 hours
-- **Phase 2 (Frontend)**: 3-4 hours  
-- **Phase 3 (Config)**: 1 hour
-- **Phase 4 (Testing)**: 2-3 hours
-- **Phase 5 (Documentation)**: 1 hour
+### Weekly Review
+- [ ] Review completed tasks
+- [ ] Assess remaining work
+- [ ] Adjust timeline if needed
+- [ ] Update success criteria
 
-**Total Estimated Time**: 9-12 hours
+### Final Review
+- [ ] Verify all tasks completed
+- [ ] Validate success criteria met
+- [ ] Document lessons learned
+- [ ] Prepare final report
 
-## Notes
+---
 
-- This is a comprehensive removal that will significantly reduce codebase complexity
-- Performance should improve due to reduced logging overhead
-- Default browser console and dev server logs will still be available for debugging
-- All logging functionality will be removed, so debugging will rely on standard tools
+**Total Estimated Tasks**: 20 major tasks with 100+ subtasks
+**Estimated Timeline**: 3-5 days of focused work
+**Priority**: HIGH - Critical for maintainability and performance
+**Risk Level**: LOW - Well-defined scope with clear rollback strategy

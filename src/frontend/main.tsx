@@ -54,25 +54,30 @@ async function registerServiceWorker() {
         },
         onOfflineReady() {
         },
-        onRegistered(registration: ServiceWorkerRegistration) {
+        onRegistered(_registration: ServiceWorkerRegistration) {
+          // Service worker registered successfully
         },
-        onRegisterError(error: Error) {
+        onRegisterError(_error: Error) {
+          // Service worker registration failed
         },
       });
 
       // Auto-update every hour
       setInterval(
         () => {
-          updateSW(true).catch((error: Error) => {
+          updateSW(true).catch((_error: Error) => {
+            // Auto-update failed, will retry next hour
           });
         },
         60 * 60 * 1000
       );
-    } catch (error) {
+    } catch (_error) {
+      // Service worker registration failed, app will work without PWA features
     }
   }
 }
 
 // Register service worker after React app is initialized
-registerServiceWorker().catch((error: Error) => {
+registerServiceWorker().catch((_error: Error) => {
+  // Service worker registration failed, app will work without PWA features
 });

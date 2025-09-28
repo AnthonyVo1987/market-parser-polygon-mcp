@@ -22,13 +22,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 # Template Management Models
 
 
-class PromptTemplateInfo(BaseModel):
-    """Information about a prompt template"""
-
-    template_type: str = Field(alias="templateId")
-    available: bool = True
-    enhanced_formatting: bool = True
-    description: Optional[str] = None
 
 
 # TemplateListResponse removed as part of direct prompt migration
@@ -37,15 +30,6 @@ class PromptTemplateInfo(BaseModel):
 # GeneratePromptRequest removed as part of direct prompt migration
 
 
-class TickerContextInfo(BaseModel):
-    """Ticker context information"""
-
-    symbol: str
-    company_name: Optional[str] = None
-    sector: Optional[str] = None
-    last_mentioned: bool = False
-    confidence: float
-    source: str
 
 
 # GeneratePromptResponse removed as part of direct prompt migration
@@ -68,12 +52,6 @@ class ChatMessage(BaseModel):
 # ChatAnalysisResponse removed as part of direct prompt migration
 
 
-class FollowUpQuestionsResponse(BaseModel):
-    """Response for follow-up questions"""
-
-    questions: List[str]
-    context: Optional[str] = None
-    analysis_type: Optional[str] = None
 
 
 # System Status Models
@@ -159,12 +137,6 @@ class TickerExtractionRequest(BaseModel):
     chat_history: Optional[List[ChatMessage]] = None
 
 
-class TickerExtractionResponse(BaseModel):
-    """Response for ticker extraction"""
-
-    ticker_context: TickerContextInfo
-    extraction_successful: bool
-    reasoning: Optional[str] = None
 
 
 # Success Response Models
