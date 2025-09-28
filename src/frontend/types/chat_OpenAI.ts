@@ -15,6 +15,9 @@ export interface MessageMetadata {
   readonly isError?: boolean;
   readonly tokenCount?: number;
   readonly model?: string;
+  readonly processingTime?: number;
+  readonly requestId?: string;
+  readonly timestamp?: string;
 }
 
 // Enhanced API response interface
@@ -31,6 +34,7 @@ export interface ResponseMetadata {
   readonly tokenCount?: number;
   readonly model?: string;
   readonly timestamp?: string;
+  readonly processingTime?: number;
 }
 
 // API Error interface with enhanced error details

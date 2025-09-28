@@ -47,19 +47,20 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Completely remove and retire the UI Quick Analysis Button Prompts and User Input ticker functionality.  This feature will be re-worked in the future, so let's just retire the current implementation for now to clean up the app and set the scaffolding for the future features
+## Task 1. OPEN and view the image from 'screenshots/image.png' to investigate and implement the following change requests for the UI in later tasks. you cannot proceed with later tasks until you actual view and analyze the image to identify the issues
 
-Requirements:
+🔴 CRITICAL: *PERFORM PLAYWRIGHT TOOLS BROWSER TESTING AND VALIDATION ONLY AFTER TASK 7 TO TEST APP WITH ALL CHANGES IMPLEMENTED - DO NOT TEST APP IF NOT ALL CHANGES HAVE BEEN IMPLEMENTED*
 
-- No More user input ticker box and all code removed
-- All 3x buttons for Snapshot, Support Resistance, Technical Anlaysis and code removed
-- Removal and consolidation of All prompts to now only have a single source of truth for the prompts: main.py is the main system prompt and agent instructions
-- CLI backend chat prompts remains unchanged since it already uses main.py
-- GUI user AI chat input will now inherit prompt from CLI backend main.py - End result is no duplicate redudant prompts for CLI user input vs GUI user input
-- App is now streamlined with less complex AI Chatbot functionality with single common consolidated system prompt and agent instructions
+## Task 2. UI Fix: Fix incorrect ChatInput_OpenAI user input text box. Text box size is incorrectly sized now
 
-## Task 2.  use Playwright Tools to perform testing and validation
+## Task 3. UI Fix: Fix incorrecty app borders\layout\grid because now UI components are no longer properly placed evenly due to teh removed sidebars and buttons.  Things look shifted all over the place
 
-## Task 3.  Search for ALL docs to update the new app behavior
+## Task 4. UI Enhancement: Add Expand\Collapse feature to show\hide any of the bottom panel cards, such as the debug panel, performance metrics panels etc
 
-## Task 4. use serena to update memories
+## Task 5. Fix GUI AI Chat responses incorrectly NOT providing the Footer Data for Performance Metrics I.E. Response Time: 23.214s, Model: gpt-5-nano etc.  The CLI version is able to respond with correct footer data and performance metrics, but the GUI, which is supposed to inherit from CLI prompt, is NOT providing the footer data in chat responses for some reason
+
+## Task 6. Update, fix, correct any UI locator names to reflect the new UI that removed Button Prompts and sidebar. This should make it easier fot PLaywright Tools testing to have teh corrected locators
+
+## Task 7. Review and understand the project's current Lint\PYlint\ESLint commands and configuration, and then Run comprehensive Lint\PYlint\ESLint commands for entire project and fix all Lint\PYlint\ESLint issues
+
+## Task 8. Use Playwright Tools to test app in browser. Fix any issues from your testing and re-test until passing

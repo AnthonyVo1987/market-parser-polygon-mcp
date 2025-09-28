@@ -47,8 +47,8 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. Review and understand the project's current Lint\PYlint\ESLint commands and configuration
+## Task 1. Review and understand the project's current Lint\PYlint\ESLint commands and configuration, and then Run comprehensive Lint\PYlint\ESLint commands for entire project and fix all Lint\PYlint\ESLint issues
 
-## Task 2. Run comprehensive Lint\PYlint\ESLint commands for entire project and fix all Lint\PYlint\ESLint issues
+## Task 2. 
 
 ## Task 3. Sanity check test GUi with playwright tools to verify app still working ok

@@ -12,7 +12,7 @@
     "dev:frontend": "npm run frontend:dev",
     "dev:backend": "npm run backend:dev",
     "// === BACKEND COMMANDS ===": "",
-    "backend:dev": "uv run uvicorn src.backend.main:app --host 0.0.0.0 --port 8000 --reload",
+    "backend:dev": "uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload",
     "backend:server": "uv run -m src.backend.main --server",
     "backend:cli": "uv run -m src.backend.main",
     "backend:install": "uv install",

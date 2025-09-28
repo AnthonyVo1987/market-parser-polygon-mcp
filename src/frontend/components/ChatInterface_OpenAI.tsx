@@ -27,7 +27,6 @@ interface ChatState {
   isLoading: boolean;
   error: string | null;
   inputValue: string;
-  isMobileSidebarOpen: boolean;
 }
 
 // Action types for state management
@@ -46,8 +45,6 @@ type ChatAction =
   }
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'CLEAR_ERROR' }
-  | { type: 'TOGGLE_MOBILE_SIDEBAR' }
-  | { type: 'CLOSE_MOBILE_SIDEBAR' }
   | { type: 'RESET_STATE' };
 
 // Initial state
@@ -56,7 +53,6 @@ const initialChatState: ChatState = {
   isLoading: false,
   error: null,
   inputValue: '',
-  isMobileSidebarOpen: false,
 };
 
 // Reducer function for consolidated state management
@@ -88,25 +84,10 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         inputValue: action.payload,
       };
-    case 'CLEAR_INPUT':
-      return {
-        ...state,
-        inputValue: '',
-      };
     case 'CLEAR_ERROR':
       return {
         ...state,
         error: null,
-      };
-    case 'TOGGLE_MOBILE_SIDEBAR':
-      return {
-        ...state,
-        isMobileSidebarOpen: !state.isMobileSidebarOpen,
-      };
-    case 'CLOSE_MOBILE_SIDEBAR':
-      return {
-        ...state,
-        isMobileSidebarOpen: false,
       };
     case 'RESET_STATE':
       return initialChatState;
@@ -117,6 +98,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 
 import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
+import CollapsiblePanel from './CollapsiblePanel';
 import DebugPanel from './DebugPanel';
 
 // Lazy load secondary components for better performance
@@ -138,7 +120,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
     isLoading,
     error,
     inputValue,
-    isMobileSidebarOpen: _isMobileSidebarOpen,
   } = state;
 
   // AI Model management - temporarily disabled to fix React Hook order error
@@ -257,6 +238,13 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           content: apiResponse.response,
           sender: 'ai',
           timestamp: new Date(),
+          metadata: apiResponse.metadata ? {
+            tokenCount: apiResponse.metadata.tokenCount,
+            model: apiResponse.metadata.model,
+            processingTime: apiResponse.metadata.processingTime,
+            requestId: apiResponse.metadata.requestId,
+            timestamp: apiResponse.metadata.timestamp,
+          } : undefined,
         };
 
         dispatch({
@@ -432,10 +420,10 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       <div className='bottom-control-panels' role='complementary'>
 
         {/* SECTION 6: Export/Recent Buttons */}
-        <section
-          className='export-buttons-section'
-          role='complementary'
-          aria-label='Export and recent message functions'
+        <CollapsiblePanel
+          title="Export & Recent Messages"
+          defaultExpanded={true}
+          data-testid="export-recent-panel"
         >
           <div className='export-recent-container'>
             {hasMessages && (
@@ -459,23 +447,27 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               <ExportButtons messages={messages} />
             </Suspense>
           </div>
-        </section>
+        </CollapsiblePanel>
 
         {/* SECTION 7: Debug Panel */}
-        <section
-          className='debug-section'
-          role='complementary'
-          aria-label='Debug information'
+        <CollapsiblePanel
+          title="Debug Information"
+          defaultExpanded={false}
+          data-testid="debug-panel"
         >
           <DebugPanel
             messageCount={messages.length}
             lastUpdate={new Date()}
             isConnected={true}
           />
-        </section>
+        </CollapsiblePanel>
 
         {/* SECTION 8: Message Count and Status */}
-        <section className='status-section' role='status' aria-live='polite'>
+        <CollapsiblePanel
+          title="Status Information"
+          defaultExpanded={true}
+          data-testid="status-panel"
+        >
           <div className='message-count-display'>
             <span className='message-count-label'>Messages:</span>
             <span
@@ -494,16 +486,14 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               {isLoading ? 'Processing...' : 'Ready'}
             </span>
           </div>
-        </section>
+        </CollapsiblePanel>
 
         {/* SECTION 9: Performance Monitoring Display */}
-        <section
-          className='performance-section'
-          data-testid='performance-indicator'
+        <CollapsiblePanel
+          title="Performance Metrics"
+          defaultExpanded={false}
+          data-testid="performance-panel"
         >
-          <div className='performance-header'>
-            <h4>Performance Metrics</h4>
-          </div>
           <div className='performance-metrics-grid'>
             <div className='performance-metric'>
               <span className='metric-label'>FCP:</span>
@@ -551,7 +541,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           <div className='performance-note'>
             <small>Metrics update after user interaction</small>
           </div>
-        </section>
+        </CollapsiblePanel>
       </div>
     </div>
   );

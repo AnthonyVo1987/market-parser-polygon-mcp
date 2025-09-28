@@ -259,6 +259,29 @@ const ChatMessage_OpenAI = memo(
               ? formattedMessage.absoluteTime
               : formattedMessage.relativeTime}
           </div>
+
+          {/* Footer Data for AI Messages */}
+          {!isUser && message.metadata && (
+            <div className='message-footer' data-testid='message-footer'>
+              <div className='footer-metrics'>
+                {message.metadata.processingTime && (
+                  <span className='footer-metric'>
+                    Response Time: {message.metadata.processingTime.toFixed(3)}s
+                  </span>
+                )}
+                {message.metadata.model && (
+                  <span className='footer-metric'>
+                    Model: {message.metadata.model}
+                  </span>
+                )}
+                {message.metadata.tokenCount && (
+                  <span className='footer-metric'>
+                    Tokens: {message.metadata.tokenCount.toLocaleString()}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -354,6 +377,42 @@ export const messageStyles = `
   }
   
   .user-bubble .message-timestamp {
+    color: var(--neutral-200);
+  }
+  
+  /* Message Footer Styles */
+  .message-footer {
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--glass-border-subtle);
+  }
+  
+  .footer-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--neutral-400);
+    font-family: var(--font-mono);
+  }
+  
+  .footer-metric {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-2);
+    background: var(--glass-surface-light);
+    border: var(--glass-border-subtle);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+  }
+  
+  .ai-bubble .footer-metric {
+    background: var(--glass-surface-medium);
+    color: var(--neutral-300);
+  }
+  
+  .user-bubble .footer-metric {
+    background: rgba(255, 255, 255, 0.1);
     color: var(--neutral-200);
   }
   
