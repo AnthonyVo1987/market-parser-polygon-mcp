@@ -2,7 +2,6 @@ import {
   Suspense,
   lazy,
   memo,
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -11,14 +10,9 @@ import {
 } from 'react';
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
-import {
-  useInteractionLogger,
-  usePerformanceLogger,
-} from '../hooks/useDebugLog';
 import { sendChatMessage } from '../services/api_OpenAI';
 import { AIModelId } from '../types/ai_models';
 import { Message } from '../types/chat_OpenAI';
-import { logger } from '../utils/logger';
 import { usePerformanceMonitoring } from '../utils/performance';
 
 // Consolidated state interface for useReducer
@@ -143,13 +137,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // Performance and interaction tracking
 
-  // Performance tracking - always available for optimization
-  const { startTiming, endTiming } = usePerformanceLogger(
-    'ChatInterface_OpenAI'
-  );
 
-  // User interaction logging - always available for UX insights
-  const logInteraction = useInteractionLogger('ChatInterface_OpenAI');
 
   // Phase 4: Performance Monitoring
   const { metrics: performanceMetrics } = usePerformanceMonitoring();
@@ -193,7 +181,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
       };
 
       // Start performance timing
-      startTiming('message_processing');
 
       // Use optimized reducer action for immediate message start state
       dispatch({
@@ -201,24 +188,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         payload: { userMessage },
       });
 
-      // Use startTransition for non-critical logging
-      startTransition(() => {
-        logInteraction('send_message', 'chat_input', {
-          messageLength: messageContent.length,
-          messagePreview:
-            messageContent.slice(0, 100) +
-            (messageContent.length > 100 ? '...' : ''),
-          messageId,
-        });
-      });
 
       try {
-        logger.group('🌐 API Request Processing');
-        logger.info('Sending message to API', {
-          messageId,
-          contentLength: messageContent.length,
-          timestamp: new Date().toISOString(),
-        });
 
         // Send to API and get response
         const apiResponse = await sendChatMessage(
@@ -226,11 +197,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           currentModel || undefined
         );
 
-        logger.info('✅ API response received', {
-          messageId,
-          responseLength: apiResponse.response.length,
-        });
-        logger.groupEnd();
 
         // Create AI message and dispatch success action
         const aiMessage: Message = {
@@ -253,20 +219,10 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         });
 
         // End performance timing
-        endTiming('message_processing');
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to send message';
 
-        logger.group('❌ API Request Failed');
-        logger.error('API request failed', {
-          messageId,
-          errorType: err instanceof Error ? err.constructor.name : 'Unknown',
-          errorMessage:
-            errorMessage.slice(0, 200) +
-            (errorMessage.length > 200 ? '...' : ''),
-        });
-        logger.groupEnd();
 
         // Create error AI message and dispatch error action
         const aiMessage: Message = {
@@ -283,10 +239,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         });
 
         // End performance timing even on error
-        endTiming('message_processing');
       }
     },
-    [startTiming, endTiming, logInteraction, currentModel]
+    [currentModel]
   ); // Include currentModel dependency
 
 

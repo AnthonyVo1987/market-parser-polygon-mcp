@@ -1,6 +1,5 @@
 /// <reference types="@welldone-software/why-did-you-render" />
 import React from 'react';
-import { logger } from './utils/logger';
 
 // React Scan integration for performance monitoring
 import { scan } from 'react-scan/all-environments';
@@ -73,19 +72,6 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
           // Custom notification for excessive re-renders using minimal logger
           const componentName =
             displayName || hookName || Component?.name || 'Unknown';
-          logger.debug(`🔄 Why Did You Render: ${componentName}`, {
-            reason,
-            previous: {
-              props: prevProps,
-              state: prevState,
-              hookResult: prevHookResult,
-            },
-            next: {
-              props: nextProps,
-              state: nextState,
-              hookResult: nextHookResult,
-            },
-          });
         },
       });
     }

@@ -45,12 +45,6 @@ try:
         SystemMetrics,
         SystemStatusResponse,
     )
-    from .utils.logger import (
-        get_logger,
-        log_api_request,
-        log_api_response,
-        log_mcp_operation,
-    )
 except ImportError:
     # Fallback to absolute imports (when run directly)
     from backend.api_models import (
@@ -63,17 +57,10 @@ except ImportError:
         SystemMetrics,
         SystemStatusResponse,
     )
-    from backend.utils.logger import (
-        get_logger,
-        log_api_request,
-        log_api_response,
-        log_mcp_operation,
-    )
 
 load_dotenv()
 
 console = Console()
-logger = get_logger(__name__)
 
 
 # ====== CONFIGURATION SETTINGS ======
@@ -255,13 +242,11 @@ class AgentCache:
             cached_agent, timestamp = self.cache[cache_key]
             if time.time() - timestamp < self.cache_ttl:
                 self.hit_count += 1
-                logger.debug(f"Agent cache hit: {cache_key[:20]}...")
                 return cached_agent
             # Remove expired entry
             del self.cache[cache_key]
 
         self.miss_count += 1
-        logger.debug(f"Agent cache miss: {cache_key[:20]}...")
         return None
 
     def cache_agent(self, model: str, instructions: str, mcp_servers: list, agent):
@@ -273,7 +258,6 @@ class AgentCache:
             self._cleanup_cache()
 
         self.cache[cache_key] = (agent, time.time())
-        logger.debug(f"Agent cached: {cache_key[:20]}...")
 
     def _cleanup_cache(self):
         """Remove oldest entries from cache."""
@@ -288,7 +272,6 @@ class AgentCache:
             key = sorted_items[i][0]
             del self.cache[key]
 
-        logger.debug(f"Agent cache cleaned up: removed {items_to_remove} entries")
 
     def get_cache_stats(self) -> dict:
         """Get cache statistics."""
@@ -310,7 +293,6 @@ class AgentCache:
         self.cache.clear()
         self.hit_count = 0
         self.miss_count = 0
-        logger.info(f"Agent cache cleared: {cleared_count} entries removed")
         return cleared_count
 
 
@@ -343,9 +325,6 @@ class MCPServerMonitor:
 
         if not is_healthy:
             self.error_count += 1
-            logger.warning(f"MCP server {server_name} health check failed")
-        else:
-            logger.debug(f"MCP server {server_name} health check passed in {response_time:.3f}s")
 
     def log_performance_metric(
         self, server_name: str, operation: str, duration: float, success: bool
@@ -363,13 +342,6 @@ class MCPServerMonitor:
 
         if not success:
             self.error_count += 1
-            logger.error(
-                f"MCP server {server_name} operation '{operation}' failed after {duration:.3f}s"
-            )
-        else:
-            logger.debug(
-                f"MCP server {server_name} operation '{operation}' completed in {duration:.3f}s"
-            )
 
     def get_health_summary(self) -> dict:
         """Get MCP server health summary."""
@@ -460,14 +432,13 @@ class MCPServerResourceManager:
         """Log memory usage for monitoring."""
         self.memory_usage = usage_bytes
         if usage_bytes > 100 * 1024 * 1024:  # 100MB threshold
-            logger.warning(f"MCP server memory usage high: {usage_bytes / 1024 / 1024:.2f}MB")
+            pass  # Memory usage monitoring removed
 
     def cleanup_resources(self):
         """Clean up MCP server resources."""
         self.connection_pool.clear()
         self.active_connections = 0
         self.memory_usage = 0
-        logger.info("MCP server resources cleaned up")
 
 
 # Global MCP server resource manager
@@ -503,41 +474,11 @@ class PerformanceMonitor:
         self.error_count = 0
         self.last_cleanup = time.time()
 
-    def log_agent_creation_time(self, creation_time: float):
-        """Log agent creation time for performance analysis."""
-        self.metrics.append(
-            PerformanceMetrics(agent_creation_time=creation_time, timestamp=time.time())
-        )
-        logger.debug(f"Agent creation time logged: {creation_time:.3f}s")
 
-    def log_session_access_time(self, access_time: float):
-        """Log session access time for performance analysis."""
-        if self.metrics:
-            self.metrics[-1].session_access_time = access_time
-        logger.debug(f"Session access time logged: {access_time:.3f}s")
 
-    def log_mcp_server_response_time(self, response_time: float):
-        """Log MCP server response time for performance analysis."""
-        if self.metrics:
-            self.metrics[-1].mcp_server_response_time = response_time
-        logger.debug(f"MCP server response time logged: {response_time:.3f}s")
 
-    def log_cache_hit_rate(self, hit_rate: float):
-        """Log cache hit rate for performance analysis."""
-        if self.metrics:
-            self.metrics[-1].cache_hit_rate = hit_rate
-        logger.debug(f"Cache hit rate logged: {hit_rate:.2f}%")
 
-    def log_memory_usage(self, memory_usage: float):
-        """Log memory usage for performance analysis."""
-        if self.metrics:
-            self.metrics[-1].memory_usage = memory_usage
-        logger.debug(f"Memory usage logged: {memory_usage:.2f}MB")
 
-    def log_error(self, error_type: str, error_message: str):
-        """Log system errors for monitoring."""
-        self.error_count += 1
-        logger.error(f"System error [{error_type}]: {error_message}")
 
     def get_performance_summary(self) -> Dict[str, Any]:
         """Get comprehensive performance summary."""
@@ -582,7 +523,6 @@ class PerformanceMonitor:
                 m for m in self.metrics if current_time - m.timestamp < 86400
             ]  # Keep last 24 hours
             self.last_cleanup = current_time
-            logger.debug(f"Performance metrics cleaned up, {len(self.metrics)} entries remaining")
 
 
 # Global performance monitor
@@ -703,14 +643,12 @@ def get_cached_response(cache_key: str) -> Optional[str]:
         if cache_key in response_cache:
             cache_stats["hits"] += 1
             cache_stats["current_size"] = len(response_cache)
-            logger.info(f"Cache hit for key: {cache_key[:20]}...")
             return str(response_cache[cache_key])
 
         cache_stats["misses"] += 1
         cache_stats["current_size"] = len(response_cache)
         return None
-    except Exception as e:  # pylint: disable=broad-exception-caught
-        logger.error(f"Cache retrieval error: {e}")
+    except Exception:  # pylint: disable=broad-exception-caught
         cache_stats["misses"] += 1
         return None
 
@@ -727,10 +665,8 @@ def cache_response(cache_key: str, response: str):
         response_cache[cache_key] = response
         cache_stats["current_size"] = len(response_cache)
 
-        logger.info(f"Cached response for key: {cache_key[:20]}... (size: {len(response_cache)})")
 
     except MemoryError:
-        logger.error("Cache memory exhausted - clearing cache")
         response_cache.clear()
         cache_stats["evictions"] += 1
         cache_stats["current_size"] = 0
@@ -738,10 +674,8 @@ def cache_response(cache_key: str, response: str):
         try:
             response_cache[cache_key] = response
             cache_stats["current_size"] = len(response_cache)
-        except Exception as e:
-            logger.error(f"Failed to cache response after cleanup: {e}")
-    except Exception as e:
-        logger.error(f"Cache storage error: {e}")
+        except Exception:
+            pass  # Cache error handling removed
 
 
 def invalidate_cache_by_ticker(ticker: str) -> int:
@@ -761,12 +695,11 @@ def invalidate_cache_by_ticker(ticker: str) -> int:
         cache_stats["current_size"] = len(response_cache)
 
         if keys_to_remove:
-            logger.info(f"Invalidated {len(keys_to_remove)} cache entries for ticker {ticker}")
+            pass  # Cache invalidation logging removed
 
         return len(keys_to_remove)
 
-    except Exception as e:
-        logger.error(f"Cache invalidation error for ticker {ticker}: {e}")
+    except Exception:
         return 0
 
 
@@ -780,11 +713,9 @@ def clear_all_cache() -> int:
         cache_stats["current_size"] = 0
         cache_stats["evictions"] += cleared_count
 
-        logger.info(f"Cleared all {cleared_count} cache entries")
         return cleared_count
 
-    except Exception as e:
-        logger.error(f"Cache clear error: {e}")
+    except Exception:
         return 0
 
 
@@ -794,7 +725,6 @@ def cleanup_session_periodically():
 
     try:
         if shared_session is None:
-            logger.warning("Session cleanup called but shared_session is None")
             return
 
         if hasattr(shared_session, "_session_data"):
@@ -808,27 +738,21 @@ def cleanup_session_periodically():
                 for key in keys_to_remove:
                     del session_data[key]
 
-                logger.info(f"Cleaned up {len(keys_to_remove)} old session entries")
 
         # Session health monitoring
         if hasattr(shared_session, "_session_data"):
             session_size = len(getattr(shared_session, "_session_data", {}))
-            logger.debug(f"Session health: {session_size} entries")
 
             # Session error recovery - reset if corrupted
             if session_size > 1000:  # Unusually large session
-                logger.warning("Session size exceeded threshold, resetting session")
                 shared_session = SQLiteSession(settings.agent_session_name)
-                logger.info("Session reset completed")
 
-    except Exception as e:
-        logger.error(f"Session cleanup error: {e}")
+    except Exception:
         # Session error recovery - recreate session on error
         try:
             shared_session = SQLiteSession(settings.agent_session_name)
-            logger.info("Session recreated after cleanup error")
-        except Exception as recovery_error:
-            logger.error(f"Session recovery failed: {recovery_error}")
+        except Exception:
+            pass  # Session recovery error handling removed
 
 
 # Output functions
@@ -927,99 +851,44 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
     """FastAPI lifespan management for shared MCP server and session instances."""
     global shared_mcp_server, shared_session, gui_agent_cache
 
-    startup_start = time.time()
-    logger.info(
-        "🚀 FastAPI application startup initiated - host: %s, port: %s, model: %s, session: %s",
-        settings.fastapi_host,
-        settings.fastapi_port,
-        settings.available_models[0],
-        settings.agent_session_name,
-    )
 
     # Startup: Create shared instances
     try:
         # Server initialization
 
         # Initialize session
-        session_start = time.time()
         shared_session = SQLiteSession(settings.agent_session_name)
-        session_time = time.time() - session_start
-        logger.debug("📊 SQLite session initialized in %.3fs", session_time)
 
         # Initialize agent cache for GUI
         if settings.enable_agent_caching:
             gui_agent_cache = AgentCache(
                 cache_ttl=settings.agent_cache_ttl, max_size=settings.max_cache_size
             )
-            logger.debug("🚀 GUI agent cache initialized")
 
         # Initialize MCP server
-        mcp_start = time.time()
         shared_mcp_server = create_polygon_mcp_server()
         await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
-        mcp_time = time.time() - mcp_start
-        log_mcp_operation(logger, "MCP server initialization", mcp_time, True)
 
         # Log MCP server health check
-        mcp_server_monitor.log_health_check("shared_mcp_server", True, mcp_time)
-
-        startup_time = time.time() - startup_start
-        logger.info(
-            "✅ FastAPI application startup completed in %.3fs - session: %.3fs, mcp: %.3fs",
-            startup_time,
-            session_time,
-            mcp_time,
-        )
 
         # Initialization complete
-    except Exception as e:
-        startup_time = time.time() - startup_start
-        logger.error(
-            "❌ FastAPI startup failed after %.3fs - error: %s (%s)",
-            startup_time,
-            str(e),
-            type(e).__name__,
-        )
-        logger.error(f"Failed to initialize shared resources: {e}")
+    except Exception:
         raise
 
     yield
 
     # Cleanup: Close shared instances
-    shutdown_start = time.time()
-    logger.info("🔄 FastAPI application shutdown initiated")
 
     try:
         # Shutting down MCP server
         if shared_mcp_server:
-            mcp_shutdown_start = time.time()
             await shared_mcp_server.__aexit__(None, None, None)
-            mcp_shutdown_time = time.time() - mcp_shutdown_start
-            log_mcp_operation(logger, "MCP server shutdown", mcp_shutdown_time, True)
 
             # Log MCP server shutdown performance
-            mcp_server_monitor.log_performance_metric(
-                "shared_mcp_server", "shutdown", mcp_shutdown_time, True
-            )
-
-        shutdown_time = time.time() - shutdown_start
-        logger.info(
-            f"✅ FastAPI application shutdown completed in {shutdown_time:.3f}s",
-            {"shutdown_time": f"{shutdown_time:.3f}s"},
-        )
 
         # Resources cleaned up
-    except Exception as e:
-        shutdown_time = time.time() - shutdown_start
-        logger.error(
-            f"❌ FastAPI shutdown failed after {shutdown_time:.3f}s",
-            {
-                "error_type": type(e).__name__,
-                "error_message": str(e),
-                "shutdown_time": f"{shutdown_time:.3f}s",
-            },
-        )
-        logger.error(f"Error during cleanup: {e}")
+    except Exception:
+        pass
 
 
 # FastAPI App Setup
@@ -1072,7 +941,6 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     request_id = str(uuid.uuid4())[:8]
 
-    log_api_request(logger, "POST", "/chat", request.message, request_id)
 
     # Enhanced input validation for empty and whitespace-only inputs
     if not request.message:
@@ -1103,18 +971,11 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         # Use shared instances instead of creating new ones
         # Call the AI model with the unified prompt system
         try:
-            # Start performance monitoring
-            agent_creation_start = time.perf_counter()
 
             # MCP server health check and error recovery
             if shared_mcp_server is None:
-                logger.error("MCP server is None, attempting recovery")
-                performance_monitor.log_error(
-                    "mcp_server_recovery", "MCP server was None, attempting recovery"
-                )
                 shared_mcp_server = create_polygon_mcp_server()
                 await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
-                mcp_server_monitor.log_health_check("shared_mcp_server", True, 0.0)
 
             # Get or create agent with caching
             analysis_agent = None
@@ -1146,14 +1007,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                         agent=analysis_agent,
                     )
 
-            # Log agent creation time
-            agent_creation_time = time.perf_counter() - agent_creation_start
-            performance_monitor.log_agent_creation_time(agent_creation_time)
 
-            # Log cache hit rate
-            if settings.enable_agent_caching and gui_agent_cache:
-                gui_cache_stats = gui_agent_cache.get_cache_stats()
-                performance_monitor.log_cache_hit_rate(gui_cache_stats["hit_rate"])
 
             # Run the financial analysis agent with the user message
             result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
@@ -1162,30 +1016,21 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             response_text = str(result.final_output)
 
         except Exception as e:
-            logger.error(f"AI model call failed: {e}")
-            performance_monitor.log_error("ai_model_call", f"AI model call failed: {str(e)}")
             response_text = f"Error: Unable to process request. {str(e)}"
 
         # Extract token count from OpenAI response metadata
         token_count = None
-        input_tokens = None
-        output_tokens = None
 
         if result and hasattr(result, "metadata") and result.metadata:
             # Try to extract token information from OpenAI response metadata
             if hasattr(result.metadata, "get"):
                 token_count = result.metadata.get("tokenCount")
-                input_tokens = result.metadata.get("inputTokens")
-                output_tokens = result.metadata.get("outputTokens")
             elif hasattr(result.metadata, "usage"):
                 # Handle OpenAI usage object format
                 usage = result.metadata.usage
                 if hasattr(usage, "total_tokens"):
                     token_count = usage.total_tokens
-                if hasattr(usage, "prompt_tokens"):
-                    input_tokens = usage.prompt_tokens
-                if hasattr(usage, "completion_tokens"):
-                    output_tokens = usage.completion_tokens
+                # Token usage tracking removed for performance
 
         # Create response metadata with timing and token information
         response_metadata = ResponseMetadata(
@@ -1197,32 +1042,17 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         )
 
         # Log performance metrics for baseline measurement and monitoring
-        logger.info(f"Performance metrics - Request processed, Request ID: {request_id}")
 
         # Log token usage if available in metadata
         if token_count:
-            logger.info(
-                f"Token usage - Input: {input_tokens or 'N/A'}, Output: {output_tokens or 'N/A'}, Total: {token_count}"
-            )
+            pass  # Token usage logging removed
 
-        log_api_response(logger, 200, request_id=request_id)
 
         return ChatResponse(response=response_text, metadata=response_metadata)
 
     except HTTPException:
         raise
     except Exception as e:
-        log_api_response(logger, 500, request_id=request_id)
-        logger.error(
-            "💥 Unhandled exception in chat endpoint: %s - %s",
-            type(e).__name__,
-            str(e),
-            extra={
-                "request_id": request_id,
-                "error_type": type(e).__name__,
-                "error_message": str(e),
-            },
-        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Server error: {str(e)}"
         ) from e
@@ -1408,7 +1238,6 @@ async def invalidate_ticker_cache(ticker: str):
             "ticker": ticker.upper(),
         }
     except Exception as e:
-        logger.error(f"Failed to invalidate cache for ticker {ticker}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to invalidate cache: {str(e)}",
@@ -1426,7 +1255,6 @@ async def clear_all_cache_endpoint():
             "cleared_count": cleared_count,
         }
     except Exception as e:
-        logger.error(f"Failed to clear all cache: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to clear cache: {str(e)}",
@@ -1453,11 +1281,8 @@ async def cli_async():
 
         server = create_polygon_mcp_server()
 
-        # Log CLI MCP server initialization
-        mcp_start = time.time()
+        # Initialize CLI MCP server
         async with server:
-            mcp_init_time = time.time() - mcp_start
-            mcp_server_monitor.log_health_check("cli_mcp_server", True, mcp_init_time)
             while True:
                 try:
                     user_input = input("> ").strip()
@@ -1474,7 +1299,6 @@ async def cli_async():
                     try:
                         # Start timing for performance metrics
                         start_time = time.perf_counter()
-                        agent_creation_start = time.perf_counter()
 
                         # Get or create agent with caching
                         analysis_agent = None
@@ -1506,14 +1330,7 @@ async def cli_async():
                                     agent=analysis_agent,
                                 )
 
-                        # Log agent creation time
-                        agent_creation_time = time.perf_counter() - agent_creation_start
-                        performance_monitor.log_agent_creation_time(agent_creation_time)
 
-                        # Log cache hit rate
-                        if settings.enable_agent_caching and cli_agent_cache:
-                            cli_cache_stats = cli_agent_cache.get_cache_stats()
-                            performance_monitor.log_cache_hit_rate(cli_cache_stats["hit_rate"])
 
                         # Run the financial analysis agent with the user message
                         result = await Runner.run(analysis_agent, user_input, session=cli_session)
@@ -1551,9 +1368,6 @@ async def cli_async():
 
                     except Exception as e:
                         print_error(e, "AI Model Error")
-                        performance_monitor.log_error(
-                            "cli_ai_model_call", f"CLI AI model call failed: {str(e)}"
-                        )
 
                         # Create a mock result object for error cases
                         class MockResult:

@@ -1,11 +1,10 @@
-import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './wdyr';
 
 import App from './App.tsx';
 import './index.css';
 import './pwa-types.d.ts';
-import { logger } from './utils/logger';
 
 // Basic CSS reset and global styles
 const globalStyles = `
@@ -51,21 +50,13 @@ async function registerServiceWorker() {
 
       const updateSW = registerSW({
         onNeedRefresh() {
-          logger.info(
-            'PWA: New app version available. Update will be applied automatically.'
-          );
           // Auto-update strategy - no user prompt needed
         },
         onOfflineReady() {
-          logger.info('PWA: App is ready to work offline.');
         },
         onRegistered(registration: ServiceWorkerRegistration) {
-          logger.info('PWA: Service worker registered successfully:', {
-            registration,
-          });
         },
         onRegisterError(error: Error) {
-          logger.error('PWA: Service worker registration failed:', { error });
         },
       });
 
@@ -73,20 +64,15 @@ async function registerServiceWorker() {
       setInterval(
         () => {
           updateSW(true).catch((error: Error) => {
-            logger.error('PWA: Auto-update failed:', { error });
           });
         },
         60 * 60 * 1000
       );
     } catch (error) {
-      logger.error('PWA: Failed to register service worker:', { error });
     }
   }
 }
 
 // Register service worker after React app is initialized
 registerServiceWorker().catch((error: Error) => {
-  logger.error('PWA: Service worker registration initialization failed:', {
-    error,
-  });
 });

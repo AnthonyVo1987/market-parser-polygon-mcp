@@ -1,34 +1,19 @@
-feat: Complete prompt consolidation - remove dynamic & direct prompt systems
+feat: Complete legacy logging removal for performance optimization
 
-• Remove dynamic prompt manager system (20+ files deleted)
-  - Delete dynamic_prompt_manager.py, dynamic_prompt_integration.py, dynamic_prompts.py
-  - Delete secure_prompt_manager.py, security_features.py, advanced_prompting_features.py
-  - Remove all dynamic prompt documentation and implementation plans
-  - Delete dynamic prompt configuration files and test files
+- Remove all custom logging infrastructure (1000+ lines of code)
+- Delete logging files: src/backend/utils/logger.py, src/frontend/utils/logger.ts, src/frontend/hooks/useDebugLog.ts
+- Remove logging calls from: src/backend/main.py, src/frontend/components/ChatInterface_OpenAI.tsx, src/frontend/services/api_OpenAI.ts, src/frontend/main.tsx, src/frontend/wdyr.ts
+- Clean up performance monitoring logging functions and unused variables
+- Fix linting issues and unused exception variables
+- Add comprehensive implementation plan (TODO_task_plan.md)
+- Update Serena memories with completion documentation
+- Maintain full functionality while eliminating logging overhead
+- Rely solely on default browser console and dev server logs
 
-• Remove direct prompts system (legacy dead code)
-  - Delete direct_prompts.py and DirectPromptManager class
-  - Remove AnalysisIntent enum and all references
-  - Update api_models.py to remove AnalysisIntent usage
-  - Remove frontend analysis button CSS and accessibility references
+Performance benefits:
+- Reduced codebase complexity by 1000+ lines
+- Eliminated logging overhead in production
+- Simplified debugging workflow
+- Improved application performance
 
-• Consolidate all prompts into main.py
-  - Simplify get_enhanced_agent_instructions() to static prompt
-  - Remove dynamic prompt import and try/except blocks
-  - Update both CLI and GUI to use unified prompt system
-  - Remove "Data first, Detailed Analysis" enforcement
-
-• Code quality improvements
-  - Fix linting issues (PyLint 9.95/10, ESLint 0 issues)
-  - Remove unused imports and clean up code
-  - Apply Black and isort formatting
-  - Fix unnecessary else statements and dunder calls
-
-• Testing validation
-  - Verify consolidated system with Playwright tests
-  - Confirm both CLI and GUI use identical prompts
-  - Validate real-time market data integration works
-  - Test standardized prompts (Market Status, Stock Snapshots)
-
-Result: Single source of truth for prompts, eliminated dead code, 
-simplified architecture, improved maintainability
+All core functionality preserved and tested (CLI + GUI).
