@@ -12,29 +12,40 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: Complete UI overhaul with performance optimizations and footer metrics
+feat: Complete prompt consolidation - remove dynamic & direct prompt systems
 
-- Fix ChatInput_OpenAI text box sizing to use full available width
-- Convert layout from grid with sidebar to full-width flex design
-- Add CollapsiblePanel component for expand/collapse functionality
-- Integrate collapsible panels for Export/Recent, Debug, Status, and Performance sections
-- Fix GUI AI chat responses to display footer data (Response Time, Model, Tokens)
-- Update MessageMetadata interface to include processingTime, requestId, timestamp
-- Clean up mobile sidebar references and update UI locators for Playwright testing
-- Maintain excellent code quality (9.82/10 Python rating, minimal JS/TS warnings)
-- All changes tested and verified with Playwright browser automation
+• Remove dynamic prompt manager system (20+ files deleted)
+  - Delete dynamic_prompt_manager.py, dynamic_prompt_integration.py, dynamic_prompts.py
+  - Delete secure_prompt_manager.py, security_features.py, advanced_prompting_features.py
+  - Remove all dynamic prompt documentation and implementation plans
+  - Delete dynamic prompt configuration files and test files
 
-Files modified:
+• Remove direct prompts system (legacy dead code)
+  - Delete direct_prompts.py and DirectPromptManager class
+  - Remove AnalysisIntent enum and all references
+  - Update api_models.py to remove AnalysisIntent usage
+  - Remove frontend analysis button CSS and accessibility references
 
-- src/frontend/components/ChatInterface_OpenAI.tsx
-- src/frontend/components/ChatMessage_OpenAI.tsx  
-- src/frontend/components/ChatInput_OpenAI.tsx
-- src/frontend/index.css
-- src/frontend/types/chat_OpenAI.ts
-- src/frontend/components/CollapsiblePanel.tsx (new)
-- src/frontend/components/ExportButtons.tsx
-- src/frontend/services/api_OpenAI.ts
-- package.json, new_task_plan.md, new_task_details.md
+• Consolidate all prompts into main.py
+  - Simplify get_enhanced_agent_instructions() to static prompt
+  - Remove dynamic prompt import and try/except blocks
+  - Update both CLI and GUI to use unified prompt system
+  - Remove "Data first, Detailed Analysis" enforcement
+
+• Code quality improvements
+  - Fix linting issues (PyLint 9.95/10, ESLint 0 issues)
+  - Remove unused imports and clean up code
+  - Apply Black and isort formatting
+  - Fix unnecessary else statements and dunder calls
+
+• Testing validation
+  - Verify consolidated system with Playwright tests
+  - Confirm both CLI and GUI use identical prompts
+  - Validate real-time market data integration works
+  - Test standardized prompts (Market Status, Stock Snapshots)
+
+Result: Single source of truth for prompts, eliminated dead code, 
+simplified architecture, improved maintainability
 <!-- LAST_COMPLETED_TASK_END -->
 - **User Experience**: Comprehensive guide for system usage
 - **Developer Experience**: Complete architecture reference

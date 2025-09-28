@@ -47,6 +47,24 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 
 ## New Task Details
 
-## Task 1. OPEN and view the image from 'screenshots/image.png' to investigate latest UI for any additional potential issues to fix and\or areas of improvement.  Provide some scoping only and do NOT fix anything on your own yet so user can review and approve your new proposals and scope.  no new docs needed
+## Task 1. Investigate, Research, and Scope out details to fully consolidate & streamline the AI Chat Prompts to only have a single common System Prompt & Agent instructions for CLI & GUI to only use prompts from src/backend/main.py
 
-## Task 2. 🔴 CRITICAL:: DO NOT TEST OR VALIDATE ON YOUR OWN - ASK USER TO TEST & VALIDATE the UI FIX(ES)
+- Need to completely remove and retire the dynamic prompt manager with the enhanced user instructions IE verbosity_instruction, tool_restriction, format_instruction, style_instruction etc
+- Need to ensure that GUI will fully inherit and use the prompts from CLI version main.py
+- Need to also search entire docs and remove and update any docs the reflect the new app architecture
+
+Expected Outcomes:
+
+- Single Streamlined System Prompt & Agent Instructions.
+- No dynamic or enhanced prompts anymore
+- GUI chat does NOT have it's own duplicate redundant System Prompt or Agent Instructions
+- No responses enforce "Data first, Detailed Analysis" anymore because main.py prompts have updated and removed that prompt
+- No unused dead code and files referencing the removed dynamic prompt system anymore
+
+## Task 2. Generate a granular detailed TODO Task Checklist for you to implement task 1
+
+## Task 3. Implement the plan from the granular detailed TODO Task Checklist you generated from Task 2
+
+## Task 4. REview projects Lint\ESLint\PYlint commands and config, and run full Lint\ESLint\PYlint and fix all issues
+
+## Task 5. Perform testing initial testing with Playright Tools

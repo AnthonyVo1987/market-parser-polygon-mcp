@@ -1,37 +1,34 @@
-feat: Fix Python import issues and validate all test scripts
+feat: Complete prompt consolidation - remove dynamic & direct prompt systems
 
-- Fix critical Python import error in main.py (get_logger not defined)
-  - Add proper fallback imports for both relative and absolute import paths
-  - Resolve CLI mode startup failures affecting all test scripts
+• Remove dynamic prompt manager system (20+ files deleted)
+  - Delete dynamic_prompt_manager.py, dynamic_prompt_integration.py, dynamic_prompts.py
+  - Delete secure_prompt_manager.py, security_features.py, advanced_prompting_features.py
+  - Remove all dynamic prompt documentation and implementation plans
+  - Delete dynamic prompt configuration files and test files
 
-- Fix bash script syntax errors across multiple test files
-  - Remove 'local' variables outside functions in test_load_performance.sh
-  - Increase timeout from 120s to 180s in test_3_prompts_same_session.sh
-  - Fix loop logic in run_3x_tests.sh (was running 5 tests instead of 3)
+• Remove direct prompts system (legacy dead code)
+  - Delete direct_prompts.py and DirectPromptManager class
+  - Remove AnalysisIntent enum and all references
+  - Update api_models.py to remove AnalysisIntent usage
+  - Remove frontend analysis button CSS and accessibility references
 
-- Create comprehensive 7-prompt test script
-  - Add test_7_prompts_comprehensive.sh with 90s timeout per test
-  - Implement granular response time tracking and performance classification
-  - Achieve 100% success rate (7/7 tests passing)
+• Consolidate all prompts into main.py
+  - Simplify get_enhanced_agent_instructions() to static prompt
+  - Remove dynamic prompt import and try/except blocks
+  - Update both CLI and GUI to use unified prompt system
+  - Remove "Data first, Detailed Analysis" enforcement
 
-- Validate all existing test scripts (8/8 working)
-  - test_conversation_memory.sh: ✅ Working
-  - test_load_performance.sh: ✅ Fixed and working
-  - test_3_prompts_same_session.sh: ✅ Fixed and working
-  - test_agent_caching.sh: ✅ Working
-  - test_memory_usage.sh: ✅ Working
-  - test_session_persistence.sh: ✅ Working
-  - test_consolidated.sh: ✅ Working (7/7 tests passing)
-  - run_3x_tests.sh: ✅ Fixed and working
+• Code quality improvements
+  - Fix linting issues (PyLint 9.95/10, ESLint 0 issues)
+  - Remove unused imports and clean up code
+  - Apply Black and isort formatting
+  - Fix unnecessary else statements and dunder calls
 
-- Add comprehensive test reports and documentation
-  - Generate detailed test results in test-reports/ directory
-  - Create Serena memories for test results and lessons learned
-  - Document Python import fix and script development process
+• Testing validation
+  - Verify consolidated system with Playwright tests
+  - Confirm both CLI and GUI use identical prompts
+  - Validate real-time market data integration works
+  - Test standardized prompts (Market Status, Stock Snapshots)
 
-- Performance validation
-  - All tests completing within 20-70s response time range
-  - 100% success rate across all test scripts
-  - Proper timeout handling and error management
-
-This commit resolves the critical import issue that was preventing all CLI test scripts from working and establishes a robust testing infrastructure for the Market Parser application.
+Result: Single source of truth for prompts, eliminated dead code, 
+simplified architecture, improved maintainability

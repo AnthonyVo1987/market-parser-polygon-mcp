@@ -9,8 +9,6 @@ removed as it's now handled by the GUI Copy/Export buttons.
 import asyncio
 import json
 import os
-
-# import re  # Removed - no longer needed after removing save_analysis_report
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -47,7 +45,6 @@ try:
         SystemMetrics,
         SystemStatusResponse,
     )
-    from .direct_prompts import DirectPromptManager
     from .utils.logger import (
         get_logger,
         log_api_request,
@@ -66,7 +63,6 @@ except ImportError:
         SystemMetrics,
         SystemStatusResponse,
     )
-    from backend.direct_prompts import DirectPromptManager
     from backend.utils.logger import (
         get_logger,
         log_api_request,
@@ -261,9 +257,8 @@ class AgentCache:
                 self.hit_count += 1
                 logger.debug(f"Agent cache hit: {cache_key[:20]}...")
                 return cached_agent
-            else:
-                # Remove expired entry
-                del self.cache[cache_key]
+            # Remove expired entry
+            del self.cache[cache_key]
 
         self.miss_count += 1
         logger.debug(f"Agent cache miss: {cache_key[:20]}...")
@@ -648,31 +643,15 @@ Do NOT use training data cutoff dates or outdated information.
 """
 
 
-def get_enhanced_agent_instructions(user_input: str = ""):
+def get_enhanced_agent_instructions():
     """
-    Generate enhanced agent instructions with dynamic customization support.
-
-    This function replaces the static get_enhanced_agent_instructions function
-    with a dynamic version that supports user customization while maintaining
-    backward compatibility.
-
-    Args:
-        user_input: Optional user input for customization
+    Generate enhanced agent instructions for financial analysis.
 
     Returns:
         Enhanced agent instructions string
     """
-    try:
-        # Import the dynamic prompt integration
-        from .dynamic_prompt_integration import (
-            get_enhanced_agent_instructions as dynamic_get_instructions,
-        )
-
-        return dynamic_get_instructions(user_input)
-    except ImportError:
-        # Fallback to static prompt for backward compatibility
-        datetime_context = get_current_datetime_context()
-        return f"""You are a financial analyst with real-time market data access.
+    datetime_context = get_current_datetime_context()
+    return f"""You are a financial analyst with real-time market data access.
 
 {datetime_context}
 
@@ -940,8 +919,7 @@ def print_guardrail_error(exception):
 # process_financial_query function removed as part of direct prompt migration
 
 
-# Initialize direct prompt system
-direct_prompt_manager = DirectPromptManager()
+# Direct prompt system removed - using unified prompt system
 
 
 @asynccontextmanager
@@ -1123,18 +1101,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
 
     try:
         # Use shared instances instead of creating new ones
-        # Detect analysis intent
-        analysis_intent = direct_prompt_manager.detect_analysis_intent(stripped_message)
-
-        # Generate direct prompt
-        prompt_data = direct_prompt_manager.generate_direct_prompt(
-            stripped_message, analysis_intent
-        )
-
-        # Extract ticker if present (for future use)
-        _ = direct_prompt_manager.extract_ticker_from_message(stripped_message)
-
-        # Call the AI model with the direct prompt
+        # Call the AI model with the unified prompt system
         try:
             # Start performance monitoring
             agent_creation_start = time.perf_counter()
@@ -1146,7 +1113,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                     "mcp_server_recovery", "MCP server was None, attempting recovery"
                 )
                 shared_mcp_server = create_polygon_mcp_server()
-                await shared_mcp_server.__aenter__()
+                await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
                 mcp_server_monitor.log_health_check("shared_mcp_server", True, 0.0)
 
             # Get or create agent with caching
@@ -1188,10 +1155,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
                 gui_cache_stats = gui_agent_cache.get_cache_stats()
                 performance_monitor.log_cache_hit_rate(gui_cache_stats["hit_rate"])
 
-            # Run the financial analysis agent with the direct prompt
-            result = await Runner.run(
-                analysis_agent, prompt_data["user_prompt"], session=shared_session
-            )
+            # Run the financial analysis agent with the user message
+            result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
 
             # Extract the response
             response_text = str(result.final_output)
@@ -1504,14 +1469,8 @@ async def cli_async():
                         print("Please enter a valid query (at least 2 characters).")
                         continue
 
-                    # Use direct prompt system
-                    analysis_intent = direct_prompt_manager.detect_analysis_intent(user_input)
-                    prompt_data = direct_prompt_manager.generate_direct_prompt(
-                        user_input, analysis_intent
-                    )
-                    _ = direct_prompt_manager.extract_ticker_from_message(user_input)
-
-                    # Call the AI model with the direct prompt
+                    # Use unified prompt system
+                    # Call the AI model with the unified prompt system
                     try:
                         # Start timing for performance metrics
                         start_time = time.perf_counter()
@@ -1556,10 +1515,8 @@ async def cli_async():
                             cli_cache_stats = cli_agent_cache.get_cache_stats()
                             performance_monitor.log_cache_hit_rate(cli_cache_stats["hit_rate"])
 
-                        # Run the financial analysis agent with the direct prompt
-                        result = await Runner.run(
-                            analysis_agent, prompt_data["user_prompt"], session=cli_session
-                        )
+                        # Run the financial analysis agent with the user message
+                        result = await Runner.run(analysis_agent, user_input, session=cli_session)
 
                         # Calculate processing time
                         processing_time = time.perf_counter() - start_time

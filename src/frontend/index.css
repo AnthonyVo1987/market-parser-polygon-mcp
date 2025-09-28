@@ -373,116 +373,7 @@ body {
   font-style: italic;
 }
 
-/* Analysis Buttons - Sophisticated Glassmorphic Design */
-.analysis-buttons-container {
-  background: var(--glass-surface-analysis);
-  /* backdrop-filter removed for performance */
-  border: var(--border-analysis);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--border-glow-analysis);
-  position: relative;
-  transition: opacity 0.2s ease;
-}
-
-.analysis-buttons-container:hover {
-  box-shadow: var(--border-glow-analysis-hover);
-  /* transform: translateY(-1px); removed for performance */
-}
-
-.analysis-section-header {
-  font-size: var(--font-size-small);
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  font-family: var(--font-body);
-  /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); removed for performance */
-}
-
-.analysis-buttons-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-/* Individual Analysis Button - Enhanced Glassmorphic Design */
-.analysis-button {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
-  background: var(--glass-surface-light);
-  /* backdrop-filter removed for performance */
-  border: var(--glass-border-subtle);
-  border-radius: var(--radius-lg);
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-body);
-  transition: opacity 0.2s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--glass-shadow-sm);
-}
-
-.analysis-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  /* linear-gradient removed for performance */
-  background: transparent;
-  transition: left 0.3s ease;
-}
-
-.analysis-button:hover::before {
-  left: 100%;
-}
-
-.analysis-button:hover {
-  background: var(--glass-surface-medium);
-  border-color: var(--glass-border-highlight);
-  /* transform: translateY(-2px); removed for performance */
-  box-shadow: var(--glass-shadow-md);
-}
-
-.analysis-button:active {
-  /* transform: translateY(0); removed for performance */
-  box-shadow: var(--glass-shadow-sm);
-}
-
-.analysis-button:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-/* Button Icon - Enhanced Styling */
-.analysis-button .button-icon {
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  /* filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)); removed for performance */
-  transition: opacity 0.2s ease;
-}
-
-.analysis-button:hover .button-icon {
-  /* transform: scale(1.05); removed for performance */
-  /* filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); removed for performance */
-}
-
-/* Button Text - Enhanced Typography */
-.analysis-button .button-text {
-  flex: 1;
-  text-align: left;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wide);
-  transition: opacity 0.2s ease;
-}
+/* Analysis Buttons CSS removed - no longer used */
 
 /* Debug Panel - Enhanced Glassmorphic Design */
 .debug-panel-container {
@@ -513,42 +404,42 @@ body {
 }
 
 .debug-metrics-grid {
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 16px;
-    justify-content: flex-start;
-    align-items: center;
-  }
+  justify-content: flex-start;
+  align-items: center;
+}
 
 .debug-metric {
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-font-size: 12px;
-padding: 8px 12px;
-background: #475569;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 12px;
+  padding: 8px 12px;
+  background: #475569;
   border-radius: 6px;
-    min-width: 120px;
+  min-width: 120px;
   flex-shrink: 0;
 }
 
 .debug-label {
-color: #94a3b8;
-font-weight: 500;
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #94a3b8;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin-bottom: 4px;
-    font-size: 10px;
+  font-size: 10px;
   text-transform: uppercase;
-letter-spacing: 0.05em;
+  letter-spacing: 0.05em;
 }
 
 .debug-value {
-    color: #ffffff;
-    font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 12px;
-  }
+  color: #ffffff;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+}
 
 .debug-value.connected {
   color: var(--accent-success);
@@ -597,34 +488,34 @@ letter-spacing: 0.05em;
 }
 
 .performance-metrics-grid {
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 16px;
-    justify-content: flex-start;
-    align-items: center;
-  }
+  justify-content: flex-start;
+  align-items: center;
+}
 
 .performance-metric {
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 12px;
   background: #475569;
-    border-radius: 6px;
-    min-width: 100px;
-    flex-shrink: 0;
-  }
+  border-radius: 6px;
+  min-width: 100px;
+  flex-shrink: 0;
+}
 
 .metric-label {
-font-weight: 500;
-color: #94a3b8;
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  color: #94a3b8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
-  }
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
 
 .performance-metric .good {
   color: var(--accent-success);
@@ -767,7 +658,6 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     border: 2px solid var(--text-primary);
   }
 
-  .analysis-button,
   .chat-input-textarea,
   .ticker-input-field {
     border: 1px solid var(--text-primary);

@@ -11,10 +11,7 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-try:
-    from .direct_prompts import AnalysisIntent
-except ImportError:
-    from direct_prompts import AnalysisIntent
+# AnalysisIntent removed as part of direct prompt system removal
 
 # AnalysisType enum removed as part of direct prompt migration
 
@@ -28,7 +25,7 @@ except ImportError:
 class PromptTemplateInfo(BaseModel):
     """Information about a prompt template"""
 
-    template_type: AnalysisIntent = Field(alias="templateId")
+    template_type: str = Field(alias="templateId")
     available: bool = True
     enhanced_formatting: bool = True
     description: Optional[str] = None
@@ -76,7 +73,7 @@ class FollowUpQuestionsResponse(BaseModel):
 
     questions: List[str]
     context: Optional[str] = None
-    analysis_type: Optional[AnalysisIntent] = None
+    analysis_type: Optional[str] = None
 
 
 # System Status Models
@@ -96,7 +93,7 @@ class SystemMetrics(BaseModel):
 
     api_version: str = "1.0.0"
     prompt_templates_loaded: int
-    supported_analysis_types: List[AnalysisIntent]
+    supported_analysis_types: List[str]
     uptime_seconds: Optional[float] = None
     last_restart: Optional[datetime] = None
 
