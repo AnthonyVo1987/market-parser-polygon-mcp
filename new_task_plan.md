@@ -48,39 +48,29 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 ## New Task Details
 
 <Research, Investigation, Analysis, Scoping Task(s)>
-Research Using Context7 Tools, Openai cookbook tools, openai gpt-5 prompting guides, to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for:
+Research Using Context7 Tools, OpenAI cookbook tools, to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for:
 
-Task 1. Consolidate and streamline the current 3x Prompts to remove redundancies and improving performance and converting to TRUE a 2-tier architecture for AI Agent Prompts:
-
-1. AI Agent Instructions: Becomes now the single source of truth "System Prompt" for ALL AI interactions
-2. System Prompt Instructions: Duplicate and Redundant to AI Agent Instructions, so remove all of this and any code\prompts
-3. Message Prompts: Streamline by removing the dupe instructions that matches AI Agent Instructions. Messages will always be sent with the AI Agent Instructions as part of the "prompt prefix", and the actual message gets appended and combined with the prompt prefix to send the whole message.  So currently we have the exact same AI instruction as part of the message too, which is dupe and redudant.  So fix the prompts\code.
-
-Context:
-
-1. **System Prompt Instructions are redundant** - The `Agent.instructions` parameter automatically becomes the system message
-2. **Message Prompts can be simplified** - User messages can be sent directly without duplicate instructions
-3. **AI Agent Instructions are the foundation** - They define the agent's behavior and become the system prompt
-
-### **🔧 What Actually Happens:**
-
-- **Agent Creation**: `Agent(instructions="...")` sets the system prompt
-- **User Message**: `Runner.run(agent, "user query")` sends the message directly
-- **SDK Magic**: The OpenAI Agents SDK automatically constructs the proper message array with system + user + history
-
-### **📊 Simplified Architecture:**
-
-1. **Tier 1: Agent Instructions** → System prompt (static)
-2. **Tier 2: User Messages** → Dynamic user input (simple queries)
+SOLUTION 1: MCP Proxy with Tool Filtering with ONLY the following ALLOWED Polygon Tools that the AI Agent can use:
+get_aggs()
+list_aggs()
+get_daily_open_close_agg()
+get_previous_close_agg()
+get_snapshot_all()
+get_snapshot_ticker()
+get_snapshot_option()
+get_market_status()
+list_universal_snapshots()
+list_ticker_news()
+list_dividends()
 
 <Planning Task>
-Based on the Research, Analysis & Scoping from previous task(s), delete the current 'TODO_task_plan.md' and then Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
+Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and overwrite the current file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
 
 <Implementation Task>
 Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
 <CLI Testing Task>
-YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform  testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times.
+YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times.  Detect false failures test run\results and re-run if needed
 
 <Serena Update Memories Task>
 Use Serena Tools to update project memories to reflect all the new changes and new app architecture
