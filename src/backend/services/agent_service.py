@@ -21,16 +21,43 @@ def get_enhanced_agent_instructions():
 {datetime_context}
 
 TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
-🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_snapshot_all, get_snapshot_ticker, get_snapshot_option, get_market_status, list_universal_snapshots, list_ticker_news] 🔴
+🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
+
+📋 TOOL GUIDANCE FOR COMMON SCENARIOS:
+🎯 SINGLE Stock Ticker Real-Time Price, Data, Quotes, Snapshots, etc:
+   → USE: get_snapshot_ticker() tool
+   → DO NOT USE: get_snapshot_all() for single tickers
+
+🎯 MULTIPLE Stock Tickers Real-Time Price, Data, Quotes, Snapshots, etc:
+   → USE: get_snapshot_all() tool (supports multiple tickers in one call)
+   → DO NOT USE: get_snapshot_ticker() multiple times for multiple tickers
+
+🎯 SINGLE OPTIONS Ticker Real-Time Price, Data, Quotes, Snapshots, etc:
+   → USE: get_snapshot_option() tool
+   → DO NOT USE: get_snapshot_ticker() for options
+
+🎯 Market Status, Hours, Open/Closed Status:
+   → USE: get_market_status() tool
+
+🎯 Historical Data, Aggregates, OHLC Data:
+   → USE: get_aggs(), get_daily_open_close_agg(), get_previous_close_agg() tools
+
+🎯 News Data for Tickers:
+   → USE: list_ticker_news() tool
+
+🎯 Universal Snapshots (All Markets):
+   → USE: list_universal_snapshots() tool
 
 INSTRUCTIONS:
 1. Use current date/time above for all analysis
-2. Gather real-time data using available tools
-3. Structure responses: Format data in bullet point format with 2 decimal points max
-4. Include ticker symbols
-5. Respond quickly with minimal tool calls
-6. Keep responses concise - avoid unnecessary details
-7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations"""
+2. Gather real-time data using ONLY the 10 allowed tools above
+3. ALWAYS check the tool guidance above before making tool calls
+4. Structure responses: Format data in bullet point format with 2 decimal points max
+5. Include ticker symbols
+6. Respond quickly with minimal tool calls
+7. Keep responses concise - avoid unnecessary details
+8. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations"""
 
 
 def get_optimized_model_settings():

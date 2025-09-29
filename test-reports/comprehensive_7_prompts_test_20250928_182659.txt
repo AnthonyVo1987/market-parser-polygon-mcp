@@ -1,0 +1,294 @@
+=== Test 1: Test_1_Market_Status_Query ===
+Prompt: What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?
+Duration: 0s
+Response Time: 21.673s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:27:01] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:27:10] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/28/25 18:27:11] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market Status: Closed                                                        
+ • After-Hours: No                                                              
+ • Pre-market: No                                                               
+ • Date: 2025-09-28                                                             
+ • Time: 18:27                                                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 21.673s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 1 ===
+
+=== Test 2: Test_2_Single_Stock_Snapshot_NVDA ===
+Prompt: Single Stock Snapshot Price NVDA
+Duration: 0s
+Response Time: 32.252s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:27:29] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:27:44] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/28/25 18:27:45] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:27:52] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA: Price N/A (data access not authorized)                                 
+ • Time (UTC): 2025-09-28 18:27:29                                              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 32.252s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 2 ===
+
+=== Test 3: Test_3_Full_Market_Snapshot_SPY_QQQ_IWM ===
+Prompt: Full Market Snapshot Price: SPY, QQQ, IWM
+Duration: 0s
+Response Time: 19.056s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:28:08] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:28:18] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: 661.82                                                                  
+ • QQQ: 595.97                                                                  
+ • IWM: 241.34                                                                  
+ • Updated: 2025-09-28 18:28 UTC                                                
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 19.056s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 3 ===
+
+=== Test 4: Test_4_Closing_Price_Query_GME ===
+Prompt: GME closing price today
+Duration: 0s
+Response Time: 40.168s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:28:34] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:28:49] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:29:02] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/28/25 18:29:03] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • GME: 26.42 (closing price today)                                             
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 40.168s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 4 ===
+
+=== Test 5: Test_5_Performance_Analysis_SOUN ===
+Prompt: SOUN Price performance this week
+Duration: 0s
+Response Time: 21.528s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:29:21] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:29:35] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SOUN: This week price change: -7.90% (start close 17.31, end close 15.94)    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 21.528s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 5 ===
+
+=== Test 6: Test_6_Support_Resistance_NVDA ===
+Prompt: NVDA Price Support & Resistance Levels
+Duration: 0s
+Response Time: 38.679s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:29:49] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:30:04] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:30:15] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/28/25 18:30:16] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA price (latest): 178.19                                                  
+ • Immediate support: 174.93, 173.12                                            
+ • Resistance: 179.77, 180.26                                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 38.679s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 6 ===
+
+=== Test 7: Test_7_Technical_Analysis_SPY ===
+Prompt: SPY Price Technical Analysis
+Duration: 0s
+Response Time: 23.578s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/28/25 18:30:34] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/28/25 18:30:46] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/28/25 18:30:47] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Ticker: SPY                                                                  
+ • Last price: N/A                                                              
+ • 52-week range: N/A                                                           
+ • Market status: Closed                                                        
+ • Time: 2025-09-28 18:30                                                       
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 23.578s
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 7 ===
+
+
+=== COMPREHENSIVE TEST SUMMARY ===
+Timestamp: Sun Sep 28 18:31:03 PDT 2025
+Total Tests: 7
+Passed: 7
+Failed: 0
+Success Rate: 100%
+Max Timeout per Test: 90s
+Total Max Runtime: 630s
+Min Response Time: [0;34m📝 Test 1: Test_1_Market_Status_Query[0m
+[1;33mPrompt: 'What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?'[0m
+[0;32m✅ Test 1 completed successfully[0m
+[0;32m⏱️  Duration: 0s[0m
+[0;32m📊 Response Time: 21.673s[0m
+[0;31m📈 Performance: TIMEOUT (> 90s)[0m
+21.673s
+Max Response Time: [0;34m📝 Test 1: Test_1_Market_Status_Query[0m
+[1;33mPrompt: 'What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?'[0m
+[0;32m✅ Test 1 completed successfully[0m
+[0;32m⏱️  Duration: 0s[0m
+[0;32m📊 Response Time: 21.673s[0m
+[0;31m📈 Performance: TIMEOUT (> 90s)[0m
+21.673s
+Avg Response Time: 0s
+Performance Rating: GOOD
+=== END COMPREHENSIVE TEST SUMMARY ===
