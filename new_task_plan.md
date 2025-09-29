@@ -48,7 +48,13 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 ## New Task Details
 
 <Research, Investigation, Analysis, Scoping Task(s)>
-Research Using Context7 Tools, OpenAI cookbook tools, to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for:
+Research Using Context7 Tools, OpenAI cookbook tools, & your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for the following task(s) and\or requirments:
+
+- Using Official OpenAI Agents SDK method to Output the token counting stats to the footer data of each response for both CLI & GUI responses, with minimal performance impact
+
+- Completley remove and retire the current non-Official OpenAI partial token counting meta data previously implemented. This needs to be the first thing that is implemented first as part of the plan to set the stage and scaffolding to remove all old remnants of token counting so there are no conflicts and confusion when you implement the official OpenAI method
+
+- DO NOT TEST GUI VERSION AFTER IMPLEMENTATION BECAUSE USER WILL TEST GUI IN ANOTHER TASK
 
 <Planning Task>
 Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and overwrite the current file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
@@ -57,7 +63,7 @@ Based on the Research, Analysis & Scoping from previous task(s), Generate a bran
 Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
 <CLI Testing Task>
-YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times.  Detect false failures test run\results and re-run if needed
+YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed
 
 <Serena Update Memories Task>
 Use Serena Tools to update project memories to reflect all the new changes and new app architecture
