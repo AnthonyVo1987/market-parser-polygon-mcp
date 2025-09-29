@@ -50,9 +50,51 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 Research Using Context7 Tools, OpenAI cookbook tools, & your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for the following task(s) and\or requirments:
 
-1. Add back missing AI Model Seletor drop down component.  Place the Model selector dropdown next to the send button
-2. Consolidate and combine Debug Info and Status Info into a single bottom panel instead of 1 for each.  
-3. Remove the folowing GUI components, indicators, and code: Both Status, Session.  We do not need these right now, and they will now leave room to add additional debug components in the future
+Re-fix these issues properly with the CORRECT OpenAI Agents SDK package and NOT 'agents' per the post-mortem:
+
+- React Hook Order Issue (which we fixed by disabling why-did-you-render)
+- Model Selection Backend Issue (which we fixed in the code)
+- Virtual Environment Path Issue (uvicorn not using uv environment)
+
+Here was your post-mortem:
+
+"
+
+## **🔴 POST-MORTEM: CRITICAL REASONING FAILURE ANALYSIS**
+
+### **🚨 ROOT CAUSE: SOLUTION JUMPING**
+
+I made a **fundamental error in my investigation methodology** - I saw an error and immediately started looking for a solution instead of first understanding the current state.
+
+### **❌ WHAT I DID WRONG:**
+
+1. **SKIPPED INVESTIGATION**: I saw `ModuleNotFoundError: No module named 'agents'` and immediately jumped to "we need to install a package"
+
+2. **IGNORED EXISTING EVIDENCE**: The `pyproject.toml` clearly showed `"openai-agents==0.2.9"` was already installed from day 1
+
+3. **ASSUMED WRONG PACKAGE**: I researched and found two packages (`agents` vs `openai-agents`) and incorrectly assumed we needed the `agents` package
+
+4. **MADE PROBLEM WORSE**: Installing the wrong `agents` package introduced TensorFlow compatibility issues
+
+### **✅ WHAT I SHOULD HAVE DONE:**
+
+1. **FIRST**: Check `pyproject.toml` to see what was already installed
+2. **SECOND**: Check the actual imports in the codebase (`from agents import Agent, Runner, SQLiteSession`)
+3. **THIRD**: Investigate the correct import structure for `openai-agents==0.2.9`
+4. **FOURTH**: Fix the virtual environment path issue for uvicorn
+
+### **🔍 EVIDENCE OF MY FAILURE:**
+
+- **pyproject.toml line 12**: `"openai-agents==0.2.9"` was RIGHT THERE
+- **Codebase imports**: `from agents import Agent, Runner, SQLiteSession` throughout
+- **Real issue**: Virtual environment path problem, not missing package
+
+### **📚 LESSON LEARNED:**
+
+This was a classic case of **solution jumping** - I violated the fundamental debugging principle of "understand the problem before solving it." I should have systematically investigated the current state before making any changes.
+
+**The correct approach would have been to investigate the import structure of `openai-agents==0.2.9` and fix the virtual environment path issue, not install additional packages.**
+"
 
 ###
 
@@ -67,10 +109,8 @@ Implement the granular detailed Implementation Plan TODO Task Checklist file 'TO
 
 ###
 
-<CLI Testing Phase>
-test all fixes using CLI method 'test_7_prompts_comprehensive.sh' first for NANO, then re-run and test for MINI
-
-YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed
+<Playwright GUI Testing Phase>
+- Test nano first, and then mini
 
 ###
 
