@@ -1,6 +1,6 @@
 # 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
-🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
+🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
@@ -37,25 +37,31 @@ SUCCESS CRITERIA:
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## New Task Details
+---
 
-<Research, Investigation, Analysis, Scoping Task(s)>
-Use Context7 for Research and Perform a focused, incremental, comprehensive, systematic, deep dive codebase audit and code review to investigate, analyze, & provide some scoping for the modularization and refactor of the current monolithic backend main.py file.  Currently the "core code path" lies in the main.py file, which is inherited by the GUI frontend. But the current main.py has gotten too large and complex, so it is time to break down and modularize main.py.  So you need to modularize this using the latest most up to date robest practices to implemented the refactor for a better cleaned up modularized and orgranized backend .py folder\file structure etc
+## New Tasks(s) Workflow Details
 
-<Planning Task>
-Based on the Research, Analysis & Scoping from previous task(s), delete the current 'TODO_task_plan.md' and then Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
+<Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
+Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or openai-cookbook Docs Tools to provide scoping for EACH of following task(s) and\or requirements:
 
-<Implementation Task>
+---
+
+<Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
+
+Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with  Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
+
+---
+
+<Implementation Phase>
 Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
-<Lint Task>
-Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
+---
 
-<CLI Testing Task>
-Perform some testing of CLI version executing test_7_prompts_comprehensive.sh (uv run src/backend/main.py), fix any issues
+<CLI Testing Phase>
+- IF there were ONLY DOCUMENTATION changes, You MUST NOT PERFORM ANY TESTING BECAUSE VALIDATION IS NOT NEEDED FOR JUST DOCUMENTATION CHANGES.
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.
 
-<GUI Testing Task>
-Perform some testing of GUI version using Playwright Tools and executing tests/playwright/test_prompts.md, fix any issues
+---
 
-<Serena Update Memories Task>
-Use Serena Tools to update project memories
+<Serena Update Memories Phase>
+Use Serena Tools to update project memories to reflect all the new changes and new app architecture

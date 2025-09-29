@@ -44,8 +44,8 @@ SUCCESS CRITERIA:
 ## **🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: CODE REVIEW TASKS (Steps 1-10)
 
 1. Run `git status` to identify ALL modified files in the repository
-2. Review code quality, syntax, and logic in all changed files
-3. Check for linting errors using read_lints tool on changed files
+2. Based on ONLY the current modified files in the repo, perform comprehensive code review of the changes: reviewing full code and data execution path flow for any potential logic and\or integration issues, code quality, syntax, and logic in all changed files
+3. Run the project's Lint\ESLInt\PYLint commands\config and check any linting errors using read_lints tool on changed files
 4. Fix any identified issues in the code
 5. Verify all imports and dependencies are correct
 6. Ensure TypeScript interfaces and types are properly defined

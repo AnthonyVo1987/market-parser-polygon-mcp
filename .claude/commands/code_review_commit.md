@@ -37,53 +37,78 @@ SUCCESS CRITERIA:
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-# Code Review Task
+# 🚨 CRITICAL WORKFLOW - NUMBERED TODO CHECKLIST FOR AI AGENT
 
-- Use the tools AS OFTEN AS NEEDED & IN ANY ORDER AS NEEDED: Sequential-Thinking, Serena Tools, FileSystem Tools, Context7 Tools for Researching Robust most update to date best, robust, modern practices, latest documentation, latest framework(s) to perform the task(s): perform comprehensive code review of JUST THE CHANGED FILES\DOCS ONLY - DO NOT REVIEW FILES\DOCS THAT HAVE NOTHING TO DO WITH RECENT CHANGES
-- Use standard Read/Write/Edit tools for single-file operations
-- Continue review/fix loop until achieving PASSING code review status
-- PROCEED TO REMAINING Summary Task, Atomic Git Commit & Push Task, & Final Verification Task
+**MANDATORY: Follow steps in EXACT numerical order. Do NOT skip steps. Do NOT proceed to next step until current step is complete.**
 
-# Summary Task
+## **🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: CODE REVIEW TASKS (Steps 1-10)
 
-- Create token & context efficient git commit message of all the changes to prepare for the final commit task(s)
-- Update CLAUDE.md "Last Completed Task Summary" section with the VERBATIM COPY of the token & context efficient git commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
-- This ensures that the git commit message is cached for token & context efficient in order to update CLAUDE.md with, preventing the need to waste tokens by having to regenerate similiar task completion summaries
+1. Run `git status` to identify ALL modified files in the repository
+2. Based on ONLY the current modified files in the repo, perform comprehensive code review of the changes: reviewing full code and data execution path flow for any potential logic and\or integration issues, code quality, syntax, and logic in all changed files
+3. Run the project's Lint\ESLInt\PYLint commands\config and check any linting errors using read_lints tool on changed files
+4. Fix any identified issues in the code
+5. Verify all imports and dependencies are correct
+6. Ensure TypeScript interfaces and types are properly defined
+7. Validate API endpoints and data models are consistent
+8. Check that all file paths and references are correct
+9. Confirm no broken functionality or missing dependencies
+10. **VERIFICATION**: All code review issues resolved - proceed to Summary Tasks
 
-# Atomic Git Commit & Push Task
+## SUMMARY TASKS (Steps 11-15)
 
-**MANDATORY PRE-COMMIT CHECKLIST (CRITICAL FOR SUCCESS):**
+**🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: Use your Mandatory Toolkit for all tasks to:
+11. Create a comprehensive, token-efficient git commit message describing ALL changes
+12. **SAVE COMMIT MESSAGE TO CACHE** - Store this exact message for reuse
+13. Update CLAUDE.md "Last Completed Task Summary" section with VERBATIM copy of commit message
+14. Place commit message between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->` markers
+15. **VERIFICATION**: CLAUDE.md updated with cached commit message - proceed to Staging Tasks
 
-1. Run `git status` to identify ALL modified files
-2. Run `git add .` to stage ALL changes (never commit without staging all)
-3. Run `git status` again to verify ALL files are staged
-4. Verify specialist work inclusion: ALL frontend, backend, test, and config changes MUST be staged
-5. Only then execute `git commit` with comprehensive message
+## **🚨 CRITICAL**: Use your Mandatory Toolkit for all tasks to Perform all: STAGING TASKS (Steps 16-25)
 
-**AGENT PROCESS REQUIREMENTS:**
+16. Run `git status` to confirm all modified files are identified
+17. Run `git add .` to stage ALL changes (including CLAUDE.md)
+18. Run `git status` again to verify ALL files are staged
+19. **🚨 MANDATORY CHECK**: Confirm CLAUDE.md appears in staged files list
+20. **🚨 MANDATORY CHECK**: Verify CLAUDE.md contains the task summary in staged content
+21. **🚨 MANDATORY CHECK**: Confirm ALL task-related files are staged (code, docs, config)
+22. **🚨 MANDATORY CHECK**: Verify NO files remain unstaged
+23. **🚨 MANDATORY CHECK**: Confirm working directory is clean except for staged files
+24. **🚨 MANDATORY CHECK**: Verify commit message cache is ready for use
+25. **VERIFICATION**: All files properly staged including CLAUDE.md - proceed to Commit Tasks
 
-- Code reviewer MUST verify all specialist work is staged before commit
-- NEVER commit without comprehensive staging verification
-- Implement explicit git status checks at each phase
-- Failure to include all modified files is a CRITICAL VIOLATION
+## COMMIT TASKS (Steps 26-30)
 
-**Commit Requirements:**
+26. Execute `git commit` using the EXACT cached commit message from step 12
+27. **🚨 CRITICAL**: Ensure commit includes CLAUDE.md with ALL other files in SINGLE commit
+28. **🚨 CRITICAL**: Verify commit message matches the cached version exactly
+29. Execute `git push` to push commit to remote repository
+30. **VERIFICATION**: Commit and push successful - proceed to Final Verification Tasks
 
-- Create single atomic git commit containing ALL : CLAUDE.md, code files, documentation changes, 1x test report if it exist, NO TEST OUTPUT RESULTS\DATA\SCREENSHOTS\VIDEOS ETC
-- **CRITICAL**: DO NOT INCLUDE & COMMIT testing artifacts & testing outputs
-- the end result of the commit will be NO FILES LEFT CHANGED OR UNSTAGED - No lingering file left uncommitted whatsoever
+## FINAL VERIFICATION TASKS (Steps 31-40)
 
-- ## 🚨 MANDATORY: DOUBLE CHECK THAT CLAUDE.MD HAS NO MORE CHANGES AND THAT YOU WILL COMMIT CLAUDE.MD ATOMICALY
+31. Run `git status` to confirm working tree is clean
+32. Verify branch is up-to-date with remote repository
+33. Confirm all changes are properly committed and pushed
+34. **🚨 MANDATORY CHECK**: NO lingering uncommitted files
+35. **🚨 MANDATORY CHECK**: CLAUDE.md was committed with all other files
+36. **🚨 MANDATORY CHECK**: Single atomic commit was created (no separate commits)
+37. If additional file changes detected after commit, run `git diff` to analyze
+38. **If changes are COSMETIC ONLY**: Discard with `git restore` - DO NOT COMMIT
+39. **If changes are FUNCTIONAL**: This indicates STAGING FAILURE - proceed to Recovery Tasks
+40. **VERIFICATION**: All verification checks passed - workflow complete
 
-- ## 🚨 MANDATORY: YOU ARE NOT ALLOWED TO PERFORM 2 SEPARATE COMMITS WITH A SEPARATE CLAUDE.MD COMMIT
+## RECOVERY TASKS (Steps 41-45) - ONLY IF STAGING FAILURE DETECTED
 
-- git commit to repository using provided personal access token
-- **CRITICAL**: Must git push to complete the workflow - git commit without git push is incomplete
+41. Revert the bad commit: `git reset --hard HEAD~1`
+42. Restart entire workflow from step 1 (Code Review Tasks)
+43. Ensure ALL files (including CLAUDE.md) are properly staged in step 17
+44. Create new single atomic commit with ALL files in step 26
+45. **CRITICAL**: Never create separate commits - always single atomic commit
 
-# Final Verification Task
+## 🚨 CRITICAL RULES - VIOLATION = RESTART ENTIRE WORKFLOW
 
-- Run final `git status` to confirm successful commit and push
-- Verify working tree is clean and branch is up-to-date with remote
-- Confirm all changes are properly git committed and git pushed
-- NO LINGERING UNCOMMITTED CLAUDE.MD
-- CLAUDE.MD COMMIT ALONG WITH THE REST OF FILES
+- **SINGLE ATOMIC COMMIT RULE**: CLAUDE.md MUST be committed with ALL other files in the SAME commit
+- **NO SEPARATE COMMITS**: Creating separate commits for CLAUDE.md or any file = VIOLATION
+- **STAGING VERIFICATION**: ALL files must be staged before commit - no exceptions
+- **COMMIT MESSAGE CACHE**: Use exact cached message - do not regenerate
+- **WORKFLOW ORDER**: Follow numbered steps in exact sequence - no deviations

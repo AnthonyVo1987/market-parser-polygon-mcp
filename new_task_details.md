@@ -1,6 +1,6 @@
 # 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
-🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
+🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
@@ -36,3 +36,32 @@ SUCCESS CRITERIA:
 - No rigid sequencing - only logical tool usage based on task requirements
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
+
+---
+
+## New Tasks(s) Workflow Details
+
+<Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
+Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or openai-cookbook Docs Tools to provide scoping for EACH of following task(s) and\or requirements:
+
+---
+
+<Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
+
+Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with  Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
+
+---
+
+<Implementation Phase>
+Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
+
+---
+
+<CLI Testing Phase>
+- IF there were ONLY DOCUMENTATION changes, You MUST NOT PERFORM ANY TESTING BECAUSE VALIDATION IS NOT NEEDED FOR JUST DOCUMENTATION CHANGES.
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.
+
+---
+
+<Serena Update Memories Phase>
+Use Serena Tools to update project memories to reflect all the new changes and new app architecture

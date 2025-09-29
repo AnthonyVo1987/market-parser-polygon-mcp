@@ -37,24 +37,18 @@ SUCCESS CRITERIA:
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## New Task Details
+---
+
+## New Tasks(s) Workflow Details
 
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
-Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or openai-cookbook Docs Tools to provide scoping for EACH of following task(s) and\or requirments:
-
-feat: Completely remove and retire anything related to AI Model Selection implementation because it will be re-implemented at a later date because we are still in the prototpying stage.  We will just make gpt-5-nano the current active default model for now.  So need to also make fixes to the config 'config/app.config.json' to now only support only one active model for new to be used in the app with no selection possible. Remove 'availableModels' and instead, just create a config entry for current default active model etc and set it to gpt-5-nano, and the app should now ONLY read the new default active model config during startup to then use for ALL AI Agents\Messages. Remove any mention of model selection and any references to gpt-5-mini in the docs and all docs. also remove any mention or references and usage of 'temperature' since GPT-5 actually does NOT support temperature parameter anymore, so we need to remove all references to it.
-
-Expected Outcomes:
-
-- No more model selection ability
-- gpt-5-nano default in config
-- No more gpt-5-mini, temperature in code and docs etc
+Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or openai-cookbook Docs Tools to provide scoping for EACH of following task(s) and\or requirements:
 
 ---
 
 <Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and overwrite the current file 'TODO_task_plan.md' for you to Implement the requested task(s) with  Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
+Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with  Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
 
 ---
 
