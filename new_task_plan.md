@@ -1,6 +1,6 @@
 # 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
-🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
+🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
@@ -40,19 +40,21 @@ SUCCESS CRITERIA:
 ## New Task Details
 
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
-Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for the following task(s) and\or requirments:
+Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or OpenAI Cookbook Tools to provide scoping for EACH of following task(s) and\or requirments:
 
-1. Using Official OpenAI Agents SDK method to Output the token counting stats to the footer data of each response for both CLI & GUI responses, with minimal performance impact
+feat: Completely remove and retire anything related to AI Model Selection implementation because it will be re-implemented at a later date because we are still in the prototpying stage.  We will just make gpt-5-nano the current active default model for now.  So need to also make fixes to the config 'config/app.config.json' to now only support only one active model for new to be used in the app with no selection possible. Remove 'availableModels' and instead, just create a config entry for current default active model etc and set it to gpt-5-nano, and the app should now ONLY read the new default active model config during startup to then use for ALL AI Agents\Messages. Remove any mention of model selection and any references to gpt-5-mini in the docs and all docs. also remove any mention or references and usage of 'temperature' since GPT-5 actually does NOT support temperature parameter anymore, so we need to remove all references to it.
 
-2. Completley remove and retire the current non-Official OpenAI partial token counting meta data previously implemented. This needs to be the first thing that is implemented first as part of the plan to set the stage and scaffolding to remove all old remnants of token counting so there are no conflicts and confusion when you implement the official OpenAI method
+Expected Outcomes:
 
-3. DO NOT TEST GUI VERSION AFTER IMPLEMENTATION BECAUSE USER WILL TEST GUI IN ANOTHER TASK
+- No more model selection ability
+- gpt-5-nano default in config
+- No more gpt-5-mini, temperature in code and docs etc
 
 ---
 
 <Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and overwrite the current file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
+Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and overwrite the current file 'TODO_task_plan.md' for you to Implement the requested task(s) with  Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
 
 ---
 
@@ -62,7 +64,7 @@ Implement the granular detailed Implementation Plan TODO Task Checklist file 'TO
 ---
 
 <CLI Testing Phase>
-- IF there were ONLY DOCUMENTATION changes, You MUST NOT PERFORM ANY TESTING BECAUSE VALIDATION IS NOT NEEDED FOR FOR DOCUMENTATION CHANGES.
+- IF there were ONLY DOCUMENTATION changes, You MUST NOT PERFORM ANY TESTING BECAUSE VALIDATION IS NOT NEEDED FOR JUST DOCUMENTATION CHANGES.
 - IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.
 
 ---
