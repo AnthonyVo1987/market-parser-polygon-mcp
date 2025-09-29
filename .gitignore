@@ -88,7 +88,6 @@ json_workflow_debug.log
 node_modules
 
 #mcp servers
-.mcp.json
 
 # Frontend build artifacts
 frontend/dev-dist/

@@ -12,21 +12,12 @@ Resync new AI Agent Chat instance with latest project state, docs, & memory file
 
 When you invoke `/resync`, I will:
 
-1. Carefuly read and ingest ONLY 'CLAUDE.md' to understand Project Development Rules & Operating Procedures. 
+1. Carefuly read and ingest ONLY 'CLAUDE.md' to understand Project Development Rules & Operating Procedures.
 
 2. After ingesting CLAUDE.md, Acknowledge and provide:
 • High level summary of current status of the project
 • High level summary of Last Completed Task Summary from CLAUDE.md
 
-3. Confirm: 🔴 CRITICAL: YOU MUST ALWAYS USE THESE TOOLS FIRST in any particular order to perform all task(s)
-
-- __Serena Tools__: Use for Advanced code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-- __Sequential-Thinking Tools__: Use for Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-- __Context7 Tools__: Use for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
-- __Filesystem Tools__: Use for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
-- __Standard Read/Write/Edit Tools__: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-- __Playwright Tools__: Use for Testing with Browser automation for React GUI & App Validation
-
-4. DO NOT PERFORM ANY NEW TASKS YET OR READ ANY OTHER FILES OR DOCS OTHER THAN CLAUDE.md for resync
+3. DO NOT PERFORM ANY NEW TASKS YET OR READ ANY OTHER FILES OR DOCS OTHER THAN CLAUDE.md for resync
 
 ---
