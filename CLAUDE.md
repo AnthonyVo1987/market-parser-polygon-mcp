@@ -12,24 +12,21 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-feat: implement official OpenAI token counting with comprehensive code improvements
+feat: implement AI Model Selector with consolidated debug panel
 
-- Replace custom token counting with official OpenAI Agents SDK method (result.context_wrapper.usage)
-- Enable include_usage=True in ModelSettings for official token tracking
-- Create shared token_utils.py utility to eliminate code duplication between CLI and API
-- Remove old custom token extraction logic from cli.py and chat.py
-- Update response_utils.py to display official SDK token data in footer
-- Remove list_universal_snapshots tool from agent instructions (confusing/incorrect usage)
-- Optimize tool set to 9 tools with clear selection guidance
-- Fix all linting issues: 9.99/10 Python score, proper type annotations
-- Apply black/isort formatting and create shared utilities for DRY principle
-- Add comprehensive Serena memories for token counting and tool optimization
-- Validate with 100% test success rate (7/7 tests passing)
-- Update project documentation and architecture status
+- Add AIModelSelector component with dropdown for GPT-5 Nano/Mini selection
+- Create useAIModel hook for model state management and API integration  
+- Update ChatInput_OpenAI to include model selector next to send button
+- Integrate model selection into ChatInterface_OpenAI with proper hook order
+- Create ConsolidatedDebugPanel combining debug and status information
+- Remove separate DebugPanel component to streamline UI
+- Fix selectModel API to use query parameters instead of request body
+- Update chat types to support model selection props
+- Add comprehensive test reports and documentation updates
 
-BREAKING CHANGE: AI agent now uses official OpenAI token counting method
-PERFORMANCE: Improved tool selection efficiency with 9 optimized tools
-TESTING: All comprehensive tests passing with official token counting validation
+BREAKING CHANGE: DebugPanel component removed, replaced with ConsolidatedDebugPanel
+FEATURE: AI Model Selector now available in chat interface
+API: Fixed model selection endpoint to use query parameters
 <!-- LAST_COMPLETED_TASK_END -->
 
 # 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion

@@ -1,180 +1,223 @@
-# 🔴 CRITICAL: MANDATORY TOOL USAGE Implementation Plan - Token Counting with Official OpenAI Agents SDK
+# 🔴 CRITICAL: MANDATORY TOOL USAGE Implementation Plan - GUI Component Updates
 
-## **PHASE 1: REMOVE OLD TOKEN COUNTING IMPLEMENTATION** 🔴 CRITICAL: DO FIRST
+## **PHASE 1: AI MODEL SELECTOR IMPLEMENTATION**
 
-### **Task 1.1: Remove CLI Token Extraction Logic**
+### **Task 1.1: Create useAIModel Hook**
 
-- **File**: `src/backend/cli.py`
-- **Actions**:
-  - Remove `_extract_token_count()` function (lines 119-129)
-  - Remove token extraction call (line 88)
-  - Remove `token_count=token_count` from ResponseMetadata (line 96)
-  - Replace with comment: "Token counting handled by official OpenAI Agents SDK"
+- **File**: `src/frontend/hooks/useAIModel.ts`
+- **Purpose**: State management for AI model selection
+- **Features**:
+  - Fetch available models from API
+  - Manage current model selection
+  - Handle loading and error states
+  - Provide model selection function
+- **Dependencies**: `src/frontend/services/api_OpenAI.ts`, `src/frontend/types/ai_models.ts`
 
-### **Task 1.2: Remove API Token Extraction Logic**
+### **Task 1.2: Create AIModelSelector Component**
 
-- **File**: `src/backend/routers/chat.py`
-- **Actions**:
-  - Remove token extraction logic (lines 95-107)
-  - Remove `tokenCount=token_count` from ResponseMetadata (line 118)
-  - Replace with comment: "Token counting handled by official OpenAI Agents SDK"
+- **File**: `src/frontend/components/AIModelSelector.tsx`
+- **Purpose**: Dropdown component for model selection
+- **Features**:
+  - Dropdown with available models
+  - Current model display
+  - Loading and error states
+  - Accessibility support
+- **Props**: `models`, `currentModel`, `onModelChange`, `loading`, `error`
+- **Styling**: Match existing design system
 
-### **Task 1.3: Update Footer Display Logic**
+### **Task 1.3: Update ChatInput Component**
 
-- **File**: `src/backend/utils/response_utils.py`
-- **Actions**:
-  - Remove custom token extraction logic (lines 36-61)
-  - Replace with official SDK method using `result.context_wrapper.usage`
-  - Maintain existing footer format with enhanced token display
+- **File**: `src/frontend/components/ChatInput_OpenAI.tsx`
+- **Purpose**: Integrate AI Model Selector next to send button
+- **Changes**:
+  - Add AIModelSelector component
+  - Update layout to accommodate selector
+  - Pass model selection to parent
+  - Maintain responsive design
+- **Layout**: Horizontal layout with textarea, selector, and send button
 
-### **Task 1.4: Clean Up API Models**
+### **Task 1.4: Update ChatInterface Component**
 
-- **File**: `src/backend/api_models.py`
-- **Actions**:
-  - Keep `token_count` field in ResponseMetadata (needed for API responses)
-  - Remove any unused token-related fields if any
+- **File**: `src/frontend/components/ChatInterface_OpenAI.tsx`
+- **Purpose**: Integrate useAIModel hook and pass model to API
+- **Changes**:
+  - Uncomment and implement useAIModel hook
+  - Pass selected model to sendChatMessage
+  - Handle model selection state
+  - Update error handling for model selection
 
-## **PHASE 2: IMPLEMENT OFFICIAL OPENAI AGENTS SDK TOKEN COUNTING**
+## **PHASE 2: PANEL CONSOLIDATION**
 
-### **Task 2.1: Enable Usage Tracking in ModelSettings**
+### **Task 2.1: Create Consolidated Debug Panel**
 
-- **File**: `src/backend/services/agent_service.py`
-- **Actions**:
-  - Add `include_usage=True` to `get_optimized_model_settings()` function
-  - Update function docstring to mention token usage tracking
+- **File**: `src/frontend/components/ConsolidatedDebugPanel.tsx`
+- **Purpose**: Combine Debug and Status information into single panel
+- **Features**:
+  - Debug information (connection status, version, last update)
+  - Status information (message count, processing status)
+  - Performance metrics (FCP, LCP, CLS)
+  - Organized sections within single panel
+- **Props**: `messageCount`, `isLoading`, `lastUpdate`, `isConnected`, `performanceMetrics`
 
-### **Task 2.2: Update CLI Token Access**
+### **Task 2.2: Update ChatInterface Layout**
 
-- **File**: `src/backend/cli.py`
-- **Actions**:
-  - Add function to extract token data from `result.context_wrapper.usage`
-  - Update ResponseMetadata creation to include token data
-  - Add error handling for missing usage data
+- **File**: `src/frontend/components/ChatInterface_OpenAI.tsx`
+- **Purpose**: Replace separate panels with consolidated panel
+- **Changes**:
+  - Remove separate Debug Information panel
+  - Remove separate Status Information panel
+  - Remove separate Performance Metrics panel
+  - Add single Consolidated Debug Panel
+  - Update panel titles and organization
 
-### **Task 2.3: Update API Token Access**
+### **Task 2.3: Remove Session Components**
 
-- **File**: `src/backend/routers/chat.py`
-- **Actions**:
-  - Add function to extract token data from `result.context_wrapper.usage`
-  - Update ResponseMetadata creation to include token data
-  - Add error handling for missing usage data
+- **Files**: Search and remove any Session-related components
+- **Purpose**: Clean up unused Session functionality
+- **Changes**:
+  - Remove Session references from DebugPanel
+  - Remove Session-related props and state
+  - Clean up unused imports and types
 
-### **Task 2.4: Update Footer Display with Official SDK Method**
+## **PHASE 3: STYLING AND RESPONSIVENESS**
 
-- **File**: `src/backend/utils/response_utils.py`
-- **Actions**:
-  - Replace custom token extraction with `result.context_wrapper.usage`
-  - Update token display format to show: `total_tokens (input_tokens, output_tokens)`
-  - Add error handling for missing usage data
-  - Maintain existing emoji and formatting
+### **Task 3.1: Update CSS for New Layout**
 
-## **PHASE 3: TESTING AND VALIDATION**
+- **File**: `src/frontend/components/ChatInterface_OpenAI.tsx` (styles section)
+- **Purpose**: Update styles for consolidated panels and model selector
+- **Changes**:
+  - Update bottom control panels layout
+  - Add styles for AI Model Selector
+  - Ensure responsive design for mobile
+  - Update panel spacing and organization
 
-### **Task 3.1: CLI Testing**
+### **Task 3.2: Create AIModelSelector Styles**
 
-- **Command**: `./test_7_prompts_comprehensive.sh`
+- **File**: `src/frontend/components/AIModelSelector.tsx` (inline styles)
+- **Purpose**: Style the model selector dropdown
+- **Features**:
+  - Match existing design system
+  - Responsive design
+  - Accessibility support
+  - Loading and error states
+
+## **PHASE 4: TESTING AND VALIDATION**
+
+### **Task 4.1: Test with GPT-5 Nano Model**
+
+- **Command**: `test_7_prompts_comprehensive.sh`
+- **Purpose**: Validate functionality with default model
 - **Validation**:
-  - All 7 tests must pass
-  - Verify token counts appear in footer
-  - Check for 7 different response times
-  - Detect and re-run any false failures
+  - All 7 tests pass
+  - Model selector shows correct model
+  - API calls use selected model
+  - UI layout is correct
 
-### **Task 3.2: API Testing**
+### **Task 4.2: Test with GPT-5 Mini Model**
 
+- **Command**: `test_7_prompts_comprehensive.sh` (after model selection)
+- **Purpose**: Validate model switching functionality
 - **Validation**:
-  - Test API endpoints return token data in metadata
-  - Verify footer display works in both CLI and API responses
-  - Check error handling for missing usage data
+  - Model selector allows switching
+  - API calls use new model
+  - All functionality works with Mini model
+  - Performance is acceptable
 
-## **PHASE 4: DOCUMENTATION AND CLEANUP**
+### **Task 4.3: Test Panel Consolidation**
 
-### **Task 4.1: Update Code Comments**
+- **Purpose**: Validate consolidated debug panel
+- **Validation**:
+  - Single panel shows all information
+  - No duplicate information
+  - Panel is collapsible and functional
+  - Mobile responsiveness works
 
-- **Files**: All modified files
-- **Actions**:
-  - Add comments explaining official SDK usage
-  - Remove outdated comments about performance issues
-  - Document new token counting approach
+## **PHASE 5: CLEANUP AND OPTIMIZATION**
 
-### **Task 4.2: Update Serena Memories**
+### **Task 5.1: Remove Unused Code**
 
-- **Actions**:
-  - Create memory for official token counting implementation
-  - Update project status with new architecture
-  - Document performance improvements
+- **Files**: Various component files
+- **Purpose**: Clean up removed functionality
+- **Changes**:
+  - Remove unused imports
+  - Remove unused props and state
+  - Remove unused CSS classes
+  - Clean up type definitions
 
-## **IMPLEMENTATION DETAILS**
+### **Task 5.2: Update Type Definitions**
 
-### **Token Data Access Pattern**
+- **File**: `src/frontend/types/index.ts` (if exists)
+- **Purpose**: Update types for new components
+- **Changes**:
+  - Add AIModelSelector props types
+  - Update ConsolidatedDebugPanel props
+  - Remove unused Status/Session types
 
-```python
-# Official SDK method
-if hasattr(result, 'context_wrapper') and result.context_wrapper:
-    usage = result.context_wrapper.usage
-    total_tokens = usage.total_tokens
-    input_tokens = usage.input_tokens
-    output_tokens = usage.output_tokens
-    requests = usage.requests
-```
+### **Task 5.3: Documentation Updates**
 
-### **Footer Display Format**
+- **Files**: Component files and README
+- **Purpose**: Update documentation for new features
+- **Changes**:
+  - Add JSDoc comments for new components
+  - Update component descriptions
+  - Document new props and usage
 
-```
-📊 Performance Metrics:
-   ⏱️  Response Time: {processing_time:.3f}s
-   🤖  Model: {model_name}
-   🔢  Tokens Used: {total_tokens:,} (Input: {input_tokens:,}, Output: {output_tokens:,})
-```
+## **PHASE 6: FINAL VALIDATION**
 
-### **Error Handling**
+### **Task 6.1: Comprehensive Testing**
 
-- Graceful fallback if `context_wrapper` is missing
-- Graceful fallback if `usage` data is unavailable
-- Maintain existing footer structure even without token data
+- **Command**: `test_7_prompts_comprehensive.sh`
+- **Purpose**: Final validation of all changes
+- **Validation**:
+  - All 7 tests pass with both models
+  - UI is responsive and accessible
+  - No console errors or warnings
+  - Performance is maintained
+
+### **Task 6.2: Code Quality Check**
+
+- **Command**: `npm run lint:all`
+- **Purpose**: Ensure code quality standards
+- **Validation**:
+  - No linting errors
+  - TypeScript compilation successful
+  - Code follows project conventions
 
 ## **SUCCESS CRITERIA**
 
-✅ **All old token counting code removed**
-✅ **Official SDK method implemented**
-✅ **Token counts appear in footer for both CLI and API**
-✅ **All 7 CLI tests pass**
-✅ **Performance impact minimal**
-✅ **Error handling robust**
-✅ **Code comments updated**
-✅ **Serena memories updated**
+✅ **AI Model Selector**:
 
-## **FILES TO MODIFY**
+- Dropdown appears next to send button
+- Allows switching between GPT-5 Nano and Mini
+- API calls use selected model
+- Loading and error states handled
 
-1. `src/backend/services/agent_service.py` - Enable usage tracking
-2. `src/backend/cli.py` - Remove old logic, add new method
-3. `src/backend/routers/chat.py` - Remove old logic, add new method
-4. `src/backend/utils/response_utils.py` - Update footer display
-5. `src/backend/api_models.py` - Keep existing fields
+✅ **Panel Consolidation**:
 
-## **TESTING COMMANDS**
+- Single consolidated debug panel
+- Contains all debug, status, and performance info
+- Status Information panel removed
+- Session components removed
 
-```bash
-# CLI Testing
-./test_7_prompts_comprehensive.sh
+✅ **Functionality**:
 
-# API Testing
-curl -X POST http://127.0.0.1:8000/api/v1/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Tesla stock price"}'
-```
+- All 7 comprehensive tests pass
+- Both models work correctly
+- UI is responsive and accessible
+- No regressions in existing features
 
-## **PERFORMANCE EXPECTATIONS**
+✅ **Code Quality**:
 
-- **Minimal Impact**: Official SDK method is optimized
-- **Real-time**: Token counts available immediately
-- **Reliable**: More accurate than custom metadata approach
-- **Maintainable**: Uses official SDK patterns
+- No linting errors
+- Clean, maintainable code
+- Proper TypeScript types
+- Good component organization
 
----
+## **IMPLEMENTATION NOTES**
 
-**🔴 CRITICAL: MANDATORY TOOL USAGE THROUGHOUT IMPLEMENTATION**
-
-- Use all tools continuously during implementation
-- Test after each major change
-- Verify both CLI and API functionality
-- Update documentation as you go
+- **Tool Usage**: Use ALL mandatory toolkit tools throughout implementation
+- **Testing**: Test after each major change
+- **Incremental**: Implement changes incrementally and test frequently
+- **Documentation**: Update documentation as changes are made
+- **Accessibility**: Ensure all new components are accessible
+- **Responsiveness**: Test on mobile and desktop viewports

@@ -50,11 +50,9 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 Research Using Context7 Tools, OpenAI cookbook tools, & your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for the following task(s) and\or requirments:
 
-1. Using Official OpenAI Agents SDK method to Output the token counting stats to the footer data of each response for both CLI & GUI responses, with minimal performance impact
-
-2. Completley remove and retire the current non-Official OpenAI partial token counting meta data previously implemented. This needs to be the first thing that is implemented first as part of the plan to set the stage and scaffolding to remove all old remnants of token counting so there are no conflicts and confusion when you implement the official OpenAI method
-
-3. DO NOT TEST GUI VERSION AFTER IMPLEMENTATION BECAUSE USER WILL TEST GUI IN ANOTHER TASK
+1. Add back missing AI Model Seletor drop down component.  Place the Model selector dropdown next to the send button
+2. Consolidate and combine Debug Info and Status Info into a single bottom panel instead of 1 for each.  
+3. Remove the folowing GUI components, indicators, and code: Both Status, Session.  We do not need these right now, and they will now leave room to add additional debug components in the future
 
 ###
 
@@ -70,6 +68,8 @@ Implement the granular detailed Implementation Plan TODO Task Checklist file 'TO
 ###
 
 <CLI Testing Phase>
+test all fixes using CLI method 'test_7_prompts_comprehensive.sh' first for NANO, then re-run and test for MINI
+
 YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed
 
 ###

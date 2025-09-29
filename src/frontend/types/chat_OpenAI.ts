@@ -47,11 +47,18 @@ export interface ApiError {
 
 // Component prop interfaces for better type safety
 export interface ChatInputProps {
-  onSendMessage: (message: string) => void | Promise<void>;
+  onSendMessage: (message: string, model?: string) => void | Promise<void>;
   isLoading: boolean;
   disabled?: boolean;
   placeholder?: string;
   maxLength?: number;
+  value?: string;
+  onChange?: (value: string) => void;
+  selectedModel?: string;
+  onModelChange?: (modelId: string) => void;
+  models?: Array<{ id: string; name: string }>;
+  modelLoading?: boolean;
+  modelError?: string | null;
 }
 
 export interface ChatMessageProps {

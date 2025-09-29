@@ -11,9 +11,7 @@ import {
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
 import { sendChatMessage } from '../services/api_OpenAI';
-import { AIModelId } from '../types/ai_models';
 import { Message } from '../types/chat_OpenAI';
-import { usePerformanceMonitoring } from '../utils/performance';
 
 // Consolidated state interface for useReducer
 interface ChatState {
@@ -27,16 +25,16 @@ interface ChatState {
 type ChatAction =
   | { type: 'SEND_MESSAGE_START'; payload: { userMessage: Message } }
   | {
-      type: 'SEND_MESSAGE_SUCCESS';
-      payload: { aiMessage: Message };
-    }
+    type: 'SEND_MESSAGE_SUCCESS';
+    payload: { aiMessage: Message };
+  }
   | {
-      type: 'SEND_MESSAGE_ERROR';
-      payload: {
-        errorMessage: string;
-        aiMessage: Message;
-      };
-    }
+    type: 'SEND_MESSAGE_ERROR';
+    payload: {
+      errorMessage: string;
+      aiMessage: Message;
+    };
+  }
   | { type: 'UPDATE_INPUT'; payload: string }
   | { type: 'CLEAR_ERROR' }
   | { type: 'RESET_STATE' };
@@ -90,10 +88,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
   }
 }
 
+import { useAIModel } from '../hooks/useAIModel';
 import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import CollapsiblePanel from './CollapsiblePanel';
-import DebugPanel from './DebugPanel';
+import ConsolidatedDebugPanel from './ConsolidatedDebugPanel';
 
 // Lazy load secondary components for better performance
 const ExportButtons = lazy(() =>
@@ -111,15 +110,14 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
   const { messages, isLoading, error, inputValue } = state;
 
-  // AI Model management - temporarily disabled to fix React Hook order error
-  // const {
-  //   models,
-  //   currentModel,
-  //   isLoading: isLoadingModels,
-  //   error: modelError,
-  //   selectModel,
-  // } = useAIModel();
-  const currentModel: AIModelId = 'gpt-5-nano' as AIModelId;
+  // AI Model management - MUST be called immediately after useReducer
+  const {
+    models,
+    currentModel,
+    isLoading: isLoadingModels,
+    error: modelError,
+    selectModel,
+  } = useAIModel();
 
   // Optimize useMemo - Only memoize expensive calculations
   const hasMessages = messages.length > 0;
@@ -130,8 +128,9 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
   // Performance and interaction tracking
 
-  // Phase 4: Performance Monitoring
-  const { metrics: performanceMetrics } = usePerformanceMonitoring();
+  // Phase 4: Performance Monitoring - Temporarily disabled for debugging
+  // const { metrics: performanceMetrics } = usePerformanceMonitoring();
+  const performanceMetrics = { fcp: 0, lcp: 0, cls: 0 };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const statusRegionRef = useRef<HTMLDivElement>(null);
@@ -183,7 +182,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         // Send to API and get response
         const apiResponse = await sendChatMessage(
           messageContent,
-          currentModel || undefined
+          currentModel
         );
 
         // Create AI message and dispatch success action
@@ -194,12 +193,12 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           timestamp: new Date(),
           metadata: apiResponse.metadata
             ? {
-                tokenCount: apiResponse.metadata.tokenCount,
-                model: apiResponse.metadata.model,
-                processingTime: apiResponse.metadata.processingTime,
-                requestId: apiResponse.metadata.requestId,
-                timestamp: apiResponse.metadata.timestamp,
-              }
+              tokenCount: apiResponse.metadata.tokenCount,
+              model: apiResponse.metadata.model,
+              processingTime: apiResponse.metadata.processingTime,
+              requestId: apiResponse.metadata.requestId,
+              timestamp: apiResponse.metadata.timestamp,
+            }
             : undefined,
         };
 
@@ -323,6 +322,11 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
               onChange={value =>
                 dispatch({ type: 'UPDATE_INPUT', payload: value })
               }
+              selectedModel={currentModel}
+              onModelChange={selectModel}
+              models={models}
+              modelLoading={isLoadingModels}
+              modelError={modelError}
             />
           </div>
         </section>
@@ -391,98 +395,19 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           </div>
         </CollapsiblePanel>
 
-        {/* Debug Panel */}
+        {/* Consolidated Debug Panel */}
         <CollapsiblePanel
-          title='Debug Information'
+          title='System Information'
           defaultExpanded={false}
-          data-testid='debug-panel'
+          data-testid='consolidated-debug-panel'
         >
-          <DebugPanel
+          <ConsolidatedDebugPanel
             messageCount={messages.length}
+            isLoading={isLoading}
             lastUpdate={new Date()}
             isConnected={true}
+            performanceMetrics={performanceMetrics}
           />
-        </CollapsiblePanel>
-
-        {/* Status Information */}
-        <CollapsiblePanel
-          title='Status Information'
-          defaultExpanded={false}
-          data-testid='status-panel'
-        >
-          <div className='message-count-display'>
-            <span className='message-count-label'>Messages:</span>
-            <span
-              className='message-count-value'
-              aria-label={`Total messages: ${messages.length}`}
-            >
-              {messages.length}
-            </span>
-          </div>
-          <div className='status-info'>
-            <span className='status-label'>Status:</span>
-            <span
-              className={`status-value ${isLoading ? 'status--loading' : 'status--ready'}`}
-              aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
-            >
-              {isLoading ? 'Processing...' : 'Ready'}
-            </span>
-          </div>
-        </CollapsiblePanel>
-
-        {/* Performance Monitoring */}
-        <CollapsiblePanel
-          title='Performance Metrics'
-          defaultExpanded={false}
-          data-testid='performance-panel'
-        >
-          <div className='performance-metrics-grid'>
-            <div className='performance-metric'>
-              <span className='metric-label'>FCP:</span>
-              <span
-                className={
-                  performanceMetrics.fcp && performanceMetrics.fcp < 1500
-                    ? 'good'
-                    : 'warning'
-                }
-              >
-                {performanceMetrics.fcp
-                  ? `${performanceMetrics.fcp.toFixed(0)}ms`
-                  : 'Calculating...'}
-              </span>
-            </div>
-            <div className='performance-metric'>
-              <span className='metric-label'>LCP:</span>
-              <span
-                className={
-                  performanceMetrics.lcp && performanceMetrics.lcp < 2500
-                    ? 'good'
-                    : 'warning'
-                }
-              >
-                {performanceMetrics.lcp
-                  ? `${performanceMetrics.lcp.toFixed(0)}ms`
-                  : 'Calculating...'}
-              </span>
-            </div>
-            <div className='performance-metric'>
-              <span className='metric-label'>CLS:</span>
-              <span
-                className={
-                  performanceMetrics.cls && performanceMetrics.cls < 0.1
-                    ? 'good'
-                    : 'warning'
-                }
-              >
-                {performanceMetrics.cls
-                  ? performanceMetrics.cls.toFixed(3)
-                  : 'Calculating...'}
-              </span>
-            </div>
-          </div>
-          <div className='performance-note'>
-            <small>Metrics update after user interaction</small>
-          </div>
         </CollapsiblePanel>
       </div>
     </div>

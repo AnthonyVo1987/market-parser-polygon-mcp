@@ -106,7 +106,7 @@ export async function fetchModels(): Promise<ModelListResponse> {
 export async function selectModel(
   modelId: AIModelId
 ): Promise<ModelSelectionResponse> {
-  const endpoint = `${API_BASE_URL}${MODEL_API_ENDPOINTS.SELECT}`;
+  const endpoint = `${API_BASE_URL}${MODEL_API_ENDPOINTS.SELECT}?model_id=${modelId}`;
 
   try {
     const response = await fetch(endpoint, {
@@ -114,7 +114,6 @@ export async function selectModel(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ model_id: modelId }),
     });
 
     if (!response.ok) {
