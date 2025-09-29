@@ -48,46 +48,30 @@ REMEMBER: The tool list is your toolkit - use every tool as often as needed, in 
 ## New Task Details
 
 <Research, Investigation, Analysis, Scoping Task(s)>
-Use Context7 Tools, Openai cookbook tools to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for:
+Research Using Context7 Tools, Openai cookbook tools, openai gpt-5 prompting guides, to perform focused, incremental, comprehensive, systematic, investigation, & analysis to provide scoping for:
 
-Task 1. Remove ALL OpenAI Rate limiting code\config so that we can have maximum model performance
+Task 1. Consolidate and streamline the current 3x Prompts to remove redundancies and improving performance and converting to TRUE a 2-tier architecture for AI Agent Prompts:
 
-Task 2. Research and optimize all AI Output Response from  OpenAI Responses API config\properties\attributes for OpenAI gpt-5-nano & OpenAI gpt-5-mini models being used in our app. You have to check the from OpenAI for some of the attributes.  Verify and fix to make sure the app is actually using the settings:
+1. AI Agent Instructions: Becomes now the single source of truth "System Prompt" for ALL AI interactions
+2. System Prompt Instructions: Duplicate and Redundant to AI Agent Instructions, so remove all of this and any code\prompts
+3. Message Prompts: Streamline by removing the dupe instructions that matches AI Agent Instructions. Messages will always be sent with the AI Agent Instructions as part of the "prompt prefix", and the actual message gets appended and combined with the prompt prefix to send the whole message.  So currently we have the exact same AI instruction as part of the message too, which is dupe and redudant.  So fix the prompts\code.
 
-- max_context_length: Output should be set to max for both models.
-- temperature: should be set higher to .2 for Financial Analysis
-- Enable adaptive thinking\reasoning to allow model to adjust it's reasoning as needed to match the complexity of the tasks
-- Set verbosity to LOW
-- adjust anything else that can be optmized for every AI response
+Context:
 
-Task 3. Research and optimize all OpenAI Agents SDK AI Agent config\properties\attributes for OpenAI gpt-5-nano & OpenAI gpt-5-mini models being used in our app. Verify and fix to make sure the app is actually using the settings:
+1. **System Prompt Instructions are redundant** - The `Agent.instructions` parameter automatically becomes the system message
+2. **Message Prompts can be simplified** - User messages can be sent directly without duplicate instructions
+3. **AI Agent Instructions are the foundation** - They define the agent's behavior and become the system prompt
 
-- adjust anything else that can be optmized for every AI agent
-- Fix the Agent's "max_tokens" setting because it makes no sense to be so low that does not even match the gpt-5 models.  are they even being used correctly?  these models have 400K total context window and a max output of 128K tokens.
+### **🔧 What Actually Happens:**
 
-src/backend/routers/models.py
-async def get_available_models():
-    """Get list of available AI models"""
-    try:
-        models = [
-            AIModel(
-                id=AIModelId.GPT_5_NANO,
-                name="GPT-5 Nano",
-                description="Fast and efficient model for quick responses",
-                is_default=True,
-                cost_per_1k_tokens=0.15,
-                max_tokens=4096,
-            ),
-            AIModel(
-                id=AIModelId.GPT_5_MINI,
-                name="GPT-5 Mini",
-                description="Balanced performance model",
-                is_default=False,
-                cost_per_1k_tokens=0.25,
-                max_tokens=8192,
-            ),
-            # Removed GPT_4O and GPT_4O_MINI models
-        ]
+- **Agent Creation**: `Agent(instructions="...")` sets the system prompt
+- **User Message**: `Runner.run(agent, "user query")` sends the message directly
+- **SDK Magic**: The OpenAI Agents SDK automatically constructs the proper message array with system + user + history
+
+### **📊 Simplified Architecture:**
+
+1. **Tier 1: Agent Instructions** → System prompt (static)
+2. **Tier 2: User Messages** → Dynamic user input (simple queries)
 
 <Planning Task>
 Based on the Research, Analysis & Scoping from previous task(s), delete the current 'TODO_task_plan.md' and then Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s), NEVER stop using tools, continue using them until tasks completion, Comprehensive Documentation Updates & Cleanup, removal etc to reflect the latest updates to remove outdated info
@@ -95,11 +79,8 @@ Based on the Research, Analysis & Scoping from previous task(s), delete the curr
 <Implementation Task>
 Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
-<Lint Task>
-Review projects Lint\ESLint\Pylint commands and config, and run full Lint\ESLint\PyLint and fix all issues
-
 <CLI Testing Task>
-Perform some testing of CLI version executing test_7_prompts_comprehensive.sh (uv run src/backend/main.py), fix any issues
+YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform  testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times.
 
 <Serena Update Memories Task>
-Use Serena Tools to update project memories
+Use Serena Tools to update project memories to reflect all the new changes and new app architecture

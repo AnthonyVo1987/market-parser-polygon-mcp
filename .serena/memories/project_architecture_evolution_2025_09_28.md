@@ -181,6 +181,50 @@ def get_session():
 
 ---
 
+## 🤖 **3-TIER PROMPT ARCHITECTURE INTEGRATION**
+
+### **Tier 1: AI Agent Instructions (Static Foundation)**
+**File**: `src/backend/services/agent_service.py:11-33`
+**Function**: `get_enhanced_agent_instructions()`
+**Purpose**: Defines agent's core personality and capabilities
+**Key Components**:
+- Role Definition: "financial analyst with real-time market data access"
+- Dynamic DateTime Context: Generated fresh each time agent is created
+- Tool Instructions: Specific MCP server usage guidelines
+- Response Formatting: Bullet points, 2 decimal places, ticker symbols
+- Behavioral Constraints: Concise responses, minimal tool calls
+
+### **Tier 2: System Prompt Instructions (OpenAI API Integration)**
+**File**: `src/backend/services/agent_service.py:19-33`
+**Purpose**: Provides system role message to OpenAI API
+**Activation**: Every API call to OpenAI
+**Content**: Same as AI Agent Instructions (Tier 1)
+**Persistence**: Static throughout session, regenerated on new agent creation
+
+### **Tier 3: Message Prompts (Dynamic User Input)**
+**File**: `src/backend/routers/chat.py:50,87`
+**Purpose**: Captures and processes user queries
+**Activation**: Every user interaction
+**Structure**: User role messages with conversation history from shared_session
+
+### **Complete Message Flow Architecture**
+The OpenAI Agents SDK internally constructs the complete message array:
+```python
+messages = [
+    {
+        "role": "system",
+        "content": "You are a financial analyst with real-time market data access.\n\nCURRENT DATE AND TIME CONTEXT:\n- Today's date: Sunday, September 28, 2025\n- Current time: 04:33 PM \n- ISO format: 2025-09-28 16:33:49\n- Market status: Closed\n\nIMPORTANT: Always use the current date and time above for all financial analysis.\nDo NOT use training data cutoff dates or outdated information.\n\nTOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.\n🔴 CRITICAL: YOU MUST NOT USE THE FOLLOWING UNSUPPORTED TOOLS: [list_trades, get_last_trade, list_quotes, get_last_quote] 🔴\n\nINSTRUCTIONS:\n1. Use current date/time above for all analysis\n2. Gather real-time data using available tools\n3. Structure responses: Format data in bullet point format with 2 decimal points max\n4. Include ticker symbols\n5. Respond quickly with minimal tool calls\n6. Keep responses concise - avoid unnecessary details\n7. Do NOT provide any of the following UNLESS SPECIFICALLY REQUESTED: analysis, key takeways, actionable recommendations"
+    },
+    {
+        "role": "user",
+        "content": "What is the price of NVDA?"
+    }
+    # Plus conversation history from shared_session
+]
+```
+
+---
+
 ## 📊 **ARCHITECTURE METRICS**
 
 ### **Code Organization Metrics:**
@@ -201,6 +245,13 @@ def get_session():
 - **Memory Usage:** No significant change
 - **Response Times:** Maintained original performance
 - **Resource Usage:** Optimized through shared resources
+
+### **Prompt Architecture Metrics:**
+- **3-Tier System:** Complete separation of concerns
+- **Performance:** Agent reuse reduces instruction regeneration overhead
+- **Consistency:** System prompt remains stable throughout session
+- **Flexibility:** User messages are completely dynamic
+- **Context Awareness:** DateTime context ensures current market data usage
 
 ---
 
@@ -229,6 +280,14 @@ def get_session():
 - ✅ **DRY Principle:** Common functionality extracted to utilities
 - ✅ **Clean Code:** Better code organization and readability
 - ✅ **Standards Compliance:** Easier to maintain coding standards
+
+### **5. Prompt Architecture Benefits**
+- ✅ **Separation of Concerns:** Each tier has a distinct purpose
+- ✅ **Performance:** Agent reuse reduces instruction regeneration overhead
+- ✅ **Consistency:** System prompt remains stable throughout session
+- ✅ **Flexibility:** User messages are completely dynamic
+- ✅ **Context Awareness:** DateTime context ensures current market data usage
+- ✅ **Tool Integration:** MCP server provides real-time financial data access
 
 ---
 
@@ -264,9 +323,16 @@ def get_session():
 3. **Documentation:** Document module interfaces and responsibilities
 4. **Code Reviews:** Ensure architectural consistency through reviews
 
+### **Prompt Architecture Best Practices:**
+1. **Static Foundation:** Keep agent instructions stable for consistency
+2. **Dynamic Context:** Regenerate datetime context for accuracy
+3. **User Flexibility:** Allow complete freedom in user message input
+4. **Tool Integration:** Seamlessly integrate MCP server capabilities
+
 ---
 
 **Architecture Status:** ✅ **SUCCESSFULLY TRANSFORMED**  
 **Maintainability:** ✅ **SIGNIFICANTLY IMPROVED**  
 **Scalability:** ✅ **ENHANCED FOR FUTURE GROWTH**  
-**Code Quality:** ✅ **EXCELLENT STANDARDS MAINTAINED**
+**Code Quality:** ✅ **EXCELLENT STANDARDS MAINTAINED**  
+**Prompt Architecture:** ✅ **3-TIER SYSTEM IMPLEMENTED**
