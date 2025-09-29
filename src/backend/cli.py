@@ -9,6 +9,7 @@ from .api_models import ResponseMetadata
 from .config import settings
 from .services import create_agent, create_polygon_mcp_server
 from .utils import print_error, print_response
+from .utils.token_utils import extract_token_count_from_context_wrapper
 
 
 async def cli_async():
@@ -84,8 +85,8 @@ async def _process_user_input(server, cli_session, user_input):
         # Calculate processing time
         processing_time = time.perf_counter() - start_time
 
-        # Extract token information from OpenAI response metadata
-        token_count = _extract_token_count(result)
+        # Extract token data using official OpenAI Agents SDK
+        token_count = extract_token_count_from_context_wrapper(result)
 
         # Create metadata object for CLI response
         cli_metadata = ResponseMetadata(
@@ -114,17 +115,3 @@ async def _process_user_input(server, cli_session, user_input):
                 self.metadata = None
 
         return MockResult(f"Error: Unable to process request. {str(e)}")
-
-
-def _extract_token_count(result):
-    """Extract token count from result metadata."""
-    if hasattr(result, "metadata") and result.metadata:
-        # Try to extract token information from OpenAI response metadata
-        if hasattr(result.metadata, "get"):
-            return result.metadata.get("tokenCount")
-        if hasattr(result.metadata, "usage"):
-            # Handle OpenAI usage object format
-            usage = result.metadata.usage
-            if hasattr(usage, "total_tokens"):
-                return usage.total_tokens
-    return None

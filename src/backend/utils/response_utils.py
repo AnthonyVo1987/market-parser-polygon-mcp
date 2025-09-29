@@ -33,25 +33,20 @@ def print_response(result):
         if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
             console.print(f"   ⏱️  Response Time: {result.metadata.processing_time:.3f}s")
 
-        # Extract token information
+        # Extract token information using official OpenAI Agents SDK
         token_count = None
         input_tokens = None
         output_tokens = None
 
-        if hasattr(result.metadata, "get"):
-            token_count = result.metadata.get("tokenCount")
-            input_tokens = result.metadata.get("inputTokens")
-            output_tokens = result.metadata.get("outputTokens")
-        elif hasattr(result.metadata, "usage"):
-            usage = result.metadata.usage
+        # Try to get token data from official SDK context_wrapper
+        if hasattr(result, "context_wrapper") and result.context_wrapper:
+            usage = result.context_wrapper.usage
             if hasattr(usage, "total_tokens"):
                 token_count = usage.total_tokens
-            if hasattr(usage, "prompt_tokens"):
-                input_tokens = usage.prompt_tokens
-            if hasattr(usage, "completion_tokens"):
-                output_tokens = usage.completion_tokens
-        elif hasattr(result.metadata, "token_count"):
-            token_count = result.metadata.token_count
+            if hasattr(usage, "input_tokens"):
+                input_tokens = usage.input_tokens
+            if hasattr(usage, "output_tokens"):
+                output_tokens = usage.output_tokens
 
         # Display token information
         if token_count:

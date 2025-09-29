@@ -13,6 +13,7 @@ from ..api_models import ResponseMetadata
 from ..config import settings
 from ..dependencies import get_mcp_server, get_session
 from ..services import create_agent, create_polygon_mcp_server
+from ..utils.token_utils import extract_token_count_from_context_wrapper
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
 
@@ -92,19 +93,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         except Exception as e:
             response_text = f"Error: Unable to process request. {str(e)}"
 
-        # Extract token count from OpenAI response metadata
-        token_count = None
-
-        if result and hasattr(result, "metadata") and result.metadata:
-            # Try to extract token information from OpenAI response metadata
-            if hasattr(result.metadata, "get"):
-                token_count = result.metadata.get("tokenCount")
-            elif hasattr(result.metadata, "usage"):
-                # Handle OpenAI usage object format
-                usage = result.metadata.usage
-                if hasattr(usage, "total_tokens"):
-                    token_count = usage.total_tokens
-                # Token usage tracking removed for performance
+        # Extract token data using official OpenAI Agents SDK
+        token_count = extract_token_count_from_context_wrapper(result)
 
         # Calculate processing time
         processing_time = time.perf_counter() - start_time

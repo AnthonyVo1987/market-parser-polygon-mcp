@@ -21,7 +21,7 @@ def get_enhanced_agent_instructions():
 {datetime_context}
 
 TOOLS: Use Polygon.io MCP server for live market data, prices, and financial information.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_snapshot_all, get_snapshot_ticker, get_snapshot_option, get_market_status, list_universal_snapshots, list_ticker_news] 🔴
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 9 SUPPORTED TOOLS: [get_snapshot_ticker, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_market_status, list_ticker_news] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 📋 TOOL GUIDANCE FOR COMMON SCENARIOS:
@@ -46,9 +46,6 @@ TOOLS: Use Polygon.io MCP server for live market data, prices, and financial inf
 🎯 News Data for Tickers:
    → USE: list_ticker_news() tool
 
-🎯 Universal Snapshots (All Markets):
-   → USE: list_universal_snapshots() tool
-
 INSTRUCTIONS:
 1. Use current date/time above for all analysis
 2. Gather real-time data using ONLY the 10 allowed tools above
@@ -64,16 +61,14 @@ def get_optimized_model_settings():
     """Get optimized ModelSettings for GPT-5 financial analysis.
 
     Returns:
-        ModelSettings: Optimized configuration for GPT-5 models
+        ModelSettings: Optimized configuration for GPT-5 models with token usage tracking
     """
     return ModelSettings(
         reasoning=Reasoning(effort="low"),
         verbosity="low",
         max_tokens=128000,
-        extra_args={
-            "service_tier": "flex",
-            "user": "financial_analysis_agent"
-        }
+        include_usage=True,  # Enable official token usage tracking
+        extra_args={"service_tier": "flex", "user": "financial_analysis_agent"},
     )
 
 
