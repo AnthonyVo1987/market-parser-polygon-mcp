@@ -9,6 +9,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from test_utils import run_test_suite
+
 
 def test_cli_help():
     """Test that CLI shows help information"""
@@ -64,29 +66,11 @@ def test_cli_exists():
 
 def main():
     """Run basic CLI smoke tests"""
-    print("🔍 Running CLI smoke tests...")
-    print("=" * 50)
-
     tests = [("CLI Existence", test_cli_exists), ("CLI Help Command", test_cli_help)]
 
-    passed = 0
-    total = len(tests)
-
-    for test_name, test_func in tests:
-        print(f"\n🧪 {test_name}:")
-        if test_func():
-            passed += 1
-        else:
-            print(f"   Test failed")
-
-    print("\n" + "=" * 50)
-    print(f"📊 Results: {passed}/{total} tests passed")
-
-    if passed == total:
-        print("🎉 All CLI smoke tests passed!")
-        return 0
-    print("⚠️ Some CLI smoke tests failed")
-    return 1
+    return run_test_suite(
+        "CLI smoke tests", tests, "All CLI smoke tests passed!", "Some CLI smoke tests failed"
+    )
 
 
 if __name__ == "__main__":

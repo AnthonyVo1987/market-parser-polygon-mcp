@@ -86,7 +86,7 @@ def create_agent(mcp_server: MCPServerStdio):
         instructions=get_enhanced_agent_instructions(),
         tools=[],  # Removed save_analysis_report - superseded by GUI Copy/Export buttons
         mcp_servers=[mcp_server],
-        model=settings.available_models[0],
+        model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )
 

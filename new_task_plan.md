@@ -40,7 +40,7 @@ SUCCESS CRITERIA:
 ## New Task Details
 
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
-Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or OpenAI Cookbook Tools to provide scoping for EACH of following task(s) and\or requirments:
+Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or openai-cookbook Docs Tools to provide scoping for EACH of following task(s) and\or requirments:
 
 feat: Completely remove and retire anything related to AI Model Selection implementation because it will be re-implemented at a later date because we are still in the prototpying stage.  We will just make gpt-5-nano the current active default model for now.  So need to also make fixes to the config 'config/app.config.json' to now only support only one active model for new to be used in the app with no selection possible. Remove 'availableModels' and instead, just create a config entry for current default active model etc and set it to gpt-5-nano, and the app should now ONLY read the new default active model config during startup to then use for ALL AI Agents\Messages. Remove any mention of model selection and any references to gpt-5-mini in the docs and all docs. also remove any mention or references and usage of 'temperature' since GPT-5 actually does NOT support temperature parameter anymore, so we need to remove all references to it.
 

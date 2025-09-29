@@ -544,7 +544,7 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Test Output: Complete AI response text
   - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
-  - Model Used: gpt-5-mini
+  - Model Used: gpt-5-nano
   - Execution Time: Start and end times
   - UI Validation: Modern 2-panel layout, glassmorphic design, mobile sidebar functionality validated
 
@@ -558,7 +558,7 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Test Output: Complete AI response text
   - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
-  - Model Used: gpt-5-mini
+  - Model Used: gpt-5-nano
   - Execution Time: Start and end times
   - UI Validation: Mobile sidebar functionality, responsive design, touch interactions validated
 
@@ -572,7 +572,7 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Test Output: Complete AI response text
   - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
-  - Model Used: gpt-5-mini
+  - Model Used: gpt-5-nano
   - Execution Time: Start and end times
   - UI Validation: Analysis button functionality, template population validated
 
@@ -586,7 +586,7 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Test Output: Complete AI response text
   - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
-  - Model Used: gpt-5-mini
+  - Model Used: gpt-5-nano
   - Execution Time: Start and end times
   - UI Validation: Performance metrics display, response time tracking validated
 
@@ -600,7 +600,7 @@ TZ='America/Los_Angeles' date '+%H:%M %Z'
   - Test Output: Complete AI response text
   - Response Time: Actual time recorded
   - Performance Classification: SUCCESS (< 45s)
-  - Model Used: gpt-5-mini
+  - Model Used: gpt-5-nano
   - Execution Time: Start and end times
   - UI Validation: Export functionality, recent message buttons, debug panel validated
 

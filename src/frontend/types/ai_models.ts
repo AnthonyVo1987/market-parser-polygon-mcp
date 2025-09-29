@@ -8,7 +8,7 @@
 // Enum for model IDs matching backend
 export enum AIModelId {
   GPT_5_NANO = 'gpt-5-nano',
-  GPT_5_MINI = 'gpt-5-mini',
+  // Removed GPT_5_MINI
 }
 
 // Strict interface definitions

@@ -36,11 +36,11 @@ This document provides comprehensive scoping analysis for two change requests to
 
 ### Research Findings - OpenAI API Best Practices
 
-**Temperature Settings for Financial Analysis**:
+**Model Settings for Financial Analysis**:
 
-- **Optimal Range**: 0.2-0.3 for financial analysis (more deterministic, less creative)
-- **Current Setting**: Not explicitly set (defaults to 1.0)
-- **Recommendation**: Set temperature to 0.2 for consistent, factual financial responses
+- **GPT-5 Optimization**: GPT-5 provides deterministic responses without temperature parameter
+- **Current Setting**: Using GPT-5 nano with optimized settings
+- **Recommendation**: Continue using GPT-5 for consistent, factual financial responses
 
 **Token Optimization Strategies**:
 
@@ -65,10 +65,10 @@ This document provides comprehensive scoping analysis for two change requests to
    - Remove emoji usage instructions
    - Simplify response structure requirements
    - Remove financial disclaimers from prompts
-   - Add temperature parameter (0.2) to API calls
+   - Optimize GPT-5 model settings for financial analysis
 
 2. **Update API Configuration**:
-   - Set temperature to 0.2 in OpenAI API calls
+   - Optimize GPT-5 model settings for faster responses
    - Optimize max_tokens for faster responses
    - Remove unnecessary response formatting
 
@@ -76,13 +76,13 @@ This document provides comprehensive scoping analysis for two change requests to
 
 - `src/backend/direct_prompts.py` (system and user prompts)
 - `src/backend/main.py` (API configuration)
-- `src/backend/ai_models.py` (temperature settings)
+- `src/backend/ai_models.py` (model settings)
 
 ### Expected Performance Improvements
 
-- **Response Time**: 20-30% faster due to shorter prompts and lower temperature
+- **Response Time**: 20-30% faster due to shorter prompts and optimized GPT-5 settings
 - **Token Usage**: 40-50% reduction in prompt tokens
-- **Consistency**: Higher consistency with lower temperature setting
+- **Consistency**: Higher consistency with optimized GPT-5 settings
 - **Cost**: Reduced API costs due to lower token usage
 
 ## Change Request 2: Direct Button Sending
@@ -186,7 +186,7 @@ This document provides comprehensive scoping analysis for two change requests to
 **Task 3.1: AI Prompt Optimization**
 
 - Update system prompts for brevity and speed
-- Implement temperature optimization (0.2)
+- Implement GPT-5 model optimization
 - Remove verbose disclaimers and emoji instructions
 - Optimize token usage
 
@@ -200,7 +200,7 @@ This document provides comprehensive scoping analysis for two change requests to
 **Task 3.3: Configuration Updates**
 
 - Update API configuration for optimized performance
-- Add temperature settings to AI model configuration
+- Add optimized GPT-5 settings to AI model configuration
 - Update documentation for new button functionality
 
 ## Risk Assessment

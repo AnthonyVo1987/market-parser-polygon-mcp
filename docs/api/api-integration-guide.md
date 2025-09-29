@@ -6,11 +6,11 @@ This document provides comprehensive integration patterns and implementation gui
 
 ### New Features (Phase 3)
 
-- **Optimized AI Prompts**: 40-50% token reduction with temperature control
+- **Optimized AI Prompts**: 40-50% token reduction with optimized GPT-5 settings
 - **Direct Analysis Buttons**: One-click SNAPSHOT, SUPPORT/RESISTANCE, and TECHNICAL analysis
 - **Performance Monitoring**: Response time and token usage tracking
 - **Enhanced Configuration**: Centralized settings in `config/app.config.json`
-- **GPT-5 Model Optimization**: Proper model specification with rate limiting (200K TPM for nano, 500K TPM for mini)
+- **GPT-5 Model Optimization**: Proper model specification with rate limiting (200K TPM for nano)
 - **Quick Response System**: All prompts enforce minimal tool calls for 20-40% faster responses
 - **Polygon MCP v4.1.0**: Latest version with enhanced market data capabilities
 
@@ -509,8 +509,6 @@ def get_model_rate_limits(model: str) -> dict:
     """Get rate limits for specific GPT-5 models."""
     if model == "gpt-5-nano":
         return {"tpm": 200000, "rpm": 500}  # 200K TPM, 500 RPM
-    elif model == "gpt-5-mini":
-        return {"tpm": 500000, "rpm": 500}  # 500K TPM, 500 RPM
     else:
         return {"tpm": 200000, "rpm": 500}  # Default fallback
 
@@ -518,7 +516,7 @@ def get_model_rate_limits(model: str) -> dict:
 @limiter.limit("500/minute")  # GPT-5 model-specific rate limit
 async def process_chat(request: Request, chat_request: ChatRequest):
     # Validate request size against model-specific TPM limits
-    model = settings.available_models[0]  # GPT-5 nano or mini
+    model = settings.default_active_model  # GPT-5 nano
     limits = get_model_rate_limits(model)
     
     # Implementation here with proper model specification

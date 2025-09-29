@@ -18,20 +18,12 @@ The main configuration file contains all non-sensitive application settings:
       "port": 8000
     },
     "ai": {
-      "availableModels": [
-        "gpt-5-nano",
-        "gpt-5-mini"
-      ],
-      "maxContextLength": 128000,
-      "temperature": 0.2,
+      "default_active_model": "gpt-5-nano",
+      "maxContextLength": 400000,
       "pricing": {
         "gpt-5-nano": {
           "inputPer1M": 0.05,
           "outputPer1M": 0.40
-        },
-        "gpt-5-mini": {
-          "inputPer1M": 0.25,
-          "outputPer1M": 2.00
         }
       }
     },
@@ -106,9 +98,9 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ## GPT-5 Model Configuration
 
-### Available Models
+### Default Model
 
-The application now supports only GPT-5 models with proper rate limiting:
+The application uses a single GPT-5 model for all financial analysis:
 
 - **GPT-5 Nano**: Fast and efficient model for quick responses
   - **TPM Limit**: 200,000 tokens per minute
@@ -116,23 +108,14 @@ The application now supports only GPT-5 models with proper rate limiting:
   - **Cost**: $0.05/1M input tokens, $0.40/1M output tokens
   - **Max Tokens**: 4,096
 
-- **GPT-5 Mini**: Balanced performance model
-  - **TPM Limit**: 500,000 tokens per minute
-  - **RPM Limit**: 500 requests per minute
-  - **Cost**: $0.25/1M input tokens, $2.00/1M output tokens
-  - **Max Tokens**: 8,192
+### Model Configuration
 
-### Model Selection
-
-The application automatically selects the first model from the `availableModels` array:
+The application uses a single default model configuration:
 
 ```json
 {
   "ai": {
-    "availableModels": [
-      "gpt-5-nano",    // Primary model (default)
-      "gpt-5-mini"     // Secondary model
-    ]
+    "default_active_model": "gpt-5-nano"
   }
 }
 ```
@@ -202,18 +185,12 @@ All AI agents now enforce quick response behavior:
 - **Response Time**: 20-40% faster response times expected
 - **Efficiency**: Reduced token usage while maintaining quality
 
-### Temperature Settings
+### Model Settings
 
-```json
-{
-  "ai": {
-    "temperature": 0.2    // Deterministic financial analysis
-  }
-}
-```
+The application uses optimized settings for financial analysis:
 
-- **Low Temperature (0.2)**: Ensures consistent, deterministic responses
-- **Financial Focus**: Optimized for financial analysis accuracy
+- **Deterministic Responses**: GPT-5 provides consistent, reliable financial analysis
+- **Financial Focus**: Optimized for financial data accuracy
 - **Reduced Variability**: More predictable output for trading decisions
 
 ## Security Configuration
@@ -325,8 +302,8 @@ export const validateConfig = (config: AppConfig): boolean => {
   }
   
   // Validate AI model configuration
-  if (!config.backend?.ai?.availableModels?.length) {
-    throw new Error('At least one AI model must be configured');
+  if (!config.backend?.ai?.default_active_model) {
+    throw new Error('Default active model must be configured');
   }
   
   return true;
@@ -349,7 +326,7 @@ The following configuration changes have been implemented:
 If upgrading from a previous version:
 
 1. **Update Configuration**: Add the new `rateLimiting` section to your `app.config.json`
-2. **Remove GPT-4o References**: Ensure only GPT-5 models are in `availableModels`
+2. **Remove GPT-4o References**: Ensure only GPT-5 models are configured
 3. **Update Polygon Version**: Change MCP version to "v4.1.0"
 4. **Test Configuration**: Run the application to validate all settings
 
@@ -398,7 +375,7 @@ npm run validate-config
 1. **Environment Separation**: Use different configurations for development, staging, and production
 2. **API Key Security**: Never commit API keys to version control
 3. **Rate Limit Monitoring**: Monitor rate limit usage and adjust as needed
-4. **Model Selection**: Choose appropriate model based on use case (nano for speed, mini for complexity)
+4. **Model Configuration**: Ensure default active model is properly configured
 5. **Configuration Validation**: Always validate configuration before deployment
 6. **Backup Configuration**: Keep backup copies of working configurations
 

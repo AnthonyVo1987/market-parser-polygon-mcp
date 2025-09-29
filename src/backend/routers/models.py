@@ -47,15 +47,7 @@ async def get_available_models():
                 cost_per_1k_tokens=0.15,
                 max_tokens=128000,
             ),
-            AIModel(
-                id=AIModelId.GPT_5_MINI,
-                name="GPT-5 Mini",
-                description="Balanced performance model",
-                is_default=False,
-                cost_per_1k_tokens=0.25,
-                max_tokens=128000,
-            ),
-            # Removed GPT_4O and GPT_4O_MINI models
+            # Removed GPT_5_MINI, GPT_4O and GPT_4O_MINI models
         ]
 
         return ModelListResponse(

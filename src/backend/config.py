@@ -2,7 +2,6 @@
 
 import json
 from pathlib import Path
-from typing import List
 
 from pydantic_settings import BaseSettings
 
@@ -35,9 +34,9 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # AI configuration
-    available_models: List[str] = ["gpt-5-mini"]
+    default_active_model: str = "gpt-5-nano"
+    available_models: list = ["gpt-5-nano"]
     max_context_length: int = 400000
-    temperature: float = 0.2
     ai_pricing: dict = {}
 
     # Logging configuration
@@ -92,9 +91,9 @@ class Settings(BaseSettings):
 
         # AI configuration
         ai_config = backend_config["ai"]
-        self.available_models = ai_config["availableModels"]
+        self.default_active_model = ai_config["default_active_model"]
+        self.available_models = ["gpt-5-nano"]  # Only GPT-5-Nano supported
         self.max_context_length = ai_config["maxContextLength"]
-        self.temperature = ai_config["temperature"]
         self.ai_pricing = ai_config["pricing"]
 
         # Security configuration (rate limiting removed for maximum performance)

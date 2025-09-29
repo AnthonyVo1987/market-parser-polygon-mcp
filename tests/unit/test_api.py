@@ -10,6 +10,8 @@ from pathlib import Path
 
 import requests
 
+from test_utils import run_test_suite
+
 
 def test_api_health():
     """Test that API health endpoint responds correctly"""
@@ -99,37 +101,23 @@ def test_backend_structure():
 
 def main():
     """Run basic API smoke tests"""
-    print("🔍 Running API smoke tests...")
-    print("=" * 50)
-
     tests = [
         ("Backend Structure", test_backend_structure),
         ("API Reachability", test_api_reachable),
         ("API Health Endpoint", test_api_health),
     ]
 
-    passed = 0
-    total = len(tests)
-
-    for test_name, test_func in tests:
-        print(f"\n🧪 {test_name}:")
-        if test_func():
-            passed += 1
-        else:
-            print(f"   Test failed")
-
-    print("\n" + "=" * 50)
-    print(f"📊 Results: {passed}/{total} tests passed")
-
-    if passed == total:
-        print("🎉 All API smoke tests passed!")
-        return 0
-    print("⚠️ Some API smoke tests failed")
-    print("\nℹ️  Note: API tests may fail if backend server is not running")
-    print(
-        "   Start backend with: cd /path/to/project && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"
+    result = run_test_suite(
+        "API smoke tests", tests, "All API smoke tests passed!", "Some API smoke tests failed"
     )
-    return 1
+
+    if result != 0:
+        print("\nℹ️  Note: API tests may fail if backend server is not running")
+        print(
+            "   Start backend with: cd /path/to/project && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000"
+        )
+
+    return result
 
 
 if __name__ == "__main__":

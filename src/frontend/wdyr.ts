@@ -57,7 +57,18 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
             nextState: _nextState,
             nextHookResult: _nextHookResult,
             reason: _reason,
-          } = options;
+          } = options as {
+            Component?: React.ComponentType<unknown>;
+            displayName?: string;
+            hookName?: string;
+            prevProps: unknown;
+            prevState: unknown;
+            prevHookResult: unknown;
+            nextProps: unknown;
+            nextState: unknown;
+            nextHookResult: unknown;
+            reason: unknown;
+          };
           // Custom notification for excessive re-renders using minimal logger
           const componentName =
             displayName || hookName || Component?.name || 'Unknown';

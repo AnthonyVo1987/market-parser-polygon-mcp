@@ -53,10 +53,10 @@ documentation, see `tests/playwright/test_prompts.md`
 
 - **40-50% token reduction** for faster responses
 - **20-40% response time improvement** with optimized prompts and quick response optimization
-- **Deterministic financial analysis** with temperature setting of 0.2
+- **Deterministic financial analysis** with optimized GPT-5 settings
 - **Streamlined system prompts** without verbose disclaimers
 - **Quick Response Optimization** - All prompts enforce minimal tool calls for faster responses
-- **GPT-5 Model-Specific Rate Limiting** - Proper rate limits (200K TPM for nano, 500K TPM for mini)
+- **GPT-5 Model-Specific Rate Limiting** - Proper rate limits (200K TPM for nano)
 
 ### ⚡ **Streamlined Chat Interface**
 
@@ -282,7 +282,7 @@ maintaining visual quality:
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **AI Models**: GPT-5 Nano (200K TPM) and GPT-5 Mini (500K TPM) with proper rate limiting
+- **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
 - **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
 - **Testing**: Playwright E2E test suite with standardized quick response prompts
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup

@@ -1,0 +1,322 @@
+=== Test 1: Test_1_Market_Status_Query ===
+Prompt: What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?
+Duration: 0s
+Response Time: 25.230s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:51:27] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:51:41] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market Status: Open                                                          
+ • Date: 2025-09-29                                                             
+ • Time: 11:51 AM ET                                                            
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 25.230s
+   🔢  Tokens Used: 26,961 (Input: 26,720, Output: 241)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 1 ===
+
+=== Test 2: Test_2_Single_Stock_Snapshot_NVDA ===
+Prompt: Single Stock Snapshot Price NVDA
+Duration: 0s
+Response Time: 45.893s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:52:00] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:52:13] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:52:25] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/29/25 11:52:26] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA: Last price 181.71 USD                                                  
+ • Change: +3.56 (+1.99%)                                                       
+ • Day range: 180.32 – 184.00                                                   
+ • Prev close: 178.19                                                           
+ • VWAP (today): 182.52                                                         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 45.893s
+   🔢  Tokens Used: 40,835 (Input: 40,401, Output: 434)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 2 ===
+
+=== Test 3: Test_3_Full_Market_Snapshot_SPY_QQQ_IWM ===
+Prompt: Full Market Snapshot Price: SPY, QQQ, IWM
+Duration: 0s
+Response Time: 21.955s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:52:52] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:53:04] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: 663.44 (ch 1.65)                                                        
+ • QQQ: 599.23 (ch 3.27)                                                        
+ • IWM: 241.70 (ch 0.36)                                                        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 21.955s
+   🔢  Tokens Used: 27,804 (Input: 27,524, Output: 280)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 3 ===
+
+=== Test 4: Test_4_Closing_Price_Query_GME ===
+Prompt: GME closing price today
+Duration: 0s
+Response Time: 31.668s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:53:21] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:53:34] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:53:46] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • GME: 26.94, change +0.53 (+2.01%) today; previous close 26.42                
+ • Note: market is open; closing price not available yet                        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 31.668s
+   🔢  Tokens Used: 41,907 (Input: 41,327, Output: 580)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 4 ===
+
+=== Test 5: Test_5_Performance_Analysis_SOUN ===
+Prompt: SOUN Price performance this week
+Duration: 0s
+Response Time: 28.411s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:53:59] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:54:11] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/29/25 11:54:12] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SOUN: -0.15% this week (start close 15.94 → end close 15.92)                 
+ • Week intraday range: high ~19.33, low ~15.55 (week 1) and high ~16.27, low   
+   ~15.72 (week 2)                                                              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 28.411s
+   🔢  Tokens Used: 27,635 (Input: 26,984, Output: 651)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 5 ===
+
+=== Test 6: Test_6_Support_Resistance_NVDA ===
+Prompt: NVDA Price Support & Resistance Levels
+Duration: 0s
+Response Time: 19.247s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:54:35] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:54:47] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA: Support 164.07, Resistance 184.55, Last close 181.64                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 19.247s
+   🔢  Tokens Used: 29,772 (Input: 28,883, Output: 889)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 6 ===
+
+=== Test 7: Test_7_Technical_Analysis_SPY ===
+Prompt: SPY Price Technical Analysis
+Duration: 0s
+Response Time: 42.134s
+Cache Stats: 
+Success Indicator: 1
+Exit Code: 0
+
+   Updating https://github.com/polygon-io/mcp_polygon (v0.4.1)
+    Updated https://github.com/polygon-io/mcp_polygon (f54dd0c1bf812477dca97045d698067ddcfb2c83)
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [09/29/25 11:55:01] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:55:08] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:55:17] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[09/29/25 11:55:18] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[09/29/25 11:55:31] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Ticker: SPY                                                                  
+ • Price: 663.24                                                                
+ • Change (today): +1.40 (+0.21%)                                               
+ • Day range: 662.19 – 665.28                                                   
+ • Prev close: 661.82                                                           
+ • VWAP: 663.60                                                                 
+ • Market status: Open (as of 2025-09-29 14:55 ET)                              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 42.134s
+   🔢  Tokens Used: 55,339 (Input: 54,863, Output: 476)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END TEST 7 ===
+
+
+=== COMPREHENSIVE TEST SUMMARY ===
+Timestamp: Mon Sep 29 11:55:49 PDT 2025
+Total Tests: 7
+Passed: 7
+Failed: 0
+Success Rate: 100%
+Max Timeout per Test: 90s
+Total Max Runtime: 630s
+Min Response Time: [0;34m📝 Test 1: Test_1_Market_Status_Query[0m
+[1;33mPrompt: 'What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?'[0m
+[0;32m✅ Test 1 completed successfully[0m
+[0;32m⏱️  Duration: 0s[0m
+[0;32m📊 Response Time: 25.230s[0m
+[0;31m📈 Performance: TIMEOUT (> 90s)[0m
+25.230s
+Max Response Time: [0;34m📝 Test 1: Test_1_Market_Status_Query[0m
+[1;33mPrompt: 'What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?'[0m
+[0;32m✅ Test 1 completed successfully[0m
+[0;32m⏱️  Duration: 0s[0m
+[0;32m📊 Response Time: 25.230s[0m
+[0;31m📈 Performance: TIMEOUT (> 90s)[0m
+25.230s
+Avg Response Time: 0s
+Performance Rating: GOOD
+=== END COMPREHENSIVE TEST SUMMARY ===

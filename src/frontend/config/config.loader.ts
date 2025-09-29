@@ -5,7 +5,7 @@ export interface AppConfig {
   backend: {
     server: { host: string; port: number };
     ai: {
-      availableModels: string[];
+      default_active_model: string;
       maxContextLength: number;
       pricing: Record<string, { inputPer1M: number; outputPer1M: number }>;
     };
