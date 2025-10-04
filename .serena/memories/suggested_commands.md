@@ -72,15 +72,30 @@ npm run check:all             # Run lint + format check + type check
 
 ## Testing Commands
 
-### Comprehensive Testing
+### Persistent Session Testing (RECOMMENDED)
 ```bash
-./test_7_prompts_comprehensive.sh   # Run 7-prompt validation suite
+./test_7_prompts_persistent_session.sh   # Run 7-prompt test in SINGLE session
 ```
 
 **Expected Output:**
-- All 7/7 tests should pass
-- Response times: 19-46s (varies per real API calls)
+- All 7/7 tests pass in ONE session (not 7 separate sessions)
+- Session count: 1 (verified)
+- Response times: 6-31s per test (accurate tracking)
+- Avg response time: 15-20s
+- Total duration: 110-150s
+- Performance rating: EXCELLENT
 - Test report generated in test-reports/
+
+### Legacy Testing (NOT RECOMMENDED)
+```bash
+./test_7_prompts_comprehensive.sh   # Old script (separate sessions - DO NOT USE)
+```
+
+**Note:** Legacy script has issues:
+- Runs each test in separate CLI session (7 sessions total)
+- Incorrect response time calculation
+- Does not test session persistence
+- Not representative of actual user behavior
 
 ## Health & Status Checks
 
@@ -195,3 +210,35 @@ uv --version                  # Check uv version
 node --version                # Check Node.js version
 npm --version                 # Check npm version
 ```
+
+## Testing Best Practices
+
+### When to Run Persistent Session Tests
+
+**Required:**
+- Before committing CLI or backend changes
+- After modifying agent service or MCP integration
+- Before creating pull requests
+
+**Recommended:**
+- After changing prompt templates
+- During performance optimization
+- When investigating user issues
+
+### Interpreting Test Results
+
+**Session Persistence:**
+- ✅ Session count = 1: All tests in same session (correct)
+- ❌ Session count > 1: Tests in separate sessions (incorrect)
+
+**Performance Ratings:**
+- EXCELLENT: < 30s (most tests should achieve this)
+- GOOD: 30-45s (acceptable for complex queries)
+- ACCEPTABLE: 45-90s (may need optimization)
+- SLOW: > 90s (needs investigation)
+
+**Success Criteria:**
+- All 7/7 tests pass
+- Session count = 1
+- Avg response time: 15-25s
+- No timeouts or failures
