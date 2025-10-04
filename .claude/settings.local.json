@@ -193,7 +193,11 @@
       "mcp__serena__think_about_task_adherence",
       "Bash(npm run lint:fix:*)",
       "mcp__serena__think_about_whether_you_are_done",
-      "mcp__serena__summarize_changes"
+      "mcp__serena__summarize_changes",
+      "Bash(npm run lint:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run check:all:*)",
+      "Bash(npm run format:*)"
     ],
     "deny": [],
     "ask": [],

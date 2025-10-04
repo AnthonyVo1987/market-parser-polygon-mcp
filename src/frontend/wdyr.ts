@@ -45,6 +45,7 @@ if (typeof window !== 'undefined' && import.meta.env?.MODE === 'development') {
         titleColor: 'red',
         diffNameColor: 'orange',
         diffPathColor: 'gray',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         notifier: (options: any) => {
           const {
             Component,

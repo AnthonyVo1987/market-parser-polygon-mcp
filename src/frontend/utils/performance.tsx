@@ -521,12 +521,15 @@ export function withPerformanceMonitoring<P extends object>(
 }
 
 // Phase 4: Lazy Loading Utilities
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createLazyComponent<T extends React.ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
   fallback?: React.ReactNode
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): React.ComponentType<any> {
   const LazyComponent = lazy(importFunc);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const LazyWrapper = (props: any) => (
     <Suspense fallback={fallback || <div>Loading...</div>}>
       <LazyComponent {...props} />
