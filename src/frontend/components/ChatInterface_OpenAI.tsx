@@ -1,6 +1,4 @@
 import {
-  Suspense,
-  lazy,
   memo,
   useCallback,
   useEffect,
@@ -93,15 +91,8 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 import ChatInput_OpenAI from './ChatInput_OpenAI';
 import ChatMessage_OpenAI from './ChatMessage_OpenAI';
 import CollapsiblePanel from './CollapsiblePanel';
-import DebugPanel from './DebugPanel';
 
-// Lazy load secondary components for better performance
-const ExportButtons = lazy(() =>
-  import('./ExportButtons').then(module => ({ default: module.default }))
-);
-const RecentMessageButtons = lazy(() =>
-  import('./RecentMessageButtons').then(module => ({ default: module.default }))
-);
+// Lazy load secondary components removed - Export and Recent Message panels removed
 
 // Note: Styles are now included within each lazy-loaded component to prevent static imports
 // that would break the lazy loading optimization
@@ -122,7 +113,6 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   const currentModel: AIModelId = 'gpt-5-nano' as AIModelId;
 
   // Optimize useMemo - Only memoize expensive calculations
-  const hasMessages = messages.length > 0;
   const placeholderText = useMemo(
     () => `Ask any financial question... (Shift+Enter for new line)`,
     []
@@ -359,129 +349,82 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         </div>
       )}
 
-      {/* Bottom Control Panels - Collapsible and stable */}
+      {/* Bottom Control Panels - Consolidated System Status & Performance */}
       <div className='bottom-control-panels' role='complementary'>
-        {/* Export/Recent Buttons */}
+        {/* Consolidated System Status & Performance Panel */}
         <CollapsiblePanel
-          title='Export & Recent Messages'
+          title='System Status & Performance'
           defaultExpanded={false}
-          data-testid='export-recent-panel'
+          data-testid='status-performance-panel'
         >
-          <div className='export-recent-container'>
-            {hasMessages && (
-              <Suspense
-                fallback={
-                  <div className='component-loading'>
-                    Loading recent messages...
-                  </div>
-                }
-              >
-                <RecentMessageButtons messages={messages} />
-              </Suspense>
-            )}
-            <Suspense
-              fallback={
-                <div className='component-loading'>
-                  Loading export options...
-                </div>
-              }
-            >
-              <ExportButtons messages={messages} />
-            </Suspense>
-          </div>
-        </CollapsiblePanel>
-
-        {/* Debug Panel */}
-        <CollapsiblePanel
-          title='Debug Information'
-          defaultExpanded={false}
-          data-testid='debug-panel'
-        >
-          <DebugPanel
-            messageCount={messages.length}
-            lastUpdate={new Date()}
-            isConnected={true}
-          />
-        </CollapsiblePanel>
-
-        {/* Status Information */}
-        <CollapsiblePanel
-          title='Status Information'
-          defaultExpanded={false}
-          data-testid='status-panel'
-        >
-          <div className='message-count-display'>
-            <span className='message-count-label'>Messages:</span>
-            <span
-              className='message-count-value'
-              aria-label={`Total messages: ${messages.length}`}
-            >
-              {messages.length}
-            </span>
-          </div>
-          <div className='status-info'>
-            <span className='status-label'>Status:</span>
-            <span
-              className={`status-value ${isLoading ? 'status--loading' : 'status--ready'}`}
-              aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
-            >
-              {isLoading ? 'Processing...' : 'Ready'}
-            </span>
-          </div>
-        </CollapsiblePanel>
-
-        {/* Performance Monitoring */}
-        <CollapsiblePanel
-          title='Performance Metrics'
-          defaultExpanded={false}
-          data-testid='performance-panel'
-        >
-          <div className='performance-metrics-grid'>
-            <div className='performance-metric'>
-              <span className='metric-label'>FCP:</span>
-              <span
-                className={
-                  performanceMetrics.fcp && performanceMetrics.fcp < 1500
-                    ? 'good'
-                    : 'warning'
-                }
-              >
-                {performanceMetrics.fcp
-                  ? `${performanceMetrics.fcp.toFixed(0)}ms`
-                  : 'Calculating...'}
-              </span>
+          <div className='status-performance-grid'>
+            {/* Status Section */}
+            <div className='status-section-inline'>
+              <div className='status-metric'>
+                <span className='status-label'>Messages:</span>
+                <span
+                  className='status-value'
+                  aria-label={`Total messages: ${messages.length}`}
+                >
+                  {messages.length}
+                </span>
+              </div>
+              <div className='status-metric'>
+                <span className='status-label'>Status:</span>
+                <span
+                  className={`status-value ${isLoading ? 'status--loading' : 'status--ready'}`}
+                  aria-label={`Current status: ${isLoading ? 'Processing request' : 'Ready for input'}`}
+                >
+                  {isLoading ? 'Processing...' : 'Ready'}
+                </span>
+              </div>
             </div>
-            <div className='performance-metric'>
-              <span className='metric-label'>LCP:</span>
-              <span
-                className={
-                  performanceMetrics.lcp && performanceMetrics.lcp < 2500
-                    ? 'good'
-                    : 'warning'
-                }
-              >
-                {performanceMetrics.lcp
-                  ? `${performanceMetrics.lcp.toFixed(0)}ms`
-                  : 'Calculating...'}
-              </span>
+
+            {/* Performance Section */}
+            <div className='performance-section-inline'>
+              <div className='performance-metric'>
+                <span className='metric-label'>FCP:</span>
+                <span
+                  className={
+                    performanceMetrics.fcp && performanceMetrics.fcp < 1500
+                      ? 'good'
+                      : 'warning'
+                  }
+                >
+                  {performanceMetrics.fcp
+                    ? `${performanceMetrics.fcp.toFixed(0)}ms`
+                    : 'Calculating...'}
+                </span>
+              </div>
+              <div className='performance-metric'>
+                <span className='metric-label'>LCP:</span>
+                <span
+                  className={
+                    performanceMetrics.lcp && performanceMetrics.lcp < 2500
+                      ? 'good'
+                      : 'warning'
+                  }
+                >
+                  {performanceMetrics.lcp
+                    ? `${performanceMetrics.lcp.toFixed(0)}ms`
+                    : 'Calculating...'}
+                </span>
+              </div>
+              <div className='performance-metric'>
+                <span className='metric-label'>CLS:</span>
+                <span
+                  className={
+                    performanceMetrics.cls && performanceMetrics.cls < 0.1
+                      ? 'good'
+                      : 'warning'
+                  }
+                >
+                  {performanceMetrics.cls
+                    ? performanceMetrics.cls.toFixed(3)
+                    : 'Calculating...'}
+                </span>
+              </div>
             </div>
-            <div className='performance-metric'>
-              <span className='metric-label'>CLS:</span>
-              <span
-                className={
-                  performanceMetrics.cls && performanceMetrics.cls < 0.1
-                    ? 'good'
-                    : 'warning'
-                }
-              >
-                {performanceMetrics.cls
-                  ? performanceMetrics.cls.toFixed(3)
-                  : 'Calculating...'}
-              </span>
-            </div>
-          </div>
-          <div className='performance-note'>
-            <small>Metrics update after user interaction</small>
           </div>
         </CollapsiblePanel>
       </div>
@@ -837,136 +780,65 @@ export const interfaceStyles = `
     }
   }
   
-  
-  /* SECTION 6: Export/Recent Buttons - Professional glassmorphic utilities with Green Export Theme */
-  .export-buttons-section {
-    flex-shrink: 0;
-    background: var(--glass-surface-export);
-    border: var(--border-export);
-    border-top: var(--border-export);
-    border-bottom: var(--border-export);
-    box-shadow: var(--border-glow-export);
-    padding: var(--space-3) var(--space-4);
-    min-height: 70px; 
-    max-height: 120px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-    overflow-x: hidden;
-    contain: layout style;
-  }
-  
-  .export-buttons-section:hover {
-    box-shadow: var(--border-glow-export-hover);
-  }
-  
-  .export-recent-container {
+
+  /* SECTION 6: Consolidated Status & Performance Grid */
+  .status-performance-grid {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 1.5rem;
+    padding: 1rem;
     width: 100%;
-    max-width: 1000px;
-    align-items: center;
   }
-  
-  /* SECTION 7: Debug Panel - Professional glassmorphic developer information with Orange/Amber Debug Theme */
-  .debug-section {
-    flex-shrink: 0;
-    background: var(--glass-surface-debug);
-    border: var(--border-debug);
-    border-top: var(--border-debug);
-    box-shadow: var(--border-glow-debug);
-    padding: var(--space-3) var(--space-4);
-    min-height: 80px; 
-    max-height: 120px; 
+
+  /* Status Section Inline */
+  .status-section-inline {
     display: flex;
+    gap: 2rem;
     align-items: center;
     justify-content: center;
-    overflow-y: auto;
-    overflow-x: hidden;
-    contain: layout style;
-  }
-  
-  .debug-section:hover {
-    box-shadow: var(--border-glow-debug-hover);
+    flex-wrap: wrap;
   }
 
-  /* SECTION 8: Status Section - Message Count and Status */
-  .status-section {
-    flex-shrink: 0;
-    background: var(--glass-surface-debug);
-    border: var(--border-debug);
-    border-top: var(--border-debug);
-    box-shadow: var(--border-glow-debug);
-    padding: var(--space-3) var(--space-4);
-    min-height: 60px;
-    max-height: 80px;
+  .status-metric {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    overflow-x: auto;
-    overflow-y: hidden;
-    contain: layout style;
-  }
-
-  .status-section:hover {
-    box-shadow: var(--border-glow-debug-hover);
-  }
-
-  .message-count-display {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    gap: 0.5rem;
     color: var(--neutral-200);
     font-size: var(--text-sm);
     font-family: var(--font-inter);
     font-weight: 500;
   }
 
-  .status-info {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--neutral-300);
-    font-size: var(--text-xs);
-    font-family: var(--font-inter);
+  .status-label {
+    color: var(--neutral-400);
   }
 
-  /* SECTION 9: Performance Section */
-  .performance-section {
-    flex-shrink: 0;
-    background: var(--glass-surface-debug);
-    border: var(--border-debug);
-    border-top: var(--border-debug);
-    box-shadow: var(--border-glow-debug);
-    padding: var(--space-3) var(--space-4);
-    min-height: 80px;
-    max-height: 120px;
+  .status-value {
+    color: var(--neutral-200);
+    font-weight: 600;
+  }
+
+  .status--loading {
+    color: var(--warning-500);
+  }
+
+  .status--ready {
+    color: var(--success-500);
+  }
+
+  /* Performance Section Inline */
+  .performance-section-inline {
     display: flex;
-    flex-direction: column;
+    gap: 2rem;
     align-items: center;
     justify-content: center;
-    overflow-y: auto;
-    overflow-x: hidden;
-    contain: layout style;
+    flex-wrap: wrap;
   }
 
-  .performance-section:hover {
-    box-shadow: var(--border-glow-debug-hover);
-  }
-
-  .performance-header h4 {
-    margin: 0 0 var(--space-2) 0;
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--neutral-200);
-    font-family: var(--font-inter);
-  }
 
   .performance-metrics-grid {
     display: flex;
-    gap: var(--space-4);
+    gap: 2rem;
     align-items: center;
   }
 
@@ -974,7 +846,7 @@ export const interfaceStyles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
+    gap: 0.25rem;
   }
 
   .metric-label {
@@ -1013,25 +885,22 @@ export const interfaceStyles = `
       max-height: 40vh;
     }
 
-    .export-buttons-section,
-    .debug-section,
-    .status-section,
-    .performance-section {
-      padding: 8px 12px;
-      min-height: 60px;
+    .status-performance-grid {
+      gap: 1rem;
     }
 
+    .status-section-inline,
+    .performance-section-inline {
+      gap: 1rem;
+    }
 
     .performance-metrics-grid {
-      gap: var(--space-2);
+      gap: 1rem;
     }
 
-    .performance-metric {
-      gap: 2px;
-    }
-
-    .message-count-display,
-    .status-info {
+    .performance-metric,
+    .status-metric {
+      gap: 0.25rem;
       font-size: var(--text-xs);
     }
   }

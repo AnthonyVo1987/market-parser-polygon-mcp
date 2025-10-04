@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 import requests
-
 from test_utils import run_test_suite
 
 

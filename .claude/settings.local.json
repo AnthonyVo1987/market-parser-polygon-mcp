@@ -189,7 +189,11 @@
       "Bash(git reset:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\n[SERENA] Complete Serena onboarding with comprehensive memory files\n\n- Create 5 comprehensive Serena memory files (53KB total documentation)\n  - suggested_commands.md: All development commands and utilities\n  - code_style_conventions.md: Python and TypeScript style guidelines\n  - task_completion_checklist.md: Pre-commit validation checklist\n  - project_architecture.md: Detailed architecture and data flows\n  - tech_stack.md: Complete technology stack documentation\n- Index 24 Python files for accelerated symbol operations (304KB cache)\n- Add symbol cache: .serena/cache/python/document_symbols_cache_v23-06-25.pkl\n- Update Claude settings for Serena integration\n- Document project purpose, tech stack, development workflows\n- Establish code quality standards (10.00/10 Python, 0 errors JS/TS)\n- Define GPT-5-Nano only policy and conventions\n- Create comprehensive onboarding for future AI agent interactions\n\nSerena Status:\n✅ Full onboarding complete\n✅ 6 total memory files (68KB)\n✅ Symbol indexing complete (24 files, 72.26 files/sec)\n✅ All 24 Serena tools tested and operational\n✅ Project architecture documented\n✅ Development commands catalogued\n✅ Code conventions established\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git commit:*)",
-      "Bash(./test_7_prompts_persistent_session.sh:*)"
+      "Bash(./test_7_prompts_persistent_session.sh:*)",
+      "mcp__serena__think_about_task_adherence",
+      "Bash(npm run lint:fix:*)",
+      "mcp__serena__think_about_whether_you_are_done",
+      "mcp__serena__summarize_changes"
     ],
     "deny": [],
     "ask": [],

@@ -156,17 +156,24 @@ JSON Response to Frontend
 #### 2. components/ - UI Components
 
 **Key Components:**
-- `ChatInterface_OpenAI.tsx`: Main chat container
+- `ChatInterface_OpenAI.tsx`: Main chat container with consolidated status panel
 - `ChatInput_OpenAI.tsx`: Message input with submit
 - `ChatMessage_OpenAI.tsx`: Individual message display
 - `LoadingSpinner.tsx`: Loading state indicator
 - `ErrorBoundary.tsx`: Error handling wrapper
-- `DebugPanel.tsx`: Development debugging tools
 - `PerformanceToggle.tsx`: Performance monitoring toggle
-- `RecentMessageButtons.tsx`: Quick message shortcuts
-- `ExportButtons.tsx`: Export functionality
-- `MessageCopyButton.tsx`: Copy message content
+- `MessageCopyButton.tsx`: Copy individual message content (inline clipboard utilities)
 - `CollapsiblePanel.tsx`: Collapsible UI sections
+
+**REMOVED Components (Oct 2025):**
+- ~~`ExportButtons.tsx`~~ - Export functionality removed
+- ~~`RecentMessageButtons.tsx`~~ - Recent message shortcuts removed
+- ~~`DebugPanel.tsx`~~ - Debug panel removed
+
+**CONSOLIDATED:**
+- Status Information Panel + Performance Metrics Panel → **"System Status & Performance"** panel
+  - Shows: Message count, loading status, FCP, LCP, CLS metrics
+  - Single CollapsiblePanel for cleaner UI
 
 **Naming Convention:**
 - Suffix `_OpenAI` indicates OpenAI-specific implementation
@@ -191,6 +198,21 @@ JSON Response to Frontend
 - Environment-specific configuration loading
 - API endpoint configuration
 - Feature flags
+
+#### 6. utils/ - Utility Functions
+
+**Removed:**
+- ~~`exportHelpers.ts`~~ - Export utilities removed (Oct 2025)
+
+**Retained:**
+- `performance.tsx`: Performance monitoring and metrics
+- `accessibility.ts`: Accessibility utilities
+- `willChangeManager.ts`: CSS will-change optimization
+- `touchGestures.ts`: Touch gesture handling
+- `messageFormatting.ts`: Message display formatting
+- `placeholderText.ts`: Placeholder text utilities
+
+**Note:** MessageCopyButton.tsx now contains inline clipboard utilities (copyToClipboard, convertSingleMessageToMarkdown) extracted from removed exportHelpers.
 
 ### Frontend Data Flow
 
@@ -317,12 +339,14 @@ User navigates to http://127.0.0.1:3000
 - Lazy loading of components
 - Production bundle optimization
 - PWA support with service workers
+- Removed unused components (Export, Debug, Recent Messages panels)
+- Consolidated panels for reduced UI complexity
 
 ### Performance Targets
 - **First Contentful Paint**: ~256ms
 - **Core Web Vitals**: 85%+ improvement
 - **Memory Heap**: ~13.8MB optimized
-- **Backend Response**: 19-46s for complex queries (real API calls)
+- **Backend Response**: 14-28s for complex queries (real API calls, Oct 2025 benchmark)
 
 ## Security Architecture
 
@@ -346,7 +370,7 @@ User navigates to http://127.0.0.1:3000
 ### Backend Testing
 - Unit tests with pytest
 - Test utilities in test_utils.py
-- Comprehensive CLI test suite (7 prompts)
+- Comprehensive CLI test suite (7 prompts in single persistent session)
 
 ### Frontend Testing
 - E2E tests with Playwright
@@ -356,6 +380,7 @@ User navigates to http://127.0.0.1:3000
 - Full stack tests via comprehensive script
 - Health check validation
 - API response validation
+- **Latest Test Results (Oct 4, 2025)**: 7/7 tests passed, 18.78s avg response time, EXCELLENT performance
 
 ## Scalability Considerations
 
@@ -370,3 +395,24 @@ User navigates to http://127.0.0.1:3000
 - Load balancing for frontend
 - CDN for static assets
 - Separate MCP server per worker (if needed)
+
+## UI/UX Architecture Changes (Oct 2025)
+
+### Panel Consolidation
+**Removed Panels:**
+- Export & Recent Messages Panel (ExportButtons, RecentMessageButtons)
+- Debug Information Panel (DebugPanel)
+
+**Consolidated Panel:**
+- **"System Status & Performance"** panel combines:
+  - Status metrics: Message count, loading state (Ready/Processing)
+  - Performance metrics: FCP, LCP, CLS
+  - Single CollapsiblePanel with responsive grid layout
+  - Data test ID: `status-performance-panel`
+
+### Benefits
+- **Cleaner UI**: Reduced visual clutter
+- **Better UX**: Related information grouped logically
+- **Simplified Codebase**: 4 files removed, 1 file modified
+- **No Backend Impact**: Pure frontend refactor
+- **Maintained Functionality**: Critical status/performance info preserved

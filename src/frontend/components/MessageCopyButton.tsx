@@ -1,9 +1,48 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Message } from '../types/chat_OpenAI';
-import {
-  convertSingleMessageToMarkdown,
-  copyToClipboard,
-} from '../utils/exportHelpers';
+
+// Inline clipboard utility (extracted from removed exportHelpers)
+const copyToClipboard = async (text: string): Promise<void> => {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    textArea.style.opacity = '0';
+    textArea.setAttribute('readonly', '');
+    textArea.setAttribute('aria-hidden', 'true');
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    const successful = document.execCommand('copy');
+    textArea.remove();
+
+    if (!successful) {
+      throw new Error('Copy command was unsuccessful');
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to copy to clipboard: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+};
+
+// Inline message formatting (extracted from removed exportHelpers)
+const convertSingleMessageToMarkdown = (message: Message): string => {
+  const sender = message.sender === 'user' ? '👤 User' : '🤖 AI Assistant';
+  const timestamp = message.timestamp.toLocaleString();
+  const content = message.content.trim();
+
+  return `## ${sender} - ${timestamp}\n\n${content}`;
+};
 
 interface MessageCopyButtonProps {
   message: Message;
