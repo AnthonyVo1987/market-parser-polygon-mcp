@@ -41,10 +41,6 @@
     "docs-serena": {
       "type": "http",
       "url": "https://gitmcp.io/oraios/serena"
-    },
-    "docs-polygon-python": {
-      "type": "http",
-      "url": "https://gitmcp.io/polygon-io/client-python"
     }
   }
 }

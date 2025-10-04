@@ -6,7 +6,7 @@ category: development
 
 # Serena System Health Check
 
-You are performing a comprehensive health check of the Serena system to verify all tools and configurations are working correctly after an IDE restart. This command will systematically test all Serena tool categories and provide a detailed health report.
+You are performing a comprehensive health check of the Serena system to verify all tools and configurations are working correctly after an IDE restart. This command will systematically test all Serena tool categories and provide a detailed health summary.
 
 ## 🎯 **HEALTH CHECK OBJECTIVES**
 
@@ -22,14 +22,19 @@ You are performing a comprehensive health check of the Serena system to verify a
 
 ### **STEP 1: Initial System Status Check**
 
-First, get the current Serena configuration and project status:
+First, get the tool instructions and  current Serena configuration and project status:
+use docs-serena tools to understand proper usage of Serena
 
-1. **Get Current Configuration**
+1. **Get Serena Documentation & Initial Instuctions**
+   - First, Use docs-serena tools to retreive and understand Serena tools
+   - Second, use Serena `initial_instructions` tool to understand how to use Serena tools
+
+2. **Get Current Configuration**
    - Use `get_current_config` to verify Serena version, active project, context, and modes
    - Check available tools count and status
    - Verify project path and language detection
 
-2. **Check Project Activation**
+3. **Check Project Activation**
    - Verify the current project is properly activated
    - Confirm project path matches expected location
    - Check if project appears in available projects list
@@ -121,7 +126,7 @@ Test each category of Serena tools systematically:
 
 ## 📊 **HEALTH REPORT GENERATION**
 
-Create a comprehensive health report with the following sections:
+Create a comprehensive health summary with the following sections and do NOT CREATE ANY NEW DOCS OR MEMORIES:
 
 ### **System Status Summary**
 
@@ -160,14 +165,6 @@ Create a comprehensive health report with the following sections:
 - **USE** read-only operations where possible
 - **CONTINUE** testing other components if one fails
 - **PRESERVE** existing project state and settings
-
-## 📝 **MEMORY STORAGE**
-
-Store the complete health check results in project memory:
-
-- **Memory Name**: `serena_health_check_[timestamp]`
-- **Content**: Complete health report with all test results
-- **Purpose**: Historical record and troubleshooting reference
 
 ## 🔧 **TROUBLESHOOTING GUIDANCE**
 
@@ -210,8 +207,7 @@ The health check is successful when:
 1. **Start the health check** by following the procedure above
 2. **Test each component systematically** using the specified tools
 3. **Record results** for each test with clear pass/fail indicators
-4. **Generate comprehensive report** with all findings
-5. **Store results in memory** for future reference
-6. **Provide actionable recommendations** for any issues found
+4. **Generate comprehensive summary** with all findings
+5. **Provide actionable recommendations** for any issues found
 
 **Begin the Serena System Health Check now.**

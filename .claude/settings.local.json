@@ -167,7 +167,15 @@
       "Bash(bun x:*)",
       "Bash(/home/anthony/snap/bun-js/77/.bun/bin/ccstatusline)",
       "mcp__docs-ccstatusline__fetch_ccstatusline_documentation",
-      "mcp__docs-ccstatusline__search_ccstatusline_documentation"
+      "mcp__docs-ccstatusline__search_ccstatusline_documentation",
+      "Bash(pkill:*)",
+      "Bash(uv:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(chmod:*)",
+      "Bash(./test_7_prompts_comprehensive.sh:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": [],
