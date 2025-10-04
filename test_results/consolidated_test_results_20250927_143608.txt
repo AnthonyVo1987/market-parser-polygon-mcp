@@ -1,6 +1,0 @@
-CONSOLIDATED TEST RESULTS - Sat Sep 27 14:36:08 PDT 2025
-=====================================
-
-TEST 1: Market_Status_Query
-Prompt: Current Market Status
-----------------------------------------
