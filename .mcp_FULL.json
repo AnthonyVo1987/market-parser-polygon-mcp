@@ -45,6 +45,18 @@
     "docs-polygon-python": {
       "type": "http",
       "url": "https://gitmcp.io/polygon-io/client-python"
+    },
+    "docs-polygon-mcp": {
+      "type": "http",
+      "url": "https://gitmcp.io/polygon-io/client-python"
+    },
+    "docs-polygon-examples": {
+      "type": "http",
+      "url": "https://gitmcp.io/polygon-io/client-python"
+    },
+    "docs-finnhub": {
+      "type": "http",
+      "url": "https://gitmcp.io/Finnhub-Stock-API/finnhub-python"
     }
   }
 }

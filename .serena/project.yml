@@ -60,23 +60,9 @@ read_only: false
 #  * `write_memory`: Writes a named memory (for future reference) to Serena's project-specific memory store.
 excluded_tools: []
 
-# list of optional tool names that are disabled by default and have to be explicitly enabled by the user.
-# These tools provide additional functionality but are not included in the default toolset.
-# Available optional tools:
-#  * `delete_lines`: Deletes a range of lines within a file.
-#  * `get_current_config`: Prints the current configuration of the agent, including the active and available projects, tools, contexts, and modes.
-#  * `initial_instructions`: Gets the initial instructions for the current project. Should only be used in settings where the system prompt cannot be set, e.g. in clients you have no control over, like Claude Desktop.
-#  * `insert_at_line`: Inserts content at a given line in a file.
-#  * `replace_lines`: Replaces a range of lines within a file with new content.
-#  * `restart_language_server`: Restarts the language server, may be necessary when edits not through Serena happen.
-#  * `summarize_changes`: Provides instructions for summarizing the changes made to the codebase.
-#  * `switch_modes`: Activates modes by providing a list of their names
 included_optional_tools:
-  - delete_lines
   - get_current_config
   - initial_instructions
-  - insert_at_line
-  - replace_lines
   - restart_language_server
   - summarize_changes
   - switch_modes
@@ -86,25 +72,3 @@ included_optional_tools:
 initial_prompt: ""
 
 project_name: "market-parser-polygon-mcp"
-
-# Enable tool usage statistics collection
-record_tool_usage_stats: true
-
-# Optional: Configure stats collection behavior
-stats:
-  # Enable detailed tool usage tracking
-  detailed_tracking: true
-  
-  # Enable performance metrics
-  performance_metrics: true
-  
-  # Enable dashboard access
-  dashboard_enabled: true
-
-# Optional: Configure output settings
-output:
-  # Show stats in console output
-  show_stats: true
-  
-  # Verbose logging for debugging
-  verbose: true
