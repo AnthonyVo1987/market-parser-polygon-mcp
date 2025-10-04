@@ -41,15 +41,13 @@ SUCCESS CRITERIA:
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research to provide scoping for EACH of following task(s) and\or requirements:
 
-- Completely remove and retire the following Frontend GUI panels and all corresponding code for Export & Recent Messages Panel and Debug Information Panel.  That means any corresponding code in the Backend must also be removed
-- Consolidate Status Information Panel and Performance Metrics Panel into a a single shared panel
-- Expected Outcome: No more panels for Export & Recent Messages Panel and Debug Information Panel and code removed for all that functionality, and a single consolidated panel
+- Merge and sync up our current development branch 'clean_serena_reset' back to the 'master' branch.  We were on a development branch for major features and re-architecturing of the app, and now the app is stable.  So it is now time to migrate and merge and sync up ALL changes and commits so that the master is now synced up to the same level and code as the current development branch 'clean_serena_reset' since the master is MANY commits behind the development branch
 
 ---
 
 <Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and completely overwrite 'TODO_task_plan.md' for you to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
+Based on the Research, Analysis & Scoping from previous task(s), delete the current file 'TODO_task_plan.md' and then create a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' and completely for you to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
 
 ---
 
