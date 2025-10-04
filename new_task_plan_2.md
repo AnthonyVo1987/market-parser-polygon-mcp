@@ -15,10 +15,9 @@ TOOL USAGE REQUIREMENTS:
 MANDATORY TOOL USAGE PATTERNS:
 
 1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
-3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-4. REPEAT any tool as needed throughout the process
-5. 🔴 NEVER stop using tools - continue using them until task completion
+2. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+3. REPEAT any tool as needed throughout the process
+4. 🔴 NEVER stop using tools - continue using them until task completion
 
 VIOLATION PENALTIES:
 
@@ -39,16 +38,18 @@ SUCCESS CRITERIA:
 
 ---
 
-## New Tasks(s) Workflow Details
-
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
-Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research using Context7 Tools and\or openai-cookbook Docs Tools to provide scoping for EACH of following task(s) and\or requirements:
+Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research to provide scoping for EACH of following task(s) and\or requirements:
+
+- Completely remove and retire the following Frontend GUI panels and all corresponding code for Export & Recent Messages Panel and Debug Information Panel.  That means any corresponding code in the Backend must also be removed
+- Consolidate Status Information Panel and Performance Metrics Panel into a a single shared panel
+- Expected Outcome: No more panels for Export & Recent Messages Panel and Debug Information Panel and code removed for all that functionality, and a single consolidated panel
 
 ---
 
 <Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to Implement the requested task(s) with  Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
+Based on the Research, Analysis & Scoping from previous task(s), Generate a brand new granular detailed Implementation Plan TODO Task Checklist and completely overwrite 'TODO_task_plan.md' for you to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
 
 ---
 
@@ -58,8 +59,7 @@ Implement the granular detailed Implementation Plan TODO Task Checklist file 'TO
 ---
 
 <CLI Testing Phase>
-- IF there were ONLY DOCUMENTATION changes, You MUST NOT PERFORM ANY TESTING BECAUSE VALIDATION IS NOT NEEDED FOR JUST DOCUMENTATION CHANGES.
-- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_persistent_session.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.  If ONLY doc changes, you may skip testing since no code needs to be tested
 
 ---
 

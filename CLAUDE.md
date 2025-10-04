@@ -45,10 +45,9 @@ TOOL USAGE REQUIREMENTS:
 MANDATORY TOOL USAGE PATTERNS:
 
 1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-2. Use Context7 for research and best up to date Implementation Practices & Library documentation lookups
-3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-4. REPEAT any tool as needed throughout the process
-5. 🔴 NEVER stop using tools - continue using them until task completion
+2. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
+3. REPEAT any tool as needed throughout the process
+4. 🔴 NEVER stop using tools - continue using them until task completion
 
 VIOLATION PENALTIES:
 
