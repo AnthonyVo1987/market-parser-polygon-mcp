@@ -1,0 +1,203 @@
+=== PERSISTENT SESSION TEST REPORT ===
+Timestamp: Sat Oct  4 14:50:37 PDT 2025
+Total Tests: 7
+Passed: 7
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 116.066722215s
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 6.775s
+Max Response Time: 28.821s
+Avg Response Time: 16.19s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_Market_Status_Query - PASS
+  Response Time: 18.473s
+Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
+  Response Time: 22.492s
+Test 3: Test_3_Full_Market_Snapshot_SPY_QQQ_IWM - PASS
+  Response Time: 14.089s
+Test 4: Test_4_Closing_Price_Query_GME - PASS
+  Response Time: 28.821s
+Test 5: Test_5_Performance_Analysis_SOUN - PASS
+  Response Time: 15.850s
+Test 6: Test_6_Support_Resistance_NVDA - PASS
+  Response Time: 6.775s
+Test 7: Test_7_Technical_Analysis_SPY - PASS
+  Response Time: 6.897s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [10/04/25 14:48:43] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:48:55] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[10/04/25 14:48:56] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market status: Closed                                                        
+ • Time (current): 2025-10-04 14:48:43                                          
+ • Notes: After-hours/Pre-market/Overnight: Not active (no open session)        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 18.473s
+   🔢  Tokens Used: 27,100 (Input: 26,777, Output: 323)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 14:49:02] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:49:10] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:49:17] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Ticker: NVDA                                                                 
+ • Price: 187.62                                                                
+ • Change (today): -1.23 (-0.65%)                                               
+ • Day range: 189.19 - 190.36                                                   
+ • Prev close: 188.89                                                           
+ • Last updated: 2025-10-04 00:00:00 UTC (data snapshot)                        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 22.492s
+   🔢  Tokens Used: 41,765 (Input: 41,442, Output: 323)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 14:49:24] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:49:31] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: c 669.21, change -0.01 (-0.15%), day 669.99 open, 672.68 high, 668.16   
+   low                                                                          
+ • QQQ: c 603.18, change -2.76 (-0.46%), day 606.51 open, 607.33 high, 601.39   
+   low                                                                          
+ • IWM: c 245.83, change +1.81 (+0.74%), day 245.35 open, 248.09 high, 245.03   
+   low                                                                          
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 14.089s
+   🔢  Tokens Used: 29,928 (Input: 29,451, Output: 477)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 14:49:38] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:49:46] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:49:58] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Ticker: GME                                                                  
+ • Today’s close: not available yet (market closed)                             
+ • Previous close: 25.38                                                        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 28.821s
+   🔢  Tokens Used: 46,938 (Input: 46,719, Output: 219)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 14:50:07] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 14:50:14] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SOUN weekly price performance: +13.86% (15.68 -> 17.85) over 2025-09-28 to   
+   2025-10-04                                                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 15.850s
+   🔢  Tokens Used: 32,785 (Input: 32,301, Output: 484)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 14:50:23] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Ticker: NVDA                                                                 
+ • Current price: 187.62                                                        
+ • Day range: 185.38 – 190.36                                                   
+ • Estimated support: 185.38 (primary)                                          
+ • Estimated resistance: 190.36 (primary)                                       
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 6.775s
+   🔢  Tokens Used: 16,655 (Input: 16,405, Output: 250)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 14:50:30] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY price: 669.21                                                            
+ • Change: -0.01 (-0.00%)                                                       
+ • Day range: 668.16 – 672.68                                                   
+ • Near-term support: 668.16                                                    
+ • Near-term resistance: 672.68                                                 
+ • Trend view: Neutral to slightly bearish based on small intraday move         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 6.897s
+   🔢  Tokens Used: 16,804 (Input: 16,472, Output: 332)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END PERSISTENT SESSION TEST REPORT ===

@@ -59,7 +59,7 @@ Implement the granular detailed Implementation Plan TODO Task Checklist file 'TO
 
 <CLI Testing Phase>
 - IF there were ONLY DOCUMENTATION changes, You MUST NOT PERFORM ANY TESTING BECAUSE VALIDATION IS NOT NEEDED FOR JUST DOCUMENTATION CHANGES.
-- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_comprehensive.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_persistent_session.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.
 
 ---
 
