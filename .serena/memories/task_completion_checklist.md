@@ -1,5 +1,18 @@
 # Task Completion Checklist
 
+## 🔴 CRITICAL: Testing is MANDATORY - Not Optional
+
+**Before ANY task can be considered complete:**
+1. ✅ Code must be implemented
+2. ✅ Tests must be EXECUTED (not just created)
+3. ✅ Test results must be SHOWN (100% pass rate)
+4. ✅ Test report path must be provided
+5. ❌ NO test execution = Task INCOMPLETE
+
+**Rule:** Code without test execution = Code NOT implemented
+
+---
+
 ## Pre-Commit Code Quality Checks
 
 ### 1. Linting (Required - Must Pass)
@@ -42,18 +55,34 @@ npm run build                 # Production build test
 - ✅ No bundle size regressions
 - ⚠️ Monitor build time (should be ~3-6s)
 
-## Testing Requirements
+## 🔴 Testing Requirements (MANDATORY - DO NOT SKIP)
 
-### 5. Run Comprehensive Tests
+### 5. Run Comprehensive Tests (REQUIRED FOR TASK COMPLETION)
+
+**🔴 CRITICAL: You MUST execute tests and show results - not just create test files**
+
 ```bash
-./test_7_prompts_comprehensive.sh
+# Run the appropriate test suite based on task
+./test_16_prompts_persistent_session.sh   # For tasks with 16 tests
+# OR
+./test_7_prompts_comprehensive.sh          # For tasks with 7 tests
 ```
 
-**Expected Results:**
-- ✅ All 7/7 tests must pass
-- ✅ Response times: 19-46s (varies with real API calls)
+**Expected Results (MUST VERIFY):**
+- ✅ All X/X tests must PASS (100% success rate)
+- ✅ Response times: 13-35s average (varies with real API calls)
 - ✅ Test report generated in test-reports/
+- ✅ Session persistence verified (single session for all tests)
+- ✅ Performance metrics shown (min/max/avg response times)
 - ⚠️ Varying response times confirm real API calls (not mocked)
+
+**ENFORCEMENT:**
+- ❌ Task is NOT complete without test execution
+- ❌ Creating test file ≠ Running test file
+- ❌ Updating test suite ≠ Executing test suite
+- ✅ Must RUN tests and SHOW results to user
+- ✅ Must verify 100% pass rate
+- ✅ Must provide test report file path
 
 ### 6. Verify Test Reports
 ```bash

@@ -33,10 +33,10 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 
 ### MCP Integration
 - **openai-agents-mcp** (>=0.0.8): MCP server integration
-  - Polygon.io MCP server connection (7 tools remaining)
+  - Polygon.io MCP server connection (6 tools remaining)
   - Financial data tool access
   - Agent tool orchestration
-  - **Migration in progress**: Transitioning to direct Polygon API calls
+  - **Migration in progress**: Transitioning to direct Polygon API calls (11 tools migrated)
 
 ### Financial Data APIs
 - **Finnhub Python Library** (v2.4.25): Real-time stock quotes
@@ -45,14 +45,21 @@ Market Parser is built with a modern full-stack architecture combining Python ba
   - Real-time price updates
 
 - **Polygon Python Library** (polygon-api-client v1.15.4): Market data
-  - Custom tools (6 total):
+  - Custom tools (11 total):
     - get_market_status_and_date_time: Market status and datetime
-    - get_ta_sma: Simple Moving Average indicator ⭐ NEW
-    - get_ta_ema: Exponential Moving Average indicator ⭐ NEW
-    - get_ta_rsi: Relative Strength Index indicator ⭐ NEW
-    - get_ta_macd: MACD indicator ⭐ NEW
+    - get_stock_quote_multi: Multi-ticker snapshot quotes ⭐ NEW
+    - get_options_quote_single: Single options contract quote ⭐ NEW
+    - get_OHLC_bars_custom_date_range: Custom date range OHLC bars ⭐ NEW
+    - get_OHLC_bars_specific_date: Specific date OHLC bars ⭐ NEW
+    - get_OHLC_bars_previous_close: Previous trading day OHLC ⭐ NEW
+    - get_ta_sma: Simple Moving Average indicator
+    - get_ta_ema: Exponential Moving Average indicator
+    - get_ta_rsi: Relative Strength Index indicator
+    - get_ta_macd: MACD indicator
   - Direct API access (bypassing MCP)
   - Technical analysis indicators
+  - OHLC bars and historical data
+  - Multi-ticker and options support
   - Enhanced performance and control
 
 ### Data Validation & Models
@@ -278,9 +285,12 @@ Market Parser is built with a modern full-stack architecture combining Python ba
   - Historical data
   - Market status
   - Technical indicators (SMA, EMA, RSI, MACD)
+  - OHLC bars (custom range, specific date, previous close)
+  - Multi-ticker snapshots
+  - Options quotes
   - **Access methods**:
-    - MCP server (7 tools): get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
-    - Direct API (6 tools): get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd ⭐ 4 NEW
+    - MCP server (6 tools): get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg (backward compatibility)
+    - Direct API (11 tools): get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
 
 - **Finnhub API**: Real-time stock data
   - Single ticker quotes
@@ -291,10 +301,10 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 - **Protocol Version**: Compatible with openai-agents-mcp >=0.0.8
 - **Purpose**: Tool integration for agents
 - **Features**:
-  - Polygon.io financial data access (7 MCP tools remaining)
+  - Polygon.io financial data access (6 MCP tools remaining)
   - Extensible tool framework
   - Session persistence
-- **Migration Status**: Transitioning to direct API calls (6 tools migrated)
+- **Migration Status**: Transitioning to direct API calls (11 tools migrated, 6 MCP tools remain for backward compatibility)
 
 ## Infrastructure & Deployment
 
@@ -421,13 +431,13 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 - **Simplicity**: Fewer dependencies and infrastructure layers
 - **Control**: Full control over API interaction and error handling
 - **Flexibility**: Easier to customize response formats
-- **Validation**: 6 tools successfully migrated (get_market_status_and_date_time + 4 TA indicators)
+- **Validation**: 11 tools successfully migrated (get_market_status_and_date_time + 4 TA indicators + 5 OHLC/multi-ticker/options + get_stock_quote Finnhub)
 
 ## Performance Characteristics
 
 ### Backend Performance
-- **Response Time**: 11-31s for CLI queries (Excellent: <30s, 6/7 tests)
-- **Average**: 20.11s per query
+- **Response Time**: 11-31s for CLI queries (Excellent: <30s)
+- **Average**: 20-25s per query
 - **Variation**: Due to real API calls (Polygon.io, OpenAI, Finnhub)
 - **Health Check**: Sub-second response
 - **Optimization**: Async/await, shared resources, direct API calls
@@ -445,33 +455,40 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 
 ## Tool Architecture
 
-### Current Tool Distribution (14 total)
+### Current Tool Distribution (18 total)
 1. **Finnhub Custom Tools (1)**:
    - get_stock_quote
 
-2. **Polygon Direct API Tools (6)**:
+2. **Polygon Direct API Tools (11)**:
    - get_market_status_and_date_time
-   - get_ta_sma ⭐ NEW
-   - get_ta_ema ⭐ NEW
-   - get_ta_rsi ⭐ NEW
-   - get_ta_macd ⭐ NEW
+   - get_stock_quote_multi ⭐ NEW (replaces get_snapshot_all MCP)
+   - get_options_quote_single ⭐ NEW (replaces get_snapshot_option MCP)
+   - get_OHLC_bars_custom_date_range ⭐ NEW (replaces list_aggs MCP)
+   - get_OHLC_bars_specific_date ⭐ NEW (replaces get_daily_open_close_agg MCP)
+   - get_OHLC_bars_previous_close ⭐ NEW (replaces get_previous_close_agg MCP)
+   - get_ta_sma
+   - get_ta_ema
+   - get_ta_rsi
+   - get_ta_macd
 
-3. **Polygon MCP Tools (7)**:
+3. **Polygon MCP Tools (6)** (backward compatibility):
    - get_snapshot_all
    - get_snapshot_option
-   - get_aggs
    - list_aggs
    - get_daily_open_close_agg
    - get_previous_close_agg
 
-4. **Removed MCP Tools (1)**:
+4. **Removed Tools**:
+   - ~~get_aggs~~ (not relevant for analysis)
    - ~~get_market_status~~ (replaced by get_market_status_and_date_time)
 
 ### Migration Roadmap
-- **Completed**: get_market_status → get_market_status_and_date_time
-- **Completed**: 4 TA indicators (SMA, EMA, RSI, MACD) added
-- **In Progress**: 6 direct API tools validated
-- **Future**: Gradual migration of remaining MCP tools to direct API
+- **Completed**: 
+  - get_market_status → get_market_status_and_date_time
+  - 4 TA indicators (SMA, EMA, RSI, MACD) added
+  - 5 OHLC/multi-ticker/options tools migrated
+- **Current**: 11 direct API tools validated and operational
+- **Future**: 6 MCP tools remain for backward compatibility
 
 ## Security Considerations
 

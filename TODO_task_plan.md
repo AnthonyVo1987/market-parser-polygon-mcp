@@ -1,741 +1,700 @@
-# TODO Task Plan: Polygon Technical Analysis Indicators Custom Tools
+# TODO Task Plan: Replace MCP Tools with Custom Polygon Direct API Tools
 
-**Task ID**: polygon-ta-indicators
-**Created**: October 5, 2025
-**Status**: Planning Complete - Ready for Implementation
-**Priority**: High
-**Estimated Effort**: 2-3 hours
+**Task:** Create/Update 5 custom tools using Polygon Python Library to replace MCP Tools
+
+**Version:** 1.0
+**Created:** 2025-10-05
+**Status:** 🔴 PLANNING PHASE - DO NOT IMPLEMENT YET
 
 ---
 
 ## 📋 Executive Summary
 
-Create 4 new custom tools for Technical Analysis (TA) indicators using the Polygon Python Library direct API: SMA, EMA, RSI, and MACD. Follow the established pattern from commit 68a058d (get_market_status_and_date_time implementation).
+### Objective
 
-**Tools to Create:**
-1. `get_ta_sma` - Simple Moving Average (SMA)
-2. `get_ta_ema` - Exponential Moving Average (EMA)
-3. `get_ta_rsi` - Relative Strength Index (RSI) ⚠️ Note: Typo in request 'get_ta_rse' corrected to 'get_ta_rsi'
-4. `get_ta_macd` - Moving Average Convergence Divergence (MACD)
+Replace 5 Polygon MCP server tools with custom @function_tool decorated tools using the Polygon Python Library direct API, reducing MCP dependencies and increasing control over tool behavior.
 
-**Tool Count Change**: 10 → 14 tools (+ 4 new TA indicator tools)
+### Scope
 
----
-
-## 🎯 Success Criteria
-
-- [ ] All 4 TA indicator custom tools implemented and working
-- [ ] Pylint score: 10.00/10 for all modified Python files
-- [ ] All imports verified working
-- [ ] Agent instructions updated with RULE #8 for TA indicators
-- [ ] Test script updated with 4 new test cases (7→11 total tests)
-- [ ] All 11 tests passing with EXCELLENT performance rating
-- [ ] Serena memories updated (tech_stack, project_architecture)
-- [ ] CLAUDE.md updated with complete task documentation
-- [ ] Clean git commit with comprehensive message
+- **Tools to Create:** 5 new custom tools
+- **Tools to Remove:** 1 MCP tool (get_aggs)
+- **Tools to Replace:** 5 MCP tools → 5 custom tools
+- **Final Tool Count:** 12 tools (11 Polygon direct + 1 Finnhub)
+- **Test Cases:** Add 5 new test cases (total: 16 tests)
 
 ---
 
-## 📚 Research Summary
+## 🎯 Tool Migration Mapping
 
-### Polygon Python Library TA Indicators API
+### MCP Tools → Custom Tools Mapping
 
-**Available Methods** (from `polygon.rest.indicators.py`):
-- `client.get_sma()` - Returns `SMAIndicatorResults`
-- `client.get_ema()` - Returns `EMAIndicatorResults`
-- `client.get_rsi()` - Returns `RSIIndicatorResults`
-- `client.get_macd()` - Returns `MACDIndicatorResults`
+| # | MCP Tool (OLD) | Custom Tool (NEW) | Polygon Client Method | Status |
+|---|----------------|-------------------|----------------------|--------|
+| 1 | `get_snapshot_all` | `get_stock_quote_multi` | `client.get_snapshot_all(market_type, tickers)` | ⏳ Pending |
+| 2 | `get_snapshot_option` | `get_options_quote_single` | `client.get_snapshot_option(underlying, contract)` | ⏳ Pending |
+| 3 | `list_aggs` | `get_OHLC_bars_custom_date_range` | `client.list_aggs(ticker, multiplier, timespan, from, to, limit)` | ⏳ Pending |
+| 4 | `get_daily_open_close_agg` | `get_OHLC_bars_specific_date` | `client.get_daily_open_close_agg(ticker, date)` | ⏳ Pending |
+| 5 | `get_previous_close_agg` | `get_OHLC_bars_previous_close` | `client.get_previous_close_agg(ticker)` | ⏳ Pending |
+| 6 | `get_aggs` | **REMOVE** (not relevant) | N/A | ⏳ Pending |
 
-**Common Parameters**:
-- `ticker` (str, required): Stock symbol
-- `timespan` (str, optional): Aggregate window (day, minute, hour, week, month, quarter, year)
-- `window` (int, optional): Lookback period for SMA/EMA/RSI (default varies by indicator)
-- `timestamp`, `timestamp_lt`, `timestamp_lte`, `timestamp_gt`, `timestamp_gte`: Time filtering
-- `adjusted` (bool, optional): Adjust for splits (default True)
-- `expand_underlying` (bool, optional): Include underlying aggregates
-- `order` (str, optional): Sort order (asc/desc)
-- `limit` (int, optional): Result limit (default 10, max 5000)
-- `series_type` (str, optional): Price type (close, open, high, low)
+---
 
-**MACD-Specific Parameters**:
-- `short_window` (int, optional): Short EMA window (default 12)
-- `long_window` (int, optional): Long EMA window (default 26)
-- `signal_window` (int, optional): Signal line window (default 9)
+## 📚 Research Findings Summary
 
-### Previous Implementation Pattern (commit 68a058d)
+### Polygon Python Library Client Methods
 
-**File: src/backend/tools/polygon_tools.py**
+#### 1. client.get_snapshot_all()
+
 ```python
-# 1. Lazy client initialization helper
+# Signature
+snapshot = client.get_snapshot_all(market_type: str, tickers: List[str])
+
+# Example (from polygon-io/client-python examples)
+snapshot = client.get_snapshot_all("stocks", ["TSLA", "AAPL", "MSFT"])
+
+# Returns: List[TickerSnapshot]
+# Each TickerSnapshot contains: ticker, day, min, prevDay, lastTrade, lastQuote
+```
+
+#### 2. client.get_snapshot_option()
+
+```python
+# Signature
+snapshot = client.get_snapshot_option(
+    underlying_asset: str,
+    option_contract: str
+)
+
+# Example
+snapshot = client.get_snapshot_option("AAPL", "O:AAPL230616C00150000")
+
+# Returns: OptionContractSnapshot
+# Contains: break_even_price, day, details, greeks, implied_volatility, etc.
+```
+
+#### 3. client.list_aggs()
+
+```python
+# Signature
+aggs = client.list_aggs(
+    ticker: str,
+    multiplier: int,
+    timespan: str,
+    from_: str,
+    to: str,
+    limit: int = 50000
+)
+
+# Example
+aggs = client.list_aggs("AAPL", 1, "minute", "2022-01-01", "2023-02-03", limit=50000)
+
+# Returns: Iterator[Agg]
+# Each Agg contains: c (close), h (high), l (low), n (transactions), o (open), t (timestamp), v (volume), vw (vwap)
+```
+
+#### 4. client.get_daily_open_close_agg()
+
+```python
+# Signature
+agg = client.get_daily_open_close_agg(
+    ticker: str,
+    date: str  # Format: "YYYY-MM-DD"
+)
+
+# Example
+agg = client.get_daily_open_close_agg("AAPL", "2023-02-07")
+
+# Returns: DailyOpenCloseAgg
+# Contains: afterHours, close, from, high, low, open, preMarket, symbol, volume
+```
+
+#### 5. client.get_previous_close_agg()
+
+```python
+# Signature
+agg = client.get_previous_close_agg(ticker: str)
+
+# Example
+agg = client.get_previous_close_agg("AAPL")
+
+# Returns: PreviousCloseAgg
+# Contains: T (ticker), c (close), h (high), l (low), o (open), t (timestamp), v (volume), vw (vwap)
+```
+
+---
+
+## 🛠️ Custom Tool Pattern (from commit e1ba319)
+
+### Tool Creation Template
+
+```python
+from agents import function_tool
+from polygon import RESTClient
+import json
+import os
+
 def _get_polygon_client():
     """Get Polygon client with API key from environment."""
     api_key = os.getenv("POLYGON_API_KEY")
     return RESTClient(api_key=api_key)
 
-# 2. @function_tool decorated async function
 @function_tool
-async def tool_name() -> str:
-    """Comprehensive docstring with:
-    - Purpose and when to use
-    - Args description
-    - Returns format
-    - Note section
-    - Examples
+async def tool_name(param1: str, param2: int = 50) -> str:
+    """[1-LINE SUMMARY OF WHAT TOOL DOES]
+
+    Use this tool when the user requests [WHEN TO USE - BE SPECIFIC].
+
+    [2-3 sentences explaining what the tool does and why it's useful]
+
+    Args:
+        param1: [Description with examples in parentheses]
+        param2: [Description with default value explanation]
+
+    Returns:
+        JSON string containing [data structure] with format:
+        {
+            "status": "success",
+            "[data_key]": [description of data],
+            "parameters": {...},
+            "count": [number],
+            "source": "Polygon.io"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "source": "Polygon.io"
+        }
+
+    Note:
+        - [Important note 1]
+        - [Important note 2]
+        - [Important note 3]
+
+    Examples:
+        - "[Example user query 1]"
+        - "[Example user query 2]"
+        - "[Example user query 3]"
     """
     try:
+        # Call Polygon API with lazy client initialization
         client = _get_polygon_client()
-        result = client.method_call()
+        result = client.method_name(param1, param2)
 
-        # Validate data
+        # Check if API returned valid data
         if not result:
-            return json.dumps({"error": "No data", "message": "...", "source": "Polygon.io"})
+            return json.dumps({
+                "error": "No data",
+                "message": f"No data returned from Polygon.io for {param1}.",
+                "source": "Polygon.io"
+            })
 
-        # Format and return JSON
+        # Process and structure response data
+        # ... data processing logic ...
+
         return json.dumps({
             "status": "success",
-            "data": result,
+            "data": processed_data,
             "source": "Polygon.io"
         })
+
     except Exception as e:
         return json.dumps({
-            "error": "API request failed",
-            "message": f"Error details: {str(e)}",
+            "error": "API Error",
+            "message": f"Polygon.io API error: {str(e)}",
             "source": "Polygon.io"
         })
 ```
 
-**File: src/backend/services/agent_service.py**
-```python
-# 1. Import new tools
-from ..tools.polygon_tools import get_market_status_and_date_time
+### Key Pattern Elements
 
-# 2. Add to tools list
-tools=[get_stock_quote, get_market_status_and_date_time]
-
-# 3. Update SUPPORTED TOOLS count and list
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [...]
-
-# 4. Add new RULE for tool usage
-RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
-```
-
-### OpenAI Custom Tools Best Practices
-
-**From docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md:**
-1. Use `@function_tool` decorator for automatic schema generation
-2. Comprehensive docstrings with purpose, args, returns, examples
-3. Type hints on all parameters
-4. Return JSON strings via `json.dumps()` for structured data
-5. Error handling returns helpful messages, not exceptions
-6. Async for I/O operations (API calls)
-7. Clear, descriptive naming (verb + noun format)
+1. ✅ **@function_tool decorator** - Enables automatic schema generation
+2. ✅ **async def** - All tools should be async
+3. ✅ **Type hints** - All parameters with types
+4. ✅ **Comprehensive docstring** - Purpose, when to use, args, returns, notes, examples
+5. ✅ **Lazy client init** - Use `_get_polygon_client()` helper
+6. ✅ **Error handling** - try-except with structured JSON error response
+7. ✅ **JSON return** - Always return JSON string, never raw objects
+8. ✅ **Consistent format** - {status/error, data/message, source: "Polygon.io"}
 
 ---
 
-## 🔧 Implementation Checklist
+## 📝 Implementation Checklist
 
-### PHASE 1: Tool Implementation in polygon_tools.py
+### PHASE 1: Create 5 Custom Tools in `src/backend/tools/polygon_tools.py`
 
-**File**: `src/backend/tools/polygon_tools.py`
+#### ✅ Checklist for Each Tool
 
-#### 1.1: Import Additional Modules
-```python
-# Add to existing imports at top of file (if not already present)
-from typing import Optional
-```
+- [ ] **Tool 1: get_stock_quote_multi** ⏳
+  - [ ] Add after existing tools in polygon_tools.py
+  - [ ] Function signature: `async def get_stock_quote_multi(tickers: List[str], market_type: str = "stocks") -> str:`
+  - [ ] Use `client.get_snapshot_all(market_type, tickers)`
+  - [ ] Comprehensive docstring with: purpose, when to use, args, returns, notes, examples
+  - [ ] Error handling with structured JSON response
+  - [ ] Return format: `{"status": "success", "tickers": [...], "count": N, "source": "Polygon.io"}`
+  - [ ] When to use: "Multiple tickers snapshot", "SPY, QQQ, IWM prices", "Market snapshot"
 
-#### 1.2: Implement get_ta_sma
-- [ ] Create `get_ta_sma(ticker: str, timespan: str = "day", window: int = 50, limit: int = 10) -> str`
-- [ ] Comprehensive docstring:
-  - Purpose: Get Simple Moving Average indicator values
-  - When to use: Technical analysis, trend identification, support/resistance
-  - Args: ticker, timespan, window, limit
-  - Returns: JSON with SMA values, timestamps, parameters, source
-  - Examples: "SMA for SPY", "50-day moving average AAPL"
-- [ ] Implementation:
-  - Get client via `_get_polygon_client()`
-  - Call `client.get_sma(ticker=ticker, timespan=timespan, window=window, limit=limit)`
-  - Validate response (check if results exist)
-  - Extract values from results list
-  - Format JSON response with status, indicator, ticker, values, parameters, source
-  - Error handling with try-except
-  - Return JSON string
+- [ ] **Tool 2: get_options_quote_single** ⏳
+  - [ ] Add after get_stock_quote_multi
+  - [ ] Function signature: `async def get_options_quote_single(underlying_asset: str, option_contract: str) -> str:`
+  - [ ] Use `client.get_snapshot_option(underlying_asset, option_contract)`
+  - [ ] Comprehensive docstring
+  - [ ] Return format: `{"status": "success", "contract": {...}, "greeks": {...}, "source": "Polygon.io"}`
+  - [ ] When to use: "Options contract quote", "Option snapshot", "AAPL call option"
 
-#### 1.3: Implement get_ta_ema
-- [ ] Create `get_ta_ema(ticker: str, timespan: str = "day", window: int = 50, limit: int = 10) -> str`
-- [ ] Comprehensive docstring:
-  - Purpose: Get Exponential Moving Average indicator values
-  - When to use: Technical analysis, trend following, more responsive than SMA
-  - Args: ticker, timespan, window, limit
-  - Returns: JSON with EMA values, timestamps, parameters, source
-  - Examples: "EMA for SPY", "20-day EMA TSLA"
-- [ ] Implementation:
-  - Same pattern as get_ta_sma
-  - Call `client.get_ema(ticker=ticker, timespan=timespan, window=window, limit=limit)`
-  - Format JSON response
-  - Error handling
+- [ ] **Tool 3: get_OHLC_bars_custom_date_range** ⏳
+  - [ ] Add after get_options_quote_single
+  - [ ] Function signature: `async def get_OHLC_bars_custom_date_range(ticker: str, from_date: str, to_date: str, timespan: str = "day", multiplier: int = 1, limit: int = 5000) -> str:`
+  - [ ] Use `client.list_aggs(ticker, multiplier, timespan, from_date, to_date, limit)`
+  - [ ] Comprehensive docstring
+  - [ ] Return format: `{"status": "success", "ticker": "SPY", "bars": [...], "count": N, "source": "Polygon.io"}`
+  - [ ] When to use: "Historical OHLC", "Price bars from X to Y", "Custom date range candles"
 
-#### 1.4: Implement get_ta_rsi
-- [ ] Create `get_ta_rsi(ticker: str, timespan: str = "day", window: int = 14, limit: int = 10) -> str`
-- [ ] Comprehensive docstring:
-  - Purpose: Get Relative Strength Index indicator values
-  - When to use: Identify overbought/oversold conditions, momentum analysis
-  - Args: ticker, timespan, window (default 14), limit
-  - Returns: JSON with RSI values (0-100), timestamps, parameters, source
-  - Note: RSI > 70 = overbought, RSI < 30 = oversold
-  - Examples: "RSI for SPY", "Relative strength index NVDA"
-- [ ] Implementation:
-  - Same pattern as previous tools
-  - Call `client.get_rsi(ticker=ticker, timespan=timespan, window=window, limit=limit)`
-  - Format JSON response
-  - Error handling
+- [ ] **Tool 4: get_OHLC_bars_specific_date** ⏳
+  - [ ] Add after get_OHLC_bars_custom_date_range
+  - [ ] Function signature: `async def get_OHLC_bars_specific_date(ticker: str, date: str) -> str:`
+  - [ ] Use `client.get_daily_open_close_agg(ticker, date)`
+  - [ ] Comprehensive docstring
+  - [ ] Return format: `{"status": "success", "ticker": "AAPL", "date": "2023-02-07", "open": X, "high": Y, "low": Z, "close": W, "source": "Polygon.io"}`
+  - [ ] When to use: "OHLC for specific date", "Daily candle on 2023-01-15", "What was price on DATE"
 
-#### 1.5: Implement get_ta_macd
-- [ ] Create `get_ta_macd(ticker: str, timespan: str = "day", short_window: int = 12, long_window: int = 26, signal_window: int = 9, limit: int = 10) -> str`
-- [ ] Comprehensive docstring:
-  - Purpose: Get MACD indicator values (trend and momentum)
-  - When to use: Identify trend changes, momentum shifts, buy/sell signals
-  - Args: ticker, timespan, short_window, long_window, signal_window, limit
-  - Returns: JSON with MACD line, signal line, histogram values, timestamps, parameters, source
-  - Note: MACD crossovers indicate potential trend changes
-  - Examples: "MACD for SPY", "MACD analysis AAPL"
-- [ ] Implementation:
-  - Call `client.get_macd(ticker=ticker, timespan=timespan, short_window=short_window, long_window=long_window, signal_window=signal_window, limit=limit)`
-  - Format JSON response with MACD, signal, histogram values
-  - Error handling
+- [ ] **Tool 5: get_OHLC_bars_previous_close** ⏳
+  - [ ] Add after get_OHLC_bars_specific_date
+  - [ ] Function signature: `async def get_OHLC_bars_previous_close(ticker: str) -> str:`
+  - [ ] Use `client.get_previous_close_agg(ticker)`
+  - [ ] Comprehensive docstring
+  - [ ] Return format: `{"status": "success", "ticker": "SPY", "previous_close": {...}, "source": "Polygon.io"}`
+  - [ ] When to use: "Previous close", "Last trading day", "Yesterday's close"
+
+#### Code Quality Requirements
+
+- [ ] All tools follow @function_tool pattern
+- [ ] All tools use `_get_polygon_client()` for lazy initialization
+- [ ] All tools have comprehensive docstrings (>30 lines)
+- [ ] All tools have proper error handling
+- [ ] All tools return JSON strings with consistent format
+- [ ] All tools use type hints
+- [ ] All tools are async def
+- [ ] Pylint score: 10.00/10
 
 ---
 
-### PHASE 2: Agent Service Integration
+### PHASE 2: Update `src/backend/services/agent_service.py`
 
-**File**: `src/backend/services/agent_service.py`
+#### Import Updates
 
-#### 2.1: Import New Tools
-- [ ] Add imports:
-```python
-from ..tools.polygon_tools import (
-    get_market_status_and_date_time,
-    get_ta_sma,
-    get_ta_ema,
-    get_ta_rsi,
-    get_ta_macd,
-)
-```
+- [ ] **Remove MCP tool references** ⏳
+  - [ ] Remove any imports of get_snapshot_all (if present)
+  - [ ] Remove any imports of get_snapshot_option (if present)
+  - [ ] Remove any imports of list_aggs (if present)
+  - [ ] Remove any imports of get_daily_open_close_agg (if present)
+  - [ ] Remove any imports of get_previous_close_agg (if present)
+  - [ ] Remove any imports of get_aggs (if present)
 
-#### 2.2: Update Tools List
-- [ ] Update tools list in `create_agent()`:
-```python
-tools=[
-    get_stock_quote,
-    get_market_status_and_date_time,
-    get_ta_sma,
-    get_ta_ema,
-    get_ta_rsi,
-    get_ta_macd,
-],  # Finnhub + Polygon direct API tools
-```
+- [ ] **Add new custom tool imports** ⏳
+  - [ ] Add: `from backend.tools.polygon_tools import get_stock_quote_multi`
+  - [ ] Add: `from backend.tools.polygon_tools import get_options_quote_single`
+  - [ ] Add: `from backend.tools.polygon_tools import get_OHLC_bars_custom_date_range`
+  - [ ] Add: `from backend.tools.polygon_tools import get_OHLC_bars_specific_date`
+  - [ ] Add: `from backend.tools.polygon_tools import get_OHLC_bars_previous_close`
 
-#### 2.3: Update Agent Instructions - Tool Count
-- [ ] Change SUPPORTED TOOLS from 10 to 14:
-```python
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 14 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg] 🔴
-```
+#### create_agent() Function Updates
 
-#### 2.4: Add RULE #8 for Technical Indicators
-- [ ] Add after RULE #7:
-```python
-RULE #8: TECHNICAL ANALYSIS INDICATORS = USE get_ta_* tools
-- If the request asks for technical indicators, moving averages, RSI, MACD, or TA analysis
-- Examples: "SMA for SPY", "RSI NVDA", "MACD analysis", "50-day moving average"
-- 📊 Uses Polygon.io Direct API for technical analysis indicator calculations
-- ✅ Available indicators:
-  * get_ta_sma(ticker, timespan='day', window=50, limit=10) - Simple Moving Average
-  * get_ta_ema(ticker, timespan='day', window=50, limit=10) - Exponential Moving Average
-  * get_ta_rsi(ticker, timespan='day', window=14, limit=10) - Relative Strength Index (0-100)
-  * get_ta_macd(ticker, timespan='day', short_window=12, long_window=26, signal_window=9, limit=10) - MACD
-- ✅ Returns: JSON with indicator values, timestamps, parameters used
-```
+- [ ] **Update tools=[] list** ⏳
+  - [ ] Keep existing: get_stock_quote
+  - [ ] Keep existing: get_market_status_and_date_time
+  - [ ] Keep existing: get_ta_sma
+  - [ ] Keep existing: get_ta_ema
+  - [ ] Keep existing: get_ta_rsi
+  - [ ] Keep existing: get_ta_macd
+  - [ ] ADD: get_stock_quote_multi
+  - [ ] ADD: get_options_quote_single
+  - [ ] ADD: get_OHLC_bars_custom_date_range
+  - [ ] ADD: get_OHLC_bars_specific_date
+  - [ ] ADD: get_OHLC_bars_previous_close
+  - [ ] Update comment: "# Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)"
 
-#### 2.5: Add Examples Section for TA Tools
-- [ ] Add to EXAMPLES OF CORRECT TOOL CALLS:
-```python
-✅ "SMA for SPY" → get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10)
-✅ "20-day EMA NVDA" → get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10)
-✅ "RSI analysis SPY" → get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10)
-✅ "MACD for AAPL" → get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26, signal_window=9, limit=10)
-```
+- [ ] **Verify imports work** ⏳
+  - [ ] Run: `PYTHONPATH=. uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ Import successful')"`
+
+#### Code Quality
+
+- [ ] Pylint score: 10.00/10
+- [ ] No unused imports
+- [ ] All new tools properly imported and registered
 
 ---
 
-### PHASE 3: Test Suite Updates
+### PHASE 3: Update AI Agent Instructions in `get_enhanced_agent_instructions()`
 
-**File**: `test_7_prompts_persistent_session.sh`
+#### Tool List Updates
 
-#### 3.1: Update Test Configuration
-- [ ] Change test count from 7 to 11
-- [ ] Update script header comments to reflect 11 tests
+- [ ] **Update SUPPORTED TOOLS list** ⏳
+  - [ ] CURRENT: `[get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg]`
+  - [ ] NEW: `[get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close]`
+  - [ ] Update tool count: "14 SUPPORTED TOOLS" → "12 SUPPORTED TOOLS"
 
-#### 3.2: Add New Test Prompts
-- [ ] Add 4 new prompts to prompts array (after existing 7):
-```bash
-declare -a prompts=(
-    # ... existing 7 prompts ...
-    "SMA Indicator: SPY"
-    "EMA Indicator: SPY"
-    "RSI Indicator: SPY"
-    "MACD Indicator: SPY"
-)
-```
+#### RULE Updates
 
-#### 3.3: Add New Test Names
-- [ ] Add 4 new test names to test_names array:
-```bash
-declare -a test_names=(
-    # ... existing 7 test names ...
-    "Test_8_SMA_Indicator_SPY"
-    "Test_9_EMA_Indicator_SPY"
-    "Test_10_RSI_Indicator_SPY"
-    "Test_11_MACD_Indicator_SPY"
-)
-```
+- [ ] **RULE #2: Update for get_stock_quote_multi** ⏳
+  - [ ] Change: "get_snapshot_all(tickers=['SYM1','SYM2'], market_type='stocks')"
+  - [ ] To: "get_stock_quote_multi(tickers=['SYM1','SYM2'], market_type='stocks')"
+  - [ ] Update all examples in RULE #2
 
-#### 3.4: Verify Test Count Variables
-- [ ] Ensure `total_tests=${#prompts[@]}` correctly counts 11 tests
-- [ ] Update any hardcoded test count references from 7 to 11
+- [ ] **RULE #3: Update for get_options_quote_single** ⏳
+  - [ ] Change: "get_snapshot_option()"
+  - [ ] To: "get_options_quote_single(underlying_asset, option_contract)"
+
+- [ ] **RULE #5: Update for new OHLC tools** ⏳
+  - [ ] Change: "get_aggs(), get_daily_open_close_agg(), get_previous_close_agg()"
+  - [ ] To: "get_OHLC_bars_custom_date_range(), get_OHLC_bars_specific_date(), get_OHLC_bars_previous_close()"
+  - [ ] Add descriptions for each new tool
+  - [ ] Add examples for when to use each
+
+#### Example Updates
+
+- [ ] **Update CORRECT tool call examples** ⏳
+  - [ ] Change: `get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks')`
+  - [ ] To: `get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks')`
+  - [ ] Add examples for all 5 new tools
+
+- [ ] **Update INCORRECT tool call examples** ⏳
+  - [ ] Update incorrect format examples to use new tool names
+  - [ ] Remove get_aggs references
+  - [ ] Remove get_snapshot_ticker references (already deprecated)
+
+#### Quality Checks
+
+- [ ] All tool names updated consistently
+- [ ] No references to old MCP tools remain
+- [ ] All examples use correct tool names
+- [ ] Tool count is accurate (12 tools)
+- [ ] Instructions are clear and comprehensive
 
 ---
 
-### PHASE 4: Code Quality & Validation
+### PHASE 4: Update Test Suite
 
-#### 4.1: Python Code Quality
-- [ ] Run pylint on polygon_tools.py:
-```bash
-uv run pylint src/backend/tools/polygon_tools.py --max-line-length=100
-```
-- [ ] Target score: 10.00/10
-- [ ] Fix any linting issues
+#### Update `test_7_prompts_persistent_session.sh`
 
-- [ ] Run pylint on agent_service.py:
-```bash
-uv run pylint src/backend/services/agent_service.py --max-line-length=100
-```
-- [ ] Target score: 10.00/10
-- [ ] Fix any linting issues
+- [ ] **Rename file** ⏳
+  - [ ] From: `test_7_prompts_persistent_session.sh`
+  - [ ] To: `test_16_prompts_persistent_session.sh`
 
-#### 4.2: Code Formatting
-- [ ] Run black formatter:
-```bash
-uv run black src/backend/tools/polygon_tools.py --line-length 100
-uv run black src/backend/services/agent_service.py --line-length 100
-```
+- [ ] **Update test configuration** ⏳
+  - [ ] Update comments: "11 Test Prompts" → "16 Test Prompts"
+  - [ ] Update session description: "all 11 tests" → "all 16 tests"
+  - [ ] Update total_tests variable
 
-- [ ] Run isort:
-```bash
-uv run isort src/backend/tools/polygon_tools.py --profile black --line-length 100
-uv run isort src/backend/services/agent_service.py --profile black --line-length 100
-```
+- [ ] **Add 5 new test prompts** ⏳
+  - [ ] Test 12: "Stock Snapshot: AAPL, MSFT, GOOGL" (get_stock_quote_multi)
+  - [ ] Test 13: "AAPL call option O:AAPL230616C00150000" (get_options_quote_single)
+  - [ ] Test 14: "OHLC bars SPY from 2025-09-01 to 2025-10-01" (get_OHLC_bars_custom_date_range)
+  - [ ] Test 15: "Daily OHLC for NVDA on 2025-10-04" (get_OHLC_bars_specific_date)
+  - [ ] Test 16: "Previous close for SPY" (get_OHLC_bars_previous_close)
 
-#### 4.3: Import Verification
-- [ ] Test polygon_tools.py imports:
-```bash
-PYTHONPATH=. uv run python -c "from src.backend.tools.polygon_tools import get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd; print('✅ Polygon tools imports successful')"
-```
+- [ ] **Add corresponding test names** ⏳
+  - [ ] Test_12_Multi_Stock_Snapshot_AAPL_MSFT_GOOGL
+  - [ ] Test_13_Options_Quote_Single_AAPL
+  - [ ] Test_14_OHLC_Bars_Custom_Date_Range_SPY
+  - [ ] Test_15_OHLC_Bars_Specific_Date_NVDA
+  - [ ] Test_16_OHLC_Bars_Previous_Close_SPY
 
-- [ ] Test agent_service.py imports:
-```bash
-PYTHONPATH=. uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ Agent service imports successful')"
-```
+- [ ] **Update success criteria** ⏳
+  - [ ] Update success message: "All 11 tests passed" → "All 16 tests passed"
+  - [ ] Update test counting logic
+  - [ ] Update report generation
 
-#### 4.4: CLI Testing
-- [ ] Run full test suite:
-```bash
-./test_7_prompts_persistent_session.sh
-```
+#### Run Tests
 
-- [ ] Verify:
-  - All 11/11 tests PASS
-  - Average response time < 30s (EXCELLENT rating)
-  - Session persistence validated (single session)
-  - Test report generated successfully
+- [ ] **Execute test script** ⏳
+  - [ ] Run: `./test_16_prompts_persistent_session.sh`
+  - [ ] Verify: 16/16 tests PASS
+  - [ ] Verify: Session persistence (single session for all 16 tests)
+  - [ ] Verify: Performance metrics (avg response time, min/max)
 
-- [ ] Review test report:
-```bash
-cat test-reports/persistent_session_test_*.txt
-```
+- [ ] **Verify test results** ⏳
+  - [ ] All 16 tests pass ✅
+  - [ ] Success rate: 100%
+  - [ ] No tool selection errors
+  - [ ] All new tools called correctly
+  - [ ] Response times reasonable (<30s excellent, <45s good, <90s acceptable)
 
 ---
 
 ### PHASE 5: Documentation Updates
 
-#### 5.1: Update CLAUDE.md
+#### Update CLAUDE.md
 
-**File**: `CLAUDE.md`
+- [ ] **Update Last Completed Task Summary** ⏳
+  - [ ] Task name: "mcp-to-custom-tools: Replace 5 MCP Tools with Custom Polygon Direct API Tools"
+  - [ ] Implementation details: List all 5 new tools created
+  - [ ] Tool architecture evolution: Before (14 tools) → After (12 tools)
+  - [ ] Test suite updates: From 11 → 16 tests
+  - [ ] Achievement summary
 
-- [ ] Update "Last Completed Task Summary" section
-- [ ] Replace content between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->`
-- [ ] New summary should include:
-  - Task title: "polygon-ta-indicators"
-  - Tool count change: 10 → 14
-  - List of 4 new tools
-  - Implementation details with checkmarks
-  - Test results (11/11 PASSED)
-  - Pylint scores (10.00/10)
-  - Tool architecture change
-  - Critical rules updated (added RULE #8)
-  - Achievement statement
+#### Update Serena Memory Files
 
-**Example Template**:
-```markdown
-<!-- LAST_COMPLETED_TASK_START -->
-polygon-ta-indicators: Create 4 Technical Analysis indicator custom tools using Polygon Python Library
+- [ ] **Update tech_stack.md** ⏳
+  - [ ] Update tool count: "6 Polygon direct API tools" → "11 Polygon direct API tools"
+  - [ ] Add descriptions of 5 new tools
+  - [ ] Update tool architecture diagram/description
 
-- Created 4 new TA indicator custom tools using Polygon.io direct API
-- Expanded tool capabilities with SMA, EMA, RSI, and MACD indicators
-- Created custom tools using @function_tool decorator with Polygon Python Library (polygon-api-client v1.15.4)
-- Updated AI Agent instructions: Added RULE #8 for TA indicators
-- Increased to 14 total tools (7 Polygon.io MCP + 1 Finnhub custom + 4 Polygon TA + 2 Polygon direct)
-- Enhanced technical analysis capabilities for financial queries
-- All tools follow established pattern from get_market_status_and_date_time
+- [ ] **Update other relevant memories** ⏳
+  - [ ] Check suggested_commands.md for test command updates
+  - [ ] Check project_architecture.md for tool flow updates
 
-Implementation Details:
-✅ Extended src/backend/tools/polygon_tools.py with 4 TA indicator functions
-✅ get_ta_sma: Simple Moving Average with configurable window
-✅ get_ta_ema: Exponential Moving Average for trend following
-✅ get_ta_rsi: Relative Strength Index (0-100) for momentum analysis
-✅ get_ta_macd: MACD indicator with signal line and histogram
-✅ Integrated into agent via tools=[...get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd]
-✅ Updated decision tree and added RULE #8 for TA indicator tool selection
-✅ Pylint score: 10.00/10 (clean code, no linting errors) for both files
-✅ CLI Tests: 11/11 PASSED, XX.XXs avg response time, EXCELLENT performance
-✅ Updated Serena memories: tech_stack and project_architecture
-✅ Test suite expanded from 7 to 11 tests with 4 new TA indicator test cases
+#### Update Symbol Cache
 
-Tool Architecture Change:
-- **BEFORE:** 10 tools (7 Polygon.io MCP + 1 Finnhub + 1 Polygon direct + 1 removed)
-- **AFTER:** 14 tools (7 Polygon.io MCP + 1 Finnhub + 4 Polygon TA + 2 Polygon direct)
-- **ADDED:** get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-- **PATTERN:** All TA tools follow polygon_tools.py established pattern
+- [ ] **Run symbol indexing** ⏳
+  - [ ] Serena will auto-update .serena/cache/python/document_symbols_cache_v23-06-25.pkl
+  - [ ] Verify new tool symbols are indexed
 
-Critical Rules Updated:
-🔴 RULE #1: Single ticker → get_stock_quote(ticker='SYMBOL') via Finnhub
-🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks') via Polygon.io MCP
-🔴 RULE #4: Market status & date/time → get_market_status_and_date_time() via Polygon Direct API
-🔴 RULE #8: Technical indicators → get_ta_* tools via Polygon Direct API ⭐ NEW
-🔴 SUPPORTED TOOLS: Updated from 10 to 14 tools in agent instructions
+#### Final Documentation
 
-ACHIEVEMENT: Successfully expanded technical analysis capabilities with 4 new TA indicator tools, enabling comprehensive financial market analysis
-<!-- LAST_COMPLETED_TASK_END -->
+- [ ] Update TODO_task_plan.md status to COMPLETED
+- [ ] Document any issues encountered and resolutions
+- [ ] Document performance benchmarks
+
+---
+
+## 🧪 Testing Strategy
+
+### Test Prompts for New Tools
+
+#### Test 12: get_stock_quote_multi
+
+```
+Prompt: "Stock Snapshot: AAPL, MSFT, GOOGL"
+Expected Tool: get_stock_quote_multi(tickers=['AAPL','MSFT','GOOGL'], market_type='stocks')
+Expected Response: JSON with 3 ticker snapshots
+Validation: ✅ Returns data for all 3 tickers
 ```
 
-#### 5.2: Update Serena tech_stack Memory
+#### Test 13: get_options_quote_single
 
-**File**: `.serena/memories/tech_stack.md`
-
-- [ ] Add section for TA indicator tools under "Financial Data APIs"
-- [ ] Update tool count: 10 → 14
-- [ ] Document 4 new TA tools with descriptions
-- [ ] Update "Tool Distribution" section
-
-**Example Addition**:
-```markdown
-### Technical Analysis Indicators (Polygon Direct API)
-- **get_ta_sma** - Simple Moving Average calculation
-- **get_ta_ema** - Exponential Moving Average calculation
-- **get_ta_rsi** - Relative Strength Index (0-100 momentum indicator)
-- **get_ta_macd** - Moving Average Convergence Divergence (trend + momentum)
-- **Purpose**: Provide technical analysis indicators for financial market analysis
-- **Pattern**: Follows polygon_tools.py established pattern
+```
+Prompt: "AAPL call option O:AAPL230616C00150000"
+Expected Tool: get_options_quote_single(underlying_asset='AAPL', option_contract='O:AAPL230616C00150000')
+Expected Response: JSON with option contract details, greeks, implied volatility
+Validation: ✅ Returns option contract data
 ```
 
-#### 5.3: Update Serena project_architecture Memory
+#### Test 14: get_OHLC_bars_custom_date_range
 
-**File**: `.serena/memories/project_architecture.md`
+```
+Prompt: "OHLC bars SPY from 2025-09-01 to 2025-10-01"
+Expected Tool: get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-01', to_date='2025-10-01', timespan='day')
+Expected Response: JSON with array of OHLC bars
+Validation: ✅ Returns OHLC data for date range
+```
 
-- [ ] Update "Backend Tool Architecture" section
-- [ ] Update tool count from 10 to 14
-- [ ] Add TA tools to tool distribution breakdown
-- [ ] Update data flow diagram to include TA indicator tools
+#### Test 15: get_OHLC_bars_specific_date
 
-**Example Update**:
-```markdown
-## Backend Tool Architecture
+```
+Prompt: "Daily OHLC for NVDA on 2025-10-04"
+Expected Tool: get_OHLC_bars_specific_date(ticker='NVDA', date='2025-10-04')
+Expected Response: JSON with single day OHLC
+Validation: ✅ Returns OHLC for specific date
+```
 
-### Tool Distribution (14 Total)
-1. **Finnhub Custom Tools (1)**: get_stock_quote
-2. **Polygon Direct API Tools (6)**: get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, (1 removed: get_market_status)
-3. **Polygon MCP Tools (7)**: get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
+#### Test 16: get_OHLC_bars_previous_close
 
-### Technical Analysis Tools
-All TA indicator tools use Polygon.io direct API via `RESTClient`:
-- SMA: Trend identification, support/resistance
-- EMA: Trend following, more responsive than SMA
-- RSI: Overbought/oversold conditions (>70 / <30)
-- MACD: Trend changes and momentum shifts
+```
+Prompt: "Previous close for SPY"
+Expected Tool: get_OHLC_bars_previous_close(ticker='SPY')
+Expected Response: JSON with previous close data
+Validation: ✅ Returns previous close information
 ```
 
 ---
 
-### PHASE 6: Git Commit & Push
+## ⚠️ Critical Success Criteria
 
-#### 6.1: Stage Changes
-- [ ] Stage all modified and new files:
-```bash
-git add src/backend/tools/polygon_tools.py
-git add src/backend/services/agent_service.py
-git add test_7_prompts_persistent_session.sh
-git add CLAUDE.md
-git add .serena/memories/tech_stack.md
-git add .serena/memories/project_architecture.md
-git add test-reports/persistent_session_test_*.txt
-git add TODO_task_plan.md
-git add new_task_details.md
-```
+### Must-Have Requirements
 
-#### 6.2: Verify Staged Changes
-- [ ] Review staged changes:
-```bash
-git status
-git diff --cached
-```
+1. ✅ **All 5 custom tools created** with @function_tool pattern
+2. ✅ **All tools follow established pattern** from commit e1ba319
+3. ✅ **Pylint score 10.00/10** for both polygon_tools.py and agent_service.py
+4. ✅ **All imports verified working** (test import command passes)
+5. ✅ **AI Agent instructions updated** with all new tool names
+6. ✅ **All 16 tests pass** with 100% success rate
+7. ✅ **Session persistence verified** (single session for all 16 tests)
+8. ✅ **No tool selection errors** (agent uses correct tools)
+9. ✅ **Documentation updated** (CLAUDE.md, Serena memories)
+10. ✅ **get_aggs completely removed** from all references
 
-#### 6.3: Create Comprehensive Commit
-- [ ] Create commit with detailed message:
-```bash
-git commit -m "$(cat <<'EOF'
-[POLYGON-TA-INDICATORS] Create 4 Technical Analysis indicator custom tools
+### Performance Targets
 
-- Create 4 new TA indicator custom tools using Polygon Python Library direct API
-- Expand tool capabilities: SMA, EMA, RSI, MACD for technical analysis
-- Update AI Agent instructions: Add RULE #8 for TA indicator tool selection
-- Increase to 14 total tools (7 Polygon.io MCP + 1 Finnhub + 4 Polygon TA + 2 Polygon direct)
-- Expand test suite from 7 to 11 tests with 4 new TA indicator test cases
-- All tools follow established pattern from get_market_status_and_date_time
-
-Implementation Details:
-✅ Extend src/backend/tools/polygon_tools.py with 4 TA indicator functions
-✅ get_ta_sma: Simple Moving Average (configurable window, default 50)
-✅ get_ta_ema: Exponential Moving Average (configurable window, default 50)
-✅ get_ta_rsi: Relative Strength Index (0-100, default window 14)
-✅ get_ta_macd: MACD with signal line (configurable windows: 12/26/9)
-✅ Integrate into agent via tools list in create_agent()
-✅ Update decision tree and add RULE #8 to agent instructions
-✅ Expand test suite to 11 tests (4 new TA indicator tests)
-✅ Pylint score: 10.00/10 (clean code, no linting errors)
-✅ CLI Tests: 11/11 PASSED, XX.XXs avg response time, EXCELLENT performance
-✅ Update Serena memories: tech_stack and project_architecture
-✅ Update CLAUDE.md with complete task documentation
-
-Tool Architecture Change:
-- BEFORE: 10 tools (7 Polygon.io MCP + 1 Finnhub + 2 Polygon direct - 1 removed)
-- AFTER: 14 tools (7 Polygon.io MCP + 1 Finnhub + 4 Polygon TA + 2 Polygon direct)
-- ADDED: get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-- PATTERN: All TA tools follow polygon_tools.py established pattern
-
-Agent Instructions Updates:
-- Tool Count: 10 → 14 in SUPPORTED TOOLS list
-- Added RULE #8: TECHNICAL ANALYSIS INDICATORS = USE get_ta_* tools
-- Updated examples with TA indicator tool usage
-- Decision tree includes TA indicator selection
-
-Test Suite Updates:
-- Test Count: 7 → 11 tests
-- Added Test 8: SMA Indicator SPY
-- Added Test 9: EMA Indicator SPY
-- Added Test 10: RSI Indicator SPY
-- Added Test 11: MACD Indicator SPY
-- All tests running in persistent single session
-
-Test Results:
-- CLI Test Suite: 11/11 PASSED (100% success rate)
-- Average Response Time: XX.XXs (EXCELLENT performance)
-- Session Mode: Persistent single session validated
-- Test Report: test-reports/persistent_session_test_TIMESTAMP.txt
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
-```
-
-#### 6.4: Push to Remote
-- [ ] Push commit to remote repository:
-```bash
-git push
-```
-
-- [ ] Verify push successful:
-```bash
-git log -1 --oneline
-```
+- Average response time: <30s (EXCELLENT) or <45s (GOOD)
+- Test suite completion: <10 minutes total
+- No timeouts or hanging processes
+- Clean error handling (no uncaught exceptions)
 
 ---
 
-## 🔍 JSON Response Format Specifications
+## 🔍 Validation Checklist
 
-### SMA/EMA Response Format
-```json
-{
-  "status": "success",
-  "indicator": "sma",  // or "ema"
-  "ticker": "SPY",
-  "values": [
-    {
-      "timestamp": "2025-10-05T00:00:00Z",
-      "value": 450.25
-    },
-    ...
-  ],
-  "parameters": {
-    "timespan": "day",
-    "window": 50
-  },
-  "count": 10,
-  "source": "Polygon.io"
-}
-```
+### Before Starting Implementation
 
-### RSI Response Format
-```json
-{
-  "status": "success",
-  "indicator": "rsi",
-  "ticker": "SPY",
-  "values": [
-    {
-      "timestamp": "2025-10-05T00:00:00Z",
-      "value": 62.45  // 0-100 scale
-    },
-    ...
-  ],
-  "parameters": {
-    "timespan": "day",
-    "window": 14
-  },
-  "interpretation": {
-    "overbought_threshold": 70,
-    "oversold_threshold": 30
-  },
-  "count": 10,
-  "source": "Polygon.io"
-}
-```
+- [ ] Read CLAUDE.md for project context ✅
+- [ ] Review docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md ✅
+- [ ] Analyze commit e1ba319 for pattern reference ✅
+- [ ] Understand current tool architecture ✅
+- [ ] Review test strategy ✅
 
-### MACD Response Format
-```json
-{
-  "status": "success",
-  "indicator": "macd",
-  "ticker": "SPY",
-  "values": [
-    {
-      "timestamp": "2025-10-05T00:00:00Z",
-      "macd": 2.34,
-      "signal": 1.87,
-      "histogram": 0.47
-    },
-    ...
-  ],
-  "parameters": {
-    "timespan": "day",
-    "short_window": 12,
-    "long_window": 26,
-    "signal_window": 9
-  },
-  "count": 10,
-  "source": "Polygon.io"
-}
-```
+### During Implementation
 
-### Error Response Format (All Tools)
-```json
-{
-  "error": "API request failed",
-  "message": "Failed to retrieve SMA data from Polygon.io: [detailed error message]",
-  "source": "Polygon.io"
-}
-```
+- [ ] Follow @function_tool pattern exactly
+- [ ] Use _get_polygon_client() helper
+- [ ] Write comprehensive docstrings (>30 lines)
+- [ ] Implement proper error handling
+- [ ] Return consistent JSON format
+- [ ] Test each tool individually
+- [ ] Run pylint after each tool creation
+
+### After Implementation
+
+- [ ] All imports work (no ImportError)
+- [ ] All tests pass (16/16)
+- [ ] Pylint score 10.00/10
+- [ ] No deprecated tool references
+- [ ] Documentation complete
+- [ ] Performance targets met
 
 ---
 
-## 📝 Implementation Notes
+## 📊 Tool Architecture Evolution
 
-### Important Considerations
+### BEFORE (Current)
 
-1. **Typo Correction**: The research request mentioned 'get_ta_rse' which should be 'get_ta_rsi' (Relative Strength Index)
+```
+Total Tools: 14
+- Finnhub: 1 (get_stock_quote)
+- Polygon Direct: 6 (get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, ?)
+- Polygon MCP: 7 (get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, ?)
+```
 
-2. **Default Parameters**:
-   - SMA/EMA window: 50 (commonly used for long-term trends)
-   - RSI window: 14 (industry standard)
-   - MACD windows: 12/26/9 (standard MACD parameters)
-   - Timespan: "day" (daily aggregates)
-   - Limit: 10 (reasonable default for recent data)
+### AFTER (Target)
 
-3. **Error Handling**: All tools must handle:
-   - Missing/invalid API responses
-   - Network errors
-   - Invalid ticker symbols
-   - Empty result sets
-   - Polygon API errors
+```
+Total Tools: 12
+- Finnhub: 1 (get_stock_quote)
+- Polygon Direct: 11 (existing 6 + new 5)
+  - Existing: get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, ?
+  - NEW: get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
+- Polygon MCP: 0 (all replaced with direct API)
+```
 
-4. **Performance**: Expected average response time < 30s for EXCELLENT rating
+### Benefits
 
-5. **Code Quality**: Maintain 10.00/10 Pylint score for both files
-
-6. **Testing**: All 11 tests must pass in persistent single session mode
+1. ✅ **Reduced MCP dependency** - More control over tool behavior
+2. ✅ **Direct API access** - Faster response times
+3. ✅ **Consistent error handling** - All tools use same pattern
+4. ✅ **Better documentation** - Comprehensive docstrings for all tools
+5. ✅ **Easier maintenance** - All tools in one location
 
 ---
 
-## 🎯 Definition of Done
+## 🚨 Common Pitfalls to Avoid
 
-Task is complete when ALL of the following are true:
+1. ❌ **Don't forget type hints** - All parameters must have type annotations
+2. ❌ **Don't skip docstrings** - Every tool needs comprehensive documentation
+3. ❌ **Don't return raw objects** - Always return JSON strings
+4. ❌ **Don't ignore errors** - Implement proper try-except blocks
+5. ❌ **Don't hard-code API keys** - Use _get_polygon_client() helper
+6. ❌ **Don't mix sync/async** - All tools must be async def
+7. ❌ **Don't forget to update tests** - Add test cases for all new tools
+8. ❌ **Don't leave old tool references** - Remove all MCP tool mentions
+9. ❌ **Don't skip validation** - Test imports before running full suite
+10. ❌ **Don't forget documentation** - Update CLAUDE.md and Serena memories
 
-- [x] Research phase completed with Sequential-Thinking
-- [ ] All 4 TA indicator tools implemented in polygon_tools.py
-- [ ] All 4 tools properly integrated in agent_service.py
-- [ ] Agent instructions updated with RULE #8 and examples
-- [ ] Test suite expanded to 11 tests with 4 new TA test cases
-- [ ] Pylint score 10.00/10 for polygon_tools.py
-- [ ] Pylint score 10.00/10 for agent_service.py
-- [ ] All imports verified working
-- [ ] CLI test suite passing 11/11 tests
-- [ ] Average response time < 30s (EXCELLENT rating)
-- [ ] Session persistence validated (single session)
-- [ ] CLAUDE.md updated with comprehensive task summary
-- [ ] Serena tech_stack memory updated
-- [ ] Serena project_architecture memory updated
-- [ ] Git commit created with comprehensive message
-- [ ] Changes pushed to remote repository
-- [ ] All test reports generated and saved
+---
+
+## 📈 Expected Outcomes
+
+### Tool Functionality
+
+- ✅ All 5 new tools work correctly
+- ✅ All tools return proper JSON format
+- ✅ Error handling works as expected
+- ✅ Tool selection logic updated correctly
+- ✅ AI Agent uses new tools appropriately
+
+### Code Quality
+
+- ✅ Pylint score: 10.00/10 for all modified files
+- ✅ No code duplication
+- ✅ Consistent naming conventions
+- ✅ Clear, comprehensive docstrings
+- ✅ Proper error handling throughout
+
+### Testing
+
+- ✅ 16/16 tests pass (100% success rate)
+- ✅ Average response time <30s (EXCELLENT)
+- ✅ Session persistence verified (single session)
+- ✅ No tool selection errors
+- ✅ All new tools validated
+
+### Documentation
+
+- ✅ CLAUDE.md updated with task summary
+- ✅ Serena memory files updated
+- ✅ Symbol cache refreshed
+- ✅ Test reports generated
+- ✅ TODO_task_plan.md marked complete
+
+---
+
+## 🎯 Next Steps After Completion
+
+1. **Run final validation**
+
+   ```bash
+   # Verify imports
+   PYTHONPATH=. uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ All imports work')"
+
+   # Run test suite
+   ./test_16_prompts_persistent_session.sh
+
+   # Check pylint scores
+   pylint src/backend/tools/polygon_tools.py
+   pylint src/backend/services/agent_service.py
+   ```
+
+2. **Update CLAUDE.md** with completion summary
+
+3. **Update Serena memories** with new tool information
+
+4. **Generate test report** and document performance metrics
+
+5. **Mark TODO_task_plan.md as COMPLETED** ✅
 
 ---
 
 ## 📚 Reference Materials
 
-### Key Files
-- **Polygon Indicators Source**: `polygon/rest/indicators.py` (from Polygon Python Library)
-- **Previous Implementation**: Commit `68a058d` - get_market_status_and_date_time
-- **OpenAI Tools Reference**: `docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md`
-- **Test Script**: `test_7_prompts_persistent_session.sh`
+### Documentation
 
-### Documentation Links
-- Polygon.io Indicators API: https://polygon.io/docs/stocks/get_v1_indicators_sma__stockticker
-- OpenAI Agents SDK: https://openai.github.io/openai-agents-python/tools/
-- Polygon Python Client: https://github.com/polygon-io/client-python
+- `/docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md` - Custom tool creation guide
+- Polygon Python Library docs (researched via mcp__docs-polygon-python)
+- Commit e1ba319 - Previous custom tool implementation
 
----
+### Code Examples
 
-## 🚀 Ready to Implement
+- `src/backend/tools/polygon_tools.py` - Existing custom tools (get_ta_*)
+- `src/backend/services/agent_service.py` - Agent configuration
+- Polygon examples: stocks-snapshots_all.py, options-snapshots_option_contract.py, etc.
 
-This plan is comprehensive and ready for implementation. All research is complete, patterns are established, and the path forward is clear.
+### Test Scripts
 
-**Estimated Implementation Time**: 2-3 hours
-**Complexity**: Medium (following established pattern)
-**Risk Level**: Low (well-researched, clear implementation path)
-
-🔴 **CRITICAL REMINDER**: This is a PLANNING document only. DO NOT START IMPLEMENTATION until user explicitly approves this plan and requests implementation to begin.
+- `test_7_prompts_persistent_session.sh` → `test_16_prompts_persistent_session.sh`
+- Test prompt patterns from tests/playwright/test_prompts.md
 
 ---
 
-**Plan Created**: October 5, 2025
-**Status**: ✅ READY FOR APPROVAL
+**END OF TODO TASK PLAN**
+
+*This plan is comprehensive and ready for implementation. Follow each phase sequentially, validate at each step, and maintain code quality throughout.*

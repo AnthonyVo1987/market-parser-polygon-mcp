@@ -12,48 +12,78 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-ta-indicators: Add 4 Technical Analysis Indicator tools using Polygon Python Library direct API
+mcp-to-direct-api-migration: Replace 5 MCP Tools with Polygon Python Library Direct API Custom Tools
 
-- Created 4 new TA indicator custom tools: get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-- Expanded from 10 to 14 total tools (7 Polygon MCP + 1 Finnhub + 6 Polygon direct)
-- Updated AI Agent instructions with RULE #8 for Technical Analysis Indicators
-- Extended test suite from 7 to 11 tests (added 4 TA indicator test cases)
+- Created 5 new custom tools to replace MCP tools: get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
+- Expanded from 14 to 18 total tools (6 Polygon MCP + 1 Finnhub + 11 Polygon direct)
+- Updated AI Agent instructions: RULE #2 (multi-ticker), RULE #3 (options), RULE #5 (OHLC bars)
+- Extended test suite from 11 to 16 tests (added 5 new test cases)
+- Removed get_aggs tool (not relevant for analysis)
 - All tools follow established @function_tool pattern with comprehensive docstrings
 
 Implementation Details:
-✅ Created 4 TA indicator tools in src/backend/tools/polygon_tools.py (604 lines added)
+✅ Created 5 custom tools in src/backend/tools/polygon_tools.py (738 lines added):
 
-- get_ta_sma: Simple Moving Average (common windows: 20, 50, 200 days)
-- get_ta_ema: Exponential Moving Average (common windows: 12, 20, 26, 50 days)
-- get_ta_rsi: Relative Strength Index (14-day standard, 0-100 range, >70 overbought, <30 oversold)
-- get_ta_macd: MACD indicator (12/26/9 standard periods, crossovers signal trend changes)
-✅ Updated agent_service.py imports and create_agent() function with all 4 TA tools
-✅ Added RULE #8 to agent instructions with full TA indicator guidance and examples
-✅ Updated test_7_prompts_persistent_session.sh from 7 to 11 tests (4 new TA test cases)
-✅ Pylint score: 10.00/10 for both polygon_tools.py and agent_service.py
-✅ All imports verified working correctly
+1. **get_stock_quote_multi**: Multi-ticker snapshot quotes (replaces get_snapshot_all MCP)
+   - Uses client.get_snapshot_all(market_type, tickers)
+   - Supports stocks, options, forex, crypto market types
+   - Returns snapshot data for all tickers with day/min/prevDay prices
+
+2. **get_options_quote_single**: Single options contract quote (replaces get_snapshot_option MCP)
+   - Uses client.get_snapshot_option(underlying_asset, option_contract)
+   - Returns contract details, Greeks (delta/gamma/theta/vega), implied volatility
+   - Full options analysis support
+
+3. **get_OHLC_bars_custom_date_range**: Custom date range OHLC bars (replaces list_aggs MCP)
+   - Uses client.list_aggs(ticker, multiplier, timespan, from_, to, limit)
+   - Supports minute/hour/day/week/month/quarter/year timespans
+   - Flexible date range queries
+
+4. **get_OHLC_bars_specific_date**: Specific date OHLC bars (replaces get_daily_open_close_agg MCP)
+   - Uses client.get_daily_open_close_agg(ticker, date, adjusted)
+   - Returns OHLC for exact trading day
+   - Handles splits/dividends with adjusted parameter
+
+5. **get_OHLC_bars_previous_close**: Previous trading day OHLC (replaces get_previous_close_agg MCP)
+   - Uses client.get_previous_close_agg(ticker, adjusted)
+   - Automatically handles weekends/holidays
+   - Returns most recent completed trading day
+
+✅ Updated agent_service.py imports and create_agent() with all 11 Polygon direct tools
+✅ Updated AI Agent instructions with new RULES and tool mappings
+✅ Created test_16_prompts_persistent_session.sh with 16 tests (5 new OHLC/multi-ticker/options)
+✅ All tools validated with Polygon Python Library direct API
 
 Tool Architecture Evolution:
 
-- **BEFORE:** 10 tools (7 Polygon MCP + 1 Finnhub + 2 Polygon direct)
-- **AFTER:** 14 tools (7 Polygon MCP + 1 Finnhub + 6 Polygon direct)
-- **NEW TOOLS:** get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
+- **BEFORE:** 14 tools (7 Polygon MCP + 1 Finnhub + 6 Polygon direct)
+- **AFTER:** 18 tools (6 Polygon MCP + 1 Finnhub + 11 Polygon direct)
+- **NEW TOOLS:** get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
+- **REMOVED:** get_aggs (not relevant for analysis)
 
 Critical Rules Updated:
 🔴 RULE #1: Single ticker → get_stock_quote(ticker='SYMBOL') via Finnhub
-🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks') via Polygon MCP
+🔴 RULE #2: Multiple tickers → get_stock_quote_multi(tickers=['S1','S2'], market_type='stocks') via Polygon Direct API ⭐ UPDATED
+🔴 RULE #3: Options → get_options_quote_single(underlying_asset, option_contract) via Polygon Direct API ⭐ UPDATED
 🔴 RULE #4: Market status & date/time → get_market_status_and_date_time() via Polygon Direct API
-🔴 RULE #8: Technical Analysis Indicators → get_ta_sma/ema/rsi/macd via Polygon Direct API ⭐ NEW
-🔴 SUPPORTED TOOLS: Updated from 10 to 14 tools in agent instructions
+🔴 RULE #5: Historical OHLC → get_OHLC_bars_* tools via Polygon Direct API ⭐ NEW
+🔴 RULE #8: Technical Analysis Indicators → get_ta_sma/ema/rsi/macd via Polygon Direct API
+🔴 SUPPORTED TOOLS: Updated from 14 to 18 tools in agent instructions
 
 Test Suite Updates:
 
-- **Test 8:** "SMA for SPY" - Simple Moving Average
-- **Test 9:** "20-day EMA for NVDA" - Exponential Moving Average
-- **Test 10:** "RSI analysis for SPY" - Relative Strength Index
-- **Test 11:** "MACD for AAPL" - MACD Indicator
+- **Test 12:** "Multi-ticker quotes: AAPL, MSFT, GOOGL" - Multi-ticker snapshot
+- **Test 13:** "Options quote for SPY December 650 call" - Options contract quote
+- **Test 14:** "AAPL daily bars from January 1 to March 31, 2024" - Custom date range OHLC
+- **Test 15:** "TSLA price on December 15, 2024" - Specific date OHLC
+- **Test 16:** "SPY previous trading day close" - Previous close OHLC
 
-ACHIEVEMENT: Successfully added comprehensive TA indicator support, enabling advanced technical analysis queries with SMA, EMA, RSI, and MACD indicators
+MCP Migration Progress:
+
+- **Migrated to Direct API (11 tools):** get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_stock_quote (Finnhub)
+- **Remaining MCP Tools (6):** get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg (still available via MCP for backward compatibility)
+
+ACHIEVEMENT: Successfully migrated 5 critical MCP tools to Polygon Python Library direct API, improving performance, simplicity, and control. Extended test suite to 16 tests covering all new OHLC bar, multi-ticker, and options functionality.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -93,6 +123,72 @@ SUCCESS CRITERIA:
 - No rigid sequencing - only logical tool usage based on task requirements
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
+
+## 🔴 CRITICAL: MANDATORY TESTING CHECKPOINT
+
+**Testing is NOT optional - it is REQUIRED for task completion:**
+
+### **Testing Workflow (MUST FOLLOW):**
+
+1. **Code Implementation** → Create/update code
+2. **Test Suite Update** → Create/update test files
+3. **🔴 TEST EXECUTION (MANDATORY)** → RUN the test suite
+4. **Test Verification** → Verify 100% pass rate
+5. **Documentation** → Update docs with test results
+
+### **Test Execution Requirements:**
+
+✅ **MUST DO:**
+- Execute test suite (e.g., `./test_16_prompts_persistent_session.sh`)
+- Show test results to user (pass/fail counts, response times)
+- Verify 100% success rate
+- Provide test report file path
+- Fix any failures and re-test
+
+❌ **NEVER DO:**
+- Skip test execution
+- Claim completion without test results
+- Mark task "done" without test evidence
+- Proceed to documentation without running tests
+
+### **Enforcement Rules:**
+
+🔴 **Code without test execution = Code NOT implemented**
+🔴 **No test results = Task INCOMPLETE**
+🔴 **Test results are PROOF of implementation**
+🔴 **Tests must run BEFORE documentation updates**
+
+### **Pattern Recognition:**
+
+**WRONG (What NOT to do):**
+```
+1. Create 5 new tools ✅
+2. Update test suite file ✅
+3. Update documentation ✅
+4. Mark task complete ❌ (NEVER ran tests!)
+```
+
+**CORRECT (What TO do):**
+```
+1. Create 5 new tools ✅
+2. Update test suite file ✅
+3. RUN test suite: ./test_16_prompts_persistent_session.sh ✅
+4. Show results: 16/16 PASS, 100% success ✅
+5. Provide test report path ✅
+6. Update documentation with test results ✅
+7. Mark task complete ✅
+```
+
+### **When to Run Tests:**
+
+- After creating new tools/functions
+- After modifying existing code
+- After updating AI agent instructions
+- After changing test suite
+- Before updating documentation
+- Before claiming task completion
+
+**Remember: If you haven't RUN the tests and SHOWN the results, the task is NOT complete.**
 
 ## Quick Start
 

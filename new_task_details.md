@@ -41,10 +41,12 @@ SUCCESS CRITERIA:
 <Implementation Phase>
 Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
+- After implementation is complete, you MUST RUN CLI TESTING
+
 ---
 
 <CLI Testing Phase>
-- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_persistent_session.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed. If ONLY doc changes, you may skip testing since no code needs to be tested
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_xxx.sh' to perform testing of CLI version, fix any issues until you get alltest to pass with different response times. Detect false failures test run\results and re-run if needed. If ONLY doc changes, you may skip testing since no code needs to be tested
 
 ---
 

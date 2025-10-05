@@ -20,3 +20,56 @@
 Based on the Research, Analysis & Scoping from previous task(s), delete the current file 'TODO_task_plan.md' and then create a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' and completely for you to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
 
 ---
+
+<Implementation Phase>
+
+Implement all code changes, test suite updates, and agent instruction modifications according to the TODO_task_plan.md
+
+---
+
+<CLI Testing Phase> 🔴 MANDATORY CHECKPOINT - DO NOT SKIP 🔴
+
+⚠️ **CRITICAL: You MUST run tests BEFORE claiming completion** ⚠️
+⚠️ **CRITICAL: Task is INCOMPLETE without test execution and results** ⚠️
+
+**REQUIRED ACTIONS:**
+
+1. ✅ **Execute the test suite:**
+   ```bash
+   ./test_16_prompts_persistent_session.sh
+   ```
+
+2. ✅ **Verify test results:**
+   - All tests PASS (must show 100% success rate)
+   - Test report generated in test-reports/
+   - No errors or failures in output
+   - Session persistence verified
+
+3. ✅ **Show evidence to user:**
+   - Display test summary output
+   - Show pass/fail counts (must be X/X PASS)
+   - Provide test report file path
+   - Show performance metrics (response times)
+
+**❌ ENFORCEMENT RULES:**
+- Code without test execution = Code NOT implemented
+- No test results = Task INCOMPLETE
+- Must run tests BEFORE Serena memory update phase
+- Cannot claim "done" without showing test evidence
+- Test failures must be fixed and re-tested
+
+**✅ ONLY PROCEED to next phase after:**
+- Test suite executed successfully
+- 100% pass rate achieved
+- Test results displayed to user
+- Test report path provided
+
+🔴 **IF YOU SKIP THIS PHASE, THE ENTIRE TASK IS INVALID** 🔴
+
+---
+
+<Serena Update Memories Phase>
+
+Update Serena memory files with new tool information, architecture changes, and test results (ONLY after tests pass)
+
+---

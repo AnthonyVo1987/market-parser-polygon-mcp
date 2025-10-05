@@ -1,0 +1,480 @@
+=== PERSISTENT SESSION TEST REPORT ===
+Timestamp: Sun Oct  5 14:26:49 PDT 2025
+Total Tests: 16
+Passed: 16
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 334.587390673s
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 13.650s
+Max Response Time: 33.759s
+Avg Response Time: 20.72s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_Market_Status_Query - PASS
+  Response Time: 23.373s
+Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
+  Response Time: 15.477s
+Test 3: Test_3_Multi_Stock_Snapshot_SPY_QQQ_IWM - PASS
+  Response Time: 18.586s
+Test 4: Test_4_Closing_Price_Query_SPY - PASS
+  Response Time: 24.133s
+Test 5: Test_5_Weekly_Performance_Analysis_SPY - PASS
+  Response Time: 22.386s
+Test 6: Test_6_Support_Resistance_SPY - PASS
+  Response Time: 13.650s
+Test 7: Test_7_Technical_Analysis_SPY - PASS
+  Response Time: 31.309s
+Test 8: Test_8_SMA_Indicator_SPY - PASS
+  Response Time: 13.850s
+Test 9: Test_9_EMA_Indicator_NVDA - PASS
+  Response Time: 19.897s
+Test 10: Test_10_RSI_Indicator_SPY - PASS
+  Response Time: 16.892s
+Test 11: Test_11_MACD_Indicator_AAPL - PASS
+  Response Time: 24.510s
+Test 12: Test_12_Multi_Ticker_Quote_AAPL_MSFT_GOOGL - PASS
+  Response Time: 22.265s
+Test 13: Test_13_Options_Quote_SPY_Call - PASS
+  Response Time: 18.482s
+Test 14: Test_14_OHLC_Custom_Date_Range_AAPL - PASS
+  Response Time: 15.153s
+Test 15: Test_15_OHLC_Specific_Date_TSLA - PASS
+  Response Time: 33.759s
+Test 16: Test_16_OHLC_Previous_Close_SPY - PASS
+  Response Time: 17.938s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [10/05/25 14:21:16] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:21:29] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market status: Closed                                                        
+ • Server time: 2025-10-05 17:21:29 (UTC-4)                                     
+
+Tools Used:                                                                     
+
+ • get_market_status_and_date_time() - Provide real-time market status and      
+   server datetime per request                                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 23.373s
+   🔢  Tokens Used: 35,595 (Input: 35,454, Output: 141)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:21:39] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:21:49] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA: 187.62                                                                 
+ • Change: -1.27 (-0.67%)                                                       
+ • High: 190.36                                                                 
+ • Low: 185.38                                                                  
+ • Open: 189.19                                                                 
+ • Previous close: 188.89                                                       
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='NVDA') - Single ticker request, used to fetch        
+   real-time quote data per RULE #1                                             
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 15.477s
+   🔢  Tokens Used: 36,016 (Input: 35,777, Output: 239)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:21:55] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:22:03] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: Last price 0.00, Change 0.00% (data unavailable)                        
+ • QQQ: Last price 0.00, Change 0.00% (data unavailable)                        
+ • IWM: Last price 0.00, Change 0.00% (data unavailable)                        
+
+Tools Used:                                                                     
+
+ • get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks') -   
+   Multiple tickers, used for multi-ticker snapshot per RULE #2 with list format
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 18.586s
+   🔢  Tokens Used: 36,906 (Input: 36,565, Output: 341)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:22:14] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:22:29] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY close today: 669.21 (adjusted)                                           
+
+Note: Market is closed; this is the last close available.                       
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_previous_close(ticker='SPY', adjusted=True) - Provided the last
+   close when market is closed, per RULE #5 and to satisfy the "closing price   
+   today" request with last known data.                                         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 24.133s
+   🔢  Tokens Used: 37,793 (Input: 37,552, Output: 241)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:22:38] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:22:47] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY weekly price change: $7.39 (1.12%)                                       
+ • Last weekly close: 669.21                                                    
+ • Previous weekly close: 661.82                                                
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-22',        
+   to_date='2025-10-05', timespan='week', multiplier=1) - Retrieved weekly bars 
+   to compute the weekly change.                                                
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 22.386s
+   🔢  Tokens Used: 39,126 (Input: 38,452, Output: 674)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:23:00] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Primary resistance: 672.68                                                   
+ • Secondary resistance: around 669–672 zone                                    
+ • Primary support: 661.82                                                      
+ • Stronger support: 654.41                                                     
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-22',        
+   to_date='2025-10-05', timespan='week', multiplier=1) - Used weekly bars to   
+   identify recent highs/lows for levels                                        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 13.650s
+   🔢  Tokens Used: 20,020 (Input: 19,275, Output: 745)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:23:14] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:23:33] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • 50-day SMA: 648.03                                                           
+ • 50-day EMA: 648.04                                                           
+ • RSI (14): 68.91 (near overbought)                                            
+ • MACD (12,26,9): MACD 6.05, Signal 5.99, Histogram 0.06                       
+
+Interpretation: SPY trends modestly bullish; RSI near overbought, MACD shows    
+positive momentum but not overbought signals yet.                               
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=50, limit=5) - Provide 50-day
+   simple moving average                                                        
+ • get_ta_ema(ticker='SPY', timespan='day', window=50, limit=5) - Provide 50-day
+   exponential moving average                                                   
+ • get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=5) - Provide RSI   
+ • get_ta_macd(ticker='SPY', timespan='day', short_window=12, long_window=26,   
+   signal_window=9, limit=5) - Provide MACD components                          
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 31.309s
+   🔢  Tokens Used: 26,339 (Input: 25,494, Output: 845)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:23:45] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:23:53] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • 50-day SMA: 648.03                                                           
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=50, limit=5) - Provide 50-day
+   simple moving average data                                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 13.850s
+   🔢  Tokens Used: 41,765 (Input: 41,611, Output: 154)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:23:59] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:24:13] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA 20-day EMA: 180.54                                                      
+
+Tools Used:                                                                     
+
+ • get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=5) - Provide      
+   20-day EMA data                                                              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 19.897s
+   🔢  Tokens Used: 42,175 (Input: 42,085, Output: 90)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:24:19] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:24:26] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY RSI (14): 68.91 (near overbought)                                        
+
+Tools Used:                                                                     
+
+ • get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=5) - Provide RSI   
+   values and interpretation                                                    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 16.892s
+   🔢  Tokens Used: 42,864 (Input: 42,707, Output: 157)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:24:36] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:24:48] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL MACD: 7.42                                                              
+ • Signal: 6.97                                                                 
+ • Histogram: 0.44                                                              
+
+Tools Used:                                                                     
+
+ • get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26,  
+   signal_window=9, limit=5) - Provide MACD components                          
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 24.510s
+   🔢  Tokens Used: 43,541 (Input: 43,417, Output: 124)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:25:00] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:25:12] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL: data unavailable                                                       
+ • MSFT: data unavailable                                                       
+ • GOOGL: data unavailable                                                      
+
+Tools Used:                                                                     
+
+ • get_stock_quote_multi(tickers=['AAPL','MSFT','GOOGL'], market_type='stocks') 
+   - Multiple tickers, used for a quick snapshot of several symbols per RULE #2 
+   with list format.                                                            
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 22.265s
+   🔢  Tokens Used: 44,716 (Input: 44,474, Output: 242)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:25:22] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:25:32] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY 2025-12-19 C$65.00 call (O:SPY251219C00650000)                           
+    • Last price (theoretical/quote): 34.90                                     
+    • Day range: 34.60 - 37.67                                                  
+    • Volume: 247                                                               
+    • Open interest: 21,568                                                     
+    • Delta: 0.679                                                              
+    • Gamma: 0.00663                                                            
+    • Theta: -0.165                                                             
+    • Vega: 1.144                                                               
+    • Implied Vol (IV): 18.10%                                                  
+
+Tools Used:                                                                     
+
+ • get_options_quote_single(underlying_asset='SPY',                             
+   option_contract='O:SPY251219C00650000') - Provide option contract details and
+   Greeks                                                                       
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 18.482s
+   🔢  Tokens Used: 45,600 (Input: 45,394, Output: 206)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:25:41] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:25:48] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL daily bars (2024-01-01 to 2024-03-31): 61 bars                          
+ • Example closes: 185.64, 184.25, 181.91, 181.18, 185.56                       
+ • If you want, I can export full bar data or summarize daily ranges.           
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01',       
+   to_date='2024-03-31', timespan='day', multiplier=1) - Retrieved daily OHLC   
+   bars for the specified period                                                
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 15.153s
+   🔢  Tokens Used: 51,114 (Input: 50,405, Output: 709)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:25:56] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:26:03] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:26:15] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • TSLA on 2024-12-15: Data not found; last available close (previous close)    
+   429.83                                                                       
+
+Note: Used last available data to provide a price reference since exact date    
+data was not found.                                                             
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-15', adjusted=True) 
+   - Attempted to fetch exact date OHLC                                         
+ • get_OHLC_bars_previous_close(ticker='TSLA', adjusted=True) - Provided last   
+   known close when exact date data unavailable                                 
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 33.759s
+   🔢  Tokens Used: 83,488 (Input: 83,167, Output: 321)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 14:26:30] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 14:26:38] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY previous close: 669.21                                                   
+
+Tools Used:                                                                     
+
+ • get_previous_close_agg(ticker='SPY', adjusted=true) - Retrieved prior day    
+   close data from aggregation source for SPY                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 17.938s
+   🔢  Tokens Used: 56,559 (Input: 56,293, Output: 266)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END PERSISTENT SESSION TEST REPORT ===
