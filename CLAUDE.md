@@ -12,32 +12,34 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-ai-agent: fix AI agent instructions to resolve tool selection errors and improve response quality
+finnhub-integration: swap Polygon.io get_snapshot_ticker with Finnhub get_stock_quote custom tool
 
-- Fixed tool selection confusion between get_snapshot_ticker() and get_snapshot_all() for single tickers
-- Added mandatory market_type='stocks' parameter to all snapshot tool calls
-- Fixed ticker format requirement for get_snapshot_all() - must use list format: ['SYM1','SYM2']
-- Added RULE #7: NEVER refuse price requests when market closed - always return last available price
-- Added RULE #6: Work with available data - no strict data amount requirements
-- Added tool call transparency requirement - list all tools used with reasoning
-- Created 7 critical rules with decision tree, examples, and clear correct/incorrect patterns
-- Validated with 3x sanity check runs - all passed with 100% success rate (21/21 tests total)
+- Replaced Polygon.io get_snapshot_ticker with Finnhub get_stock_quote for single ticker queries
+- Created custom tool using @function_tool decorator with Finnhub Python library v2.4.25
+- Updated AI Agent instructions: RULE #1 now uses get_stock_quote(ticker='SYMBOL') instead of get_snapshot_ticker
+- Maintained 9 total tools (8 Polygon.io MCP + 1 Finnhub custom)
+- Simplified single ticker calls - no market_type parameter needed for Finnhub
+- Multi-ticker queries unchanged - still use get_snapshot_all from Polygon.io
 
-AI Agent Improvements:
-✅ Tool Selection Accuracy: 100% (fixed from ~43% for single tickers)
-✅ Response Success Rate: 100% (eliminated all "unavailable" and refusal responses)
-✅ Average Response Time: 15-18s (improved from 20-23s)
-✅ Test Consistency: 3/3 runs passed (7/7 tests each = 21/21 total)
-✅ Performance Rating: EXCELLENT across all test runs
-✅ Created Serena memory: ai_agent_instructions_oct_2025.md
+Implementation Details:
+✅ Created src/backend/tools/finnhub_tools.py with get_stock_quote function
+✅ Returns JSON with: current_price, change, percent_change, high, low, open, previous_close, source
+✅ Integrated into agent via tools=[get_stock_quote] in create_agent()
+✅ Updated decision tree and all examples to use get_stock_quote for single tickers
+✅ Added FINNHUB_API_KEY environment variable support
+✅ Pylint score: 10.00/10 (clean code, no linting errors)
 
-Critical Rules Added:
-🔴 RULE #1: Single ticker → get_snapshot_ticker(ticker='SYM', market_type='stocks')
-🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks')
-🔴 RULE #6: Work with available data - never refuse due to data count
-🔴 RULE #7: Market closed = still provide last price - NEVER refuse
+Tool Architecture Change:
+- **BEFORE:** 9 tools (all Polygon.io MCP) - get_snapshot_ticker for single tickers
+- **AFTER:** 9 tools (8 Polygon.io MCP + 1 Finnhub custom) - get_stock_quote for single tickers
+- **UNCHANGED:** get_snapshot_all for multiple tickers (Polygon.io)
 
-ACHIEVEMENT: 100% tool selection accuracy and zero refusals with consistent performance
+Critical Rules Updated:
+🔴 RULE #1: Single ticker → get_stock_quote(ticker='SYMBOL') via Finnhub
+🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks') via Polygon.io
+🔴 REMOVED: get_snapshot_ticker from supported tools list
+
+ACHIEVEMENT: Successfully swapped single ticker data source from Polygon.io to Finnhub with cleaner API interface
 <!-- LAST_COMPLETED_TASK_END -->
 
 # 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
