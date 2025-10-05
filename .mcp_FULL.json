@@ -28,15 +28,15 @@
     },
     "docs-openai-cookbook": {
       "type": "http",
-      "url": "https://mcp.context7.com/mcp"
+      "url": "https://gitmcp.io/openai/openai-cookbook"
     },
     "docs-openai-python": {
       "type": "http",
-      "url": "https://mcp.context7.com/mcp"
+      "url": "https://gitmcp.io/openai/openai-python"
     },
     "docs-openai-agents": {
       "type": "http",
-      "url": "https://mcp.context7.com/mcp"
+      "url": "https://gitmcp.io/openai/openai-agents-python"
     },
     "docs-serena": {
       "type": "http",

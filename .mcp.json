@@ -37,6 +37,14 @@
     "docs-openai-agents": {
       "type": "http",
       "url": "https://gitmcp.io/openai/openai-agents-python"
+    },
+    "docs-polygon-python": {
+      "type": "http",
+      "url": "https://gitmcp.io/polygon-io/client-python"
+    },
+    "docs-finnhub": {
+      "type": "http",
+      "url": "https://gitmcp.io/Finnhub-Stock-API/finnhub-python"
     }
   }
 }
