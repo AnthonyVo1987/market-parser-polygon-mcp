@@ -26,8 +26,7 @@ First, get the tool instructions and  current Serena configuration and project s
 use docs-serena tools to understand proper usage of Serena
 
 1. **Get Serena Documentation & Initial Instuctions**
-   - First, Use docs-serena tools to retreive and understand Serena tools
-   - Second, use Serena `initial_instructions` tool to understand how to use Serena tools
+   - First, use Serena `initial_instructions` tool to understand how to use Serena tools
 
 2. **Get Current Configuration**
    - Use `get_current_config` to verify Serena version, active project, context, and modes
@@ -128,6 +127,8 @@ Test each category of Serena tools systematically:
 
 Create a comprehensive health summary with the following sections and do NOT CREATE ANY NEW DOCS OR MEMORIES:
 
+**🔴 CRITICAL: DO NOT CREATE OR UPDATE ANY MEMORIES OR NEW FILES\DOCS FOR THE comprehensive summary: JUST RESPOND WITH THE SUMMARY ONLY AND DO NOT WASTE TOKENS BY CREATING NEW FILES\MEMORIES**
+
 ### **System Status Summary**
 
 - Overall health status (✅ HEALTHY / ⚠️ WARNINGS / ❌ ISSUES)
@@ -209,5 +210,6 @@ The health check is successful when:
 3. **Record results** for each test with clear pass/fail indicators
 4. **Generate comprehensive summary** with all findings
 5. **Provide actionable recommendations** for any issues found
+6. **🔴 CRITICAL: DO NOT CREATE OR UPDATE ANY MEMORIES OR NEW FILES\DOCS FOR THE comprehensive summary**
 
 **Begin the Serena System Health Check now.**

@@ -200,7 +200,12 @@
       "Bash(npm run format:*)",
       "Bash(git merge-base:*)",
       "Bash(git fetch:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(for i in {1..10})",
+      "Bash(do echo \"=== BASELINE RUN $i/10 ===\" ./test_7_prompts_persistent_session.sh)",
+      "Bash(for i in 1 2 3 4 5 6 7 8 9 10)",
+      "Bash(do echo \"=== BASELINE RUN $i/10 ===\")",
+      "Bash(for i in 6 7 8 9 10)"
     ],
     "deny": [],
     "ask": [],
