@@ -216,8 +216,6 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "sequential-thinking",
-    "filesystem",
-    "context7",
-    "github"
+    "context7"
   ]
 }
