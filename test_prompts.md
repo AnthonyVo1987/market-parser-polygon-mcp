@@ -60,7 +60,7 @@ efficiency and quick response optimization system
 
 #### Test Prompt 5: Performance Analysis
 
-"Weekly Price Change $ and % for: SPY"
+"Current weekly Price Change $ and % for: SPY"
 
 ### 6. Support & Resistance
 

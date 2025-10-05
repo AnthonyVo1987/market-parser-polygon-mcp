@@ -41,14 +41,6 @@ SUCCESS CRITERIA:
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research to provide scoping for EACH of following task(s) and\or requirements:
 
-Investigate test-reports/persistent_session_test_20251004_180426.txt and fix AI Agent Instructions Prompt because of the following issues, the fixes need to be generic and NOT specific to the user request, so need to fix any logic that the AI Agent may be confused with using the wrong tools:
-Test 2: "Single Stock Snapshot Price NVDA": AI Agent should have used 'get_snapshot_ticker' for single ticker, but instead incorrectly used 'get_snapshot_all', which is supposed to be for multi tickers
-Test 4. "GME closing price today": AI Agent should have used 'get_snapshot_ticker' for single ticker, but instead incorrectly used 'get_snapshot_all', which is supposed to be for multi tickers
-
-So seems like AI Agent gets confused between get_snapshot_ticker vs get_snapshot_all for single tickers for some reasonm even though there are clear instructions for single ticker
-
-After fixing, test with 'test_7_prompts_persistent_session.sh', review the results to ensure the expected tool calls,  AND DO NOT COMMIT AND WAIT FOR USER FEEDBACK
-
 ---
 
 <Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
