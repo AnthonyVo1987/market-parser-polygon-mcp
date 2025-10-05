@@ -44,9 +44,18 @@ Implement the granular detailed Implementation Plan TODO Task Checklist file 'TO
 ---
 
 <CLI Testing Phase>
-- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_persistent_session.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.  If ONLY doc changes, you may skip testing since no code needs to be tested
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_persistent_session.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed. If ONLY doc changes, you may skip testing since no code needs to be tested
 
 ---
 
 <Serena Update Memories Phase>
 Use Serena Tools to update project memories to reflect all the new changes and new app architecture
+
+---
+
+<User Review & Approval Phase>
+🔴 CRITICAL: DO NOT COMMIT OR PUSH CHANGES TO REPO YET UNTIL USER APPROVES 🔴
+
+- Notify user that initial implementation and testing is done, and user must review and approve changes for commit & push or not
+
+🔴 CRITICAL: DO NOT COMMIT OR PUSH CHANGES TO REPO YET UNTIL USER APPROVES 🔴

@@ -4,9 +4,9 @@
 
 1. Create New tool 'get_stock_quote_multi': 'client.get_snapshot_all' : Replaces currently used MCP Tool 'get_snapshot_all'
 2. Create New tool 'get_options_quote_single': 'client.get_snapshot_option' : Replaces currently used MCP Tool 'get_snapshot_option'
-3. Create New tool 'get_OHLC_custom_date_range': 'client.list_aggs' : Replaces currently used MCP Tool 'list_aggs'
+3. Create New tool 'get_OHLC_bars_custom_date_range': 'client.list_aggs' : Replaces currently used MCP Tool 'list_aggs'
 4. Create New tool 'get_OHLC_bars_specific_date': 'client.get_daily_open_close_agg' : Replaces currently used MCP Tool 'get_daily_open_close_agg'
-5. Create New tool 'get_OHLC_previous_close': 'client.get_previous_close_agg' : Replaces currently used MCP Tool 'get_previous_close_agg'
+5. Create New tool 'get_OHLC_bars_previous_close': 'client.get_previous_close_agg' : Replaces currently used MCP Tool 'get_previous_close_agg'
 6. REMOVE allowed tool usage in AI Agent Prompt for 'get_aggs' completely because this tool is actually not relevant to any analysis for our app
 
 - Read docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md to guide on you on proper custom tool creation
