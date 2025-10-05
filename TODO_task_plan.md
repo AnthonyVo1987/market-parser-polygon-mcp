@@ -1,700 +1,512 @@
-# TODO Task Plan: Replace MCP Tools with Custom Polygon Direct API Tools
+# TODO Task Plan: Complete Removal of Legacy Polygon MCP Tools
 
-**Task:** Create/Update 5 custom tools using Polygon Python Library to replace MCP Tools
+**Task**: Completely remove and retire ALL Polygon MCP Tools and Polygon Server Creation endpoints since migration to direct Polygon Python API calls is complete and validated.
 
-**Version:** 1.0
-**Created:** 2025-10-05
-**Status:** 🔴 PLANNING PHASE - DO NOT IMPLEMENT YET
+**Commit Reference**: fe380fa4a96369a6a518b70656bae0c4e0c8c9a3 (migration complete, all 16/16 tests passing)
 
----
-
-## 📋 Executive Summary
-
-### Objective
-
-Replace 5 Polygon MCP server tools with custom @function_tool decorated tools using the Polygon Python Library direct API, reducing MCP dependencies and increasing control over tool behavior.
-
-### Scope
-
-- **Tools to Create:** 5 new custom tools
-- **Tools to Remove:** 1 MCP tool (get_aggs)
-- **Tools to Replace:** 5 MCP tools → 5 custom tools
-- **Final Tool Count:** 12 tools (11 Polygon direct + 1 Finnhub)
-- **Test Cases:** Add 5 new test cases (total: 16 tests)
+**Expected Outcome**: Absolutely ZERO references to legacy Polygon MCP Server tools anywhere in code, comments, docs, memories, or project files.
 
 ---
 
-## 🎯 Tool Migration Mapping
+## Research Summary: What Needs to be Removed
 
-### MCP Tools → Custom Tools Mapping
+### 6 Legacy Polygon MCP Tools to Remove:
+1. ✅ `get_snapshot_all` → REPLACED by `get_stock_quote_multi` (direct API)
+2. ✅ `get_snapshot_option` → REPLACED by `get_options_quote_single` (direct API)
+3. ✅ `list_aggs` → REPLACED by `get_OHLC_bars_custom_date_range` (direct API)
+4. ✅ `get_daily_open_close_agg` → REPLACED by `get_OHLC_bars_specific_date` (direct API)
+5. ✅ `get_previous_close_agg` → REPLACED by `get_OHLC_bars_previous_close` (direct API)
+6. ✅ `get_aggs` → REMOVED (not relevant for analysis)
 
-| # | MCP Tool (OLD) | Custom Tool (NEW) | Polygon Client Method | Status |
-|---|----------------|-------------------|----------------------|--------|
-| 1 | `get_snapshot_all` | `get_stock_quote_multi` | `client.get_snapshot_all(market_type, tickers)` | ⏳ Pending |
-| 2 | `get_snapshot_option` | `get_options_quote_single` | `client.get_snapshot_option(underlying, contract)` | ⏳ Pending |
-| 3 | `list_aggs` | `get_OHLC_bars_custom_date_range` | `client.list_aggs(ticker, multiplier, timespan, from, to, limit)` | ⏳ Pending |
-| 4 | `get_daily_open_close_agg` | `get_OHLC_bars_specific_date` | `client.get_daily_open_close_agg(ticker, date)` | ⏳ Pending |
-| 5 | `get_previous_close_agg` | `get_OHLC_bars_previous_close` | `client.get_previous_close_agg(ticker)` | ⏳ Pending |
-| 6 | `get_aggs` | **REMOVE** (not relevant) | N/A | ⏳ Pending |
+### Files Found with Legacy References:
 
----
+**CODE FILES (8 files):**
+1. `src/backend/cli.py` - Imports and uses `create_polygon_mcp_server()`
+2. `src/backend/dependencies.py` - MCP server dependency injection
+3. `src/backend/__init__.py` - Exports `create_polygon_mcp_server`
+4. `src/backend/main.py` - Creates and manages MCP server lifecycle
+5. `src/backend/routers/chat.py` - Uses MCP server for agent creation
+6. `src/backend/services/agent_service.py` - References 18 tools (should be 12), mentions MCP tools
+7. `src/backend/services/mcp_service.py` - Creates Polygon MCP server (ENTIRE FILE TO DELETE)
+8. `src/backend/services/__init__.py` - Exports `create_polygon_mcp_server`
 
-## 📚 Research Findings Summary
+**DOCUMENTATION FILES (2 files):**
+1. `CLAUDE.md` - References all 6 MCP tools, mentions "backward compatibility"
+2. `TODO_task_plan.md` - Migration plan (will be replaced by this file)
 
-### Polygon Python Library Client Methods
+**SERENA MEMORY FILES (5 files):**
+1. `.serena/memories/project_architecture.md` - Lists MCP tools
+2. `.serena/memories/performance_baseline_oct_2025.md` - References MCP tool usage
+3. `.serena/memories/ai_agent_instructions_oct_2025.md` - Old tool selection rules
+4. `.serena/memories/tech_stack.md` - Lists MCP tools as "backward compatibility"
+5. `.serena/memories/finnhub_tool_swap_oct_2025.md` - Migration history
 
-#### 1. client.get_snapshot_all()
+**TEST REPORTS (26 files):**
+- `test-reports/*.txt` - Historical test outputs showing MCP tool usage (keep for history)
 
-```python
-# Signature
-snapshot = client.get_snapshot_all(market_type: str, tickers: List[str])
-
-# Example (from polygon-io/client-python examples)
-snapshot = client.get_snapshot_all("stocks", ["TSLA", "AAPL", "MSFT"])
-
-# Returns: List[TickerSnapshot]
-# Each TickerSnapshot contains: ticker, day, min, prevDay, lastTrade, lastQuote
-```
-
-#### 2. client.get_snapshot_option()
-
-```python
-# Signature
-snapshot = client.get_snapshot_option(
-    underlying_asset: str,
-    option_contract: str
-)
-
-# Example
-snapshot = client.get_snapshot_option("AAPL", "O:AAPL230616C00150000")
-
-# Returns: OptionContractSnapshot
-# Contains: break_even_price, day, details, greeks, implied_volatility, etc.
-```
-
-#### 3. client.list_aggs()
-
-```python
-# Signature
-aggs = client.list_aggs(
-    ticker: str,
-    multiplier: int,
-    timespan: str,
-    from_: str,
-    to: str,
-    limit: int = 50000
-)
-
-# Example
-aggs = client.list_aggs("AAPL", 1, "minute", "2022-01-01", "2023-02-03", limit=50000)
-
-# Returns: Iterator[Agg]
-# Each Agg contains: c (close), h (high), l (low), n (transactions), o (open), t (timestamp), v (volume), vw (vwap)
-```
-
-#### 4. client.get_daily_open_close_agg()
-
-```python
-# Signature
-agg = client.get_daily_open_close_agg(
-    ticker: str,
-    date: str  # Format: "YYYY-MM-DD"
-)
-
-# Example
-agg = client.get_daily_open_close_agg("AAPL", "2023-02-07")
-
-# Returns: DailyOpenCloseAgg
-# Contains: afterHours, close, from, high, low, open, preMarket, symbol, volume
-```
-
-#### 5. client.get_previous_close_agg()
-
-```python
-# Signature
-agg = client.get_previous_close_agg(ticker: str)
-
-# Example
-agg = client.get_previous_close_agg("AAPL")
-
-# Returns: PreviousCloseAgg
-# Contains: T (ticker), c (close), h (high), l (low), o (open), t (timestamp), v (volume), vw (vwap)
-```
+**TOOL CODE (2 files):**
+- `src/backend/tools/polygon_tools.py` - Direct API implementations (keep, no MCP references in code)
+- No MCP tool implementations exist (they were accessed via MCP server)
 
 ---
 
-## 🛠️ Custom Tool Pattern (from commit e1ba319)
+## PHASE 1: CODE CLEANUP - Remove MCP Server Infrastructure
 
-### Tool Creation Template
+### 1.1 Delete MCP Service File
+- [ ] **DELETE ENTIRE FILE**: `src/backend/services/mcp_service.py`
+  - Contains `create_polygon_mcp_server()` function
+  - No longer needed since we use direct API
 
-```python
-from agents import function_tool
-from polygon import RESTClient
-import json
-import os
+### 1.2 Update `src/backend/services/__init__.py`
+- [ ] Remove import: `from .mcp_service import create_polygon_mcp_server`
+- [ ] Remove from `__all__`: `"create_polygon_mcp_server"`
+- [ ] Update to export only: `["create_agent", "get_enhanced_agent_instructions"]`
 
-def _get_polygon_client():
-    """Get Polygon client with API key from environment."""
-    api_key = os.getenv("POLYGON_API_KEY")
-    return RESTClient(api_key=api_key)
+### 1.3 Update `src/backend/services/agent_service.py`
+- [ ] **Remove MCP server parameter from `create_agent()` function**
+  - Current: `def create_agent(mcp_server: MCPServerStdio):`
+  - New: `def create_agent():`
+- [ ] **Remove MCP import**: `from agents.mcp import MCPServerStdio`
+- [ ] **Remove `mcp_servers` parameter from Agent initialization**
+  - Current: `mcp_servers=[mcp_server],`
+  - New: Remove this line entirely
+- [ ] **Update AI agent instructions - CRITICAL TOOL COUNT UPDATE**
+  - Current: `18 SUPPORTED TOOLS: [get_stock_quote, ..., get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg]`
+  - **New: 12 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd]**
+- [ ] **Remove all 6 MCP tools from instructions:**
+  - Remove `get_snapshot_all` references (RULE #2, examples, incorrect calls)
+  - Remove `get_snapshot_option` references (RULE #3, examples, incorrect calls)
+  - Remove `list_aggs` references (if any)
+  - Remove `get_daily_open_close_agg` references (if any)
+  - Remove `get_previous_close_agg` references (fallback sequences)
+  - Remove `get_aggs` references (already marked as REMOVED)
+- [ ] **Update RULE #2**: Remove fallback mention of `get_snapshot_all`
+- [ ] **Update RULE #7**: Remove fallback mentions of MCP tools
+- [ ] **Update examples section**: Remove all MCP tool examples
+- [ ] **Verify final tool list**: 1 Finnhub + 11 Polygon Direct = 12 total
 
-@function_tool
-async def tool_name(param1: str, param2: int = 50) -> str:
-    """[1-LINE SUMMARY OF WHAT TOOL DOES]
+### 1.4 Update `src/backend/dependencies.py`
+- [ ] **Remove MCP server dependency injection (ENTIRE FILE CLEANUP)**
+  - Remove import: `from agents.mcp import MCPServerStdio`
+  - Remove global: `_shared_mcp_server: Optional[MCPServerStdio] = None`
+  - Remove function: `set_shared_resources(mcp_server: MCPServerStdio, session: SQLiteSession)`
+  - Remove function: `get_mcp_server() -> Optional[MCPServerStdio]`
+- [ ] **Keep only session-related code**
+  - Keep: `_shared_session: Optional[SQLiteSession] = None`
+  - Update: `set_shared_resources(session: SQLiteSession)` (remove mcp_server param)
+  - Keep: `get_session() -> Optional[SQLiteSession]`
 
-    Use this tool when the user requests [WHEN TO USE - BE SPECIFIC].
+### 1.5 Update `src/backend/main.py`
+- [ ] Remove import: `from .services import create_polygon_mcp_server`
+- [ ] Remove global: `shared_mcp_server = None`
+- [ ] Remove from lifespan startup:
+  - Remove: `shared_mcp_server = create_polygon_mcp_server()`
+  - Remove: `await shared_mcp_server.__aenter__()`
+- [ ] Remove from lifespan shutdown:
+  - Remove: `if shared_mcp_server: await shared_mcp_server.__aexit__(None, None, None)`
+- [ ] Update `set_shared_resources()` call:
+  - Current: `set_shared_resources(shared_mcp_server, shared_session)`
+  - New: `set_shared_resources(shared_session)`
 
-    [2-3 sentences explaining what the tool does and why it's useful]
+### 1.6 Update `src/backend/routers/chat.py`
+- [ ] Remove import: `from ..dependencies import get_mcp_server, get_session`
+  - New: `from ..dependencies import get_session`
+- [ ] Remove import: `from ..services import create_agent, create_polygon_mcp_server`
+  - New: `from ..services import create_agent`
+- [ ] Remove MCP server retrieval:
+  - Remove: `shared_mcp_server = get_mcp_server()`
+- [ ] Remove MCP server health check and recovery:
+  - Remove entire block: `if shared_mcp_server is None: ...`
+- [ ] Update agent creation:
+  - Current: `analysis_agent = create_agent(shared_mcp_server)`
+  - New: `analysis_agent = create_agent()`
 
-    Args:
-        param1: [Description with examples in parentheses]
-        param2: [Description with default value explanation]
+### 1.7 Update `src/backend/cli.py`
+- [ ] Remove import: `from .services import create_agent, create_polygon_mcp_server`
+  - New: `from .services import create_agent`
+- [ ] Remove MCP server creation:
+  - Remove: `server = create_polygon_mcp_server()`
+- [ ] Remove MCP server initialization comments
+- [ ] Update agent creation:
+  - Find: `create_agent(server)` or similar
+  - New: `create_agent()`
 
-    Returns:
-        JSON string containing [data structure] with format:
-        {
-            "status": "success",
-            "[data_key]": [description of data],
-            "parameters": {...},
-            "count": [number],
-            "source": "Polygon.io"
-        }
-
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "source": "Polygon.io"
-        }
-
-    Note:
-        - [Important note 1]
-        - [Important note 2]
-        - [Important note 3]
-
-    Examples:
-        - "[Example user query 1]"
-        - "[Example user query 2]"
-        - "[Example user query 3]"
-    """
-    try:
-        # Call Polygon API with lazy client initialization
-        client = _get_polygon_client()
-        result = client.method_name(param1, param2)
-
-        # Check if API returned valid data
-        if not result:
-            return json.dumps({
-                "error": "No data",
-                "message": f"No data returned from Polygon.io for {param1}.",
-                "source": "Polygon.io"
-            })
-
-        # Process and structure response data
-        # ... data processing logic ...
-
-        return json.dumps({
-            "status": "success",
-            "data": processed_data,
-            "source": "Polygon.io"
-        })
-
-    except Exception as e:
-        return json.dumps({
-            "error": "API Error",
-            "message": f"Polygon.io API error: {str(e)}",
-            "source": "Polygon.io"
-        })
-```
-
-### Key Pattern Elements
-
-1. ✅ **@function_tool decorator** - Enables automatic schema generation
-2. ✅ **async def** - All tools should be async
-3. ✅ **Type hints** - All parameters with types
-4. ✅ **Comprehensive docstring** - Purpose, when to use, args, returns, notes, examples
-5. ✅ **Lazy client init** - Use `_get_polygon_client()` helper
-6. ✅ **Error handling** - try-except with structured JSON error response
-7. ✅ **JSON return** - Always return JSON string, never raw objects
-8. ✅ **Consistent format** - {status/error, data/message, source: "Polygon.io"}
+### 1.8 Update `src/backend/__init__.py`
+- [ ] Remove from imports: `create_polygon_mcp_server,`
+- [ ] Remove from `__all__`: `"create_polygon_mcp_server",`
 
 ---
 
-## 📝 Implementation Checklist
+## PHASE 2: DOCUMENTATION CLEANUP
 
-### PHASE 1: Create 5 Custom Tools in `src/backend/tools/polygon_tools.py`
+### 2.1 Update `CLAUDE.md`
+- [ ] **Remove Migration Section** (lines 20-62):
+  - Remove all 5 tool migration bullet points
+  - Remove "Remaining MCP Tools (6)" section
+  - Remove "Migration rationale" section
+- [ ] **Update "Last Completed Task Summary"**:
+  - Add new task summary for MCP removal
+  - Document final tool count: 12 tools (1 Finnhub + 11 Polygon Direct)
+- [ ] **Search for any remaining references to:**
+  - `get_snapshot_all`
+  - `get_snapshot_option`
+  - `list_aggs`
+  - `get_daily_open_close_agg`
+  - `get_previous_close_agg`
+  - `get_aggs`
+  - "MCP" in context of Polygon tools
+  - "backward compatibility" related to Polygon
 
-#### ✅ Checklist for Each Tool
-
-- [ ] **Tool 1: get_stock_quote_multi** ⏳
-  - [ ] Add after existing tools in polygon_tools.py
-  - [ ] Function signature: `async def get_stock_quote_multi(tickers: List[str], market_type: str = "stocks") -> str:`
-  - [ ] Use `client.get_snapshot_all(market_type, tickers)`
-  - [ ] Comprehensive docstring with: purpose, when to use, args, returns, notes, examples
-  - [ ] Error handling with structured JSON response
-  - [ ] Return format: `{"status": "success", "tickers": [...], "count": N, "source": "Polygon.io"}`
-  - [ ] When to use: "Multiple tickers snapshot", "SPY, QQQ, IWM prices", "Market snapshot"
-
-- [ ] **Tool 2: get_options_quote_single** ⏳
-  - [ ] Add after get_stock_quote_multi
-  - [ ] Function signature: `async def get_options_quote_single(underlying_asset: str, option_contract: str) -> str:`
-  - [ ] Use `client.get_snapshot_option(underlying_asset, option_contract)`
-  - [ ] Comprehensive docstring
-  - [ ] Return format: `{"status": "success", "contract": {...}, "greeks": {...}, "source": "Polygon.io"}`
-  - [ ] When to use: "Options contract quote", "Option snapshot", "AAPL call option"
-
-- [ ] **Tool 3: get_OHLC_bars_custom_date_range** ⏳
-  - [ ] Add after get_options_quote_single
-  - [ ] Function signature: `async def get_OHLC_bars_custom_date_range(ticker: str, from_date: str, to_date: str, timespan: str = "day", multiplier: int = 1, limit: int = 5000) -> str:`
-  - [ ] Use `client.list_aggs(ticker, multiplier, timespan, from_date, to_date, limit)`
-  - [ ] Comprehensive docstring
-  - [ ] Return format: `{"status": "success", "ticker": "SPY", "bars": [...], "count": N, "source": "Polygon.io"}`
-  - [ ] When to use: "Historical OHLC", "Price bars from X to Y", "Custom date range candles"
-
-- [ ] **Tool 4: get_OHLC_bars_specific_date** ⏳
-  - [ ] Add after get_OHLC_bars_custom_date_range
-  - [ ] Function signature: `async def get_OHLC_bars_specific_date(ticker: str, date: str) -> str:`
-  - [ ] Use `client.get_daily_open_close_agg(ticker, date)`
-  - [ ] Comprehensive docstring
-  - [ ] Return format: `{"status": "success", "ticker": "AAPL", "date": "2023-02-07", "open": X, "high": Y, "low": Z, "close": W, "source": "Polygon.io"}`
-  - [ ] When to use: "OHLC for specific date", "Daily candle on 2023-01-15", "What was price on DATE"
-
-- [ ] **Tool 5: get_OHLC_bars_previous_close** ⏳
-  - [ ] Add after get_OHLC_bars_specific_date
-  - [ ] Function signature: `async def get_OHLC_bars_previous_close(ticker: str) -> str:`
-  - [ ] Use `client.get_previous_close_agg(ticker)`
-  - [ ] Comprehensive docstring
-  - [ ] Return format: `{"status": "success", "ticker": "SPY", "previous_close": {...}, "source": "Polygon.io"}`
-  - [ ] When to use: "Previous close", "Last trading day", "Yesterday's close"
-
-#### Code Quality Requirements
-
-- [ ] All tools follow @function_tool pattern
-- [ ] All tools use `_get_polygon_client()` for lazy initialization
-- [ ] All tools have comprehensive docstrings (>30 lines)
-- [ ] All tools have proper error handling
-- [ ] All tools return JSON strings with consistent format
-- [ ] All tools use type hints
-- [ ] All tools are async def
-- [ ] Pylint score: 10.00/10
+### 2.2 Verify No References in Other Docs
+- [ ] Check `README.md` for any MCP tool mentions
+- [ ] Check `new_research_details.md` (template file, should be clean)
+- [ ] Check any other documentation files in root directory
 
 ---
 
-### PHASE 2: Update `src/backend/services/agent_service.py`
+## PHASE 3: SERENA MEMORY UPDATES
 
-#### Import Updates
+### 3.1 Update `.serena/memories/tech_stack.md`
+- [ ] **Update Polygon.io Tools Section** (around line 292):
+  - Remove: "MCP server (6 tools): get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg (backward compatibility)"
+  - Update tool count: "Direct API (11 tools total)"
+- [ ] **Update tool list** (lines 464-482):
+  - Remove all 6 MCP tool entries
+  - Keep only 11 direct API tools + 1 Finnhub tool
+- [ ] **Remove any migration notes** about MCP tools
 
-- [ ] **Remove MCP tool references** ⏳
-  - [ ] Remove any imports of get_snapshot_all (if present)
-  - [ ] Remove any imports of get_snapshot_option (if present)
-  - [ ] Remove any imports of list_aggs (if present)
-  - [ ] Remove any imports of get_daily_open_close_agg (if present)
-  - [ ] Remove any imports of get_previous_close_agg (if present)
-  - [ ] Remove any imports of get_aggs (if present)
+### 3.2 Update `.serena/memories/project_architecture.md`
+- [ ] **Remove MCP Tools Section** (around line 171):
+  - Remove: "Polygon.io MCP (get_snapshot_all, get_snapshot_option, get_aggs, etc.)"
+- [ ] **Remove tool list** (lines 188-193):
+  - Remove all MCP tool entries
+- [ ] **Update "Financial Data Tools" section** (line 348):
+  - Remove: "Tools: get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg"
+  - Add: "Tools: 11 Polygon Direct API tools (see tech_stack.md for full list)"
+- [ ] **Remove migration roadmap** (line 543):
+  - Remove: "Phase 2: Migrate snapshot tools (get_snapshot_all, get_snapshot_option)"
+  - Remove: "Phase 3: Migrate aggregate tools (get_aggs, list_aggs, etc.)"
 
-- [ ] **Add new custom tool imports** ⏳
-  - [ ] Add: `from backend.tools.polygon_tools import get_stock_quote_multi`
-  - [ ] Add: `from backend.tools.polygon_tools import get_options_quote_single`
-  - [ ] Add: `from backend.tools.polygon_tools import get_OHLC_bars_custom_date_range`
-  - [ ] Add: `from backend.tools.polygon_tools import get_OHLC_bars_specific_date`
-  - [ ] Add: `from backend.tools.polygon_tools import get_OHLC_bars_previous_close`
+### 3.3 Update `.serena/memories/ai_agent_instructions_oct_2025.md`
+- [ ] **Remove outdated tool selection rules**:
+  - Remove: "get_snapshot_all()" references (lines 9-11, 15, 22, 26, 29, 70, 103, 110)
+  - Remove: "get_snapshot_option()" references (line 71)
+  - Remove: "get_aggs()" references (line 47, 73)
+  - Remove: "get_previous_close_agg()" fallback references (line 47)
+- [ ] **Add note**: "DEPRECATED: This memory file contains outdated tool references. See agent_service.py for current tool list."
+- [ ] **OR DELETE this memory file entirely** (it's now redundant with agent_service.py)
 
-#### create_agent() Function Updates
+### 3.4 Update `.serena/memories/performance_baseline_oct_2025.md`
+- [ ] **Remove expected tool references**:
+  - Remove: "Expected Tool: get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks')" (line 58)
+  - Remove: "Expected Tool: get_aggs() with weekly timespan" (line 70)
+  - Remove: "Expected Tool: get_aggs() with weekly/daily aggregates" (line 76)
+  - Remove: "Expected Tool: get_aggs() for trend analysis" (line 82)
+- [ ] **Update performance metrics**:
+  - Remove: "Multi-Ticker Test (Test 3): 100% correct use of get_snapshot_all()" (line 104)
+  - Remove: "Aggregate Tests (Test 5, 6, 7): 100% correct use of get_aggs()" (line 105)
+- [ ] **Remove tool confusion analysis**:
+  - Remove: "Tool Selection Confusion: AI agent confused between get_snapshot_ticker() and get_snapshot_all()" (line 113)
+  - Remove: "RULE #2: Multiple tickers = ALWAYS use get_snapshot_all()" (line 121)
+- [ ] **Add note**: "Baseline metrics from Oct 2025 using legacy MCP tools. Current tools use direct Polygon API."
 
-- [ ] **Update tools=[] list** ⏳
-  - [ ] Keep existing: get_stock_quote
-  - [ ] Keep existing: get_market_status_and_date_time
-  - [ ] Keep existing: get_ta_sma
-  - [ ] Keep existing: get_ta_ema
-  - [ ] Keep existing: get_ta_rsi
-  - [ ] Keep existing: get_ta_macd
-  - [ ] ADD: get_stock_quote_multi
-  - [ ] ADD: get_options_quote_single
-  - [ ] ADD: get_OHLC_bars_custom_date_range
-  - [ ] ADD: get_OHLC_bars_specific_date
-  - [ ] ADD: get_OHLC_bars_previous_close
-  - [ ] Update comment: "# Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)"
+### 3.5 Update `.serena/memories/finnhub_tool_swap_oct_2025.md`
+- [ ] **Remove MCP tool list** (lines 37, 46, 206-211):
+  - Remove all references to: get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
+- [ ] **Add note**: "Historical reference - MCP tools fully replaced by direct API tools as of commit fe380fa"
 
-- [ ] **Verify imports work** ⏳
-  - [ ] Run: `PYTHONPATH=. uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ Import successful')"`
-
-#### Code Quality
-
-- [ ] Pylint score: 10.00/10
-- [ ] No unused imports
-- [ ] All new tools properly imported and registered
-
----
-
-### PHASE 3: Update AI Agent Instructions in `get_enhanced_agent_instructions()`
-
-#### Tool List Updates
-
-- [ ] **Update SUPPORTED TOOLS list** ⏳
-  - [ ] CURRENT: `[get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg]`
-  - [ ] NEW: `[get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close]`
-  - [ ] Update tool count: "14 SUPPORTED TOOLS" → "12 SUPPORTED TOOLS"
-
-#### RULE Updates
-
-- [ ] **RULE #2: Update for get_stock_quote_multi** ⏳
-  - [ ] Change: "get_snapshot_all(tickers=['SYM1','SYM2'], market_type='stocks')"
-  - [ ] To: "get_stock_quote_multi(tickers=['SYM1','SYM2'], market_type='stocks')"
-  - [ ] Update all examples in RULE #2
-
-- [ ] **RULE #3: Update for get_options_quote_single** ⏳
-  - [ ] Change: "get_snapshot_option()"
-  - [ ] To: "get_options_quote_single(underlying_asset, option_contract)"
-
-- [ ] **RULE #5: Update for new OHLC tools** ⏳
-  - [ ] Change: "get_aggs(), get_daily_open_close_agg(), get_previous_close_agg()"
-  - [ ] To: "get_OHLC_bars_custom_date_range(), get_OHLC_bars_specific_date(), get_OHLC_bars_previous_close()"
-  - [ ] Add descriptions for each new tool
-  - [ ] Add examples for when to use each
-
-#### Example Updates
-
-- [ ] **Update CORRECT tool call examples** ⏳
-  - [ ] Change: `get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks')`
-  - [ ] To: `get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks')`
-  - [ ] Add examples for all 5 new tools
-
-- [ ] **Update INCORRECT tool call examples** ⏳
-  - [ ] Update incorrect format examples to use new tool names
-  - [ ] Remove get_aggs references
-  - [ ] Remove get_snapshot_ticker references (already deprecated)
-
-#### Quality Checks
-
-- [ ] All tool names updated consistently
-- [ ] No references to old MCP tools remain
-- [ ] All examples use correct tool names
-- [ ] Tool count is accurate (12 tools)
-- [ ] Instructions are clear and comprehensive
+### 3.6 Create New Memory: `polygon_mcp_removal_history.md`
+- [ ] **Document the complete removal**:
+  - Migration completed in commit fe380fa
+  - All 6 MCP tools replaced with 5 direct API tools
+  - MCP server infrastructure removed
+  - Final tool count: 12 (1 Finnhub + 11 Polygon Direct)
+  - Reason for removal: Direct API is faster, more reliable, no MCP server overhead
 
 ---
 
-### PHASE 4: Update Test Suite
+## PHASE 4: CLI TESTING - MANDATORY CHECKPOINT
 
-#### Update `test_7_prompts_persistent_session.sh`
+### 4.1 Run Comprehensive Test Suite
+- [ ] **Execute test script**:
+  ```bash
+  ./test_16_prompts_persistent_session.sh
+  ```
 
-- [ ] **Rename file** ⏳
-  - [ ] From: `test_7_prompts_persistent_session.sh`
-  - [ ] To: `test_16_prompts_persistent_session.sh`
+### 4.2 Verify Test Results
+- [ ] All 16/16 tests PASS (100% success rate)
+- [ ] Test report generated in `test-reports/`
+- [ ] No errors or failures in output
+- [ ] Session persistence verified (single session)
+- [ ] No MCP tool calls in test output
+- [ ] All responses use direct API tools only
 
-- [ ] **Update test configuration** ⏳
-  - [ ] Update comments: "11 Test Prompts" → "16 Test Prompts"
-  - [ ] Update session description: "all 11 tests" → "all 16 tests"
-  - [ ] Update total_tests variable
+### 4.3 Expected Tool Usage in Tests
+- [ ] **Test 1** (Market Status): `get_market_status_and_date_time()`
+- [ ] **Test 2** (NVDA): `get_stock_quote(ticker='NVDA')`
+- [ ] **Test 3** (SPY, QQQ, IWM): `get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks')`
+- [ ] **Test 4** (SPY close): `get_stock_quote(ticker='SPY')` OR `get_OHLC_bars_previous_close()`
+- [ ] **Test 5** (Weekly change): `get_OHLC_bars_custom_date_range()` for date range
+- [ ] **Test 6** (Support/Resistance): `get_OHLC_bars_custom_date_range()` for historical analysis
+- [ ] **Test 7** (Technical Analysis): Multiple tools (OHLC, TA indicators)
+- [ ] **Test 8** (SMA): `get_ta_sma(ticker='SPY', ...)`
+- [ ] **Test 9** (EMA): `get_ta_ema(ticker='NVDA', window=20, ...)`
+- [ ] **Test 10** (RSI): `get_ta_rsi(ticker='SPY', ...)`
+- [ ] **Test 11** (MACD): `get_ta_macd(ticker='AAPL', ...)`
+- [ ] **Test 12** (Multi-ticker): `get_stock_quote_multi(tickers=['AAPL','MSFT','GOOGL'], market_type='stocks')`
+- [ ] **Test 13** (Options): `get_options_quote_single(underlying_asset='SPY', option_contract='O:SPY251219C00650000')`
+- [ ] **Test 14** (OHLC range): `get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01', to_date='2024-03-31', ...)`
+- [ ] **Test 15** (TSLA date): `get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-13', ...)`
+- [ ] **Test 16** (Previous close): `get_OHLC_bars_previous_close(ticker='SPY', ...)`
 
-- [ ] **Add 5 new test prompts** ⏳
-  - [ ] Test 12: "Stock Snapshot: AAPL, MSFT, GOOGL" (get_stock_quote_multi)
-  - [ ] Test 13: "AAPL call option O:AAPL230616C00150000" (get_options_quote_single)
-  - [ ] Test 14: "OHLC bars SPY from 2025-09-01 to 2025-10-01" (get_OHLC_bars_custom_date_range)
-  - [ ] Test 15: "Daily OHLC for NVDA on 2025-10-04" (get_OHLC_bars_specific_date)
-  - [ ] Test 16: "Previous close for SPY" (get_OHLC_bars_previous_close)
+### 4.4 Show Test Evidence to User
+- [ ] Display test summary output (X/X PASS, response times)
+- [ ] Provide test report file path
+- [ ] Confirm no MCP tool usage detected
+- [ ] Performance metrics (avg response time should be similar or faster without MCP overhead)
 
-- [ ] **Add corresponding test names** ⏳
-  - [ ] Test_12_Multi_Stock_Snapshot_AAPL_MSFT_GOOGL
-  - [ ] Test_13_Options_Quote_Single_AAPL
-  - [ ] Test_14_OHLC_Bars_Custom_Date_Range_SPY
-  - [ ] Test_15_OHLC_Bars_Specific_Date_NVDA
-  - [ ] Test_16_OHLC_Bars_Previous_Close_SPY
-
-- [ ] **Update success criteria** ⏳
-  - [ ] Update success message: "All 11 tests passed" → "All 16 tests passed"
-  - [ ] Update test counting logic
-  - [ ] Update report generation
-
-#### Run Tests
-
-- [ ] **Execute test script** ⏳
-  - [ ] Run: `./test_16_prompts_persistent_session.sh`
-  - [ ] Verify: 16/16 tests PASS
-  - [ ] Verify: Session persistence (single session for all 16 tests)
-  - [ ] Verify: Performance metrics (avg response time, min/max)
-
-- [ ] **Verify test results** ⏳
-  - [ ] All 16 tests pass ✅
-  - [ ] Success rate: 100%
-  - [ ] No tool selection errors
-  - [ ] All new tools called correctly
-  - [ ] Response times reasonable (<30s excellent, <45s good, <90s acceptable)
-
----
-
-### PHASE 5: Documentation Updates
-
-#### Update CLAUDE.md
-
-- [ ] **Update Last Completed Task Summary** ⏳
-  - [ ] Task name: "mcp-to-custom-tools: Replace 5 MCP Tools with Custom Polygon Direct API Tools"
-  - [ ] Implementation details: List all 5 new tools created
-  - [ ] Tool architecture evolution: Before (14 tools) → After (12 tools)
-  - [ ] Test suite updates: From 11 → 16 tests
-  - [ ] Achievement summary
-
-#### Update Serena Memory Files
-
-- [ ] **Update tech_stack.md** ⏳
-  - [ ] Update tool count: "6 Polygon direct API tools" → "11 Polygon direct API tools"
-  - [ ] Add descriptions of 5 new tools
-  - [ ] Update tool architecture diagram/description
-
-- [ ] **Update other relevant memories** ⏳
-  - [ ] Check suggested_commands.md for test command updates
-  - [ ] Check project_architecture.md for tool flow updates
-
-#### Update Symbol Cache
-
-- [ ] **Run symbol indexing** ⏳
-  - [ ] Serena will auto-update .serena/cache/python/document_symbols_cache_v23-06-25.pkl
-  - [ ] Verify new tool symbols are indexed
-
-#### Final Documentation
-
-- [ ] Update TODO_task_plan.md status to COMPLETED
-- [ ] Document any issues encountered and resolutions
-- [ ] Document performance benchmarks
+### 4.5 Test Failure Handling
+- [ ] If any test fails: STOP and analyze failure
+- [ ] Check if failure is due to missing MCP tools
+- [ ] Verify all agent instructions correctly reference direct API tools
+- [ ] Fix issues and re-test until 100% pass rate
 
 ---
 
-## 🧪 Testing Strategy
+## PHASE 5: FINAL VERIFICATION
 
-### Test Prompts for New Tools
+### 5.1 Code Quality Checks
+- [ ] **Run Pylint on modified files**:
+  ```bash
+  pylint src/backend/services/agent_service.py
+  pylint src/backend/dependencies.py
+  pylint src/backend/main.py
+  pylint src/backend/routers/chat.py
+  pylint src/backend/cli.py
+  ```
+- [ ] **Expected**: 10.00/10 score for all files
+- [ ] **Fix any issues** if score drops
 
-#### Test 12: get_stock_quote_multi
+### 5.2 Search for Remaining References
+- [ ] **Final pattern search for MCP tool names**:
+  ```bash
+  # Should return ZERO results in code/docs/memories (test-reports excluded)
+  grep -r "get_snapshot_all" --exclude-dir=test-reports --exclude-dir=.git .
+  grep -r "get_snapshot_option" --exclude-dir=test-reports --exclude-dir=.git .
+  grep -r "list_aggs" --exclude-dir=test-reports --exclude-dir=.git .
+  grep -r "get_daily_open_close_agg" --exclude-dir=test-reports --exclude-dir=.git .
+  grep -r "get_previous_close_agg" --exclude-dir=test-reports --exclude-dir=.git .
+  grep -r "get_aggs" --exclude-dir=test-reports --exclude-dir=.git .
+  ```
+- [ ] **Verify**: Only historical test reports contain references
 
-```
-Prompt: "Stock Snapshot: AAPL, MSFT, GOOGL"
-Expected Tool: get_stock_quote_multi(tickers=['AAPL','MSFT','GOOGL'], market_type='stocks')
-Expected Response: JSON with 3 ticker snapshots
-Validation: ✅ Returns data for all 3 tickers
-```
+### 5.3 Import Verification
+- [ ] **Check Python imports** for MCP-related code:
+  ```bash
+  grep -r "from agents.mcp import MCPServerStdio" src/
+  grep -r "create_polygon_mcp_server" src/
+  ```
+- [ ] **Expected**: ZERO results (all MCP imports removed)
 
-#### Test 13: get_options_quote_single
-
-```
-Prompt: "AAPL call option O:AAPL230616C00150000"
-Expected Tool: get_options_quote_single(underlying_asset='AAPL', option_contract='O:AAPL230616C00150000')
-Expected Response: JSON with option contract details, greeks, implied volatility
-Validation: ✅ Returns option contract data
-```
-
-#### Test 14: get_OHLC_bars_custom_date_range
-
-```
-Prompt: "OHLC bars SPY from 2025-09-01 to 2025-10-01"
-Expected Tool: get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-01', to_date='2025-10-01', timespan='day')
-Expected Response: JSON with array of OHLC bars
-Validation: ✅ Returns OHLC data for date range
-```
-
-#### Test 15: get_OHLC_bars_specific_date
-
-```
-Prompt: "Daily OHLC for NVDA on 2025-10-04"
-Expected Tool: get_OHLC_bars_specific_date(ticker='NVDA', date='2025-10-04')
-Expected Response: JSON with single day OHLC
-Validation: ✅ Returns OHLC for specific date
-```
-
-#### Test 16: get_OHLC_bars_previous_close
-
-```
-Prompt: "Previous close for SPY"
-Expected Tool: get_OHLC_bars_previous_close(ticker='SPY')
-Expected Response: JSON with previous close data
-Validation: ✅ Returns previous close information
-```
+### 5.4 Tool Count Verification
+- [ ] **Verify agent instructions** show exactly 12 tools:
+  ```bash
+  grep "SUPPORTED TOOLS" src/backend/services/agent_service.py
+  ```
+- [ ] **Expected**: "12 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd]"
 
 ---
 
-## ⚠️ Critical Success Criteria
+## PHASE 6: DOCUMENTATION & COMMIT
 
-### Must-Have Requirements
+### 6.1 Update CLAUDE.md Last Completed Task
+- [ ] **Add new task summary**:
+  ```markdown
+  ## Last Completed Task Summary
 
-1. ✅ **All 5 custom tools created** with @function_tool pattern
-2. ✅ **All tools follow established pattern** from commit e1ba319
-3. ✅ **Pylint score 10.00/10** for both polygon_tools.py and agent_service.py
-4. ✅ **All imports verified working** (test import command passes)
-5. ✅ **AI Agent instructions updated** with all new tool names
-6. ✅ **All 16 tests pass** with 100% success rate
-7. ✅ **Session persistence verified** (single session for all 16 tests)
-8. ✅ **No tool selection errors** (agent uses correct tools)
-9. ✅ **Documentation updated** (CLAUDE.md, Serena memories)
-10. ✅ **get_aggs completely removed** from all references
+  <!-- LAST_COMPLETED_TASK_START -->
+  [CLEANUP] Complete removal of legacy Polygon MCP Tools and server infrastructure
 
-### Performance Targets
+  - Removed 6 legacy Polygon MCP tools (get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_aggs)
+  - Deleted MCP server infrastructure (mcp_service.py, dependency injection, lifecycle management)
+  - Updated AI agent instructions to reference only 12 direct API tools (was 18)
+  - Cleaned up all code, documentation, and Serena memories
+  - Final tool count: 12 (1 Finnhub + 11 Polygon Direct API)
+  - All 16/16 tests passing with direct API tools only
+  - Pylint score: 10.00/10 for all modified files
 
-- Average response time: <30s (EXCELLENT) or <45s (GOOD)
-- Test suite completion: <10 minutes total
-- No timeouts or hanging processes
-- Clean error handling (no uncaught exceptions)
+  Migration Complete:
+  ✅ Commit fe380fa: Migrated 6 MCP tools to 5 direct API tools
+  ✅ This commit: Removed all legacy MCP infrastructure and references
 
----
+  Tool Evolution:
+  - **Before Migration:** 10 tools (7 Polygon MCP + 1 Finnhub + 2 Polygon Direct)
+  - **After Migration:** 18 tools (6 Polygon MCP + 1 Finnhub + 11 Polygon Direct)
+  - **After Cleanup:** 12 tools (0 Polygon MCP + 1 Finnhub + 11 Polygon Direct) ⭐ FINAL
 
-## 🔍 Validation Checklist
+  BREAKING CHANGE: Removed Polygon MCP server and all MCP-based tools. All financial queries now use direct Polygon Python API.
+  <!-- LAST_COMPLETED_TASK_END -->
+  ```
 
-### Before Starting Implementation
+### 6.2 Create Git Commit
+- [ ] **Stage all modified files**:
+  ```bash
+  git add -A
+  ```
+- [ ] **Verify changes**:
+  ```bash
+  git status
+  git diff --cached
+  ```
+- [ ] **Create commit** with proper format:
+  ```bash
+  git commit -m "$(cat <<'EOF'
+  [CLEANUP] Complete removal of legacy Polygon MCP Tools and server infrastructure
 
-- [ ] Read CLAUDE.md for project context ✅
-- [ ] Review docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md ✅
-- [ ] Analyze commit e1ba319 for pattern reference ✅
-- [ ] Understand current tool architecture ✅
-- [ ] Review test strategy ✅
+  - Deleted MCP server infrastructure (entire mcp_service.py file)
+  - Removed MCP server dependency injection from dependencies.py
+  - Removed MCP server lifecycle management from main.py
+  - Removed MCP server usage from routers/chat.py and cli.py
+  - Updated agent_service.py to use direct API tools only (12 tools, was 18)
+  - Removed all 6 legacy MCP tool references from AI agent instructions:
+    * get_snapshot_all → replaced by get_stock_quote_multi
+    * get_snapshot_option → replaced by get_options_quote_single
+    * list_aggs → replaced by get_OHLC_bars_custom_date_range
+    * get_daily_open_close_agg → replaced by get_OHLC_bars_specific_date
+    * get_previous_close_agg → replaced by get_OHLC_bars_previous_close
+    * get_aggs → removed (not relevant)
 
-### During Implementation
+  Documentation & Memory Updates:
+  ✅ Updated CLAUDE.md: Removed migration section, updated tool counts
+  ✅ Updated tech_stack.md: Removed MCP tools, updated to 11 direct API tools
+  ✅ Updated project_architecture.md: Removed MCP references
+  ✅ Updated ai_agent_instructions_oct_2025.md: Removed outdated tool rules
+  ✅ Updated performance_baseline_oct_2025.md: Added historical note
+  ✅ Updated finnhub_tool_swap_oct_2025.md: Marked as historical
+  ✅ Created polygon_mcp_removal_history.md: Documented complete removal
 
-- [ ] Follow @function_tool pattern exactly
-- [ ] Use _get_polygon_client() helper
-- [ ] Write comprehensive docstrings (>30 lines)
-- [ ] Implement proper error handling
-- [ ] Return consistent JSON format
-- [ ] Test each tool individually
-- [ ] Run pylint after each tool creation
+  Testing & Quality Assurance:
+  ✅ All 16/16 tests PASSING (100% success rate)
+  ✅ Test report: test-reports/mcp_removal_test_TIMESTAMP.txt
+  ✅ No MCP tool usage detected in test outputs
+  ✅ Pylint score: 10.00/10 for all modified files
+  ✅ Zero MCP references remaining in code/docs/memories
 
-### After Implementation
+  Final Tool Count: 12 tools total
+  - 1 Finnhub tool: get_stock_quote
+  - 11 Polygon Direct API tools: get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
 
-- [ ] All imports work (no ImportError)
-- [ ] All tests pass (16/16)
-- [ ] Pylint score 10.00/10
-- [ ] No deprecated tool references
-- [ ] Documentation complete
-- [ ] Performance targets met
+  BREAKING CHANGE: Removed Polygon MCP server and all MCP-based tools. All financial queries now use direct Polygon Python API with no MCP overhead.
 
----
+  🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-## 📊 Tool Architecture Evolution
+  Co-Authored-By: Claude <noreply@anthropic.com>
+  EOF
+  )"
+  ```
 
-### BEFORE (Current)
-
-```
-Total Tools: 14
-- Finnhub: 1 (get_stock_quote)
-- Polygon Direct: 6 (get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, ?)
-- Polygon MCP: 7 (get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, ?)
-```
-
-### AFTER (Target)
-
-```
-Total Tools: 12
-- Finnhub: 1 (get_stock_quote)
-- Polygon Direct: 11 (existing 6 + new 5)
-  - Existing: get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, ?
-  - NEW: get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
-- Polygon MCP: 0 (all replaced with direct API)
-```
-
-### Benefits
-
-1. ✅ **Reduced MCP dependency** - More control over tool behavior
-2. ✅ **Direct API access** - Faster response times
-3. ✅ **Consistent error handling** - All tools use same pattern
-4. ✅ **Better documentation** - Comprehensive docstrings for all tools
-5. ✅ **Easier maintenance** - All tools in one location
-
----
-
-## 🚨 Common Pitfalls to Avoid
-
-1. ❌ **Don't forget type hints** - All parameters must have type annotations
-2. ❌ **Don't skip docstrings** - Every tool needs comprehensive documentation
-3. ❌ **Don't return raw objects** - Always return JSON strings
-4. ❌ **Don't ignore errors** - Implement proper try-except blocks
-5. ❌ **Don't hard-code API keys** - Use _get_polygon_client() helper
-6. ❌ **Don't mix sync/async** - All tools must be async def
-7. ❌ **Don't forget to update tests** - Add test cases for all new tools
-8. ❌ **Don't leave old tool references** - Remove all MCP tool mentions
-9. ❌ **Don't skip validation** - Test imports before running full suite
-10. ❌ **Don't forget documentation** - Update CLAUDE.md and Serena memories
+### 6.3 Push Changes
+- [ ] **Push to remote**:
+  ```bash
+  git push
+  ```
+- [ ] **Verify push** was successful
 
 ---
 
-## 📈 Expected Outcomes
+## Success Criteria Checklist
 
-### Tool Functionality
+**Code:**
+- [✓] All MCP server code removed (mcp_service.py deleted)
+- [✓] All MCP imports removed from codebase
+- [✓] Agent created without MCP server parameter
+- [✓] All 6 MCP tools removed from agent instructions
+- [✓] Tool count updated to 12 (was 18)
+- [✓] Pylint 10.00/10 on all modified files
 
-- ✅ All 5 new tools work correctly
-- ✅ All tools return proper JSON format
-- ✅ Error handling works as expected
-- ✅ Tool selection logic updated correctly
-- ✅ AI Agent uses new tools appropriately
+**Documentation:**
+- [✓] CLAUDE.md updated with removal task summary
+- [✓] No MCP tool references in project docs
+- [✓] Migration sections removed from CLAUDE.md
 
-### Code Quality
+**Serena Memories:**
+- [✓] tech_stack.md: MCP tools removed, tool count updated
+- [✓] project_architecture.md: MCP references removed
+- [✓] ai_agent_instructions_oct_2025.md: Outdated rules removed or file deleted
+- [✓] performance_baseline_oct_2025.md: Historical note added
+- [✓] finnhub_tool_swap_oct_2025.md: Historical note added
+- [✓] New memory created: polygon_mcp_removal_history.md
 
-- ✅ Pylint score: 10.00/10 for all modified files
-- ✅ No code duplication
-- ✅ Consistent naming conventions
-- ✅ Clear, comprehensive docstrings
-- ✅ Proper error handling throughout
+**Testing:**
+- [✓] All 16/16 tests passing (100% success rate)
+- [✓] No MCP tool usage in test outputs
+- [✓] Test report generated and path provided to user
+- [✓] Performance metrics similar or better (no MCP overhead)
 
-### Testing
-
-- ✅ 16/16 tests pass (100% success rate)
-- ✅ Average response time <30s (EXCELLENT)
-- ✅ Session persistence verified (single session)
-- ✅ No tool selection errors
-- ✅ All new tools validated
-
-### Documentation
-
-- ✅ CLAUDE.md updated with task summary
-- ✅ Serena memory files updated
-- ✅ Symbol cache refreshed
-- ✅ Test reports generated
-- ✅ TODO_task_plan.md marked complete
-
----
-
-## 🎯 Next Steps After Completion
-
-1. **Run final validation**
-
-   ```bash
-   # Verify imports
-   PYTHONPATH=. uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ All imports work')"
-
-   # Run test suite
-   ./test_16_prompts_persistent_session.sh
-
-   # Check pylint scores
-   pylint src/backend/tools/polygon_tools.py
-   pylint src/backend/services/agent_service.py
-   ```
-
-2. **Update CLAUDE.md** with completion summary
-
-3. **Update Serena memories** with new tool information
-
-4. **Generate test report** and document performance metrics
-
-5. **Mark TODO_task_plan.md as COMPLETED** ✅
+**Verification:**
+- [✓] Zero grep results for MCP tool names (excluding test-reports)
+- [✓] Zero grep results for MCP imports
+- [✓] Agent instructions show exactly 12 tools
+- [✓] All changes committed and pushed
 
 ---
 
-## 📚 Reference Materials
+## Timeline Estimate
 
-### Documentation
+- **PHASE 1** (Code Cleanup): 45 minutes
+  - 8 files to modify
+  - 1 file to delete
+  - Import updates, function signature changes
 
-- `/docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md` - Custom tool creation guide
-- Polygon Python Library docs (researched via mcp__docs-polygon-python)
-- Commit e1ba319 - Previous custom tool implementation
+- **PHASE 2** (Documentation): 20 minutes
+  - 2 files to update
+  - Remove migration sections
 
-### Code Examples
+- **PHASE 3** (Serena Memories): 30 minutes
+  - 5 files to update
+  - 1 new memory file to create
 
-- `src/backend/tools/polygon_tools.py` - Existing custom tools (get_ta_*)
-- `src/backend/services/agent_service.py` - Agent configuration
-- Polygon examples: stocks-snapshots_all.py, options-snapshots_option_contract.py, etc.
+- **PHASE 4** (CLI Testing): 15 minutes
+  - Run test suite
+  - Verify results
+  - Show evidence to user
 
-### Test Scripts
+- **PHASE 5** (Verification): 15 minutes
+  - Pylint checks
+  - Pattern searches
+  - Import verification
 
-- `test_7_prompts_persistent_session.sh` → `test_16_prompts_persistent_session.sh`
-- Test prompt patterns from tests/playwright/test_prompts.md
+- **PHASE 6** (Documentation & Commit): 15 minutes
+  - Update CLAUDE.md
+  - Git commit and push
+
+**Total Estimated Time: 2.5 hours**
 
 ---
 
-**END OF TODO TASK PLAN**
+## Risk Mitigation
 
-*This plan is comprehensive and ready for implementation. Follow each phase sequentially, validate at each step, and maintain code quality throughout.*
+**Risk 1: Tests fail due to missing MCP tools**
+- Mitigation: Agent instructions correctly updated with direct API tools
+- Fallback: Verify all 12 tools are imported and available in create_agent()
+
+**Risk 2: Breaking change affects production**
+- Mitigation: All tests passing before deployment
+- Fallback: Keep this branch separate, test thoroughly before merging
+
+**Risk 3: Performance degradation without MCP server**
+- Mitigation: Direct API calls are actually faster (no MCP overhead)
+- Validation: Compare response times in test reports
+
+**Risk 4: Missed MCP references**
+- Mitigation: Comprehensive grep searches in Phase 5
+- Validation: Final verification ensures zero references
+
+---
+
+## Notes
+
+- **Historical test reports** in `test-reports/` will be preserved as they document the migration journey
+- **Tool count evolution** shows clear progression: 10 → 18 → 12
+- **Direct API benefits**: Faster, more reliable, no MCP server overhead, simpler codebase
+- **Breaking change** is acceptable as migration is complete and validated
