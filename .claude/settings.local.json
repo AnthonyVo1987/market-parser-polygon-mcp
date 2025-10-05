@@ -215,7 +215,10 @@
       "Bash(PYTHONPATH=. uv run python -c \"from src.backend.tools.polygon_tools import get_market_status_and_date_time; print(''✅ Import successful'')\")",
       "Bash(PYTHONPATH=. uv run python -c \"from src.backend.services.agent_service import create_agent; print(''✅ Agent service imports work correctly'')\")",
       "Bash(npx markdownlint-cli2-fix:*)",
-      "Bash(npx markdownlint-cli2:*)"
+      "Bash(npx markdownlint-cli2:*)",
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.tools.polygon_tools import get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd; print(''✅ All 4 TA indicator tools imported successfully'')\")",
+      "Bash(git restore:*)",
+      "Bash(timeout 30 bash -c 'echo \"\"\"\"SMA for SPY\"\"\"\" | uv run src/backend/main.py')"
     ],
     "deny": [],
     "ask": [],

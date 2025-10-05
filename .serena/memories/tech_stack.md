@@ -45,10 +45,15 @@ Market Parser is built with a modern full-stack architecture combining Python ba
   - Real-time price updates
 
 - **Polygon Python Library** (polygon-api-client v1.15.4): Market data
-  - Custom tool: get_market_status_and_date_time
+  - Custom tools (6 total):
+    - get_market_status_and_date_time: Market status and datetime
+    - get_ta_sma: Simple Moving Average indicator ⭐ NEW
+    - get_ta_ema: Exponential Moving Average indicator ⭐ NEW
+    - get_ta_rsi: Relative Strength Index indicator ⭐ NEW
+    - get_ta_macd: MACD indicator ⭐ NEW
   - Direct API access (bypassing MCP)
-  - Market status and datetime information
-  - **New addition**: First direct Polygon API tool
+  - Technical analysis indicators
+  - Enhanced performance and control
 
 ### Data Validation & Models
 - **Pydantic** (latest): Data validation library
@@ -272,10 +277,10 @@ Market Parser is built with a modern full-stack architecture combining Python ba
   - Real-time stock prices
   - Historical data
   - Market status
-  - Technical indicators
+  - Technical indicators (SMA, EMA, RSI, MACD)
   - **Access methods**:
     - MCP server (7 tools): get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
-    - Direct API (1 tool): get_market_status_and_date_time
+    - Direct API (6 tools): get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd ⭐ 4 NEW
 
 - **Finnhub API**: Real-time stock data
   - Single ticker quotes
@@ -289,7 +294,7 @@ Market Parser is built with a modern full-stack architecture combining Python ba
   - Polygon.io financial data access (7 MCP tools remaining)
   - Extensible tool framework
   - Session persistence
-- **Migration Status**: Transitioning to direct API calls (1 tool migrated)
+- **Migration Status**: Transitioning to direct API calls (6 tools migrated)
 
 ## Infrastructure & Deployment
 
@@ -416,7 +421,7 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 - **Simplicity**: Fewer dependencies and infrastructure layers
 - **Control**: Full control over API interaction and error handling
 - **Flexibility**: Easier to customize response formats
-- **Proof of Concept**: get_market_status_and_date_time validates migration pattern
+- **Validation**: 6 tools successfully migrated (get_market_status_and_date_time + 4 TA indicators)
 
 ## Performance Characteristics
 
@@ -440,12 +445,16 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 
 ## Tool Architecture
 
-### Current Tool Distribution (10 total)
+### Current Tool Distribution (14 total)
 1. **Finnhub Custom Tools (1)**:
    - get_stock_quote
 
-2. **Polygon Direct API Tools (1)**:
-   - get_market_status_and_date_time ⭐ NEW
+2. **Polygon Direct API Tools (6)**:
+   - get_market_status_and_date_time
+   - get_ta_sma ⭐ NEW
+   - get_ta_ema ⭐ NEW
+   - get_ta_rsi ⭐ NEW
+   - get_ta_macd ⭐ NEW
 
 3. **Polygon MCP Tools (7)**:
    - get_snapshot_all
@@ -460,7 +469,8 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 
 ### Migration Roadmap
 - **Completed**: get_market_status → get_market_status_and_date_time
-- **In Progress**: Proof of concept validated
+- **Completed**: 4 TA indicators (SMA, EMA, RSI, MACD) added
+- **In Progress**: 6 direct API tools validated
 - **Future**: Gradual migration of remaining MCP tools to direct API
 
 ## Security Considerations

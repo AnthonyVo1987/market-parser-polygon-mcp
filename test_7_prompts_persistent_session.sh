@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Persistent Session 7 Test Prompts Script
-# Tests all 7 standardized test prompts sequentially in a SINGLE CLI session
+# Persistent Session 11 Test Prompts Script
+# Tests all 11 standardized test prompts sequentially in a SINGLE CLI session
 # Properly handles session persistence and accurate response time tracking
 # Based on tests/playwright/test_prompts.md
+# Extended with 4 TA indicator tests (SMA, EMA, RSI, MACD)
 
 # Colors for output
 RED='\033[0;31m'
@@ -24,16 +25,16 @@ RAW_OUTPUT="/tmp/cli_output_${TIMESTAMP}.log"
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 Persistent Session 7 Test Prompts Validation${NC}"
-echo -e "${CYAN}===============================================${NC}"
+echo -e "${CYAN}🧪 Persistent Session 11 Test Prompts Validation${NC}"
+echo -e "${CYAN}================================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "Output file: $OUTPUT_FILE"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 7 tests in same session)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 11 tests in same session)"
 echo ""
 
-# The 7 standardized test prompts from test_prompts.md
+# The 11 standardized test prompts (7 original + 4 TA indicators)
 declare -a prompts=(
     "What the current Market Status?"
     "Stock Snapshot: NVDA"
@@ -42,6 +43,10 @@ declare -a prompts=(
     "Current weekly Price Change $ and % for: SPY"
     "Support & Resistance Levels: SPY"
     "Technical Analysis: SPY"
+    "SMA for SPY"
+    "20-day EMA for NVDA"
+    "RSI analysis for SPY"
+    "MACD for AAPL"
 )
 
 declare -a test_names=(
@@ -52,6 +57,10 @@ declare -a test_names=(
     "Test_5_Weekly_Performance_Analysis_SPY"
     "Test_6_Support_Resistance_SPY"
     "Test_7_Technical_Analysis_SPY"
+    "Test_8_SMA_Indicator_SPY"
+    "Test_9_EMA_Indicator_NVDA"
+    "Test_10_RSI_Indicator_SPY"
+    "Test_11_MACD_Indicator_AAPL"
 )
 
 # Initialize test tracking
@@ -68,7 +77,7 @@ done
 echo "exit" >> "$INPUT_FILE"
 
 echo -e "${CYAN}🚀 Starting Persistent Session Test...${NC}"
-echo -e "${CYAN}Session will run all 7 tests sequentially${NC}"
+echo -e "${CYAN}Session will run all 11 tests sequentially${NC}"
 echo ""
 
 # Start CLI and capture output in real-time
@@ -257,7 +266,7 @@ echo -e "Total Session Duration: ${total_duration}s"
 echo -e "Session Mode: ${GREEN}PERSISTENT${NC}"
 
 if [ $failed_tests -eq 0 ]; then
-    echo -e "${GREEN}🎉 All $total_tests tests passed!${NC}"
+    echo -e "${GREEN}🎉 All $total_tests tests passed (including 4 TA indicators)!${NC}"
     echo -e "${GREEN}✅ Persistent Session Validation: SUCCESS${NC}"
 else
     echo -e "${RED}❌ $failed_tests test(s) failed${NC}"

@@ -1,487 +1,741 @@
-# Implementation Plan: Polygon Direct API Custom Tool - get_market_status_and_date_time
+# TODO Task Plan: Polygon Technical Analysis Indicators Custom Tools
 
-**Task:** Create custom tool `get_market_status_and_date_time` using Polygon Python Library direct API calls
-
-**Research Phase:** ✅ COMPLETED
-**Implementation Phase:** 🔴 NOT STARTED - AWAITING APPROVAL
-**Status:** RESEARCH & PLANNING ONLY - NO CODE IMPLEMENTATION YET
+**Task ID**: polygon-ta-indicators
+**Created**: October 5, 2025
+**Status**: Planning Complete - Ready for Implementation
+**Priority**: High
+**Estimated Effort**: 2-3 hours
 
 ---
 
-## 📋 Research Summary
+## 📋 Executive Summary
 
-### Polygon API Research Findings
+Create 4 new custom tools for Technical Analysis (TA) indicators using the Polygon Python Library direct API: SMA, EMA, RSI, and MACD. Follow the established pattern from commit 68a058d (get_market_status_and_date_time implementation).
 
-**API Method:** `client.get_market_status()`
-- **Endpoint:** `/v1/marketstatus/now`
-- **Client Initialization:** `RESTClient()` with `POLYGON_API_KEY` environment variable
-- **Return Type:** `MarketStatus` model
+**Tools to Create:**
+1. `get_ta_sma` - Simple Moving Average (SMA)
+2. `get_ta_ema` - Exponential Moving Average (EMA)
+3. `get_ta_rsi` - Relative Strength Index (RSI) ⚠️ Note: Typo in request 'get_ta_rse' corrected to 'get_ta_rsi'
+4. `get_ta_macd` - Moving Average Convergence Divergence (MACD)
 
-**MarketStatus Response Structure:**
+**Tool Count Change**: 10 → 14 tools (+ 4 new TA indicator tools)
+
+---
+
+## 🎯 Success Criteria
+
+- [ ] All 4 TA indicator custom tools implemented and working
+- [ ] Pylint score: 10.00/10 for all modified Python files
+- [ ] All imports verified working
+- [ ] Agent instructions updated with RULE #8 for TA indicators
+- [ ] Test script updated with 4 new test cases (7→11 total tests)
+- [ ] All 11 tests passing with EXCELLENT performance rating
+- [ ] Serena memories updated (tech_stack, project_architecture)
+- [ ] CLAUDE.md updated with complete task documentation
+- [ ] Clean git commit with comprehensive message
+
+---
+
+## 📚 Research Summary
+
+### Polygon Python Library TA Indicators API
+
+**Available Methods** (from `polygon.rest.indicators.py`):
+- `client.get_sma()` - Returns `SMAIndicatorResults`
+- `client.get_ema()` - Returns `EMAIndicatorResults`
+- `client.get_rsi()` - Returns `RSIIndicatorResults`
+- `client.get_macd()` - Returns `MACDIndicatorResults`
+
+**Common Parameters**:
+- `ticker` (str, required): Stock symbol
+- `timespan` (str, optional): Aggregate window (day, minute, hour, week, month, quarter, year)
+- `window` (int, optional): Lookback period for SMA/EMA/RSI (default varies by indicator)
+- `timestamp`, `timestamp_lt`, `timestamp_lte`, `timestamp_gt`, `timestamp_gte`: Time filtering
+- `adjusted` (bool, optional): Adjust for splits (default True)
+- `expand_underlying` (bool, optional): Include underlying aggregates
+- `order` (str, optional): Sort order (asc/desc)
+- `limit` (int, optional): Result limit (default 10, max 5000)
+- `series_type` (str, optional): Price type (close, open, high, low)
+
+**MACD-Specific Parameters**:
+- `short_window` (int, optional): Short EMA window (default 12)
+- `long_window` (int, optional): Long EMA window (default 26)
+- `signal_window` (int, optional): Signal line window (default 9)
+
+### Previous Implementation Pattern (commit 68a058d)
+
+**File: src/backend/tools/polygon_tools.py**
 ```python
+# 1. Lazy client initialization helper
+def _get_polygon_client():
+    """Get Polygon client with API key from environment."""
+    api_key = os.getenv("POLYGON_API_KEY")
+    return RESTClient(api_key=api_key)
+
+# 2. @function_tool decorated async function
+@function_tool
+async def tool_name() -> str:
+    """Comprehensive docstring with:
+    - Purpose and when to use
+    - Args description
+    - Returns format
+    - Note section
+    - Examples
+    """
+    try:
+        client = _get_polygon_client()
+        result = client.method_call()
+
+        # Validate data
+        if not result:
+            return json.dumps({"error": "No data", "message": "...", "source": "Polygon.io"})
+
+        # Format and return JSON
+        return json.dumps({
+            "status": "success",
+            "data": result,
+            "source": "Polygon.io"
+        })
+    except Exception as e:
+        return json.dumps({
+            "error": "API request failed",
+            "message": f"Error details: {str(e)}",
+            "source": "Polygon.io"
+        })
+```
+
+**File: src/backend/services/agent_service.py**
+```python
+# 1. Import new tools
+from ..tools.polygon_tools import get_market_status_and_date_time
+
+# 2. Add to tools list
+tools=[get_stock_quote, get_market_status_and_date_time]
+
+# 3. Update SUPPORTED TOOLS count and list
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [...]
+
+# 4. Add new RULE for tool usage
+RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
+```
+
+### OpenAI Custom Tools Best Practices
+
+**From docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md:**
+1. Use `@function_tool` decorator for automatic schema generation
+2. Comprehensive docstrings with purpose, args, returns, examples
+3. Type hints on all parameters
+4. Return JSON strings via `json.dumps()` for structured data
+5. Error handling returns helpful messages, not exceptions
+6. Async for I/O operations (API calls)
+7. Clear, descriptive naming (verb + noun format)
+
+---
+
+## 🔧 Implementation Checklist
+
+### PHASE 1: Tool Implementation in polygon_tools.py
+
+**File**: `src/backend/tools/polygon_tools.py`
+
+#### 1.1: Import Additional Modules
+```python
+# Add to existing imports at top of file (if not already present)
+from typing import Optional
+```
+
+#### 1.2: Implement get_ta_sma
+- [ ] Create `get_ta_sma(ticker: str, timespan: str = "day", window: int = 50, limit: int = 10) -> str`
+- [ ] Comprehensive docstring:
+  - Purpose: Get Simple Moving Average indicator values
+  - When to use: Technical analysis, trend identification, support/resistance
+  - Args: ticker, timespan, window, limit
+  - Returns: JSON with SMA values, timestamps, parameters, source
+  - Examples: "SMA for SPY", "50-day moving average AAPL"
+- [ ] Implementation:
+  - Get client via `_get_polygon_client()`
+  - Call `client.get_sma(ticker=ticker, timespan=timespan, window=window, limit=limit)`
+  - Validate response (check if results exist)
+  - Extract values from results list
+  - Format JSON response with status, indicator, ticker, values, parameters, source
+  - Error handling with try-except
+  - Return JSON string
+
+#### 1.3: Implement get_ta_ema
+- [ ] Create `get_ta_ema(ticker: str, timespan: str = "day", window: int = 50, limit: int = 10) -> str`
+- [ ] Comprehensive docstring:
+  - Purpose: Get Exponential Moving Average indicator values
+  - When to use: Technical analysis, trend following, more responsive than SMA
+  - Args: ticker, timespan, window, limit
+  - Returns: JSON with EMA values, timestamps, parameters, source
+  - Examples: "EMA for SPY", "20-day EMA TSLA"
+- [ ] Implementation:
+  - Same pattern as get_ta_sma
+  - Call `client.get_ema(ticker=ticker, timespan=timespan, window=window, limit=limit)`
+  - Format JSON response
+  - Error handling
+
+#### 1.4: Implement get_ta_rsi
+- [ ] Create `get_ta_rsi(ticker: str, timespan: str = "day", window: int = 14, limit: int = 10) -> str`
+- [ ] Comprehensive docstring:
+  - Purpose: Get Relative Strength Index indicator values
+  - When to use: Identify overbought/oversold conditions, momentum analysis
+  - Args: ticker, timespan, window (default 14), limit
+  - Returns: JSON with RSI values (0-100), timestamps, parameters, source
+  - Note: RSI > 70 = overbought, RSI < 30 = oversold
+  - Examples: "RSI for SPY", "Relative strength index NVDA"
+- [ ] Implementation:
+  - Same pattern as previous tools
+  - Call `client.get_rsi(ticker=ticker, timespan=timespan, window=window, limit=limit)`
+  - Format JSON response
+  - Error handling
+
+#### 1.5: Implement get_ta_macd
+- [ ] Create `get_ta_macd(ticker: str, timespan: str = "day", short_window: int = 12, long_window: int = 26, signal_window: int = 9, limit: int = 10) -> str`
+- [ ] Comprehensive docstring:
+  - Purpose: Get MACD indicator values (trend and momentum)
+  - When to use: Identify trend changes, momentum shifts, buy/sell signals
+  - Args: ticker, timespan, short_window, long_window, signal_window, limit
+  - Returns: JSON with MACD line, signal line, histogram values, timestamps, parameters, source
+  - Note: MACD crossovers indicate potential trend changes
+  - Examples: "MACD for SPY", "MACD analysis AAPL"
+- [ ] Implementation:
+  - Call `client.get_macd(ticker=ticker, timespan=timespan, short_window=short_window, long_window=long_window, signal_window=signal_window, limit=limit)`
+  - Format JSON response with MACD, signal, histogram values
+  - Error handling
+
+---
+
+### PHASE 2: Agent Service Integration
+
+**File**: `src/backend/services/agent_service.py`
+
+#### 2.1: Import New Tools
+- [ ] Add imports:
+```python
+from ..tools.polygon_tools import (
+    get_market_status_and_date_time,
+    get_ta_sma,
+    get_ta_ema,
+    get_ta_rsi,
+    get_ta_macd,
+)
+```
+
+#### 2.2: Update Tools List
+- [ ] Update tools list in `create_agent()`:
+```python
+tools=[
+    get_stock_quote,
+    get_market_status_and_date_time,
+    get_ta_sma,
+    get_ta_ema,
+    get_ta_rsi,
+    get_ta_macd,
+],  # Finnhub + Polygon direct API tools
+```
+
+#### 2.3: Update Agent Instructions - Tool Count
+- [ ] Change SUPPORTED TOOLS from 10 to 14:
+```python
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 14 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg] 🔴
+```
+
+#### 2.4: Add RULE #8 for Technical Indicators
+- [ ] Add after RULE #7:
+```python
+RULE #8: TECHNICAL ANALYSIS INDICATORS = USE get_ta_* tools
+- If the request asks for technical indicators, moving averages, RSI, MACD, or TA analysis
+- Examples: "SMA for SPY", "RSI NVDA", "MACD analysis", "50-day moving average"
+- 📊 Uses Polygon.io Direct API for technical analysis indicator calculations
+- ✅ Available indicators:
+  * get_ta_sma(ticker, timespan='day', window=50, limit=10) - Simple Moving Average
+  * get_ta_ema(ticker, timespan='day', window=50, limit=10) - Exponential Moving Average
+  * get_ta_rsi(ticker, timespan='day', window=14, limit=10) - Relative Strength Index (0-100)
+  * get_ta_macd(ticker, timespan='day', short_window=12, long_window=26, signal_window=9, limit=10) - MACD
+- ✅ Returns: JSON with indicator values, timestamps, parameters used
+```
+
+#### 2.5: Add Examples Section for TA Tools
+- [ ] Add to EXAMPLES OF CORRECT TOOL CALLS:
+```python
+✅ "SMA for SPY" → get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10)
+✅ "20-day EMA NVDA" → get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10)
+✅ "RSI analysis SPY" → get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10)
+✅ "MACD for AAPL" → get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26, signal_window=9, limit=10)
+```
+
+---
+
+### PHASE 3: Test Suite Updates
+
+**File**: `test_7_prompts_persistent_session.sh`
+
+#### 3.1: Update Test Configuration
+- [ ] Change test count from 7 to 11
+- [ ] Update script header comments to reflect 11 tests
+
+#### 3.2: Add New Test Prompts
+- [ ] Add 4 new prompts to prompts array (after existing 7):
+```bash
+declare -a prompts=(
+    # ... existing 7 prompts ...
+    "SMA Indicator: SPY"
+    "EMA Indicator: SPY"
+    "RSI Indicator: SPY"
+    "MACD Indicator: SPY"
+)
+```
+
+#### 3.3: Add New Test Names
+- [ ] Add 4 new test names to test_names array:
+```bash
+declare -a test_names=(
+    # ... existing 7 test names ...
+    "Test_8_SMA_Indicator_SPY"
+    "Test_9_EMA_Indicator_SPY"
+    "Test_10_RSI_Indicator_SPY"
+    "Test_11_MACD_Indicator_SPY"
+)
+```
+
+#### 3.4: Verify Test Count Variables
+- [ ] Ensure `total_tests=${#prompts[@]}` correctly counts 11 tests
+- [ ] Update any hardcoded test count references from 7 to 11
+
+---
+
+### PHASE 4: Code Quality & Validation
+
+#### 4.1: Python Code Quality
+- [ ] Run pylint on polygon_tools.py:
+```bash
+uv run pylint src/backend/tools/polygon_tools.py --max-line-length=100
+```
+- [ ] Target score: 10.00/10
+- [ ] Fix any linting issues
+
+- [ ] Run pylint on agent_service.py:
+```bash
+uv run pylint src/backend/services/agent_service.py --max-line-length=100
+```
+- [ ] Target score: 10.00/10
+- [ ] Fix any linting issues
+
+#### 4.2: Code Formatting
+- [ ] Run black formatter:
+```bash
+uv run black src/backend/tools/polygon_tools.py --line-length 100
+uv run black src/backend/services/agent_service.py --line-length 100
+```
+
+- [ ] Run isort:
+```bash
+uv run isort src/backend/tools/polygon_tools.py --profile black --line-length 100
+uv run isort src/backend/services/agent_service.py --profile black --line-length 100
+```
+
+#### 4.3: Import Verification
+- [ ] Test polygon_tools.py imports:
+```bash
+PYTHONPATH=. uv run python -c "from src.backend.tools.polygon_tools import get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd; print('✅ Polygon tools imports successful')"
+```
+
+- [ ] Test agent_service.py imports:
+```bash
+PYTHONPATH=. uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ Agent service imports successful')"
+```
+
+#### 4.4: CLI Testing
+- [ ] Run full test suite:
+```bash
+./test_7_prompts_persistent_session.sh
+```
+
+- [ ] Verify:
+  - All 11/11 tests PASS
+  - Average response time < 30s (EXCELLENT rating)
+  - Session persistence validated (single session)
+  - Test report generated successfully
+
+- [ ] Review test report:
+```bash
+cat test-reports/persistent_session_test_*.txt
+```
+
+---
+
+### PHASE 5: Documentation Updates
+
+#### 5.1: Update CLAUDE.md
+
+**File**: `CLAUDE.md`
+
+- [ ] Update "Last Completed Task Summary" section
+- [ ] Replace content between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->`
+- [ ] New summary should include:
+  - Task title: "polygon-ta-indicators"
+  - Tool count change: 10 → 14
+  - List of 4 new tools
+  - Implementation details with checkmarks
+  - Test results (11/11 PASSED)
+  - Pylint scores (10.00/10)
+  - Tool architecture change
+  - Critical rules updated (added RULE #8)
+  - Achievement statement
+
+**Example Template**:
+```markdown
+<!-- LAST_COMPLETED_TASK_START -->
+polygon-ta-indicators: Create 4 Technical Analysis indicator custom tools using Polygon Python Library
+
+- Created 4 new TA indicator custom tools using Polygon.io direct API
+- Expanded tool capabilities with SMA, EMA, RSI, and MACD indicators
+- Created custom tools using @function_tool decorator with Polygon Python Library (polygon-api-client v1.15.4)
+- Updated AI Agent instructions: Added RULE #8 for TA indicators
+- Increased to 14 total tools (7 Polygon.io MCP + 1 Finnhub custom + 4 Polygon TA + 2 Polygon direct)
+- Enhanced technical analysis capabilities for financial queries
+- All tools follow established pattern from get_market_status_and_date_time
+
+Implementation Details:
+✅ Extended src/backend/tools/polygon_tools.py with 4 TA indicator functions
+✅ get_ta_sma: Simple Moving Average with configurable window
+✅ get_ta_ema: Exponential Moving Average for trend following
+✅ get_ta_rsi: Relative Strength Index (0-100) for momentum analysis
+✅ get_ta_macd: MACD indicator with signal line and histogram
+✅ Integrated into agent via tools=[...get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd]
+✅ Updated decision tree and added RULE #8 for TA indicator tool selection
+✅ Pylint score: 10.00/10 (clean code, no linting errors) for both files
+✅ CLI Tests: 11/11 PASSED, XX.XXs avg response time, EXCELLENT performance
+✅ Updated Serena memories: tech_stack and project_architecture
+✅ Test suite expanded from 7 to 11 tests with 4 new TA indicator test cases
+
+Tool Architecture Change:
+- **BEFORE:** 10 tools (7 Polygon.io MCP + 1 Finnhub + 1 Polygon direct + 1 removed)
+- **AFTER:** 14 tools (7 Polygon.io MCP + 1 Finnhub + 4 Polygon TA + 2 Polygon direct)
+- **ADDED:** get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
+- **PATTERN:** All TA tools follow polygon_tools.py established pattern
+
+Critical Rules Updated:
+🔴 RULE #1: Single ticker → get_stock_quote(ticker='SYMBOL') via Finnhub
+🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks') via Polygon.io MCP
+🔴 RULE #4: Market status & date/time → get_market_status_and_date_time() via Polygon Direct API
+🔴 RULE #8: Technical indicators → get_ta_* tools via Polygon Direct API ⭐ NEW
+🔴 SUPPORTED TOOLS: Updated from 10 to 14 tools in agent instructions
+
+ACHIEVEMENT: Successfully expanded technical analysis capabilities with 4 new TA indicator tools, enabling comprehensive financial market analysis
+<!-- LAST_COMPLETED_TASK_END -->
+```
+
+#### 5.2: Update Serena tech_stack Memory
+
+**File**: `.serena/memories/tech_stack.md`
+
+- [ ] Add section for TA indicator tools under "Financial Data APIs"
+- [ ] Update tool count: 10 → 14
+- [ ] Document 4 new TA tools with descriptions
+- [ ] Update "Tool Distribution" section
+
+**Example Addition**:
+```markdown
+### Technical Analysis Indicators (Polygon Direct API)
+- **get_ta_sma** - Simple Moving Average calculation
+- **get_ta_ema** - Exponential Moving Average calculation
+- **get_ta_rsi** - Relative Strength Index (0-100 momentum indicator)
+- **get_ta_macd** - Moving Average Convergence Divergence (trend + momentum)
+- **Purpose**: Provide technical analysis indicators for financial market analysis
+- **Pattern**: Follows polygon_tools.py established pattern
+```
+
+#### 5.3: Update Serena project_architecture Memory
+
+**File**: `.serena/memories/project_architecture.md`
+
+- [ ] Update "Backend Tool Architecture" section
+- [ ] Update tool count from 10 to 14
+- [ ] Add TA tools to tool distribution breakdown
+- [ ] Update data flow diagram to include TA indicator tools
+
+**Example Update**:
+```markdown
+## Backend Tool Architecture
+
+### Tool Distribution (14 Total)
+1. **Finnhub Custom Tools (1)**: get_stock_quote
+2. **Polygon Direct API Tools (6)**: get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, (1 removed: get_market_status)
+3. **Polygon MCP Tools (7)**: get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
+
+### Technical Analysis Tools
+All TA indicator tools use Polygon.io direct API via `RESTClient`:
+- SMA: Trend identification, support/resistance
+- EMA: Trend following, more responsive than SMA
+- RSI: Overbought/oversold conditions (>70 / <30)
+- MACD: Trend changes and momentum shifts
+```
+
+---
+
+### PHASE 6: Git Commit & Push
+
+#### 6.1: Stage Changes
+- [ ] Stage all modified and new files:
+```bash
+git add src/backend/tools/polygon_tools.py
+git add src/backend/services/agent_service.py
+git add test_7_prompts_persistent_session.sh
+git add CLAUDE.md
+git add .serena/memories/tech_stack.md
+git add .serena/memories/project_architecture.md
+git add test-reports/persistent_session_test_*.txt
+git add TODO_task_plan.md
+git add new_task_details.md
+```
+
+#### 6.2: Verify Staged Changes
+- [ ] Review staged changes:
+```bash
+git status
+git diff --cached
+```
+
+#### 6.3: Create Comprehensive Commit
+- [ ] Create commit with detailed message:
+```bash
+git commit -m "$(cat <<'EOF'
+[POLYGON-TA-INDICATORS] Create 4 Technical Analysis indicator custom tools
+
+- Create 4 new TA indicator custom tools using Polygon Python Library direct API
+- Expand tool capabilities: SMA, EMA, RSI, MACD for technical analysis
+- Update AI Agent instructions: Add RULE #8 for TA indicator tool selection
+- Increase to 14 total tools (7 Polygon.io MCP + 1 Finnhub + 4 Polygon TA + 2 Polygon direct)
+- Expand test suite from 7 to 11 tests with 4 new TA indicator test cases
+- All tools follow established pattern from get_market_status_and_date_time
+
+Implementation Details:
+✅ Extend src/backend/tools/polygon_tools.py with 4 TA indicator functions
+✅ get_ta_sma: Simple Moving Average (configurable window, default 50)
+✅ get_ta_ema: Exponential Moving Average (configurable window, default 50)
+✅ get_ta_rsi: Relative Strength Index (0-100, default window 14)
+✅ get_ta_macd: MACD with signal line (configurable windows: 12/26/9)
+✅ Integrate into agent via tools list in create_agent()
+✅ Update decision tree and add RULE #8 to agent instructions
+✅ Expand test suite to 11 tests (4 new TA indicator tests)
+✅ Pylint score: 10.00/10 (clean code, no linting errors)
+✅ CLI Tests: 11/11 PASSED, XX.XXs avg response time, EXCELLENT performance
+✅ Update Serena memories: tech_stack and project_architecture
+✅ Update CLAUDE.md with complete task documentation
+
+Tool Architecture Change:
+- BEFORE: 10 tools (7 Polygon.io MCP + 1 Finnhub + 2 Polygon direct - 1 removed)
+- AFTER: 14 tools (7 Polygon.io MCP + 1 Finnhub + 4 Polygon TA + 2 Polygon direct)
+- ADDED: get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
+- PATTERN: All TA tools follow polygon_tools.py established pattern
+
+Agent Instructions Updates:
+- Tool Count: 10 → 14 in SUPPORTED TOOLS list
+- Added RULE #8: TECHNICAL ANALYSIS INDICATORS = USE get_ta_* tools
+- Updated examples with TA indicator tool usage
+- Decision tree includes TA indicator selection
+
+Test Suite Updates:
+- Test Count: 7 → 11 tests
+- Added Test 8: SMA Indicator SPY
+- Added Test 9: EMA Indicator SPY
+- Added Test 10: RSI Indicator SPY
+- Added Test 11: MACD Indicator SPY
+- All tests running in persistent single session
+
+Test Results:
+- CLI Test Suite: 11/11 PASSED (100% success rate)
+- Average Response Time: XX.XXs (EXCELLENT performance)
+- Session Mode: Persistent single session validated
+- Test Report: test-reports/persistent_session_test_TIMESTAMP.txt
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+#### 6.4: Push to Remote
+- [ ] Push commit to remote repository:
+```bash
+git push
+```
+
+- [ ] Verify push successful:
+```bash
+git log -1 --oneline
+```
+
+---
+
+## 🔍 JSON Response Format Specifications
+
+### SMA/EMA Response Format
+```json
 {
-    "after_hours": bool,           # Whether after-hours trading is active
-    "currencies": {                # Currency market status
-        "crypto": str,
-        "fx": str
+  "status": "success",
+  "indicator": "sma",  // or "ema"
+  "ticker": "SPY",
+  "values": [
+    {
+      "timestamp": "2025-10-05T00:00:00Z",
+      "value": 450.25
     },
-    "early_hours": bool,          # Whether pre-market trading is active
-    "exchanges": {                # Exchange status
-        "nasdaq": str,            # "open", "closed", "extended-hours"
-        "nyse": str,
-        "otc": str
-    },
-    "indicesGroups": {            # Indices status
-        "s_and_p": str,
-        "nasdaq": str,
-        "dow_jones": str,
-        # ... more indices
-    },
-    "market": str,                # Overall market status: "open", "closed", "extended-hours"
-    "server_time": str            # ISO timestamp from Polygon server
+    ...
+  ],
+  "parameters": {
+    "timespan": "day",
+    "window": 50
+  },
+  "count": 10,
+  "source": "Polygon.io"
 }
 ```
 
-### Previous Implementation Pattern (Finnhub Reference)
-
-**File Structure:**
-- Location: `src/backend/tools/finnhub_tools.py`
-- Pattern: @function_tool decorator with async function
-- Client initialization: Lazy initialization with helper function
-- Error handling: Try-except with JSON error responses
-- Integration: Added to agent via `tools=[get_stock_quote]` in `create_agent()`
-
-**Key Patterns:**
-1. Lazy client initialization with helper function
-2. Input validation before API calls
-3. Comprehensive error handling with descriptive messages
-4. JSON return format for structured data
-5. Detailed docstring following Google style
-6. Environment variable for API key
-
----
-
-## ✅ Implementation Checklist
-
-### PHASE 1: Create Polygon Tools File
-
-- [ ] **Task 1.1:** Create new file `src/backend/tools/polygon_tools.py`
-  - Location: `/home/anthony/Github/market-parser-polygon-mcp/src/backend/tools/polygon_tools.py`
-  - Template: Follow finnhub_tools.py structure
-  - Dependencies: `polygon`, `os`, `json`, `agents`
-
-- [ ] **Task 1.2:** Add file-level docstring
-  ```python
-  """
-  Polygon.io custom tools for OpenAI AI Agent.
-  Provides direct Polygon Python Library API access for market status and datetime.
-  """
-  ```
-
-- [ ] **Task 1.3:** Add required imports
-  ```python
-  import json
-  import os
-  from polygon import RESTClient
-  from agents import function_tool
-  ```
-
-### PHASE 2: Implement Helper Function
-
-- [ ] **Task 2.1:** Create `_get_polygon_client()` helper function
-  - Purpose: Lazy initialization of Polygon client
-  - Pattern: Same as `_get_finnhub_client()` from finnhub_tools.py
-  - API Key: Get from `os.getenv("POLYGON_API_KEY")`
-  - Return: `RESTClient` instance
-
-  ```python
-  def _get_polygon_client():
-      """Get Polygon client with API key from environment.
-
-      Lazy initialization ensures .env is loaded before accessing API key.
-      """
-      api_key = os.getenv("POLYGON_API_KEY")
-      return RESTClient(api_key=api_key)
-  ```
-
-### PHASE 3: Implement Main Tool Function
-
-- [ ] **Task 3.1:** Create `get_market_status_and_date_time()` function signature
-  - Decorator: `@function_tool`
-  - Function type: `async def`
-  - Parameters: None (no parameters needed - retrieves current status)
-  - Return type: `str` (JSON string)
-
-- [ ] **Task 3.2:** Write comprehensive docstring
-  - Style: Google-style docstring (per OPENAI_CUSTOM_TOOLS_REFERENCE.md)
-  - Include: Purpose, when to use, return format, examples
-  - Reference: Lines 368-390 from OPENAI_CUSTOM_TOOLS_REFERENCE.md
-
-  **Required sections:**
-  1. Summary: "Get current market status and datetime from Polygon.io API."
-  2. Usage context: "Use this tool when the user requests market status, trading hours, current date/time, or whether markets are open/closed."
-  3. Returns: JSON format specification
-  4. Note: Limitations and data source info
-  5. Examples: Query examples that trigger this tool
-
-- [ ] **Task 3.3:** Implement function body with error handling
-
-  **Error Handling Strategy (per reference docs):**
-  1. Try-except block wrapping API call
-  2. JSON error responses for all error cases
-  3. Specific error types: API failures, empty data, validation errors
-
-  **Implementation steps:**
-  - [ ] 3.3a: Initialize Polygon client using helper function
-  - [ ] 3.3b: Call `client.get_market_status()`
-  - [ ] 3.3c: Validate response is not None/empty
-  - [ ] 3.3d: Extract relevant fields from MarketStatus model
-  - [ ] 3.3e: Format response as JSON with clear structure
-  - [ ] 3.3f: Add try-except for exception handling
-  - [ ] 3.3g: Return structured JSON error messages on failure
-
-- [ ] **Task 3.4:** Design JSON response format
-
-  **Success Response:**
-  ```json
-  {
-      "market_status": "open" | "closed" | "extended-hours",
-      "after_hours": true | false,
-      "early_hours": true | false,
-      "exchanges": {
-          "nasdaq": "open" | "closed" | "extended-hours",
-          "nyse": "open" | "closed" | "extended-hours",
-          "otc": "open" | "closed" | "extended-hours"
-      },
-      "server_time": "2025-10-05T14:30:00Z",
-      "date": "2025-10-05",
-      "time": "14:30:00",
-      "source": "Polygon.io"
-  }
-  ```
-
-  **Error Response:**
-  ```json
-  {
-      "error": "error_type",
-      "message": "descriptive error message",
-      "source": "Polygon.io"
-  }
-  ```
-
-### PHASE 4: Integrate Tool into Agent
-
-- [ ] **Task 4.1:** Update `src/backend/services/agent_service.py`
-  - [ ] 4.1a: Add import statement
-    ```python
-    from ..tools.polygon_tools import get_market_status_and_date_time
-    ```
-
-  - [ ] 4.1b: Update `create_agent()` function - add tool to tools list
-    ```python
-    tools=[get_stock_quote, get_market_status_and_date_time],  # Added Polygon direct API tool
-    ```
-
-- [ ] **Task 4.2:** Update agent instructions in `get_enhanced_agent_instructions()`
-
-  **Changes Required:**
-  1. Update TOOLS section header to reflect new tool count (10 tools total)
-  2. Update CRITICAL TOOL SELECTION RULES header
-  3. **Replace RULE #4** - Change from MCP `get_market_status()` to custom `get_market_status_and_date_time()`
-
-  **OLD RULE #4:**
-  ```
-  RULE #4: MARKET STATUS = ALWAYS USE get_market_status()
-  - If the request asks about market open/closed status, hours, or trading sessions
-  - Examples: "Is market open?", "Market status", "Trading hours"
-  ```
-
-  **NEW RULE #4:**
-  ```
-  RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
-  - If the request asks about market open/closed status, hours, trading sessions, current date, or current time
-  - Examples: "Is market open?", "Market status", "Trading hours", "What's the date?", "Current time?"
-  - 📊 Uses Polygon.io Direct API for real-time market status and server datetime
-  - ✅ Returns: market status, exchange statuses, after_hours, early_hours, server_time with date and time
-  ```
-
-  - [ ] 4.2a: Update supported tools list from 9 to 10 tools
-  - [ ] 4.2b: Replace `get_market_status` with `get_market_status_and_date_time` in tools list
-  - [ ] 4.2c: Update RULE #4 with new tool name and capabilities
-  - [ ] 4.2d: Update decision tree examples if referencing market status
-  - [ ] 4.2e: Update "EXAMPLES OF CORRECT TOOL CALLS" section with new tool
-  - [ ] 4.2f: Add to "Tools Used" transparency examples
-
-### PHASE 5: Code Quality & Validation
-
-- [ ] **Task 5.1:** Run Pylint on new file
-  - Command: `pylint src/backend/tools/polygon_tools.py`
-  - Target: 10.00/10 score (matching finnhub_tools.py standard)
-  - Fix any linting issues identified
-
-- [ ] **Task 5.2:** Verify imports work
-  - Test import: `from src.backend.tools.polygon_tools import get_market_status_and_date_time`
-  - Ensure no circular dependencies
-  - Validate POLYGON_API_KEY environment variable is accessible
-
-- [ ] **Task 5.3:** Type checking validation
-  - Verify all type hints are correct
-  - Check return type matches docstring specification
-  - Ensure async/await usage is correct
-
-### PHASE 6: Testing & Verification
-
-- [ ] **Task 6.1:** Unit test the tool function directly
-  - Test with valid POLYGON_API_KEY
-  - Verify JSON response structure
-  - Test error handling (invalid API key, network failure)
-  - Validate datetime parsing from server_time field
-
-- [ ] **Task 6.2:** Integration test with agent
-  - Test queries: "Is the market open?", "What time is it?", "Market status?"
-  - Verify tool is called correctly by agent
-  - Check response includes all required fields
-  - Validate no errors in agent execution
-
-- [ ] **Task 6.3:** Compare with MCP tool behavior
-  - Test same queries with old MCP-based get_market_status
-  - Verify new tool provides equivalent or better data
-  - Check response format is AI-friendly
-
-### PHASE 7: Documentation Updates
-
-- [ ] **Task 7.1:** Update CLAUDE.md
-  - [ ] 7.1a: Update "Last Completed Task Summary" section
-  - [ ] 7.1b: Document the Polygon direct API migration milestone
-  - [ ] 7.1c: Update tool architecture description (10 tools: 7 MCP + 2 Finnhub + 1 Polygon direct)
-  - [ ] 7.1d: Add migration notes about transitioning from MCP to direct API calls
-
-- [ ] **Task 7.2:** Update README.md (if exists)
-  - Update feature descriptions to mention Polygon direct API usage
-  - Update environment variables section to ensure POLYGON_API_KEY is documented
-  - Update tool count and capabilities
-
-- [ ] **Task 7.3:** Add inline code comments
-  - Document why direct API call is used instead of MCP
-  - Explain datetime extraction from server_time field
-  - Note this is first step in migration strategy
-
-### PHASE 8: Environment Configuration
-
-- [ ] **Task 8.1:** Verify .env file has POLYGON_API_KEY
-  - Check `.env` file exists
-  - Confirm `POLYGON_API_KEY` variable is set
-  - Test API key is valid with test call
-
-- [ ] **Task 8.2:** Update .env.example (if exists)
-  - Add POLYGON_API_KEY with placeholder
-  - Add comments explaining Polygon direct API usage
-  - Document where to get API key
-
-### PHASE 9: Deployment Preparation
-
-- [ ] **Task 9.1:** Create migration notes
-  - Document what changed: MCP get_market_status → Direct API get_market_status_and_date_time
-  - Note impact: Additional datetime functionality
-  - List benefits: Faster response, combined data, migration proof-of-concept
-
-- [ ] **Task 9.2:** Update changelog
-  - Add entry for new Polygon direct API tool
-  - Note tool count change (9 → 10 tools)
-  - Document migration strategy milestone
-
-- [ ] **Task 9.3:** Pre-commit validation
-  - Run all linters (pylint, type-check if configured)
-  - Verify no breaking changes to existing tools
-  - Test full application startup
-  - Confirm both frontend and backend work correctly
-
----
-
-## 🔧 Technical Implementation Details
-
-### File Structure
-
-```
-src/backend/tools/
-├── __init__.py                    # May need updating to export new tool
-├── finnhub_tools.py              # Reference implementation (✅ existing)
-└── polygon_tools.py              # ⭐ NEW FILE TO CREATE
+### RSI Response Format
+```json
+{
+  "status": "success",
+  "indicator": "rsi",
+  "ticker": "SPY",
+  "values": [
+    {
+      "timestamp": "2025-10-05T00:00:00Z",
+      "value": 62.45  // 0-100 scale
+    },
+    ...
+  ],
+  "parameters": {
+    "timespan": "day",
+    "window": 14
+  },
+  "interpretation": {
+    "overbought_threshold": 70,
+    "oversold_threshold": 30
+  },
+  "count": 10,
+  "source": "Polygon.io"
+}
 ```
 
-### Dependencies
-
-**Required Python Packages:**
-- `polygon` (Polygon Python Library) - Should already be installed for MCP
-- `agents` (OpenAI Agents SDK v0.2.9) - Already installed
-- `os` (standard library)
-- `json` (standard library)
-
-**Environment Variables:**
-- `POLYGON_API_KEY` - Must be set in .env file
-
-### Integration Points
-
-**Files to Modify:**
-1. `src/backend/services/agent_service.py`
-   - Import: Add get_market_status_and_date_time
-   - create_agent(): Add to tools list
-   - get_enhanced_agent_instructions(): Update RULE #4 and tool counts
-
-**Files to Create:**
-1. `src/backend/tools/polygon_tools.py`
-   - New custom tool file with get_market_status_and_date_time function
-
-**Files to Review (No Changes Expected):**
-1. `src/backend/config.py` - API keys already configured
-2. `.env` - POLYGON_API_KEY should already exist
-
----
-
-## 📊 Expected Outcomes
-
-### Tool Capabilities
-
-**New Tool:** `get_market_status_and_date_time()`
-- **Purpose:** Get current market status AND date/time in single call
-- **Advantage:** Combines market status with server timestamp
-- **Use Cases:**
-  - "Is the market open?"
-  - "What time is it?"
-  - "Market status?"
-  - "What's today's date?"
-  - "Are markets open for trading?"
-
-### Migration Benefits
-
-1. **Proof of Concept:** First direct Polygon API tool (vs. MCP server tools)
-2. **Performance:** Direct API may be faster than MCP routing
-3. **Functionality:** Combined market status + datetime in one call
-4. **Scalability:** Establishes pattern for future direct API migrations
-
-### Tool Count Evolution
-
-- **Before:** 9 tools (8 Polygon MCP + 1 Finnhub custom)
-- **After:** 10 tools (7 Polygon MCP + 1 Finnhub custom + 1 Polygon direct + 1 removed MCP tool)
-- **Net Change:** +1 total tool, migrated 1 MCP tool to direct API
-
----
-
-## ⚠️ Important Notes
-
-### Critical Success Factors
-
-1. **No Code Implementation During Research Phase**
-   - ✅ This document is PLANNING ONLY
-   - ❌ No files created or modified yet
-   - ⏳ Awaiting approval before proceeding to implementation
-
-2. **Follow Established Patterns**
-   - Use finnhub_tools.py as reference template
-   - Follow OPENAI_CUSTOM_TOOLS_REFERENCE.md best practices
-   - Maintain 10.00/10 Pylint score standard
-
-3. **Error Handling**
-   - All errors must return JSON (never raise exceptions to agent)
-   - Provide descriptive error messages
-   - Include error type classification
-
-4. **Testing Requirements**
-   - Unit test the tool function directly
-   - Integration test with full agent
-   - Verify no regression in existing tools
-
-### Migration Strategy Context
-
-**Current State:**
-- 9 tools: 8 Polygon MCP + 1 Finnhub custom
-- All Polygon data flows through MCP server
-
-**Target State (This Task):**
-- 10 tools: 7 Polygon MCP + 1 Finnhub custom + 1 Polygon direct
-- Start migrating Polygon data to direct API calls
-
-**Future State (TBD):**
-- Fully migrate all Polygon tools to direct API
-- Deprecate Polygon MCP server dependency
-- Maintain only custom direct API tools
-
-### Risk Mitigation
-
-1. **API Key Validation:** Ensure POLYGON_API_KEY works before full implementation
-2. **Response Format:** Validate MarketStatus model fields match documentation
-3. **Backward Compatibility:** Ensure existing tools still work correctly
-4. **Agent Behavior:** Test that agent selects correct tool for queries
-
----
-
-## 📚 Reference Documentation
-
-### Research Sources
-
-1. **Polygon Python Library Documentation:**
-   - Source: `mcp__docs-polygon-python__*` tools
-   - Method: `client.get_market_status()`
-   - Endpoint: `/v1/marketstatus/now`
-   - Example: `examples/rest/stocks-market_status.py`
-
-2. **Previous Implementation:**
-   - File: `src/backend/tools/finnhub_tools.py` (commit c82b26e)
-   - Pattern: @function_tool with async, JSON returns, error handling
-   - Integration: `src/backend/services/agent_service.py`
-
-3. **OpenAI Custom Tools Reference:**
-   - File: `docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md`
-   - Guidelines: Tool creation, docstrings, error handling, best practices
-
-### Key Reference Code
-
-**Polygon Client Example:**
-```python
-from polygon import RESTClient
-
-client = RESTClient()  # Uses POLYGON_API_KEY env var
-result = client.get_market_status()
-print(result)
+### MACD Response Format
+```json
+{
+  "status": "success",
+  "indicator": "macd",
+  "ticker": "SPY",
+  "values": [
+    {
+      "timestamp": "2025-10-05T00:00:00Z",
+      "macd": 2.34,
+      "signal": 1.87,
+      "histogram": 0.47
+    },
+    ...
+  ],
+  "parameters": {
+    "timespan": "day",
+    "short_window": 12,
+    "long_window": 26,
+    "signal_window": 9
+  },
+  "count": 10,
+  "source": "Polygon.io"
+}
 ```
 
-**MarketStatus Model:**
-```python
-@modelclass
-class MarketStatus:
-    after_hours: Optional[bool] = None
-    currencies: Optional[MarketCurrencies] = None
-    early_hours: Optional[bool] = None
-    exchanges: Optional[MarketExchanges] = None
-    indicesGroups: Optional[MarketIndices] = None
-    market: Optional[str] = None
-    server_time: Optional[str] = None
+### Error Response Format (All Tools)
+```json
+{
+  "error": "API request failed",
+  "message": "Failed to retrieve SMA data from Polygon.io: [detailed error message]",
+  "source": "Polygon.io"
+}
 ```
+
+---
+
+## 📝 Implementation Notes
+
+### Important Considerations
+
+1. **Typo Correction**: The research request mentioned 'get_ta_rse' which should be 'get_ta_rsi' (Relative Strength Index)
+
+2. **Default Parameters**:
+   - SMA/EMA window: 50 (commonly used for long-term trends)
+   - RSI window: 14 (industry standard)
+   - MACD windows: 12/26/9 (standard MACD parameters)
+   - Timespan: "day" (daily aggregates)
+   - Limit: 10 (reasonable default for recent data)
+
+3. **Error Handling**: All tools must handle:
+   - Missing/invalid API responses
+   - Network errors
+   - Invalid ticker symbols
+   - Empty result sets
+   - Polygon API errors
+
+4. **Performance**: Expected average response time < 30s for EXCELLENT rating
+
+5. **Code Quality**: Maintain 10.00/10 Pylint score for both files
+
+6. **Testing**: All 11 tests must pass in persistent single session mode
+
+---
+
+## 🎯 Definition of Done
+
+Task is complete when ALL of the following are true:
+
+- [x] Research phase completed with Sequential-Thinking
+- [ ] All 4 TA indicator tools implemented in polygon_tools.py
+- [ ] All 4 tools properly integrated in agent_service.py
+- [ ] Agent instructions updated with RULE #8 and examples
+- [ ] Test suite expanded to 11 tests with 4 new TA test cases
+- [ ] Pylint score 10.00/10 for polygon_tools.py
+- [ ] Pylint score 10.00/10 for agent_service.py
+- [ ] All imports verified working
+- [ ] CLI test suite passing 11/11 tests
+- [ ] Average response time < 30s (EXCELLENT rating)
+- [ ] Session persistence validated (single session)
+- [ ] CLAUDE.md updated with comprehensive task summary
+- [ ] Serena tech_stack memory updated
+- [ ] Serena project_architecture memory updated
+- [ ] Git commit created with comprehensive message
+- [ ] Changes pushed to remote repository
+- [ ] All test reports generated and saved
+
+---
+
+## 📚 Reference Materials
+
+### Key Files
+- **Polygon Indicators Source**: `polygon/rest/indicators.py` (from Polygon Python Library)
+- **Previous Implementation**: Commit `68a058d` - get_market_status_and_date_time
+- **OpenAI Tools Reference**: `docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md`
+- **Test Script**: `test_7_prompts_persistent_session.sh`
+
+### Documentation Links
+- Polygon.io Indicators API: https://polygon.io/docs/stocks/get_v1_indicators_sma__stockticker
+- OpenAI Agents SDK: https://openai.github.io/openai-agents-python/tools/
+- Polygon Python Client: https://github.com/polygon-io/client-python
 
 ---
 
 ## 🚀 Ready to Implement
 
-### Prerequisites Checklist
+This plan is comprehensive and ready for implementation. All research is complete, patterns are established, and the path forward is clear.
 
-- [x] Research completed on Polygon API
-- [x] Reference implementation analyzed (Finnhub pattern)
-- [x] Custom tools best practices reviewed
-- [x] Response format designed
-- [x] Integration points identified
-- [x] Documentation plan created
-- [x] Implementation plan approved
+**Estimated Implementation Time**: 2-3 hours
+**Complexity**: Medium (following established pattern)
+**Risk Level**: Low (well-researched, clear implementation path)
 
-### Next Steps
-
-1. **Await Approval:** Get confirmation to proceed with implementation
-2. **Begin Phase 1:** Create polygon_tools.py file
-3. **Follow Checklist:** Complete all tasks in sequential order
-4. **Validate Each Phase:** Run linting and tests after each phase
-5. **Update Documentation:** Keep CLAUDE.md updated with progress
+🔴 **CRITICAL REMINDER**: This is a PLANNING document only. DO NOT START IMPLEMENTATION until user explicitly approves this plan and requests implementation to begin.
 
 ---
 
-**Status:** 📋 PLANNING COMPLETE - READY FOR IMPLEMENTATION
-**Estimated Effort:** 2-3 hours for full implementation and testing
-**Risk Level:** LOW - Following established patterns with proven API
+**Plan Created**: October 5, 2025
+**Status**: ✅ READY FOR APPROVAL

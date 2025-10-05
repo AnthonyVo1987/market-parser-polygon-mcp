@@ -6,7 +6,13 @@ from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..tools.finnhub_tools import get_stock_quote
-from ..tools.polygon_tools import get_market_status_and_date_time
+from ..tools.polygon_tools import (
+    get_market_status_and_date_time,
+    get_ta_ema,
+    get_ta_macd,
+    get_ta_rsi,
+    get_ta_sma,
+)
 from ..utils.datetime_utils import get_current_datetime_context
 
 
@@ -22,8 +28,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for market status/datetime, and Polygon.io MCP server for multi-ticker data and other financial information.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg] 🔴
+TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for market status/datetime/TA indicators, and Polygon.io MCP server for multi-ticker data and other financial information.
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 14 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -75,6 +81,20 @@ RULE #7: MARKET CLOSED = STILL PROVIDE DATA - NEVER REFUSE
 - ❌ NEVER ask user to retry or wait for market to open
 - Example: "What is NVDA price?" when market closed → Return last trade price with note it's from when market was open
 
+RULE #8: TECHNICAL ANALYSIS INDICATORS = USE get_ta_* tools
+- If the request asks for technical indicators, moving averages, RSI, MACD, or TA analysis
+- Examples: "SMA for SPY", "RSI NVDA", "MACD analysis", "50-day moving average", "overbought/oversold"
+- 📊 Uses Polygon.io Direct API for technical analysis indicator calculations
+- ✅ Available indicators:
+  * get_ta_sma(ticker, timespan='day', window=50, limit=10) - Simple Moving Average
+  * get_ta_ema(ticker, timespan='day', window=50, limit=10) - Exponential Moving Average
+  * get_ta_rsi(ticker, timespan='day', window=14, limit=10) - Relative Strength Index (0-100)
+  * get_ta_macd(ticker, timespan='day', short_window=12, long_window=26, signal_window=9, limit=10) - MACD
+- ✅ Returns: JSON with indicator values, timestamps, parameters used
+- 🔴 Common windows: SMA/EMA (20, 50, 200), RSI (14), MACD (12/26/9)
+- 🔴 RSI interpretation: >70 overbought, <30 oversold
+- 🔴 MACD signals: Crossovers indicate trend changes
+
 
 📋 DECISION TREE FOR STOCK QUOTES:
 
@@ -92,6 +112,10 @@ EXAMPLES OF CORRECT TOOL CALLS:
 ✅ "AAPL data" → get_stock_quote(ticker='AAPL')
 ✅ "SPY, QQQ, IWM" → get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks')
 ✅ "AAPL and MSFT prices" → get_snapshot_all(tickers=['AAPL','MSFT'], market_type='stocks')
+✅ "SMA for SPY" → get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10)
+✅ "20-day EMA NVDA" → get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10)
+✅ "RSI analysis SPY" → get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10)
+✅ "MACD for AAPL" → get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26, signal_window=9, limit=10)
 
 EXAMPLES OF INCORRECT TOOL CALLS:
 ❌ get_snapshot_all(tickers='SPY,QQQ,IWM') [WRONG format! Use list: ['SPY','QQQ','IWM']]
@@ -163,7 +187,11 @@ def create_agent(mcp_server: MCPServerStdio):
         tools=[
             get_stock_quote,
             get_market_status_and_date_time,
-        ],  # Finnhub + Polygon direct API tools
+            get_ta_sma,
+            get_ta_ema,
+            get_ta_rsi,
+            get_ta_macd,
+        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 5 Polygon)
         mcp_servers=[mcp_server],
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
