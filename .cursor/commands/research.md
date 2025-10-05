@@ -41,6 +41,8 @@ Type `/research` in Chat to execute the comprehensive research workflow for the 
 
 ## 📋 SYSTEMATIC RESEARCH WORKFLOW
 
+## 🚨 CRITICAL: FIRST, read 'new_research_details.md' to fetch the requested research topic details, then proceed with the SYSTEMATIC RESEARCH WORKFLOW 🚨
+
 ### **PHASE 1: RESEARCH PLANNING & ANALYSIS**
 
 1. **MANDATORY START: Sequential-Thinking** for systematic research planning and holistic approach
