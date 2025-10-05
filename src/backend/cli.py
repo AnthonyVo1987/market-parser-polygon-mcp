@@ -7,7 +7,7 @@ from agents import Runner, SQLiteSession
 
 from .api_models import ResponseMetadata
 from .config import settings
-from .services import create_agent, create_polygon_mcp_server
+from .services import create_agent
 from .utils import print_error, print_response
 from .utils.token_utils import extract_token_count_from_context_wrapper
 
@@ -21,11 +21,7 @@ async def cli_async():
         cli_session = SQLiteSession(settings.cli_session_name)
         print(f"📊 CLI session '{settings.cli_session_name}' initialized for conversation memory")
 
-        server = create_polygon_mcp_server()
-
-        # Initialize CLI MCP server
-        async with server:
-            await _run_cli_loop(server, cli_session)
+        await _run_cli_loop(cli_session)
 
     except Exception as e:
         print_error(e, "Startup Error")
@@ -40,7 +36,7 @@ async def cli_async():
             print(f"Warning: Cleanup failed: {cleanup_error}")
 
 
-async def _run_cli_loop(server, cli_session):
+async def _run_cli_loop(cli_session):
     """Run the main CLI input loop."""
     while True:
         try:
@@ -54,7 +50,7 @@ async def _run_cli_loop(server, cli_session):
                 continue
 
             # Process the user input
-            result = await _process_user_input(server, cli_session, user_input)
+            result = await _process_user_input(cli_session, user_input)
 
             # Display the response with full result object for metadata
             print_response(result)
@@ -70,14 +66,14 @@ async def _run_cli_loop(server, cli_session):
             print_error(e, "Unexpected Error")
 
 
-async def _process_user_input(server, cli_session, user_input):
+async def _process_user_input(cli_session, user_input):
     """Process a single user input and return the result."""
     try:
         # Start timing for performance metrics
         start_time = time.perf_counter()
 
         # Get or create agent using factory function
-        analysis_agent = create_agent(server)
+        analysis_agent = create_agent()
 
         # Run the financial analysis agent with the user message
         result = await Runner.run(analysis_agent, user_input, session=cli_session)

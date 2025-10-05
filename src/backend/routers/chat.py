@@ -11,8 +11,8 @@ from pydantic import BaseModel
 
 from ..api_models import ResponseMetadata
 from ..config import settings
-from ..dependencies import get_mcp_server, get_session
-from ..services import create_agent, create_polygon_mcp_server
+from ..dependencies import get_session
+from ..services import create_agent
 from ..utils.token_utils import extract_token_count_from_context_wrapper
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
@@ -38,7 +38,6 @@ class ChatResponse(BaseModel):
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     """Process a financial query and return the response using direct prompts."""
     # Get shared resources from dependency injection
-    shared_mcp_server = get_mcp_server()
     shared_session = get_session()
 
     request_id = str(uuid.uuid4())[:8]
@@ -75,14 +74,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         # Use shared instances instead of creating new ones
         # Call the AI model with the unified prompt system
         try:
-
-            # MCP server health check and error recovery
-            if shared_mcp_server is None:
-                shared_mcp_server = create_polygon_mcp_server()
-                await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
-
             # Get or create agent using factory function
-            analysis_agent = create_agent(shared_mcp_server)
+            analysis_agent = create_agent()
 
             # Run the financial analysis agent with the user message
             result = await Runner.run(analysis_agent, stripped_message, session=shared_session)

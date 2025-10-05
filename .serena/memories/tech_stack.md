@@ -1,525 +1,162 @@
-# Technology Stack
+# Tech Stack
 
-## Overview
+## Core Technologies
 
-Market Parser is built with a modern full-stack architecture combining Python backend services with a React TypeScript frontend, integrated with AI and financial data APIs.
+### Backend Framework
+- **FastAPI** (v0.115.5): Modern async web framework
+- **Python** (3.12.3): Programming language
+- **Uvicorn**: ASGI server for FastAPI
 
-## Backend Technology Stack
-
-### Core Framework
-- **FastAPI** (latest): Modern Python web framework
-  - Async/await support
-  - Automatic OpenAPI documentation
-  - Pydantic integration for validation
-  - High performance ASGI framework
-
-- **Uvicorn** (with [standard] extras): ASGI server
-  - Production-grade server
-  - Hot reload in development
-  - WebSocket support
-  - HTTP/2 support
-
-### AI & Agent Framework
-- **OpenAI Agents SDK v0.2.9**: Official OpenAI agent framework
-  - Agent-based workflow orchestration
-  - Tool calling capabilities
-  - Session management
-  - SQLite session persistence
-
-- **OpenAI API** (>=1.99.0, <1.100.0): OpenAI API client
-  - GPT-5-Nano model access (exclusive)
-  - Streaming support
-  - Function calling
-
-### MCP Integration
-- **openai-agents-mcp** (>=0.0.8): MCP server integration
-  - Polygon.io MCP server connection (6 tools remaining)
-  - Financial data tool access
-  - Agent tool orchestration
-  - **Migration in progress**: Transitioning to direct Polygon API calls (11 tools migrated)
+### AI/ML Integration
+- **OpenAI Agents SDK** (v0.2.9): Agent framework for GPT-5
+- **GPT-5-Nano**: AI model for financial analysis (ONLY model allowed - NO GPT-5-Mini)
+- **Reasoning effort**: Low (optimized for speed)
 
 ### Financial Data APIs
-- **Finnhub Python Library** (v2.4.25): Real-time stock quotes
-  - Custom tool: get_stock_quote
-  - Single ticker data
-  - Real-time price updates
 
-- **Polygon Python Library** (polygon-api-client v1.15.4): Market data
-  - Custom tools (11 total):
-    - get_market_status_and_date_time: Market status and datetime
-    - get_stock_quote_multi: Multi-ticker snapshot quotes ⭐ NEW
-    - get_options_quote_single: Single options contract quote ⭐ NEW
-    - get_OHLC_bars_custom_date_range: Custom date range OHLC bars ⭐ NEW
-    - get_OHLC_bars_specific_date: Specific date OHLC bars ⭐ NEW
-    - get_OHLC_bars_previous_close: Previous trading day OHLC ⭐ NEW
-    - get_ta_sma: Simple Moving Average indicator
-    - get_ta_ema: Exponential Moving Average indicator
-    - get_ta_rsi: Relative Strength Index indicator
-    - get_ta_macd: MACD indicator
-  - Direct API access (bypassing MCP)
-  - Technical analysis indicators
-  - OHLC bars and historical data
-  - Multi-ticker and options support
-  - Enhanced performance and control
+**Finnhub (1 tool):**
+- Single ticker quotes via `get_stock_quote`
 
-### Data Validation & Models
-- **Pydantic** (latest): Data validation library
-  - Request/response validation
-  - Type safety
-  - Serialization/deserialization
-  - Settings management
+**Polygon.io Direct API (11 tools):**
+1. `get_market_status_and_date_time` - Market status and datetime
+2. `get_stock_quote_multi` - Multi-ticker quotes
+3. `get_options_quote_single` - Options contracts with Greeks
+4. `get_OHLC_bars_custom_date_range` - Custom date range OHLC bars
+5. `get_OHLC_bars_specific_date` - Specific date OHLC bars
+6. `get_OHLC_bars_previous_close` - Previous trading day OHLC
+7. `get_ta_sma` - Simple Moving Average
+8. `get_ta_ema` - Exponential Moving Average
+9. `get_ta_rsi` - Relative Strength Index
+10. `get_ta_macd` - MACD Indicator
+11. (Additional tool if needed)
 
-### Utilities & Helpers
-- **Rich**: Terminal formatting and console output
-  - Pretty printing
-  - Progress bars
-  - Syntax highlighting
-  - Tables and panels
+**Total**: 12 tools (1 Finnhub + 11 Polygon Direct API)
 
-- **python-dotenv**: Environment variable management
-  - .env file loading
-  - Configuration management
+### Database
+- **SQLite**: Session storage via OpenAI Agents SDK
+- **Session management**: Conversation memory persistence
 
-- **aiofiles** (>=24.1.0): Async file I/O
-  - Non-blocking file operations
-  - Better performance for I/O-bound tasks
+### Frontend
+- **React** (18.2.0): UI framework
+- **TypeScript** (5.5.3): Type-safe JavaScript
+- **Vite** (5.2.13): Build tool and dev server
+- **TailwindCSS** (3.4.4): Utility-first CSS
 
-### Language Server
-- **python-lsp-server[all]** (>=1.13.1): Python LSP for IDE support
-  - Code completion
-  - Linting integration
-  - Type checking support
-
-### Development Tools (Python)
-
-**Linting & Formatting:**
-- **pylint** (>=3.0.0): Code linter
-  - Style enforcement
-  - Error detection
-  - Code quality metrics
-
-- **black** (>=23.12.0): Code formatter
-  - Opinionated formatting
-  - 100-character line length
-  - Consistent style
-
-- **isort** (>=5.13.0): Import sorting
-  - Black-compatible profile
-  - Automatic import organization
-
-**Type Checking:**
-- **mypy** (>=1.7.0): Static type checker
-  - Type hint validation
-  - Gradual typing support
-  - Error detection
-
-**Testing:**
-- **pytest** (>=7.4.0): Testing framework
-  - Unit testing
-  - Fixtures support
-  - Plugin ecosystem
-
-### Python Version Requirements
-- **Python**: >=3.10
-- **Package Manager**: uv (latest)
-  - Fast dependency resolution
-  - Lock file management
-  - Virtual environment management
-
-## Frontend Technology Stack
-
-### Core Framework
-- **React** (18.2.0): UI library
-  - Functional components
-  - Hooks API
-  - Concurrent features
-  - Performance optimizations
-
-- **React DOM** (18.2.0): React renderer
-  - DOM manipulation
-  - Event handling
-  - Server-side rendering support
-
-### Language & Type System
-- **TypeScript** (5.2.2): Type-safe JavaScript
-  - Static type checking
-  - Enhanced IDE support
-  - Better refactoring
-  - Compile-time error detection
-
-### Build Tooling
-- **Vite** (5.2.0): Next-generation build tool
-  - Lightning-fast HMR (Hot Module Replacement)
-  - Optimized production builds
-  - ES modules native support
-  - Plugin ecosystem
-
-- **@vitejs/plugin-react** (4.2.1): React plugin for Vite
-  - Fast Refresh support
-  - JSX transformation
-  - Development optimizations
-
-### UI & Rendering
-- **react-markdown** (9.0.0): Markdown rendering
-  - Safe markdown parsing
-  - Component-based rendering
-  - Extensible with plugins
-
-### Performance & Optimization
-- **react-scan** (0.4.3): Performance monitoring
-  - Component render tracking
-  - Performance bottleneck detection
-  - Development optimization insights
-
-- **use-debounce** (10.0.6): Input debouncing
-  - Optimized input handling
-  - Reduced re-renders
-  - Better UX for typing
-
-### Development Tools (Frontend)
-
-**Linting:**
-- **ESLint** (8.57.0): JavaScript/TypeScript linter
-  - Code quality enforcement
-  - Best practices
-  - Custom rules
-
-- **@typescript-eslint/eslint-plugin** (7.2.0): TypeScript-specific rules
-- **@typescript-eslint/parser** (7.2.0): TypeScript parser for ESLint
-- **eslint-plugin-react** (7.33.0): React-specific linting
-- **eslint-plugin-react-hooks** (4.6.0): Hooks linting
-- **eslint-plugin-react-refresh** (0.4.6): Fast Refresh validation
-- **eslint-plugin-import** (2.28.0): Import/export validation
-- **eslint-plugin-unused-imports** (3.0.0): Unused import detection
-
-**Formatting:**
-- **Prettier** (3.0.0): Code formatter
-  - Consistent code style
-  - Integration with ESLint
-  - Multi-language support
-
-- **eslint-config-prettier** (9.0.0): ESLint + Prettier integration
-
-**CSS Processing:**
-- **PostCSS** (8.5.6): CSS transformations
-  - Autoprefixing
-  - CSS optimization
-
-- **postcss-cli** (11.0.1): PostCSS command-line interface
-
-- **cssnano** (7.1.1): CSS minifier
-  - Production optimization
-  - Size reduction
-
-- **lightningcss** (1.30.1): Fast CSS processing
-  - High-performance transformations
-  - Modern CSS features
-
-### Build & Bundle Analysis
-- **rollup-plugin-visualizer** (5.14.0): Bundle visualization
-  - Bundle size analysis
-  - Dependency tracking
-
-- **source-map-explorer** (2.5.3): Source map analysis
-  - Code size breakdown
-  - Module analysis
-
-- **terser** (5.44.0): JavaScript minifier
-  - Production optimization
-  - Code compression
-
-### Progressive Web App (PWA)
-- **vite-plugin-pwa** (1.0.3): PWA support for Vite
-  - Service worker generation
-  - Offline functionality
-  - App manifest creation
+### Code Quality
+- **Pylint** (3.3.3): Python linting (10.00/10 score maintained)
+- **ESLint** (9.17.0): JavaScript/TypeScript linting
+- **Black** (24.10.0): Python code formatting
+- **isort** (5.13.2): Python import sorting
+- **Prettier** (3.4.2): JS/TS code formatting
+- **markdownlint-cli2**: Markdown linting
 
 ### Testing
-- **@playwright/test** (1.55.0): E2E testing framework
-  - Browser automation
-  - Cross-browser testing
-  - API testing
-  - Visual regression testing
+- **Custom test scripts**: Persistent session testing with 16 standardized prompts
+- **Performance metrics**: Response time tracking (target: <30s average)
+- **Health checks**: Backend `/health` endpoint validation
 
-### Performance Monitoring
-- **@lhci/cli** (0.15.0): Lighthouse CI
-  - Performance auditing
-  - Accessibility testing
-  - PWA validation
-  - SEO checks
+### Development Tools
+- **uv** (0.8.19): Python package manager
+- **npm** (11.6.0): Node.js package manager
+- **Node.js** (v24.6.0): JavaScript runtime
 
-### Debugging
-- **@welldone-software/why-did-you-render** (10.0.1): React re-render tracking
-  - Performance debugging
-  - Unnecessary re-render detection
+## Architecture Patterns
 
-### Development Workflow
-- **concurrently** (8.2.0): Run multiple commands
-  - Parallel script execution
-  - Backend + frontend simultaneously
+### Tool Architecture
+- **Direct API pattern**: All tools use direct Polygon Python Library calls
+- **@function_tool decorator**: Consistent tool definition pattern
+- **Comprehensive docstrings**: Detailed tool documentation
+- **Structured JSON responses**: Consistent response format
 
-- **npm-run-all** (4.1.5): Sequential/parallel npm scripts
-  - Complex workflow orchestration
+### Agent Configuration
+- **Model**: GPT-5-Nano only (NO GPT-5-Mini)
+- **Reasoning**: Low effort (optimized for speed)
+- **Verbosity**: Low (concise responses)
+- **Max tokens**: 128,000
+- **Service tier**: Flex
+- **Usage tracking**: Enabled via `include_usage=True`
 
-### Markdown Linting
-- **markdownlint-cli** (0.45.0): Markdown linter
-  - Documentation quality
-  - Consistent formatting
+### Session Management
+- **Persistent sessions**: CLI and web sessions stored separately
+- **SQLite backend**: Local session storage
+- **Automatic cleanup**: Session cleanup on exit
 
-### Node.js Version Requirements
-- **Node.js**: >=18.0.0
-- **npm**: >=9.0.0
+## Performance Metrics
 
-## External Services & APIs
-
-### AI Services
-- **OpenAI API**: GPT-5-Nano language model
-  - Natural language processing
-  - Financial analysis
-  - Chat completion
-  - Tool/function calling
-
-### Financial Data
-- **Polygon.io API**: Market data provider
-  - Real-time stock prices
-  - Historical data
-  - Market status
-  - Technical indicators (SMA, EMA, RSI, MACD)
-  - OHLC bars (custom range, specific date, previous close)
-  - Multi-ticker snapshots
-  - Options quotes
-  - **Access methods**:
-    - MCP server (6 tools): get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg (backward compatibility)
-    - Direct API (11 tools): get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-
-- **Finnhub API**: Real-time stock data
-  - Single ticker quotes
-  - Custom tool: get_stock_quote
-  - Real-time price updates
-
-### MCP (Model Context Protocol)
-- **Protocol Version**: Compatible with openai-agents-mcp >=0.0.8
-- **Purpose**: Tool integration for agents
-- **Features**:
-  - Polygon.io financial data access (6 MCP tools remaining)
-  - Extensible tool framework
-  - Session persistence
-- **Migration Status**: Transitioning to direct API calls (11 tools migrated, 6 MCP tools remain for backward compatibility)
-
-## Infrastructure & Deployment
-
-### Development Environment
-- **Operating System**: Linux (WSL2/Ubuntu)
-  - bash scripting support
-  - Standard Unix utilities
-
-### Package Managers
-- **Python**: uv (latest)
-  - Fast dependency resolution
-  - Lock file support
-  - Virtual environment management
-
-- **JavaScript**: npm (>=9.0.0)
-  - Package management
-  - Script execution
-  - Lock file (package-lock.json)
-
-### Version Control
-- **Git**: Standard version control
-  - Branching strategy
-  - Commit message conventions
-
-### Development Servers
-- **Backend**: Uvicorn with --reload
-  - Port: 8000
-  - Hot reload enabled
-
-- **Frontend**: Vite dev server
-  - Port: 3000
-  - HMR enabled
-  - Fast refresh
-
-### Production Serving
-- **Backend**: Uvicorn (without --reload)
-  - Production mode
-  - Single worker (scalable to multi-worker)
-
-- **Frontend**: Static file serving
-  - Pre-built dist/ folder
-  - Live Server or production web server
-  - Port 5500 (development testing)
-
-## Configuration Files
-
-### Python Configuration
-- **pyproject.toml**: Project metadata, dependencies, tool configs
-- **.pylintrc**: Pylint configuration
-- **.env**: Environment variables (not committed)
-  - OPENAI_API_KEY: OpenAI API access
-  - POLYGON_API_KEY: Polygon.io API access (MCP + direct)
-  - FINNHUB_API_KEY: Finnhub API access
-- **.env.example**: Environment variable template
-- **uv.lock**: Dependency lock file
-
-### JavaScript/TypeScript Configuration
-- **package.json**: Project metadata, scripts, dependencies
-- **package-lock.json**: Dependency lock file
-- **tsconfig.json**: TypeScript compiler options
-- **tsconfig.node.json**: Node-specific TypeScript config
-- **vite.config.ts**: Vite build configuration
-- **.eslintrc.cjs**: ESLint configuration
-- **.prettierrc.cjs**: Prettier configuration
-- **postcss.config.js**: PostCSS configuration
-
-### Build & Performance
-- **lighthouserc.js**: Lighthouse CI configuration
-- **lighthouserc.cjs**: Alternative Lighthouse config
-
-## Key Technology Decisions
-
-### Why FastAPI?
-- Modern async Python framework
-- Automatic API documentation
-- Built-in validation with Pydantic
-- High performance (comparable to Node.js)
-- Excellent type hint support
-
-### Why React 18.2?
-- Mature, stable version
-- Concurrent features
-- Extensive ecosystem
-- Strong TypeScript support
-- Component reusability
-
-### Why Vite?
-- Significantly faster than Webpack
-- Native ES modules
-- Lightning-fast HMR
-- Optimized production builds
-- Better developer experience
-
-### Why TypeScript?
-- Type safety reduces bugs
-- Better IDE support
-- Easier refactoring
-- Self-documenting code
-- Gradual adoption possible
-
-### Why OpenAI Agents SDK v0.2.9?
-- Official OpenAI framework
-- Simplified agent workflows
-- Built-in tool calling
-- Session management
-- MCP integration support
-
-### Why GPT-5-Nano Only?
-- Project policy decision
-- Cost optimization
-- Sufficient for use case
-- Consistent behavior
-- GPT-5-Mini removed as breaking change
-
-### Why uv for Python?
-- Significantly faster than pip
-- Better dependency resolution
-- Lock file support
-- Virtual environment management
-- Modern Python tooling
-
-### Why Migrate from MCP to Direct API?
-- **Performance**: Direct API calls eliminate MCP routing overhead
-- **Simplicity**: Fewer dependencies and infrastructure layers
-- **Control**: Full control over API interaction and error handling
-- **Flexibility**: Easier to customize response formats
-- **Validation**: 11 tools successfully migrated (get_market_status_and_date_time + 4 TA indicators + 5 OHLC/multi-ticker/options + get_stock_quote Finnhub)
-
-## Performance Characteristics
-
-### Backend Performance
-- **Response Time**: 11-31s for CLI queries (Excellent: <30s)
-- **Average**: 20-25s per query
-- **Variation**: Due to real API calls (Polygon.io, OpenAI, Finnhub)
-- **Health Check**: Sub-second response
-- **Optimization**: Async/await, shared resources, direct API calls
-
-### Frontend Performance
-- **First Contentful Paint**: ~256ms
-- **Core Web Vitals**: 85%+ improvement
-- **Memory Heap**: ~13.8MB optimized
-- **Bundle Size**: Monitored with Vite analyzer
+### Response Times (16-test suite average)
+- **Excellent**: <30s (target achieved: 5.30s avg)
+- **Good**: 30-45s
+- **Acceptable**: 45-90s
+- **Performance rating**: EXCELLENT (Oct 2025)
 
 ### Build Performance
-- **Frontend Build**: 3-6 seconds (production)
-- **Development HMR**: Instant (<100ms)
-- **Type Checking**: <5 seconds
+- **Production build**: ~3-6s
+- **Dev server startup**: <2s
+- **Hot reload**: <500ms
 
-## Tool Architecture
+## Configuration Management
 
-### Current Tool Distribution (18 total)
-1. **Finnhub Custom Tools (1)**:
-   - get_stock_quote
+### Environment Variables (.env)
+- `POLYGON_API_KEY`: Polygon.io API key
+- `OPENAI_API_KEY`: OpenAI API key
+- `DEFAULT_MODEL`: gpt-5-nano (ONLY allowed value)
 
-2. **Polygon Direct API Tools (11)**:
-   - get_market_status_and_date_time
-   - get_stock_quote_multi ⭐ NEW (replaces get_snapshot_all MCP)
-   - get_options_quote_single ⭐ NEW (replaces get_snapshot_option MCP)
-   - get_OHLC_bars_custom_date_range ⭐ NEW (replaces list_aggs MCP)
-   - get_OHLC_bars_specific_date ⭐ NEW (replaces get_daily_open_close_agg MCP)
-   - get_OHLC_bars_previous_close ⭐ NEW (replaces get_previous_close_agg MCP)
-   - get_ta_sma
-   - get_ta_ema
-   - get_ta_rsi
-   - get_ta_macd
+### Config Files
+- `app.config.json`: Non-sensitive application settings
+- `pyproject.toml`: Python project configuration
+- `package.json`: Node.js dependencies and scripts
+- `.eslintrc.cjs`: ESLint configuration
+- `.prettierrc`: Prettier configuration
 
-3. **Polygon MCP Tools (6)** (backward compatibility):
-   - get_snapshot_all
-   - get_snapshot_option
-   - list_aggs
-   - get_daily_open_close_agg
-   - get_previous_close_agg
+## Deployment
 
-4. **Removed Tools**:
-   - ~~get_aggs~~ (not relevant for analysis)
-   - ~~get_market_status~~ (replaced by get_market_status_and_date_time)
+### Ports
+- **Backend**: 8000 (FastAPI/Uvicorn)
+- **Frontend Dev**: 3000 (Vite)
+- **Frontend Prod**: 5500 (served via npm)
 
-### Migration Roadmap
-- **Completed**: 
-  - get_market_status → get_market_status_and_date_time
-  - 4 TA indicators (SMA, EMA, RSI, MACD) added
-  - 5 OHLC/multi-ticker/options tools migrated
-- **Current**: 11 direct API tools validated and operational
-- **Future**: 6 MCP tools remain for backward compatibility
+### Startup Scripts
+- `start-app.sh`: Main startup script (30s timeout, works in WSL2 and X11)
+- `start-app-xterm.sh`: XTerm variant (X11 environments)
 
-## Security Considerations
+### Health Checks
+- **Backend**: `GET /health` → `{"status": "healthy", "timestamp": "..."}`
+- **Frontend**: Served content verification
+- **Retry logic**: 10 attempts with 2s intervals
 
-### API Key Management
-- Environment variables only
-- Never committed to version control
-- .env file in .gitignore
-- Three API keys required:
-  - OPENAI_API_KEY (GPT-5-Nano)
-  - POLYGON_API_KEY (MCP + direct API)
-  - FINNHUB_API_KEY (stock quotes)
+## Migration History
 
-### Dependency Security
-- Regular dependency updates
-- Known vulnerability scanning (to be implemented)
-- Version pinning in lock files
+### Tool Evolution
+1. **Phase 1**: Initial 10 tools (7 Polygon MCP + 1 Finnhub + 2 Polygon Direct)
+2. **Phase 2**: Added TA indicators (10 → 14 tools)
+3. **Phase 3**: Migration to direct API (14 → 18 tools, 6 MCP + 12 Direct)
+4. **Phase 4**: MCP removal (18 → 12 tools, all Direct API) ⭐ CURRENT
 
-### CORS Configuration
-- Explicit origin allowlist
-- Credentials support controlled
-- Security headers configured
+### Breaking Changes
+- **Oct 5, 2025**: Removed Polygon MCP server and all MCP tools
+- All queries now use direct Polygon Python API
+- Agent creation simplified: no MCP server parameter
+- Performance improved: no MCP overhead
 
-## Accessibility Standards
+## Development Workflow
 
-- **WCAG 2.1 AA**: Full compliance target
-- **Semantic HTML**: Required
-- **ARIA labels**: Where necessary
-- **Keyboard navigation**: Supported
+### Code Quality Checklist
+1. **Linting**: `npm run lint` (Python 10/10, JS/TS 0 errors)
+2. **Type checking**: `npm run type-check`
+3. **Formatting**: `npm run format:check` or `npm run lint:fix`
+4. **Build**: `npm run build`
+5. **Testing**: `./test_16_prompts_persistent_session.sh` (16/16 PASS required)
 
-## Browser Support
+### Git Workflow
+- **Atomic commits**: All changes in single commit
+- **Descriptive messages**: Clear commit message with context
+- **Co-authoring**: Claude credited in commits
+- **Breaking changes**: Clearly marked in commit message
 
-- **Modern browsers**: Chrome, Firefox, Safari, Edge
-- **ES2020+**: Native support required
-- **PWA support**: Enabled for compatible browsers
+## Key Principles
+
+1. **GPT-5-Nano Only**: NO GPT-5-Mini allowed
+2. **Direct API**: All tools use Polygon Python Library directly (no MCP)
+3. **Code Quality**: 10.00/10 Pylint score mandatory
+4. **Testing Required**: 100% test pass rate before commit
+5. **Performance**: <30s average response time target

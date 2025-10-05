@@ -25,38 +25,31 @@ try:
     from .config import settings
     from .dependencies import set_shared_resources
     from .routers import chat_router, health_router, models_router, system_router
-    from .services import create_polygon_mcp_server
 except ImportError:
     # Fallback to absolute imports (when run directly)
     from backend.cli import cli_async
     from backend.config import settings
     from backend.dependencies import set_shared_resources
     from backend.routers import chat_router, health_router, models_router, system_router
-    from backend.services import create_polygon_mcp_server
 
 load_dotenv()
 
 # Global shared resources for FastAPI lifespan management
-shared_mcp_server = None
 shared_session = None
 
 
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
-    """FastAPI lifespan management for shared MCP server and session instances."""
-    global shared_mcp_server, shared_session
+    """FastAPI lifespan management for shared session instance."""
+    global shared_session
 
     # Startup: Create shared instances
     try:
         # Initialize session
         shared_session = SQLiteSession(settings.agent_session_name)
 
-        # Initialize MCP server
-        shared_mcp_server = create_polygon_mcp_server()
-        await shared_mcp_server.__aenter__()  # pylint: disable=unnecessary-dunder-call
-
         # Set shared resources for dependency injection
-        set_shared_resources(shared_mcp_server, shared_session)
+        set_shared_resources(shared_session)
 
         # Initialization complete
     except Exception as e:
@@ -66,16 +59,7 @@ async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
 
     yield
 
-    # Cleanup: Close shared instances
-    try:
-        # Shutting down MCP server
-        if shared_mcp_server:
-            await shared_mcp_server.__aexit__(None, None, None)
-
-        # Resources cleaned up
-    except Exception:
-        # Ignore cleanup errors during shutdown
-        pass  # This is intentional - we don't want to raise during shutdown
+    # Cleanup: Close shared instances (if needed in future)
 
 
 # FastAPI App Setup

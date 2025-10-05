@@ -1,7 +1,6 @@
 """Agent management for the Market Parser application."""
 
 from agents import Agent, ModelSettings
-from agents.mcp import MCPServerStdio
 from openai.types.shared import Reasoning
 
 from ..config import settings
@@ -33,10 +32,9 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for market status/datetime/TA indicators/OHLC bars/multi-ticker quotes/options, and Polygon.io MCP server for remaining financial data access.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 18 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg] 🔴
+TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/multi-ticker quotes/options).
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 12 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
-🔴 REMOVED TOOL: get_aggs - DO NOT USE THIS TOOL (not relevant for analysis) 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
 
@@ -55,7 +53,7 @@ RULE #2: MULTIPLE TICKERS = ALWAYS USE get_stock_quote_multi() WITH FALLBACK
 - ✅ ALWAYS use get_stock_quote_multi(tickers=['SYM1','SYM2',...], market_type='stocks') for multiple tickers
 - 🔴 MANDATORY: ALWAYS include market_type='stocks' parameter (default to stocks unless explicitly options)
 - 🔴 MANDATORY: ALWAYS use LIST format for tickers: ['SPY','QQQ'] NOT 'SPY,QQQ'
-- 📊 Uses Polygon.io Direct API (replaces get_snapshot_all MCP tool)
+- 📊 Uses Polygon.io Direct API
 - ✅ Returns: snapshot data for all tickers including day/min/prevDay prices
 - 🔴 FALLBACK: If get_stock_quote_multi returns "data unavailable", IMMEDIATELY call get_stock_quote for EACH ticker individually
 
@@ -63,7 +61,7 @@ RULE #3: OPTIONS = ALWAYS USE get_options_quote_single()
 - If the request mentions OPTIONS contracts → MUST USE get_options_quote_single(underlying_asset='TICKER', option_contract='O:...')
 - Examples: "SPY call option", "AAPL put snapshot", "Option Greeks for TSLA"
 - ❌ NEVER use get_stock_quote() for options
-- 📊 Uses Polygon.io Direct API (replaces get_snapshot_option MCP tool)
+- 📊 Uses Polygon.io Direct API
 - ✅ Returns: contract details, Greeks (delta/gamma/theta/vega), implied volatility, last quote/trade
 
 RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
@@ -160,9 +158,6 @@ EXAMPLES OF INCORRECT TOOL CALLS:
 ❌ get_stock_quote_multi(tickers=['GME']) for single ticker [WRONG! Use get_stock_quote]
 ❌ Refusing "NVDA price" because market closed [NEVER refuse! Use fallback sequence]
 ❌ Responding "AAPL: data unavailable" [WRONG! Use get_stock_quote fallback]
-❌ Using get_snapshot_all [REPLACED! Use get_stock_quote_multi for multi-ticker quotes]
-❌ Using get_snapshot_option [REPLACED! Use get_options_quote_single for options]
-❌ Using get_aggs [REMOVED! Not relevant for analysis]
 ❌ Using weekend dates without adjustment [WRONG! Adjust to previous business day]
 
 
@@ -216,11 +211,8 @@ def get_optimized_model_settings():
     )
 
 
-def create_agent(mcp_server: MCPServerStdio):
+def create_agent():
     """Create a financial analysis agent with optimized GPT-5 configuration.
-
-    Args:
-        mcp_server (MCPServerStdio): The MCP server instance to use
 
     Returns:
         Agent: The financial analysis agent with optimized settings
@@ -240,8 +232,7 @@ def create_agent(mcp_server: MCPServerStdio):
             get_ta_ema,
             get_ta_rsi,
             get_ta_macd,
-        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 10 Polygon)
-        mcp_servers=[mcp_server],
+        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

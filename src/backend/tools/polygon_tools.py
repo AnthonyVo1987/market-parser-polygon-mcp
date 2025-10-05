@@ -607,7 +607,7 @@ async def get_stock_quote_multi(tickers: list[str], market_type: str = "stocks")
     across multiple tickers.
 
     This tool provides real-time snapshot data for multiple tickers in a single
-    API call via Polygon.io direct API, replacing the MCP-based get_snapshot_all tool.
+    API call via Polygon.io direct API.
 
     Args:
         tickers: List of ticker symbols to get snapshots for (e.g., ["SPY", "QQQ", "IWM"])

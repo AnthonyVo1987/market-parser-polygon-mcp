@@ -23,8 +23,7 @@ VIOLATION PENALTIES:
 
 - If you use tools only once and stop, you're failing
 - If you follow a rigid order instead of using tools as needed, you're failing
-- If you don't use tools throughout the entire process, you're failing
-- If you use wrong tool for the operation (e.g., Standard for batch operations), you're failing
+- If you don't use tools throughout the entire process, you're failingplan
 
 SUCCESS CRITERIA:
 
@@ -38,10 +37,15 @@ SUCCESS CRITERIA:
 
 ---
 
-<Implementation Phase>
-Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
+<Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-- After implementation is complete, you MUST RUN CLI TESTING
+Based on the Research, Analysis & Scoping from previous task(s), delete the current file 'TODO_task_plan.md' and then create a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
+
+---
+
+<Implementation Phase>
+
+You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to Implement all code changes, test suite updates, and agent instruction modifications according to the TODO_task_plan.md
 
 ---
 

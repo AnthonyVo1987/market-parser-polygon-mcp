@@ -12,78 +12,41 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-mcp-to-direct-api-migration: Replace 5 MCP Tools with Polygon Python Library Direct API Custom Tools
+[CLEANUP] Complete removal of legacy Polygon MCP Tools and server infrastructure
 
-- Created 5 new custom tools to replace MCP tools: get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
-- Expanded from 14 to 18 total tools (6 Polygon MCP + 1 Finnhub + 11 Polygon direct)
-- Updated AI Agent instructions: RULE #2 (multi-ticker), RULE #3 (options), RULE #5 (OHLC bars)
-- Extended test suite from 11 to 16 tests (added 5 new test cases)
-- Removed get_aggs tool (not relevant for analysis)
-- All tools follow established @function_tool pattern with comprehensive docstrings
+- Removed 6 legacy Polygon MCP tools completely from codebase
+- Deleted MCP server infrastructure (mcp_service.py, dependency injection, lifecycle management)
+- Updated AI agent instructions to reference only 12 direct API tools (was 18)
+- Cleaned up all code, documentation, and Serena memories
+- Final tool count: 12 (1 Finnhub + 11 Polygon Direct API)
+- All 16/16 tests passing with direct API tools only
+- Pylint score: 10.00/10 for all modified files
 
-Implementation Details:
-✅ Created 5 custom tools in src/backend/tools/polygon_tools.py (738 lines added):
+Migration Complete - Tool Evolution:
+✅ **Phase 1** (Commit fe380fa): Migrated 6 MCP tools → 5 direct API tools
+✅ **Phase 2** (This commit): Removed all legacy MCP infrastructure and references
 
-1. **get_stock_quote_multi**: Multi-ticker snapshot quotes (replaces get_snapshot_all MCP)
-   - Uses client.get_snapshot_all(market_type, tickers)
-   - Supports stocks, options, forex, crypto market types
-   - Returns snapshot data for all tickers with day/min/prevDay prices
+Code Cleanup (8 files modified, 1 deleted):
+- ❌ Deleted: src/backend/services/mcp_service.py (entire file)
+- ✅ Updated: src/backend/services/__init__.py (removed MCP exports)
+- ✅ Updated: src/backend/services/agent_service.py (removed MCP parameter, updated instructions)
+- ✅ Updated: src/backend/dependencies.py (removed MCP server dependency injection)
+- ✅ Updated: src/backend/main.py (removed MCP server lifecycle)
+- ✅ Updated: src/backend/routers/chat.py (removed MCP server usage)
+- ✅ Updated: src/backend/cli.py (removed MCP server creation)
+- ✅ Updated: src/backend/__init__.py (removed MCP exports)
 
-2. **get_options_quote_single**: Single options contract quote (replaces get_snapshot_option MCP)
-   - Uses client.get_snapshot_option(underlying_asset, option_contract)
-   - Returns contract details, Greeks (delta/gamma/theta/vega), implied volatility
-   - Full options analysis support
+AI Agent Instructions Updated:
+- Tool count: 18 → 12 (removed 6 MCP tools)
+- Removed all references to: get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_aggs
+- Simplified instructions to focus on direct API tools only
+- Updated tool descriptions to remove "replaces MCP" language
 
-3. **get_OHLC_bars_custom_date_range**: Custom date range OHLC bars (replaces list_aggs MCP)
-   - Uses client.list_aggs(ticker, multiplier, timespan, from_, to, limit)
-   - Supports minute/hour/day/week/month/quarter/year timespans
-   - Flexible date range queries
+Final Tool Count: **12 tools total**
+- **1 Finnhub tool:** get_stock_quote
+- **11 Polygon Direct API tools:** get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
 
-4. **get_OHLC_bars_specific_date**: Specific date OHLC bars (replaces get_daily_open_close_agg MCP)
-   - Uses client.get_daily_open_close_agg(ticker, date, adjusted)
-   - Returns OHLC for exact trading day
-   - Handles splits/dividends with adjusted parameter
-
-5. **get_OHLC_bars_previous_close**: Previous trading day OHLC (replaces get_previous_close_agg MCP)
-   - Uses client.get_previous_close_agg(ticker, adjusted)
-   - Automatically handles weekends/holidays
-   - Returns most recent completed trading day
-
-✅ Updated agent_service.py imports and create_agent() with all 11 Polygon direct tools
-✅ Updated AI Agent instructions with new RULES and tool mappings
-✅ Created test_16_prompts_persistent_session.sh with 16 tests (5 new OHLC/multi-ticker/options)
-✅ All tools validated with Polygon Python Library direct API
-
-Tool Architecture Evolution:
-
-- **BEFORE:** 14 tools (7 Polygon MCP + 1 Finnhub + 6 Polygon direct)
-- **AFTER:** 18 tools (6 Polygon MCP + 1 Finnhub + 11 Polygon direct)
-- **NEW TOOLS:** get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
-- **REMOVED:** get_aggs (not relevant for analysis)
-
-Critical Rules Updated:
-🔴 RULE #1: Single ticker → get_stock_quote(ticker='SYMBOL') via Finnhub
-🔴 RULE #2: Multiple tickers → get_stock_quote_multi(tickers=['S1','S2'], market_type='stocks') via Polygon Direct API ⭐ UPDATED
-🔴 RULE #3: Options → get_options_quote_single(underlying_asset, option_contract) via Polygon Direct API ⭐ UPDATED
-🔴 RULE #4: Market status & date/time → get_market_status_and_date_time() via Polygon Direct API
-🔴 RULE #5: Historical OHLC → get_OHLC_bars_* tools via Polygon Direct API ⭐ NEW
-🔴 RULE #8: Technical Analysis Indicators → get_ta_sma/ema/rsi/macd via Polygon Direct API
-🔴 SUPPORTED TOOLS: Updated from 14 to 18 tools in agent instructions
-
-Test Suite Updates:
-
-- **Test 12:** "Multi-ticker quotes: AAPL, MSFT, GOOGL" - Multi-ticker snapshot
-- **Test 13:** "Options quote for SPY December 650 call" - Options contract quote
-- **Test 14:** "AAPL daily bars from January 1 to March 31, 2024" - Custom date range OHLC
-- **Test 15:** "TSLA price on December 15, 2024" - Specific date OHLC
-- **Test 16:** "SPY previous trading day close" - Previous close OHLC
-
-MCP Migration Progress:
-
-- **Migrated to Direct API (11 tools):** get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_stock_quote (Finnhub)
-- **Remaining MCP Tools (6):** get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg (still available via MCP for backward compatibility)
-
-ACHIEVEMENT: Successfully migrated 5 critical MCP tools to Polygon Python Library direct API, improving performance, simplicity, and control. Extended test suite to 16 tests covering all new OHLC bar, multi-ticker, and options functionality.
+BREAKING CHANGE: Removed Polygon MCP server and all MCP-based tools. All financial queries now use direct Polygon Python API with no MCP overhead.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion

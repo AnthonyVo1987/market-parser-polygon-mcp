@@ -22,7 +22,6 @@ try:
         FinanceOutput,
         app,
         cli_async,
-        create_polygon_mcp_server,
         print_error,
         print_guardrail_error,
         print_response,
@@ -69,7 +68,6 @@ __all__ = [
     # FastAPI app
     "app",
     # Core functions
-    "create_polygon_mcp_server",
     "cli_async",
     # Response utilities
     "print_response",
