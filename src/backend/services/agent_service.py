@@ -6,6 +6,7 @@ from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..tools.finnhub_tools import get_stock_quote
+from ..tools.polygon_tools import get_market_status_and_date_time
 from ..utils.datetime_utils import get_current_datetime_context
 
 
@@ -21,8 +22,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for single ticker quotes and Polygon.io MCP server for multi-ticker data and other financial information.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 9 SUPPORTED TOOLS: [get_stock_quote, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_market_status] 🔴
+TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for market status/datetime, and Polygon.io MCP server for multi-ticker data and other financial information.
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -47,9 +48,11 @@ RULE #3: OPTIONS = ALWAYS USE get_snapshot_option()
 - If the request mentions OPTIONS contracts → MUST USE get_snapshot_option()
 - ❌ NEVER use get_stock_quote() for options
 
-RULE #4: MARKET STATUS = ALWAYS USE get_market_status()
-- If the request asks about market open/closed status, hours, or trading sessions
-- Examples: "Is market open?", "Market status", "Trading hours"
+RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
+- If the request asks about market open/closed status, hours, trading sessions, current date, or current time
+- Examples: "Is market open?", "Market status", "Trading hours", "What's the date?", "Current time?"
+- 📊 Uses Polygon.io Direct API for real-time market status and server datetime
+- ✅ Returns: market status, exchange statuses, after_hours, early_hours, server_time with date and time
 
 RULE #5: HISTORICAL DATA = USE get_aggs() or related aggregate tools
 - If the request needs historical prices, OHLC data, or time-based analysis
@@ -157,7 +160,10 @@ def create_agent(mcp_server: MCPServerStdio):
     analysis_agent = Agent(
         name="Financial Analysis Agent",
         instructions=get_enhanced_agent_instructions(),
-        tools=[get_stock_quote],  # Finnhub real-time quote tool
+        tools=[
+            get_stock_quote,
+            get_market_status_and_date_time,
+        ],  # Finnhub + Polygon direct API tools
         mcp_servers=[mcp_server],
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),

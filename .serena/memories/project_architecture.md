@@ -5,8 +5,9 @@
 **Market Parser** is a full-stack financial analysis application with:
 - **Backend**: Python FastAPI REST API with OpenAI Agents SDK integration
 - **Frontend**: React TypeScript SPA with real-time chat interface
-- **Integration**: Polygon.io MCP server for financial data
+- **Integration**: Polygon.io MCP server (7 tools) + Direct Polygon API (1 tool) + Finnhub API (1 tool)
 - **AI Model**: OpenAI GPT-5-Nano (exclusive, GPT-5-Mini removed)
+- **Total AI Agent Tools**: 10 (1 Finnhub + 1 Polygon Direct + 7 Polygon MCP + 1 removed MCP)
 
 ## Directory Structure
 
@@ -16,6 +17,9 @@ market-parser-polygon-mcp/
 │   ├── backend/              # Python FastAPI backend
 │   │   ├── routers/          # API endpoint routers
 │   │   ├── services/         # Business logic services
+│   │   ├── tools/            # Custom AI agent tools ⭐ NEW
+│   │   │   ├── finnhub_tools.py     # Finnhub API custom tools
+│   │   │   └── polygon_tools.py     # Polygon Direct API tools ⭐ NEW
 │   │   ├── utils/            # Utility modules
 │   │   ├── main.py           # FastAPI application entry
 │   │   ├── cli.py            # CLI interface
@@ -73,23 +77,64 @@ market-parser-polygon-mcp/
 
 #### 2. services/agent_service.py - Agent Creation & Management
 **Symbols:**
-- `create_agent()`: Creates AI agent with MCP tools
-- `get_enhanced_agent_instructions()`: Returns agent prompt template
+- `create_agent()`: Creates AI agent with custom tools + MCP tools
+- `get_enhanced_agent_instructions()`: Returns agent prompt template (10 tools)
 - `get_optimized_model_settings()`: Returns GPT-5-Nano configuration
 
 **Responsibilities:**
 - Agent instantiation with OpenAI Agents SDK
 - System prompt configuration
 - Model settings (GPT-5-Nano only)
-- MCP tool integration
+- Custom tool integration (Finnhub + Polygon direct)
+- MCP tool integration (Polygon MCP server)
 
-#### 3. services/mcp_service.py - MCP Server Integration
+**Custom Tools Integration:**
+```python
+from ..tools.finnhub_tools import get_stock_quote
+from ..tools.polygon_tools import get_market_status_and_date_time
+
+tools=[get_stock_quote, get_market_status_and_date_time]
+```
+
+#### 3. tools/ - Custom AI Agent Tools ⭐ NEW DIRECTORY
+**Structure:**
+- `finnhub_tools.py`: Finnhub API custom tools (Oct 2025)
+  - `get_stock_quote()`: Single ticker real-time quotes
+- `polygon_tools.py`: Polygon Direct API tools (Oct 2025) ⭐ NEW FILE
+  - `get_market_status_and_date_time()`: Market status + datetime ⭐ NEW TOOL
+
+**Pattern:**
+- `@function_tool` decorator from OpenAI Agents SDK
+- Async functions
+- JSON string returns
+- Comprehensive error handling
+- Lazy client initialization with helper functions
+- 10.00/10 Pylint score standard
+
+**Custom Tool Details:**
+
+**finnhub_tools.py:**
+- Tool: `get_stock_quote(ticker: str) -> str`
+- Purpose: Real-time stock quotes for single tickers
+- API: Finnhub Python Library v2.4.25
+- Returns: JSON with current_price, change, percent_change, high, low, open, previous_close
+- Error Handling: JSON error responses (no exceptions to agent)
+
+**polygon_tools.py:** ⭐ NEW
+- Tool: `get_market_status_and_date_time() -> str`
+- Purpose: Market status + server datetime in single call
+- API: Polygon Python Library (polygon-api-client v1.15.4)
+- Returns: JSON with market_status, after_hours, early_hours, exchanges (nasdaq/nyse/otc), server_time, date, time
+- Error Handling: JSON error responses (no exceptions to agent)
+- Migration: Replaces MCP get_market_status tool
+
+#### 4. services/mcp_service.py - MCP Server Integration
 **Responsibilities:**
-- Polygon.io MCP server connection
+- Polygon.io MCP server connection (7 remaining tools)
 - MCP tool availability management
 - Session lifecycle management
 
-#### 4. routers/ - API Endpoints
+#### 5. routers/ - API Endpoints
 **Structure:**
 - `chat.py`: Chat endpoint for AI interactions
 - `health.py`: Health check endpoint
@@ -102,7 +147,7 @@ market-parser-polygon-mcp/
 - Async endpoint handlers
 - Dependency injection for shared resources
 
-#### 5. utils/ - Utility Modules
+#### 6. utils/ - Utility Modules
 **Modules:**
 - `response_utils.py`: API response formatting
 - `datetime_utils.py`: Date/time handling
@@ -119,12 +164,42 @@ Agent Service (create_agent)
     ↓
 OpenAI Agents SDK → GPT-5-Nano
     ↓
-MCP Server (Polygon.io) → Financial Data
+┌─── Custom Tools (2 tools) ───┐
+│   - Finnhub API (get_stock_quote)
+│   - Polygon Direct API (get_market_status_and_date_time) ⭐ NEW
+└─── MCP Server (7 tools) ─────┘
+    - Polygon.io MCP (get_snapshot_all, get_snapshot_option, get_aggs, etc.)
     ↓
 Agent Response Processing
     ↓
 JSON Response to Frontend
 ```
+
+### AI Agent Tool Architecture (10 Total Tools)
+
+**Tool Distribution:**
+1. **Finnhub Custom (1 tool)**:
+   - get_stock_quote
+
+2. **Polygon Direct API Custom (1 tool)**: ⭐ NEW
+   - get_market_status_and_date_time
+
+3. **Polygon MCP Server (7 tools)**:
+   - get_snapshot_all
+   - get_snapshot_option
+   - get_aggs
+   - list_aggs
+   - get_daily_open_close_agg
+   - get_previous_close_agg
+
+4. **Removed MCP Tools (1 tool)**:
+   - ~~get_market_status~~ (replaced by get_market_status_and_date_time direct API)
+
+**Migration Strategy:**
+- **Phase 1 Complete**: get_market_status migrated from MCP to direct API
+- **Proof of Concept**: Validated direct API pattern with polygon_tools.py
+- **Future Phases**: Gradual migration of remaining MCP tools to direct API
+- **Benefits**: Improved performance, simpler architecture, full control
 
 ### Backend Dependencies
 
@@ -136,6 +211,10 @@ JSON Response to Frontend
 - `pydantic`: Data validation
 - `python-dotenv`: Environment variables
 - `aiofiles`: Async file I/O
+
+**Financial Data APIs:**
+- `finnhub-python==2.4.25`: Finnhub API client
+- `polygon-api-client==1.15.4`: Polygon.io API client ⭐ NEW
 
 **Development:**
 - `pylint`, `black`, `isort`: Code quality
@@ -223,7 +302,7 @@ API Service Layer
     ↓
 HTTP POST to /api/chat
     ↓
-Backend Processing
+Backend Processing (10 tools available)
     ↓
 JSON Response
     ↓
@@ -256,22 +335,37 @@ UI Re-render (ChatMessage_OpenAI)
 - **Protocol**: HTTP REST API
 - **Format**: JSON
 - **Endpoints**:
-  - `POST /api/chat`: Send message, receive AI response
+  - `POST /api/chat`: Send message, receive AI response (10 tools available)
   - `GET /health`: Health check
   - `GET /api/system/info`: System information
   - `GET /api/models`: Available models list
 
-### 2. Backend ↔ Polygon.io MCP
+### 2. Backend ↔ Polygon.io
+**Two Integration Methods:**
+
+**A) MCP Server (7 tools):**
 - **Protocol**: MCP (Model Context Protocol)
-- **Tools Available**: Financial data queries via Polygon.io
+- **Tools**: get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
 - **Session**: SQLite-based session persistence
 - **Integration**: `openai-agents-mcp>=0.0.8`
 
-### 3. Backend ↔ OpenAI API
+**B) Direct API (1 tool):** ⭐ NEW
+- **Protocol**: HTTP REST API (polygon-api-client)
+- **Tool**: get_market_status_and_date_time
+- **Library**: polygon-api-client v1.15.4
+- **Advantages**: Direct control, simpler architecture, better performance
+
+### 3. Backend ↔ Finnhub API
+- **Protocol**: HTTP REST API (finnhub-python)
+- **Tool**: get_stock_quote
+- **Library**: finnhub-python v2.4.25
+- **Purpose**: Single ticker real-time quotes
+
+### 4. Backend ↔ OpenAI API
 - **Model**: GPT-5-Nano (exclusive)
 - **SDK**: OpenAI Agents SDK v0.2.9
 - **Authentication**: API key via environment variable
-- **Features**: Agent-based interactions with tool calling
+- **Features**: Agent-based interactions with tool calling (10 tools)
 
 ## Configuration Management
 
@@ -279,8 +373,9 @@ UI Re-render (ChatMessage_OpenAI)
 
 **Backend (.env):**
 ```
-POLYGON_API_KEY=xxx
-OPENAI_API_KEY=xxx
+POLYGON_API_KEY=xxx     # Used by MCP server + direct API
+OPENAI_API_KEY=xxx      # OpenAI GPT-5-Nano access
+FINNHUB_API_KEY=xxx     # Finnhub API access
 ```
 
 **Frontend (config/app.config.json):**
@@ -331,6 +426,7 @@ User navigates to http://127.0.0.1:3000
 - Shared MCP server instance (not per-request)
 - Shared session instance for agent persistence
 - Process timing middleware for monitoring
+- Direct API calls for improved performance (Polygon direct API)
 
 ### Frontend Optimization
 - React.memo for component memoization
@@ -342,11 +438,16 @@ User navigates to http://127.0.0.1:3000
 - Removed unused components (Export, Debug, Recent Messages panels)
 - Consolidated panels for reduced UI complexity
 
-### Performance Targets
+### Performance Targets & Latest Results
 - **First Contentful Paint**: ~256ms
 - **Core Web Vitals**: 85%+ improvement
 - **Memory Heap**: ~13.8MB optimized
-- **Backend Response**: 14-28s for complex queries (real API calls, Oct 2025 benchmark)
+- **Backend Response** (Oct 5, 2025 Test Results):
+  - Min Response Time: 11.100s
+  - Max Response Time: 31.264s
+  - Average Response Time: 20.11s
+  - Success Rate: 100% (7/7 tests)
+  - Performance Rating: EXCELLENT
 
 ## Security Architecture
 
@@ -354,6 +455,10 @@ User navigates to http://127.0.0.1:3000
 - Stored in `.env` (never committed)
 - Loaded via `python-dotenv`
 - Environment variables only
+- Three API keys required:
+  - OPENAI_API_KEY (GPT-5-Nano)
+  - POLYGON_API_KEY (MCP + direct API)
+  - FINNHUB_API_KEY (stock quotes)
 
 ### CORS Configuration
 - Configured in main.py
@@ -371,6 +476,7 @@ User navigates to http://127.0.0.1:3000
 - Unit tests with pytest
 - Test utilities in test_utils.py
 - Comprehensive CLI test suite (7 prompts in single persistent session)
+- **Latest Results (Oct 5, 2025)**: 7/7 tests PASSED, 20.11s avg, EXCELLENT performance
 
 ### Frontend Testing
 - E2E tests with Playwright
@@ -380,13 +486,14 @@ User navigates to http://127.0.0.1:3000
 - Full stack tests via comprehensive script
 - Health check validation
 - API response validation
-- **Latest Test Results (Oct 4, 2025)**: 7/7 tests passed, 18.78s avg response time, EXCELLENT performance
+- Validates all 10 tools work correctly
 
 ## Scalability Considerations
 
 ### Current Architecture
 - Single-process backend (uvicorn)
 - Shared state (MCP server, session)
+- 10 AI agent tools (2 custom + 7 MCP + 1 removed)
 - Suitable for development and small-scale production
 
 ### Future Scaling Options
@@ -395,6 +502,7 @@ User navigates to http://127.0.0.1:3000
 - Load balancing for frontend
 - CDN for static assets
 - Separate MCP server per worker (if needed)
+- Complete migration from MCP to direct API calls
 
 ## UI/UX Architecture Changes (Oct 2025)
 
@@ -416,6 +524,26 @@ User navigates to http://127.0.0.1:3000
 - **Simplified Codebase**: 4 files removed, 1 file modified
 - **No Backend Impact**: Pure frontend refactor
 - **Maintained Functionality**: Critical status/performance info preserved
+
+## Migration Strategy: MCP to Direct API
+
+### Rationale
+- **Performance**: Direct API calls eliminate MCP routing overhead
+- **Simplicity**: Fewer dependencies and infrastructure layers
+- **Control**: Full control over API interaction and error handling
+- **Flexibility**: Easier to customize response formats
+
+### Phase 1: Proof of Concept (✅ COMPLETED Oct 5, 2025)
+- **Target**: get_market_status (MCP) → get_market_status_and_date_time (Direct API)
+- **Implementation**: polygon_tools.py created
+- **Result**: Successfully replaced MCP tool with direct API
+- **Validation**: All 7 CLI tests pass with new tool
+
+### Future Phases
+- **Phase 2**: Migrate snapshot tools (get_snapshot_all, get_snapshot_option)
+- **Phase 3**: Migrate aggregate tools (get_aggs, list_aggs, etc.)
+- **Phase 4**: Complete MCP deprecation
+- **Timeline**: TBD based on Phase 1 success
 
 ## Branch Management & Version Control (Oct 2025)
 

@@ -208,7 +208,14 @@
       "Bash(for i in 6 7 8 9 10)",
       "mcp__docs-finnhub__fetch_finnhub_python_docs",
       "mcp__docs-finnhub__search_finnhub_python_docs",
-      "WebFetch(domain:finnhub.io)"
+      "WebFetch(domain:finnhub.io)",
+      "mcp__docs-polygon-python__search_client_python_docs",
+      "mcp__docs-polygon-python__search_client_python_code",
+      "mcp__docs-polygon-python__fetch_generic_url_content",
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.tools.polygon_tools import get_market_status_and_date_time; print(''✅ Import successful'')\")",
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.services.agent_service import create_agent; print(''✅ Agent service imports work correctly'')\")",
+      "Bash(npx markdownlint-cli2-fix:*)",
+      "Bash(npx markdownlint-cli2:*)"
     ],
     "deny": [],
     "ask": [],

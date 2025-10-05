@@ -38,19 +38,15 @@ SUCCESS CRITERIA:
 
 ---
 
-<Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
-Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research to provide scoping for EACH of following task(s) and\or requirements:
-
-- Create a new tool for our AI Agent called 'get_market_status_and_date_time' using the Polygon Python Library Function "client.get_market_status". Use docs-polygon tools to fetch Polygon Python documentation on how to use the library. You wil have to import the library in in order to call the proper endpoints
-- .env file has my Polygon API key 'POLYGON_API_KEY' to use with the new Polygon API
-- Update AI Agent Instructions to replace current tool 'get_market_status' to use the new custom tool 'get_market_status_and_date_time' to retrieve either current market status, date, and\or time
-- If needed, read docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md to guide on you on proper custom tool creation
-- If needed, review the last commit 'c82b26e78757c723af89b1080e00e31f56c58154' see previous implementation of a new custom tool
+<Implementation Phase>
+Implement the granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md'
 
 ---
 
-<Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
-
-Based on the Research, Analysis & Scoping from previous task(s), delete the current file 'TODO_task_plan.md' and then create a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' and completely for you to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info
+<CLI Testing Phase>
+- IF there were ANY CODE changes, you MUST VALIDATE THE CHANGES AND YOU MUST RUN 'test_7_prompts_persistent_session.sh' to perform testing of CLI version, fix any issues until you get all 7x test to pass with 7x different response times. Detect false failures test run\results and re-run if needed.  If ONLY doc changes, you may skip testing since no code needs to be tested
 
 ---
+
+<Serena Update Memories Phase>
+Use Serena Tools to update project memories to reflect all the new changes and new app architecture

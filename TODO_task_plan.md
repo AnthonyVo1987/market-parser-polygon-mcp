@@ -1,554 +1,487 @@
-# Implementation Plan: Swap get_snapshot_ticker with Finnhub get_stock_quote Custom Tool
+# Implementation Plan: Polygon Direct API Custom Tool - get_market_status_and_date_time
 
-**Task**: Replace Polygon.io get_snapshot_ticker with Finnhub get_stock_quote custom tool
-**Status**: Planning Phase - DO NOT IMPLEMENT YET - PENDING USER APPROVAL
-**Last Updated**: 2025-10-04 (Updated with user adjustments)
+**Task:** Create custom tool `get_market_status_and_date_time` using Polygon Python Library direct API calls
+
+**Research Phase:** ✅ COMPLETED
+**Implementation Phase:** 🔴 NOT STARTED - AWAITING APPROVAL
+**Status:** RESEARCH & PLANNING ONLY - NO CODE IMPLEMENTATION YET
 
 ---
 
-## 📋 RESEARCH & ANALYSIS SUMMARY
+## 📋 Research Summary
 
-### Finnhub API Research Findings
+### Polygon API Research Findings
 
-**Function Signature:**
-```python
-finnhub_client.quote(symbol: str) -> dict
-```
+**API Method:** `client.get_market_status()`
+- **Endpoint:** `/v1/marketstatus/now`
+- **Client Initialization:** `RESTClient()` with `POLYGON_API_KEY` environment variable
+- **Return Type:** `MarketStatus` model
 
-**Setup Required:**
-```python
-import finnhub
-finnhub_client = finnhub.Client(api_key="YOUR_API_KEY")
-```
-
-**API Response Format:**
+**MarketStatus Response Structure:**
 ```python
 {
-    "c": 178.50,     # Current price
-    "d": 2.30,       # Change
-    "dp": 1.31,      # Percent change
-    "h": 179.20,     # High price of the day
-    "l": 176.80,     # Low price of the day
-    "o": 177.00,     # Open price of the day
-    "pc": 176.20     # Previous close price
+    "after_hours": bool,           # Whether after-hours trading is active
+    "currencies": {                # Currency market status
+        "crypto": str,
+        "fx": str
+    },
+    "early_hours": bool,          # Whether pre-market trading is active
+    "exchanges": {                # Exchange status
+        "nasdaq": str,            # "open", "closed", "extended-hours"
+        "nyse": str,
+        "otc": str
+    },
+    "indicesGroups": {            # Indices status
+        "s_and_p": str,
+        "nasdaq": str,
+        "dow_jones": str,
+        # ... more indices
+    },
+    "market": str,                # Overall market status: "open", "closed", "extended-hours"
+    "server_time": str            # ISO timestamp from Polygon server
 }
 ```
 
-### Current Codebase Analysis
+### Previous Implementation Pattern (Finnhub Reference)
 
-**AI Agent Structure:**
-- Location: `src/backend/services/agent_service.py`
-- Instructions Function: `get_enhanced_agent_instructions()` (lines 10-127)
-- Agent Creation: `create_agent()` (lines 145-163)
-- Current Tools: 9 Polygon.io MCP tools
-- Custom Tools List: `tools=[]` (currently empty, line 157)
+**File Structure:**
+- Location: `src/backend/tools/finnhub_tools.py`
+- Pattern: @function_tool decorator with async function
+- Client initialization: Lazy initialization with helper function
+- Error handling: Try-except with JSON error responses
+- Integration: Added to agent via `tools=[get_stock_quote]` in `create_agent()`
 
-**Key Findings:**
-- ✅ `.env` has `FINNHUB_API_KEY` configured
-- ❌ No existing finnhub imports in codebase (brand new integration)
-- ✅ Agent uses custom tools via `tools=[]` parameter
-- ✅ Instructions follow strict rule-based format with examples
-
-**Current Tool Count:** 9 Polygon.io MCP tools
-**New Tool Count After Implementation:** 9 tools (8 MCP + 1 custom Finnhub)
-
-**🔄 TOOL SWAP STRATEGY:**
-- **REMOVE:** get_snapshot_ticker (Polygon.io MCP tool)
-- **ADD:** get_stock_quote (Finnhub custom tool)
-- **KEEP:** get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_market_status
-- **RESULT:** Single ticker queries use get_stock_quote; Multiple tickers use get_snapshot_all
+**Key Patterns:**
+1. Lazy client initialization with helper function
+2. Input validation before API calls
+3. Comprehensive error handling with descriptive messages
+4. JSON return format for structured data
+5. Detailed docstring following Google style
+6. Environment variable for API key
 
 ---
 
-## 🎯 IMPLEMENTATION PLAN - GRANULAR TASK CHECKLIST
+## ✅ Implementation Checklist
 
-### PHASE 1: DEPENDENCY SETUP
+### PHASE 1: Create Polygon Tools File
 
-**1.1 Install Finnhub Python Library**
-- [ ] Add `finnhub-python` to `pyproject.toml` dependencies
-- [ ] Run `uv sync` to install package
-- [ ] Verify installation with `uv pip list | grep finnhub`
+- [ ] **Task 1.1:** Create new file `src/backend/tools/polygon_tools.py`
+  - Location: `/home/anthony/Github/market-parser-polygon-mcp/src/backend/tools/polygon_tools.py`
+  - Template: Follow finnhub_tools.py structure
+  - Dependencies: `polygon`, `os`, `json`, `agents`
 
-**1.2 Verify Environment Configuration**
-- [x] Confirm `.env` has `FINNHUB_API_KEY` (already verified)
-- [ ] Load API key in config module if needed
+- [ ] **Task 1.2:** Add file-level docstring
+  ```python
+  """
+  Polygon.io custom tools for OpenAI AI Agent.
+  Provides direct Polygon Python Library API access for market status and datetime.
+  """
+  ```
 
----
+- [ ] **Task 1.3:** Add required imports
+  ```python
+  import json
+  import os
+  from polygon import RESTClient
+  from agents import function_tool
+  ```
 
-### PHASE 2: CREATE CUSTOM TOOL
+### PHASE 2: Implement Helper Function
 
-**2.1 Create New Tools Module**
-- [ ] Create directory: `src/backend/tools/` (if not exists)
-- [ ] Create file: `src/backend/tools/__init__.py`
-- [ ] Create file: `src/backend/tools/finnhub_tools.py`
+- [ ] **Task 2.1:** Create `_get_polygon_client()` helper function
+  - Purpose: Lazy initialization of Polygon client
+  - Pattern: Same as `_get_finnhub_client()` from finnhub_tools.py
+  - API Key: Get from `os.getenv("POLYGON_API_KEY")`
+  - Return: `RESTClient` instance
 
-**2.2 Implement get_stock_quote Tool**
+  ```python
+  def _get_polygon_client():
+      """Get Polygon client with API key from environment.
 
-File: `src/backend/tools/finnhub_tools.py`
+      Lazy initialization ensures .env is loaded before accessing API key.
+      """
+      api_key = os.getenv("POLYGON_API_KEY")
+      return RESTClient(api_key=api_key)
+  ```
 
-```python
-"""
-Finnhub custom tools for OpenAI AI Agent.
-Provides real-time stock quote data via Finnhub API.
-"""
+### PHASE 3: Implement Main Tool Function
 
-import os
-import json
-import finnhub
-from typing import Optional
-from agents import function_tool
+- [ ] **Task 3.1:** Create `get_market_status_and_date_time()` function signature
+  - Decorator: `@function_tool`
+  - Function type: `async def`
+  - Parameters: None (no parameters needed - retrieves current status)
+  - Return type: `str` (JSON string)
 
+- [ ] **Task 3.2:** Write comprehensive docstring
+  - Style: Google-style docstring (per OPENAI_CUSTOM_TOOLS_REFERENCE.md)
+  - Include: Purpose, when to use, return format, examples
+  - Reference: Lines 368-390 from OPENAI_CUSTOM_TOOLS_REFERENCE.md
 
-# Initialize Finnhub client with API key from environment
-FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
-finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
+  **Required sections:**
+  1. Summary: "Get current market status and datetime from Polygon.io API."
+  2. Usage context: "Use this tool when the user requests market status, trading hours, current date/time, or whether markets are open/closed."
+  3. Returns: JSON format specification
+  4. Note: Limitations and data source info
+  5. Examples: Query examples that trigger this tool
 
+- [ ] **Task 3.3:** Implement function body with error handling
 
-@function_tool
-async def get_stock_quote(ticker: str) -> str:
-    """Get real-time stock quote from Finnhub API.
+  **Error Handling Strategy (per reference docs):**
+  1. Try-except block wrapping API call
+  2. JSON error responses for all error cases
+  3. Specific error types: API failures, empty data, validation errors
 
-    Use this tool when the user requests a stock quote, current price,
-    or real-time market data for a single ticker symbol.
+  **Implementation steps:**
+  - [ ] 3.3a: Initialize Polygon client using helper function
+  - [ ] 3.3b: Call `client.get_market_status()`
+  - [ ] 3.3c: Validate response is not None/empty
+  - [ ] 3.3d: Extract relevant fields from MarketStatus model
+  - [ ] 3.3e: Format response as JSON with clear structure
+  - [ ] 3.3f: Add try-except for exception handling
+  - [ ] 3.3g: Return structured JSON error messages on failure
 
-    This tool provides alternative real-time price data via Finnhub API,
-    complementing the Polygon.io MCP tools.
+- [ ] **Task 3.4:** Design JSON response format
 
-    Args:
-        ticker: Stock ticker symbol (e.g., "AAPL", "TSLA", "NVDA").
-                Must be a valid ticker from major US exchanges.
+  **Success Response:**
+  ```json
+  {
+      "market_status": "open" | "closed" | "extended-hours",
+      "after_hours": true | false,
+      "early_hours": true | false,
+      "exchanges": {
+          "nasdaq": "open" | "closed" | "extended-hours",
+          "nyse": "open" | "closed" | "extended-hours",
+          "otc": "open" | "closed" | "extended-hours"
+      },
+      "server_time": "2025-10-05T14:30:00Z",
+      "date": "2025-10-05",
+      "time": "14:30:00",
+      "source": "Polygon.io"
+  }
+  ```
 
-    Returns:
-        JSON string containing quote data with format:
-        {
-            "ticker": "AAPL",
-            "current_price": 178.50,
-            "change": 2.30,
-            "percent_change": 1.31,
-            "high": 179.20,
-            "low": 176.80,
-            "open": 177.00,
-            "previous_close": 176.20,
-            "source": "Finnhub"
-        }
+  **Error Response:**
+  ```json
+  {
+      "error": "error_type",
+      "message": "descriptive error message",
+      "source": "Polygon.io"
+  }
+  ```
 
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
+### PHASE 4: Integrate Tool into Agent
 
-    Note:
-        - Supports major US stock exchanges (NYSE, NASDAQ, etc.)
-        - Data updates in real-time during market hours
-        - Returns last available price when market is closed
-        - Rate limits apply based on Finnhub API tier
+- [ ] **Task 4.1:** Update `src/backend/services/agent_service.py`
+  - [ ] 4.1a: Add import statement
+    ```python
+    from ..tools.polygon_tools import get_market_status_and_date_time
+    ```
 
-    Examples:
-        - "Get AAPL stock quote"
-        - "What's the current price of TSLA?"
-        - "NVDA quote"
-    """
-    try:
-        # Validate ticker input
-        if not ticker or not ticker.strip():
-            return json.dumps({
-                "error": "Invalid ticker",
-                "message": "Ticker symbol cannot be empty",
-                "ticker": ticker
-            })
+  - [ ] 4.1b: Update `create_agent()` function - add tool to tools list
+    ```python
+    tools=[get_stock_quote, get_market_status_and_date_time],  # Added Polygon direct API tool
+    ```
 
-        # Clean ticker (uppercase, strip whitespace)
-        ticker = ticker.strip().upper()
+- [ ] **Task 4.2:** Update agent instructions in `get_enhanced_agent_instructions()`
 
-        # Call Finnhub API
-        quote_data = finnhub_client.quote(ticker)
+  **Changes Required:**
+  1. Update TOOLS section header to reflect new tool count (10 tools total)
+  2. Update CRITICAL TOOL SELECTION RULES header
+  3. **Replace RULE #4** - Change from MCP `get_market_status()` to custom `get_market_status_and_date_time()`
 
-        # Check if API returned valid data
-        if not quote_data or quote_data.get('c') == 0:
-            return json.dumps({
-                "error": "No data",
-                "message": f"No quote data available for ticker: {ticker}. Verify ticker symbol is valid.",
-                "ticker": ticker
-            })
+  **OLD RULE #4:**
+  ```
+  RULE #4: MARKET STATUS = ALWAYS USE get_market_status()
+  - If the request asks about market open/closed status, hours, or trading sessions
+  - Examples: "Is market open?", "Market status", "Trading hours"
+  ```
 
-        # Format response
-        return json.dumps({
-            "ticker": ticker,
-            "current_price": round(quote_data.get('c', 0), 2),
-            "change": round(quote_data.get('d', 0), 2),
-            "percent_change": round(quote_data.get('dp', 0), 2),
-            "high": round(quote_data.get('h', 0), 2),
-            "low": round(quote_data.get('l', 0), 2),
-            "open": round(quote_data.get('o', 0), 2),
-            "previous_close": round(quote_data.get('pc', 0), 2),
-            "source": "Finnhub"
-        })
+  **NEW RULE #4:**
+  ```
+  RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
+  - If the request asks about market open/closed status, hours, trading sessions, current date, or current time
+  - Examples: "Is market open?", "Market status", "Trading hours", "What's the date?", "Current time?"
+  - 📊 Uses Polygon.io Direct API for real-time market status and server datetime
+  - ✅ Returns: market status, exchange statuses, after_hours, early_hours, server_time with date and time
+  ```
 
-    except Exception as e:
-        # Handle unexpected errors
-        return json.dumps({
-            "error": "API request failed",
-            "message": f"Failed to retrieve quote for {ticker}: {str(e)}",
-            "ticker": ticker
-        })
-```
+  - [ ] 4.2a: Update supported tools list from 9 to 10 tools
+  - [ ] 4.2b: Replace `get_market_status` with `get_market_status_and_date_time` in tools list
+  - [ ] 4.2c: Update RULE #4 with new tool name and capabilities
+  - [ ] 4.2d: Update decision tree examples if referencing market status
+  - [ ] 4.2e: Update "EXAMPLES OF CORRECT TOOL CALLS" section with new tool
+  - [ ] 4.2f: Add to "Tools Used" transparency examples
 
-**Implementation Checklist:**
-- [ ] Create `src/backend/tools/__init__.py`
-- [ ] Create `src/backend/tools/finnhub_tools.py`
-- [ ] Implement `get_stock_quote()` function with @function_tool decorator
-- [ ] Add comprehensive docstring following Google style
-- [ ] Implement error handling with JSON returns
-- [ ] Add input validation (empty ticker check)
-- [ ] Format all numeric values to 2 decimal places
-- [ ] Include source field in response
+### PHASE 5: Code Quality & Validation
 
----
+- [ ] **Task 5.1:** Run Pylint on new file
+  - Command: `pylint src/backend/tools/polygon_tools.py`
+  - Target: 10.00/10 score (matching finnhub_tools.py standard)
+  - Fix any linting issues identified
 
-### PHASE 3: INTEGRATE TOOL INTO AGENT
+- [ ] **Task 5.2:** Verify imports work
+  - Test import: `from src.backend.tools.polygon_tools import get_market_status_and_date_time`
+  - Ensure no circular dependencies
+  - Validate POLYGON_API_KEY environment variable is accessible
 
-**3.1 Update Agent Service Imports**
+- [ ] **Task 5.3:** Type checking validation
+  - Verify all type hints are correct
+  - Check return type matches docstring specification
+  - Ensure async/await usage is correct
 
-File: `src/backend/services/agent_service.py`
+### PHASE 6: Testing & Verification
 
-- [ ] Add import at top of file:
-```python
-from ..tools.finnhub_tools import get_stock_quote
-```
+- [ ] **Task 6.1:** Unit test the tool function directly
+  - Test with valid POLYGON_API_KEY
+  - Verify JSON response structure
+  - Test error handling (invalid API key, network failure)
+  - Validate datetime parsing from server_time field
 
-**3.2 Update create_agent() Function**
+- [ ] **Task 6.2:** Integration test with agent
+  - Test queries: "Is the market open?", "What time is it?", "Market status?"
+  - Verify tool is called correctly by agent
+  - Check response includes all required fields
+  - Validate no errors in agent execution
 
-Location: `src/backend/services/agent_service.py` line 157
+- [ ] **Task 6.3:** Compare with MCP tool behavior
+  - Test same queries with old MCP-based get_market_status
+  - Verify new tool provides equivalent or better data
+  - Check response format is AI-friendly
 
-- [ ] Change `tools=[]` to `tools=[get_stock_quote]`
+### PHASE 7: Documentation Updates
 
-Before:
-```python
-tools=[],  # Removed save_analysis_report
-```
+- [ ] **Task 7.1:** Update CLAUDE.md
+  - [ ] 7.1a: Update "Last Completed Task Summary" section
+  - [ ] 7.1b: Document the Polygon direct API migration milestone
+  - [ ] 7.1c: Update tool architecture description (10 tools: 7 MCP + 2 Finnhub + 1 Polygon direct)
+  - [ ] 7.1d: Add migration notes about transitioning from MCP to direct API calls
 
-After:
-```python
-tools=[get_stock_quote],  # Finnhub real-time quote tool
-```
+- [ ] **Task 7.2:** Update README.md (if exists)
+  - Update feature descriptions to mention Polygon direct API usage
+  - Update environment variables section to ensure POLYGON_API_KEY is documented
+  - Update tool count and capabilities
 
----
+- [ ] **Task 7.3:** Add inline code comments
+  - Document why direct API call is used instead of MCP
+  - Explain datetime extraction from server_time field
+  - Note this is first step in migration strategy
 
-### PHASE 4: UPDATE AI AGENT INSTRUCTIONS
+### PHASE 8: Environment Configuration
 
-**4.1 Update Supported Tools List**
+- [ ] **Task 8.1:** Verify .env file has POLYGON_API_KEY
+  - Check `.env` file exists
+  - Confirm `POLYGON_API_KEY` variable is set
+  - Test API key is valid with test call
 
-Location: `src/backend/services/agent_service.py` line 23-24
+- [ ] **Task 8.2:** Update .env.example (if exists)
+  - Add POLYGON_API_KEY with placeholder
+  - Add comments explaining Polygon direct API usage
+  - Document where to get API key
 
-- [ ] REMOVE get_snapshot_ticker from supported tools list
-- [ ] ADD get_stock_quote to supported tools list
-- [ ] Keep tool count at 9
+### PHASE 9: Deployment Preparation
 
-Before:
-```python
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 9 SUPPORTED TOOLS: [get_snapshot_ticker, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_market_status] 🔴
-```
+- [ ] **Task 9.1:** Create migration notes
+  - Document what changed: MCP get_market_status → Direct API get_market_status_and_date_time
+  - Note impact: Additional datetime functionality
+  - List benefits: Faster response, combined data, migration proof-of-concept
 
-After:
-```python
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 9 SUPPORTED TOOLS: [get_stock_quote, get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_market_status] 🔴
-```
+- [ ] **Task 9.2:** Update changelog
+  - Add entry for new Polygon direct API tool
+  - Note tool count change (9 → 10 tools)
+  - Document migration strategy milestone
 
-**4.2 Replace RULE #1 - Single Ticker Logic**
-
-Location: `src/backend/services/agent_service.py` RULE #1 (~line 28-35)
-
-- [ ] REPLACE get_snapshot_ticker references with get_stock_quote
-- [ ] Update rule to use Finnhub instead of Polygon.io
-- [ ] REMOVE market_type parameter (not needed for Finnhub)
-
-Before:
-```python
-RULE #1: SINGLE TICKER = ALWAYS USE get_snapshot_ticker()
-- If the request mentions ONLY ONE ticker symbol → MUST USE get_snapshot_ticker(ticker='SYMBOL', market_type='stocks')
-- Examples: "NVDA price", "GME closing price", "TSLA snapshot", "AAPL data"
-- ❌ NEVER use get_snapshot_all() for a single ticker
-- ✅ ALWAYS use get_snapshot_ticker(ticker='SYMBOL', market_type='stocks') for one ticker
-- 🔴 MANDATORY: ALWAYS include market_type='stocks' parameter (default to stocks unless explicitly options)
-```
-
-After:
-```python
-RULE #1: SINGLE TICKER = ALWAYS USE get_stock_quote()
-- If the request mentions ONLY ONE ticker symbol → MUST USE get_stock_quote(ticker='SYMBOL')
-- Examples: "NVDA price", "GME closing price", "TSLA snapshot", "AAPL data"
-- ❌ NEVER use get_snapshot_all() for a single ticker
-- ✅ ALWAYS use get_stock_quote(ticker='SYMBOL') for one ticker
-- 📊 Uses Finnhub API for real-time quote data
-- ✅ Returns: current price, change, percent change, high, low, open, previous close
-```
-
-**4.3 Update Tool Examples Section**
-
-Location: `src/backend/services/agent_service.py` (~line 100)
-
-- [ ] REPLACE all get_snapshot_ticker examples with get_stock_quote
-- [ ] REMOVE market_type parameter from single ticker examples
-- [ ] Keep get_snapshot_all examples unchanged
-
-Before:
-```python
-EXAMPLES OF CORRECT TOOL CALLS:
-✅ "NVDA price" → get_snapshot_ticker(ticker='NVDA', market_type='stocks')
-✅ "GME closing price" → get_snapshot_ticker(ticker='GME', market_type='stocks')
-✅ "TSLA snapshot" → get_snapshot_ticker(ticker='TSLA', market_type='stocks')
-✅ "SPY, QQQ, IWM" → get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks')
-✅ "AAPL and MSFT prices" → get_snapshot_all(tickers=['AAPL','MSFT'], market_type='stocks')
-
-EXAMPLES OF INCORRECT TOOL CALLS:
-❌ get_snapshot_ticker(ticker='NVDA') [MISSING market_type!]
-❌ get_snapshot_all(tickers='SPY,QQQ,IWM') [WRONG format! Use list: ['SPY','QQQ','IWM']]
-❌ get_snapshot_all(tickers=['GME']) for single ticker [WRONG! Use get_snapshot_ticker]
-❌ Refusing "NVDA price" because market closed [NEVER refuse! Return last price]
-```
-
-After:
-```python
-EXAMPLES OF CORRECT TOOL CALLS:
-✅ "NVDA price" → get_stock_quote(ticker='NVDA')
-✅ "GME closing price" → get_stock_quote(ticker='GME')
-✅ "TSLA snapshot" → get_stock_quote(ticker='TSLA')
-✅ "AAPL data" → get_stock_quote(ticker='AAPL')
-✅ "SPY, QQQ, IWM" → get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks')
-✅ "AAPL and MSFT prices" → get_snapshot_all(tickers=['AAPL','MSFT'], market_type='stocks')
-
-EXAMPLES OF INCORRECT TOOL CALLS:
-❌ get_snapshot_all(tickers='SPY,QQQ,IWM') [WRONG format! Use list: ['SPY','QQQ','IWM']]
-❌ get_snapshot_all(tickers=['GME']) for single ticker [WRONG! Use get_stock_quote]
-❌ Refusing "NVDA price" because market closed [NEVER refuse! Return last price]
-❌ Using get_snapshot_ticker [REMOVED! Use get_stock_quote for single tickers]
-```
-
-**4.4 Update Decision Tree**
-
-Location: `src/backend/services/agent_service.py` (~line 95)
-
-- [ ] Update decision tree to use get_stock_quote instead of get_snapshot_ticker
-- [ ] Remove market_type parameter from single ticker decision
-
-Before:
-```python
-📋 DECISION TREE FOR STOCK SNAPSHOTS:
-
-Step 1: Count how many ticker symbols in the request
-Step 2:
-   - If count = 1 ticker → USE get_snapshot_ticker(ticker='SYMBOL', market_type='stocks')
-   - If count ≥ 2 tickers → USE get_snapshot_all(tickers=['SYM1','SYM2',...], market_type='stocks')
-Step 3: ALWAYS include market_type='stocks' (unless request explicitly mentions options)
-Step 4: For get_snapshot_all(), ALWAYS use LIST format: ['SPY','QQQ'] NOT 'SPY,QQQ'
-```
-
-After:
-```python
-📋 DECISION TREE FOR STOCK QUOTES:
-
-Step 1: Count how many ticker symbols in the request
-Step 2:
-   - If count = 1 ticker → USE get_stock_quote(ticker='SYMBOL')
-   - If count ≥ 2 tickers → USE get_snapshot_all(tickers=['SYM1','SYM2',...], market_type='stocks')
-Step 3: For get_snapshot_all(), ALWAYS include market_type='stocks' (unless request explicitly mentions options)
-Step 4: For get_snapshot_all(), ALWAYS use LIST format: ['SPY','QQQ'] NOT 'SPY,QQQ'
-```
+- [ ] **Task 9.3:** Pre-commit validation
+  - Run all linters (pylint, type-check if configured)
+  - Verify no breaking changes to existing tools
+  - Test full application startup
+  - Confirm both frontend and backend work correctly
 
 ---
 
-### PHASE 5: TESTING & VALIDATION
+## 🔧 Technical Implementation Details
 
-**5.1 Unit Testing**
-- [ ] Create test file: `tests/test_finnhub_tools.py`
-- [ ] Test valid ticker: `get_stock_quote("AAPL")`
-- [ ] Test invalid ticker: `get_stock_quote("INVALID_XYZ")`
-- [ ] Test empty ticker: `get_stock_quote("")`
-- [ ] Test API error handling
-- [ ] Verify JSON response format
-- [ ] Verify all numeric fields round to 2 decimals
+### File Structure
 
-**5.2 Integration Testing**
-- [ ] Test tool integration with agent
-- [ ] Verify get_snapshot_ticker is NOT in supported tools list
-- [ ] Verify get_stock_quote IS in supported tools list
-- [ ] Test agent can call get_stock_quote successfully
-- [ ] Test single ticker query: "Get AAPL stock quote" → should use get_stock_quote
-- [ ] Test single ticker query: "What's NVDA price?" → should use get_stock_quote
-- [ ] Test multi ticker query: "SPY, QQQ, IWM prices" → should use get_snapshot_all
-- [ ] Verify agent NEVER calls get_snapshot_ticker (removed from tools)
-- [ ] Verify "Tools Used" section includes get_stock_quote for single ticker queries
+```
+src/backend/tools/
+├── __init__.py                    # May need updating to export new tool
+├── finnhub_tools.py              # Reference implementation (✅ existing)
+└── polygon_tools.py              # ⭐ NEW FILE TO CREATE
+```
 
-**5.3 Manual Testing**
-- [ ] Start backend server
-- [ ] Test single ticker via CLI: "What's NVDA price?" → should use get_stock_quote
-- [ ] Test single ticker via React UI: "Get AAPL stock quote" → should use get_stock_quote
-- [ ] Test multi ticker via CLI: "SPY and QQQ prices" → should use get_snapshot_all
-- [ ] Verify single ticker response includes all Finnhub fields (current_price, change, percent_change, etc.)
-- [ ] Verify agent NEVER attempts to call get_snapshot_ticker
-- [ ] Test during market hours
-- [ ] Test after market close
+### Dependencies
 
----
-
-### PHASE 6: DOCUMENTATION UPDATES
-
-**6.1 Update CLAUDE.md**
-- [ ] Update Last Completed Task Summary with tool swap details
-- [ ] Document Finnhub integration (replaced Polygon.io get_snapshot_ticker)
-- [ ] Note tool count remains at 9 (swap, not addition)
-- [ ] Document single ticker now uses Finnhub instead of Polygon.io
-
-**6.2 Update README (if exists)**
-- [ ] Document Finnhub API requirement
-- [ ] Add FINNHUB_API_KEY to environment variables section
-- [ ] Update features list
-
-**6.3 Create Serena Memory**
-- [ ] Create memory file: `finnhub_tool_swap_oct_2025.md`
-- [ ] Document get_snapshot_ticker → get_stock_quote swap
-- [ ] Include tool usage examples and comparison
-- [ ] Note integration points and why swap was made
-- [ ] Document that single ticker queries now use Finnhub, multi ticker still uses Polygon.io
-
----
-
-### PHASE 7: VALIDATION & CLEANUP
-
-**7.1 Code Quality Checks**
-- [ ] Run `npm run lint` to check TypeScript/JavaScript
-- [ ] Run `uv run pylint src/backend/tools/finnhub_tools.py` for Python linting
-- [ ] Run `npm run type-check` for TypeScript validation
-- [ ] Fix any linting errors
-
-**7.2 Final Verification**
-- [ ] Confirm tool count: 9 (8 MCP + 1 custom Finnhub)
-- [ ] Verify get_snapshot_ticker is completely removed from instructions
-- [ ] Verify get_stock_quote is in supported tools list
-- [ ] Verify imports work correctly
-- [ ] Verify FINNHUB_API_KEY loads from .env
-- [ ] Test agent creation without errors
-- [ ] Verify all instructions updated correctly (RULE #1, examples, decision tree)
-
-**7.3 Cleanup**
-- [ ] Remove any debug print statements
-- [ ] Remove any commented-out code
-- [ ] Ensure consistent code formatting
-- [ ] Update any outdated comments
-
----
-
-## 📊 IMPLEMENTATION SUMMARY
-
-**Files to Create:**
-1. `src/backend/tools/__init__.py` (new)
-2. `src/backend/tools/finnhub_tools.py` (new)
-3. `tests/test_finnhub_tools.py` (new, optional)
-4. `.serena/memories/finnhub_integration_oct_2025.md` (new)
-
-**Files to Modify:**
-1. `src/backend/services/agent_service.py` (add import, update create_agent, REPLACE get_snapshot_ticker with get_stock_quote in instructions)
-2. `pyproject.toml` (add finnhub-python dependency)
-3. `CLAUDE.md` (update Last Completed Task Summary with swap details)
-
-**Dependencies to Add:**
-1. `finnhub-python` package
+**Required Python Packages:**
+- `polygon` (Polygon Python Library) - Should already be installed for MCP
+- `agents` (OpenAI Agents SDK v0.2.9) - Already installed
+- `os` (standard library)
+- `json` (standard library)
 
 **Environment Variables:**
-- ✅ `FINNHUB_API_KEY` (already configured in .env)
+- `POLYGON_API_KEY` - Must be set in .env file
 
-**Total Tasks:** 50 checklist items across 7 phases
+### Integration Points
 
-**Tool Architecture Change:**
-- **BEFORE:** 9 tools (all Polygon.io MCP) - includes get_snapshot_ticker
-- **AFTER:** 9 tools (8 Polygon.io MCP + 1 Finnhub custom) - get_stock_quote replaces get_snapshot_ticker
+**Files to Modify:**
+1. `src/backend/services/agent_service.py`
+   - Import: Add get_market_status_and_date_time
+   - create_agent(): Add to tools list
+   - get_enhanced_agent_instructions(): Update RULE #4 and tool counts
+
+**Files to Create:**
+1. `src/backend/tools/polygon_tools.py`
+   - New custom tool file with get_market_status_and_date_time function
+
+**Files to Review (No Changes Expected):**
+1. `src/backend/config.py` - API keys already configured
+2. `.env` - POLYGON_API_KEY should already exist
 
 ---
 
-## 🔍 TECHNICAL SPECIFICATIONS
+## 📊 Expected Outcomes
 
-**Tool Name:** `get_stock_quote`
-**Tool Type:** Custom OpenAI Agent Function Tool
-**Decorator:** `@function_tool`
-**Function Type:** `async`
-**Parameters:** `ticker: str`
-**Return Type:** `str` (JSON formatted)
-**Error Handling:** Returns JSON with error details
-**API Provider:** Finnhub
-**API Endpoint:** `finnhub_client.quote(symbol)`
+### Tool Capabilities
 
-**Response Schema:**
-```json
-{
-  "ticker": "string",
-  "current_price": "number (2 decimals)",
-  "change": "number (2 decimals)",
-  "percent_change": "number (2 decimals)",
-  "high": "number (2 decimals)",
-  "low": "number (2 decimals)",
-  "open": "number (2 decimals)",
-  "previous_close": "number (2 decimals)",
-  "source": "Finnhub"
-}
+**New Tool:** `get_market_status_and_date_time()`
+- **Purpose:** Get current market status AND date/time in single call
+- **Advantage:** Combines market status with server timestamp
+- **Use Cases:**
+  - "Is the market open?"
+  - "What time is it?"
+  - "Market status?"
+  - "What's today's date?"
+  - "Are markets open for trading?"
+
+### Migration Benefits
+
+1. **Proof of Concept:** First direct Polygon API tool (vs. MCP server tools)
+2. **Performance:** Direct API may be faster than MCP routing
+3. **Functionality:** Combined market status + datetime in one call
+4. **Scalability:** Establishes pattern for future direct API migrations
+
+### Tool Count Evolution
+
+- **Before:** 9 tools (8 Polygon MCP + 1 Finnhub custom)
+- **After:** 10 tools (7 Polygon MCP + 1 Finnhub custom + 1 Polygon direct + 1 removed MCP tool)
+- **Net Change:** +1 total tool, migrated 1 MCP tool to direct API
+
+---
+
+## ⚠️ Important Notes
+
+### Critical Success Factors
+
+1. **No Code Implementation During Research Phase**
+   - ✅ This document is PLANNING ONLY
+   - ❌ No files created or modified yet
+   - ⏳ Awaiting approval before proceeding to implementation
+
+2. **Follow Established Patterns**
+   - Use finnhub_tools.py as reference template
+   - Follow OPENAI_CUSTOM_TOOLS_REFERENCE.md best practices
+   - Maintain 10.00/10 Pylint score standard
+
+3. **Error Handling**
+   - All errors must return JSON (never raise exceptions to agent)
+   - Provide descriptive error messages
+   - Include error type classification
+
+4. **Testing Requirements**
+   - Unit test the tool function directly
+   - Integration test with full agent
+   - Verify no regression in existing tools
+
+### Migration Strategy Context
+
+**Current State:**
+- 9 tools: 8 Polygon MCP + 1 Finnhub custom
+- All Polygon data flows through MCP server
+
+**Target State (This Task):**
+- 10 tools: 7 Polygon MCP + 1 Finnhub custom + 1 Polygon direct
+- Start migrating Polygon data to direct API calls
+
+**Future State (TBD):**
+- Fully migrate all Polygon tools to direct API
+- Deprecate Polygon MCP server dependency
+- Maintain only custom direct API tools
+
+### Risk Mitigation
+
+1. **API Key Validation:** Ensure POLYGON_API_KEY works before full implementation
+2. **Response Format:** Validate MarketStatus model fields match documentation
+3. **Backward Compatibility:** Ensure existing tools still work correctly
+4. **Agent Behavior:** Test that agent selects correct tool for queries
+
+---
+
+## 📚 Reference Documentation
+
+### Research Sources
+
+1. **Polygon Python Library Documentation:**
+   - Source: `mcp__docs-polygon-python__*` tools
+   - Method: `client.get_market_status()`
+   - Endpoint: `/v1/marketstatus/now`
+   - Example: `examples/rest/stocks-market_status.py`
+
+2. **Previous Implementation:**
+   - File: `src/backend/tools/finnhub_tools.py` (commit c82b26e)
+   - Pattern: @function_tool with async, JSON returns, error handling
+   - Integration: `src/backend/services/agent_service.py`
+
+3. **OpenAI Custom Tools Reference:**
+   - File: `docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md`
+   - Guidelines: Tool creation, docstrings, error handling, best practices
+
+### Key Reference Code
+
+**Polygon Client Example:**
+```python
+from polygon import RESTClient
+
+client = RESTClient()  # Uses POLYGON_API_KEY env var
+result = client.get_market_status()
+print(result)
 ```
 
-**Error Response Schema:**
-```json
-{
-  "error": "string",
-  "message": "string",
-  "ticker": "string"
-}
+**MarketStatus Model:**
+```python
+@modelclass
+class MarketStatus:
+    after_hours: Optional[bool] = None
+    currencies: Optional[MarketCurrencies] = None
+    early_hours: Optional[bool] = None
+    exchanges: Optional[MarketExchanges] = None
+    indicesGroups: Optional[MarketIndices] = None
+    market: Optional[str] = None
+    server_time: Optional[str] = None
 ```
 
 ---
 
-## ⚠️ IMPORTANT NOTES
+## 🚀 Ready to Implement
 
-1. **NO IMPLEMENTATION YET**: This is the planning phase only. Awaiting user approval before proceeding.
+### Prerequisites Checklist
 
-2. **🔄 TOOL SWAP (NOT ADDITION)**: This implementation REPLACES get_snapshot_ticker with get_stock_quote. Tool count remains at 9.
+- [x] Research completed on Polygon API
+- [x] Reference implementation analyzed (Finnhub pattern)
+- [x] Custom tools best practices reviewed
+- [x] Response format designed
+- [x] Integration points identified
+- [x] Documentation plan created
+- [x] Implementation plan approved
 
-3. **Single Ticker Strategy Change**:
-   - **OLD:** Single ticker → Polygon.io get_snapshot_ticker
-   - **NEW:** Single ticker → Finnhub get_stock_quote
-   - **UNCHANGED:** Multiple tickers → Polygon.io get_snapshot_all
+### Next Steps
 
-4. **API Rate Limits**: Finnhub API has rate limits depending on tier. Free tier typically allows 60 calls/minute.
-
-5. **Error Handling**: All errors return JSON format (no exceptions) to ensure AI agent can process responses gracefully.
-
-6. **Market Hours**: Tool works both during market hours (real-time) and after hours (returns last available price).
-
-7. **Testing Priority**: Critical to verify agent NEVER attempts to call get_snapshot_ticker after swap. Must test single ticker queries use get_stock_quote.
-
-8. **No market_type Parameter**: Finnhub's quote() doesn't need market_type parameter (simpler than Polygon.io)
-
----
-
-## 🎯 SUCCESS CRITERIA
-
-Implementation is successful when:
-
-- ✅ Agent has 9 tools (8 MCP Polygon.io + 1 custom Finnhub)
-- ✅ get_snapshot_ticker is COMPLETELY REMOVED from agent instructions
-- ✅ get_stock_quote REPLACES get_snapshot_ticker in supported tools list
-- ✅ Agent instructions updated: RULE #1 uses get_stock_quote (not get_snapshot_ticker)
-- ✅ Decision tree updated to use get_stock_quote for single tickers
-- ✅ All examples updated to use get_stock_quote instead of get_snapshot_ticker
-- ✅ Tool returns properly formatted JSON responses
-- ✅ Error handling works for invalid tickers
-- ✅ Single ticker query: "Get AAPL price" → uses get_stock_quote (Finnhub)
-- ✅ Multi ticker query: "SPY and QQQ prices" → uses get_snapshot_all (Polygon.io)
-- ✅ Agent NEVER attempts to call get_snapshot_ticker (verification critical)
-- ✅ "Tools Used" section correctly lists get_stock_quote for single ticker queries
-- ✅ No linting errors or type check failures
-- ✅ Documentation updated with swap details (CLAUDE.md, Serena memory)
+1. **Await Approval:** Get confirmation to proceed with implementation
+2. **Begin Phase 1:** Create polygon_tools.py file
+3. **Follow Checklist:** Complete all tasks in sequential order
+4. **Validate Each Phase:** Run linting and tests after each phase
+5. **Update Documentation:** Keep CLAUDE.md updated with progress
 
 ---
 
-**END OF IMPLEMENTATION PLAN**
-
-*Awaiting user approval to proceed with implementation.*
+**Status:** 📋 PLANNING COMPLETE - READY FOR IMPLEMENTATION
+**Estimated Effort:** 2-3 hours for full implementation and testing
+**Risk Level:** LOW - Following established patterns with proven API

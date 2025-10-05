@@ -33,9 +33,22 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 
 ### MCP Integration
 - **openai-agents-mcp** (>=0.0.8): MCP server integration
-  - Polygon.io MCP server connection
+  - Polygon.io MCP server connection (7 tools remaining)
   - Financial data tool access
   - Agent tool orchestration
+  - **Migration in progress**: Transitioning to direct Polygon API calls
+
+### Financial Data APIs
+- **Finnhub Python Library** (v2.4.25): Real-time stock quotes
+  - Custom tool: get_stock_quote
+  - Single ticker data
+  - Real-time price updates
+
+- **Polygon Python Library** (polygon-api-client v1.15.4): Market data
+  - Custom tool: get_market_status_and_date_time
+  - Direct API access (bypassing MCP)
+  - Market status and datetime information
+  - **New addition**: First direct Polygon API tool
 
 ### Data Validation & Models
 - **Pydantic** (latest): Data validation library
@@ -260,15 +273,23 @@ Market Parser is built with a modern full-stack architecture combining Python ba
   - Historical data
   - Market status
   - Technical indicators
-  - Accessed via MCP server
+  - **Access methods**:
+    - MCP server (7 tools): get_snapshot_all, get_snapshot_option, get_aggs, list_aggs, get_daily_open_close_agg, get_previous_close_agg
+    - Direct API (1 tool): get_market_status_and_date_time
+
+- **Finnhub API**: Real-time stock data
+  - Single ticker quotes
+  - Custom tool: get_stock_quote
+  - Real-time price updates
 
 ### MCP (Model Context Protocol)
 - **Protocol Version**: Compatible with openai-agents-mcp >=0.0.8
 - **Purpose**: Tool integration for agents
 - **Features**:
-  - Polygon.io financial data access
+  - Polygon.io financial data access (7 MCP tools remaining)
   - Extensible tool framework
   - Session persistence
+- **Migration Status**: Transitioning to direct API calls (1 tool migrated)
 
 ## Infrastructure & Deployment
 
@@ -319,6 +340,9 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 - **pyproject.toml**: Project metadata, dependencies, tool configs
 - **.pylintrc**: Pylint configuration
 - **.env**: Environment variables (not committed)
+  - OPENAI_API_KEY: OpenAI API access
+  - POLYGON_API_KEY: Polygon.io API access (MCP + direct)
+  - FINNHUB_API_KEY: Finnhub API access
 - **.env.example**: Environment variable template
 - **uv.lock**: Dependency lock file
 
@@ -387,13 +411,21 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 - Virtual environment management
 - Modern Python tooling
 
+### Why Migrate from MCP to Direct API?
+- **Performance**: Direct API calls eliminate MCP routing overhead
+- **Simplicity**: Fewer dependencies and infrastructure layers
+- **Control**: Full control over API interaction and error handling
+- **Flexibility**: Easier to customize response formats
+- **Proof of Concept**: get_market_status_and_date_time validates migration pattern
+
 ## Performance Characteristics
 
 ### Backend Performance
-- **Response Time**: 19-46s for complex financial queries
-- **Variation**: Due to real API calls (Polygon.io, OpenAI)
+- **Response Time**: 11-31s for CLI queries (Excellent: <30s, 6/7 tests)
+- **Average**: 20.11s per query
+- **Variation**: Due to real API calls (Polygon.io, OpenAI, Finnhub)
 - **Health Check**: Sub-second response
-- **Optimization**: Async/await, shared resources
+- **Optimization**: Async/await, shared resources, direct API calls
 
 ### Frontend Performance
 - **First Contentful Paint**: ~256ms
@@ -406,12 +438,41 @@ Market Parser is built with a modern full-stack architecture combining Python ba
 - **Development HMR**: Instant (<100ms)
 - **Type Checking**: <5 seconds
 
+## Tool Architecture
+
+### Current Tool Distribution (10 total)
+1. **Finnhub Custom Tools (1)**:
+   - get_stock_quote
+
+2. **Polygon Direct API Tools (1)**:
+   - get_market_status_and_date_time ⭐ NEW
+
+3. **Polygon MCP Tools (7)**:
+   - get_snapshot_all
+   - get_snapshot_option
+   - get_aggs
+   - list_aggs
+   - get_daily_open_close_agg
+   - get_previous_close_agg
+
+4. **Removed MCP Tools (1)**:
+   - ~~get_market_status~~ (replaced by get_market_status_and_date_time)
+
+### Migration Roadmap
+- **Completed**: get_market_status → get_market_status_and_date_time
+- **In Progress**: Proof of concept validated
+- **Future**: Gradual migration of remaining MCP tools to direct API
+
 ## Security Considerations
 
 ### API Key Management
 - Environment variables only
 - Never committed to version control
 - .env file in .gitignore
+- Three API keys required:
+  - OPENAI_API_KEY (GPT-5-Nano)
+  - POLYGON_API_KEY (MCP + direct API)
+  - FINNHUB_API_KEY (stock quotes)
 
 ### Dependency Security
 - Regular dependency updates

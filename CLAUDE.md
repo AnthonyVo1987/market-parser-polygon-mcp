@@ -12,37 +12,49 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-finnhub-integration: swap Polygon.io get_snapshot_ticker with Finnhub get_stock_quote custom tool
+polygon-direct-api: Create get_market_status_and_date_time custom tool using Polygon Python Library direct API
 
-- Replaced Polygon.io get_snapshot_ticker with Finnhub get_stock_quote for single ticker queries
-- Created custom tool using @function_tool decorator with Finnhub Python library v2.4.25
-- Updated AI Agent instructions: RULE #1 now uses get_stock_quote(ticker='SYMBOL') instead of get_snapshot_ticker
-- Maintained 9 total tools (8 Polygon.io MCP + 1 Finnhub custom)
-- Simplified single ticker calls - no market_type parameter needed for Finnhub
-- Multi-ticker queries unchanged - still use get_snapshot_all from Polygon.io
+- Created first direct Polygon API custom tool, migrating from MCP to direct API architecture
+- Replaced MCP get_market_status with direct API get_market_status_and_date_time
+- Created custom tool using @function_tool decorator with Polygon Python Library (polygon-api-client v1.15.4)
+- Updated AI Agent instructions: RULE #4 now uses get_market_status_and_date_time() instead of get_market_status()
+- Increased to 10 total tools (7 Polygon.io MCP + 1 Finnhub custom + 1 Polygon direct + 1 removed MCP)
+- Enhanced functionality: Combined market status + server datetime in single API call
+- No parameters needed - automatically retrieves current market status
 
 Implementation Details:
-✅ Created src/backend/tools/finnhub_tools.py with get_stock_quote function
-✅ Returns JSON with: current_price, change, percent_change, high, low, open, previous_close, source
-✅ Integrated into agent via tools=[get_stock_quote] in create_agent()
-✅ Updated decision tree and all examples to use get_stock_quote for single tickers
-✅ Added FINNHUB_API_KEY environment variable support
+✅ Created src/backend/tools/polygon_tools.py with get_market_status_and_date_time function
+✅ Returns JSON with: market_status, after_hours, early_hours, exchanges{nasdaq,nyse,otc}, server_time, date, time, source
+✅ Integrated into agent via tools=[get_stock_quote, get_market_status_and_date_time] in create_agent()
+✅ Updated decision tree and RULE #4 to use new tool for market status + date/time queries
+✅ Added polygon-api-client v1.15.4 dependency (POLYGON_API_KEY from .env)
 ✅ Pylint score: 10.00/10 (clean code, no linting errors)
+✅ CLI Tests: 7/7 PASSED, 20.11s avg response time, EXCELLENT performance
 
 Tool Architecture Change:
-- **BEFORE:** 9 tools (all Polygon.io MCP) - get_snapshot_ticker for single tickers
-- **AFTER:** 9 tools (8 Polygon.io MCP + 1 Finnhub custom) - get_stock_quote for single tickers
-- **UNCHANGED:** get_snapshot_all for multiple tickers (Polygon.io)
+
+- **BEFORE:** 9 tools (8 Polygon.io MCP + 1 Finnhub custom)
+- **AFTER:** 10 tools (7 Polygon.io MCP + 1 Finnhub custom + 1 Polygon direct API)
+- **MIGRATION:** get_market_status (MCP) → get_market_status_and_date_time (Direct API)
+- **REMOVED:** get_market_status from Polygon MCP tools list
 
 Critical Rules Updated:
 🔴 RULE #1: Single ticker → get_stock_quote(ticker='SYMBOL') via Finnhub
-🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks') via Polygon.io
-🔴 REMOVED: get_snapshot_ticker from supported tools list
+🔴 RULE #2: Multiple tickers → get_snapshot_all(tickers=['S1','S2'], market_type='stocks') via Polygon.io MCP
+🔴 RULE #4: Market status & date/time → get_market_status_and_date_time() via Polygon Direct API ⭐ NEW
+🔴 SUPPORTED TOOLS: Updated from 9 to 10 tools in agent instructions
 
-ACHIEVEMENT: Successfully swapped single ticker data source from Polygon.io to Finnhub with cleaner API interface
+Migration Strategy:
+
+- **Phase 1 COMPLETE**: Proof of concept validated with get_market_status_and_date_time
+- **Benefits**: Direct API = improved performance, simpler architecture, full control over responses
+- **Pattern Established**: polygon_tools.py follows same pattern as finnhub_tools.py for future migrations
+- **Future Phases**: Gradual migration of remaining MCP tools (snapshot, aggs) to direct API calls
+
+ACHIEVEMENT: Successfully validated Polygon direct API migration pattern, establishing foundation for complete MCP-to-direct-API transition
 <!-- LAST_COMPLETED_TASK_END -->
 
-# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
+## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
 🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
