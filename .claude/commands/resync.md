@@ -18,6 +18,8 @@ When you invoke `/resync`, I will:
 • High level summary of current status of the project
 • High level summary of Last Completed Task Summary from CLAUDE.md
 
-3. DO NOT PERFORM ANY NEW TASKS YET OR READ ANY OTHER FILES OR DOCS OTHER THAN CLAUDE.md for resync
+3. Use SERENA 'initial_instructions' tool understand optimal Serena Tools usage for new tasks
+
+4. DO NOT PERFORM ANY NEW TASKS YET OR READ ANY OTHER FILES OR DOCS OTHER THAN CLAUDE.md for resync
 
 ---
