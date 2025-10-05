@@ -1,0 +1,240 @@
+=== PERSISTENT SESSION TEST REPORT ===
+Timestamp: Sat Oct  4 18:07:06 PDT 2025
+Total Tests: 7
+Passed: 7
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 158.873579477s
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 13.517s
+Max Response Time: 33.300s
+Avg Response Time: 22.94s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_Market_Status_Query - PASS
+  Response Time: 18.849s
+Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
+  Response Time: 33.300s
+Test 3: Test_3_Full_Market_Snapshot_SPY_QQQ_IWM - PASS
+  Response Time: 13.517s
+Test 4: Test_4_Closing_Price_Query_GME - PASS
+  Response Time: 23.086s
+Test 5: Test_5_Performance_Analysis_SOUN - PASS
+  Response Time: 28.392s
+Test 6: Test_6_Support_Resistance_NVDA - PASS
+  Response Time: 24.719s
+Test 7: Test_7_Technical_Analysis_SPY - PASS
+  Response Time: 18.738s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [10/04/25 18:04:28] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:04:39] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market Status: Closed                                                        
+ • Regular hours: Closed                                                        
+ • After-hours: No                                                              
+ • Pre-market: No                                                               
+ • Overnight: Not active (no after-hours)                                       
+ • Server Time (ET): 2025-10-04 21:04:39                                        
+
+Tools Used:                                                                     
+
+ • get_market_status() - Provided current market status and server time.        
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 18.849s
+   🔢  Tokens Used: 27,502 (Input: 27,088, Output: 414)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 18:04:46] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:04:54] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:05:04] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:05:11] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Ticker: NVDA                                                                 
+ • Current price: 187.62                                                        
+ • Change (today): -1.23 (-0.65%)                                               
+ • Day range: 185.38 - 190.36                                                   
+ • Previous close: 188.89                                                       
+
+Tools Used:                                                                     
+
+ • get_snapshot_all(stock market_type="stocks", tickers=["NVDA"]) - Used to     
+   retrieve real-time snapshot data for NVDA in a single call due to            
+   single-ticker tool constraint.                                               
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 33.300s
+   🔢  Tokens Used: 57,096 (Input: 56,600, Output: 496)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 18:05:19] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:05:25] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: 669.21 (-0.15%), Day Range 668.16 - 672.68                              
+ • QQQ: 603.18 (-0.46%), Day Range 601.39 - 607.33                              
+ • IWM: 245.83 (+0.74%), Day Range 245.03 - 248.09                              
+
+Tools Used:                                                                     
+
+ • get_snapshot_all(tickers=["SPY","QQQ","IWM"]) - Retrieved real-time snapshot 
+   data for multiple tickers in a single call.                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 13.517s
+   🔢  Tokens Used: 30,464 (Input: 30,121, Output: 343)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 18:05:32] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:05:44] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • GME closing price today: 25.38                                               
+
+Tools Used:                                                                     
+
+ • get_snapshot_all(market_type="stocks", tickers=["GME"]) - Retrieved real-time
+   snapshot data for GME to determine today’s close.                            
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 23.086s
+   🔢  Tokens Used: 32,305 (Input: 32,034, Output: 271)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 18:05:55] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:06:03] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SOUN weekly price performance: +10.78% (Week: open 16.11, close 17.85)       
+
+Tools Used:                                                                     
+
+ • get_aggs(ticker="SOUN", multiplier=1, timespan="week", from_="2025-09-29",   
+   to="2025-10-04") - Used to compute weekly performance from weekly agg data.  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 28.392s
+   🔢  Tokens Used: 33,461 (Input: 32,941, Output: 520)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 18:06:22] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:06:36] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA                                                                         
+ • Support levels: 181.50, 180.30                                               
+ • Resistance levels: 191.00, 190.36                                            
+
+Tools Used:                                                                     
+
+ • get_aggs(ticker="NVDA", multiplier=1, timespan="day", from_="2025-09-29",    
+   to="2025-10-04") - Used to derive short-term support and resistance from     
+   daily price range data.                                                      
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 24.719s
+   🔢  Tokens Used: 34,470 (Input: 33,877, Output: 593)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/04/25 18:06:46] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/04/25 18:06:58] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY last close: 669.21                                                       
+ • Day range: 661.61 - 672.68                                                   
+ • Short-term support: 661.61, 668.16                                           
+ • Short-term resistance: 669.37, 672.68                                        
+
+Tools Used:                                                                     
+
+ • get_aggs(ticker="SPY", multiplier=1, timespan="day", from_="2025-09-29",     
+   to="2025-10-04") - Provided daily price bars to derive close, range, and     
+   levels.                                                                      
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 18.738s
+   🔢  Tokens Used: 35,775 (Input: 35,288, Output: 487)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END PERSISTENT SESSION TEST REPORT ===

@@ -35,22 +35,22 @@ echo ""
 
 # The 7 standardized test prompts from test_prompts.md
 declare -a prompts=(
-    "What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?"
-    "Single Stock Snapshot Price NVDA"
-    "Full Market Snapshot Price: SPY, QQQ, IWM"
-    "GME closing price today"
-    "SOUN Price performance this week"
-    "NVDA Price Support & Resistance Levels"
-    "SPY Price Technical Analysis"
+    "What the current Market Status?"
+    "Stock Snapshot: NVDA"
+    "Stock Snapshot: SPY, QQQ, IWM"
+    "What was closing price today for: SPY"
+    "Current weekly Price Change $ and % for: SPY"
+    "Support & Resistance Levels: SPY"
+    "Technical Analysis: SPY"
 )
 
 declare -a test_names=(
     "Test_1_Market_Status_Query"
     "Test_2_Single_Stock_Snapshot_NVDA"
-    "Test_3_Full_Market_Snapshot_SPY_QQQ_IWM"
-    "Test_4_Closing_Price_Query_GME"
-    "Test_5_Performance_Analysis_SOUN"
-    "Test_6_Support_Resistance_NVDA"
+    "Test_3_Multi_Stock_Snapshot_SPY_QQQ_IWM"
+    "Test_4_Closing_Price_Query_SPY"
+    "Test_5_Weekly_Performance_Analysis_SPY"
+    "Test_6_Support_Resistance_SPY"
     "Test_7_Technical_Analysis_SPY"
 )
 

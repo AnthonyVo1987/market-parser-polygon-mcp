@@ -41,7 +41,13 @@ SUCCESS CRITERIA:
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research to provide scoping for EACH of following task(s) and\or requirements:
 
-- Merge and sync up our current development branch 'clean_serena_reset' back to the 'master' branch.  We were on a development branch for major features and re-architecturing of the app, and now the app is stable.  So it is now time to migrate and merge and sync up ALL changes and commits so that the master is now synced up to the same level and code as the current development branch 'clean_serena_reset' since the master is MANY commits behind the development branch
+Investigate test-reports/persistent_session_test_20251004_180426.txt and fix AI Agent Instructions Prompt because of the following issues, the fixes need to be generic and NOT specific to the user request, so need to fix any logic that the AI Agent may be confused with using the wrong tools:
+Test 2: "Single Stock Snapshot Price NVDA": AI Agent should have used 'get_snapshot_ticker' for single ticker, but instead incorrectly used 'get_snapshot_all', which is supposed to be for multi tickers
+Test 4. "GME closing price today": AI Agent should have used 'get_snapshot_ticker' for single ticker, but instead incorrectly used 'get_snapshot_all', which is supposed to be for multi tickers
+
+So seems like AI Agent gets confused between get_snapshot_ticker vs get_snapshot_all for single tickers for some reasonm even though there are clear instructions for single ticker
+
+After fixing, test with 'test_7_prompts_persistent_session.sh', review the results to ensure the expected tool calls,  AND DO NOT COMMIT AND WAIT FOR USER FEEDBACK
 
 ---
 
