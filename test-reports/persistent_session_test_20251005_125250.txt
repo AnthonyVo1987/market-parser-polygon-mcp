@@ -1,0 +1,338 @@
+=== PERSISTENT SESSION TEST REPORT ===
+Timestamp: Sun Oct  5 12:56:08 PDT 2025
+Total Tests: 11
+Passed: 11
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 197.163248992s
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 12.391s
+Max Response Time: 25.027s
+Avg Response Time: 17.69s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_Market_Status_Query - PASS
+  Response Time: 15.238s
+Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
+  Response Time: 12.454s
+Test 3: Test_3_Multi_Stock_Snapshot_SPY_QQQ_IWM - PASS
+  Response Time: 16.679s
+Test 4: Test_4_Closing_Price_Query_SPY - PASS
+  Response Time: 20.584s
+Test 5: Test_5_Weekly_Performance_Analysis_SPY - PASS
+  Response Time: 23.101s
+Test 6: Test_6_Support_Resistance_SPY - PASS
+  Response Time: 12.507s
+Test 7: Test_7_Technical_Analysis_SPY - PASS
+  Response Time: 19.148s
+Test 8: Test_8_SMA_Indicator_SPY - PASS
+  Response Time: 19.178s
+Test 9: Test_9_EMA_Indicator_NVDA - PASS
+  Response Time: 12.391s
+Test 10: Test_10_RSI_Indicator_SPY - PASS
+  Response Time: 25.027s
+Test 11: Test_11_MACD_Indicator_AAPL - PASS
+  Response Time: 18.287s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> [10/05/25 12:52:52] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:53:00] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market status: Closed                                                        
+ • Server date/time: 2025-10-05 15:52:59 (EDT)                                  
+ • Date: 2025-10-05                                                             
+ • Exchanges: NASDAQ closed, NYSE closed, OTC closed                            
+
+Tools Used:                                                                     
+
+ • get_market_status_and_date_time() - Provided real-time market status and     
+   server datetime from Polygon.io                                              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 15.238s
+   🔢  Tokens Used: 32,433 (Input: 32,266, Output: 167)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:53:07] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:53:14] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA: $187.62                                                                
+ • Change: -$1.27 (-0.67%)                                                      
+ • Day high/low: 190.36 / 185.38                                                
+ • Open: 189.19                                                                 
+ • Previous close: 188.89                                                       
+ • Note: Last price from Finnhub                                                
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='NVDA') - Single ticker request, used get_stock_quote 
+   per RULE #1                                                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 12.454s
+   🔢  Tokens Used: 32,769 (Input: 32,653, Output: 116)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:53:20] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:53:28] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+                    INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: $669.21, Change -$0.01 (-0.15%), Day high 672.68, Day low 668.16, Open  
+   669.99, Prev close 669.22                                                    
+ • QQQ: $603.18, Change -$2.76 (-0.46%), Day high 607.33, Day low 601.39, Open  
+   606.51, Prev close 605.73                                                    
+ • IWM: $245.83, Change +$1.81 (+0.74%), Day high 248.09, Day low 245.03, Open  
+   245.35, Prev close 244.02                                                    
+
+Tools Used:                                                                     
+
+ • get_snapshot_all(tickers=['SPY','QQQ','IWM'], market_type='stocks') - Used   
+   for multi-ticker snapshot in one call (RULE #2)                              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 16.679s
+   🔢  Tokens Used: 34,574 (Input: 34,033, Output: 541)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:53:36] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:53:45] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY closing price today: 669.21                                              
+ • Change: -0.01 (-0.00%)                                                       
+ • Day high/low: 672.67 / 668.16                                                
+ • Open: 669.99                                                                 
+ • Previous close: 669.22                                                       
+ • Note: Last price from Finnhub                                                
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='SPY') - Single ticker request, used for              
+   current/closing price when market status may vary                            
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 20.584s
+   🔢  Tokens Used: 35,810 (Input: 35,624, Output: 186)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:53:57] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:54:08] INFO     Processing request of type            server.py:664
+                             CallToolRequest                                    
+[10/05/25 12:54:09] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY weekly change: $4.85 (+0.73%)                                            
+ • This week's open: 664.36, close: 669.21                                      
+
+Tools Used:                                                                     
+
+ • get_aggs(ticker='SPY', multiplier=1, timespan='week', from_='2025-09-29',    
+   to='2025-10-05', adjusted=true) - To retrieve weekly aggregate data and      
+   calculate the weekly change                                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 23.101s
+   🔢  Tokens Used: 37,064 (Input: 36,467, Output: 597)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:54:20] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY support levels: 661.61, 664.36                                           
+ • SPY resistance levels: 672.68, 669.21                                        
+
+Notes:                                                                          
+
+ • Based on weekly high/low and close data.                                     
+
+Tools Used:                                                                     
+
+ • get_aggs(ticker='SPY', multiplier=1, timespan='week', from_='2025-09-29',    
+   to='2025-10-05', adjusted=true) - Prior weekly data used to derive levels    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 12.507s
+   🔢  Tokens Used: 19,042 (Input: 18,299, Output: 743)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:54:33] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:54:41] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY SMA(50d): 648.03                                                         
+ • SPY EMA(50d): 648.04                                                         
+ • SPY RSI(14d): 69.00                                                          
+ • SPY MACD: MACD 6.05, Signal 5.99, Hist 0.06                                  
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10) - Provide      
+   50-day simple moving average                                                 
+ • get_ta_ema(ticker='SPY', timespan='day', window=50, limit=10) - Provide      
+   50-day exponential moving average                                            
+ • get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10) - Provide RSI  
+ • get_ta_macd(ticker='SPY', timespan='day', short_window=12, long_window=26,   
+   signal_window=9, limit=10) - Provide MACD components                         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 19.148s
+   🔢  Tokens Used: 25,794 (Input: 24,789, Output: 1,005)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:54:52] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:55:05] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY SMA(50d): 648.03                                                         
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10) - Provide      
+   50-day simple moving average                                                 
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 19.178s
+   🔢  Tokens Used: 41,117 (Input: 40,899, Output: 218)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:55:11] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:55:18] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA 20-day EMA: 180.54                                                      
+
+Tools Used:                                                                     
+
+ • get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10) - Provide     
+   20-day EMA                                                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 12.391s
+   🔢  Tokens Used: 41,740 (Input: 41,587, Output: 153)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:55:23] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:55:32] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY RSI (14d): 69.00                                                         
+ • Interpretation: Near overbought threshold (70)                               
+
+Tools Used:                                                                     
+
+ • get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10) - Provide RSI  
+   values and interpretation                                                    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 25.027s
+   🔢  Tokens Used: 42,521 (Input: 42,358, Output: 163)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> [10/05/25 12:55:48] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+[10/05/25 12:55:56] INFO     Processing request of type            server.py:664
+                             ListToolsRequest                                   
+
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL MACD: 7.41                                                              
+ • Signal: 6.97                                                                 
+ • Histogram: 0.44                                                              
+
+Tools Used:                                                                     
+
+ • get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26,  
+   signal_window=9, limit=10) - Provide MACD components                         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 18.287s
+   🔢  Tokens Used: 43,660 (Input: 43,473, Output: 187)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END PERSISTENT SESSION TEST REPORT ===

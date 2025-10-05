@@ -66,6 +66,9 @@ included_optional_tools:
   - restart_language_server
   - summarize_changes
   - switch_modes
+  - delete_lines
+  - insert_at_line
+  - replace_lines
 
 # initial prompt for the project. It will always be given to the LLM upon activating the project
 # (contrary to the memories, which are loaded on demand).
