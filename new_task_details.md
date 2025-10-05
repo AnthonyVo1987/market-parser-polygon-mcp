@@ -41,10 +41,11 @@ SUCCESS CRITERIA:
 <Research, Investigation, Analysis, Scoping Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 Use your entire Mandatory Tools Toolkit to perform focused, incremental, comprehensive, systematic, investigation, analysis, & Research to provide scoping for EACH of following task(s) and\or requirements:
 
-- Create a new tool for our AI Agent called 'get_stock_quote' using the Finnhub Python Library Function "finnhub_client.quote".  Use docs-finnhub tools to fetch Finnhub Python documentation on how to use the library.  You wil have to import the library in in order to call the proper endpoints for "finnhub_client.quote"
-- .env file has my Finnhub API key 'FINNHUB_API_KEY' to use with the new Finnhub API
-- Update AI Agent Instructions to add on the new 'get_stock_quote' as a supported tool to be used to retrieve any single stock quote for real-time price
-- If needed, use docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md to guide on you on proper custom tool creation
+- Create a new tool for our AI Agent called 'get_market_status_and_date_time' using the Polygon Python Library Function "client.get_market_status". Use docs-polygon tools to fetch Polygon Python documentation on how to use the library. You wil have to import the library in in order to call the proper endpoints
+- .env file has my Polygon API key 'POLYGON_API_KEY' to use with the new Polygon API
+- Update AI Agent Instructions to replace current tool 'get_market_status' to use the new custom tool 'get_market_status_and_date_time' to retrieve either current market status, date, and\or time
+- If needed, read docs/OPENAI_CUSTOM_TOOLS_REFERENCE.md to guide on you on proper custom tool creation
+- If needed, review the last commit 'c82b26e78757c723af89b1080e00e31f56c58154' see previous implementation of a new custom tool
 
 ---
 

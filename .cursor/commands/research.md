@@ -6,7 +6,7 @@ Execute a comprehensive research workflow using ALL available advanced tools sys
 
 ## Usage
 
-Type `/research` in Chat to execute the comprehensive research workflow for any topic.
+Type `/research` in Chat to execute the comprehensive research workflow for the requested topic(s) in 'new_research_details.md'
 
 ---
 
