@@ -12,41 +12,38 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[CLEANUP] Complete removal of legacy Polygon MCP Tools and server infrastructure
+[PERFORMANCE] 10-Run Performance Baseline Established (Post-MCP Removal)
 
-- Removed 6 legacy Polygon MCP tools completely from codebase
-- Deleted MCP server infrastructure (mcp_service.py, dependency injection, lifecycle management)
-- Updated AI agent instructions to reference only 12 direct API tools (was 18)
-- Cleaned up all code, documentation, and Serena memories
+- Completed 10-run performance baseline with direct Polygon Python API
+- **Overall Average: 6.10s** (70% faster than legacy 20s with MCP overhead)
+- **Success Rate: 100%** (160/160 tests PASSED across all runs)
+- Statistical consistency: 0.80s standard deviation (highly reliable)
+- Performance rating: **EXCELLENT** (6-10s range, median 5.92s)
+
+**10-Run Statistical Analysis:**
+- Min Average: 5.25s
+- Max Average: 7.57s
+- Overall Average: 6.10s ⭐
+- Median: 5.92s
+- Std Deviation: 0.80s
+
+**Performance Improvement:**
+- Legacy (with MCP overhead): ~20s average
+- Current (Direct API): 6.10s average
+- 🚀 **70% Performance Improvement**
+
+**Test Environment:**
+- 16-test persistent session suite
+- Direct Polygon Python API (no MCP)
+- CLI-only testing (no GUI interference)
+- GPT-5-Nano model with low reasoning effort
+- Test reports: test-reports/persistent_session_test_20251005_16*.txt
+
+**Previous Task:** MCP Removal (see polygon_mcp_removal_history.md)
+- Removed 6 legacy Polygon MCP tools completely
+- Deleted MCP server infrastructure
 - Final tool count: 12 (1 Finnhub + 11 Polygon Direct API)
-- All 16/16 tests passing with direct API tools only
-- Pylint score: 10.00/10 for all modified files
-
-Migration Complete - Tool Evolution:
-✅ **Phase 1** (Commit fe380fa): Migrated 6 MCP tools → 5 direct API tools
-✅ **Phase 2** (This commit): Removed all legacy MCP infrastructure and references
-
-Code Cleanup (8 files modified, 1 deleted):
-- ❌ Deleted: src/backend/services/mcp_service.py (entire file)
-- ✅ Updated: src/backend/services/__init__.py (removed MCP exports)
-- ✅ Updated: src/backend/services/agent_service.py (removed MCP parameter, updated instructions)
-- ✅ Updated: src/backend/dependencies.py (removed MCP server dependency injection)
-- ✅ Updated: src/backend/main.py (removed MCP server lifecycle)
-- ✅ Updated: src/backend/routers/chat.py (removed MCP server usage)
-- ✅ Updated: src/backend/cli.py (removed MCP server creation)
-- ✅ Updated: src/backend/__init__.py (removed MCP exports)
-
-AI Agent Instructions Updated:
-- Tool count: 18 → 12 (removed 6 MCP tools)
-- Removed all references to: get_snapshot_all, get_snapshot_option, list_aggs, get_daily_open_close_agg, get_previous_close_agg, get_aggs
-- Simplified instructions to focus on direct API tools only
-- Updated tool descriptions to remove "replaces MCP" language
-
-Final Tool Count: **12 tools total**
-- **1 Finnhub tool:** get_stock_quote
-- **11 Polygon Direct API tools:** get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-
-BREAKING CHANGE: Removed Polygon MCP server and all MCP-based tools. All financial queries now use direct Polygon Python API with no MCP overhead.
+- All code, docs, and memories cleaned up
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion

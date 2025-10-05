@@ -137,9 +137,7 @@ async def get_market_status_and_date_time() -> str:
 
 
 @function_tool
-async def get_ta_sma(
-    ticker: str, timespan: str = "day", window: int = 50, limit: int = 10
-) -> str:
+async def get_ta_sma(ticker: str, timespan: str = "day", window: int = 50, limit: int = 10) -> str:
     """Get Simple Moving Average (SMA) indicator values from Polygon.io API.
 
     Use this tool when the user requests SMA, simple moving average, moving average,
@@ -193,9 +191,7 @@ async def get_ta_sma(
     try:
         # Call Polygon API with lazy client initialization
         client = _get_polygon_client()
-        sma_results = client.get_sma(
-            ticker=ticker, timespan=timespan, window=window, limit=limit
-        )
+        sma_results = client.get_sma(ticker=ticker, timespan=timespan, window=window, limit=limit)
 
         # Check if API returned valid data
         if not sma_results or not hasattr(sma_results, "values"):
@@ -243,9 +239,7 @@ async def get_ta_sma(
 
 
 @function_tool
-async def get_ta_ema(
-    ticker: str, timespan: str = "day", window: int = 50, limit: int = 10
-) -> str:
+async def get_ta_ema(ticker: str, timespan: str = "day", window: int = 50, limit: int = 10) -> str:
     """Get Exponential Moving Average (EMA) indicator values from Polygon.io API.
 
     Use this tool when the user requests EMA, exponential moving average, or more
@@ -299,9 +293,7 @@ async def get_ta_ema(
     try:
         # Call Polygon API with lazy client initialization
         client = _get_polygon_client()
-        ema_results = client.get_ema(
-            ticker=ticker, timespan=timespan, window=window, limit=limit
-        )
+        ema_results = client.get_ema(ticker=ticker, timespan=timespan, window=window, limit=limit)
 
         # Check if API returned valid data
         if not ema_results or not hasattr(ema_results, "values"):
@@ -349,9 +341,7 @@ async def get_ta_ema(
 
 
 @function_tool
-async def get_ta_rsi(
-    ticker: str, timespan: str = "day", window: int = 14, limit: int = 10
-) -> str:
+async def get_ta_rsi(ticker: str, timespan: str = "day", window: int = 14, limit: int = 10) -> str:
     """Get Relative Strength Index (RSI) indicator values from Polygon.io API.
 
     Use this tool when the user requests RSI, relative strength index, overbought/oversold
@@ -410,9 +400,7 @@ async def get_ta_rsi(
     try:
         # Call Polygon API with lazy client initialization
         client = _get_polygon_client()
-        rsi_results = client.get_rsi(
-            ticker=ticker, timespan=timespan, window=window, limit=limit
-        )
+        rsi_results = client.get_rsi(ticker=ticker, timespan=timespan, window=window, limit=limit)
 
         # Check if API returned valid data
         if not rsi_results or not hasattr(rsi_results, "values"):
@@ -740,9 +728,7 @@ async def get_stock_quote_multi(tickers: list[str], market_type: str = "stocks")
 
 
 @function_tool
-async def get_options_quote_single(
-    underlying_asset: str, option_contract: str
-) -> str:
+async def get_options_quote_single(underlying_asset: str, option_contract: str) -> str:
     """
     Get snapshot quote for a single options contract from Polygon.io API.
 
@@ -1093,9 +1079,7 @@ async def get_OHLC_bars_custom_date_range(  # pylint: disable=too-many-positiona
 
 
 @function_tool
-async def get_OHLC_bars_specific_date(
-    ticker: str, date: str, adjusted: bool = True
-) -> str:
+async def get_OHLC_bars_specific_date(ticker: str, date: str, adjusted: bool = True) -> str:
     """
     Get OHLC (Open, High, Low, Close) aggregate bars for a specific date from Polygon.io API.
 

@@ -1,0 +1,406 @@
+=== PERSISTENT SESSION TEST REPORT ===
+Timestamp: Sun Oct  5 16:44:37 PDT 2025
+Total Tests: 16
+Passed: 16
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 82.218821998s
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 2.891s
+Max Response Time: 12.844s
+Avg Response Time: 5.28s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_Market_Status_Query - PASS
+  Response Time: 5.212s
+Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
+  Response Time: 3.896s
+Test 3: Test_3_Multi_Stock_Snapshot_SPY_QQQ_IWM - PASS
+  Response Time: 4.664s
+Test 4: Test_4_Closing_Price_Query_SPY - PASS
+  Response Time: 3.084s
+Test 5: Test_5_Weekly_Performance_Analysis_SPY - PASS
+  Response Time: 12.844s
+Test 6: Test_6_Support_Resistance_SPY - PASS
+  Response Time: 6.446s
+Test 7: Test_7_Technical_Analysis_SPY - PASS
+  Response Time: 2.891s
+Test 8: Test_8_SMA_Indicator_SPY - PASS
+  Response Time: 3.729s
+Test 9: Test_9_EMA_Indicator_NVDA - PASS
+  Response Time: 3.342s
+Test 10: Test_10_RSI_Indicator_SPY - PASS
+  Response Time: 5.319s
+Test 11: Test_11_MACD_Indicator_AAPL - PASS
+  Response Time: 5.323s
+Test 12: Test_12_Multi_Ticker_Quote_AAPL_MSFT_GOOGL - PASS
+  Response Time: 5.686s
+Test 13: Test_13_Options_Quote_SPY_Call - PASS
+  Response Time: 5.432s
+Test 14: Test_14_OHLC_Custom_Date_Range_AAPL - PASS
+  Response Time: 4.525s
+Test 15: Test_15_OHLC_Specific_Date_TSLA - PASS
+  Response Time: 4.717s
+Test 16: Test_16_OHLC_Previous_Close_SPY - PASS
+  Response Time: 7.506s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • Market status: Closed                                                        
+ • After-hours: No                                                              
+ • Early hours: No                                                              
+ • Exchanges: Nasdaq closed, NYSE closed, OTC closed                            
+ • Server time/date: 2025-10-05 19:43:16 (ET)                                   
+
+Tools Used:                                                                     
+
+ • get_market_status_and_date_time() - Provided real-time market status and     
+   server datetime per RULE #4                                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 5.212s
+   🔢  Tokens Used: 10,894 (Input: 10,664, Output: 230)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA: 187.62                                                                 
+ • Change: -1.27 (-0.67%)                                                       
+ • High: 190.36                                                                 
+ • Low: 185.38                                                                  
+ • Open: 189.19                                                                 
+ • Previous close: 188.89                                                       
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='NVDA') - Single ticker request, used get_stock_quote 
+   per RULE #1                                                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 3.896s
+   🔢  Tokens Used: 11,161 (Input: 11,055, Output: 106)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY: 0.00                                                                    
+ • QQQ: 0.00                                                                    
+ • IWM: 0.00                                                                    
+ • Note: Market is closed; data snapshot returned zero values from provider     
+
+Tools Used:                                                                     
+
+ • get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks') -   
+   Multiple tickers; requested a market snapshot for 3 symbols (per RULE #2)    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 4.664s
+   🔢  Tokens Used: 12,191 (Input: 11,871, Output: 320)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY closing price (previous close): 669.21                                   
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_previous_close(ticker='SPY', adjusted=True) - Provided last    
+   completed close when market is closed (per RULE #5 & fallback guidance)      
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 3.084s
+   🔢  Tokens Used: 12,909 (Input: 12,756, Output: 153)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY weekly price change: 7.39                                                
+ • Weekly percent change: 1.12%                                                 
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-29',        
+   to_date='2025-10-03', timespan='week', multiplier=1) - Retrieved current     
+   weekly close for SPY                                                         
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-22',        
+   to_date='2025-09-26', timespan='week', multiplier=1) - Retrieved previous    
+   weekly close for SPY to compute change                                       
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 12.844s
+   🔢  Tokens Used: 21,361 (Input: 20,712, Output: 649)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY support: S1 661.60, S2 654.41                                            
+ • SPY resistance: R1 672.68, R2 667.34, R3 676.00                              
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-29',        
+   to_date='2025-10-03', timespan='week', multiplier=1) - Source current weekly 
+   data                                                                         
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-22',        
+   to_date='2025-09-26', timespan='week', multiplier=1) - Source prior weekly   
+   data                                                                         
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 6.446s
+   🔢  Tokens Used: 7,918 (Input: 7,059, Output: 859)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • 50-day SMA for SPY: 648.03                                                   
+ • Data points (last 10): 648.03, 647.34, 646.64, 645.85, 645.10, 644.38,       
+   643.70, 643.02, 642.24, 641.48                                               
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10) - Calculated   
+   50-day SMA values for SPY (TA)                                               
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 2.891s
+   🔢  Tokens Used: 14,910 (Input: 14,757, Output: 153)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY 50-day SMA: 648.03                                                       
+ • Data points (last 10): 648.03, 647.34, 646.64, 645.85, 645.10, 644.38,       
+   643.70, 643.02, 642.24, 641.48                                               
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10) - Returned     
+   50-day SMA values for SPY (TA)                                               
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 3.729s
+   🔢  Tokens Used: 15,849 (Input: 15,696, Output: 153)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • NVDA 20-day EMA: 180.54                                                      
+
+Tools Used:                                                                     
+
+ • get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10) - Returned    
+   20-day EMA for NVDA (TA)                                                     
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 3.342s
+   🔢  Tokens Used: 16,664 (Input: 16,570, Output: 94)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY RSI (14): 69.00                                                          
+
+Tools Used:                                                                     
+
+ • get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10) - RSI values   
+   for SPY (TA)                                                                 
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 5.319s
+   🔢  Tokens Used: 17,566 (Input: 17,412, Output: 154)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL MACD (latest): MACD 7.41, Signal 6.97, Histogram 0.44                   
+
+Tools Used:                                                                     
+
+ • get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26,  
+   signal_window=9, limit=10) - Returned MACD values for AAPL (TA)              
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 5.323s
+   🔢  Tokens Used: 18,668 (Input: 18,410, Output: 258)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL: price 0.00, change 0.00%, updated 1759536000000000                     
+ • MSFT: price 0.00, change 0.00%, updated 1759536000000000                     
+ • GOOGL: price 0.00, change 0.00%, updated 1759535640000000000                 
+
+Tools Used:                                                                     
+
+ • get_stock_quote_multi(tickers=['AAPL','MSFT','GOOGL'], market_type='stocks') 
+   - Multiple tickers; provided snapshot data for 3 symbols (per RULE #2)       
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 5.686s
+   🔢  Tokens Used: 20,089 (Input: 19,797, Output: 292)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY 251219C00650000 (Dec 19, 2025, $650 Call)                                
+    • Last price: 34.90                                                         
+    • Day range: 34.60 - 37.67                                                  
+    • Open: 35.76, High: 37.67, Low: 34.60                                      
+    • Implied Volatility: 18.12%                                                
+    • Delta: 0.679, Gamma: 0.00663, Theta: -0.165, Vega: 1.143                  
+    • Open Interest: 21,568                                                     
+    • Break-even price: (not provided)                                          
+
+Tools Used:                                                                     
+
+ • get_options_quote_single(underlying_asset='SPY',                             
+   option_contract='O:SPY251219C00650000') - Returned option contract details   
+   and Greeks (TA/Polygon.io)                                                   
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 5.432s
+   🔢  Tokens Used: 21,093 (Input: 20,809, Output: 284)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • AAPL daily bars: 2024-01-01 to 2024-03-31                                    
+ • Bars returned: 61                                                            
+ • First close: 185.64                                                          
+ • Last close: 171.48                                                           
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01',       
+   to_date='2024-03-31', timespan='day', multiplier=1) - Retrieved daily OHLC   
+   data for AAPL over the requested range                                       
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 4.525s
+   🔢  Tokens Used: 26,255 (Input: 25,823, Output: 432)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • TSLA price on 2024-12-13 (adjusted):                                         
+    • Open: 420.00                                                              
+    • High: 436.30                                                              
+    • Low: 415.71                                                               
+    • Close: 436.23                                                             
+    • Volume: 88,937,833                                                        
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-13', adjusted=True) 
+   - Retrieved specific date OHLC data for TSLA (Polygon.io)                    
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 4.717s
+   🔢  Tokens Used: 30,939 (Input: 30,658, Output: 281)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+
+ • SPY previous trading day close: 669.21                                       
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_previous_close(ticker='SPY', adjusted=True) - Provided last    
+   completed close (SPY) from Polygon.io data.                                  
+
+📊 Performance Metrics:
+   ⏱️  Response Time: 7.506s
+   🔢  Tokens Used: 31,205 (Input: 31,121, Output: 84)
+   🤖  Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END PERSISTENT SESSION TEST REPORT ===

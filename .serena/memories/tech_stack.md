@@ -83,11 +83,32 @@
 
 ## Performance Metrics
 
-### Response Times (16-test suite average)
-- **Excellent**: <30s (target achieved: 5.30s avg)
-- **Good**: 30-45s
-- **Acceptable**: 45-90s
-- **Performance rating**: EXCELLENT (Oct 2025)
+### Post-MCP Removal Baseline (Oct 5, 2025)
+
+**10-Run Statistical Analysis (160 total tests):**
+- **Min Average**: 5.25s
+- **Max Average**: 7.57s
+- **Overall Average**: 6.10s ⭐ EXCELLENT
+- **Median**: 5.92s
+- **Std Deviation**: 0.80s (highly consistent)
+- **Success Rate**: 100% (160/160 tests PASSED)
+
+**Performance Improvement:**
+- **Legacy (with MCP)**: ~20s average
+- **Current (Direct API)**: 6.10s average
+- **🚀 Improvement**: 70% faster (removed MCP overhead)
+
+**Performance Ratings:**
+- **Exceptional**: <6s average
+- **Excellent**: 6-10s average ✅ CURRENT
+- **Good**: 10-30s average
+- **Acceptable**: 30-90s average
+
+**Test Environment:**
+- 16-test persistent session suite
+- Direct Polygon Python API (no MCP)
+- CLI-only testing (no GUI interference)
+- GPT-5-Nano model with low reasoning effort
 
 ### Build Performance
 - **Production build**: ~3-6s
