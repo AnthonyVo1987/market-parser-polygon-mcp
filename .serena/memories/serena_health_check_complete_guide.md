@@ -1,12 +1,11 @@
----
-name: serena_check
-description: Comprehensive Serena system health check to verify all tools and configurations are working correctly after IDE restart
-category: development
----
+# Serena System Health Check - Complete Guide & Backup
 
-# Serena System Health Check
+**Date:** October 6, 2025  
+**Purpose:** Comprehensive Serena system health check guide and backup memory  
+**Source:** .cursor/commands/serena_check.md  
+**Status:** VERBATIM BACKUP - Complete guide for proper Serena tool usage and health checks
 
-You are performing a comprehensive health check of the Serena system to verify all tools and configurations are working correctly after an IDE restart. This command will systematically test all Serena tool categories and provide a detailed health summary.
+---
 
 ## 🎯 **HEALTH CHECK OBJECTIVES**
 
@@ -378,3 +377,39 @@ The health check is successful when:
 6. **🔴 CRITICAL: DO NOT CREATE OR UPDATE ANY MEMORIES OR NEW FILES/DOCS FOR THE comprehensive summary**
 
 **Begin the Serena System Health Check now.**
+
+---
+
+## 🔄 **USAGE INSTRUCTIONS**
+
+### **Primary Method: Custom Command**
+
+- Use `/serena_check` command from .cursor/commands/serena_check.md
+- This is the primary method for running health checks
+
+### **Backup Method: Memory Reference**
+
+- If the custom command is unavailable, reference this memory
+- Use `mcp_serena_read_memory` with memory name: `serena_health_check_complete_guide_2025_01_23`
+- Follow the procedures outlined in this memory
+
+### **Key Benefits of This Memory**
+
+1. **Complete Backup:** Verbatim copy of the custom command
+2. **Tool Usage Guide:** Comprehensive guide for proper Serena tool usage
+3. **Language-Agnostic:** Works with C/C++, Python, TypeScript, JavaScript projects
+4. **Troubleshooting:** Detailed solutions for common issues
+5. **Fallback Option:** Available when custom commands are not accessible
+
+### **Memory Maintenance**
+
+- This memory should be updated whenever the .cursor/commands/serena_check.md file is modified
+- Keep this memory synchronized with the primary command file
+- Use this memory as a reference for proper Serena tool usage patterns
+
+---
+
+**Memory Created:** January 23, 2025  
+**Status:** ✅ ACTIVE - Ready for use as backup and guide  
+**Last Updated:** January 23, 2025  
+**Source:** .cursor/commands/serena_check.md (VERBATIM)
