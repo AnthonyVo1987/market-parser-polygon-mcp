@@ -194,7 +194,10 @@
       "Bash(claude mcp:*)",
       "Bash(tmux kill-session:*)",
       "Bash(tmux list-sessions:*)",
-      "Bash(bc:*)"
+      "Bash(bc:*)",
+      "Bash(do echo \"=== Loop $i Statistics ===\")",
+      "Bash(do if [ -f \"$file\" ])",
+      "Bash(do echo \"=== Loop $i ===\")"
     ],
     "deny": [],
     "ask": [],
