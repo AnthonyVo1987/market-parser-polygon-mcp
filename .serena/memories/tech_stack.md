@@ -11,7 +11,7 @@
 ### AI/ML Integration
 
 - **OpenAI Agents SDK** (v0.2.9): Agent framework for GPT-5
-- **GPT-5-Nano**: AI model for financial analysis (ONLY model allowed - NO GPT-5-Mini)
+- **GPT-5-Nano**: AI model for financial analysis (ONLY model allowed - NO GPT-5-Mini, NO model selection)
 - **Reasoning effort**: Low (optimized for speed)
 
 ### Financial Data APIs
@@ -84,6 +84,29 @@
 
 ## Architecture Patterns
 
+### Token Usage Tracking
+
+**Backend (Python):**
+
+- **Function**: `extract_token_usage_from_context_wrapper()` in `src/backend/utils/token_utils.py`
+- **Returns**: Dictionary with `total_tokens`, `input_tokens`, `output_tokens`
+- **Compatibility**: Supports both OpenAI naming conventions (input/output and prompt/completion)
+- **Legacy function**: `extract_token_count_from_context_wrapper()` (deprecated, kept for compatibility)
+
+**API Response:**
+
+- **ResponseMetadata fields**:
+  - `tokenCount`: Total tokens (deprecated, use inputTokens + outputTokens)
+  - `inputTokens`: Prompt/input tokens
+  - `outputTokens`: Completion/output tokens
+- **Format**: All fields use camelCase aliases for frontend compatibility
+
+**Frontend (TypeScript):**
+
+- **Interfaces**: `MessageMetadata` and `ResponseMetadata` in `src/frontend/types/chat_OpenAI.ts`
+- **Display**: Shows "Input: X | Output: Y | Total: Z" format
+- **Backward compatibility**: Falls back to `tokenCount` if input/output not available
+
 ### Tool Architecture
 
 - **Direct API pattern**: All tools use direct Polygon Python Library calls
@@ -93,7 +116,7 @@
 
 ### Agent Configuration
 
-- **Model**: GPT-5-Nano only (NO GPT-5-Mini)
+- **Model**: GPT-5-Nano only (NO GPT-5-Mini, NO model selection)
 - **Reasoning**: Low effort (optimized for speed)
 - **Verbosity**: Low (concise responses)
 - **Max tokens**: 128,000
@@ -107,6 +130,23 @@
 - **Automatic cleanup**: Session cleanup on exit
 
 ## Performance Metrics
+
+### Latest Test Results (Oct 5, 2025)
+
+**27-Test Suite (Model Selector Removal + Token/Performance Fixes):**
+
+- **Total Tests**: 27/27 PASSED ✅
+- **Success Rate**: 100%
+- **Average Response Time**: 7.34s ⭐ EXCELLENT
+- **Response Time Range**: 4.11s - 17.14s
+- **Session Mode**: PERSISTENT (all tests in single session)
+- **Test Report**: `test-reports/cli_regression_test_loop1_20251005_181607.txt`
+
+**Changes Validated:**
+
+1. ✅ AI Model Selector completely removed (backend + frontend)
+2. ✅ Token display showing Input/Output/Total separately
+3. ✅ Performance indicators (FCP, LCP, CLS) displaying correctly
 
 ### Post-MCP Removal Baseline (Oct 5, 2025)
 
@@ -145,6 +185,16 @@
 - **Dev server startup**: <2s
 - **Hot reload**: <500ms
 
+### UI Performance Monitoring
+
+**Performance Metrics Tracking:**
+
+- **FCP** (First Contentful Paint): Web Vitals metric
+- **LCP** (Largest Contentful Paint): Web Vitals metric
+- **CLS** (Cumulative Layout Shift): Web Vitals metric
+- **Implementation**: `usePerformanceMonitoring()` hook in `src/frontend/utils/performance.tsx`
+- **Fix (Oct 5, 2025)**: Metrics initialize as `undefined` instead of `0` for proper "Calculating..." display
+
 ## Configuration Management
 
 ### Environment Variables (.env)
@@ -182,6 +232,33 @@
 
 ## Migration History
 
+### Infrastructure Cleanup (Oct 5, 2025)
+
+**AI Model Selector Removal:**
+
+- **Backend**: Removed `src/backend/routers/models.py` (entire file)
+- **Backend**: Removed model selection classes from `src/backend/api_models.py`:
+  - `CustomModel`, `AIModelId`, `AIModel`, `ModelListResponse`, `ModelSelectionRequest`, `ModelSelectionResponse`
+- **Backend**: Kept `ResponseMetadata` (used by chat endpoint)
+- **Backend**: Removed `/api/v1/models` router registration from `src/backend/main.py`
+- **Frontend**: Removed `src/frontend/types/ai_models.ts` (entire file)
+- **Frontend**: Removed model selection imports and commented code from `ChatInterface_OpenAI.tsx`
+- **Rationale**: Only GPT-5-Nano is allowed, no model selection needed
+
+**Token Display Enhancement:**
+
+- **Backend**: Added `extract_token_usage_from_context_wrapper()` function
+- **Backend**: Updated `ResponseMetadata` with `inputTokens` and `outputTokens` fields
+- **Frontend**: Updated `MessageMetadata` and `ResponseMetadata` interfaces with new fields
+- **Frontend**: Updated `ChatMessage_OpenAI.tsx` to display "Input: X | Output: Y | Total: Z" format
+- **Backward compatibility**: Kept `tokenCount` field as deprecated fallback
+
+**Performance Indicators Fix:**
+
+- **Issue**: FCP, LCP, CLS stuck on "Calculating..." because metrics initialized to `0`
+- **Fix**: Changed initialization from `0` to `undefined` in `usePerformanceMonitoring()` hook
+- **Result**: UI properly distinguishes between "not measured yet" (undefined) and actual values
+
 ### Tool Evolution
 
 1. **Phase 1**: Initial 10 tools (7 Polygon MCP + 1 Finnhub + 2 Polygon Direct)
@@ -215,8 +292,10 @@
 
 ## Key Principles
 
-1. **GPT-5-Nano Only**: NO GPT-5-Mini allowed
+1. **GPT-5-Nano Only**: NO GPT-5-Mini allowed, NO model selection
 2. **Direct API**: All tools use Polygon Python Library directly (no MCP)
 3. **Code Quality**: 10.00/10 Pylint score mandatory
 4. **Testing Required**: 100% test pass rate before commit
 5. **Performance**: <30s average response time target
+6. **Token Transparency**: Display input/output/total tokens separately
+7. **UI Performance**: Monitor FCP, LCP, CLS metrics for optimal UX

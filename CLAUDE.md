@@ -12,51 +12,78 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[TESTING] Add automated loop support to CLI_test_regression.sh
+[INFRASTRUCTURE] Remove AI Model Selector + Fix Token Display + Fix Performance Indicators
 
-- Enhanced CLI_test_regression.sh with automated loop testing (1-10 iterations)
-- Deleted legacy CLI_test_regression.sh
-- **Loop Parameter Support**: `./CLI_test_regression.sh [LOOP_COUNT]` (default: 1, max: 10)
-- **Aggregate Statistics**: Min/max/avg response times across all loop iterations
-- **Individual Reports**: Separate timestamped report per loop iteration
+**Primary Changes:**
 
-**Loop Enhancement Features:**
+1. **AI Model Selector Removal**: Completely removed model selection infrastructure (GPT-5-Nano only)
+2. **Token Display Enhancement**: Split total tokens into Input/Output/Total display
+3. **Performance Indicators Fix**: Fixed FCP/LCP/CLS stuck on "Calculating..."
 
-1. **Parameter Validation**: Enforces 1-10 loop range with clear error messages
-2. **Per-Loop Tracking**: Each loop runs all 27 tests in single persistent session
-3. **Aggregate Analysis**: Overall statistics calculated across all loops
-4. **Report Generation**: Unique timestamped reports per loop iteration
-5. **Loop Progress**: Visual indicators showing current loop (e.g., "LOOP 2/3")
+**Backend Changes:**
 
-**Test Results (1x and 3x Loop Validation):**
+- **Deleted**: `src/backend/routers/models.py` (entire file - model selection endpoints)
+- **api_models.py**: Removed 6 model selection classes (CustomModel, AIModelId, AIModel, ModelListResponse, ModelSelectionRequest, ModelSelectionResponse)
+- **api_models.py**: Added `inputTokens` and `outputTokens` fields to ResponseMetadata (kept `tokenCount` for backward compatibility)
+- **token_utils.py**: Added `extract_token_usage_from_context_wrapper()` with dual naming convention support (input/output and prompt/completion)
+- **routers/chat.py**: Updated to extract and populate all three token fields (total, input, output)
+- **main.py**: Removed models_router registration
+- **routers/\_\_init\_\_.py**: Removed models_router export
 
-**1-Loop Test (Baseline):**
+**Frontend Changes:**
 
-- Total Tests: 27/27 PASSED
-- Avg Response Time: 6.44s
-- Performance: EXCELLENT
-- Report: cli_regression_test_loop1_20251005_171905.txt
+- **Deleted**: `src/frontend/types/ai_models.ts` (entire file - model types)
+- **chat_OpenAI.ts**: Added `inputTokens` and `outputTokens` to MessageMetadata and ResponseMetadata interfaces
+- **ChatInterface_OpenAI.tsx**: Removed model selection code, added token metadata mapping
+- **ChatMessage_OpenAI.tsx**: Updated token display with "Input: X | Output: Y | Total: Z" format and backward compatibility fallback
+- **api_OpenAI.ts**: Removed model parameter from sendChatMessage(), removed fetchModels() and selectModel() functions
+- **performance.tsx**: Fixed metrics initialization from `0` to `undefined` for proper "Calculating..." display
 
-**3-Loop Test (Validation):**
+**Token Usage Architecture:**
 
-- Total Loops: 3/3 PASSED (100% success rate)
-- Loop 1 Avg: 9.19s (27/27 PASS)
-- Loop 2 Avg: 9.06s (27/27 PASS)
-- Loop 3 Avg: 9.38s (27/27 PASS)
-- Overall Avg: 9.21s (EXCELLENT performance)
-- Reports Generated: 3 individual loop reports
+- **Extraction**: `context_wrapper.usage` object from OpenAI Agents SDK
+- **Compatibility**: Supports both `input_tokens`/`output_tokens` AND `prompt_tokens`/`completion_tokens`
+- **API Fields**: `tokenCount` (deprecated), `inputTokens`, `outputTokens`
+- **Display Logic**: Shows separate counts with fallback to total if input/output unavailable
+
+**Performance Indicators Fix:**
+
+- **Issue**: FCP, LCP, CLS initialized to `0` causing falsy evaluation
+- **Fix**: Changed initialization to `undefined` for proper conditional rendering
+- **Result**: UI correctly shows "Calculating..." until actual metrics are measured
+
+**Test Results:**
+
+- **Total Tests**: 27/27 PASSED ✅
+- **Success Rate**: 100%
+- **Average Response Time**: 7.34s ⭐ EXCELLENT
+- **Response Time Range**: 4.11s - 17.14s
+- **Test Report**: `cli_regression_test_loop1_20251005_181607.txt`
 
 **Documentation Updates:**
-✅ Updated tech_stack.md with loop automation documentation
-✅ Updated Code Quality Checklist: `./CLI_test_regression.sh [LOOP_COUNT]`
-✅ Documented loop usage examples and aggregate statistics
+
+✅ Updated tech_stack.md with token tracking architecture
+✅ Updated tech_stack.md with performance indicators fix
+✅ Updated tech_stack.md with model selector removal details
+✅ Documented OpenAI API dual naming convention support
 
 **Files Changed:**
 
-- ❌ Deleted: CLI_test_regression.sh
-- ✅ Enhanced: CLI_test_regression.sh (added loop support with 1-10 iterations)
-- ✅ Updated: .serena/memories/tech_stack.md
-- ✅ Test Reports: 4 total (1x baseline + 3x loops validation)
+- ❌ Deleted: `src/backend/routers/models.py`
+- ❌ Deleted: `src/frontend/types/ai_models.ts`
+- ✅ Modified: `src/backend/api_models.py` (removed 6 classes, added 2 fields)
+- ✅ Modified: `src/backend/utils/token_utils.py` (added new extraction function)
+- ✅ Modified: `src/backend/routers/chat.py` (token extraction logic)
+- ✅ Modified: `src/backend/main.py` (removed router)
+- ✅ Modified: `src/backend/routers/__init__.py` (removed export)
+- ✅ Modified: `src/frontend/types/chat_OpenAI.ts` (added 2 fields to 2 interfaces)
+- ✅ Modified: `src/frontend/components/ChatInterface_OpenAI.tsx` (removed model code, added token mapping)
+- ✅ Modified: `src/frontend/components/ChatMessage_OpenAI.tsx` (new token display format)
+- ✅ Modified: `src/frontend/services/api_OpenAI.ts` (removed model functions)
+- ✅ Modified: `src/frontend/utils/performance.tsx` (metrics initialization fix)
+- ✅ Updated: `.serena/memories/tech_stack.md`
+
+**Total**: 2 files deleted, 11 files modified
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion

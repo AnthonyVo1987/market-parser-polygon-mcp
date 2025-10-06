@@ -9,7 +9,6 @@ import {
 // Removed useDebouncedCallback import - implementing direct state updates for <16ms input responsiveness
 
 import { sendChatMessage } from '../services/api_OpenAI';
-import { AIModelId } from '../types/ai_models';
 import { Message } from '../types/chat_OpenAI';
 import { usePerformanceMonitoring } from '../utils/performance';
 
@@ -100,17 +99,7 @@ import CollapsiblePanel from './CollapsiblePanel';
 const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
   // Consolidated state management using useReducer for performance optimization
   const [state, dispatch] = useReducer(chatReducer, initialChatState);
-  const { messages, isLoading, error, inputValue } = state;
-
-  // AI Model management - temporarily disabled to fix React Hook order error
-  // const {
-  //   models,
-  //   currentModel,
-  //   isLoading: isLoadingModels,
-  //   error: modelError,
-  //   selectModel,
-  // } = useAIModel();
-  const currentModel: AIModelId = 'gpt-5-nano' as AIModelId;
+  const { messages, isLoading, error, inputValue} = state;
 
   // Optimize useMemo - Only memoize expensive calculations
   const placeholderText = useMemo(
@@ -171,10 +160,7 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
 
       try {
         // Send to API and get response
-        const apiResponse = await sendChatMessage(
-          messageContent,
-          currentModel || undefined
-        );
+        const apiResponse = await sendChatMessage(messageContent);
 
         // Create AI message and dispatch success action
         const aiMessage: Message = {
@@ -185,6 +171,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
           metadata: apiResponse.metadata
             ? {
                 tokenCount: apiResponse.metadata.tokenCount,
+                inputTokens: apiResponse.metadata.inputTokens,
+                outputTokens: apiResponse.metadata.outputTokens,
                 model: apiResponse.metadata.model,
                 processingTime: apiResponse.metadata.processingTime,
                 requestId: apiResponse.metadata.requestId,
@@ -220,8 +208,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
         // End performance timing even on error
       }
     },
-    [currentModel]
-  ); // Include currentModel dependency
+    []
+  );
 
   // Removed handleRecentMessageClick and handleExport callbacks as they're now handled internally
   // Removed handleDebugAction as it's now handled internally by DebugPanel

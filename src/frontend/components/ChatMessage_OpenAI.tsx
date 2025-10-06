@@ -276,11 +276,17 @@ const ChatMessage_OpenAI = memo(
                     Model: {message.metadata.model}
                   </span>
                 )}
-                {message.metadata.tokenCount && (
+                {(message.metadata.inputTokens !== undefined && message.metadata.outputTokens !== undefined) ? (
+                  <span className='footer-metric'>
+                    Input: {message.metadata.inputTokens.toLocaleString()} |
+                    Output: {message.metadata.outputTokens.toLocaleString()} |
+                    Total: {(message.metadata.inputTokens + message.metadata.outputTokens).toLocaleString()}
+                  </span>
+                ) : message.metadata.tokenCount ? (
                   <span className='footer-metric'>
                     Tokens: {message.metadata.tokenCount.toLocaleString()}
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
           )}

@@ -188,7 +188,9 @@
       "Bash(for:*)",
       "Bash(do echo \"=== CLEAN PERFORMANCE BASELINE - RUN $i/10 ===\")",
       "Bash(./CLI_test_regression.sh:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(git pull:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": [],

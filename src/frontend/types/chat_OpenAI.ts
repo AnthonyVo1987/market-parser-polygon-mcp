@@ -13,7 +13,9 @@ export type MessageSender = 'user' | 'ai';
 // Optional metadata for messages
 export interface MessageMetadata {
   readonly isError?: boolean;
-  readonly tokenCount?: number;
+  readonly tokenCount?: number;  // Deprecated: use inputTokens and outputTokens
+  readonly inputTokens?: number;
+  readonly outputTokens?: number;
   readonly model?: string;
   readonly processingTime?: number;
   readonly requestId?: string;
@@ -31,7 +33,9 @@ export interface ChatResponse {
 // Response metadata for tracking and analytics
 export interface ResponseMetadata {
   readonly requestId?: string;
-  readonly tokenCount?: number;
+  readonly tokenCount?: number;  // Deprecated: use inputTokens and outputTokens
+  readonly inputTokens?: number;
+  readonly outputTokens?: number;
   readonly model?: string;
   readonly timestamp?: string;
   readonly processingTime?: number;

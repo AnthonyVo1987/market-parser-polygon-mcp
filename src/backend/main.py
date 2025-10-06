@@ -24,13 +24,13 @@ try:
     from .cli import cli_async
     from .config import settings
     from .dependencies import set_shared_resources
-    from .routers import chat_router, health_router, models_router, system_router
+    from .routers import chat_router, health_router, system_router
 except ImportError:
     # Fallback to absolute imports (when run directly)
     from backend.cli import cli_async
     from backend.config import settings
     from backend.dependencies import set_shared_resources
-    from backend.routers import chat_router, health_router, models_router, system_router
+    from backend.routers import chat_router, health_router, system_router
 
 load_dotenv()
 
@@ -107,7 +107,6 @@ else:
 # Include all routers
 app.include_router(chat_router)
 app.include_router(health_router)
-app.include_router(models_router)
 app.include_router(system_router)
 
 

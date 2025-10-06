@@ -13,7 +13,7 @@ from ..api_models import ResponseMetadata
 from ..config import settings
 from ..dependencies import get_session
 from ..services import create_agent
-from ..utils.token_utils import extract_token_count_from_context_wrapper
+from ..utils.token_utils import extract_token_count_from_context_wrapper, extract_token_usage_from_context_wrapper
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
 
@@ -87,7 +87,12 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             response_text = f"Error: Unable to process request. {str(e)}"
 
         # Extract token data using official OpenAI Agents SDK
-        token_count = extract_token_count_from_context_wrapper(result)
+        token_usage = extract_token_usage_from_context_wrapper(result)
+
+        # Extract individual token counts
+        token_count = token_usage.get("total_tokens") if token_usage else None
+        input_tokens = token_usage.get("input_tokens") if token_usage else None
+        output_tokens = token_usage.get("output_tokens") if token_usage else None
 
         # Calculate processing time
         processing_time = time.perf_counter() - start_time
@@ -98,7 +103,9 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             timestamp=datetime.now().isoformat(),
             processingTime=processing_time,
             requestId=request_id,
-            tokenCount=token_count,
+            tokenCount=token_count,  # Deprecated: kept for backward compatibility
+            inputTokens=input_tokens,
+            outputTokens=output_tokens,
         )
 
         # Log performance metrics for baseline measurement and monitoring

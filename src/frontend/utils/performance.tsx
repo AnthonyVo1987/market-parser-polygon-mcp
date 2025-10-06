@@ -445,12 +445,12 @@ export function getMemoryUsage(): {
 export function usePerformanceMonitoring() {
   const monitor = useMemo(() => new PerformanceMonitor(), []);
   const [metrics, setMetrics] = useState<Partial<PerformanceMetrics>>({
-    fcp: 0,
-    lcp: 0,
-    cls: 0,
-    tti: 0,
-    fid: 0,
-    ttfb: 0,
+    fcp: undefined,
+    lcp: undefined,
+    cls: undefined,
+    tti: undefined,
+    fid: undefined,
+    ttfb: undefined,
     backdropFilterCount: 0,
     boxShadowCount: 0,
     gradientCount: 0,
