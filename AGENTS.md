@@ -12,30 +12,53 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-merge: sync development branch clean_serena_reset to master branch
+[TESTING] Establish CLI_test_regression.sh as single source of truth
 
-- Successfully merged 260+ commits from clean_serena_reset to master (fast-forward merge)
-- Files changed: 471 files (+37,280 insertions, -143,107 deletions = -105,827 net lines)
-- Merge type: Fast-forward (no conflicts), common ancestor: commit 977517b
-- Master now synchronized with clean_serena_reset at commit 4a4951a
-- Both local and remote branches synchronized (origin/master updated)
-- All 7/7 CLI tests PASSED on master after merge (17.69s avg, 12.576s-22.534s range)
-- Performance rating: EXCELLENT across all tests
-- Updated Serena project_architecture.md memory with branch merge documentation
-- Created comprehensive TODO_task_plan.md for merge execution
-- Test report saved: test-reports/persistent_session_test_20251004_162806.txt
+- Created comprehensive CLI_test_regression.sh with 27 tests (16 original + 11 new)
+- **Success Rate: 100%** (27/27 tests PASSED)
+- **Average Response Time: 8.33s** (EXCELLENT rating)
+- Deleted legacy test scripts: test_7_prompts_persistent_session.sh
+- Established single source of truth for all CLI testing
 
-Branch Merge Summary:
-✅ Development Work: Serena onboarding, linting, UI refactoring, performance optimizations
-✅ Code Quality: 10.00/10 Python, 0 errors/warnings TypeScript maintained
-✅ Testing Infrastructure: 7-prompt persistent session tests passing
-✅ Documentation: CLAUDE.md, project memories, startup scripts updated
-✅ Production Status: Stable and validated on master branch
+**New Test Coverage (11 additional TA indicator tests):**
 
-MILESTONE: Master branch now contains all stable development work from clean_serena_reset
+1. SPY MACD (Test 17)
+2. SPY SMA-20, SMA-50, SMA-200 (Tests 18-20)
+3. SPY EMA-20, EMA-50, EMA-200 (Tests 21-23)
+4. SPY SMA-5, SMA-10 (Tests 24-25)
+5. SPY EMA-5, EMA-10 (Tests 26-27)
+
+**Test Results Summary:**
+
+- Total Tests: 27 (expanded from 16)
+- Min Response Time: 4.138s
+- Max Response Time: 18.274s
+- Avg Response Time: 8.33s
+- Success Rate: 100%
+- Session Duration: 217s
+- Performance: EXCELLENT
+
+**Content Verification:**
+✅ All SPY TA indicator responses verified correct:
+
+- SPY MACD: 6.05 (signal 5.99, histogram 0.06)
+- SPY SMA values: 667.35 (5d), 664.78 (10d), 661.01 (20d), 648.03 (50d), 601.41 (200d)
+- SPY EMA values: 667.38 (5d), 665.05 (10d), 660.68 (20d), 648.04 (50d), 607.80 (200d)
+
+**Documentation Updates:**
+✅ Updated tech_stack.md with CLI_test_regression.sh as single source
+✅ Removed legacy test script references
+✅ Updated testing checklist: `./CLI_test_regression.sh` (27/27 PASS required)
+
+**Files Changed:**
+
+- ❌ Deleted: test_7_prompts_persistent_session.sh
+- ✅ Created: CLI_test_regression.sh (27 tests)
+- ✅ Updated: .serena/memories/tech_stack.md
+- ✅ Test Report: test-reports/cli_regression_test_20251005_165758.txt
 <!-- LAST_COMPLETED_TASK_END -->
 
-# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
+## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
 🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
 
@@ -72,6 +95,76 @@ SUCCESS CRITERIA:
 - No rigid sequencing - only logical tool usage based on task requirements
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
+
+## 🔴 CRITICAL: MANDATORY TESTING CHECKPOINT
+
+**Testing is NOT optional - it is REQUIRED for task completion:**
+
+### **Testing Workflow (MUST FOLLOW):**
+
+1. **Code Implementation** → Create/update code
+2. **Test Suite Update** → Create/update test files
+3. **🔴 TEST EXECUTION (MANDATORY)** → RUN the test suite
+4. **Test Verification** → Verify 100% pass rate
+5. **Documentation** → Update docs with test results
+
+### **Test Execution Requirements:**
+
+✅ **MUST DO:**
+
+- Execute test suite (e.g., `./test_16_prompts_persistent_session.sh`)
+- Show test results to user (pass/fail counts, response times)
+- Verify 100% success rate
+- Provide test report file path
+- Fix any failures and re-test
+
+❌ **NEVER DO:**
+
+- Skip test execution
+- Claim completion without test results
+- Mark task "done" without test evidence
+- Proceed to documentation without running tests
+
+### **Enforcement Rules:**
+
+🔴 **Code without test execution = Code NOT implemented**
+🔴 **No test results = Task INCOMPLETE**
+🔴 **Test results are PROOF of implementation**
+🔴 **Tests must run BEFORE documentation updates**
+
+### **Pattern Recognition:**
+
+**WRONG (What NOT to do):**
+
+```
+1. Create 5 new tools ✅
+2. Update test suite file ✅
+3. Update documentation ✅
+4. Mark task complete ❌ (NEVER ran tests!)
+```
+
+**CORRECT (What TO do):**
+
+```
+1. Create 5 new tools ✅
+2. Update test suite file ✅
+3. RUN test suite: ./test_16_prompts_persistent_session.sh ✅
+4. Show results: 16/16 PASS, 100% success ✅
+5. Provide test report path ✅
+6. Update documentation with test results ✅
+7. Mark task complete ✅
+```
+
+### **When to Run Tests:**
+
+- After creating new tools/functions
+- After modifying existing code
+- After updating AI agent instructions
+- After changing test suite
+- Before updating documentation
+- Before claiming task completion
+
+**Remember: If you haven't RUN the tests and SHOWN the results, the task is NOT complete.**
 
 ## Quick Start
 
