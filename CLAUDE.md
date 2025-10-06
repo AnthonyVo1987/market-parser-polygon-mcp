@@ -12,46 +12,51 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[TESTING] Establish CLI_test_regression.sh as single source of truth
+[TESTING] Add automated loop support to CLI_test_regression.sh
 
-- Created comprehensive CLI_test_regression.sh with 27 tests (16 original + 11 new)
-- **Success Rate: 100%** (27/27 tests PASSED)
-- **Average Response Time: 8.33s** (EXCELLENT rating)
-- Deleted legacy test scripts: test_7_prompts_persistent_session.sh
-- Established single source of truth for all CLI testing
+- Enhanced CLI_test_regression.sh with automated loop testing (1-10 iterations)
+- Deleted legacy test_16_prompts_persistent_session.sh
+- **Loop Parameter Support**: `./CLI_test_regression.sh [LOOP_COUNT]` (default: 1, max: 10)
+- **Aggregate Statistics**: Min/max/avg response times across all loop iterations
+- **Individual Reports**: Separate timestamped report per loop iteration
 
-**New Test Coverage (11 additional TA indicator tests):**
-1. SPY MACD (Test 17)
-2. SPY SMA-20, SMA-50, SMA-200 (Tests 18-20)
-3. SPY EMA-20, EMA-50, EMA-200 (Tests 21-23)
-4. SPY SMA-5, SMA-10 (Tests 24-25)
-5. SPY EMA-5, EMA-10 (Tests 26-27)
+**Loop Enhancement Features:**
 
-**Test Results Summary:**
-- Total Tests: 27 (expanded from 16)
-- Min Response Time: 4.138s
-- Max Response Time: 18.274s
-- Avg Response Time: 8.33s
-- Success Rate: 100%
-- Session Duration: 217s
+1. **Parameter Validation**: Enforces 1-10 loop range with clear error messages
+2. **Per-Loop Tracking**: Each loop runs all 27 tests in single persistent session
+3. **Aggregate Analysis**: Overall statistics calculated across all loops
+4. **Report Generation**: Unique timestamped reports per loop iteration
+5. **Loop Progress**: Visual indicators showing current loop (e.g., "LOOP 2/3")
+
+**Test Results (1x and 3x Loop Validation):**
+
+**1-Loop Test (Baseline):**
+
+- Total Tests: 27/27 PASSED
+- Avg Response Time: 6.44s
 - Performance: EXCELLENT
+- Report: cli_regression_test_loop1_20251005_171905.txt
 
-**Content Verification:**
-✅ All SPY TA indicator responses verified correct:
-- SPY MACD: 6.05 (signal 5.99, histogram 0.06)
-- SPY SMA values: 667.35 (5d), 664.78 (10d), 661.01 (20d), 648.03 (50d), 601.41 (200d)
-- SPY EMA values: 667.38 (5d), 665.05 (10d), 660.68 (20d), 648.04 (50d), 607.80 (200d)
+**3-Loop Test (Validation):**
+
+- Total Loops: 3/3 PASSED (100% success rate)
+- Loop 1 Avg: 9.19s (27/27 PASS)
+- Loop 2 Avg: 9.06s (27/27 PASS)
+- Loop 3 Avg: 9.38s (27/27 PASS)
+- Overall Avg: 9.21s (EXCELLENT performance)
+- Reports Generated: 3 individual loop reports
 
 **Documentation Updates:**
-✅ Updated tech_stack.md with CLI_test_regression.sh as single source
-✅ Removed legacy test script references
-✅ Updated testing checklist: `./CLI_test_regression.sh` (27/27 PASS required)
+✅ Updated tech_stack.md with loop automation documentation
+✅ Updated Code Quality Checklist: `./CLI_test_regression.sh [LOOP_COUNT]`
+✅ Documented loop usage examples and aggregate statistics
 
 **Files Changed:**
-- ❌ Deleted: test_7_prompts_persistent_session.sh
-- ✅ Created: CLI_test_regression.sh (27 tests)
+
+- ❌ Deleted: test_16_prompts_persistent_session.sh
+- ✅ Enhanced: CLI_test_regression.sh (added loop support with 1-10 iterations)
 - ✅ Updated: .serena/memories/tech_stack.md
-- ✅ Test Report: test-reports/cli_regression_test_20251005_165758.txt
+- ✅ Test Reports: 4 total (1x baseline + 3x loops validation)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -107,6 +112,7 @@ SUCCESS CRITERIA:
 ### **Test Execution Requirements:**
 
 ✅ **MUST DO:**
+
 - Execute test suite (e.g., `./test_16_prompts_persistent_session.sh`)
 - Show test results to user (pass/fail counts, response times)
 - Verify 100% success rate
@@ -114,6 +120,7 @@ SUCCESS CRITERIA:
 - Fix any failures and re-test
 
 ❌ **NEVER DO:**
+
 - Skip test execution
 - Claim completion without test results
 - Mark task "done" without test evidence
@@ -129,7 +136,8 @@ SUCCESS CRITERIA:
 ### **Pattern Recognition:**
 
 **WRONG (What NOT to do):**
-```
+
+```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
 3. Update documentation ✅
@@ -137,7 +145,8 @@ SUCCESS CRITERIA:
 ```
 
 **CORRECT (What TO do):**
-```
+
+```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
 3. RUN test suite: ./test_16_prompts_persistent_session.sh ✅

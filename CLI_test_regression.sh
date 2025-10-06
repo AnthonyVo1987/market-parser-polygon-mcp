@@ -4,12 +4,19 @@
 # Tests all 27 standardized test prompts sequentially in a SINGLE CLI session
 # Properly handles session persistence and accurate response time tracking
 #
+# Usage: ./CLI_test_regression.sh [LOOP_COUNT]
+#   LOOP_COUNT: Number of test loops to run (1-10, default: 1)
+#   Examples:
+#     ./CLI_test_regression.sh     # Run 1 loop (default)
+#     ./CLI_test_regression.sh 3   # Run 3 loops
+#     ./CLI_test_regression.sh 10  # Run 10 loops (max)
+#
 # Test Coverage:
 # - 7 original market data tests
 # - 4 TA indicator tests (original)
 # - 5 OHLC/options tests (original)
 # - 11 NEW TA indicator tests (SPY-specific SMA/EMA/MACD variants)
-# Total: 27 tests
+# Total: 27 tests per loop
 
 # Colors for output
 RED='\033[0;31m'
@@ -19,13 +26,27 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
+# Parse loop count parameter (default 1, max 10)
+LOOP_COUNT=${1:-1}
+
+# Validate loop count
+if ! [[ "$LOOP_COUNT" =~ ^[0-9]+$ ]]; then
+    echo -e "${RED}❌ Error: LOOP_COUNT must be a number${NC}"
+    echo -e "Usage: $0 [LOOP_COUNT]"
+    echo -e "  LOOP_COUNT: Number of loops (1-10, default: 1)"
+    exit 1
+fi
+
+if [ "$LOOP_COUNT" -lt 1 ] || [ "$LOOP_COUNT" -gt 10 ]; then
+    echo -e "${RED}❌ Error: LOOP_COUNT must be between 1 and 10${NC}"
+    echo -e "Usage: $0 [LOOP_COUNT]"
+    exit 1
+fi
+
 # Test configuration
 MAX_RESPONSE_TIME=120  # 2 minutes max per response
 CLI_CMD="uv run src/backend/main.py"
 RESULTS_DIR="test-reports"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-OUTPUT_FILE="$RESULTS_DIR/cli_regression_test_${TIMESTAMP}.txt"
-RAW_OUTPUT="/tmp/cli_output_${TIMESTAMP}.log"
 
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
@@ -33,10 +54,10 @@ mkdir -p "$RESULTS_DIR"
 echo -e "${CYAN}🧪 CLI Test Regression - 27 Test Suite${NC}"
 echo -e "${CYAN}=======================================${NC}"
 echo -e "Timestamp: $(date)"
+echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
-echo -e "Output file: $OUTPUT_FILE"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 27 tests in same session)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 27 tests in same session per loop)"
 echo ""
 
 # The 27 standardized test prompts
@@ -108,20 +129,42 @@ declare -a test_names=(
 
 # Initialize test tracking
 total_tests=${#prompts[@]}
-declare -a response_times=()
-declare -a test_results=()
-declare -a test_durations=()
 
-# Create input file with all prompts and exit at the end
-INPUT_FILE="/tmp/test_input_${TIMESTAMP}.txt"
-for prompt in "${prompts[@]}"; do
-    echo "$prompt" >> "$INPUT_FILE"
-done
-echo "exit" >> "$INPUT_FILE"
+# Aggregate tracking across all loops
+declare -a all_loop_avg_times=()
+declare -a all_loop_durations=()
+declare -a all_loop_reports=()
+total_loops_passed=0
+total_loops_failed=0
 
-echo -e "${CYAN}🚀 Starting CLI Regression Test...${NC}"
-echo -e "${CYAN}Session will run all 27 tests sequentially${NC}"
-echo ""
+# Loop through test iterations
+for loop_num in $(seq 1 $LOOP_COUNT); do
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║  LOOP ${loop_num}/${LOOP_COUNT} - Starting Test Iteration${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    # Initialize per-loop tracking
+    declare -a response_times=()
+    declare -a test_results=()
+    declare -a test_durations=()
+
+    # Generate unique timestamp for this loop
+    LOOP_TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+    OUTPUT_FILE="$RESULTS_DIR/cli_regression_test_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
+    RAW_OUTPUT="/tmp/cli_output_loop${loop_num}_${LOOP_TIMESTAMP}.log"
+    INPUT_FILE="/tmp/test_input_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
+
+    # Create input file with all prompts and exit at the end
+    for prompt in "${prompts[@]}"; do
+        echo "$prompt" >> "$INPUT_FILE"
+    done
+    echo "exit" >> "$INPUT_FILE"
+
+    echo -e "${CYAN}🚀 Starting CLI Regression Test (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
+    echo -e "${CYAN}Session will run all 27 tests sequentially${NC}"
+    echo -e "Output file: $OUTPUT_FILE"
+    echo ""
 
 # Start CLI and capture output in real-time
 start_time=$(date +%s.%N)
@@ -297,9 +340,9 @@ else
     echo -e "${YELLOW}   Could not verify session count${NC}"
 fi
 
-# Generate comprehensive summary
+# Generate comprehensive summary for this loop
 echo ""
-echo -e "${CYAN}📊 Comprehensive Test Summary${NC}"
+echo -e "${CYAN}📊 Loop ${loop_num}/${LOOP_COUNT} Test Summary${NC}"
 echo -e "${CYAN}============================${NC}"
 echo -e "Total Tests: $total_tests"
 echo -e "${GREEN}Passed: $passed_tests${NC}"
@@ -308,62 +351,140 @@ echo -e "Success Rate: $(( passed_tests * 100 / total_tests ))%"
 echo -e "Total Session Duration: ${total_duration}s"
 echo -e "Session Mode: ${GREEN}PERSISTENT${NC}"
 
+# Track loop results
 if [ $failed_tests -eq 0 ]; then
-    echo -e "${GREEN}🎉 All $total_tests tests passed!${NC}"
-    echo -e "${GREEN}✅ CLI Regression Test: SUCCESS${NC}"
+    echo -e "${GREEN}🎉 All $total_tests tests passed in Loop ${loop_num}!${NC}"
+    echo -e "${GREEN}✅ Loop ${loop_num} CLI Regression Test: SUCCESS${NC}"
+    ((total_loops_passed++))
+    loop_status="PASS"
 else
-    echo -e "${RED}❌ $failed_tests test(s) failed${NC}"
-    echo -e "${RED}❌ CLI Regression Test: NEEDS INVESTIGATION${NC}"
+    echo -e "${RED}❌ $failed_tests test(s) failed in Loop ${loop_num}${NC}"
+    echo -e "${RED}❌ Loop ${loop_num} CLI Regression Test: FAILED${NC}"
+    ((total_loops_failed++))
+    loop_status="FAIL"
 fi
 
-# Generate detailed output file
-{
-    echo "=== CLI REGRESSION TEST REPORT ==="
-    echo "Timestamp: $(date)"
-    echo "Total Tests: $total_tests"
-    echo "Passed: $passed_tests"
-    echo "Failed: $failed_tests"
-    echo "Success Rate: $(( passed_tests * 100 / total_tests ))%"
-    echo "Total Session Duration: ${total_duration}s"
-    echo "Session Mode: PERSISTENT (single session)"
-    echo "Session Count Detected: $session_count"
-    echo ""
+# Store aggregate metrics
+if [ -n "$avg_time" ]; then
+    all_loop_avg_times+=("$avg_time")
+fi
+all_loop_durations+=("$total_duration")
+all_loop_reports+=("$OUTPUT_FILE")
 
-    if [ ${#response_times[@]} -gt 0 ]; then
-        echo "=== RESPONSE TIME ANALYSIS ==="
-        echo "Min Response Time: ${min_time}s"
-        echo "Max Response Time: ${max_time}s"
-        echo "Avg Response Time: ${avg_time}s"
-        echo "Performance Rating: $performance_rating"
+    # Generate detailed output file for this loop
+    {
+        echo "=== CLI REGRESSION TEST REPORT (Loop ${loop_num}/${LOOP_COUNT}) ==="
+        echo "Timestamp: $(date)"
+        echo "Loop Number: ${loop_num}/${LOOP_COUNT}"
+        echo "Total Tests: $total_tests"
+        echo "Passed: $passed_tests"
+        echo "Failed: $failed_tests"
+        echo "Success Rate: $(( passed_tests * 100 / total_tests ))%"
+        echo "Total Session Duration: ${total_duration}s"
+        echo "Session Mode: PERSISTENT (single session)"
+        echo "Session Count Detected: $session_count"
+        echo "Loop Status: $loop_status"
         echo ""
-    fi
 
-    echo "=== TEST RESULTS DETAIL ==="
-    for i in "${!test_names[@]}"; do
-        test_number=$((i + 1))
-        echo "Test $test_number: ${test_names[$i]} - ${test_results[$i]:-UNKNOWN}"
-        if [ -n "${response_times[$i]}" ]; then
-            echo "  Response Time: ${response_times[$i]}s"
+        if [ ${#response_times[@]} -gt 0 ]; then
+            echo "=== RESPONSE TIME ANALYSIS ==="
+            echo "Min Response Time: ${min_time}s"
+            echo "Max Response Time: ${max_time}s"
+            echo "Avg Response Time: ${avg_time}s"
+            echo "Performance Rating: $performance_rating"
+            echo ""
         fi
-    done
+
+        echo "=== TEST RESULTS DETAIL ==="
+        for i in "${!test_names[@]}"; do
+            test_number=$((i + 1))
+            echo "Test $test_number: ${test_names[$i]} - ${test_results[$i]:-UNKNOWN}"
+            if [ -n "${response_times[$i]}" ]; then
+                echo "  Response Time: ${response_times[$i]}s"
+            fi
+        done
+        echo ""
+
+        echo "=== FULL CLI OUTPUT ==="
+        cat "$RAW_OUTPUT"
+        echo ""
+        echo "=== END CLI REGRESSION TEST REPORT (Loop ${loop_num}/${LOOP_COUNT}) ==="
+    } > "$OUTPUT_FILE"
+
+    echo ""
+    echo -e "${BLUE}📄 Loop ${loop_num} results saved to: $OUTPUT_FILE${NC}"
+    echo -e "${BLUE}📄 Loop ${loop_num} raw output: $RAW_OUTPUT${NC}"
+
+    # Clean up input file
+    rm -f "$INPUT_FILE"
+
+    echo ""
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║  LOOP ${loop_num}/${LOOP_COUNT} - Completed${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
-    echo "=== FULL CLI OUTPUT ==="
-    cat "$RAW_OUTPUT"
-    echo ""
-    echo "=== END CLI REGRESSION TEST REPORT ==="
-} > "$OUTPUT_FILE"
+done  # End of loop iteration
 
+# Aggregate Statistics Across All Loops
 echo ""
-echo -e "${BLUE}📄 Detailed results saved to: $OUTPUT_FILE${NC}"
-echo -e "${BLUE}📄 Raw CLI output: $RAW_OUTPUT${NC}"
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║  AGGREGATE STATISTICS - ALL ${LOOP_COUNT} LOOPS${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+echo ""
 
-# Clean up input file
-rm -f "$INPUT_FILE"
+echo -e "${CYAN}📊 Overall Test Summary${NC}"
+echo -e "${CYAN}======================${NC}"
+echo -e "Total Loops Run: $LOOP_COUNT"
+echo -e "${GREEN}Loops Passed: $total_loops_passed${NC}"
+echo -e "${RED}Loops Failed: $total_loops_failed${NC}"
+echo -e "Overall Success Rate: $(( total_loops_passed * 100 / LOOP_COUNT ))%"
+echo ""
 
-# Exit with appropriate code
-if [ $failed_tests -eq 0 ]; then
+# Calculate aggregate response time statistics
+if [ ${#all_loop_avg_times[@]} -gt 0 ]; then
+    echo -e "${CYAN}📊 Aggregate Response Time Analysis${NC}"
+    echo -e "${CYAN}===================================${NC}"
+
+    # Find min/max/avg of all loop averages
+    agg_min=${all_loop_avg_times[0]}
+    agg_max=${all_loop_avg_times[0]}
+    agg_total=0
+
+    for time in "${all_loop_avg_times[@]}"; do
+        if (( $(echo "$time < $agg_min" | bc -l 2>/dev/null || echo "0") )); then
+            agg_min=$time
+        fi
+        if (( $(echo "$time > $agg_max" | bc -l 2>/dev/null || echo "0") )); then
+            agg_max=$time
+        fi
+        agg_total=$(echo "$agg_total + $time" | bc -l 2>/dev/null || echo "$agg_total")
+    done
+
+    agg_avg=$(echo "scale=2; $agg_total / ${#all_loop_avg_times[@]}" | bc -l 2>/dev/null || echo "0")
+
+    echo -e "Min Average Response Time (across loops): ${agg_min}s"
+    echo -e "Max Average Response Time (across loops): ${agg_max}s"
+    echo -e "Overall Average Response Time: ${agg_avg}s"
+    echo ""
+fi
+
+# Display all test reports generated
+echo -e "${CYAN}📄 Test Reports Generated${NC}"
+echo -e "${CYAN}========================${NC}"
+for i in "${!all_loop_reports[@]}"; do
+    loop_idx=$((i + 1))
+    echo -e "Loop ${loop_idx}: ${all_loop_reports[$i]}"
+done
+echo ""
+
+# Final exit status
+if [ $total_loops_failed -eq 0 ]; then
+    echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) completed successfully!${NC}"
+    echo -e "${GREEN}✅ CLI Regression Test: SUCCESS${NC}"
     exit 0
 else
-    exit $failed_tests
+    echo -e "${RED}❌ ${total_loops_failed} loop(s) failed${NC}"
+    echo -e "${RED}❌ CLI Regression Test: FAILED${NC}"
+    exit 1
 fi

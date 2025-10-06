@@ -51,11 +51,19 @@
 - **markdownlint-cli2**: Markdown linting
 
 ### Testing
-- **CLI_test_regression.sh**: Single source of truth for CLI testing (27 tests)
-  - 16 original tests (market data, TA indicators, OHLC/options)
-  - 11 new SPY TA indicator tests (MACD, SMA/EMA variants: 5/10/20/50/200)
-  - Persistent session testing in single CLI session
-  - 100% pass rate required before commit
+- **CLI_test_regression.sh**: Single source of truth for CLI testing with loop automation
+  - **Loop Support**: Automated loop testing (1-10 iterations, default: 1)
+    - Usage: `./CLI_test_regression.sh [LOOP_COUNT]`
+    - Examples: `./CLI_test_regression.sh` (1 loop), `./CLI_test_regression.sh 3` (3 loops)
+  - **27 tests per loop** (16 original + 11 SPY TA indicator tests)
+    - Market data queries (7 tests)
+    - TA indicators (4 original tests)
+    - OHLC/options queries (5 tests)
+    - SPY TA variants (11 tests): MACD, SMA/EMA (5/10/20/50/200)
+  - **Persistent session**: All 27 tests in single CLI session per loop
+  - **Aggregate statistics**: Min/max/avg response times across all loops
+  - **Individual reports**: Separate test report generated per loop iteration
+  - **100% pass rate required** before commit
 - **Performance metrics**: Response time tracking (target: <30s average)
 - **Health checks**: Backend `/health` endpoint validation
 - **Legacy scripts removed**: test_7_prompts_persistent_session.sh, test_16_prompts_persistent_session.sh
@@ -171,7 +179,7 @@
 2. **Type checking**: `npm run type-check`
 3. **Formatting**: `npm run format:check` or `npm run lint:fix`
 4. **Build**: `npm run build`
-5. **Testing**: `./CLI_test_regression.sh` (27/27 PASS required)
+5. **Testing**: `./CLI_test_regression.sh [LOOP_COUNT]` (27/27 PASS required per loop)
 
 ### Git Workflow
 - **Atomic commits**: All changes in single commit
