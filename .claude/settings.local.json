@@ -191,7 +191,9 @@
       "Bash(tee:*)",
       "Bash(git pull:*)",
       "Bash(cat:*)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(tmux kill-session:*)",
+      "Bash(tmux list-sessions:*)"
     ],
     "deny": [],
     "ask": [],
