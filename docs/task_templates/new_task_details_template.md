@@ -62,3 +62,79 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 
 <Serena Update Memories Phase>
 Use Serena Tools to update project memories to reflect all the new changes and new app architecture
+
+---
+
+<Final Git Commit Phase> 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW 🔴
+
+**MANDATORY: Stage ONLY Immediately Before Commit**
+
+**CORRECT Workflow (follow EXACTLY):**
+
+1. **DO ALL WORK FIRST** (DO NOT stage anything yet):
+   - ✅ Complete ALL code changes
+   - ✅ Run ALL tests and generate test reports
+   - ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
+   - ✅ Update ALL config files (.claude/settings.local.json, etc.)
+   - ✅ Update ALL Serena memories
+   - ✅ Update ALL task plans
+   - ⚠️ **DO NOT RUN `git add` YET**
+
+2. **VERIFY EVERYTHING IS COMPLETE**:
+   ```bash
+   git status  # Review ALL changed/new files
+   git diff    # Review ALL changes
+   ```
+   - Ensure ALL work is done
+   - Ensure ALL files are present
+
+3. **STAGE EVERYTHING AT ONCE**:
+   ```bash
+   git add -A  # Stage ALL files in ONE command
+   ```
+   - ⚠️ This is the FIRST time you run `git add`
+   - ⚠️ Stage ALL related files together
+
+4. **VERIFY STAGING IMMEDIATELY**:
+   ```bash
+   git status  # Verify ALL files staged, NOTHING unstaged
+   ```
+   - If anything is missing: `git add [missing-file]`
+
+5. **COMMIT IMMEDIATELY** (within 60 seconds of staging):
+   ```bash
+   git commit -m "$(cat <<'EOF'
+   [TAG] Descriptive commit message
+
+   - Change 1
+   - Change 2
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   EOF
+   )"
+   ```
+
+6. **PUSH IMMEDIATELY**:
+   ```bash
+   git push
+   ```
+
+**WHAT BELONGS IN ATOMIC COMMIT:**
+- ✅ Code changes (backend + frontend)
+- ✅ Test reports (evidence of passing tests)
+- ✅ Documentation updates (CLAUDE.md, README.md, etc.)
+- ✅ Memory updates (.serena/memories/)
+- ✅ Config changes (.claude/settings.local.json, etc.)
+- ✅ Task plan updates (TODO_task_plan.md, etc.)
+
+**❌ NEVER DO THIS:**
+- ❌ Stage files early during development
+- ❌ Stage files "as you go"
+- ❌ Run `git add` before ALL work is complete
+- ❌ Delay between `git add` and `git commit`
+- ❌ Commit without test reports
+- ❌ Commit without documentation updates
+
+**Reference:** See `.serena/memories/git_commit_workflow.md` for complete details

@@ -12,78 +12,70 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[INFRASTRUCTURE] Remove AI Model Selector + Fix Token Display + Fix Performance Indicators
+[DOCUMENTATION] Enforce proper atomic commit workflow across all project documentation
 
-**Primary Changes:**
+**Problem Identified:**
 
-1. **AI Model Selector Removal**: Completely removed model selection infrastructure (GPT-5-Nano only)
-2. **Token Display Enhancement**: Split total tokens into Input/Output/Total display
-3. **Performance Indicators Fix**: Fixed FCP/LCP/CLS stuck on "Calculating..."
+Previous commit (ef98379) was incomplete due to staging files too early during development:
+- Staged code changes at Time T1
+- Continued working (tests, config changes) at Time T2-T5
+- Committed at Time T6
+- **Result**: Missing test reports and config files from commit
 
-**Backend Changes:**
+**Root Cause:** Staging files "as you go" instead of staging ALL files immediately before commit.
 
-- **Deleted**: `src/backend/routers/models.py` (entire file - model selection endpoints)
-- **api_models.py**: Removed 6 model selection classes (CustomModel, AIModelId, AIModel, ModelListResponse, ModelSelectionRequest, ModelSelectionResponse)
-- **api_models.py**: Added `inputTokens` and `outputTokens` fields to ResponseMetadata (kept `tokenCount` for backward compatibility)
-- **token_utils.py**: Added `extract_token_usage_from_context_wrapper()` with dual naming convention support (input/output and prompt/completion)
-- **routers/chat.py**: Updated to extract and populate all three token fields (total, input, output)
-- **main.py**: Removed models_router registration
-- **routers/\_\_init\_\_.py**: Removed models_router export
+**Solution Implemented:**
 
-**Frontend Changes:**
+Created comprehensive git workflow documentation across 9 files to prevent this mistake:
 
-- **Deleted**: `src/frontend/types/ai_models.ts` (entire file - model types)
-- **chat_OpenAI.ts**: Added `inputTokens` and `outputTokens` to MessageMetadata and ResponseMetadata interfaces
-- **ChatInterface_OpenAI.tsx**: Removed model selection code, added token metadata mapping
-- **ChatMessage_OpenAI.tsx**: Updated token display with "Input: X | Output: Y | Total: Z" format and backward compatibility fallback
-- **api_OpenAI.ts**: Removed model parameter from sendChatMessage(), removed fetchModels() and selectModel() functions
-- **performance.tsx**: Fixed metrics initialization from `0` to `undefined` for proper "Calculating..." display
+**New Serena Memory:**
+- ✅ `.serena/memories/git_commit_workflow.md` - Complete 6-phase workflow guide with examples
 
-**Token Usage Architecture:**
+**Updated Templates (2 files):**
+- ✅ `docs/task_templates/new_task_details_template.md`
+- ✅ `docs/task_templates/new_research_details_template.md`
 
-- **Extraction**: `context_wrapper.usage` object from OpenAI Agents SDK
-- **Compatibility**: Supports both `input_tokens`/`output_tokens` AND `prompt_tokens`/`completion_tokens`
-- **API Fields**: `tokenCount` (deprecated), `inputTokens`, `outputTokens`
-- **Display Logic**: Shows separate counts with fallback to total if input/output unavailable
+**Updated Active Task Files (3 files):**
+- ✅ `new_task_details.md`
+- ✅ `new_task_details_2.md`
+- ✅ `new_research_details.md`
 
-**Performance Indicators Fix:**
+**Updated Project Documentation (2 files):**
+- ✅ `CLAUDE.md` - Added "PROPER ATOMIC COMMIT WORKFLOW" section
+- ✅ `AGENTS.md` - Added "PROPER ATOMIC COMMIT WORKFLOW" section
 
-- **Issue**: FCP, LCP, CLS initialized to `0` causing falsy evaluation
-- **Fix**: Changed initialization to `undefined` for proper conditional rendering
-- **Result**: UI correctly shows "Calculating..." until actual metrics are measured
+**Mandatory Workflow (6 Steps):**
 
-**Test Results:**
+1. **DO ALL WORK FIRST** (code, tests, docs, config) - NO staging yet
+2. **VERIFY COMPLETION** (`git status`, `git diff`)
+3. **STAGE EVERYTHING AT ONCE** (`git add -A`) - First time running git add
+4. **VERIFY STAGING** (`git status` - everything staged, nothing unstaged)
+5. **COMMIT IMMEDIATELY** (within 60 seconds of staging)
+6. **PUSH IMMEDIATELY**
 
-- **Total Tests**: 27/27 PASSED ✅
-- **Success Rate**: 100%
-- **Average Response Time**: 7.34s ⭐ EXCELLENT
-- **Response Time Range**: 4.11s - 17.14s
-- **Test Report**: `cli_regression_test_loop1_20251005_181607.txt`
+**What Must Be in Every Atomic Commit:**
+- ✅ Code changes (backend + frontend)
+- ✅ Test reports (evidence of passing tests)
+- ✅ Documentation updates (CLAUDE.md, tech_stack.md, etc.)
+- ✅ Memory updates (.serena/memories/)
+- ✅ Config changes (.claude/settings.local.json, etc.)
+- ✅ Task plan updates
 
-**Documentation Updates:**
-
-✅ Updated tech_stack.md with token tracking architecture
-✅ Updated tech_stack.md with performance indicators fix
-✅ Updated tech_stack.md with model selector removal details
-✅ Documented OpenAI API dual naming convention support
+**Enforcement:**
+- 🔴 Staging files early = VIOLATION
+- 🔴 Committing without test reports = VIOLATION
+- 🔴 Incomplete commits will be reverted and reworked
 
 **Files Changed:**
 
-- ❌ Deleted: `src/backend/routers/models.py`
-- ❌ Deleted: `src/frontend/types/ai_models.ts`
-- ✅ Modified: `src/backend/api_models.py` (removed 6 classes, added 2 fields)
-- ✅ Modified: `src/backend/utils/token_utils.py` (added new extraction function)
-- ✅ Modified: `src/backend/routers/chat.py` (token extraction logic)
-- ✅ Modified: `src/backend/main.py` (removed router)
-- ✅ Modified: `src/backend/routers/__init__.py` (removed export)
-- ✅ Modified: `src/frontend/types/chat_OpenAI.ts` (added 2 fields to 2 interfaces)
-- ✅ Modified: `src/frontend/components/ChatInterface_OpenAI.tsx` (removed model code, added token mapping)
-- ✅ Modified: `src/frontend/components/ChatMessage_OpenAI.tsx` (new token display format)
-- ✅ Modified: `src/frontend/services/api_OpenAI.ts` (removed model functions)
-- ✅ Modified: `src/frontend/utils/performance.tsx` (metrics initialization fix)
-- ✅ Updated: `.serena/memories/tech_stack.md`
+- ✅ Created: `.serena/memories/git_commit_workflow.md` (comprehensive guide)
+- ✅ Modified: 2 task templates
+- ✅ Modified: 3 active task files
+- ✅ Modified: CLAUDE.md (added workflow section)
+- ✅ Modified: AGENTS.md (added workflow section)
+- **Total**: 1 new file, 8 files modified, 9 files total
 
-**Total**: 2 files deleted, 11 files modified
+**Key Principle:** `git add` is the LAST step before `git commit`, not a step during development.
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -193,6 +185,92 @@ SUCCESS CRITERIA:
 - Before claiming task completion
 
 **Remember: If you haven't RUN the tests and SHOWN the results, the task is NOT complete.**
+
+## 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW
+
+**MANDATORY: Stage ONLY Immediately Before Commit**
+
+### The Fatal Mistake: Early Staging
+
+**NEVER stage files early during development. Staging is the LAST step before committing.**
+
+**What happens when you stage too early:**
+
+1. ⏰ **Time T1**: You run `git add` (files staged)
+   - Staging area = snapshot at T1
+2. ⏰ **Time T2-T5**: You continue working
+   - Update config files
+   - Run tests (generates test reports)
+   - Update documentation
+3. ⏰ **Time T6**: You run `git commit`
+   - **Only commits the T1 snapshot**
+   - **All work after T1 is MISSING**
+
+**Result: Incomplete, broken atomic commits** ❌
+
+### Correct Atomic Commit Workflow
+
+**Follow this workflow EXACTLY:**
+
+1. **DO ALL WORK FIRST** (DO NOT stage anything yet):
+   - ✅ Complete ALL code changes
+   - ✅ Run ALL tests and generate test reports
+   - ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
+   - ✅ Update ALL config files (.claude/settings.local.json, etc.)
+   - ✅ Update ALL Serena memories
+   - ✅ Update ALL task plans
+   - ⚠️ **DO NOT RUN `git add` YET**
+
+2. **VERIFY EVERYTHING IS COMPLETE**:
+   ```bash
+   git status  # Review ALL changed/new files
+   git diff    # Review ALL changes
+   ```
+
+3. **STAGE EVERYTHING AT ONCE**:
+   ```bash
+   git add -A  # Stage ALL files in ONE command
+   ```
+   - ⚠️ This is the FIRST time you run `git add`
+
+4. **VERIFY STAGING IMMEDIATELY**:
+   ```bash
+   git status  # Verify ALL files staged, NOTHING unstaged
+   ```
+
+5. **COMMIT IMMEDIATELY** (within 60 seconds):
+   ```bash
+   git commit -m "message"
+   ```
+
+6. **PUSH IMMEDIATELY**:
+   ```bash
+   git push
+   ```
+
+### What Belongs in an Atomic Commit
+
+**ALL of these must be included together:**
+
+- ✅ Code changes (backend + frontend)
+- ✅ Test reports (evidence of passing tests)
+- ✅ Documentation updates (CLAUDE.md, README.md, etc.)
+- ✅ Memory updates (.serena/memories/)
+- ✅ Config changes (.claude/settings.local.json, etc.)
+- ✅ Task plan updates (TODO_task_plan.md, etc.)
+
+### ❌ NEVER DO THIS
+
+- ❌ Stage files early during development
+- ❌ Stage files "as you go"
+- ❌ Run `git add` before ALL work is complete
+- ❌ Delay between `git add` and `git commit`
+- ❌ Commit without test reports
+- ❌ Commit without documentation updates
+
+**Reference:** See `.serena/memories/git_commit_workflow.md` for complete details.
+
+**Enforcement:** Incomplete commits will be reverted and reworked.
 
 ## Quick Start
 
