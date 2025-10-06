@@ -186,7 +186,8 @@
       "Bash(echo \"✅ Run $i completed\")",
       "Bash(awk:*)",
       "Bash(for:*)",
-      "Bash(do echo \"=== CLEAN PERFORMANCE BASELINE - RUN $i/10 ===\")"
+      "Bash(do echo \"=== CLEAN PERFORMANCE BASELINE - RUN $i/10 ===\")",
+      "Bash(./CLI_test_regression.sh:*)"
     ],
     "deny": [],
     "ask": [],

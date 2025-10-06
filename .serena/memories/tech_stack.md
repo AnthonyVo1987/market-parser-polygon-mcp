@@ -51,9 +51,14 @@
 - **markdownlint-cli2**: Markdown linting
 
 ### Testing
-- **Custom test scripts**: Persistent session testing with 16 standardized prompts
+- **CLI_test_regression.sh**: Single source of truth for CLI testing (27 tests)
+  - 16 original tests (market data, TA indicators, OHLC/options)
+  - 11 new SPY TA indicator tests (MACD, SMA/EMA variants: 5/10/20/50/200)
+  - Persistent session testing in single CLI session
+  - 100% pass rate required before commit
 - **Performance metrics**: Response time tracking (target: <30s average)
 - **Health checks**: Backend `/health` endpoint validation
+- **Legacy scripts removed**: test_7_prompts_persistent_session.sh, test_16_prompts_persistent_session.sh
 
 ### Development Tools
 - **uv** (0.8.19): Python package manager
@@ -166,7 +171,7 @@
 2. **Type checking**: `npm run type-check`
 3. **Formatting**: `npm run format:check` or `npm run lint:fix`
 4. **Build**: `npm run build`
-5. **Testing**: `./test_16_prompts_persistent_session.sh` (16/16 PASS required)
+5. **Testing**: `./CLI_test_regression.sh` (27/27 PASS required)
 
 ### Git Workflow
 - **Atomic commits**: All changes in single commit

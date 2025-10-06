@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# Persistent Session 11 Test Prompts Script
-# Tests all 11 standardized test prompts sequentially in a SINGLE CLI session
+# CLI Test Regression Script - Single Source of Truth
+# Tests all 27 standardized test prompts sequentially in a SINGLE CLI session
 # Properly handles session persistence and accurate response time tracking
-# Based on tests/playwright/test_prompts.md
-# Extended with 4 TA indicator tests (SMA, EMA, RSI, MACD)
+#
+# Test Coverage:
+# - 7 original market data tests
+# - 4 TA indicator tests (original)
+# - 5 OHLC/options tests (original)
+# - 11 NEW TA indicator tests (SPY-specific SMA/EMA/MACD variants)
+# Total: 27 tests
 
 # Colors for output
 RED='\033[0;31m'
@@ -19,23 +24,26 @@ MAX_RESPONSE_TIME=120  # 2 minutes max per response
 CLI_CMD="uv run src/backend/main.py"
 RESULTS_DIR="test-reports"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-OUTPUT_FILE="$RESULTS_DIR/persistent_session_test_${TIMESTAMP}.txt"
+OUTPUT_FILE="$RESULTS_DIR/cli_regression_test_${TIMESTAMP}.txt"
 RAW_OUTPUT="/tmp/cli_output_${TIMESTAMP}.log"
 
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 Persistent Session 11 Test Prompts Validation${NC}"
-echo -e "${CYAN}================================================${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - 27 Test Suite${NC}"
+echo -e "${CYAN}=======================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "Output file: $OUTPUT_FILE"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 11 tests in same session)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 27 tests in same session)"
 echo ""
 
-# The 11 standardized test prompts (7 original + 4 TA indicators)
+# The 27 standardized test prompts
+# Tests 1-16: Original test suite
+# Tests 17-27: New TA indicator tests (SPY-specific)
 declare -a prompts=(
+    # Original 16 tests
     "What the current Market Status?"
     "Stock Snapshot: NVDA"
     "Stock Snapshot: SPY, QQQ, IWM"
@@ -47,9 +55,27 @@ declare -a prompts=(
     "20-day EMA for NVDA"
     "RSI analysis for SPY"
     "MACD for AAPL"
+    "Multi-ticker quotes: AAPL, MSFT, GOOGL"
+    "Options quote for SPY December 650 call O:SPY251219C00650000"
+    "AAPL daily bars from January 1 to March 31, 2024"
+    "TSLA price on December 13, 2024"
+    "SPY previous trading day close"
+    # New TA indicator tests (Tests 17-27)
+    "SPY MACD"
+    "SPY 20-day SMA"
+    "SPY 50-day SMA"
+    "SPY 200-day SMA"
+    "SPY 20-day EMA"
+    "SPY 50-day EMA"
+    "SPY 200-day EMA"
+    "SPY 5-day SMA"
+    "SPY 10-day SMA"
+    "SPY 5-day EMA"
+    "SPY 10-day EMA"
 )
 
 declare -a test_names=(
+    # Original 16 tests
     "Test_1_Market_Status_Query"
     "Test_2_Single_Stock_Snapshot_NVDA"
     "Test_3_Multi_Stock_Snapshot_SPY_QQQ_IWM"
@@ -61,6 +87,23 @@ declare -a test_names=(
     "Test_9_EMA_Indicator_NVDA"
     "Test_10_RSI_Indicator_SPY"
     "Test_11_MACD_Indicator_AAPL"
+    "Test_12_Multi_Ticker_Quote_AAPL_MSFT_GOOGL"
+    "Test_13_Options_Quote_SPY_Call"
+    "Test_14_OHLC_Custom_Date_Range_AAPL"
+    "Test_15_OHLC_Specific_Date_TSLA"
+    "Test_16_OHLC_Previous_Close_SPY"
+    # New TA indicator tests (Tests 17-27)
+    "Test_17_SPY_MACD"
+    "Test_18_SPY_SMA_20"
+    "Test_19_SPY_SMA_50"
+    "Test_20_SPY_SMA_200"
+    "Test_21_SPY_EMA_20"
+    "Test_22_SPY_EMA_50"
+    "Test_23_SPY_EMA_200"
+    "Test_24_SPY_SMA_5"
+    "Test_25_SPY_SMA_10"
+    "Test_26_SPY_EMA_5"
+    "Test_27_SPY_EMA_10"
 )
 
 # Initialize test tracking
@@ -76,8 +119,8 @@ for prompt in "${prompts[@]}"; do
 done
 echo "exit" >> "$INPUT_FILE"
 
-echo -e "${CYAN}🚀 Starting Persistent Session Test...${NC}"
-echo -e "${CYAN}Session will run all 11 tests sequentially${NC}"
+echo -e "${CYAN}🚀 Starting CLI Regression Test...${NC}"
+echo -e "${CYAN}Session will run all 27 tests sequentially${NC}"
 echo ""
 
 # Start CLI and capture output in real-time
@@ -266,16 +309,16 @@ echo -e "Total Session Duration: ${total_duration}s"
 echo -e "Session Mode: ${GREEN}PERSISTENT${NC}"
 
 if [ $failed_tests -eq 0 ]; then
-    echo -e "${GREEN}🎉 All $total_tests tests passed (including 4 TA indicators)!${NC}"
-    echo -e "${GREEN}✅ Persistent Session Validation: SUCCESS${NC}"
+    echo -e "${GREEN}🎉 All $total_tests tests passed!${NC}"
+    echo -e "${GREEN}✅ CLI Regression Test: SUCCESS${NC}"
 else
     echo -e "${RED}❌ $failed_tests test(s) failed${NC}"
-    echo -e "${RED}❌ Persistent Session Validation: NEEDS INVESTIGATION${NC}"
+    echo -e "${RED}❌ CLI Regression Test: NEEDS INVESTIGATION${NC}"
 fi
 
 # Generate detailed output file
 {
-    echo "=== PERSISTENT SESSION TEST REPORT ==="
+    echo "=== CLI REGRESSION TEST REPORT ==="
     echo "Timestamp: $(date)"
     echo "Total Tests: $total_tests"
     echo "Passed: $passed_tests"
@@ -308,7 +351,7 @@ fi
     echo "=== FULL CLI OUTPUT ==="
     cat "$RAW_OUTPUT"
     echo ""
-    echo "=== END PERSISTENT SESSION TEST REPORT ==="
+    echo "=== END CLI REGRESSION TEST REPORT ==="
 } > "$OUTPUT_FILE"
 
 echo ""

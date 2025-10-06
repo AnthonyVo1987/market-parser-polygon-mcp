@@ -12,38 +12,46 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[PERFORMANCE] 10-Run Performance Baseline Established (Post-MCP Removal)
+[TESTING] Establish CLI_test_regression.sh as single source of truth
 
-- Completed 10-run performance baseline with direct Polygon Python API
-- **Overall Average: 6.10s** (70% faster than legacy 20s with MCP overhead)
-- **Success Rate: 100%** (160/160 tests PASSED across all runs)
-- Statistical consistency: 0.80s standard deviation (highly reliable)
-- Performance rating: **EXCELLENT** (6-10s range, median 5.92s)
+- Created comprehensive CLI_test_regression.sh with 27 tests (16 original + 11 new)
+- **Success Rate: 100%** (27/27 tests PASSED)
+- **Average Response Time: 8.33s** (EXCELLENT rating)
+- Deleted legacy test scripts: test_7_prompts_persistent_session.sh
+- Established single source of truth for all CLI testing
 
-**10-Run Statistical Analysis:**
-- Min Average: 5.25s
-- Max Average: 7.57s
-- Overall Average: 6.10s ⭐
-- Median: 5.92s
-- Std Deviation: 0.80s
+**New Test Coverage (11 additional TA indicator tests):**
+1. SPY MACD (Test 17)
+2. SPY SMA-20, SMA-50, SMA-200 (Tests 18-20)
+3. SPY EMA-20, EMA-50, EMA-200 (Tests 21-23)
+4. SPY SMA-5, SMA-10 (Tests 24-25)
+5. SPY EMA-5, EMA-10 (Tests 26-27)
 
-**Performance Improvement:**
-- Legacy (with MCP overhead): ~20s average
-- Current (Direct API): 6.10s average
-- 🚀 **70% Performance Improvement**
+**Test Results Summary:**
+- Total Tests: 27 (expanded from 16)
+- Min Response Time: 4.138s
+- Max Response Time: 18.274s
+- Avg Response Time: 8.33s
+- Success Rate: 100%
+- Session Duration: 217s
+- Performance: EXCELLENT
 
-**Test Environment:**
-- 16-test persistent session suite
-- Direct Polygon Python API (no MCP)
-- CLI-only testing (no GUI interference)
-- GPT-5-Nano model with low reasoning effort
-- Test reports: test-reports/persistent_session_test_20251005_16*.txt
+**Content Verification:**
+✅ All SPY TA indicator responses verified correct:
+- SPY MACD: 6.05 (signal 5.99, histogram 0.06)
+- SPY SMA values: 667.35 (5d), 664.78 (10d), 661.01 (20d), 648.03 (50d), 601.41 (200d)
+- SPY EMA values: 667.38 (5d), 665.05 (10d), 660.68 (20d), 648.04 (50d), 607.80 (200d)
 
-**Previous Task:** MCP Removal (see polygon_mcp_removal_history.md)
-- Removed 6 legacy Polygon MCP tools completely
-- Deleted MCP server infrastructure
-- Final tool count: 12 (1 Finnhub + 11 Polygon Direct API)
-- All code, docs, and memories cleaned up
+**Documentation Updates:**
+✅ Updated tech_stack.md with CLI_test_regression.sh as single source
+✅ Removed legacy test script references
+✅ Updated testing checklist: `./CLI_test_regression.sh` (27/27 PASS required)
+
+**Files Changed:**
+- ❌ Deleted: test_7_prompts_persistent_session.sh
+- ✅ Created: CLI_test_regression.sh (27 tests)
+- ✅ Updated: .serena/memories/tech_stack.md
+- ✅ Test Report: test-reports/cli_regression_test_20251005_165758.txt
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
