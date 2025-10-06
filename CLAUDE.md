@@ -12,70 +12,81 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[DOCUMENTATION] Enforce proper atomic commit workflow across all project documentation
+[SERENA] Comprehensive memory updates for architectural changes
 
-**Problem Identified:**
+**Context:**
 
-Previous commit (ef98379) was incomplete due to staging files too early during development:
-- Staged code changes at Time T1
-- Continued working (tests, config changes) at Time T2-T5
-- Committed at Time T6
-- **Result**: Missing test reports and config files from commit
+Major architectural changes required updating Serena project memories to reflect:
 
-**Root Cause:** Staging files "as you go" instead of staging ALL files immediately before commit.
+- MCP server complete removal (Phase 4 complete)
+- Model selector infrastructure removal (GPT-5-Nano only)
+- Token tracking enhancement (input/output/total split)
+- Performance indicators fix (undefined initialization)
+- Tool count change from 10 to 12 (1 Finnhub + 11 Polygon Direct API)
 
-**Solution Implemented:**
+**Memory Updates Completed:**
 
-Created comprehensive git workflow documentation across 9 files to prevent this mistake:
+1. **project_architecture.md** (comprehensive rewrite):
+   - ✅ Updated tool count: 10 → 12 tools
+   - ✅ Removed ALL MCP references (MCP completely removed)
+   - ✅ Added token tracking architecture details
+   - ✅ Added model selector removal documentation
+   - ✅ Added performance metrics (7.34s avg, 27/27 tests)
+   - ✅ Documented Direct API pattern (11 Polygon + 1 Finnhub)
+   - ✅ Added git workflow reference
 
-**New Serena Memory:**
-- ✅ `.serena/memories/git_commit_workflow.md` - Complete 6-phase workflow guide with examples
+2. **task_completion_checklist.md** (major enhancement):
+   - ✅ Replaced "Git Commit Process" section with comprehensive atomic workflow
+   - ✅ Added "PROPER ATOMIC COMMIT WORKFLOW" with 6-phase process
+   - ✅ Added "The Fatal Mistake: Early Staging" explanation
+   - ✅ Added "What Belongs in an Atomic Commit" checklist
+   - ✅ Added recovery procedures for incomplete commits
+   - ✅ Updated test count references (27 tests, not 7 or 16)
+   - ✅ Added reference to `.serena/memories/git_commit_workflow.md`
 
-**Updated Templates (2 files):**
-- ✅ `docs/task_templates/new_task_details_template.md`
-- ✅ `docs/task_templates/new_research_details_template.md`
+**Architectural State Documented:**
 
-**Updated Active Task Files (3 files):**
-- ✅ `new_task_details.md`
-- ✅ `new_task_details_2.md`
-- ✅ `new_research_details.md`
+- **Total AI Agent Tools**: 12 (1 Finnhub + 11 Polygon Direct API)
+- **AI Model**: GPT-5-Nano (EXCLUSIVE - no model selection)
+- **Integration Pattern**: Direct Polygon API (no MCP overhead)
+- **Performance**: 70% faster (removed MCP latency)
+- **Token Tracking**: Dual naming convention support (input_tokens/prompt_tokens)
+- **Test Suite**: CLI_test_regression.sh (27 tests, single persistent session)
 
-**Updated Project Documentation (2 files):**
-- ✅ `CLAUDE.md` - Added "PROPER ATOMIC COMMIT WORKFLOW" section
-- ✅ `AGENTS.md` - Added "PROPER ATOMIC COMMIT WORKFLOW" section
+**Direct API Tools (12 Total):**
 
-**Mandatory Workflow (6 Steps):**
+**Finnhub Custom (1 tool):**
 
-1. **DO ALL WORK FIRST** (code, tests, docs, config) - NO staging yet
-2. **VERIFY COMPLETION** (`git status`, `git diff`)
-3. **STAGE EVERYTHING AT ONCE** (`git add -A`) - First time running git add
-4. **VERIFY STAGING** (`git status` - everything staged, nothing unstaged)
-5. **COMMIT IMMEDIATELY** (within 60 seconds of staging)
-6. **PUSH IMMEDIATELY**
+- get_stock_quote
 
-**What Must Be in Every Atomic Commit:**
-- ✅ Code changes (backend + frontend)
-- ✅ Test reports (evidence of passing tests)
-- ✅ Documentation updates (CLAUDE.md, tech_stack.md, etc.)
-- ✅ Memory updates (.serena/memories/)
-- ✅ Config changes (.claude/settings.local.json, etc.)
-- ✅ Task plan updates
+**Polygon Direct API (11 tools):**
 
-**Enforcement:**
-- 🔴 Staging files early = VIOLATION
-- 🔴 Committing without test reports = VIOLATION
-- 🔴 Incomplete commits will be reverted and reworked
+- get_market_status_and_date_time
+- get_stock_quote_multi
+- get_options_quote_single
+- get_OHLC_bars_custom_date_range
+- get_OHLC_bars_specific_date
+- get_OHLC_bars_previous_close
+- get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
+
+**Migration Timeline:**
+
+- **Phase 4 Complete** (Oct 2025): ALL MCP tools migrated to Direct API
+- **MCP Server**: Completely removed
+- **Performance Gain**: 70% faster (removed MCP server overhead)
 
 **Files Changed:**
 
-- ✅ Created: `.serena/memories/git_commit_workflow.md` (comprehensive guide)
-- ✅ Modified: 2 task templates
-- ✅ Modified: 3 active task files
-- ✅ Modified: CLAUDE.md (added workflow section)
-- ✅ Modified: AGENTS.md (added workflow section)
-- **Total**: 1 new file, 8 files modified, 9 files total
+- ✅ Modified: `.serena/memories/project_architecture.md` (comprehensive rewrite)
+- ✅ Modified: `.serena/memories/task_completion_checklist.md` (major enhancement)
+- **Total**: 2 Serena memory files updated
 
-**Key Principle:** `git add` is the LAST step before `git commit`, not a step during development.
+**Key Achievements:**
+
+- ✅ Serena memories now accurately reflect current architecture
+- ✅ All outdated MCP references removed
+- ✅ Proper atomic commit workflow enforced in checklist
+- ✅ Documentation aligns with actual implementation
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -222,28 +233,34 @@ SUCCESS CRITERIA:
    - ⚠️ **DO NOT RUN `git add` YET**
 
 2. **VERIFY EVERYTHING IS COMPLETE**:
+
    ```bash
    git status  # Review ALL changed/new files
    git diff    # Review ALL changes
    ```
 
 3. **STAGE EVERYTHING AT ONCE**:
+
    ```bash
    git add -A  # Stage ALL files in ONE command
    ```
+
    - ⚠️ This is the FIRST time you run `git add`
 
 4. **VERIFY STAGING IMMEDIATELY**:
+
    ```bash
    git status  # Verify ALL files staged, NOTHING unstaged
    ```
 
 5. **COMMIT IMMEDIATELY** (within 60 seconds):
+
    ```bash
    git commit -m "message"
    ```
 
 6. **PUSH IMMEDIATELY**:
+
    ```bash
    git push
    ```

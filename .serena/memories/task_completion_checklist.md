@@ -72,15 +72,13 @@ npm run build                 # Production build test
 
 ```bash
 # Run the appropriate test suite based on task
-./CLI_test_regression.sh   # For tasks with 16 tests
-# OR
-./test_7_prompts_comprehensive.sh          # For tasks with 7 tests
+./CLI_test_regression.sh   # For tasks with 27 tests (single persistent session)
 ```
 
 **Expected Results (MUST VERIFY):**
 
-- ✅ All X/X tests must PASS (100% success rate)
-- ✅ Response times: 13-35s average (varies with real API calls)
+- ✅ All 27/27 tests must PASS (100% success rate)
+- ✅ Response times: 6-10s average (EXCELLENT performance)
 - ✅ Test report generated in test-reports/
 - ✅ Session persistence verified (single session for all tests)
 - ✅ Performance metrics shown (min/max/avg response times)
@@ -98,7 +96,7 @@ npm run build                 # Production build test
 ### 6. Verify Test Reports
 
 ```bash
-ls -la test-reports/comprehensive_7_prompts_test_*.txt
+ls -la test-reports/cli_regression_test_*.txt
 ```
 
 **Check for:**
@@ -167,34 +165,79 @@ If task introduces new patterns, architecture changes, or commands:
 - Add new memory files if needed
 - Keep memories concise and actionable
 
-## Git Commit Process
+## 🔴 CRITICAL: Proper Atomic Commit Workflow
 
-### 11. Stage Changes
+**⚠️ MANDATORY: Stage ONLY Immediately Before Commit**
+
+**See `.serena/memories/git_commit_workflow.md` for complete workflow documentation**
+
+### The Fatal Mistake: Early Staging
+
+**NEVER stage files early during development. Staging is the LAST step before committing.**
+
+**What happens when you stage too early:**
+
+1. ⏰ **Time T1**: You run `git add` (files staged)
+   - Staging area = snapshot at T1
+2. ⏰ **Time T2-T5**: You continue working
+   - Update config files
+   - Run tests (generates test reports)
+   - Update documentation
+3. ⏰ **Time T6**: You run `git commit`
+   - **Only commits the T1 snapshot**
+   - **All work after T1 is MISSING**
+
+**Result: Incomplete, broken atomic commits** ❌
+
+### Correct Atomic Commit Workflow (6 Phases)
+
+**Follow this workflow EXACTLY:**
+
+#### Phase 1: DO ALL WORK FIRST (DO NOT stage anything yet)
+
+- ✅ Complete ALL code changes
+- ✅ Run ALL tests and generate test reports
+- ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
+- ✅ Update ALL config files (.claude/settings.local.json, etc.)
+- ✅ Update ALL Serena memories
+- ✅ Update ALL task plans
+- ⚠️ **DO NOT RUN `git add` YET**
+
+#### Phase 2: VERIFY EVERYTHING IS COMPLETE
 
 ```bash
-git status                    # Review changed files
-git add .                     # Stage all changes
-# OR
-git add <specific_files>      # Stage specific files only
+git status  # Review ALL changed/new files
+git diff    # Review ALL changes
 ```
 
-### 12. Verify Staged Changes
+- Ensure ALL work is done
+- Ensure ALL files are present
+
+#### Phase 3: STAGE EVERYTHING AT ONCE
 
 ```bash
-git diff --cached             # Review what will be committed
+git add -A  # Stage ALL files in ONE command
 ```
 
-### 13. Create Commit
+- ⚠️ This is the FIRST time you run `git add`
+- ⚠️ Stage ALL related files together
+
+#### Phase 4: VERIFY STAGING IMMEDIATELY
+
+```bash
+git status  # Verify ALL files staged, NOTHING unstaged
+```
+
+- If anything is missing: `git add [missing-file]`
+
+#### Phase 5: COMMIT IMMEDIATELY (within 60 seconds)
 
 ```bash
 git commit -m "$(cat <<'EOF'
-[TYPE] Brief description
+[TAG] Descriptive commit message
 
-- Detailed change 1
-- Detailed change 2
-- Additional modifications
-
-BREAKING CHANGE: Description (if applicable)
+- Change 1
+- Change 2
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -203,26 +246,49 @@ EOF
 )"
 ```
 
-**Commit Types:**
-
-- `[feat]`: New feature
-- `[fix]`: Bug fix
-- `[refactor]`: Code refactoring
-- `[test]`: Test changes
-- `[docs]`: Documentation
-- `[chore]`: Maintenance
-- `[RE-INIT]`: Environment re-initialization
-- `[SERENA]`: Serena-related changes
-
-### 14. Push Changes (When Ready)
+#### Phase 6: PUSH IMMEDIATELY
 
 ```bash
-git push                      # Push to remote
+git push
 ```
+
+### What Belongs in an Atomic Commit
+
+**ALL of these must be included together:**
+
+- ✅ Code changes (backend + frontend)
+- ✅ Test reports (evidence of passing tests)
+- ✅ Documentation updates (CLAUDE.md, README.md, etc.)
+- ✅ Memory updates (.serena/memories/)
+- ✅ Config changes (.claude/settings.local.json, etc.)
+- ✅ Task plan updates (TODO_task_plan.md, etc.)
+
+### ❌ NEVER DO THIS
+
+- ❌ Stage files early during development
+- ❌ Stage files "as you go"
+- ❌ Run `git add` before ALL work is complete
+- ❌ Delay between `git add` and `git commit`
+- ❌ Commit without test reports
+- ❌ Commit without documentation updates
+
+**Enforcement:** Incomplete commits will be reverted and reworked.
+
+**Commit Types:**
+
+- `[FEAT]`: New feature
+- `[FIX]`: Bug fix
+- `[REFACTOR]`: Code refactoring
+- `[TEST]`: Test changes
+- `[DOCS]`: Documentation
+- `[CHORE]`: Maintenance
+- `[INFRASTRUCTURE]`: Infrastructure changes
+- `[SERENA]`: Serena-related changes
+- `[TESTING]`: Testing infrastructure changes
 
 ## Performance Validation
 
-### 15. Run Performance Checks (Optional but Recommended)
+### 11. Run Performance Checks (Optional but Recommended)
 
 ```bash
 npm run lighthouse            # Lighthouse CI audit
@@ -238,7 +304,7 @@ npm run perf:bundle           # Bundle size analysis
 
 ## Environment Validation
 
-### 16. Verify Environment Integrity
+### 12. Verify Environment Integrity
 
 ```bash
 # Check Python environment
@@ -259,12 +325,14 @@ Before considering a task complete, verify:
 - [ ] TypeScript type checking passes
 - [ ] Code properly formatted (Black, isort, Prettier)
 - [ ] Production build succeeds
-- [ ] All 7 comprehensive tests pass
+- [ ] All 27 comprehensive tests pass (100% success rate)
+- [ ] Test report generated and path provided
 - [ ] Backend health endpoint responds correctly
 - [ ] Frontend loads without errors
 - [ ] CLAUDE.md updated if needed
 - [ ] Memory files updated for significant changes
-- [ ] Git commit created with proper format
+- [ ] **ALL work complete BEFORE staging**
+- [ ] Git commit created with proper atomic workflow
 - [ ] Changes pushed to remote (if ready)
 
 ## Common Issues & Solutions
@@ -309,6 +377,20 @@ pkill -f "vite"               # Kill frontend
 lsof -ti:8000 | xargs kill -9 # Force kill port 8000
 lsof -ti:3000 | xargs kill -9 # Force kill port 3000
 ```
+
+### Issue: Incomplete Atomic Commit
+
+**Solution:**
+
+1. DO NOT stage files early
+2. Complete ALL work first (code, tests, docs, config)
+3. Verify everything is done with `git status` and `git diff`
+4. Stage everything at once with `git add -A`
+5. Verify staging with `git status`
+6. Commit immediately (within 60 seconds)
+7. Push immediately
+
+**See `.serena/memories/git_commit_workflow.md` for complete recovery procedures**
 
 ## Project-Specific Requirements
 
