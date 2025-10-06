@@ -15,7 +15,7 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 [TESTING] Add automated loop support to CLI_test_regression.sh
 
 - Enhanced CLI_test_regression.sh with automated loop testing (1-10 iterations)
-- Deleted legacy test_16_prompts_persistent_session.sh
+- Deleted legacy CLI_test_regression.sh
 - **Loop Parameter Support**: `./CLI_test_regression.sh [LOOP_COUNT]` (default: 1, max: 10)
 - **Aggregate Statistics**: Min/max/avg response times across all loop iterations
 - **Individual Reports**: Separate timestamped report per loop iteration
@@ -53,7 +53,7 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 
 **Files Changed:**
 
-- ❌ Deleted: test_16_prompts_persistent_session.sh
+- ❌ Deleted: CLI_test_regression.sh
 - ✅ Enhanced: CLI_test_regression.sh (added loop support with 1-10 iterations)
 - ✅ Updated: .serena/memories/tech_stack.md
 - ✅ Test Reports: 4 total (1x baseline + 3x loops validation)
@@ -113,7 +113,7 @@ SUCCESS CRITERIA:
 
 ✅ **MUST DO:**
 
-- Execute test suite (e.g., `./test_16_prompts_persistent_session.sh`)
+- Execute test suite (e.g., `./CLI_test_regression.sh`)
 - Show test results to user (pass/fail counts, response times)
 - Verify 100% success rate
 - Provide test report file path
@@ -149,7 +149,7 @@ SUCCESS CRITERIA:
 ```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. RUN test suite: ./test_16_prompts_persistent_session.sh ✅
+3. RUN test suite: ./CLI_test_regression.sh ✅
 4. Show results: 16/16 PASS, 100% success ✅
 5. Provide test report path ✅
 6. Update documentation with test results ✅

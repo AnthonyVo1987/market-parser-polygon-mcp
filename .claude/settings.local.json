@@ -181,7 +181,7 @@
       "mcp__serena__replace_lines",
       "Bash(PYTHONPATH=. uv run python -c \"from src.backend.tools.polygon_tools import get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close; print(''✅ All 5 new Polygon tools imported successfully'')\")",
       "Bash(PYTHONPATH=. uv run python -c \"from src.backend.services.agent_service import create_agent; print(''✅ Agent service imports work correctly with all 11 Polygon tools'')\")",
-      "Bash(./test_16_prompts_persistent_session.sh:*)",
+      "Bash(./CLI_test_regression.sh:*)",
       "Bash(do echo \"=== PERFORMANCE BASELINE RUN $i/10 ===\")",
       "Bash(echo \"✅ Run $i completed\")",
       "Bash(awk:*)",

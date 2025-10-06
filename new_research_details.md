@@ -69,7 +69,7 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 1. ✅ **Execute the test suite:**
 
    ```bash
-   ./test_16_prompts_persistent_session.sh
+   ./CLI_test_regression.sh
    ```
 
 2. ✅ **Verify test results:**

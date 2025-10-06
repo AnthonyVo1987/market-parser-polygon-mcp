@@ -3,6 +3,7 @@
 ## 🔴 CRITICAL: Testing is MANDATORY - Not Optional
 
 **Before ANY task can be considered complete:**
+
 1. ✅ Code must be implemented
 2. ✅ Tests must be EXECUTED (not just created)
 3. ✅ Test results must be SHOWN (100% pass rate)
@@ -16,41 +17,49 @@
 ## Pre-Commit Code Quality Checks
 
 ### 1. Linting (Required - Must Pass)
+
 ```bash
 npm run lint                  # Run all linting checks
 ```
 
 **Requirements:**
+
 - ✅ Python: 10.00/10 pylint score (zero errors)
 - ✅ JavaScript/TypeScript: 0 errors (4 acceptable warnings currently)
 - ❌ Do NOT commit if linting fails
 
 ### 2. Type Checking (Required)
+
 ```bash
 npm run type-check            # TypeScript type validation
 ```
 
 **Requirements:**
+
 - ✅ No TypeScript compilation errors
 - ✅ All type definitions properly declared
 
 ### 3. Code Formatting (Required)
+
 ```bash
 npm run format:check          # Verify Prettier formatting
 ```
 
 **If formatting issues found:**
+
 ```bash
 npm run lint:fix              # Auto-fix Python + JS/TS
 npm run format                # Apply Prettier formatting
 ```
 
 ### 4. Build Validation (Recommended)
+
 ```bash
 npm run build                 # Production build test
 ```
 
 **Requirements:**
+
 - ✅ Build completes without errors
 - ✅ No bundle size regressions
 - ⚠️ Monitor build time (should be ~3-6s)
@@ -63,12 +72,13 @@ npm run build                 # Production build test
 
 ```bash
 # Run the appropriate test suite based on task
-./test_16_prompts_persistent_session.sh   # For tasks with 16 tests
+./CLI_test_regression.sh   # For tasks with 16 tests
 # OR
 ./test_7_prompts_comprehensive.sh          # For tasks with 7 tests
 ```
 
 **Expected Results (MUST VERIFY):**
+
 - ✅ All X/X tests must PASS (100% success rate)
 - ✅ Response times: 13-35s average (varies with real API calls)
 - ✅ Test report generated in test-reports/
@@ -77,6 +87,7 @@ npm run build                 # Production build test
 - ⚠️ Varying response times confirm real API calls (not mocked)
 
 **ENFORCEMENT:**
+
 - ❌ Task is NOT complete without test execution
 - ❌ Creating test file ≠ Running test file
 - ❌ Updating test suite ≠ Executing test suite
@@ -85,11 +96,13 @@ npm run build                 # Production build test
 - ✅ Must provide test report file path
 
 ### 6. Verify Test Reports
+
 ```bash
 ls -la test-reports/comprehensive_7_prompts_test_*.txt
 ```
 
 **Check for:**
+
 - Test completion timestamp
 - All tests marked as PASS
 - Performance ratings (GOOD/EXCELLENT)
@@ -98,6 +111,7 @@ ls -la test-reports/comprehensive_7_prompts_test_*.txt
 ## Server Health Checks
 
 ### 7. Backend Health Verification
+
 ```bash
 # Start backend
 npm run backend:dev
@@ -107,25 +121,30 @@ curl http://127.0.0.1:8000/health
 ```
 
 **Expected Response:**
+
 ```json
 {"status": "healthy", "timestamp": "2025-XX-XXTXX:XX:XX.XXXXXX"}
 ```
 
 ### 8. Frontend Build & Serve
+
 ```bash
 npm run build
 npm run serve
 ```
 
 **Verify:**
+
 - ✅ Frontend builds successfully
-- ✅ Application loads at http://127.0.0.1:3000
+- ✅ Application loads at <http://127.0.0.1:3000>
 - ✅ No console errors in browser DevTools
 
 ## Documentation Updates
 
 ### 9. Update CLAUDE.md (If Applicable)
+
 If task involves significant changes, update:
+
 ```markdown
 ## Last Completed Task Summary
 
@@ -141,7 +160,9 @@ BREAKING CHANGE: Description (if applicable)
 ```
 
 ### 10. Update Memory Files (For Major Changes)
+
 If task introduces new patterns, architecture changes, or commands:
+
 - Update relevant Serena memory files
 - Add new memory files if needed
 - Keep memories concise and actionable
@@ -149,6 +170,7 @@ If task introduces new patterns, architecture changes, or commands:
 ## Git Commit Process
 
 ### 11. Stage Changes
+
 ```bash
 git status                    # Review changed files
 git add .                     # Stage all changes
@@ -157,11 +179,13 @@ git add <specific_files>      # Stage specific files only
 ```
 
 ### 12. Verify Staged Changes
+
 ```bash
 git diff --cached             # Review what will be committed
 ```
 
 ### 13. Create Commit
+
 ```bash
 git commit -m "$(cat <<'EOF'
 [TYPE] Brief description
@@ -180,6 +204,7 @@ EOF
 ```
 
 **Commit Types:**
+
 - `[feat]`: New feature
 - `[fix]`: Bug fix
 - `[refactor]`: Code refactoring
@@ -190,6 +215,7 @@ EOF
 - `[SERENA]`: Serena-related changes
 
 ### 14. Push Changes (When Ready)
+
 ```bash
 git push                      # Push to remote
 ```
@@ -197,12 +223,14 @@ git push                      # Push to remote
 ## Performance Validation
 
 ### 15. Run Performance Checks (Optional but Recommended)
+
 ```bash
 npm run lighthouse            # Lighthouse CI audit
 npm run perf:bundle           # Bundle size analysis
 ```
 
 **Performance Targets:**
+
 - First Contentful Paint: ~256ms
 - Core Web Vitals: 85%+ improvement
 - Memory Heap: ~13.8MB
@@ -211,6 +239,7 @@ npm run perf:bundle           # Bundle size analysis
 ## Environment Validation
 
 ### 16. Verify Environment Integrity
+
 ```bash
 # Check Python environment
 uv run python -c "import openai; from agents import Agent; print('✅ Python OK')"
@@ -241,7 +270,9 @@ Before considering a task complete, verify:
 ## Common Issues & Solutions
 
 ### Issue: Linting Fails
+
 **Solution:**
+
 ```bash
 npm run lint:fix              # Auto-fix most issues
 # Manually fix remaining issues
@@ -249,14 +280,18 @@ npm run lint                  # Re-verify
 ```
 
 ### Issue: Tests Fail
+
 **Solution:**
+
 1. Check backend is running: `curl http://127.0.0.1:8000/health`
 2. Verify API keys in `.env`
 3. Check test output for specific errors
 4. Review test-reports/ for detailed logs
 
 ### Issue: Build Fails
+
 **Solution:**
+
 ```bash
 npm run clean:full            # Deep clean
 uv sync                       # Reinstall Python deps
@@ -265,7 +300,9 @@ npm run build                 # Retry build
 ```
 
 ### Issue: Port Already in Use
+
 **Solution:**
+
 ```bash
 pkill -f "uvicorn"            # Kill backend
 pkill -f "vite"               # Kill frontend
@@ -276,17 +313,20 @@ lsof -ti:3000 | xargs kill -9 # Force kill port 3000
 ## Project-Specific Requirements
 
 ### GPT-5-Nano Only Policy
+
 - ✅ Verify no GPT-5-Mini references introduced
 - ✅ All AI calls use GPT-5-Nano model
 - ⚠️ Breaking change if model policy modified
 
 ### API Key Security
+
 - ❌ NEVER commit `.env` file
 - ❌ NEVER hardcode API keys
 - ✅ Always use environment variables
 - ✅ Verify `.env.example` is updated if new keys added
 
 ### Startup Script Compatibility
+
 - ✅ Verify scripts work in both X11 and WSL2/headless environments
 - ✅ Scripts must exit cleanly (30s timeout mechanism)
 - ✅ Health checks must complete successfully
@@ -294,6 +334,7 @@ lsof -ti:3000 | xargs kill -9 # Force kill port 3000
 ## Continuous Integration Notes
 
 When CI/CD is implemented:
+
 - All checklist items should be automated in CI pipeline
 - Failing checks should block merges
 - Performance budgets should be enforced
