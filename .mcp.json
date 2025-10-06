@@ -22,7 +22,8 @@
         "--context",
         "ide-assistant",
         "--project",
-        "/home/anthony/Github/market-parser-polygon-mcp"
+        "/home/anthony/Github/market-parser-polygon-mcp",
+        "/home/1000211866/Github/market-parser-polygon-mcp"
       ],
       "env": {}
     },
