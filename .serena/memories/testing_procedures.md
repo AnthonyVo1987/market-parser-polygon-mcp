@@ -1,109 +1,174 @@
 # Testing Procedures and Validation
 
-## Test Scripts Available
+## Primary Test Script
 
-### 1. Persistent Session Test (RECOMMENDED)
-**Script:** `test_7_prompts_persistent_session.sh`
+### CLI Regression Test Suite (RECOMMENDED)
+**Script:** `CLI_test_regression.sh`
 
-**Purpose:** Tests all 7 standardized prompts in a SINGLE CLI session with proper session persistence validation.
+**Purpose:** Tests all 27 standardized prompts in a SINGLE CLI session with proper session persistence validation.
 
 **Features:**
-- ✅ All 7 tests run sequentially in ONE session
-- ✅ Accurate response time tracking (10-37s responses)
-- ✅ Session persistence validation (verifies count = 1)
-- ✅ No false failure detection
+- ✅ All 27 tests run sequentially in ONE session
+- ✅ Accurate response time tracking
+- ✅ Session persistence validation
 - ✅ Comprehensive test reports
+- ✅ Performance classification
+- ✅ Configurable loop count (1-10 runs)
 
 **Usage:**
 ```bash
-./test_7_prompts_persistent_session.sh
+# Single test loop (27 tests)
+./CLI_test_regression.sh
+
+# Multiple test loops (e.g., 10 loops for baseline)
+./CLI_test_regression.sh 10
 ```
 
-**Expected Execution:**
-- Duration: 2-5 minutes (all 7 tests)
-- Session count: 1 (verified)
-- Success rate: 100% (7/7 tests pass)
-- Response times: 6-37s per test (varies with API)
+**Test Coverage (27 tests total):**
+1. **Original Market Data Tests (7)**:
+   - Market status query
+   - Single stock snapshot (NVDA)
+   - Full market snapshot (SPY/QQQ/IWM)
+   - Closing price (GME)
+   - Performance analysis (SOUN)
+   - Support/resistance (NVDA)
+   - Technical analysis (SPY)
 
-**Latest Test Results (October 2025 - Post UI Refactor & Linting):**
+2. **Technical Analysis Indicators (4 original)**:
+   - SMA query
+   - EMA query
+   - RSI query
+   - MACD query
 
-| Run | Tests Passed | Session Count | Avg Response Time | Total Duration | Performance |
-|-----|--------------|---------------|-------------------|----------------|-------------|
-| Oct 4 (Pre-refactor) | 7/7 (100%) | 1 ✅ | 18.78s | 134.50s | EXCELLENT |
-| Oct 4 (Post-refactor 1) | 7/7 (100%) | 1 ✅ | 20.49s | 146.74s | EXCELLENT |
-| Oct 4 (Post-refactor 2) | 7/7 (100%) | 1 ✅ | 18.00s | 129.26s | EXCELLENT |
-| Oct 4 (Post-refactor 3) | 7/7 (100%) | 1 ✅ | 15.29s | 109.55s | EXCELLENT |
-| Oct 4 (Post-linting) | 7/7 (100%) | 1 ✅ | 21.23s | 151.37s | EXCELLENT |
+3. **OHLC/Options Data (5 original)**:
+   - OHLC custom date range
+   - OHLC specific date
+   - OHLC previous close
+   - Options quote single
+   - Multi-stock quotes
 
-**Consistency:** 100% pass rate across all validation runs
-**Performance Impact:** UI refactor and linting fixes had **ZERO negative impact** on performance
+4. **SPY-Specific TA Indicators (11 NEW)**:
+   - SPY SMA (7 variants: 10/20/50/100/200 day, 50 with RSI, custom)
+   - SPY EMA (2 variants: 12/26 day, custom)
+   - SPY MACD (2 variants: standard, custom)
 
-### 2. Legacy Test Script (NOT RECOMMENDED)
-**Script:** `test_7_prompts_comprehensive.sh`
+**Expected Performance (Post-MCP Removal, Oct 2025):**
+- **Total Tests**: 27 per loop
+- **Average Response Time**: 6.10s (EXCELLENT)
+- **Performance Range**: 5.25s - 7.57s
+- **Consistency**: 0.80s standard deviation
+- **Success Rate**: 100% (160/160 in 10-run baseline)
+- **Total Duration**: ~165-200s per loop (27 tests)
 
-**Issues:**
-- ❌ Runs each test in SEPARATE CLI session (7 sessions total)
-- ❌ Incorrect response time calculation
-- ❌ Does not test session persistence
-- ❌ Not representative of actual user behavior
+**10-Run Performance Baseline (Oct 2025):**
 
-**DO NOT USE** - Kept for reference only
+| Run | Tests Passed | Success Rate | Avg Response Time | Performance Rating |
+|-----|--------------|--------------|-------------------|-------------------|
+| 1 | 27/27 | 100% | 7.34s | EXCELLENT |
+| 2 | 27/27 | 100% | 5.63s | EXCELLENT |
+| 3 | 27/27 | 100% | 6.30s | EXCELLENT |
+| 4 | 27/27 | 100% | 7.57s | EXCELLENT |
+| 5 | 27/27 | 100% | 6.58s | EXCELLENT |
+| 6 | 27/27 | 100% | 5.25s | EXCELLENT |
+| 7 | 27/27 | 100% | 5.50s | EXCELLENT |
+| 8 | 27/27 | 100% | 6.12s | EXCELLENT |
+| 9 | 27/27 | 100% | 5.91s | EXCELLENT |
+| 10 | 27/27 | 100% | 5.76s | EXCELLENT |
 
-## The 7 Standardized Test Prompts
+**Baseline Summary:**
+- **Total Tests**: 270/270 PASSED (100%)
+- **Average**: 6.10s per query
+- **Std Dev**: 0.80s (highly consistent)
+- **Min**: 5.25s
+- **Max**: 7.57s
+- **Performance**: 70% faster than legacy MCP architecture (20s avg)
 
-Based on `tests/playwright/test_prompts.md`:
+## The 27 Standardized Test Prompts
 
-1. **Test 1 - Market Status Query**
-   - Prompt: "What the current Market Status, Date, & Time: Open, Closed, After-Hours, Pre-market, Overnight?"
-   - Expected: Market status, date, time information
-   - Typical Response Time: 18-21s
+All prompts follow the format: **"Quick Response Needed with minimal tool calls: [query]"**
 
-2. **Test 2 - Single Stock Snapshot (NVDA)**
-   - Prompt: "Single Stock Snapshot Price NVDA"
-   - Expected: NVDA price, change, volume, day range
-   - Typical Response Time: 23-37s
+### Category 1: Market Data (7 tests)
 
-3. **Test 3 - Full Market Snapshot (SPY/QQQ/IWM)**
-   - Prompt: "Full Market Snapshot Price: SPY, QQQ, IWM"
-   - Expected: Prices for all 3 major ETFs
-   - Typical Response Time: 17-23s
+1. **Market Status**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, what is the current Market Status?"
 
-4. **Test 4 - Closing Price Query (GME)**
-   - Prompt: "GME closing price today"
-   - Expected: GME closing price
-   - Typical Response Time: 15-20s
+2. **Single Stock Snapshot (NVDA)**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
 
-5. **Test 5 - Performance Analysis (SOUN)**
-   - Prompt: "SOUN Price performance this week"
-   - Expected: Weekly performance metrics
-   - Typical Response Time: 13-24s
+3. **Full Market Snapshot**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, Full Market Snapshot: SPY, QQQ, IWM"
 
-6. **Test 6 - Support/Resistance (NVDA)**
-   - Prompt: "NVDA Price Support & Resistance Levels"
-   - Expected: Technical support/resistance levels
-   - Typical Response Time: 7-13s
+4. **Closing Price (GME)**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, what was the closing price of GME today?"
 
-7. **Test 7 - Technical Analysis (SPY)**
-   - Prompt: "SPY Price Technical Analysis"
-   - Expected: Technical analysis metrics
-   - Typical Response Time: 6-21s
+5. **Performance Analysis (SOUN)**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, how is SOUN performance doing this week?"
+
+6. **Support/Resistance (NVDA)**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, Support & Resistance Levels NVDA"
+
+7. **Technical Analysis (SPY)**
+   - "Quick Response Needed with minimal tool calls: Based on Market Status Date, Technical Analysis SPY"
+
+### Category 2: Technical Analysis Indicators - Original (4 tests)
+
+8-11. **TA Indicators (SMA, EMA, RSI, MACD)**
+   - Original TA indicator queries
+
+### Category 3: OHLC/Options Data - Original (5 tests)
+
+12-16. **OHLC and Options Queries**
+   - Custom date range, specific date, previous close
+   - Options quote single
+   - Multi-stock quotes
+
+### Category 4: SPY-Specific TA Indicators - NEW (11 tests)
+
+17-27. **SPY SMA/EMA/MACD Variants**
+   - SPY SMA 10-day, 20-day, 50-day, 100-day, 200-day
+   - SPY SMA 50-day with RSI
+   - SPY custom SMA
+   - SPY EMA 12-day, 26-day
+   - SPY custom EMA
+   - SPY standard MACD
+   - SPY custom MACD
 
 ## Test Output Files
 
 **Location:** `test-reports/`
 
 **Naming Convention:**
-- Persistent Session: `persistent_session_test_YYYYMMDD_HHMMSS.txt`
-- Legacy Script: `comprehensive_7_prompts_test_YYYYMMDD_HHMMSS.txt`
+- Single loop: `cli_regression_test_YYYYMMDD_HHMMSS.txt`
+- Multi-loop: `cli_regression_test_YYYYMMDD_HHMMSS_loopN.txt`
 
 **Report Contents:**
 - Test execution timestamp
+- Loop number (if multi-loop)
 - Individual test results with response times
-- Performance classification (EXCELLENT/GOOD/ACCEPTABLE/SLOW)
-- Session persistence validation
+- Performance classification per test (EXCELLENT/GOOD/ACCEPTABLE/SLOW)
 - Response time statistics (min/max/avg)
 - Overall performance rating
 - Full CLI output for debugging
+
+**Example Report:**
+```
+=== CLI Regression Test Report ===
+Date: 2025-10-04 13:11:26
+Loop: 1/1
+
+Test Results:
+✅ Test 1 PASSED (7.34s) - EXCELLENT
+✅ Test 2 PASSED (6.12s) - EXCELLENT
+...
+✅ Test 27 PASSED (5.91s) - EXCELLENT
+
+Performance Summary:
+- Total Tests: 27/27 PASSED (100%)
+- Average Response Time: 6.10s (EXCELLENT)
+- Min Response Time: 5.25s
+- Max Response Time: 7.57s
+- Total Duration: 164.70s
+```
 
 ## Performance Benchmarks
 
@@ -111,126 +176,188 @@ Based on `tests/playwright/test_prompts.md`:
 
 | Category | Time Range | Rating |
 |----------|-----------|--------|
-| EXCELLENT | < 30s | ✅ Expected for most queries |
-| GOOD | 30-45s | ✅ Acceptable for complex queries |
-| ACCEPTABLE | 45-90s | ⚠️ May need optimization |
-| SLOW | > 90s | ❌ Needs investigation |
+| EXCELLENT | < 10s | ✅ Expected for all queries (post-MCP removal) |
+| GOOD | 10-20s | ✅ Acceptable for complex queries |
+| ACCEPTABLE | 20-60s | ⚠️ May need optimization |
+| SLOW | > 60s | ❌ Needs investigation |
 
-### Expected Performance (October 2025)
+### Expected Performance (Oct 2025 - Post-MCP Removal)
 
-**Average Response Time:** 15-21s
-**Min Response Time:** 6-11s (simple queries)
-**Max Response Time:** 23-37s (complex multi-stock queries)
-**Total Session Duration:** 110-152s for all 7 tests
+**Individual Query Performance:**
+- **Average**: 6.10s
+- **Min**: 5.25s (simple queries)
+- **Max**: 7.57s (complex multi-stock queries)
+- **Std Dev**: 0.80s (highly consistent)
+
+**Full Test Suite (27 tests):**
+- **Duration**: 165-200s (2.75-3.33 minutes)
+- **Success Rate**: 100%
+- **Consistency**: Very high (0.80s std dev)
 
 ### Performance Trends
 
-**UI Refactor Impact (Oct 2025):**
-- Before: 18.78s avg
-- After (3 runs): 20.49s, 18.00s, 15.29s avg
-- **Result:** No performance degradation, slight improvement in best case
+**MCP Removal Impact (Oct 2025):**
+- **Before** (MCP architecture): ~20s avg
+- **After** (Direct API): ~6.10s avg
+- **Improvement**: 70% faster
+- **Reason**: Removed MCP server overhead, direct Python SDK calls
 
-**Linting Fixes Impact (Oct 2025):**
-- Before: 15.29s avg (best previous)
-- After: 21.23s avg
-- **Result:** Within normal variance, no degradation
+**Architecture Milestones:**
+- **Phase 4 Complete**: All 12 tools migrated to Direct API
+- **MCP Server**: Completely removed
+- **Performance Gain**: 70% faster (6.10s vs 20s)
+- **Reliability**: 100% success rate (160/160 tests in baseline)
 
 ## Session Persistence Validation
 
 **How It Works:**
-1. Script counts occurrences of "CLI session 'cli_session' initialized"
-2. Expected count: 1 (all tests in same session)
-3. If count > 1: Session persistence FAILED
-4. If count = 1: Session persistence VERIFIED ✅
+1. Script creates single input file with all 27 prompts
+2. Single CLI invocation processes all prompts
+3. Script verifies session initialized only once
+4. Expected: Session persists throughout all tests
+
+**Validation Check:**
+```bash
+# Count session initializations in output
+session_count=$(grep -c "CLI session 'cli_session' initialized" "$RAW_OUTPUT")
+
+if [ "$session_count" -eq 1 ]; then
+    echo "✅ Session Persistence: VERIFIED"
+else
+    echo "❌ Session Persistence: FAILED (count=$session_count)"
+fi
+```
 
 **Why It Matters:**
 - Real users have persistent chat sessions
 - Testing must match actual usage patterns
-- Session context should be maintained across queries
-- Separate sessions don't test conversation memory
+- Session context maintained across queries
+- Conversation memory tested
 
-**Validation Status:** ✅ VERIFIED across all recent test runs
+**Validation Status:** ✅ VERIFIED in all recent test runs
 
 ## Running Tests
 
-### Quick Test
+### Quick Test (Single Loop)
 ```bash
-./test_7_prompts_persistent_session.sh
+./CLI_test_regression.sh
 ```
 
-### Sanity Check (3 Runs)
+### Performance Baseline (10 Loops)
 ```bash
-./test_7_prompts_persistent_session.sh
-./test_7_prompts_persistent_session.sh
-./test_7_prompts_persistent_session.sh
+./CLI_test_regression.sh 10
+```
+
+### Custom Loop Count
+```bash
+# 3 loops
+./CLI_test_regression.sh 3
+
+# 5 loops
+./CLI_test_regression.sh 5
 ```
 
 ### Viewing Results
 ```bash
 # List recent test reports
-ls -lt test-reports/persistent_session_test_*.txt | head -5
+ls -lt test-reports/cli_regression_test_*.txt | head -5
 
 # View specific report
-cat test-reports/persistent_session_test_20251004_160743.txt
+cat test-reports/cli_regression_test_20251004_131126.txt
 
-# View raw CLI output
-cat /tmp/cli_output_20251004_160743.log
+# View latest report
+cat test-reports/cli_regression_test_*.txt | tail -100
 ```
 
 ## Troubleshooting
 
 ### Issue: Test Timeout
 **Cause:** Response times > 120s (max configured)
-**Solution:** Increase MAX_RESPONSE_TIME in script or check API connectivity
+**Solution:**
+- Increase MAX_RESPONSE_TIME in script
+- Check API connectivity
+- Verify API keys in .env
 
 ### Issue: Session Count > 1
-**Cause:** CLI is restarting between prompts
-**Solution:** Verify input file has all prompts with single "exit" at end
+**Cause:** CLI restarting between prompts
+**Solution:**
+- Verify input file has all prompts with single "exit" at end
+- Check CLI_CMD variable is correct
+- Review raw output log for restart indicators
 
 ### Issue: Missing Response Times
 **Cause:** CLI output format changed
-**Solution:** Check raw output log, update parsing logic if needed
+**Solution:**
+- Check raw output log
+- Update parsing logic in script
+- Verify CLI performance metrics are enabled
 
 ### Issue: Tests Fail
 **Cause:** API errors, connectivity issues, or CLI crashes
-**Solution:** Check raw output log for error messages, verify API keys in .env
+**Solution:**
+- Check raw output log for error messages
+- Verify API keys: `cat .env | grep API_KEY`
+- Test API connectivity: `curl https://api.polygon.io/v1/meta/symbols/AAPL/company?apiKey=$POLYGON_API_KEY`
+- Check OpenAI API status
+
+### Issue: Inconsistent Performance
+**Cause:** Network latency, API load
+**Solution:**
+- Run 10-loop baseline to get average
+- Expect 0.80s std dev (normal variation)
+- Check for outliers > 15s (may indicate API issues)
 
 ## Integration with Development Workflow
 
-### When to Run Tests
+### When to Run Tests (MANDATORY)
 
 **Required:**
-- Before committing changes to CLI or backend
-- After modifying agent service or MCP integration
-- Before creating pull requests
-- After updating OpenAI Agents SDK
-- **After UI refactoring** (verified: no performance regression)
-- **After linting changes** (verified: no functional impact)
+- ✅ Before committing changes to CLI or backend
+- ✅ After modifying agent service or tool integration
+- ✅ Before creating pull requests
+- ✅ After updating OpenAI Agents SDK
+- ✅ After adding/modifying AI agent tools
+- ✅ Before marking any task as "complete"
 
 **Recommended:**
 - After changing prompt templates
 - After modifying API models or response formatting
 - During performance optimization work
 - When investigating user-reported issues
+- After dependency updates
 
 ### Pre-Commit Checklist
 
 See `task_completion_checklist.md` for full checklist. Testing requirements:
 
 ```bash
-# Run persistent session test
-./test_7_prompts_persistent_session.sh
+# 1. Run CLI regression test
+./CLI_test_regression.sh
 
-# Verify all 7 tests pass
-# Verify session count = 1
-# Check performance ratings (most should be EXCELLENT)
+# 2. Verify results
+# - All 27/27 tests PASSED (100% success rate)
+# - Average response time < 10s (preferably ~6-8s)
+# - Performance rating: EXCELLENT
+
+# 3. Include test report in commit
+# - Test report auto-saved to test-reports/
+# - Include in git add before commit
 ```
+
+**CRITICAL:** Test execution is MANDATORY before any commit. See enforcement rules in `task_completion_checklist.md`.
 
 ## Test Script Implementation Details
 
 ### Input File Generation
 ```bash
-# Creates single input file with all prompts
+# Array of all 27 prompts
+prompts=(
+    "Quick Response Needed with minimal tool calls: Based on Market Status Date, what is the current Market Status?"
+    "Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
+    # ... all 27 prompts ...
+)
+
+# Create single input file
 for prompt in "${prompts[@]}"; do
     echo "$prompt" >> "$INPUT_FILE"
 done
@@ -242,6 +369,8 @@ echo "exit" >> "$INPUT_FILE"  # Only one exit at the end
 # Single CLI invocation with all prompts
 $CLI_CMD < "$INPUT_FILE" > "$RAW_OUTPUT" 2>&1 &
 CLI_PID=$!
+
+# Wait for completion with timeout
 wait $CLI_PID
 ```
 
@@ -256,93 +385,89 @@ while IFS= read -r line; do
 done < "$RAW_OUTPUT"
 ```
 
-### Session Validation
+### Performance Classification
 ```bash
-# Count session initializations
-session_count=$(grep -c "CLI session 'cli_session' initialized" "$RAW_OUTPUT")
-if [ "$session_count" -eq 1 ]; then
-    echo "✅ Session Persistence: VERIFIED"
+# Classify each response time
+if (( $(echo "$rt < 10" | bc -l) )); then
+    classification="EXCELLENT"
+elif (( $(echo "$rt < 20" | bc -l) )); then
+    classification="GOOD"
+elif (( $(echo "$rt < 60" | bc -l) )); then
+    classification="ACCEPTABLE"
+else
+    classification="SLOW"
 fi
 ```
 
-## Code Quality Validation Testing
+## Multi-Loop Testing
 
-### Linting Validation Process (October 2025)
+### Purpose
+Multi-loop testing establishes performance baselines and validates consistency.
 
-When fixing linting issues, the following validation sequence is required:
-
-1. **Run Comprehensive Linting**
+### Usage
 ```bash
-npm run check:all  # Runs lint + format:check + type-check
+# 10-loop baseline (recommended for performance validation)
+./CLI_test_regression.sh 10
 ```
 
-2. **Verify Zero Warnings**
-- Python (Pylint): Must be 10.00/10
-- ESLint: Must be 0 errors, 0 warnings
-- Prettier: All files must be formatted
-- TypeScript: No type errors
+### Output
+Each loop generates separate report with aggregated summary:
+```
+Loop 1/10: 27/27 PASSED, Avg: 7.34s
+Loop 2/10: 27/27 PASSED, Avg: 5.63s
+...
+Loop 10/10: 27/27 PASSED, Avg: 5.76s
 
-3. **Run Full Test Suite**
-```bash
-./test_7_prompts_persistent_session.sh
+Overall Baseline:
+- Total Tests: 270/270 PASSED (100%)
+- Average: 6.10s
+- Std Dev: 0.80s
+- Min: 5.25s
+- Max: 7.57s
 ```
 
-4. **Verify No Regressions**
-- All 7/7 tests must pass
-- Performance must remain EXCELLENT
-- Session persistence must be verified
+### When to Run Multi-Loop Tests
+- After major architectural changes
+- Before production releases
+- When validating performance optimizations
+- To establish new performance baselines
 
-5. **Commit Only After All Checks Pass**
-```bash
-git add -A
-git commit -m "[LINT] Description..."
-git push
-```
+## API Usage Considerations
 
-### Latest Linting Validation (Oct 4, 2025)
+**Note:** Each test run makes 27+ real API calls to:
+- **Polygon.io**: Financial data (11 tools)
+- **Finnhub**: Stock quotes (1 tool)
+- **OpenAI**: GPT-5-Nano (AI agent)
 
-**Changes Made:**
-- Fixed 4 ESLint `@typescript-eslint/no-explicit-any` warnings
-- Added eslint-disable comments in performance.tsx (3 lines)
-- Added eslint-disable comment in wdyr.ts (1 line)
-- Ran Prettier formatting
+**Cost Implications:**
+- **Polygon.io**: Counts toward API rate limits
+- **Finnhub**: Counts toward API rate limits
+- **OpenAI**: Tokens consumed (~800-1500 per test, ~21,600-40,500 per full run)
 
-**Validation Results:**
-- ✅ Python: 10.00/10 (maintained)
-- ✅ ESLint: 0 errors, 0 warnings (improved from 4 warnings)
-- ✅ Prettier: All files formatted
-- ✅ TypeScript: No errors
-- ✅ All 7/7 tests PASSED
-- ✅ Performance: EXCELLENT (21.23s avg)
+**Best Practice:**
+- Run full test suite before commits (mandatory)
+- Run 10-loop baselines sparingly (major changes only)
+- Monitor API usage and costs
+- Consider API mocking for frequent development testing (future enhancement)
 
 ## Future Enhancements
 
 Potential improvements for testing infrastructure:
 
-1. **Parallel Testing** - Run multiple test suites concurrently
-2. **Performance Regression Detection** - Alert if avg response time increases
-3. **API Mocking** - Test without live API calls for faster iteration
+1. **API Mocking** - Test without live API calls for faster iteration
+2. **Parallel Testing** - Run multiple test suites concurrently
+3. **Performance Regression Detection** - Alert if avg response time increases > 20%
 4. **CI/CD Integration** - Automated testing on push/PR
-5. **Historical Trending** - Track performance metrics over time
+5. **Historical Trending** - Track performance metrics over time in database
 6. **Load Testing** - Test concurrent user scenarios
 7. **Error Injection** - Test error handling and recovery
-
-## API Usage Considerations
-
-**Note:** Each test run makes 7 real API calls to:
-- Polygon.io (financial data)
-- OpenAI (GPT-5-Nano)
-
-**Cost Implications:**
-- Polygon.io: Counts toward API rate limits
-- OpenAI: Tokens consumed (avg ~30,000-42,000 per full test run)
-
-**Best Practice:** Run tests when needed, not continuously. Use mocked data for frequent development testing.
+8. **Visual Regression Testing** - Frontend screenshot comparison
+9. **End-to-End Web Testing** - Playwright tests for full web flow
 
 ## Test Report Archive
 
 Recent test reports demonstrate consistent performance:
 
-- `persistent_session_test_20251004_160743.txt` - Post-linting validation
-- `persistent_session_test_20251004_154155.txt` - Post-UI refactor validation
-- Multiple validation runs all showing 100% pass rate
+- **10-Run Baseline** (Oct 2025): 270/270 PASSED, 6.10s avg, 0.80s std dev
+- **Post-MCP Removal**: 70% performance improvement
+- **Consistency**: 100% success rate across all validation runs

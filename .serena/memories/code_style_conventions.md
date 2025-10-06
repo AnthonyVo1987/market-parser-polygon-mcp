@@ -1,259 +1,357 @@
 # Code Style and Conventions
 
-## Python Backend Code Style
+## Python Code Style
 
-### Formatting Standards
-- **Line Length**: 100 characters (Black and isort configured)
-- **Formatter**: Black (v23.12.0+)
-- **Import Sorting**: isort with Black profile
-- **Linter**: pylint (v3.0.0+)
-- **Type Checker**: mypy (v1.7.0+)
+### General Conventions
+- **Line Length**: 100 characters max (configured in black, isort, pylint)
+- **Python Version**: 3.10+ (target: 3.12.3)
+- **Formatter**: black with `--line-length 100`
+- **Import Sorter**: isort with `--profile black --line-length 100`
+- **Linter**: pylint with custom configuration
 
-### Naming Conventions
-- **Functions/Variables**: `snake_case`
-  - Examples: `create_agent()`, `get_enhanced_agent_instructions()`, `shared_mcp_server`
-- **Classes**: `PascalCase`
-  - Examples: `ChatRequest`, `ChatResponse`, `Settings`
-- **Constants**: `UPPER_SNAKE_CASE`
-  - Examples: `MAX_TOKENS`, `DEFAULT_MODEL`
-- **Private Functions/Variables**: Prefix with single underscore `_`
-  - Example: `_internal_helper()`
-
-### Type Hints
-- **Required**: Type hints encouraged for function parameters and return types
-- **Configuration**: mypy configured with gradual adoption
-- **Example**:
+### Import Organization (isort)
 ```python
-def create_agent(session: SQLiteSession, settings: Settings) -> Agent:
-    """Create an agent with enhanced instructions."""
-    pass
-```
-
-### Docstrings
-- **Style**: Use descriptive docstrings for modules, classes, and functions
-- **Format**: One-line docstrings for simple functions, multi-line for complex ones
-- **Example**:
-```python
-def get_optimized_model_settings() -> dict:
-    """Return optimized model settings for GPT-5-Nano."""
-    return {...}
-```
-
-### Import Organization
-- **Order** (isort configured):
-  1. Future imports
-  2. Standard library
-  3. Third-party (openai, pydantic, rich, fastapi, uvicorn, agents)
-  4. First-party (src)
-  5. Local folder
-
-- **Example**:
-```python
-from typing import Optional
+# Standard library imports
 import os
+import sys
+from typing import Dict, List, Optional
 
-from openai import OpenAI
+# Third-party imports
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from rich.console import Console
 
-from src.backend.config import Settings
-from .utils import helper_function
+# First-party imports
+from src.backend.config import settings
+from src.backend.utils import helpers
+
+# Local imports
+from .models import User
 ```
 
-### Code Quality Requirements
-- **Pylint Score**: **10.00/10 (PERFECT SCORE - MAINTAINED)**
-- **Zero Errors Policy**: No linting errors allowed
-- **Zero Warnings Policy**: No linting warnings allowed
-- **Type Safety**: Use type hints where applicable
+**Import Sections (in order):**
+1. FUTURE
+2. STDLIB
+3. THIRDPARTY
+4. FIRSTPARTY
+5. LOCALFOLDER
 
-## TypeScript/React Frontend Code Style
-
-### Formatting Standards
-- **Linter**: ESLint with TypeScript plugin
-- **Formatter**: Prettier
-- **Max Warnings**: 150 (configured, but **ZERO WARNINGS ACHIEVED**)
-- **File Extensions**: `.tsx` for React components, `.ts` for utilities
+**Known packages:**
+- Third-party: `openai`, `pydantic`, `rich`, `fastapi`, `uvicorn`, `agents`
+- First-party: `src`
 
 ### Naming Conventions
-- **Components**: `PascalCase` with descriptive suffixes
-  - Examples: `ChatInterface_OpenAI`, `ChatInput_OpenAI`, `ChatMessage_OpenAI`
-- **Functions/Variables**: `camelCase`
-  - Examples: `handleSubmit`, `messageText`, `isLoading`
-- **Constants**: `UPPER_SNAKE_CASE` or `camelCase` depending on scope
-- **Types/Interfaces**: `PascalCase`
-  - Examples: `ChatRequest`, `Message`, `AgentResponse`
 
-### Component Structure
-- **Functional Components**: Use React functional components with hooks
-- **File Organization**: One component per file
-- **Example**:
-```typescript
-interface ChatMessageProps {
-  message: string;
-  sender: string;
-  timestamp: number;
-}
+**Variables and Functions:**
+- `snake_case` for variables and functions
+- Descriptive names (e.g., `get_stock_quote`, `market_status`)
+- Private functions prefixed with `_` (e.g., `_get_polygon_client`)
 
-export function ChatMessage_OpenAI({ message, sender, timestamp }: ChatMessageProps) {
-  return <div>...</div>;
-}
+**Classes:**
+- `PascalCase` for class names
+- Descriptive names (e.g., `AgentService`, `PolygonClient`)
+
+**Constants:**
+- `UPPER_SNAKE_CASE` for constants
+- Defined at module level (e.g., `MAX_RESPONSE_TIME`, `DEFAULT_MODEL`)
+
+**Type Hints:**
+- Use type hints for function parameters and return types
+- Import from `typing` module
+- Example: `def get_quote(symbol: str) -> Dict[str, Any]:`
+
+### Docstrings
+
+**Format:** Generally minimal docstrings for prototyping
+- Use docstrings for complex functions only
+- Keep them concise and focused
+- pylint configured with `missing-docstring` disabled
+
+**Example:**
+```python
+def get_stock_quote(symbol: str) -> dict:
+    """Get real-time stock quote for a symbol."""
+    # Implementation
 ```
 
-### TypeScript Standards
-- **Strict Mode**: TypeScript strict mode enabled
-- **Type Safety**: Explicit types preferred over `any`
-- **ESLint Disable Comments**: Only use when absolutely necessary with proper justification
-- **Example of Acceptable `any` Usage**:
-```typescript
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createLazyComponent<T extends React.ComponentType<any>>(
-  // ... third-party library interface requires any type
-)
-```
+### Linting Configuration (.pylintrc)
 
-### React Patterns
-- **Hooks**: Use React hooks (useState, useEffect, useCallback, useMemo)
-- **Props**: Destructure props in function parameters
-- **Performance**: Use React.memo for expensive components
-- **State Management**: Local state with useState, context for global state
+**Disabled Checks (prototyping-friendly):**
+- `missing-docstring` - Docstrings not required for all functions
+- `invalid-name` - Flexible naming
+- `too-few-public-methods` - Allow simple classes
+- `too-many-arguments` - Allow many parameters for config
+- `line-too-long` - Handled by black
+- `broad-exception-caught` - Allow catching general exceptions
 
-## Project-Specific Conventions
+**Line Length:** 100 characters max
 
-### Model Policy
-- **GPT-5-Nano Only**: Project exclusively uses GPT-5-Nano
-- **No GPT-5-Mini**: GPT-5-Mini completely removed per project policy
-- **Breaking Change**: Recent update enforced GPT-5-Nano-only architecture
-
-### File Naming
-- **Backend Python**: `snake_case.py`
-  - Examples: `agent_service.py`, `response_utils.py`, `api_models.py`
-- **Frontend TypeScript**: `PascalCase.tsx` for components, `camelCase.ts` for utilities
-  - Examples: `ChatInterface_OpenAI.tsx`, `config.ts`
-
-### Directory Structure Conventions
-- **Backend**:
-  - `routers/`: API endpoint routers
-  - `services/`: Business logic services
-  - `utils/`: Utility functions
-  - `api_models.py`: Pydantic models for API schemas
-  - `config.py`: Configuration management
-
-- **Frontend**:
-  - `components/`: React components
-  - `services/`: API services
-  - `types/`: TypeScript type definitions
-  - `utils/`: Utility functions
-  - `config/`: Configuration files
-  - `styles/`: CSS styles
+**Python Version:** 3.10
 
 ### Code Organization
-- **Single Responsibility**: Each module/component has one clear purpose
-- **DRY Principle**: Avoid code duplication (test_utils.py created to eliminate duplication)
-- **Separation of Concerns**: UI logic separate from business logic
 
-### Error Handling
-- **Backend**: Use FastAPI HTTPException with appropriate status codes
-- **Frontend**: Use ErrorBoundary component for React error handling
-- **Logging**: Use Rich console for backend, console methods for frontend
-
-### Testing Conventions
-- **Test Files**: Mirror source structure in tests/ directory
-- **Test Utilities**: Shared utilities in test_utils.py
-- **E2E Tests**: Playwright tests in tests/playwright/
-- **Test Reports**: Generated in test-reports/ directory
-
-## Git Commit Conventions
-
-### Commit Message Format
+**File Structure:**
 ```
-[TYPE] Brief description
+src/backend/
+├── main.py              # FastAPI app, endpoints, startup
+├── config.py            # Configuration management
+├── api_models.py        # Pydantic models for API
+├── dependencies.py      # Dependency injection
+├── cli.py              # CLI interface
+├── services/           # Business logic
+│   └── agent_service.py
+├── tools/              # AI agent tools
+│   ├── polygon_tools.py
+│   └── finnhub_tools.py
+├── utils/              # Helper functions
+└── routers/            # API route handlers
+```
 
-- Bullet point details
-- Additional changes
-- Breaking changes noted
+**Module Organization:**
+1. Imports (organized by isort)
+2. Constants
+3. Helper functions (private with `_` prefix)
+4. Public functions
+5. Classes (if any)
+6. Main execution (if `__main__`)
 
-BREAKING CHANGE: Description (if applicable)
+## TypeScript/React Code Style
+
+### General Conventions
+- **Line Length**: No strict limit (Prettier handles formatting)
+- **Formatter**: Prettier
+- **Linter**: ESLint with TypeScript plugin
+- **Type Checker**: TypeScript compiler (tsc)
+
+### Naming Conventions
+
+**Components:**
+- `PascalCase` for component names (e.g., `ChatInterface`, `MessageList`)
+- File names match component names (e.g., `ChatInterface.tsx`)
+
+**Functions and Variables:**
+- `camelCase` for functions and variables (e.g., `handleSubmit`, `apiUrl`)
+- Descriptive names
+
+**Hooks:**
+- Prefix with `use` (e.g., `useDebounce`, `useConfig`)
+
+**Types and Interfaces:**
+- `PascalCase` for types and interfaces (e.g., `MessageType`, `ApiResponse`)
+- Interface names without `I` prefix
+
+**Constants:**
+- `UPPER_SNAKE_CASE` for constants (e.g., `API_BASE_URL`)
+
+### TypeScript
+
+**Type Safety:**
+- Use explicit types where helpful
+- Prefer interfaces over types for objects
+- Use `unknown` instead of `any` when possible
+- ESLint configured to warn on `any` usage
+
+**Type Annotations:**
+```typescript
+// Function parameters and return types
+const fetchData = async (url: string): Promise<ApiResponse> => {
+  // Implementation
+};
+
+// Interface for props
+interface ChatProps {
+  onSubmit: (message: string) => void;
+  isLoading: boolean;
+}
+
+// Component with typed props
+const Chat: React.FC<ChatProps> = ({ onSubmit, isLoading }) => {
+  // Implementation
+};
+```
+
+### React Conventions
+
+**Component Structure:**
+```typescript
+// 1. Imports
+import { useState, useEffect } from 'react';
+import { ComponentProps } from './types';
+
+// 2. Interface/Type definitions
+interface ChatInterfaceProps {
+  // ...
+}
+
+// 3. Component definition
+const ChatInterface: React.FC<ChatInterfaceProps> = (props) => {
+  // 4. Hooks
+  const [state, setState] = useState();
+  
+  // 5. Event handlers
+  const handleSubmit = () => {
+    // ...
+  };
+  
+  // 6. Effects
+  useEffect(() => {
+    // ...
+  }, []);
+  
+  // 7. Render
+  return (
+    // JSX
+  );
+};
+
+// 8. Export
+export default ChatInterface;
+```
+
+**Hooks Rules:**
+- Follow React Hooks rules (ESLint enforces)
+- `exhaustive-deps` set to warn (prototyping-friendly)
+- Use custom hooks for reusable logic
+
+**Event Handlers:**
+- Prefix with `handle` (e.g., `handleClick`, `handleSubmit`)
+- Use arrow functions for inline handlers
+
+### ESLint Configuration
+
+**TypeScript Rules (prototyping-friendly):**
+- `@typescript-eslint/no-unused-vars`: warn
+- `@typescript-eslint/no-explicit-any`: warn
+- `@typescript-eslint/no-unsafe-*`: warn (not error)
+- `@typescript-eslint/explicit-function-return-type`: off
+- `@typescript-eslint/explicit-module-boundary-types`: off
+
+**React Rules:**
+- `react/react-in-jsx-scope`: off (React 17+)
+- `react/prop-types`: off (using TypeScript)
+- `react-hooks/rules-of-hooks`: error
+- `react-hooks/exhaustive-deps`: warn
+
+**Import Rules:**
+- Most import rules disabled (TypeScript handles resolution)
+- `unused-imports/no-unused-imports`: error
+
+### File Organization
+
+**Frontend Structure:**
+```
+src/frontend/
+├── main.tsx            # App entry point
+├── App.tsx            # Root component
+├── components/        # React components
+│   ├── ChatInterface.tsx
+│   ├── MessageList.tsx
+│   └── PerformanceMetrics.tsx
+├── hooks/            # Custom hooks
+│   └── useDebounce.ts
+├── services/         # API services
+│   └── api.ts
+├── types/           # TypeScript types
+│   └── index.ts
+├── utils/           # Helper functions
+├── config/          # Configuration
+└── styles/          # CSS/styling
+```
+
+## CSS/Styling Conventions
+
+### General Rules
+- **Tool**: PostCSS with cssnano for optimization
+- **Approach**: Utility-first with custom CSS
+- **Performance**: Optimized for Core Web Vitals
+
+### Performance Optimizations
+- **Avoid**: Backdrop filters, complex shadows, heavy gradients
+- **Prefer**: Simple transitions (opacity, color)
+- **Use**: Media queries instead of container queries
+- **Minimize**: Reflows and repaints
+
+### CSS Organization
+```css
+/* 1. CSS Reset/Normalize */
+/* 2. CSS Variables */
+:root {
+  --primary-color: #0088cc;
+}
+
+/* 3. Base styles */
+body {
+  /* ... */
+}
+
+/* 4. Component styles */
+.chat-interface {
+  /* ... */
+}
+
+/* 5. Utility classes */
+.text-center {
+  text-align: center;
+}
+```
+
+## Git Conventions
+
+### Commit Messages
+```
+[CATEGORY] Brief description
+
+- Detailed change 1
+- Detailed change 2
+- Test results (if applicable)
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-### Commit Types
-- `[RE-INIT]`: Complete environment re-initialization
-- `[feat]`: New feature
-- `[fix]`: Bug fix
-- `[refactor]`: Code refactoring
-- `[docs]`: Documentation changes
-- `[test]`: Test additions/changes
-- `[chore]`: Maintenance tasks
-- `[SERENA]`: Serena-related changes
-- `[AGENTS]`: Agent-related changes
-- `[UI]`: UI/Frontend changes
-- `[LINT]`: Linting improvements
+**Categories:**
+- `[FEATURE]` - New features
+- `[FIX]` - Bug fixes
+- `[REFACTOR]` - Code refactoring
+- `[DOCS]` - Documentation updates
+- `[TEST]` - Testing updates
+- `[PERF]` - Performance improvements
+- `[INFRASTRUCTURE]` - Infrastructure/tooling
+- `[SERENA]` - Serena memory updates
 
-## Code Review Standards
+### Branch Naming
+- `main` or `master` - Production branch
+- `feature/feature-name` - Feature branches
+- `fix/bug-name` - Bug fix branches
 
-### Before Committing
-1. Run `npm run check:all` - **Must pass with ZERO errors and ZERO warnings**
-2. Run `npm run lint` - Must pass with no errors, no warnings
-3. Run `npm run type-check` - Must pass TypeScript validation
-4. Run `npm run format:check` - Must pass Prettier formatting
-5. Run tests if applicable (test_7_prompts_persistent_session.sh)
-6. Verify changes don't break existing functionality
+## Testing Conventions
 
-### Linting Scores (Current Achievement)
-- **Python (Pylint)**: **10.00/10** (perfect score maintained)
-- **JavaScript/TypeScript (ESLint)**: **0 errors, 0 warnings** (zero-warning achievement)
-- **Prettier**: All files formatted correctly
-- **TypeScript Type Check**: No errors
+### Test File Naming
+- CLI tests: `CLI_test_regression.sh`
+- Test reports: `test-reports/` directory
 
-## Performance Considerations
+### Test Prompts
+- **Use standardized prompts only** (see `test_prompts.md`)
+- **Format**: "Quick Response Needed with minimal tool calls: [query]"
+- **Expected response time**: 6-10 seconds
+- **Success rate**: 100%
 
-### Frontend Optimization
-- **Core Web Vitals**: 85%+ improvement target
-- **First Contentful Paint**: ~256ms target
-- **Memory Efficiency**: Optimized heap size ~13.8MB
-- **Bundle Size**: Monitor with npm run analyze
-- **Removed Components** (Oct 2025): ExportButtons, RecentMessageButtons, DebugPanel, exportHelpers (4 files deleted)
-- **Consolidated Panels**: Status + Performance combined into single "System Status & Performance" panel
+## Quality Standards
 
-### Backend Optimization
-- **Response Times**: Monitor with comprehensive test suite
-- **Expected Range**: 10-37s for complex queries (varies with API calls)
-- **Health Checks**: Sub-second response on /health endpoint
+### Python Quality
+- **Pylint Score**: 10.00/10 (target)
+- **Black**: All files formatted
+- **isort**: All imports organized
+- **Type Hints**: Used where helpful
 
-## Accessibility Standards
+### TypeScript Quality
+- **ESLint**: Max 150 warnings
+- **TypeScript**: No compilation errors
+- **Prettier**: All files formatted
 
-- **WCAG 2.1 AA Compliance**: Full compliance required
-- **Semantic HTML**: Use proper HTML5 semantic elements
-- **ARIA Labels**: Include where necessary for screen readers
-
-## Documentation Standards
-
-- **README.md**: Keep updated with project overview
-- **CLAUDE.md**: AI assistant guidance and project rules
-- **Code Comments**: Explain complex logic, not obvious code
-- **API Documentation**: FastAPI auto-generates at /docs endpoint
-- **Serena Memories**: Keep updated after significant changes
-
-## Recent Code Quality Achievements (October 2025)
-
-### UI Refactor
-- **Files Removed**: 4 (ExportButtons.tsx, RecentMessageButtons.tsx, DebugPanel.tsx, exportHelpers.ts)
-- **Net Code Reduction**: 1,043 lines removed
-- **Panels Consolidated**: Status Information + Performance Metrics → Single "System Status & Performance" panel
-- **CSS Improvements**: Increased spacing for better visual breathing room (gap values: var(--space-2/4) → 1-2rem)
-
-### Linting Perfection
-- **ESLint Warnings**: Reduced from 4 → 0
-- **Method**: Added `eslint-disable-next-line` comments only where absolutely necessary
-- **Files Affected**: performance.tsx (3 lines), wdyr.ts (1 line)
-- **Justification**: Third-party library interfaces (React lazy loading, Why Did You Render)
-- **Type Safety**: Fully maintained with explicit type assertions
-
-### Testing Validation
-- **Test Suite**: test_7_prompts_persistent_session.sh
-- **Success Rate**: 100% (7/7 tests passing)
-- **Performance**: EXCELLENT rating (avg 15-21s response times)
-- **Session Persistence**: Verified (single session for all tests)
+### Performance Targets
+- **First Contentful Paint**: < 300ms
+- **Largest Contentful Paint**: < 500ms
+- **Response Time**: < 10s (average ~6s)
+- **Success Rate**: 100%

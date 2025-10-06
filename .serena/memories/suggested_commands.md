@@ -1,244 +1,355 @@
-# Suggested Development Commands
+# Suggested Commands
 
-## Quick Start Commands
+## Application Startup
 
-### One-Click Application Startup
+### One-Click Startup (Recommended)
 ```bash
-./start-app-xterm.sh          # Recommended: XTerm startup (working)
-./start-app.sh                # Main startup script (working with 30s timeout)
-npm run start:app             # Alternative: npm wrapper for start-app.sh
+# XTerm startup (RECOMMENDED - WORKING)
+./start-app-xterm.sh
+
+# Main startup (NOW WORKING - FIXED with timeout)
+./start-app.sh
+
+# Via npm scripts
+npm run start:app:xterm    # XTerm version (recommended)
+npm run start:app          # Main script (now working)
 ```
 
-**What these scripts do:**
+**What the scripts do:**
 - Kill existing dev servers (uvicorn, vite)
 - Start backend on http://127.0.0.1:8000
 - Start frontend on http://127.0.0.1:3000
-- Perform health checks (10 retries, 2s intervals)
-- Exit cleanly after verification or 30s timeout
-- **Note:** Scripts do NOT auto-open browser - manually navigate to http://127.0.0.1:3000
+- Perform health checks
+- Notify user to open browser (servers ready in 10-15s)
+- **30-second timeout** prevents hanging
 
-## Backend Development
-
-### Running Backend
+### Manual Server Startup
 ```bash
-npm run backend:dev           # Start FastAPI with hot reload (port 8000)
-npm run backend:cli           # Run CLI interface directly
-uv run src/backend/main.py    # Alternative: Direct Python execution
+# Backend only
+npm run backend:dev
+# or
+uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
+
+# Frontend only
+npm run frontend:dev
+# or
+vite --mode development
+
+# Both servers (concurrently)
+npm run dev
 ```
 
-### Backend Installation
+### CLI Interface
 ```bash
-uv install                    # Install Python dependencies
-npm run backend:install       # Alternative: npm wrapper
+# Interactive CLI (no web GUI)
+uv run src/backend/main.py
+# or
+npm run backend:cli
 ```
 
-## Frontend Development
+## Testing
 
-### Running Frontend
+### CLI Regression Testing
 ```bash
-npm run frontend:dev          # Start Vite dev server (port 3000)
-npm run dev                   # Start both backend + frontend concurrently
+# Single test loop (27 tests)
+./CLI_test_regression.sh
+
+# Multiple test loops (e.g., 10 loops)
+./CLI_test_regression.sh 10
 ```
 
-### Building Frontend
+**Test Coverage:**
+- 27 standardized test prompts per loop
+- Single persistent CLI session
+- Response time tracking
+- 100% success rate expected
+- Average response time: ~6.10s
+
+### Test Report Location
 ```bash
-npm run build                 # Production build (optimized)
-npm run build:staging         # Staging build
-npm run build:dev             # Development build
+# Test reports saved to
+ls -la test-reports/
 ```
 
-## Code Quality Commands
+## Code Quality
 
 ### Linting
 ```bash
-npm run lint                  # Run all linting (Python + JS/TS)
-npm run lint:python           # Python only: pylint src/backend/ tests/
-npm run lint:js               # JavaScript/TypeScript only: eslint
+# All linting (Python + JavaScript)
+npm run lint
+
+# Python linting only
+npm run lint:python
+uv run pylint src/backend/ tests/
+
+# JavaScript/TypeScript linting only
+npm run lint:js
+eslint 'src/frontend/**/*.{ts,tsx}' --max-warnings 150
+```
+
+### Linting + Auto-Fix
+```bash
+# Fix all issues (Python + JavaScript)
+npm run lint:fix
+
+# Fix Python issues (black + isort)
+npm run lint:fix:python
+uv run black src/backend/ tests/ --line-length 100
+uv run isort src/backend/ tests/ --profile black --line-length 100
+
+# Fix JavaScript/TypeScript issues
+npm run lint:fix:js
+eslint 'src/frontend/**/*.{ts,tsx}' --fix
 ```
 
 ### Formatting
 ```bash
-npm run lint:fix              # Auto-fix all (Python + JS)
-npm run lint:fix:python       # Black + isort for Python
-npm run lint:fix:js           # ESLint --fix for JS/TS
-npm run format                # Prettier for JS/TS
+# Format JavaScript/TypeScript
+npm run format
+prettier --write 'src/frontend/**/*.{ts,tsx,js,jsx,json,css,md}'
+
+# Check formatting
+npm run format:check
+prettier --check 'src/frontend/**/*.{ts,tsx,js,jsx,json,css,md}'
 ```
 
 ### Type Checking
 ```bash
-npm run type-check            # TypeScript type checking (tsc --noEmit)
-npm run check:all             # Run lint + format check + type check
+# TypeScript type checking
+npm run type-check
+tsc --noEmit
 ```
 
-## Testing Commands
-
-### Persistent Session Testing (RECOMMENDED)
+### All Quality Checks
 ```bash
-./test_7_prompts_persistent_session.sh   # Run 7-prompt test in SINGLE session
+# Run all checks (lint + format + type-check)
+npm run check:all
 ```
 
-**Expected Output:**
-- All 7/7 tests pass in ONE session (not 7 separate sessions)
-- Session count: 1 (verified)
-- Response times: 6-31s per test (accurate tracking)
-- Avg response time: 15-20s
-- Total duration: 110-150s
-- Performance rating: EXCELLENT
-- Test report generated in test-reports/
+## Build Commands
 
-### Legacy Testing (NOT RECOMMENDED)
+### Production Build
 ```bash
-./test_7_prompts_comprehensive.sh   # Old script (separate sessions - DO NOT USE)
+# Build frontend for production
+npm run build
+# or
+npm run frontend:build
+
+# Build for specific environments
+npm run frontend:build:development
+npm run frontend:build:staging
+npm run frontend:build:production
 ```
 
-**Note:** Legacy script has issues:
-- Runs each test in separate CLI session (7 sessions total)
-- Incorrect response time calculation
-- Does not test session persistence
-- Not representative of actual user behavior
-
-## Health & Status Checks
-
-### Check Server Status
+### Serve Production Build
 ```bash
-npm run status                # Check backend + frontend health
-npm run health                # Alias for status
-curl http://127.0.0.1:8000/health   # Direct backend health check
+# Development build + serve
+npm run serve
+
+# Staging build + serve
+npm run serve:staging
+
+# Production build + serve
+npm run serve:production
 ```
 
-## Installation & Maintenance
+**Note:** After running serve commands, open VS Code Command Palette (Ctrl+Shift+P) and run "Live Server: Open with Live Server"
 
-### Clean & Reinstall
+## Performance Testing
+
+### Lighthouse CI
 ```bash
-npm run clean                 # Remove node_modules and dist
-npm run clean:install         # Clean + fresh install
-npm run clean:full            # Deep clean (cache + install)
+# Build and prepare for Lighthouse testing
+npm run lighthouse:live-server
+npm run lighthouse:live-server:staging
+
+# Run Lighthouse CI (after Live Server is running)
+npx @lhci/cli@0.15.x autorun --config=lighthouserc.js
 ```
+
+### Performance Monitoring
+```bash
+# React Scan (component re-renders)
+npm run perf:scan
+
+# Bundle analysis
+npm run perf:bundle
+source-map-explorer 'dist/assets/*.js'
+
+# All performance checks
+npm run perf:all
+```
+
+## Maintenance
+
+### Installation
+```bash
+# Install all dependencies
+npm run install:all
+npm install
+
+# Install backend dependencies only
+npm run install:backend
+uv install
+```
+
+### Cleanup
+```bash
+# Remove node_modules and dist
+npm run clean
+rm -rf node_modules dist test-results
+
+# Remove cache
+npm run clean:cache
+rm -rf .cache node_modules/.cache
+
+# Full cleanup + reinstall
+npm run clean:install
+npm run clean:full
+```
+
+### Health Check
+```bash
+# Check server status
+npm run status
+npm run health
+
+# Manual backend health check
+curl http://localhost:8000/health
+
+# Manual frontend check
+curl http://localhost:3000
+```
+
+## Development Utilities
+
+### Git Workflow
+```bash
+# Check status
+git status
+
+# View changes
+git diff
+
+# Stage all changes (DO THIS LAST - see git_commit_workflow.md)
+git add -A
+
+# Commit (immediately after staging)
+git commit -m "message"
+
+# Push
+git push
+```
+
+**CRITICAL:** See `.serena/memories/git_commit_workflow.md` for proper atomic commit workflow. Stage ONLY immediately before committing.
 
 ### Environment Setup
 ```bash
-uv sync                       # Sync Python environment (recommended)
-npm install --legacy-peer-deps # Install Node.js dependencies
+# Copy environment template
+cp .env.example .env
+
+# Edit environment variables
+nano .env
+# or
+vim .env
 ```
 
-## Git & Version Control
-
-### Standard Git Operations
+### Python Environment
 ```bash
-git status                    # Check working tree status
-git add .                     # Stage all changes
-git commit -m "message"       # Commit with message
-git push                      # Push to remote
-git pull                      # Pull from remote
+# Check Python version
+python3 --version
+
+# Check uv version
+uv --version
+
+# Activate virtual environment (if needed)
+source .venv/bin/activate
 ```
 
-## Linux System Utilities
-
-### File Operations
+### Node Environment
 ```bash
-ls -la                        # List files with details
-cd <directory>                # Change directory
-grep -r "pattern" .           # Search for pattern recursively
-find . -name "*.py"           # Find files by name
-tree -L 2                     # Show directory tree (2 levels)
+# Check Node version
+node --version
+
+# Check npm version
+npm --version
+```
+
+## Debugging
+
+### Backend Debugging
+```bash
+# Run with verbose logging
+uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload --log-level debug
+```
+
+### Frontend Debugging
+```bash
+# Run with specific mode
+vite --mode development
+vite --mode staging
+vite --mode production
 ```
 
 ### Process Management
 ```bash
-ps aux | grep uvicorn         # Find uvicorn processes
-pkill -f uvicorn              # Kill uvicorn processes
-lsof -ti:8000                 # Find process using port 8000
-netstat -tlnp | grep :3000    # Check port 3000 status
+# Find running processes
+ps aux | grep uvicorn
+ps aux | grep vite
+
+# Kill processes (if startup scripts fail)
+pkill -f uvicorn
+pkill -f vite
+
+# Check port usage
+netstat -tlnp | grep :8000
+netstat -tlnp | grep :3000
+lsof -i :8000
+lsof -i :3000
 ```
 
-### Port Management
+## Quick Reference
+
+### Most Used Commands
 ```bash
-lsof -ti:3000 | xargs kill -9 # Kill process on port 3000
-lsof -ti:8000 | xargs kill -9 # Kill process on port 8000
+# Start app (one-click)
+./start-app-xterm.sh
+
+# Run CLI regression tests
+./CLI_test_regression.sh
+
+# Lint and fix all issues
+npm run lint:fix
+
+# Type check
+npm run type-check
+
+# Build production
+npm run build
+
+# Check server health
+npm run status
 ```
 
-## Performance & Analysis
-
-### Performance Testing
+### Development Workflow
 ```bash
-npm run lighthouse            # Run Lighthouse CI
-npm run perf:bundle           # Bundle size analysis
-npm run analyze               # Vite bundle analyzer
+# 1. Start development servers
+./start-app-xterm.sh
+
+# 2. Make code changes
+# ... edit files ...
+
+# 3. Run quality checks
+npm run lint:fix
+npm run type-check
+
+# 4. Test changes
+./CLI_test_regression.sh
+
+# 5. Commit (proper atomic workflow - see git_commit_workflow.md)
+git status
+git diff
+git add -A  # ONLY after ALL work complete
+git commit -m "message"
+git push
 ```
-
-## Environment Requirements
-
-- **Python**: 3.10+ (managed by uv)
-- **Node.js**: 18.0.0+
-- **npm**: 9.0.0+
-- **uv**: Latest version for Python package management
-
-## API Keys Required
-
-Ensure `.env` file contains:
-```
-POLYGON_API_KEY=your_polygon_key
-OPENAI_API_KEY=your_openai_key
-```
-
-## Port Configuration
-
-- **Backend API**: http://127.0.0.1:8000
-- **Frontend Dev**: http://127.0.0.1:3000
-- **API Docs**: http://127.0.0.1:8000/docs (Swagger UI)
-
-## Common Troubleshooting Commands
-
-### Port Already in Use
-```bash
-pkill -f "uvicorn"            # Kill backend server
-pkill -f "vite"               # Kill frontend server
-lsof -ti:8000 | xargs kill -9 # Force kill port 8000
-```
-
-### Dependencies Issues
-```bash
-rm -rf .venv node_modules package-lock.json uv.lock
-uv sync
-npm install --legacy-peer-deps
-```
-
-### Verify Environment
-```bash
-python3 --version             # Check Python version
-uv --version                  # Check uv version
-node --version                # Check Node.js version
-npm --version                 # Check npm version
-```
-
-## Testing Best Practices
-
-### When to Run Persistent Session Tests
-
-**Required:**
-- Before committing CLI or backend changes
-- After modifying agent service or MCP integration
-- Before creating pull requests
-
-**Recommended:**
-- After changing prompt templates
-- During performance optimization
-- When investigating user issues
-
-### Interpreting Test Results
-
-**Session Persistence:**
-- ✅ Session count = 1: All tests in same session (correct)
-- ❌ Session count > 1: Tests in separate sessions (incorrect)
-
-**Performance Ratings:**
-- EXCELLENT: < 30s (most tests should achieve this)
-- GOOD: 30-45s (acceptable for complex queries)
-- ACCEPTABLE: 45-90s (may need optimization)
-- SLOW: > 90s (needs investigation)
-
-**Success Criteria:**
-- All 7/7 tests pass
-- Session count = 1
-- Avg response time: 15-25s
-- No timeouts or failures

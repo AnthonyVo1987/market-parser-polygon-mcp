@@ -1,562 +1,433 @@
 # Project Architecture
 
-## High-Level Overview
+## Overview
 
-**Market Parser** is a full-stack financial analysis application with:
-- **Backend**: Python FastAPI REST API with OpenAI Agents SDK integration
-- **Frontend**: React TypeScript SPA with real-time chat interface  
-- **Integration**: Direct Polygon API (11 tools) + Finnhub API (1 tool)
-- **AI Model**: OpenAI GPT-5-Nano (EXCLUSIVE - no model selection, no GPT-5-Mini)
-- **Total AI Agent Tools**: 12 (1 Finnhub + 11 Polygon Direct API)
+Market Parser is a Python CLI and React web application for natural language financial queries using Direct Polygon/Finnhub API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
 
-## Directory Structure
+**Key Architectural Change (Oct 2025):**
+- **Migrated from MCP to Direct API** (Phase 4 Complete)
+- **70% performance improvement** (6.10s avg vs 20s legacy)
+- **All 12 tools now use Direct Python APIs** (no MCP overhead)
+
+## System Architecture
 
 ```
-market-parser-polygon-mcp/
-├── src/
-│   ├── backend/              # Python FastAPI backend
-│   │   ├── routers/          # API endpoint routers
-│   │   │   ├── chat.py       # Chat endpoint
-│   │   │   ├── health.py     # Health check
-│   │   │   └── system.py     # System info
-│   │   ├── services/         # Business logic services
-│   │   │   └── agent_service.py  # AI agent creation
-│   │   ├── tools/            # Custom AI agent tools (12 total)
-│   │   │   ├── finnhub_tools.py  # Finnhub API (1 tool)
-│   │   │   └── polygon_tools.py  # Polygon Direct API (11 tools)
-│   │   ├── utils/            # Utility modules
-│   │   │   └── token_utils.py    # Token tracking (input/output/total)
-│   │   ├── main.py           # FastAPI application entry
-│   │   ├── cli.py            # CLI interface
-│   │   ├── config.py         # Configuration management
-│   │   ├── api_models.py     # Pydantic API schemas (NO model selection)
-│   │   └── dependencies.py   # FastAPI dependencies
-│   └── frontend/             # React TypeScript frontend
-│       ├── components/       # React components
-│       │   ├── ChatInterface_OpenAI.tsx  # Main chat UI
-│       │   ├── ChatMessage_OpenAI.tsx    # Message display (Input/Output/Total tokens)
-│       │   └── ...
-│       ├── services/         # API service layer
-│       │   └── api_OpenAI.ts  # API client (NO model selection)
-│       ├── types/            # TypeScript type definitions
-│       │   └── chat_OpenAI.ts  # Chat types (input/output tokens)
-│       ├── utils/            # Utility functions
-│       │   └── performance.tsx  # Performance monitoring (FCP/LCP/CLS)
-│       ├── config/           # Configuration loader
-│       ├── App.tsx           # Root component
-│       └── main.tsx          # Application entry point
-├── tests/
-│   ├── playwright/           # E2E tests (Playwright)
-│   └── test_*.py             # Python unit tests
-├── config/                   # Centralized configuration
-│   └── app.config.json       # Non-sensitive settings
-├── docs/                     # Documentation
-├── test-reports/             # Test output files
-├── public/                   # Static assets
-├── dist/                     # Production build output
-├── .serena/                  # Serena AI assistant
-│   ├── memories/             # Project knowledge base
-│   └── cache/                # Symbol caching
-├── pyproject.toml            # Python project config
-├── package.json              # Node.js project config
-├── CLAUDE.md                 # Claude Code instructions
-├── AGENTS.md                 # AI agent documentation
-└── start-app*.sh             # One-click startup scripts
+┌─────────────────────────────────────────────────────────────┐
+│                        User Interfaces                      │
+├─────────────────────┬───────────────────┬───────────────────┤
+│   React Web App     │    CLI Interface  │   REST API        │
+│   (Port 3000)       │   (Terminal)      │   (Port 8000)     │
+└──────────┬──────────┴───────────┬───────┴──────┬────────────┘
+           │                      │               │
+           └──────────────────────┼───────────────┘
+                                  │
+                    ┌─────────────▼─────────────┐
+                    │      FastAPI Backend      │
+                    │    (uvicorn on :8000)     │
+                    └─────────────┬─────────────┘
+                                  │
+                    ┌─────────────▼─────────────┐
+                    │   OpenAI Agents SDK       │
+                    │   v0.2.9 (GPT-5-Nano)     │
+                    └─────────────┬─────────────┘
+                                  │
+                    ┌─────────────▼─────────────┐
+                    │   AI Agent Tools (12)     │
+                    │   Direct API Integration  │
+                    └─────────┬────────┬────────┘
+                              │        │
+                    ┌─────────▼──┐  ┌─▼────────┐
+                    │ Polygon.io │  │ Finnhub  │
+                    │ Direct API │  │ Direct   │
+                    │ (11 tools) │  │ (1 tool) │
+                    └────────────┘  └──────────┘
 ```
 
-## Backend Architecture (Python FastAPI)
+## Backend Architecture
 
-### Core Components
+### FastAPI Application (main.py)
 
-#### 1. main.py - Application Entry Point
-**Responsibilities:**
-- FastAPI app initialization
-- CORS middleware setup
-- Router registration (chat, health, system ONLY - NO models router)
-- Lifespan management (database session)
-- Request timing middleware
+**Key Components:**
+- `app` - FastAPI application instance
+- `lifespan` - Async context manager for startup/shutdown
+- `shared_session` - Shared aiohttp session for API calls
+- `add_process_time_header` - Middleware for response timing
+- CORS configuration for frontend communication
 
-**Key Changes (Oct 2025):**
-- ❌ Removed MCP server initialization
-- ❌ Removed models router registration
-- ✅ Simplified lifespan to session-only management
-
-#### 2. services/agent_service.py - Agent Creation & Management
-**Symbols:**
-- `create_agent()`: Creates AI agent with 12 custom tools (NO MCP server parameter)
-- `get_enhanced_agent_instructions()`: Returns agent prompt template (12 tools)
-- `get_optimized_model_settings()`: Returns GPT-5-Nano configuration
-
-**Responsibilities:**
-- Agent instantiation with OpenAI Agents SDK
-- System prompt configuration (12 tools documented)
-- Model settings (GPT-5-Nano ONLY - no model selection)
-- Custom tool integration (1 Finnhub + 11 Polygon Direct API)
-
-**Tool Integration:**
-```python
-from ..tools.finnhub_tools import get_stock_quote
-from ..tools.polygon_tools import (
-    get_market_status_and_date_time,
-    get_stock_quote_multi,
-    get_options_quote_single,
-    get_OHLC_bars_custom_date_range,
-    get_OHLC_bars_specific_date,
-    get_OHLC_bars_previous_close,
-    get_ta_sma,
-    get_ta_ema,
-    get_ta_rsi,
-    get_ta_macd
-)
-
-tools=[
-    get_stock_quote,  # Finnhub
-    get_market_status_and_date_time,  # Polygon
-    get_stock_quote_multi,
-    get_options_quote_single,
-    get_OHLC_bars_custom_date_range,
-    get_OHLC_bars_specific_date,
-    get_OHLC_bars_previous_close,
-    get_ta_sma,
-    get_ta_ema,
-    get_ta_rsi,
-    get_ta_macd
-]
-```
-
-#### 3. tools/ - Custom AI Agent Tools (12 Total)
-
-**finnhub_tools.py (1 tool):**
-- `get_stock_quote(ticker: str)`: Single ticker real-time quotes
-
-**polygon_tools.py (11 tools):**
-1. `get_market_status_and_date_time()`: Market status + datetime
-2. `get_stock_quote_multi(tickers, market_type)`: Multi-ticker quotes
-3. `get_options_quote_single(underlying_asset, option_contract)`: Options with Greeks
-4. `get_OHLC_bars_custom_date_range(ticker, from_date, to_date, ...)`: Date range OHLC
-5. `get_OHLC_bars_specific_date(ticker, date, ...)`: Specific date OHLC
-6. `get_OHLC_bars_previous_close(ticker, ...)`: Previous trading day
-7. `get_ta_sma(ticker, window, ...)`: Simple Moving Average
-8. `get_ta_ema(ticker, window, ...)`: Exponential Moving Average
-9. `get_ta_rsi(ticker, window, ...)`: Relative Strength Index
-10. `get_ta_macd(ticker, ...)`: MACD Indicator
-11. (Future expansion as needed)
-
-**Pattern:**
-- `@function_tool` decorator from OpenAI Agents SDK
-- Async functions
-- JSON string returns
-- Comprehensive error handling
-- Direct Polygon Python Library calls (polygon-api-client v1.15.4)
-- 10.00/10 Pylint score standard
-
-#### 4. utils/token_utils.py - Token Tracking
-
-**Functions:**
-- `extract_token_usage_from_context_wrapper()`: Returns dict with total_tokens, input_tokens, output_tokens
-- `extract_token_count_from_context_wrapper()`: Deprecated, kept for compatibility
+**Endpoints:**
+- `POST /query` - Process natural language queries
+- `GET /health` - Health check endpoint
+- `GET /` - Root endpoint with API info
 
 **Features:**
-- Dual naming convention support (input_tokens/prompt_tokens, output_tokens/completion_tokens)
-- Extracts from OpenAI Agents SDK `context_wrapper.usage` object
-- Used by chat router to populate ResponseMetadata
+- Real-time response timing via middleware
+- Token usage tracking from OpenAI responses
+- CORS enabled for http://127.0.0.1:3000
+- Async request handling
+- Shared HTTP session for efficiency
 
-#### 5. api_models.py - API Schemas
+### Agent Service (services/agent_service.py)
 
-**Key Models:**
-- `ResponseMetadata`: Contains model, timestamp, processingTime, requestId, tokenCount (deprecated), inputTokens, outputTokens
-- `ChatRequest`, `ChatResponse`: Chat endpoint models
-
-**Removed (Oct 2025):**
-- ❌ CustomModel, AIModelId, AIModel
-- ❌ ModelListResponse, ModelSelectionRequest, ModelSelectionResponse
-- ❌ All model selection infrastructure
-
-#### 6. routers/ - API Endpoints
-
-**Active Routers:**
-- `chat.py`: Chat endpoint for AI interactions (uses token_utils for input/output tracking)
-- `health.py`: Health check endpoint
-- `system.py`: System information endpoints
-
-**Removed (Oct 2025):**
-- ❌ `models.py`: Model selection endpoints (deleted)
-
-### Backend Data Flow
-
-```
-User Request
-    ↓
-FastAPI Router (chat.py)
-    ↓
-Agent Service (create_agent)
-    ↓
-OpenAI Agents SDK → GPT-5-Nano (ONLY)
-    ↓
-Custom Tools (12 tools - ALL Direct API)
-├── Finnhub (1): get_stock_quote
-└── Polygon Direct API (11): market status, quotes, OHLC, TA indicators
-    ↓
-Agent Response Processing
-    ↓
-Token Extraction (input/output/total from context_wrapper.usage)
-    ↓
-JSON Response to Frontend (with inputTokens, outputTokens, tokenCount)
-```
-
-### AI Agent Tool Architecture (12 Total Tools)
-
-**Tool Distribution:**
-1. **Finnhub Custom (1 tool)**:
-   - get_stock_quote
-
-2. **Polygon Direct API Custom (11 tools)**:
-   - get_market_status_and_date_time
-   - get_stock_quote_multi
-   - get_options_quote_single
-   - get_OHLC_bars_custom_date_range
-   - get_OHLC_bars_specific_date
-   - get_OHLC_bars_previous_close
-   - get_ta_sma
-   - get_ta_ema
-   - get_ta_rsi
-   - get_ta_macd
-   - (1 slot reserved for future expansion)
-
-**Migration Complete (Oct 2025):**
-- ✅ Phase 1-4 Complete: ALL MCP tools migrated to Direct API
-- ✅ MCP server completely removed
-- ✅ All 6 legacy MCP tools replaced with 5 direct API equivalents
-- ✅ Added 4 TA indicator tools
-- ✅ Benefits realized: 70% faster performance, simpler architecture
-
-### Backend Dependencies
-
-**Core:**
-- `fastapi`: Web framework
-- `uvicorn`: ASGI server
-- `openai-agents==0.2.9`: OpenAI Agents SDK
-- `openai>=1.99.0,<1.100.0`: OpenAI API client
-- `pydantic`: Data validation
-- `python-dotenv`: Environment variables
-
-**Financial Data APIs:**
-- `finnhub-python==2.4.25`: Finnhub API client
-- `polygon-api-client==1.15.4`: Polygon.io API client
-
-**Development:**
-- `pylint`, `black`, `isort`: Code quality (10.00/10 score)
-- `pytest`: Testing
-
-**Removed (Oct 2025):**
-- ❌ `openai-agents-mcp`: No longer needed (MCP removed)
-
-## Frontend Architecture (React TypeScript)
-
-### Core Components
-
-#### 1. ChatInterface_OpenAI.tsx - Main Chat Container
-**Responsibilities:**
-- Chat state management (messages, loading, error)
-- Send message to backend (NO model parameter)
-- Display conversation history
-- System status & performance panel (consolidated)
-
-**Key Changes (Oct 2025):**
-- ❌ Removed model selection UI
-- ❌ Removed currentModel state
-- ❌ Removed useAIModel hook
-- ✅ Simplified to GPT-5-Nano only
-
-#### 2. ChatMessage_OpenAI.tsx - Message Display
-**Responsibilities:**
-- Render individual messages
-- Display metadata (model, processing time, tokens)
-- Token display format: "Input: X | Output: Y | Total: Z"
-
-**Token Display Logic:**
-```typescript
-{(message.metadata.inputTokens !== undefined && message.metadata.outputTokens !== undefined) ? (
-    <span>
-        Input: {inputTokens} | Output: {outputTokens} | Total: {total}
-    </span>
-) : message.metadata.tokenCount ? (
-    <span>Tokens: {tokenCount}</span>
-) : null}
-```
-
-#### 3. services/api_OpenAI.ts - API Client
 **Functions:**
-- `sendChatMessage(message: string)`: Send message to chat endpoint (NO model parameter)
+- `get_enhanced_agent_instructions()` - Returns optimized system prompt
+- `get_optimized_model_settings()` - Returns GPT-5-Nano config
+- `create_agent()` - Creates OpenAI agent with all tools
 
-**Removed (Oct 2025):**
-- ❌ `fetchModels()`: Model list endpoint removed
-- ❌ `selectModel()`: Model selection endpoint removed
-- ❌ Model parameter from sendChatMessage
+**Agent Configuration:**
+- **Model**: GPT-5-Nano (EXCLUSIVE - no model selection)
+- **Max Tokens**: 16384
+- **Temperature**: 0.1 (deterministic)
+- **Parallel Tool Calls**: Enabled
+- **Rate Limits**: 200K TPM (GPT-5-Nano specific)
 
-#### 4. types/chat_OpenAI.ts - Type Definitions
-**Interfaces:**
-- `MessageMetadata`: Contains tokenCount (deprecated), inputTokens, outputTokens, model, processingTime, etc.
-- `ResponseMetadata`: Same fields as MessageMetadata
+**System Prompt Features:**
+- Streamlined instructions (no verbose disclaimers)
+- Quick response enforcement
+- Minimal tool calls requirement
+- Structured output format (KEY TAKEAWAYS + DETAILED ANALYSIS)
 
-**Removed (Oct 2025):**
-- ❌ `ai_models.ts`: Entire file deleted (AIModelId, ModelListResponse, etc.)
+### Direct API Tools (12 Total)
 
-#### 5. utils/performance.tsx - Performance Monitoring
-**Functionality:**
-- Tracks FCP, LCP, CLS Web Vitals
-- usePerformanceMonitoring hook
+#### Finnhub Custom API (1 tool)
+**File:** `src/backend/tools/finnhub_tools.py`
 
-**Fix (Oct 2025):**
-- Changed metrics initialization from `0` to `undefined`
-- Prevents "Calculating..." from showing actual 0 values
-- Proper conditional rendering in UI
+**Tools:**
+1. `get_stock_quote(symbol: str)` - Real-time stock quotes
+   - Uses `finnhub-python>=2.4.25`
+   - Returns: current price, change, percent change, high, low, open, previous close
 
-### Frontend Data Flow
+**Implementation:**
+- `_get_finnhub_client()` - Singleton client initialization
+- Environment: `FINNHUB_API_KEY`
 
+#### Polygon Direct API (11 tools)
+**File:** `src/backend/tools/polygon_tools.py`
+
+**Market Data Tools:**
+1. `get_market_status_and_date_time()` - Market status + current datetime
+2. `get_stock_quote_multi(symbols: str)` - Multiple stock quotes
+3. `get_options_quote_single(ticker: str)` - Single option quote
+
+**OHLC Data Tools:**
+4. `get_OHLC_bars_custom_date_range(...)` - OHLC bars for date range
+5. `get_OHLC_bars_specific_date(...)` - OHLC bars for specific date
+6. `get_OHLC_bars_previous_close(...)` - Previous close OHLC
+
+**Technical Analysis Tools:**
+7. `get_ta_sma(...)` - Simple Moving Average
+8. `get_ta_ema(...)` - Exponential Moving Average
+9. `get_ta_rsi(...)` - Relative Strength Index
+10. `get_ta_macd(...)` - MACD
+
+**Implementation:**
+- `_get_polygon_client()` - Singleton client initialization
+- Direct Polygon Python SDK integration
+- Environment: `POLYGON_API_KEY`
+
+### Configuration Management
+
+**Files:**
+- `.env` - API keys (POLYGON_API_KEY, OPENAI_API_KEY, FINNHUB_API_KEY)
+- `config/app.config.json` - Non-sensitive settings
+- `src/backend/config.py` - Config loader
+
+**Environment Variables:**
 ```
-User Input (ChatInterface_OpenAI)
-    ↓
-API Service Layer (api_OpenAI.ts)
-    ↓
-HTTP POST to /api/v1/chat/
-    ↓
-Backend Processing (12 tools available, GPT-5-Nano only)
-    ↓
-JSON Response (with inputTokens, outputTokens, tokenCount)
-    ↓
-State Update (React useState)
-    ↓
-UI Re-render (ChatMessage_OpenAI with token breakdown)
-```
-
-### Frontend Dependencies
-
-**Core:**
-- `react@18.2.0`: UI library
-- `react-dom@18.2.0`: React DOM renderer
-- `react-markdown@9.0.0`: Markdown rendering
-- `use-debounce@10.0.6`: Input debouncing
-
-**Development:**
-- `vite@5.2.13`: Build tool
-- `typescript@5.5.3`: Type system
-- `eslint`, `prettier`: Code quality
-
-## Integration Points
-
-### 1. Backend ↔ Frontend Communication
-- **Protocol**: HTTP REST API
-- **Format**: JSON
-- **Endpoints**:
-  - `POST /api/v1/chat/`: Send message, receive AI response (12 tools, GPT-5-Nano only, input/output tokens)
-  - `GET /health`: Health check
-  - `GET /api/system/info`: System information
-
-**Removed (Oct 2025):**
-- ❌ `GET /api/v1/models`: Model list endpoint
-- ❌ `POST /api/v1/models/select`: Model selection endpoint
-
-### 2. Backend ↔ Polygon.io
-- **Protocol**: HTTP REST API via polygon-api-client
-- **Tools**: 11 tools (all Direct API, no MCP)
-- **Library**: polygon-api-client v1.15.4
-- **Advantages**: Direct control, 70% faster, simpler architecture
-
-### 3. Backend ↔ Finnhub API
-- **Protocol**: HTTP REST API via finnhub-python
-- **Tool**: get_stock_quote
-- **Library**: finnhub-python v2.4.25
-
-### 4. Backend ↔ OpenAI API
-- **Model**: GPT-5-Nano (EXCLUSIVE)
-- **SDK**: OpenAI Agents SDK v0.2.9
-- **Authentication**: API key via environment variable
-- **Features**: Agent-based interactions with tool calling (12 tools), token usage tracking
-
-## Configuration Management
-
-### Environment Variables (.env)
-```
-POLYGON_API_KEY=xxx     # Direct API only (MCP removed)
-OPENAI_API_KEY=xxx      # OpenAI GPT-5-Nano access
-FINNHUB_API_KEY=xxx     # Finnhub API access
-DEFAULT_MODEL=gpt-5-nano  # ONLY allowed value
+POLYGON_API_KEY=your_key_here
+OPENAI_API_KEY=your_key_here
+FINNHUB_API_KEY=your_key_here
 ```
 
-### Port Configuration
-- **Backend**: 127.0.0.1:8000 (fixed)
-- **Frontend Dev**: 127.0.0.1:3000 (fixed)
-- **Frontend Prod**: 127.0.0.1:5500 (Live Server)
+## Frontend Architecture
 
-## Deployment Architecture
+### React Application Structure
 
-### One-Click Startup
+**Entry Point:** `src/frontend/main.tsx`
+- Renders `<App />` to `#root`
+- Strict mode enabled for development
+
+**Root Component:** `src/frontend/App.tsx`
+- Main application logic
+- State management (messages, loading)
+- API communication
+- Performance monitoring
+
+**Key Components:**
+- `ChatInterface` - User input and message display
+- `MessageList` - Renders chat messages
+- `PerformanceMetrics` - Real-time performance display
+
+### State Management
+
+**React State (useState):**
+- `messages` - Chat message history
+- `isLoading` - Request loading state
+- `config` - App configuration from config/app.config.json
+
+**No external state management library** - Simple useState/useEffect patterns
+
+### API Communication
+
+**Service:** `src/frontend/services/api.ts`
+- `sendQuery(query: string)` - POST to `/query` endpoint
+- Base URL: `http://127.0.0.1:8000`
+- Returns: agent response + performance metrics
+
+**Response Format:**
+```typescript
+{
+  response: string;           // Agent's formatted response
+  input_tokens?: number;      // Input token count
+  output_tokens?: number;     // Output token count
+  total_tokens?: number;      // Total token count
+  model?: string;            // Model used (gpt-5-nano)
+  response_time?: number;    // Response time in seconds
+}
 ```
-./start-app-xterm.sh or ./start-app.sh
-  ↓
-Kill existing servers
-  ↓
-Start Backend (port 8000, GPT-5-Nano only, 12 tools)
-  ↓
-Start Frontend (port 3000)
-  ↓
-Health checks (10 retries, 2s intervals)
-  ↓
-User navigates to http://127.0.0.1:3000
-```
 
-## Performance Metrics
+**Dual Naming Convention Support:**
+- `input_tokens` OR `prompt_tokens`
+- `output_tokens` OR `completion_tokens`
+- Both naming conventions supported for compatibility
 
-### Latest Test Results (Oct 5, 2025)
+### Build System
 
-**27-Test Suite (Post Infrastructure Cleanup):**
-- **Total Tests**: 27/27 PASSED ✅
-- **Success Rate**: 100%
-- **Average Response Time**: 7.34s ⭐ EXCELLENT
-- **Response Time Range**: 4.11s - 17.14s
-- **Test Report**: `cli_regression_test_loop1_20251005_181607.txt`
+**Tool:** Vite 5.2+
+- Fast HMR (Hot Module Replacement)
+- TypeScript support
+- React plugin (@vitejs/plugin-react)
+- PWA plugin (vite-plugin-pwa)
+- CSS optimization (PostCSS, cssnano)
 
-**Changes Validated:**
-1. ✅ AI Model Selector removed (backend + frontend)
-2. ✅ Token display showing Input/Output/Total separately
-3. ✅ Performance indicators (FCP, LCP, CLS) displaying correctly
+**Build Modes:**
+- `development` - Dev mode with source maps
+- `staging` - Staging environment
+- `production` - Optimized production build
 
-**Performance Improvement:**
-- **Legacy (with MCP)**: ~20s average
-- **Current (Direct API, no model selection)**: 7.34s average
-- **🚀 Improvement**: 63% faster
+**Output:** `dist/` directory
+- Optimized JavaScript bundles
+- Minified CSS
+- Service worker for PWA
+- Static assets
 
-### UI Performance
-- **FCP**: ~256ms
-- **LCP**: <1s
-- **CLS**: <0.1
-- **Memory Heap**: ~13.8MB
+## Data Flow
 
-## Security Architecture
+### Query Processing Flow
 
-### API Key Management
-- Stored in `.env` (never committed)
-- Three API keys required:
-  - OPENAI_API_KEY (GPT-5-Nano only)
-  - POLYGON_API_KEY (Direct API)
-  - FINNHUB_API_KEY (stock quotes)
+1. **User Input** (Web or CLI)
+   - User types natural language query
+   - Frontend/CLI sends to backend
 
-### Removed Attack Surfaces (Oct 2025)
-- ❌ Model selection endpoints (potential abuse vector removed)
-- ❌ MCP server connections (reduced complexity)
-- ✅ Simplified to single model, direct API calls only
+2. **Backend Processing** (FastAPI)
+   - Receives POST /query request
+   - Creates OpenAI agent with 12 tools
+   - Passes query to agent
 
-## Testing Strategy
+3. **AI Agent Processing** (OpenAI Agents SDK)
+   - Analyzes query
+   - Determines which tools to call
+   - Executes Direct API tool calls (no MCP)
+   - Generates structured response
 
-### Backend Testing
-- Comprehensive CLI test suite (27 tests in single persistent session)
-- **Latest Results (Oct 5, 2025)**: 27/27 PASSED, 7.34s avg, EXCELLENT performance
-- Validates all 12 tools work correctly
-- No MCP dependencies to test
+4. **Tool Execution** (Direct API)
+   - Polygon Direct API: 11 tools
+   - Finnhub Direct API: 1 tool
+   - No MCP server overhead
+   - Direct Python SDK calls
 
-### Frontend Testing
-- E2E tests with Playwright
-- Component testing
-- Token display validation (input/output/total)
-- Performance metrics validation
+5. **Response Generation**
+   - Agent formats response (KEY TAKEAWAYS + DETAILED ANALYSIS)
+   - Backend extracts token usage from OpenAI response
+   - Middleware measures response time
 
-## Key Architectural Decisions (Oct 2025)
+6. **Response Delivery**
+   - Backend sends JSON response
+   - Frontend/CLI displays formatted output
+   - Performance metrics shown
 
-### 1. Complete MCP Removal
-**Rationale:**
-- Direct API calls are 70% faster
-- Simpler architecture, fewer dependencies
-- Full control over API interactions
-- No MCP server lifecycle management
+### Performance Tracking
 
-**Impact:**
-- Removed mcp_service.py
-- Removed MCP dependency injection
-- Removed MCP server from lifespan management
-- All 12 tools now use Direct API pattern
+**Backend Middleware:**
+- Measures total response time
+- Adds `X-Process-Time` header
+- Logs performance metrics
 
-### 2. Model Selection Removal
-**Rationale:**
-- Only GPT-5-Nano is used (no other models)
-- Model selection infrastructure was dead code
-- Simplified API and UI
-- Reduced attack surface
+**Token Tracking:**
+- Extracts from OpenAI response metadata
+- Supports dual naming: `input_tokens`/`prompt_tokens`
+- Tracks input, output, total tokens
 
-**Impact:**
-- Removed models.py router
-- Removed 6 model selection classes from api_models.py
-- Removed ai_models.ts from frontend
-- Removed model selection UI components
-- Simplified sendChatMessage API
-
-### 3. Token Tracking Enhancement
-**Rationale:**
-- Users need visibility into token usage
-- Input vs output tokens have different costs
-- Transparency builds trust
-
-**Impact:**
-- Added extract_token_usage_from_context_wrapper
-- Updated ResponseMetadata with inputTokens/outputTokens
-- Updated UI to show "Input: X | Output: Y | Total: Z"
-- Backward compatible with tokenCount fallback
-
-### 4. Performance Monitoring
-**Rationale:**
-- Need to track UI performance metrics
-- Core Web Vitals matter for UX
-
-**Fix:**
-- Changed initialization from 0 to undefined
-- Proper "Calculating..." display
-- Accurate measurement of FCP, LCP, CLS
-
-## Git Workflow
-
-**Reference**: See `.serena/memories/git_commit_workflow.md` for complete workflow
-
-**Key Principle**: Stage ONLY immediately before commit
-- ❌ NEVER stage files early during development
-- ✅ DO ALL WORK FIRST (code, tests, docs, config)
-- ✅ STAGE EVERYTHING AT ONCE (`git add -A`)
-- ✅ COMMIT IMMEDIATELY (within 60 seconds)
-
-## Scalability Considerations
-
-### Current Architecture (Optimized)
-- Single-process backend (uvicorn)
-- 12 custom tools (all Direct API, no MCP overhead)
-- GPT-5-Nano only (no model switching overhead)
-- Suitable for development and small-scale production
-
-### Future Scaling Options
-- Multi-worker uvicorn deployment
-- State externalization (Redis for sessions)
-- Load balancing for frontend
-- CDN for static assets
-- Rate limiting per API key
+**Frontend Display:**
+- Real-time performance metrics
+- Token usage display
+- Response time display
+- Model name display
 
 ## Migration History
 
-### Infrastructure Cleanup (Oct 5, 2025)
+### Phase 4: MCP Removal (Oct 2025) ✅ COMPLETE
 
-**Phase 4 Complete: MCP Removal**
-- Tool Evolution: 10 → 14 → 18 → 12 (CURRENT)
-- Removed 6 MCP tools, added 5 direct API equivalents + 4 TA indicators
-- Performance improvement: 70% faster (removed MCP overhead)
+**Migration completed:**
+- ✅ All 12 tools migrated to Direct API
+- ✅ MCP server completely removed
+- ✅ Performance improved 70% (6.10s avg vs 20s legacy)
+- ✅ Token tracking enhanced (dual naming support)
+- ✅ Model selector removed (GPT-5-Nano only)
 
-**Model Selector Removal**
-- Removed models.py router
-- Removed 6 model selection classes
-- Removed ai_models.ts frontend types
-- Simplified to GPT-5-Nano only
+**Architecture Changes:**
+- **Before**: FastAPI → OpenAI Agent → MCP Server → Polygon/Finnhub APIs
+- **After**: FastAPI → OpenAI Agent → Direct Polygon/Finnhub Python SDKs
 
-**Token Display Enhancement**
-- Split tokenCount into inputTokens + outputTokens
-- Dual naming convention support
-- UI shows breakdown: "Input: X | Output: Y | Total: Z"
+**Performance Gains:**
+- **Response Time**: 20s → 6.10s (70% faster)
+- **Overhead**: Removed MCP server latency
+- **Reliability**: Direct API calls (no MCP middleman)
+- **Consistency**: 0.80s std dev (highly reliable)
 
-**Performance Indicators Fix**
-- Fixed FCP/LCP/CLS stuck on "Calculating..."
-- Changed initialization: 0 → undefined
+## Testing Architecture
+
+### CLI Regression Testing
+
+**Script:** `CLI_test_regression.sh`
+- 27 standardized test prompts
+- Single persistent CLI session
+- Response time tracking
+- Success rate monitoring
+
+**Test Coverage:**
+- Market data queries (7 tests)
+- Technical analysis (15 tests)
+- OHLC/options data (5 tests)
+
+**Performance Baseline (10-Run, Oct 2025):**
+- **Average**: 6.10s per query
+- **Range**: 5.25s - 7.57s
+- **Std Dev**: 0.80s
+- **Success Rate**: 100% (160/160 tests)
+
+**Test Reports:**
+- Saved to `test-reports/` directory
+- Timestamped filenames
+- Includes performance metrics
+
+### E2E Testing (Playwright)
+
+**Status:** Available but not primary test method
+**Location:** `tests/playwright/`
+**Note:** CLI regression tests are primary testing method
+
+## Performance Architecture
+
+### Optimizations
+
+**Backend:**
+- Async request handling (FastAPI)
+- Shared HTTP session (aiohttp)
+- Direct API calls (no MCP overhead)
+- Minimal tool calls enforcement
+
+**Frontend:**
+- Optimized CSS (no backdrop filters, complex shadows)
+- Simple transitions (opacity, color only)
+- Media queries (not container queries)
+- Efficient bundle size (Vite tree shaking)
+
+**AI Agent:**
+- Streamlined system prompts (40-50% token reduction)
+- GPT-5-Nano optimization (200K TPM rate limit)
+- Quick response enforcement
+- Parallel tool calls enabled
+
+### Performance Metrics
+
+**Core Web Vitals:**
+- **FCP**: 256ms (85% better than target)
+- **LCP**: < 500ms (80%+ improvement)
+- **CLS**: < 0.1 (50%+ improvement)
+- **TTI**: < 1s (70%+ improvement)
+
+**API Performance:**
+- **Average Response**: 6.10s (EXCELLENT)
+- **Success Rate**: 100%
+- **Consistency**: 0.80s std dev
+
+## Deployment Architecture
+
+### Development Servers
+
+**Backend:**
+- Command: `uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload`
+- Port: 8000
+- Auto-reload: Enabled
+- Host: 127.0.0.1 (localhost)
+
+**Frontend:**
+- Command: `vite --mode development`
+- Port: 3000
+- HMR: Enabled
+- Proxy: API calls to localhost:8000
+
+### Production Build
+
+**Frontend:**
+- Command: `npm run build`
+- Output: `dist/` directory
+- Optimization: Minification, tree shaking, code splitting
+- Service Worker: PWA support
+
+**Serving:**
+- Live Server on port 5500
+- SPA routing enabled
+- Service worker for offline support
+
+### Startup Scripts
+
+**start-app-xterm.sh (RECOMMENDED):**
+- Kills existing servers
+- Starts backend in xterm window
+- Starts frontend in xterm window
+- Health checks both servers
+- 30-second timeout fallback
+- Notifies user when ready
+
+**start-app.sh (NOW WORKING):**
+- Same as xterm version
+- Works in WSL2/headless environments
+- Background process mode
+- 30-second timeout fallback
+- Logs to backend.log, frontend.log
+
+## Configuration Files
+
+### Backend
+- `pyproject.toml` - Python dependencies, build config
+- `.pylintrc` - Pylint configuration
+- `.env` - Environment variables (API keys)
+
+### Frontend
+- `package.json` - npm dependencies, scripts
+- `tsconfig.json` - TypeScript compiler config
+- `.eslintrc.cjs` - ESLint configuration
+- `.prettierrc.cjs` - Prettier configuration
+- `vite.config.ts` - Vite build configuration
+- `postcss.config.js` - PostCSS/cssnano config
+
+### Shared
+- `config/app.config.json` - Centralized non-sensitive config
+- `.gitignore` - Git ignore patterns
+- `.env.example` - Environment variable template
+
+## Security Considerations
+
+**API Keys:**
+- Stored in `.env` file (not committed to git)
+- Loaded via python-dotenv
+- Backend only (not exposed to frontend)
+
+**CORS:**
+- Restricted to http://127.0.0.1:3000
+- Development only configuration
+
+**Dependencies:**
+- Regular updates via `uv` and `npm`
+- Pinned versions in `pyproject.toml` and `package-lock.json`

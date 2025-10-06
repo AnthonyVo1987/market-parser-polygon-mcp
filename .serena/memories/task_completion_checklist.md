@@ -1,182 +1,186 @@
 # Task Completion Checklist
 
-## 🔴 CRITICAL: Testing is MANDATORY - Not Optional
+## Pre-Commit Quality Checklist
 
-**Before ANY task can be considered complete:**
+Before committing ANY code changes, complete ALL items in this checklist:
 
-1. ✅ Code must be implemented
-2. ✅ Tests must be EXECUTED (not just created)
-3. ✅ Test results must be SHOWN (100% pass rate)
-4. ✅ Test report path must be provided
-5. ❌ NO test execution = Task INCOMPLETE
+### 1. Code Quality Checks
 
-**Rule:** Code without test execution = Code NOT implemented
-
----
-
-## Pre-Commit Code Quality Checks
-
-### 1. Linting (Required - Must Pass)
-
+#### Python Code Quality
 ```bash
-npm run lint                  # Run all linting checks
+# Lint Python code
+npm run lint:python
+# Expected: 10.00/10 score, 0 errors
+
+# Fix Python formatting
+npm run lint:fix:python
+# Expected: All files reformatted by black + isort
 ```
 
-**Requirements:**
-
-- ✅ Python: 10.00/10 pylint score (zero errors)
-- ✅ JavaScript/TypeScript: 0 errors (4 acceptable warnings currently)
-- ❌ Do NOT commit if linting fails
-
-### 2. Type Checking (Required)
-
+#### TypeScript/JavaScript Code Quality
 ```bash
-npm run type-check            # TypeScript type validation
+# Lint TypeScript/React code
+npm run lint:js
+# Expected: Max 150 warnings, 0 errors
+
+# Fix TypeScript/JavaScript issues
+npm run lint:fix:js
+# Expected: Auto-fixable issues resolved
+
+# Format code
+npm run format
+# Expected: All files formatted by Prettier
+
+# Type check
+npm run type-check
+# Expected: 0 TypeScript errors
 ```
 
-**Requirements:**
-
-- ✅ No TypeScript compilation errors
-- ✅ All type definitions properly declared
-
-### 3. Code Formatting (Required)
-
+#### All Quality Checks
 ```bash
-npm run format:check          # Verify Prettier formatting
+# Run all checks at once
+npm run check:all
+# Expected: All checks passing
 ```
 
-**If formatting issues found:**
+### 2. Testing (MANDATORY)
 
+#### CLI Regression Testing
 ```bash
-npm run lint:fix              # Auto-fix Python + JS/TS
-npm run format                # Apply Prettier formatting
+# Run CLI regression test suite (27 tests)
+./CLI_test_regression.sh
+
+# Expected results:
+# - 27/27 tests PASSED (100% success rate)
+# - Average response time: ~6-8 seconds
+# - Test report generated in test-reports/
 ```
 
-### 4. Build Validation (Recommended)
+**CRITICAL:** Test execution is MANDATORY. You MUST:
+- ✅ Execute the test suite
+- ✅ Show test results to user
+- ✅ Verify 100% pass rate
+- ✅ Provide test report file path
+- ✅ Fix any failures and re-test
 
+**NEVER:**
+- ❌ Skip test execution
+- ❌ Claim completion without test results
+- ❌ Mark task "done" without test evidence
+- ❌ Proceed to documentation without running tests
+
+**Pattern Recognition:**
+
+**WRONG:**
+```
+1. Create 5 new tools ✅
+2. Update test suite file ✅
+3. Update documentation ✅
+4. Mark task complete ❌ (NEVER ran tests!)
+```
+
+**CORRECT:**
+```
+1. Create 5 new tools ✅
+2. Update test suite file ✅
+3. RUN test suite: ./CLI_test_regression.sh ✅
+4. Show results: 27/27 PASS, 100% success ✅
+5. Provide test report path ✅
+6. Update documentation with test results ✅
+7. Mark task complete ✅
+```
+
+### 3. Documentation Updates
+
+#### Update Project Documentation
 ```bash
-npm run build                 # Production build test
+# Update CLAUDE.md with Last Completed Task Summary
+# Update README.md if user-facing features changed
+# Update relevant .md files in docs/ if needed
 ```
 
-**Requirements:**
-
-- ✅ Build completes without errors
-- ✅ No bundle size regressions
-- ⚠️ Monitor build time (should be ~3-6s)
-
-## 🔴 Testing Requirements (MANDATORY - DO NOT SKIP)
-
-### 5. Run Comprehensive Tests (REQUIRED FOR TASK COMPLETION)
-
-**🔴 CRITICAL: You MUST execute tests and show results - not just create test files**
-
-```bash
-# Run the appropriate test suite based on task
-./CLI_test_regression.sh   # For tasks with 27 tests (single persistent session)
-```
-
-**Expected Results (MUST VERIFY):**
-
-- ✅ All 27/27 tests must PASS (100% success rate)
-- ✅ Response times: 6-10s average (EXCELLENT performance)
-- ✅ Test report generated in test-reports/
-- ✅ Session persistence verified (single session for all tests)
-- ✅ Performance metrics shown (min/max/avg response times)
-- ⚠️ Varying response times confirm real API calls (not mocked)
-
-**ENFORCEMENT:**
-
-- ❌ Task is NOT complete without test execution
-- ❌ Creating test file ≠ Running test file
-- ❌ Updating test suite ≠ Executing test suite
-- ✅ Must RUN tests and SHOW results to user
-- ✅ Must verify 100% pass rate
-- ✅ Must provide test report file path
-
-### 6. Verify Test Reports
-
-```bash
-ls -la test-reports/cli_regression_test_*.txt
-```
-
-**Check for:**
-
-- Test completion timestamp
-- All tests marked as PASS
-- Performance ratings (GOOD/EXCELLENT)
-- No error messages in output
-
-## Server Health Checks
-
-### 7. Backend Health Verification
-
-```bash
-# Start backend
-npm run backend:dev
-
-# In another terminal, check health
-curl http://127.0.0.1:8000/health
-```
-
-**Expected Response:**
-
-```json
-{"status": "healthy", "timestamp": "2025-XX-XXTXX:XX:XX.XXXXXX"}
-```
-
-### 8. Frontend Build & Serve
-
-```bash
-npm run build
-npm run serve
-```
-
-**Verify:**
-
-- ✅ Frontend builds successfully
-- ✅ Application loads at <http://127.0.0.1:3000>
-- ✅ No console errors in browser DevTools
-
-## Documentation Updates
-
-### 9. Update CLAUDE.md (If Applicable)
-
-If task involves significant changes, update:
-
+**CLAUDE.md Last Completed Task Section:**
 ```markdown
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[TYPE] Brief description
+[CATEGORY] Brief task description
 
-- Bullet point of changes
-- Additional modifications
-- Breaking changes if any
+**Context:**
+- Why this task was needed
+- What architectural changes were made
 
-BREAKING CHANGE: Description (if applicable)
+**Changes Made:**
+- Detailed list of all changes
+- Files modified
+- Test results
+
+**Performance/Metrics (if applicable):**
+- Test results (e.g., 27/27 tests passing)
+- Performance metrics (e.g., 6.10s avg response time)
+- Success rates
+
+**Files Changed:**
+- ✅ Modified: path/to/file1
+- ✅ Added: path/to/file2
+- ✅ Deleted: path/to/file3
+- **Total**: X files changed
+
+**Key Achievements:**
+- ✅ Achievement 1
+- ✅ Achievement 2
 <!-- LAST_COMPLETED_TASK_END -->
 ```
 
-### 10. Update Memory Files (For Major Changes)
+#### Update Serena Memories (if applicable)
+```bash
+# If architectural changes affect Serena memories:
+# - Update project_architecture.md
+# - Update tech_stack.md
+# - Update task_completion_checklist.md
+# - Update suggested_commands.md
+```
 
-If task introduces new patterns, architecture changes, or commands:
+### 4. Performance Verification
 
-- Update relevant Serena memory files
-- Add new memory files if needed
-- Keep memories concise and actionable
+#### Server Health Check
+```bash
+# Start servers
+./start-app-xterm.sh
 
-## 🔴 CRITICAL: Proper Atomic Commit Workflow
+# Verify backend health
+curl http://127.0.0.1:8000/health
+# Expected: {"status": "healthy"}
 
-**⚠️ MANDATORY: Stage ONLY Immediately Before Commit**
+# Verify frontend
+curl http://127.0.0.1:3000
+# Expected: HTML response
 
-**See `.serena/memories/git_commit_workflow.md` for complete workflow documentation**
+# Or use npm script
+npm run status
+```
 
-### The Fatal Mistake: Early Staging
+#### Performance Testing (if changes affect performance)
+```bash
+# Run performance baseline
+./CLI_test_regression.sh 10
+
+# Check average response time
+# Expected: ~6-8 seconds average
+# Expected: 100% success rate
+```
+
+### 5. Git Workflow - PROPER ATOMIC COMMIT
+
+**🔴 CRITICAL: Follow this EXACT workflow**
+
+#### PROPER ATOMIC COMMIT WORKFLOW
+
+**The Fatal Mistake: Early Staging**
 
 **NEVER stage files early during development. Staging is the LAST step before committing.**
 
 **What happens when you stage too early:**
-
 1. ⏰ **Time T1**: You run `git add` (files staged)
    - Staging area = snapshot at T1
 2. ⏰ **Time T2-T5**: You continue working
@@ -189,55 +193,43 @@ If task introduces new patterns, architecture changes, or commands:
 
 **Result: Incomplete, broken atomic commits** ❌
 
-### Correct Atomic Commit Workflow (6 Phases)
+#### Correct Workflow (Follow EXACTLY)
 
-**Follow this workflow EXACTLY:**
-
-#### Phase 1: DO ALL WORK FIRST (DO NOT stage anything yet)
-
+**Step 1: DO ALL WORK FIRST** (DO NOT stage anything yet)
 - ✅ Complete ALL code changes
 - ✅ Run ALL tests and generate test reports
-- ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
+- ✅ Update ALL documentation (CLAUDE.md, README.md, etc.)
 - ✅ Update ALL config files (.claude/settings.local.json, etc.)
-- ✅ Update ALL Serena memories
-- ✅ Update ALL task plans
+- ✅ Update ALL Serena memories (if applicable)
+- ✅ Update ALL task plans (if applicable)
 - ⚠️ **DO NOT RUN `git add` YET**
 
-#### Phase 2: VERIFY EVERYTHING IS COMPLETE
-
+**Step 2: VERIFY EVERYTHING IS COMPLETE**
 ```bash
 git status  # Review ALL changed/new files
 git diff    # Review ALL changes
 ```
 
-- Ensure ALL work is done
-- Ensure ALL files are present
-
-#### Phase 3: STAGE EVERYTHING AT ONCE
-
+**Step 3: STAGE EVERYTHING AT ONCE**
 ```bash
 git add -A  # Stage ALL files in ONE command
 ```
-
 - ⚠️ This is the FIRST time you run `git add`
-- ⚠️ Stage ALL related files together
 
-#### Phase 4: VERIFY STAGING IMMEDIATELY
-
+**Step 4: VERIFY STAGING IMMEDIATELY**
 ```bash
 git status  # Verify ALL files staged, NOTHING unstaged
 ```
 
-- If anything is missing: `git add [missing-file]`
-
-#### Phase 5: COMMIT IMMEDIATELY (within 60 seconds)
-
+**Step 5: COMMIT IMMEDIATELY** (within 60 seconds)
 ```bash
 git commit -m "$(cat <<'EOF'
-[TAG] Descriptive commit message
+[CATEGORY] Brief description
 
-- Change 1
-- Change 2
+- Detailed change 1
+- Detailed change 2
+- Test results: 27/27 tests passing, 6.10s avg
+- Files changed: X files
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -246,16 +238,14 @@ EOF
 )"
 ```
 
-#### Phase 6: PUSH IMMEDIATELY
-
+**Step 6: PUSH IMMEDIATELY**
 ```bash
 git push
 ```
 
-### What Belongs in an Atomic Commit
+#### What Belongs in an Atomic Commit
 
 **ALL of these must be included together:**
-
 - ✅ Code changes (backend + frontend)
 - ✅ Test reports (evidence of passing tests)
 - ✅ Documentation updates (CLAUDE.md, README.md, etc.)
@@ -263,7 +253,7 @@ git push
 - ✅ Config changes (.claude/settings.local.json, etc.)
 - ✅ Task plan updates (TODO_task_plan.md, etc.)
 
-### ❌ NEVER DO THIS
+#### ❌ NEVER DO THIS
 
 - ❌ Stage files early during development
 - ❌ Stage files "as you go"
@@ -272,152 +262,184 @@ git push
 - ❌ Commit without test reports
 - ❌ Commit without documentation updates
 
+**Reference:** See `.serena/memories/git_commit_workflow.md` for complete details.
+
 **Enforcement:** Incomplete commits will be reverted and reworked.
 
-**Commit Types:**
+### 6. Final Verification
 
-- `[FEAT]`: New feature
-- `[FIX]`: Bug fix
-- `[REFACTOR]`: Code refactoring
-- `[TEST]`: Test changes
-- `[DOCS]`: Documentation
-- `[CHORE]`: Maintenance
-- `[INFRASTRUCTURE]`: Infrastructure changes
-- `[SERENA]`: Serena-related changes
-- `[TESTING]`: Testing infrastructure changes
+#### Pre-Push Checklist
+- [ ] All code quality checks passing
+- [ ] All tests passing (27/27 for CLI regression)
+- [ ] Test report generated and included in commit
+- [ ] Documentation updated (CLAUDE.md, README.md)
+- [ ] Serena memories updated (if applicable)
+- [ ] Git commit follows atomic workflow
+- [ ] All files staged and committed
+- [ ] Commit message is descriptive and includes test results
 
-## Performance Validation
-
-### 11. Run Performance Checks (Optional but Recommended)
-
+#### Post-Push Verification
 ```bash
-npm run lighthouse            # Lighthouse CI audit
-npm run perf:bundle           # Bundle size analysis
+# Verify push succeeded
+git log -1
+# Expected: Your commit appears in log
+
+# Verify remote is up to date
+git status
+# Expected: "Your branch is up to date with 'origin/master'"
 ```
 
-**Performance Targets:**
+## Common Task Workflows
 
-- First Contentful Paint: ~256ms
-- Core Web Vitals: 85%+ improvement
-- Memory Heap: ~13.8MB
-- Bundle size: Monitor for regressions
+### Adding New Features
 
-## Environment Validation
+1. **Implementation Phase:**
+   ```bash
+   # Implement feature code
+   # Create/update test prompts
+   # Run quality checks
+   npm run lint:fix
+   npm run type-check
+   ```
 
-### 12. Verify Environment Integrity
+2. **Testing Phase (MANDATORY):**
+   ```bash
+   # Execute tests
+   ./CLI_test_regression.sh
+   
+   # Verify results
+   # - Check test report in test-reports/
+   # - Verify 100% pass rate
+   # - Note average response time
+   ```
 
-```bash
-# Check Python environment
-uv run python -c "import openai; from agents import Agent; print('✅ Python OK')"
+3. **Documentation Phase:**
+   ```bash
+   # Update CLAUDE.md Last Completed Task
+   # Update README.md if needed
+   # Update Serena memories if applicable
+   ```
 
-# Check Node.js dependencies
-npm list --depth=0 | head -10
+4. **Commit Phase:**
+   ```bash
+   # Verify ALL work complete
+   git status
+   git diff
+   
+   # Stage EVERYTHING at once
+   git add -A
+   
+   # Verify staging
+   git status
+   
+   # Commit immediately
+   git commit -m "message with test results"
+   
+   # Push immediately
+   git push
+   ```
 
-# Verify servers can start
-./start-app.sh
-```
+### Fixing Bugs
 
-## Final Checklist Summary
+1. **Fix the bug in code**
+2. **Run quality checks** (`npm run check:all`)
+3. **Run tests** (`./CLI_test_regression.sh`)
+4. **Update documentation** (if needed)
+5. **Commit with atomic workflow** (`git add -A` → `git commit` → `git push`)
 
-Before considering a task complete, verify:
+### Refactoring Code
 
-- [ ] All linting checks pass (Python 10/10, JS/TS 0 errors)
-- [ ] TypeScript type checking passes
-- [ ] Code properly formatted (Black, isort, Prettier)
-- [ ] Production build succeeds
-- [ ] All 27 comprehensive tests pass (100% success rate)
-- [ ] Test report generated and path provided
-- [ ] Backend health endpoint responds correctly
-- [ ] Frontend loads without errors
-- [ ] CLAUDE.md updated if needed
-- [ ] Memory files updated for significant changes
-- [ ] **ALL work complete BEFORE staging**
-- [ ] Git commit created with proper atomic workflow
-- [ ] Changes pushed to remote (if ready)
+1. **Make refactoring changes**
+2. **Run quality checks** (`npm run lint:fix && npm run type-check`)
+3. **Run tests** (verify no regressions)
+4. **Update documentation** (if architecture changed)
+5. **Update Serena memories** (if applicable)
+6. **Commit with atomic workflow**
 
-## Common Issues & Solutions
+### Updating Documentation
 
-### Issue: Linting Fails
+1. **Make documentation changes**
+2. **Run markdown linting** (if available)
+3. **Verify links work**
+4. **Update CLAUDE.md Last Completed Task**
+5. **Commit with atomic workflow**
 
-**Solution:**
+## Quality Standards
 
-```bash
-npm run lint:fix              # Auto-fix most issues
-# Manually fix remaining issues
-npm run lint                  # Re-verify
-```
+### Required Scores
+- **Python Pylint**: 10.00/10 (no errors)
+- **TypeScript ESLint**: Max 150 warnings, 0 errors
+- **TypeScript Compiler**: 0 errors
+- **Test Success Rate**: 100%
+- **Response Time**: < 10s average (target ~6-8s)
 
-### Issue: Tests Fail
+### Performance Targets
+- **CLI Response Time**: 6-8s average
+- **Frontend FCP**: < 300ms
+- **Frontend LCP**: < 500ms
+- **Test Success Rate**: 100%
 
-**Solution:**
+## Emergency Procedures
 
-1. Check backend is running: `curl http://127.0.0.1:8000/health`
-2. Verify API keys in `.env`
-3. Check test output for specific errors
-4. Review test-reports/ for detailed logs
+### If Tests Fail
 
-### Issue: Build Fails
+1. **Do NOT commit**
+2. **Analyze failure**:
+   ```bash
+   # Check test report
+   cat test-reports/comprehensive_*.txt
+   ```
+3. **Fix the issue**
+4. **Re-run tests**
+5. **Only commit when tests pass 100%**
 
-**Solution:**
+### If Quality Checks Fail
 
-```bash
-npm run clean:full            # Deep clean
-uv sync                       # Reinstall Python deps
-npm install --legacy-peer-deps # Reinstall Node deps
-npm run build                 # Retry build
-```
+1. **Run auto-fix**:
+   ```bash
+   npm run lint:fix
+   npm run format
+   ```
+2. **Re-run checks**:
+   ```bash
+   npm run check:all
+   ```
+3. **Manually fix remaining issues**
+4. **Verify all checks pass**
 
-### Issue: Port Already in Use
+### If Servers Won't Start
 
-**Solution:**
+1. **Kill existing processes**:
+   ```bash
+   pkill -f uvicorn
+   pkill -f vite
+   ```
+2. **Clear ports**:
+   ```bash
+   lsof -i :8000 | grep -v PID | awk '{print $2}' | xargs -r kill -9
+   lsof -i :3000 | grep -v PID | awk '{print $2}' | xargs -r kill -9
+   ```
+3. **Restart servers**:
+   ```bash
+   ./start-app-xterm.sh
+   ```
 
-```bash
-pkill -f "uvicorn"            # Kill backend
-pkill -f "vite"               # Kill frontend
-lsof -ti:8000 | xargs kill -9 # Force kill port 8000
-lsof -ti:3000 | xargs kill -9 # Force kill port 3000
-```
+## Summary Checklist
 
-### Issue: Incomplete Atomic Commit
+Before pushing ANY commit:
 
-**Solution:**
+- [ ] ✅ All code quality checks passing
+- [ ] ✅ All tests executed and passing (100% success rate)
+- [ ] ✅ Test report generated and will be included in commit
+- [ ] ✅ Documentation updated (CLAUDE.md, README.md)
+- [ ] ✅ Serena memories updated (if applicable)
+- [ ] ✅ ALL work complete (do not stage yet!)
+- [ ] ✅ Reviewed git status and git diff
+- [ ] ✅ Staged ALL files at once: `git add -A`
+- [ ] ✅ Verified staging: `git status`
+- [ ] ✅ Committed immediately after staging
+- [ ] ✅ Pushed immediately after committing
 
-1. DO NOT stage files early
-2. Complete ALL work first (code, tests, docs, config)
-3. Verify everything is done with `git status` and `git diff`
-4. Stage everything at once with `git add -A`
-5. Verify staging with `git status`
-6. Commit immediately (within 60 seconds)
-7. Push immediately
+**Remember: If you haven't RUN the tests and SHOWN the results, the task is NOT complete.**
 
-**See `.serena/memories/git_commit_workflow.md` for complete recovery procedures**
-
-## Project-Specific Requirements
-
-### GPT-5-Nano Only Policy
-
-- ✅ Verify no GPT-5-Mini references introduced
-- ✅ All AI calls use GPT-5-Nano model
-- ⚠️ Breaking change if model policy modified
-
-### API Key Security
-
-- ❌ NEVER commit `.env` file
-- ❌ NEVER hardcode API keys
-- ✅ Always use environment variables
-- ✅ Verify `.env.example` is updated if new keys added
-
-### Startup Script Compatibility
-
-- ✅ Verify scripts work in both X11 and WSL2/headless environments
-- ✅ Scripts must exit cleanly (30s timeout mechanism)
-- ✅ Health checks must complete successfully
-
-## Continuous Integration Notes
-
-When CI/CD is implemented:
-
-- All checklist items should be automated in CI pipeline
-- Failing checks should block merges
-- Performance budgets should be enforced
-- Security scans should run on dependencies
+**Remember: Stage files ONLY immediately before committing. Never stage early!**
