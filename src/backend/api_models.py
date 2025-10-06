@@ -149,7 +149,9 @@ class ResponseMetadata(BaseModel):
     timestamp: str
     processing_time: Optional[float] = Field(None, alias="processingTime")
     request_id: Optional[str] = Field(None, alias="requestId")
-    token_count: Optional[int] = Field(None, alias="tokenCount")  # Deprecated: use input/output tokens
+    token_count: Optional[int] = Field(
+        None, alias="tokenCount"
+    )  # Deprecated: use input/output tokens
     input_tokens: Optional[int] = Field(None, alias="inputTokens")
     output_tokens: Optional[int] = Field(None, alias="outputTokens")
 

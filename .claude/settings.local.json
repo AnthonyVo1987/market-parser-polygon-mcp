@@ -193,7 +193,8 @@
       "Bash(cat:*)",
       "Bash(claude mcp:*)",
       "Bash(tmux kill-session:*)",
-      "Bash(tmux list-sessions:*)"
+      "Bash(tmux list-sessions:*)",
+      "Bash(bc:*)"
     ],
     "deny": [],
     "ask": [],

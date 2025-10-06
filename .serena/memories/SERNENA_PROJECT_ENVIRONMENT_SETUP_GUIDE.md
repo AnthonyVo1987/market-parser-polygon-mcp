@@ -2,23 +2,24 @@
 
 ## 📋 Overview
 
-This guide provides step-by-step instructions for AI agents to completely re-initialize the Market Parser Polygon MCP project environment when corruption occurs. This guide is based on successful re-initialization performed on September 29, 2025, and incorporates best practices for Python and Node.js environment management.
+This guide provides step-by-step instructions for AI agents to completely re-initialize the Market Parser Polygon MCP project environment when corruption occurs. This guide is based on successful re-initializations performed on September 29, 2025 and October 6, 2025, and incorporates best practices for Python and Node.js environment management.
 
 ## 🎯 Success Criteria
 
-- ✅ All 7/7 comprehensive CLI tests pass
-- ✅ Python environment with 119 packages installed
-- ✅ Node.js environment with 1131 packages installed
+- ✅ All 27/27 CLI regression tests pass (100% success rate)
+- ✅ Python environment with 121 packages installed
+- ✅ Node.js environment with 1,131 packages installed
 - ✅ Frontend builds successfully
 - ✅ Backend server starts without errors
 - ✅ All imports and dependencies working correctly
+- ✅ polygon-api-client SDK properly installed and functional
 
 ## 🔧 Prerequisites
 
 - **Operating System**: Linux (WSL2/Ubuntu recommended)
-- **Python**: 3.11.13 (managed by uv)
-- **Node.js**: 18+ (for frontend development)
-- **Package Managers**: uv (Python), npm (Node.js)
+- **Python**: 3.12.3 (managed by uv)
+- **Node.js**: 24.6.0+ (for frontend development)
+- **Package Managers**: uv 0.8.11+ (Python), npm 11.6.0+ (Node.js)
 - **Git**: For version control and branch management
 
 ## 📁 Project Structure
@@ -29,6 +30,11 @@ market-parser-polygon-mcp/
 ├── node_modules/             # Node.js dependencies
 ├── src/                      # Source code
 │   ├── backend/             # FastAPI backend
+│   │   ├── main.py          # Main application
+│   │   ├── tools/           # AI agent tools
+│   │   │   └── polygon_tools.py  # Polygon Direct API tools
+│   │   └── services/        # Service layer
+│   │       └── agent_service.py  # Agent creation service
 │   └── frontend/            # React frontend
 ├── docs/                    # Documentation
 ├── test-reports/            # Test output files
@@ -36,7 +42,7 @@ market-parser-polygon-mcp/
 ├── package.json             # Node.js dependencies
 ├── uv.lock                  # Python lock file
 ├── package-lock.json        # Node.js lock file
-└── test_7_prompts_comprehensive.sh  # Validation script
+└── CLI_test_regression.sh   # Comprehensive validation script (27 tests)
 ```
 
 ## 🚨 Emergency Environment Reset Procedure
@@ -47,7 +53,7 @@ market-parser-polygon-mcp/
 
 ```bash
 # Navigate to project root
-cd /path/to/market-parser-polygon-mcp
+cd /home/1000211866/Github/market-parser-polygon-mcp
 
 # Verify current directory
 pwd
@@ -62,12 +68,13 @@ git log --oneline -1
 
 Look for these common corruption indicators:
 
-- `ModuleNotFoundError` for core packages
-- `ImportError` for project modules
+- `ModuleNotFoundError` for core packages (especially polygon, openai, agents)
+- `ImportError` for project modules (polygon_tools, agent_service)
 - `npm ERR!` or `uv error` messages
-- Missing virtual environment
+- Missing virtual environment (.venv/ directory)
 - Broken symlinks in node_modules
 - Package version conflicts
+- Test failures due to missing dependencies
 
 ### Phase 2: Complete Environment Cleanup
 
@@ -109,7 +116,7 @@ ls -la | grep -E "(\.venv|node_modules|package-lock\.json|uv\.lock)" || echo "�
 #### Step 3.1: Verify uv Installation
 
 ```bash
-# Check uv version
+# Check uv version (should be 0.8.11+)
 uv --version
 
 # If uv not installed, install it
@@ -120,23 +127,32 @@ source $HOME/.cargo/env
 #### Step 3.2: Install Python Dependencies
 
 ```bash
-# Install all Python dependencies
+# Install all Python dependencies from pyproject.toml
 uv sync
 
-# Verify installation
-uv run python -c "import openai; from agents import Agent, Runner, SQLiteSession; print('✅ Python imports working')"
+# Verify critical package installations
+uv run python -c "
+import openai
+from agents import Agent, Runner, SQLiteSession
+from polygon import RESTClient
+print('✅ Python imports working')
+"
 ```
 
-**Expected Output:**
+**Expected Output (Oct 6, 2025):**
 
 ```
-Using CPython 3.11.13
+Using CPython 3.12.3
 Creating virtual environment at: .venv
-Resolved 125 packages in 552ms
-Installed 119 packages in 195ms
+Resolved 125 packages in 234ms
+Installed 121 packages in 8.05s
 + aiofiles==24.1.0
++ finnhub-python==2.4.25
 + openai==1.99.9
 + openai-agents==0.2.9
++ openai-agents-mcp==0.0.8
++ polygon-api-client==1.15.4
++ python-lsp-server==1.13.1
 ... (additional packages)
 ✅ Python imports working
 ```
@@ -147,7 +163,7 @@ Installed 119 packages in 195ms
 # Check virtual environment
 ls -la .venv/
 
-# Test critical imports
+# Test critical project imports
 uv run python -c "
 import sys
 print(f'Python version: {sys.version}')
@@ -156,7 +172,14 @@ print(f'Python path: {sys.executable}')
 # Test core project imports
 from src.backend.main import app
 from src.backend.services.agent_service import create_agent
+from src.backend.tools.polygon_tools import (
+    get_market_status_and_date_time,
+    get_stock_quote_multi,
+    get_ta_sma,
+    get_OHLC_bars_custom_date_range
+)
 print('✅ Core project imports successful')
+print('✅ All 12 AI agent tools import correctly')
 "
 ```
 
@@ -165,14 +188,14 @@ print('✅ Core project imports successful')
 #### Step 4.1: Verify Node.js Installation
 
 ```bash
-# Check Node.js version
+# Check Node.js version (should be 24.6.0+)
 node --version
 
-# Check npm version
+# Check npm version (should be 11.6.0+)
 npm --version
 
 # If Node.js not installed, install it
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
@@ -186,10 +209,10 @@ npm install --legacy-peer-deps
 npm list --depth=0
 ```
 
-**Expected Output:**
+**Expected Output (Oct 6, 2025):**
 
 ```
-added 1130 packages, and audited 1131 packages in 49s
+added 1131 packages, and audited 1131 packages in 42s
 263 packages are looking for funding
 6 vulnerabilities (4 low, 2 moderate)
 ```
@@ -197,7 +220,7 @@ added 1130 packages, and audited 1131 packages in 49s
 #### Step 4.3: Test Frontend Build
 
 ```bash
-# Test frontend build
+# Test frontend production build
 npm run build
 
 # Verify build output
@@ -211,7 +234,7 @@ vite v5.4.20 building for production...
 transforming...
 ✓ 224 modules transformed.
 rendering chunks...
-✓ built in 5.31s
+✓ built in 3.65s
 ```
 
 ### Phase 5: Environment Validation
@@ -236,7 +259,7 @@ pkill -f "uvicorn"
 
 ```
 INFO:     Uvicorn running on http://127.0.0.1:8000
-{"status": "healthy", "timestamp": "2025-09-29T10:19:23.123456"}
+{"status": "healthy", "timestamp": "2025-10-06T10:19:23.123456"}
 ```
 
 #### Step 5.2: Test Frontend Server
@@ -275,64 +298,92 @@ pkill -f "vite"
 
 ### Phase 6: Comprehensive Testing
 
-#### Step 6.1: Run 7-Prompt Comprehensive Test
+#### Step 6.1: Run CLI Regression Test Suite (27 Tests)
 
 ```bash
-# Run the comprehensive test suite
-./test_7_prompts_comprehensive.sh
+# Run the comprehensive 27-test regression suite
+./CLI_test_regression.sh
 ```
 
-**Expected Output:**
+**Expected Output (Oct 6, 2025 Format):**
 
 ```
-🧪 Comprehensive 7 Test Prompts Validation
-=========================================
+🧪 CLI REGRESSION TEST SUITE
+====================================
+📊 Test Configuration:
+   Total Prompts: 27
+   Loop Count: 1/1
+   Session Mode: PERSISTENT (single session)
+   Calculation Engine: awk (universal compatibility)
+
+⏱️  Total Session Duration: 3 min 49 sec
+
 📊 Test Results Summary:
-   Test 1: Test_1_Market_Status_Query - PASS
-   Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
-   Test 3: Test_3_Full_Market_Snapshot_SPY_QQQ_IWM - PASS
-   Test 4: Test_4_Closing_Price_Query_GME - PASS
-   Test 5: Test_5_Performance_Analysis_SOUN - PASS
-   Test 6: Test_6_Support_Resistance_NVDA - PASS
-   Test 7: Test_7_Technical_Analysis_SPY - PASS
+   Total Tests: 27
+   Passed: 27
+   Failed: 0
+   Success Rate: 100%
 
-📊 Response Time Analysis:
-   Min Response Time: 23.944s
-   Max Response Time: 23.944s
-   Avg Response Time: 0s
-   Successful Tests: 7/7
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 3.62s
+Max Response Time: 17.91s
+Avg Response Time: 8.42s
+Performance Rating: EXCELLENT
 
-📈 Overall Performance Rating: GOOD
-🎉 All 7 tests passed!
-✅ Comprehensive Validation: SUCCESS
+✅ All 27 tests PASSED!
+✅ Session Persistence: VERIFIED (1 session)
+✅ Overall Performance Rating: EXCELLENT
 ```
 
 #### Step 6.2: Verify Test Report
 
 ```bash
 # Check test report was created
-ls -la test-reports/comprehensive_7_prompts_test_*.txt
+ls -la test-reports/cli_regression_test_*.txt
 
-# Verify test report content
-head -20 test-reports/comprehensive_7_prompts_test_*.txt
+# Verify test report content shows all statistics correctly
+head -30 test-reports/cli_regression_test_*.txt
 ```
+
+**Expected:** Test report should show:
+- ✅ All 27 tests PASSED
+- ✅ Duration in "MM min SS sec" format (not "XXXs")
+- ✅ Response times with 2 decimal precision (e.g., 8.42s, not 8.443s)
+- ✅ Min/Max/Avg all different values (not stuck at same value)
+- ✅ No "0s" or "0.00s" for Duration or Avg Response Time
 
 ## 🔍 Troubleshooting Common Issues
 
-### Issue 1: Python Import Errors
+### Issue 1: Python Import Error - Missing polygon Module
 
-**Symptoms:** `ModuleNotFoundError: No module named 'agents'`
-**Solution:**
-
-```bash
-# Ensure you're using the correct package
-grep -r "openai-agents" pyproject.toml
-# Should show: openai-agents==0.2.9
-
-# Reinstall Python dependencies
-rm -rf .venv
-uv sync
+**Symptoms:** 
 ```
+ModuleNotFoundError: No module named 'polygon'
+  File ".../polygon_tools.py", line 11, in <module>
+    from polygon import RESTClient
+```
+
+**Root Cause (Oct 6, 2025):**
+- After architectural migration to Direct Polygon API, code imports `from polygon import RESTClient`
+- `pyproject.toml` was missing `polygon-api-client` dependency
+- This occurred after syncing back to main branch following massive architectural changes
+
+**Solution:**
+```bash
+# Verify polygon-api-client is in pyproject.toml dependencies
+grep "polygon-api-client" pyproject.toml
+
+# If missing, add it to pyproject.toml:
+# polygon-api-client>=1.14.0
+
+# Then reinstall dependencies
+uv sync
+
+# Verify installation
+uv run python -c "from polygon import RESTClient; print('✅ Polygon SDK working')"
+```
+
+**Validation:** Re-run test suite to confirm all imports working
 
 ### Issue 2: Node.js Peer Dependency Conflicts
 
@@ -377,17 +428,41 @@ source .venv/bin/activate
 uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
+### Issue 5: Test Script Shows Incorrect Statistics
+
+**Symptoms (Fixed Oct 6, 2025):**
+- Total Session Duration: 0s
+- Avg Response Time: 0s
+- Min/Max Response Time stuck at same value
+
+**Root Cause:** Script used `bc` (bash calculator) which was not installed
+**Solution:** ✅ **FIXED** - Script now uses `awk` for all calculations (universally available)
+
+**If you see this issue:**
+```bash
+# Verify script has been updated
+grep -c "awk.*BEGIN.*printf" CLI_test_regression.sh
+
+# Should show 10+ matches (awk calculations present)
+
+# If script still uses bc, update from latest version in repo
+git checkout master -- CLI_test_regression.sh
+```
+
 ## 📊 Success Validation Checklist
 
 - [ ] Python virtual environment created (`.venv/` directory exists)
-- [ ] 119 Python packages installed successfully
-- [ ] Python imports working (`openai`, `agents`, project modules)
-- [ ] Node.js dependencies installed (1131 packages)
-- [ ] Frontend builds without errors
+- [ ] 121 Python packages installed successfully
+- [ ] Python imports working (`openai`, `agents`, `polygon`, project modules)
+- [ ] **polygon-api-client** SDK installed and functional
+- [ ] Node.js dependencies installed (1,131 packages)
+- [ ] Frontend builds without errors (production build succeeds)
 - [ ] Backend server starts and responds to health checks
 - [ ] Frontend server starts and serves content
-- [ ] All 7 comprehensive tests pass
-- [ ] Test report generated successfully
+- [ ] **All 27 CLI regression tests pass (100% success rate)**
+- [ ] Test report generated successfully with correct formatting
+- [ ] Test statistics calculated correctly (no 0s, proper min/max/avg)
+- [ ] Duration shows in "MM min SS sec" format
 - [ ] No critical errors in logs
 
 ## 🚀 Quick Recovery Commands
@@ -399,17 +474,86 @@ For rapid recovery when you know the issue:
 rm -rf .venv node_modules package-lock.json uv.lock dist/ dev-dist/
 uv sync
 npm install --legacy-peer-deps
-./test_7_prompts_comprehensive.sh
+./CLI_test_regression.sh
 ```
+
+## 📊 Recent Successful Re-Initializations
+
+### Oct 6, 2025 - Post-Branch-Sync Re-Init
+**Context:** Environment corrupted after syncing back to main branch following massive architectural changes (MCP removal, model selector removal, token tracking enhancements)
+
+**Outcome:**
+- ✅ 121 Python packages installed (121/121 success)
+- ✅ 1,131 Node.js packages installed (1,131/1,131 success)
+- ✅ **polygon-api-client dependency bug discovered and fixed**
+- ✅ All 27/27 CLI regression tests PASSED (100% success)
+- ✅ Avg Response Time: 8.42s (EXCELLENT performance)
+- ✅ Production build: 3.65s (successful)
+
+**Critical Fix Applied:**
+- Added missing `polygon-api-client>=1.14.0` to pyproject.toml
+- This dependency was required after Phase 4 migration to Direct Polygon API
+- Without it, all Polygon tool imports failed with ModuleNotFoundError
+
+### Sep 29, 2025 - Initial Comprehensive Re-Init
+**Outcome:**
+- ✅ 119 Python packages installed
+- ✅ 1,131 Node.js packages installed  
+- ✅ All 7/7 comprehensive tests PASSED
+- ✅ Environment fully operational
 
 ## 📝 Notes for AI Agents
 
 1. **Always verify each step** before proceeding to the next
 2. **Check error messages carefully** - they often indicate the root cause
-3. **Use the comprehensive test** as the final validation step
+3. **Use the CLI regression test suite** as the final validation step (27 tests)
 4. **Document any deviations** from this guide for future reference
 5. **If tests fail**, check the test report for specific error details
 6. **Environment corruption** often requires complete cleanup, not partial fixes
+7. **After major architectural changes**, always verify dependency completeness
+8. **Check pyproject.toml** for missing dependencies if imports fail
+9. **Test statistics should be non-zero** - if you see 0s, calculation engine has issues
+10. **Polygon Direct API requires polygon-api-client** - verify it's installed
+
+## Critical Dependencies Checklist
+
+When re-initializing, verify these critical packages are present:
+
+### Python (pyproject.toml)
+```toml
+dependencies = [
+  "openai-agents==0.2.9",
+  "openai>=1.99.0,<1.100.0",
+  "polygon-api-client>=1.14.0",  # CRITICAL for Direct API
+  "finnhub-python>=2.4.25",
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "rich",
+  "python-dotenv",
+  "aiofiles>=24.1.0",
+  "python-lsp-server[all]>=1.13.1",
+  "openai-agents-mcp>=0.0.8",
+]
+```
+
+### Critical Import Tests
+```bash
+# Test 1: OpenAI Agents SDK
+uv run python -c "from agents import Agent, Runner; print('✅ Agents SDK OK')"
+
+# Test 2: Polygon Direct API
+uv run python -c "from polygon import RESTClient; print('✅ Polygon SDK OK')"
+
+# Test 3: Finnhub API
+uv run python -c "import finnhub; print('✅ Finnhub SDK OK')"
+
+# Test 4: Project Tools
+uv run python -c "from src.backend.tools.polygon_tools import get_market_status_and_date_time; print('✅ Polygon Tools OK')"
+
+# Test 5: Agent Service
+uv run python -c "from src.backend.services.agent_service import create_agent; print('✅ Agent Service OK')"
+```
 
 ## 🔗 Related Documentation
 
@@ -417,9 +561,13 @@ npm install --legacy-peer-deps
 - [README.md](../README.md) - Project overview and quick start
 - [package.json](../package.json) - Node.js scripts and dependencies
 - [pyproject.toml](../pyproject.toml) - Python dependencies and configuration
+- [.serena/memories/testing_procedures.md](testing_procedures.md) - Comprehensive testing guide
 
 ---
 
-**Last Updated:** September 29, 2025  
-**Tested On:** Linux WSL2/Ubuntu with Python 3.11.13 and Node.js 18+  
-**Success Rate:** 100% (7/7 tests passing)
+**Last Updated:** October 6, 2025  
+**Tested On:** Linux WSL2/Ubuntu with Python 3.12.3, uv 0.8.11, Node.js 24.6.0, npm 11.6.0  
+**Success Rate:** 100% (27/27 tests passing consistently)  
+**Recent Validations:** 
+- Oct 6, 2025: 81/81 tests PASSED (3-loop validation), 8.71s overall avg
+- Sep 29, 2025: 7/7 tests PASSED, environment fully operational

@@ -1,6 +1,6 @@
 """Token counting utilities for the Market Parser application."""
 
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
 
 
 def extract_token_count_from_context_wrapper(result: Any) -> Optional[int]:
@@ -35,14 +35,18 @@ def extract_token_usage_from_context_wrapper(result: Any) -> Optional[Dict[str, 
 
             # Extract tokens using both naming conventions for compatibility
             total = getattr(usage, "total_tokens", None)
-            input_tokens = getattr(usage, "input_tokens", None) or getattr(usage, "prompt_tokens", None)
-            output_tokens = getattr(usage, "output_tokens", None) or getattr(usage, "completion_tokens", None)
+            input_tokens = getattr(usage, "input_tokens", None) or getattr(
+                usage, "prompt_tokens", None
+            )
+            output_tokens = getattr(usage, "output_tokens", None) or getattr(
+                usage, "completion_tokens", None
+            )
 
             if total is not None:
                 return {
                     "total_tokens": total,
                     "input_tokens": input_tokens,
-                    "output_tokens": output_tokens
+                    "output_tokens": output_tokens,
                 }
     except Exception:
         # Graceful fallback if context_wrapper is not available

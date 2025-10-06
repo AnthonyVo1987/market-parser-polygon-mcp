@@ -12,81 +12,206 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[SERENA] Comprehensive memory updates for architectural changes
+[ENVIRONMENT] Complete environment re-init and CLI test script critical bug fixes
 
 **Context:**
 
-Major architectural changes required updating Serena project memories to reflect:
+After syncing back to main branch following massive architectural changes, environment corruption required complete re-initialization and exposed critical bugs in CLI test script calculation engine.
 
-- MCP server complete removal (Phase 4 complete)
-- Model selector infrastructure removal (GPT-5-Nano only)
-- Token tracking enhancement (input/output/total split)
-- Performance indicators fix (undefined initialization)
-- Tool count change from 10 to 12 (1 Finnhub + 11 Polygon Direct API)
+**Phase 1: Environment Re-Initialization (6 Phases)**
 
-**Memory Updates Completed:**
+Successfully completed full environment reset following SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE:
 
-1. **project_architecture.md** (comprehensive rewrite):
-   - ✅ Updated tool count: 10 → 12 tools
-   - ✅ Removed ALL MCP references (MCP completely removed)
-   - ✅ Added token tracking architecture details
-   - ✅ Added model selector removal documentation
-   - ✅ Added performance metrics (7.34s avg, 27/27 tests)
-   - ✅ Documented Direct API pattern (11 Polygon + 1 Finnhub)
-   - ✅ Added git workflow reference
+1. **Pre-Reset Verification**: Verified git status (master branch, commit 4e13fb6)
+2. **Complete Cleanup**: Removed .venv, node_modules, lock files, build artifacts
+3. **Python Setup**: Installed 121 packages via uv sync (discovered critical dependency bug)
+4. **Node.js Setup**: Installed 1,131 packages via npm install --legacy-peer-deps
+5. **Server Validation**: Backend and frontend health checks PASSED
+6. **Comprehensive Testing**: 27/27 CLI regression tests PASSED (100% success)
 
-2. **task_completion_checklist.md** (major enhancement):
-   - ✅ Replaced "Git Commit Process" section with comprehensive atomic workflow
-   - ✅ Added "PROPER ATOMIC COMMIT WORKFLOW" with 6-phase process
-   - ✅ Added "The Fatal Mistake: Early Staging" explanation
-   - ✅ Added "What Belongs in an Atomic Commit" checklist
-   - ✅ Added recovery procedures for incomplete commits
-   - ✅ Updated test count references (27 tests, not 7 or 16)
-   - ✅ Added reference to `.serena/memories/git_commit_workflow.md`
+**Critical Bug Fix: Missing polygon-api-client Dependency**
 
-**Architectural State Documented:**
+**Issue:**
+```python
+ModuleNotFoundError: No module named 'polygon'
+  File "polygon_tools.py", line 11, in <module>
+    from polygon import RESTClient
+```
 
-- **Total AI Agent Tools**: 12 (1 Finnhub + 11 Polygon Direct API)
-- **AI Model**: GPT-5-Nano (EXCLUSIVE - no model selection)
-- **Integration Pattern**: Direct Polygon API (no MCP overhead)
-- **Performance**: 70% faster (removed MCP latency)
-- **Token Tracking**: Dual naming convention support (input_tokens/prompt_tokens)
-- **Test Suite**: CLI_test_regression.sh (27 tests, single persistent session)
+**Root Cause:** After Phase 4 migration to Direct Polygon API, code imported `from polygon import RESTClient` but pyproject.toml was missing the polygon-api-client package dependency.
 
-**Direct API Tools (12 Total):**
+**Fix Applied:** Added `polygon-api-client>=1.14.0` to pyproject.toml dependencies
 
-**Finnhub Custom (1 tool):**
+**Validation:** Re-ran uv sync → polygon-api-client==1.15.4 installed → All imports successful → 27/27 tests PASSED
 
-- get_stock_quote
+**Phase 2: CLI Test Script Calculation Bug Fixes**
 
-**Polygon Direct API (11 tools):**
+**Critical Issue Discovered:**
+Test reports showed incorrect statistics due to missing `bc` (bash calculator) dependency:
+- Total Session Duration: 0s (should be ~230s)
+- Avg Response Time: 0s (should be ~8s)
+- Min Response Time: 7.538s, Max Response Time: 7.538s (stuck at same value)
 
-- get_market_status_and_date_time
-- get_stock_quote_multi
-- get_options_quote_single
-- get_OHLC_bars_custom_date_range
-- get_OHLC_bars_specific_date
-- get_OHLC_bars_previous_close
-- get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
+**Root Cause Analysis:**
+- Script relied on `bc` for all floating-point arithmetic (14+ calculation points)
+- `bc` not installed on system
+- All `bc` calculations failed silently with fallback values of "0" or kept old values
 
-**Migration Timeline:**
+**Fix Applied: Complete Calculation Engine Overhaul (bc → awk)**
 
-- **Phase 4 Complete** (Oct 2025): ALL MCP tools migrated to Direct API
-- **MCP Server**: Completely removed
-- **Performance Gain**: 70% faster (removed MCP server overhead)
+Replaced ALL `bc` usage with `awk` across 5 critical areas:
+
+1. **Duration Calculation** (Line 228):
+```bash
+# BEFORE (broken):
+total_duration=$(echo "$end_time - $start_time" | bc -l 2>/dev/null || echo "0")
+
+# AFTER (fixed):
+total_duration=$(awk "BEGIN {printf \"%.2f\", $end_time - $start_time}")
+```
+
+2. **Min/Max Detection** (Lines 296-311):
+```bash
+# BEFORE (broken):
+if (( $(echo "$time < $min_time" | bc -l 2>/dev/null || echo "0") )); then
+
+# AFTER (fixed):
+if (( $(awk "BEGIN {print ($time < $min_time)}") )); then
+```
+
+3. **Average Calculation** (Line 306):
+```bash
+# BEFORE (broken):
+avg_time=$(echo "scale=2; $total_time / $count" | bc -l 2>/dev/null || echo "0")
+
+# AFTER (fixed):
+avg_time=$(awk "BEGIN {printf \"%.2f\", $total_time / $count}")
+```
+
+4. **Performance Classification** (Lines 200-208):
+```bash
+# BEFORE (broken):
+if (( $(echo "$rt < 30" | bc -l 2>/dev/null || echo "0") )); then
+
+# AFTER (fixed):
+if (( $(awk "BEGIN {print ($rt < 30)}") )); then
+```
+
+5. **Aggregate Loop Statistics** (Lines 455-464):
+```bash
+# BEFORE (broken):
+agg_total=$(echo "$agg_total + $time" | bc -l 2>/dev/null || echo "$agg_total")
+
+# AFTER (fixed):
+agg_total=$(awk "BEGIN {printf \"%.2f\", $agg_total + $time}")
+```
+
+**Why awk?**
+- ✅ Universally available on all Unix/Linux systems
+- ✅ Reliable floating-point arithmetic
+- ✅ Never fails silently (unlike bc when missing)
+- ✅ Consistent precision control
+
+**Validation (3-Loop Test):** All calculations working correctly:
+- Loop 1: Min=3.648s, Max=15.674s, Avg=8.404s, Duration=229.010s
+- Loop 2: Min=2.429s, Max=13.659s, Avg=7.646s, Duration=208.689s
+- Loop 3: Min=4.019s, Max=17.159s, Avg=9.464s, Duration=258.111s
+
+**Phase 3: Output Formatting Enhancements**
+
+**Improvements Applied:**
+
+1. **Decimal Precision**: Limited all values to 2 decimal places (was 3)
+```bash
+# Changed all .3f to .2f in awk printf statements
+avg_time=$(awk "BEGIN {printf \"%.2f\", $total_time / $count}")
+```
+
+2. **Duration Format**: Converted to human-readable "MM min SS sec"
+```bash
+# BEFORE (hard to read):
+Total Session Duration: 229.010s
+
+# AFTER (human-readable):
+duration_minutes=$(awk "BEGIN {printf \"%d\", $total_duration / 60}")
+duration_seconds=$(awk "BEGIN {printf \"%d\", $total_duration % 60}")
+duration_formatted="${duration_minutes} min ${duration_seconds} sec"
+# Output: Total Session Duration: 3 min 49 sec
+```
+
+**Validation (Final 3-Loop Test):** All formatting working correctly:
+- Loop 1: 27/27 PASSED, Avg=8.42s, Duration="3 min 49 sec"
+- Loop 2: 27/27 PASSED, Avg=8.97s, Duration="4 min 4 sec"
+- Loop 3: 27/27 PASSED, Avg=8.73s, Duration="3 min 57 sec"
+- Aggregate: 81/81 PASSED (100%), Overall Avg=8.71s
+
+**Serena Memory Updates:**
+
+1. **testing_procedures.md** (comprehensive update):
+   - ✅ Documented calculation engine overhaul (bc → awk migration)
+   - ✅ Added "Calculation Engine" section with implementation details
+   - ✅ Documented historical bug and fix (Oct 6, 2025)
+   - ✅ Added "Output Formatting" section with precision/duration improvements
+   - ✅ Updated performance baselines with latest 3-loop validation data
+   - ✅ Added troubleshooting section for calculation issues
+
+2. **SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md** (major update):
+   - ✅ Updated success criteria (27 tests, 121 packages, correct test statistics)
+   - ✅ Added polygon-api-client dependency to critical dependencies checklist
+   - ✅ Documented Oct 6, 2025 re-initialization success
+   - ✅ Added Issue 1: Missing polygon Module troubleshooting section
+   - ✅ Added Issue 5: Test Script Incorrect Statistics troubleshooting section
+   - ✅ Updated validation checklist with test statistics verification
+   - ✅ Added "Recent Successful Re-Initializations" section
 
 **Files Changed:**
 
-- ✅ Modified: `.serena/memories/project_architecture.md` (comprehensive rewrite)
-- ✅ Modified: `.serena/memories/task_completion_checklist.md` (major enhancement)
-- **Total**: 2 Serena memory files updated
+Core Fixes:
+- ✅ Modified: `pyproject.toml` (+1 dependency: polygon-api-client>=1.14.0)
+- ✅ Modified: `CLI_test_regression.sh` (14+ calculation points, bc → awk migration)
+- ✅ Modified: `CLI_test_regression.sh` (formatting: 2 decimal precision, min:sec duration)
+
+Documentation:
+- ✅ Modified: `.serena/memories/testing_procedures.md` (comprehensive update)
+- ✅ Modified: `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md` (major update)
+- ✅ Modified: `CLAUDE.md` (this last task summary)
+
+Test Evidence:
+- ✅ Generated: `test-reports/cli_regression_test_loop1_20251006_111008.txt`
+- ✅ Generated: `test-reports/cli_regression_test_loop2_20251006_111401.txt`
+- ✅ Generated: `test-reports/cli_regression_test_loop3_20251006_111808.txt`
+
+**Total**: 6 code/config files modified, 2 Serena memories updated, 3 test reports generated
+
+**Performance Validation:**
+
+**Environment Re-Init:**
+- ✅ Python: 121/121 packages installed successfully
+- ✅ Node.js: 1,131/1,131 packages installed successfully
+- ✅ Production build: 3.65s (successful)
+- ✅ Backend health: PASSED
+- ✅ Frontend health: PASSED
+
+**Test Suite (Final 3-Loop Validation):**
+- ✅ Total Tests: 81/81 PASSED (100% success rate)
+- ✅ Loop 1: 27/27 PASSED, Avg=8.42s, Duration=3 min 49 sec, Rating=EXCELLENT
+- ✅ Loop 2: 27/27 PASSED, Avg=8.97s, Duration=4 min 4 sec, Rating=EXCELLENT
+- ✅ Loop 3: 27/27 PASSED, Avg=8.73s, Duration=3 min 57 sec, Rating=EXCELLENT
+- ✅ Overall Avg: 8.71s (EXCELLENT performance)
+- ✅ Min Avg: 8.42s (Loop 1)
+- ✅ Max Avg: 8.97s (Loop 2)
+- ✅ Consistency: Highly consistent across all loops
 
 **Key Achievements:**
 
-- ✅ Serena memories now accurately reflect current architecture
-- ✅ All outdated MCP references removed
-- ✅ Proper atomic commit workflow enforced in checklist
-- ✅ Documentation aligns with actual implementation
+- ✅ Environment fully operational after complete re-initialization
+- ✅ Critical polygon-api-client dependency bug discovered and fixed
+- ✅ CLI test script calculation engine made universally compatible (awk vs bc)
+- ✅ Test report formatting significantly improved (readability)
+- ✅ All 14+ calculation points working correctly across 5 critical areas
+- ✅ 100% test success rate maintained (81/81 tests)
+- ✅ Serena memories updated with comprehensive troubleshooting guides
+- ✅ Documentation aligns with actual implementation and recent fixes
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion

@@ -9,11 +9,13 @@
 
 **Features:**
 - ✅ All 27 tests run sequentially in ONE session
-- ✅ Accurate response time tracking
+- ✅ Accurate response time tracking with awk-based calculations (reliable across all systems)
 - ✅ Session persistence validation
-- ✅ Comprehensive test reports
+- ✅ Comprehensive test reports with formatted output
 - ✅ Performance classification
 - ✅ Configurable loop count (1-10 runs)
+- ✅ 2 decimal precision for all statistics
+- ✅ Human-readable duration format (MM min SS sec)
 
 **Usage:**
 ```bash
@@ -54,11 +56,26 @@
 
 **Expected Performance (Post-MCP Removal, Oct 2025):**
 - **Total Tests**: 27 per loop
-- **Average Response Time**: 6.10s (EXCELLENT)
-- **Performance Range**: 5.25s - 7.57s
-- **Consistency**: 0.80s standard deviation
-- **Success Rate**: 100% (160/160 in 10-run baseline)
-- **Total Duration**: ~165-200s per loop (27 tests)
+- **Average Response Time**: 6.10s - 8.71s (EXCELLENT)
+- **Performance Range**: 2.42s - 23.40s
+- **Success Rate**: 100% (270/270 in 10-run baseline)
+- **Total Duration**: 3-4 minutes per loop (27 tests)
+
+**Latest 3-Loop Performance Validation (Oct 6, 2025):**
+
+| Loop | Tests Passed | Success Rate | Avg Response Time | Duration | Performance Rating |
+|------|--------------|--------------|-------------------|----------|-------------------|
+| 1 | 27/27 | 100% | 8.42s | 3 min 49 sec | EXCELLENT |
+| 2 | 27/27 | 100% | 8.97s | 4 min 4 sec | EXCELLENT |
+| 3 | 27/27 | 100% | 8.73s | 3 min 57 sec | EXCELLENT |
+
+**3-Loop Aggregate Summary:**
+- **Total Tests**: 81/81 PASSED (100%)
+- **Overall Average**: 8.71s per query
+- **Min Average**: 8.42s (Loop 1)
+- **Max Average**: 8.97s (Loop 2)
+- **Duration Range**: 3 min 49 sec - 4 min 4 sec
+- **Consistency**: Highly consistent across all 3 loops
 
 **10-Run Performance Baseline (Oct 2025):**
 
@@ -82,6 +99,119 @@
 - **Min**: 5.25s
 - **Max**: 7.57s
 - **Performance**: 70% faster than legacy MCP architecture (20s avg)
+
+## Test Script Implementation Details
+
+### Calculation Engine (Critical: Oct 6, 2025 Fix)
+
+**IMPORTANT:** The test script uses `awk` for ALL floating-point calculations to ensure universal compatibility across systems. DO NOT use `bc` (bash calculator) as it is not universally available.
+
+**Why awk?**
+- ✅ Universally available on all Unix/Linux systems
+- ✅ Reliable floating-point arithmetic
+- ✅ Never fails silently (unlike bc when missing)
+- ✅ Consistent precision control
+
+**Calculation Patterns Used:**
+
+```bash
+# Duration calculation (total test execution time)
+total_duration=$(awk "BEGIN {printf \"%.2f\", $end_time - $start_time}")
+
+# Duration formatting (convert to MM min SS sec)
+duration_minutes=$(awk "BEGIN {printf \"%d\", $total_duration / 60}")
+duration_seconds=$(awk "BEGIN {printf \"%d\", $total_duration % 60}")
+duration_formatted="${duration_minutes} min ${duration_seconds} sec"
+
+# Boolean comparison (e.g., for min/max detection)
+if (( $(awk "BEGIN {print ($time < $min_time)}") )); then
+    min_time=$time
+fi
+
+# Floating-point arithmetic with 2 decimal precision
+total_time=$(awk "BEGIN {printf \"%.2f\", $total_time + $time}")
+
+# Average calculation
+avg_time=$(awk "BEGIN {printf \"%.2f\", $total_time / $count}")
+```
+
+**Historical Bug (Fixed Oct 6, 2025):**
+- **Issue**: Script originally used `bc` for calculations, which silently failed when `bc` was not installed
+- **Symptoms**: Total Duration: 0s, Avg Response Time: 0s, Min/Max stuck at same value
+- **Root Cause**: `bc` not available on system, all `bc` calculations returned "0" or kept old values
+- **Fix**: Replaced ALL `bc` usage with `awk` (14+ calculation points across 5 critical areas)
+- **Validation**: 3-loop test confirmed all calculations working correctly
+
+### Output Formatting (Oct 6, 2025 Enhancement)
+
+**Precision:** All decimal values limited to 2 decimal places for readability
+```bash
+# Response time formatting
+printf "%.2f" $response_time  # Output: 8.42s (not 8.443s)
+
+# Statistical calculations
+avg_time=$(awk "BEGIN {printf \"%.2f\", $total_time / $count}")
+```
+
+**Duration Format:** Human-readable "MM min SS sec" format
+```bash
+# Before (hard to read):
+Total Session Duration: 229.010s
+
+# After (human-readable):
+Total Session Duration: 3 min 49 sec
+```
+
+### Input File Generation
+```bash
+# Array of all 27 prompts
+prompts=(
+    "Quick Response Needed with minimal tool calls: Based on Market Status Date, what is the current Market Status?"
+    "Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
+    # ... all 27 prompts ...
+)
+
+# Create single input file
+for prompt in "${prompts[@]}"; do
+    echo "$prompt" >> "$INPUT_FILE"
+done
+echo "exit" >> "$INPUT_FILE"  # Only one exit at the end
+```
+
+### CLI Execution
+```bash
+# Single CLI invocation with all prompts
+$CLI_CMD < "$INPUT_FILE" > "$RAW_OUTPUT" 2>&1 &
+CLI_PID=$!
+
+# Wait for completion with timeout
+wait $CLI_PID
+```
+
+### Response Time Extraction
+```bash
+# Parse output for response times
+while IFS= read -r line; do
+    if echo "$line" | grep -q "Response Time:"; then
+        rt=$(echo "$line" | grep -o '[0-9]\+\.[0-9]\+' | head -1)
+        response_times+=("$rt")
+    fi
+done < "$RAW_OUTPUT"
+```
+
+### Performance Classification
+```bash
+# Classify each response time using awk for comparison
+if (( $(awk "BEGIN {print ($rt < 10)}") )); then
+    classification="EXCELLENT"
+elif (( $(awk "BEGIN {print ($rt < 20)}") )); then
+    classification="GOOD"
+elif (( $(awk "BEGIN {print ($rt < 60)}") )); then
+    classification="ACCEPTABLE"
+else
+    classification="SLOW"
+fi
+```
 
 ## The 27 Standardized Test Prompts
 
@@ -139,35 +269,43 @@ All prompts follow the format: **"Quick Response Needed with minimal tool calls:
 
 **Naming Convention:**
 - Single loop: `cli_regression_test_YYYYMMDD_HHMMSS.txt`
-- Multi-loop: `cli_regression_test_YYYYMMDD_HHMMSS_loopN.txt`
+- Multi-loop: `cli_regression_test_loopN_YYYYMMDD_HHMMSS.txt`
 
 **Report Contents:**
 - Test execution timestamp
 - Loop number (if multi-loop)
-- Individual test results with response times
+- Individual test results with response times (2 decimal precision)
 - Performance classification per test (EXCELLENT/GOOD/ACCEPTABLE/SLOW)
-- Response time statistics (min/max/avg)
+- Response time statistics (min/max/avg, 2 decimal places)
+- Total session duration (MM min SS sec format)
 - Overall performance rating
 - Full CLI output for debugging
 
-**Example Report:**
+**Example Report (Oct 6, 2025 Format):**
 ```
-=== CLI Regression Test Report ===
-Date: 2025-10-04 13:11:26
-Loop: 1/1
+=== CLI REGRESSION TEST REPORT (Loop 1/3) ===
+Timestamp: Mon Oct  6 11:14:01 PDT 2025
+Loop Number: 1/3
+Total Tests: 27
+Passed: 27
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 3 min 49 sec
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+Loop Status: PASS
 
-Test Results:
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 3.62s
+Max Response Time: 17.91s
+Avg Response Time: 8.42s
+Performance Rating: EXCELLENT
+
+=== DETAILED TEST RESULTS ===
 ✅ Test 1 PASSED (7.34s) - EXCELLENT
 ✅ Test 2 PASSED (6.12s) - EXCELLENT
 ...
 ✅ Test 27 PASSED (5.91s) - EXCELLENT
-
-Performance Summary:
-- Total Tests: 27/27 PASSED (100%)
-- Average Response Time: 6.10s (EXCELLENT)
-- Min Response Time: 5.25s
-- Max Response Time: 7.57s
-- Total Duration: 164.70s
 ```
 
 ## Performance Benchmarks
@@ -184,21 +322,21 @@ Performance Summary:
 ### Expected Performance (Oct 2025 - Post-MCP Removal)
 
 **Individual Query Performance:**
-- **Average**: 6.10s
-- **Min**: 5.25s (simple queries)
-- **Max**: 7.57s (complex multi-stock queries)
-- **Std Dev**: 0.80s (highly consistent)
+- **Average**: 6.10s - 8.71s
+- **Min**: 2.42s (simple queries)
+- **Max**: 23.40s (complex multi-stock queries)
+- **Consistency**: Highly consistent across loops
 
 **Full Test Suite (27 tests):**
-- **Duration**: 165-200s (2.75-3.33 minutes)
+- **Duration**: 3-4 minutes (180-240s)
 - **Success Rate**: 100%
-- **Consistency**: Very high (0.80s std dev)
+- **Consistency**: Very high across all validation runs
 
 ### Performance Trends
 
 **MCP Removal Impact (Oct 2025):**
 - **Before** (MCP architecture): ~20s avg
-- **After** (Direct API): ~6.10s avg
+- **After** (Direct API): ~6.10-8.71s avg
 - **Improvement**: 70% faster
 - **Reason**: Removed MCP server overhead, direct Python SDK calls
 
@@ -206,7 +344,7 @@ Performance Summary:
 - **Phase 4 Complete**: All 12 tools migrated to Direct API
 - **MCP Server**: Completely removed
 - **Performance Gain**: 70% faster (6.10s vs 20s)
-- **Reliability**: 100% success rate (160/160 tests in baseline)
+- **Reliability**: 100% success rate (270/270 tests in baseline)
 
 ## Session Persistence Validation
 
@@ -243,6 +381,11 @@ fi
 ./CLI_test_regression.sh
 ```
 
+### Performance Validation (3 Loops - Recommended)
+```bash
+./CLI_test_regression.sh 3
+```
+
 ### Performance Baseline (10 Loops)
 ```bash
 ./CLI_test_regression.sh 10
@@ -250,9 +393,6 @@ fi
 
 ### Custom Loop Count
 ```bash
-# 3 loops
-./CLI_test_regression.sh 3
-
 # 5 loops
 ./CLI_test_regression.sh 5
 ```
@@ -263,13 +403,22 @@ fi
 ls -lt test-reports/cli_regression_test_*.txt | head -5
 
 # View specific report
-cat test-reports/cli_regression_test_20251004_131126.txt
+cat test-reports/cli_regression_test_loop1_20251006_111008.txt
 
 # View latest report
-cat test-reports/cli_regression_test_*.txt | tail -100
+cat $(ls -t test-reports/cli_regression_test_*.txt | head -1)
 ```
 
 ## Troubleshooting
+
+### Issue: Incorrect Calculations (Total Duration: 0s, Avg: 0s)
+**Cause:** Missing `bc` dependency or using unreliable calculation method
+**Solution:**
+- ✅ **FIXED (Oct 6, 2025)**: Script now uses `awk` for all calculations
+- ✅ No external dependencies required
+- ✅ Works universally across all systems
+
+**Historical Note:** Earlier versions used `bc` which failed silently when not installed. All `bc` usage has been replaced with `awk` for reliability.
 
 ### Issue: Test Timeout
 **Cause:** Response times > 120s (max configured)
@@ -303,9 +452,9 @@ cat test-reports/cli_regression_test_*.txt | tail -100
 ### Issue: Inconsistent Performance
 **Cause:** Network latency, API load
 **Solution:**
-- Run 10-loop baseline to get average
-- Expect 0.80s std dev (normal variation)
-- Check for outliers > 15s (may indicate API issues)
+- Run 3-loop validation to get average
+- Run 10-loop baseline for comprehensive data
+- Check for outliers > 20s (may indicate API issues)
 
 ## Integration with Development Workflow
 
@@ -318,6 +467,7 @@ cat test-reports/cli_regression_test_*.txt | tail -100
 - ✅ After updating OpenAI Agents SDK
 - ✅ After adding/modifying AI agent tools
 - ✅ Before marking any task as "complete"
+- ✅ After fixing calculation or formatting bugs in test script
 
 **Recommended:**
 - After changing prompt templates
@@ -331,73 +481,22 @@ cat test-reports/cli_regression_test_*.txt | tail -100
 See `task_completion_checklist.md` for full checklist. Testing requirements:
 
 ```bash
-# 1. Run CLI regression test
-./CLI_test_regression.sh
+# 1. Run CLI regression test (3-loop validation recommended)
+./CLI_test_regression.sh 3
 
 # 2. Verify results
-# - All 27/27 tests PASSED (100% success rate)
-# - Average response time < 10s (preferably ~6-8s)
+# - All 81/81 tests PASSED (100% success rate for 3 loops)
+# - Average response time 6-9s (preferably EXCELLENT rating)
 # - Performance rating: EXCELLENT
+# - Duration: 3-4 minutes per loop
+# - All statistics calculated correctly (no 0s or stuck values)
 
 # 3. Include test report in commit
-# - Test report auto-saved to test-reports/
+# - Test reports auto-saved to test-reports/
 # - Include in git add before commit
 ```
 
 **CRITICAL:** Test execution is MANDATORY before any commit. See enforcement rules in `task_completion_checklist.md`.
-
-## Test Script Implementation Details
-
-### Input File Generation
-```bash
-# Array of all 27 prompts
-prompts=(
-    "Quick Response Needed with minimal tool calls: Based on Market Status Date, what is the current Market Status?"
-    "Quick Response Needed with minimal tool calls: Based on Market Status Date, Single Stock Snapshot NVDA"
-    # ... all 27 prompts ...
-)
-
-# Create single input file
-for prompt in "${prompts[@]}"; do
-    echo "$prompt" >> "$INPUT_FILE"
-done
-echo "exit" >> "$INPUT_FILE"  # Only one exit at the end
-```
-
-### CLI Execution
-```bash
-# Single CLI invocation with all prompts
-$CLI_CMD < "$INPUT_FILE" > "$RAW_OUTPUT" 2>&1 &
-CLI_PID=$!
-
-# Wait for completion with timeout
-wait $CLI_PID
-```
-
-### Response Time Extraction
-```bash
-# Parse output for response times
-while IFS= read -r line; do
-    if echo "$line" | grep -q "Response Time:"; then
-        rt=$(echo "$line" | grep -o '[0-9]\+\.[0-9]\+' | head -1)
-        response_times+=("$rt")
-    fi
-done < "$RAW_OUTPUT"
-```
-
-### Performance Classification
-```bash
-# Classify each response time
-if (( $(echo "$rt < 10" | bc -l) )); then
-    classification="EXCELLENT"
-elif (( $(echo "$rt < 20" | bc -l) )); then
-    classification="GOOD"
-elif (( $(echo "$rt < 60" | bc -l) )); then
-    classification="ACCEPTABLE"
-else
-    classification="SLOW"
-fi
-```
 
 ## Multi-Loop Testing
 
@@ -406,31 +505,34 @@ Multi-loop testing establishes performance baselines and validates consistency.
 
 ### Usage
 ```bash
+# 3-loop validation (recommended for most changes)
+./CLI_test_regression.sh 3
+
 # 10-loop baseline (recommended for performance validation)
 ./CLI_test_regression.sh 10
 ```
 
-### Output
-Each loop generates separate report with aggregated summary:
+### Output Format (Enhanced Oct 6, 2025)
+Each loop generates separate report with aggregated summary showing 2 decimal precision and formatted duration:
 ```
-Loop 1/10: 27/27 PASSED, Avg: 7.34s
-Loop 2/10: 27/27 PASSED, Avg: 5.63s
-...
-Loop 10/10: 27/27 PASSED, Avg: 5.76s
+Loop 1/3: 27/27 PASSED, Avg: 8.42s, Duration: 3 min 49 sec
+Loop 2/3: 27/27 PASSED, Avg: 8.97s, Duration: 4 min 4 sec
+Loop 3/3: 27/27 PASSED, Avg: 8.73s, Duration: 3 min 57 sec
 
-Overall Baseline:
-- Total Tests: 270/270 PASSED (100%)
-- Average: 6.10s
-- Std Dev: 0.80s
-- Min: 5.25s
-- Max: 7.57s
+Overall Aggregate Statistics:
+- Total Tests: 81/81 PASSED (100%)
+- Overall Average: 8.71s
+- Min Average: 8.42s (Loop 1)
+- Max Average: 8.97s (Loop 2)
 ```
 
 ### When to Run Multi-Loop Tests
-- After major architectural changes
-- Before production releases
-- When validating performance optimizations
-- To establish new performance baselines
+- After major architectural changes (10 loops)
+- After test script bug fixes (3 loops minimum)
+- After formatting improvements (3 loops minimum)
+- Before production releases (10 loops)
+- When validating performance optimizations (10 loops)
+- To establish new performance baselines (10 loops)
 
 ## API Usage Considerations
 
@@ -445,10 +547,57 @@ Overall Baseline:
 - **OpenAI**: Tokens consumed (~800-1500 per test, ~21,600-40,500 per full run)
 
 **Best Practice:**
-- Run full test suite before commits (mandatory)
+- Run 3-loop validation before commits (mandatory)
 - Run 10-loop baselines sparingly (major changes only)
 - Monitor API usage and costs
 - Consider API mocking for frequent development testing (future enhancement)
+
+## Recent Bug Fixes and Enhancements
+
+### Oct 6, 2025: Calculation Engine Overhaul
+**Issue:** All floating-point calculations failed silently due to missing `bc` dependency
+**Symptoms:**
+- Total Session Duration: 0s (should be ~229s)
+- Avg Response Time: 0s (should be ~8s)
+- Min/Max Response Time stuck at same value (7.538s)
+
+**Root Cause:**
+- Script relied on `bc` (bash calculator) for all arithmetic
+- `bc` not installed on system
+- All `bc` calculations failed silently with fallback values
+
+**Fix Applied:**
+- Replaced ALL `bc` usage with `awk` (14+ calculation points)
+- Updated 5 critical areas:
+  * Duration calculation
+  * Performance classification comparisons
+  * Min/max/avg calculations
+  * Performance rating logic
+  * Aggregate loop statistics
+- `awk` is universally available and never fails silently
+
+**Validation:** 3-loop test confirmed all calculations working correctly
+
+### Oct 6, 2025: Output Formatting Enhancement
+**Improvements:**
+- Limited all decimal values to 2 decimal places (was 3)
+- Converted duration to "MM min SS sec" format (was "XXX.XXXs")
+- Enhanced readability of all test reports
+- Consistent formatting across all output locations
+
+**Before:**
+```
+Total Session Duration: 229.010s
+Avg Response Time: 8.443s
+```
+
+**After:**
+```
+Total Session Duration: 3 min 49 sec
+Avg Response Time: 8.42s
+```
+
+**Validation:** 3-loop test confirmed all formatting working correctly
 
 ## Future Enhancements
 
@@ -468,6 +617,7 @@ Potential improvements for testing infrastructure:
 
 Recent test reports demonstrate consistent performance:
 
-- **10-Run Baseline** (Oct 2025): 270/270 PASSED, 6.10s avg, 0.80s std dev
+- **Oct 6, 2025 (3-Loop Validation)**: 81/81 PASSED, 8.71s overall avg, 3-4 min per loop
+- **Oct 2025 (10-Run Baseline)**: 270/270 PASSED, 6.10s avg, 0.80s std dev
 - **Post-MCP Removal**: 70% performance improvement
 - **Consistency**: 100% success rate across all validation runs

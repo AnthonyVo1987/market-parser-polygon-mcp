@@ -197,11 +197,11 @@ parse_test_results() {
                 echo -e "${GREEN}⏱️  Response Time: ${rt}s${NC}"
 
                 # Performance classification
-                if (( $(echo "$rt < 30" | bc -l 2>/dev/null || echo "0") )); then
+                if (( $(awk "BEGIN {print ($rt < 30)}") )); then
                     echo -e "${GREEN}📈 Performance: EXCELLENT (< 30s)${NC}"
-                elif (( $(echo "$rt < 45" | bc -l 2>/dev/null || echo "0") )); then
+                elif (( $(awk "BEGIN {print ($rt < 45)}") )); then
                     echo -e "${GREEN}📈 Performance: GOOD (30-45s)${NC}"
-                elif (( $(echo "$rt < 90" | bc -l 2>/dev/null || echo "0") )); then
+                elif (( $(awk "BEGIN {print ($rt < 90)}") )); then
                     echo -e "${YELLOW}📈 Performance: ACCEPTABLE (45-90s)${NC}"
                 else
                     echo -e "${YELLOW}📈 Performance: SLOW (> 90s)${NC}"
@@ -225,10 +225,15 @@ wait $CLI_PID
 exit_code=$?
 
 end_time=$(date +%s.%N)
-total_duration=$(echo "$end_time - $start_time" | bc -l 2>/dev/null || echo "0")
+total_duration=$(awk "BEGIN {printf \"%.2f\", $end_time - $start_time}")
+
+# Convert duration to min:sec format
+duration_minutes=$(awk "BEGIN {printf \"%d\", $total_duration / 60}")
+duration_seconds=$(awk "BEGIN {printf \"%d\", $total_duration % 60}")
+duration_formatted="${duration_minutes} min ${duration_seconds} sec"
 
 echo -e "${GREEN}✅ CLI session completed${NC}"
-echo -e "${GREEN}⏱️  Total Session Duration: ${total_duration}s${NC}"
+echo -e "${GREEN}⏱️  Total Session Duration: ${duration_formatted}${NC}"
 echo ""
 
 # Parse results from output
@@ -293,17 +298,17 @@ if [ ${#response_times[@]} -gt 0 ]; then
     count=0
 
     for time in "${response_times[@]}"; do
-        if (( $(echo "$time < $min_time" | bc -l 2>/dev/null || echo "0") )); then
+        if (( $(awk "BEGIN {print ($time < $min_time)}") )); then
             min_time=$time
         fi
-        if (( $(echo "$time > $max_time" | bc -l 2>/dev/null || echo "0") )); then
+        if (( $(awk "BEGIN {print ($time > $max_time)}") )); then
             max_time=$time
         fi
-        total_time=$(echo "$total_time + $time" | bc -l 2>/dev/null || echo "$total_time")
+        total_time=$(awk "BEGIN {printf \"%.2f\", $total_time + $time}")
         ((count++))
     done
 
-    avg_time=$(echo "scale=2; $total_time / $count" | bc -l 2>/dev/null || echo "0")
+    avg_time=$(awk "BEGIN {printf \"%.2f\", $total_time / $count}")
 
     echo -e "   Min Response Time: ${min_time}s"
     echo -e "   Max Response Time: ${max_time}s"
@@ -312,9 +317,9 @@ if [ ${#response_times[@]} -gt 0 ]; then
 
     # Performance assessment
     performance_rating="GOOD"
-    if (( $(echo "$avg_time < 30" | bc -l 2>/dev/null || echo "0") )); then
+    if (( $(awk "BEGIN {print ($avg_time < 30)}") )); then
         performance_rating="EXCELLENT"
-    elif (( $(echo "$avg_time > 60" | bc -l 2>/dev/null || echo "0") )); then
+    elif (( $(awk "BEGIN {print ($avg_time > 60)}") )); then
         performance_rating="ACCEPTABLE"
     fi
 
@@ -348,7 +353,7 @@ echo -e "Total Tests: $total_tests"
 echo -e "${GREEN}Passed: $passed_tests${NC}"
 echo -e "${RED}Failed: $failed_tests${NC}"
 echo -e "Success Rate: $(( passed_tests * 100 / total_tests ))%"
-echo -e "Total Session Duration: ${total_duration}s"
+echo -e "Total Session Duration: ${duration_formatted}"
 echo -e "Session Mode: ${GREEN}PERSISTENT${NC}"
 
 # Track loop results
@@ -380,7 +385,7 @@ all_loop_reports+=("$OUTPUT_FILE")
         echo "Passed: $passed_tests"
         echo "Failed: $failed_tests"
         echo "Success Rate: $(( passed_tests * 100 / total_tests ))%"
-        echo "Total Session Duration: ${total_duration}s"
+        echo "Total Session Duration: ${duration_formatted}"
         echo "Session Mode: PERSISTENT (single session)"
         echo "Session Count Detected: $session_count"
         echo "Loop Status: $loop_status"
@@ -452,16 +457,16 @@ if [ ${#all_loop_avg_times[@]} -gt 0 ]; then
     agg_total=0
 
     for time in "${all_loop_avg_times[@]}"; do
-        if (( $(echo "$time < $agg_min" | bc -l 2>/dev/null || echo "0") )); then
+        if (( $(awk "BEGIN {print ($time < $agg_min)}") )); then
             agg_min=$time
         fi
-        if (( $(echo "$time > $agg_max" | bc -l 2>/dev/null || echo "0") )); then
+        if (( $(awk "BEGIN {print ($time > $agg_max)}") )); then
             agg_max=$time
         fi
-        agg_total=$(echo "$agg_total + $time" | bc -l 2>/dev/null || echo "$agg_total")
+        agg_total=$(awk "BEGIN {printf \"%.2f\", $agg_total + $time}")
     done
 
-    agg_avg=$(echo "scale=2; $agg_total / ${#all_loop_avg_times[@]}" | bc -l 2>/dev/null || echo "0")
+    agg_avg=$(awk "BEGIN {printf \"%.2f\", $agg_total / ${#all_loop_avg_times[@]}}")
 
     echo -e "Min Average Response Time (across loops): ${agg_min}s"
     echo -e "Max Average Response Time (across loops): ${agg_max}s"

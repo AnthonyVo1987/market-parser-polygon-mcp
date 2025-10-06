@@ -13,7 +13,10 @@ from ..api_models import ResponseMetadata
 from ..config import settings
 from ..dependencies import get_session
 from ..services import create_agent
-from ..utils.token_utils import extract_token_count_from_context_wrapper, extract_token_usage_from_context_wrapper
+from ..utils.token_utils import (
+    extract_token_count_from_context_wrapper,
+    extract_token_usage_from_context_wrapper,
+)
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
 
