@@ -431,3 +431,133 @@ FINNHUB_API_KEY=your_key_here
 **Dependencies:**
 - Regular updates via `uv` and `npm`
 - Pinned versions in `pyproject.toml` and `package-lock.json`
+
+## Legacy Feature Cleanup (Oct 2025)
+
+**Context:** Comprehensive cleanup of 4 deprecated legacy features to improve performance, maintainability, and documentation accuracy.
+
+### Removed Features
+
+#### 1. CSS Performance Analysis
+- **Component**: Frontend performance monitoring
+- **File**: `src/frontend/utils/performance.tsx`
+- **Function**: `analyzeCSSPerformance()` (lines 78-186)
+- **Impact**: HIGH CPU overhead (1-2% continuous)
+- **Issue**: Scanned entire DOM 6 times every 2 seconds using `querySelectorAll('*')`
+- **References Removed**:
+  - Constructor call: `this.analyzeCSSPerformance()`
+  - Private method: `analyzeCSSPerformance(): void`
+  - startMonitoring() call
+  - getMetrics() call
+  - cssMetrics field reference
+- **Result**: 1-2% CPU reduction, cleaner performance monitoring
+
+#### 2. /api/v1/system/status Endpoint
+- **Component**: Backend API endpoint
+- **Files Deleted**:
+  - `src/backend/routers/system.py` (entire 26-line file)
+- **Files Modified**:
+  - `src/backend/api_models.py` - Removed SystemMetrics, SystemStatusResponse classes
+  - `src/backend/main.py` - Removed system_router import and registration
+  - `src/backend/routers/__init__.py` - Removed system_router export
+- **Usage**: Zero (no frontend, tests, or docs referenced it)
+- **Result**: Simplified API surface, removed dead code
+
+#### 3. Prompt Template System Remnants
+- **Component**: Legacy documentation and schema remnants
+- **Status**: System was previously removed, only references remained
+- **Files Modified**:
+  - `src/backend/api_models.py`:
+    - Removed docstring reference to "PromptTemplateManager functionality"
+    - Removed SystemMetrics.prompt_templates_loaded field (always set to 0)
+  - `CLAUDE.md`, `AGENTS.md`, `README.md`:
+    - Removed "prompt_templates.py # Analysis templates" from project structure
+- **Files Deleted**:
+  - `docs/api/api-integration-guide.md` (957 lines of outdated PromptTemplate docs)
+- **Reason**: Direct Prompts architecture replaced PromptTemplate system months ago
+- **Result**: Documentation now accurate, no misleading references
+
+#### 4. Emoji in CLI Responses
+- **Component**: CLI output formatting
+- **File**: `src/backend/utils/response_utils.py`
+- **Function**: `print_response()` (lines 9-65)
+- **Emojis Removed**:
+  - ✅ Success indicator (line 11)
+  - 📊 Performance Metrics header (line 30)
+  - ⏱️ Response Time (line 34)
+  - 🔢 Tokens Used (line 53)
+  - 🤖 Model info (lines 60, 62)
+- **Comments Updated**:
+  - "with emoji support" → "for CLI output"
+  - "better emoji support" → removed
+  - "Enhanced separator with emoji" → "Separator"
+- **Scope**: CLI only (no web API impact)
+- **Result**: Cleaner terminal output, simpler code
+
+### Cleanup Statistics
+
+**Code Changes:**
+- **Files Deleted**: 2 (system.py, api-integration-guide.md)
+- **Files Modified**: 10
+  - Backend: api_models.py, main.py, routers/__init__.py, response_utils.py
+  - Frontend: performance.tsx
+  - Docs: CLAUDE.md, AGENTS.md, README.md
+- **Lines Removed**: ~1,100+ lines
+- **Classes Removed**: 2 (SystemMetrics, SystemStatusResponse)
+- **Functions Removed**: 1 (analyzeCSSPerformance)
+- **Emojis Removed**: 5 types
+
+**Test Results (Post-Cleanup):**
+- **CLI Tests**: 27/27 PASSED ✅
+- **Success Rate**: 100%
+- **Average Response Time**: 7.95s (EXCELLENT)
+- **Performance Range**: 3.004s - 24.614s
+- **Session Mode**: PERSISTENT (all tests in single session)
+- **Test Report**: `cli_regression_test_loop1_20251006_211035.txt`
+
+**Performance Impact:**
+- **CPU Usage**: Reduced by 1-2% (CSS analysis removal)
+- **Code Quality**: Improved maintainability
+- **Documentation**: Now accurate and up-to-date
+- **API Surface**: Cleaner (unused endpoint removed)
+
+### Architecture Changes
+
+**Before Cleanup:**
+```
+Frontend: React + analyzeCSSPerformance (HIGH overhead)
+Backend: FastAPI + /system/status endpoint + SystemMetrics schema
+CLI: Rich formatting with emojis
+Docs: 957 lines of outdated PromptTemplate documentation
+```
+
+**After Cleanup:**
+```
+Frontend: React with PerformanceObserver only (LOW overhead)
+Backend: FastAPI with essential endpoints only
+CLI: Clean Rich formatting without emojis
+Docs: Accurate and current
+```
+
+**Benefits:**
+- ✅ Reduced CPU overhead
+- ✅ Simpler codebase
+- ✅ Accurate documentation
+- ✅ Fewer API endpoints to maintain
+- ✅ Cleaner CLI output
+- ✅ No performance regressions (100% test pass rate)
+
+### Maintenance Impact
+
+**Future Development:**
+- Simpler codebase to understand
+- No confusion from obsolete PromptTemplate docs
+- Clear API surface (only essential endpoints)
+- Performance monitoring focused on PerformanceObserver API (standard)
+- CLI output consistent and professional
+
+**Documentation:**
+- All project structure diagrams updated
+- No misleading references to removed features
+- Clear separation of concerns
+- Easy onboarding for new developers

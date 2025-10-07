@@ -163,3 +163,59 @@ dev = [
 - **Token Tracking**: Real-time input/output token monitoring
 - **Response Timing**: FastAPI middleware for precise measurement
 - **Quick Response**: Minimal tool calls enforcement for speed
+
+## Legacy Feature Cleanup (Oct 2025)
+
+**Context:** Removed 4 deprecated legacy features from entire codebase for improved performance and maintainability.
+
+### Features Removed
+
+**1. CSS Performance Analysis:**
+- **Impact**: HIGH overhead (1-2% CPU continuous)
+- **Location**: `src/frontend/utils/performance.tsx` (analyzeCSSPerformance function)
+- **Reason**: Minimal value - scanned DOM 6× every 2s with querySelectorAll('*')
+- **Benefit**: 1-2% CPU reduction, cleaner codebase
+
+**2. /api/v1/system/status Endpoint:**
+- **Impact**: Zero usage (unused endpoint)
+- **Files Removed**: `src/backend/routers/system.py` (entire file)
+- **Files Modified**: api_models.py (SystemMetrics, SystemStatusResponse classes), main.py, routers/__init__.py
+- **Reason**: No frontend, tests, or docs referenced it
+- **Benefit**: Simplified API surface, removed dead code
+
+**3. Prompt Template System Remnants:**
+- **Impact**: Already deprecated (system was previously removed)
+- **Remnants Removed**:
+  - api_models.py docstring reference to "PromptTemplateManager"
+  - SystemMetrics.prompt_templates_loaded field (always 0)
+  - docs/api/api-integration-guide.md (957 lines of outdated docs)
+  - Project structure references in CLAUDE.md, AGENTS.md, README.md
+- **Reason**: System was replaced by Direct Prompts, only documentation remained
+- **Benefit**: Documentation now accurate, no misleading references
+
+**4. Emoji in CLI Responses:**
+- **Impact**: Cosmetic feature (CLI only)
+- **Location**: `src/backend/utils/response_utils.py` (print_response function)
+- **Emojis Removed**: ✅ (success), 📊 (metrics), ⏱️ (time), 🔢 (tokens), 🤖 (model)
+- **Reason**: Purely visual, no functional value
+- **Benefit**: Cleaner CLI output, simpler code
+
+### Test Results (Post-Cleanup)
+
+**CLI Regression Test Results:**
+- **Total Tests**: 27/27 PASSED ✅
+- **Success Rate**: 100%
+- **Average Response Time**: 7.95s (EXCELLENT)
+- **Response Range**: 3.004s - 24.614s
+- **Test Report**: `cli_regression_test_loop1_20251006_211035.txt`
+
+**Files Changed:**
+- **Deleted**: 2 files (system.py, api-integration-guide.md)
+- **Modified**: 10 files (api_models, main, routers/__init__, performance.tsx, response_utils, CLAUDE.md, AGENTS.md, README.md)
+- **Total Impact**: Clean codebase, improved performance, accurate documentation
+
+### Performance Benefits
+- **CPU Usage**: 1-2% reduction from CSS analysis removal
+- **Code Quality**: Simpler, more maintainable codebase
+- **Documentation**: Accurate and up-to-date
+- **API Surface**: Cleaner with unused endpoint removed

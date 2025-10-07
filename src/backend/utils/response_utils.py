@@ -7,8 +7,8 @@ console = Console()
 
 
 def print_response(result):
-    """Simplified response renderer with emoji support and performance metrics."""
-    console.print("\n[bold green]✅ Query processed successfully![/bold green]")
+    """Simplified response renderer for CLI output with performance metrics."""
+    console.print("\n[bold green]Query processed successfully![/bold green]")
     console.print("[bold]Agent Response:[/bold]\n")
 
     # Extract content
@@ -22,16 +22,16 @@ def print_response(result):
         # Use Markdown rendering for structured content
         console.print(Markdown(final_text))
     else:
-        # Use direct printing with Rich markup for better emoji support
+        # Use direct printing with Rich markup
         console.print(final_text)
 
     # Display performance metrics if available
     if hasattr(result, "metadata") and result.metadata:
-        console.print("\n[bold cyan]📊 Performance Metrics:[/bold cyan]")
+        console.print("\n[bold cyan]Performance Metrics:[/bold cyan]")
 
         # Display processing time if available
         if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
-            console.print(f"   ⏱️  Response Time: {result.metadata.processing_time:.3f}s")
+            console.print(f"   Response Time: {result.metadata.processing_time:.3f}s")
 
         # Extract token information using official OpenAI Agents SDK
         token_count = None
@@ -50,18 +50,18 @@ def print_response(result):
 
         # Display token information
         if token_count:
-            token_display = f"   🔢  Tokens Used: {token_count:,}"
+            token_display = f"   Tokens Used: {token_count:,}"
             if input_tokens and output_tokens:
                 token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
             console.print(token_display)
 
         # Display model information
         if hasattr(result.metadata, "model"):
-            console.print(f"   🤖  Model: {result.metadata.model}")
+            console.print(f"   Model: {result.metadata.model}")
         elif hasattr(result, "model"):
-            console.print(f"   🤖  Model: {result.model}")
+            console.print(f"   Model: {result.model}")
 
-    # Enhanced separator with emoji
+    # Separator
     console.print("\n[dim]" + "─" * 50 + "[/dim]\n")
 
 

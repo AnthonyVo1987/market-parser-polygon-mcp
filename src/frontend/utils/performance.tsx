@@ -74,132 +74,14 @@ export const BUNDLE_SIZE_BUDGET: BundleSizeBudget = {
   total: 300 * 1024, // 300KB
 };
 
-// Phase 4: CSS Analysis Functions
-export function analyzeCSSPerformance(): Partial<PerformanceMetrics> {
-  const metrics: Partial<PerformanceMetrics> = {
-    backdropFilterCount: 0,
-    boxShadowCount: 0,
-    gradientCount: 0,
-    transformCount: 0,
-    willChangeCount: 0,
-    cssVariableCount: 0,
-    containerQueryCount: 0,
-  };
-
-  if (typeof window === 'undefined') {
-    return metrics;
-  }
-
-  // Count backdrop-filter instances
-  const backdropFilterElements = document.querySelectorAll('*');
-  backdropFilterElements.forEach(element => {
-    const computedStyle = window.getComputedStyle(element);
-    if (
-      computedStyle.backdropFilter !== 'none' ||
-      (computedStyle as CSSStyleDeclaration & { webkitBackdropFilter?: string })
-        .webkitBackdropFilter !== 'none'
-    ) {
-      if (
-        metrics.backdropFilterCount !== null &&
-        metrics.backdropFilterCount !== undefined
-      ) {
-        metrics.backdropFilterCount++;
-      }
-    }
-  });
-
-  // Count complex box-shadow instances
-  const boxShadowElements = document.querySelectorAll('*');
-  boxShadowElements.forEach(element => {
-    const computedStyle = window.getComputedStyle(element);
-    if (computedStyle.boxShadow !== 'none') {
-      // Count multiple shadows (comma-separated)
-      const shadowCount =
-        (computedStyle.boxShadow.match(/,/g) || []).length + 1;
-      if (shadowCount > 1) {
-        if (
-          metrics.boxShadowCount !== null &&
-          metrics.boxShadowCount !== undefined
-        ) {
-          metrics.boxShadowCount += shadowCount;
-        }
-      }
-    }
-  });
-
-  // Count gradient backgrounds
-  const gradientElements = document.querySelectorAll('*');
-  gradientElements.forEach(element => {
-    const computedStyle = window.getComputedStyle(element);
-    if (computedStyle.backgroundImage.includes('gradient')) {
-      if (
-        metrics.gradientCount !== null &&
-        metrics.gradientCount !== undefined
-      ) {
-        metrics.gradientCount++;
-      }
-    }
-  });
-
-  // Count transform animations
-  const transformElements = document.querySelectorAll('*');
-  transformElements.forEach(element => {
-    const computedStyle = window.getComputedStyle(element);
-    if (computedStyle.transform !== 'none') {
-      if (
-        metrics.transformCount !== null &&
-        metrics.transformCount !== undefined
-      ) {
-        metrics.transformCount++;
-      }
-    }
-  });
-
-  // Count will-change properties
-  const willChangeElements = document.querySelectorAll('*');
-  willChangeElements.forEach(element => {
-    const computedStyle = window.getComputedStyle(element);
-    if (computedStyle.willChange !== 'auto') {
-      if (
-        metrics.willChangeCount !== null &&
-        metrics.willChangeCount !== undefined
-      ) {
-        metrics.willChangeCount++;
-      }
-    }
-  });
-
-  // Count CSS variables (approximate)
-  const rootStyles = getComputedStyle(document.documentElement);
-  const cssText = rootStyles.cssText;
-  const variableMatches = cssText.match(/--[a-zA-Z-]+/g);
-  metrics.cssVariableCount = variableMatches ? variableMatches.length : 0;
-
-  // Count container queries (approximate - would need to parse CSS)
-  // This is a simplified count based on common patterns
-  const containerQueryElements = document.querySelectorAll(
-    '[style*="container-type"]'
-  );
-  metrics.containerQueryCount = containerQueryElements.length;
-
-  return metrics;
-}
-
-// Phase 4: Performance Monitoring Class
+// Performance Monitoring Class
 export class PerformanceMonitor {
   private metrics: Partial<PerformanceMetrics> = {};
   private observers: PerformanceObserver[] = [];
-  private cssMetrics: Partial<PerformanceMetrics> = {};
   // private isMonitoring = false;
 
   constructor() {
     this.initializeObservers();
-    this.analyzeCSSPerformance();
-  }
-
-  private analyzeCSSPerformance(): void {
-    this.cssMetrics = analyzeCSSPerformance();
-    this.metrics = { ...this.metrics, ...this.cssMetrics };
   }
 
   private initializeObservers(): void {
@@ -293,7 +175,6 @@ export class PerformanceMonitor {
   public startMonitoring(): void {
     // this.isMonitoring = true;
     // Performance monitoring started
-    this.analyzeCSSPerformance();
   }
 
   public stopMonitoring(): void {
@@ -304,8 +185,6 @@ export class PerformanceMonitor {
   }
 
   public getMetrics(): Partial<PerformanceMetrics> {
-    // Update CSS metrics before returning
-    this.analyzeCSSPerformance();
     return { ...this.metrics };
   }
 
@@ -341,7 +220,7 @@ export class PerformanceMonitor {
         }
 
         // Check for performance regression (simplified - would need historical data)
-        const previousValue = this.cssMetrics[key as keyof PerformanceMetrics];
+        const previousValue = this.metrics[key as keyof PerformanceMetrics];
         if (previousValue !== undefined && value > previousValue) {
           regressionAlerts.push({
             metric: key,

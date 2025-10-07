@@ -1,8 +1,8 @@
 """
-API Models for FastAPI Prompt Templates System
+API Models for FastAPI Backend
 
 This module defines Pydantic models for request/response validation and documentation
-for the FastAPI endpoints that expose PromptTemplateManager functionality.
+for the FastAPI endpoints.
 """
 
 from datetime import datetime
@@ -58,24 +58,6 @@ class SystemHealthResponse(BaseModel):
     message: str = "Financial Analysis API is running"
     timestamp: datetime = Field(default_factory=datetime.now)
     version: str = "1.0.0"
-
-
-class SystemMetrics(BaseModel):
-    """System metrics and status"""
-
-    api_version: str = "1.0.0"
-    prompt_templates_loaded: int
-    supported_analysis_types: List[str]
-    uptime_seconds: Optional[float] = None
-    last_restart: Optional[datetime] = None
-
-
-class SystemStatusResponse(BaseModel):
-    """System status response"""
-
-    status: str
-    metrics: SystemMetrics
-    timestamp: datetime = Field(default_factory=datetime.now)
 
 
 # Error Models

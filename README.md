@@ -321,8 +321,7 @@ npm run type-check        # TypeScript validation
 src/
 ├── backend/              # FastAPI backend
 │   ├── main.py          # Main application
-│   ├── api_models.py    # API schemas
-│   └── prompt_templates.py # Analysis templates
+│   └── api_models.py    # API schemas
 ├── frontend/            # React frontend
 │   ├── components/      # React components
 │   ├── hooks/          # Custom hooks
