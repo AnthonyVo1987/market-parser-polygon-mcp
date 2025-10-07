@@ -39,6 +39,11 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
+1. Remove CSS analysis entirely from entire code base and any references in docs and Serena Memories
+2. Remove /api/v1/system/status endpoint from entire code base and any references in docs and Serena Memories
+3. Remove anything related to "Prompt Template" System from entire code base and any references in docs and Serena Memories
+4. Remove anything related to "emoji in responses" from entire code base and any references in docs and Serena Memories
+
 ---
 
 <Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
@@ -119,27 +124,34 @@ Update Serena memory files with new tool information, architecture changes, and 
    - ⚠️ **DO NOT RUN `git add` YET**
 
 2. **VERIFY EVERYTHING IS COMPLETE**:
+
    ```bash
    git status  # Review ALL changed/new files
    git diff    # Review ALL changes
    ```
+
    - Ensure ALL work is done
    - Ensure ALL files are present
 
 3. **STAGE EVERYTHING AT ONCE**:
+
    ```bash
    git add -A  # Stage ALL files in ONE command
    ```
+
    - ⚠️ This is the FIRST time you run `git add`
    - ⚠️ Stage ALL related files together
 
 4. **VERIFY STAGING IMMEDIATELY**:
+
    ```bash
    git status  # Verify ALL files staged, NOTHING unstaged
    ```
+
    - If anything is missing: `git add [missing-file]`
 
 5. **COMMIT IMMEDIATELY** (within 60 seconds of staging):
+
    ```bash
    git commit -m "$(cat <<'EOF'
    [TAG] Descriptive commit message
@@ -155,11 +167,13 @@ Update Serena memory files with new tool information, architecture changes, and 
    ```
 
 6. **PUSH IMMEDIATELY**:
+
    ```bash
    git push
    ```
 
 **WHAT BELONGS IN ATOMIC COMMIT:**
+
 - ✅ Code changes (backend + frontend)
 - ✅ Test reports (evidence of passing tests)
 - ✅ Documentation updates (CLAUDE.md, README.md, etc.)
@@ -168,6 +182,7 @@ Update Serena memory files with new tool information, architecture changes, and 
 - ✅ Task plan updates (TODO_task_plan.md, etc.)
 
 **❌ NEVER DO THIS:**
+
 - ❌ Stage files early during development
 - ❌ Stage files "as you go"
 - ❌ Run `git add` before ALL work is complete

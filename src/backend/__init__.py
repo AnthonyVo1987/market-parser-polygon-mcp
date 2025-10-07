@@ -6,12 +6,8 @@ Pydantic AI Agent Framework, and Polygon.io MCP server for real-time market data
 
 Key Features:
 - CLI and FastAPI web interface for financial queries
-- Emoji-based sentiment indicators and enhanced formatting
-- Dual-mode response processing (JSON/conversational)
 - Real-time market data via Polygon.io MCP server
-- Comprehensive prompt template system for various analysis types
 - Response formatting instructions optimized for natural language
-- Removal of JSON schema dependencies for simplified architecture
 """
 
 # Handle optional imports gracefully for development/testing environments
