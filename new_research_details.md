@@ -39,7 +39,92 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Completely remove the tool 'get_stock_quote_multi' and instead have AI Agent Instructions be updated to just use multiple tool calls for 'get_stock_quote' if multiple tickers are requested. This should streamline and reduce amount of tool calls and since the direct calls to 'get_stock_quote' have low overhead, AI Agent is now allowed to call it multiple times
+A. Update AI Agent Instructions to now allow parallel tool calls IF needed, and a max of 3x Parallel tool calls only.  If a request requires more than 3+ parallel tool calls, then AI Agent needs to perform the first batch of 3x Paralell tool calls, and then afterwards, issuing additional tool calls as needed, only providing final response when ALL tool calls are done. This will allow AI Agent to analyze use request to decide whether not parallel tool calls are needed or not, and if parallel tool calls needed, only a max of 3x Parallel tool calls to help reduce any changes of rate limiting. Not all user requests will need parallel tool calls, so AI Agent Instructions need to be updated to analyze the request holistically. If the request can be done with single\minimal tool calls, then AI Agent needs to do this. Or if AI Agent analyzed and thinks parallel tool calls will help, then allow it.  So tool calling will be updates to be dynamic according to the complexity of the user request(s)
+
+B. Update AI Agent Instructions to now also dynamically and holistically decide whether tool calls are even needed for the user request, based on real world usage where User may ask multiple questions in a row for the same ticker, and also have some analysis done based on all the data already received from previous tool calls. This will test a scenario where AI Agent may have all the data it already needs in the chat, and can just use the existing data to anlayze instead of wasting tokens with redudant tool calls when AI Agent already has enough info.  For exmaple, if AI Agent already used tools to retreive some Technical Analysis Data, and then user request to provide technical analysis , AI agent can check if they already have enough data to perform the analysis or not without additional tool calls or not, and the decide if they can answer with or without additional tool calls.
+
+C. Create a brand new 'test_cli_regression.sh' based on current 'CLI_test_regression.sh' to re-work test script to allow parallel tool calls and test AI Agent dyanmic ablility to decide if additional tool calls are needed based on already existing data retrieved. Here is the brand new test plan that matches user real world usage and will completely replace the current test plan.  We will keep the current 'CLI_test_regression.sh' for backward compatilibilty and serve as reference template for the new script just in case the new script has any issues.  The new script also needs to change the output test report formatting for better spacing for the date and timestamps.   Currenly it is something like "test_cli_regression_loop10_20251006_123556.txt", but the new way needs to make it more clear like: "test_cli_regression_loop10_2025-10-06_12-35.txt", where "2025-10-06" makes clear the date, and "12-35"  makes clear the time WITHOUT seconds, so just hours and minutes.  Also update 'CLI_test_regression.sh' with the new test report naming scheme too.
+
+Here are the brand new test cases in sequence for 'test_cli_regression.sh'
+
+Here is the consolidated and sequentially numbered list of your test cases:
+
+// SPY Test Sequence
+1.  Market Status
+2.  Current Price: SPY
+3.  Today’s Closing Price: SPY
+4.  Previous Closing Price: SPY
+5.  Current Weekly Performance Change $ and %: SPY
+6.  RSI-14: SPY
+7.  MACD: SPY
+8.  SMA 20/50/200: SPY
+9.  EMA 20/50/200: SPY
+10. SMA 5/10: SPY
+11. EMA 5/10: SPY
+12. Options Quote: SPY 1/16/26 $700 Call
+13. Options Quote: SPY 1/16/26 $600 Put
+14. Support & Resistance Levels: SPY
+15. Technical Analysis: SPY
+16. Price on 1/1/25: SPY
+17. Daily bars from 1/1/25 - 3/31/25: SPY
+
+// NVDA Test Sequence
+18. Market Status
+19. Current Price: NVDA
+20. Today’s Closing Price: NVDA
+21. Previous Closing Price: NVDA
+22. Current Weekly Performance Change $ and %: NVDA
+23. RSI-14: NVDA
+24. MACD: NVDA
+25. SMA 20/50/200: NVDA
+26. EMA 20/50/200: NVDA
+27. SMA 5/10: NVDA
+28. EMA 5/10: NVDA
+29. Options Quote: NVDA 1/16/26 $200 Call
+30. Options Quote: NVDA 1/16/26 $180 Put
+31. Support & Resistance Levels: NVDA
+32. Technical Analysis: NVDA
+33. Price on 1/1/25: NVDA
+34. Daily bars from 1/1/25 - 3/31/25: NVDA
+
+// WDC Test Sequence
+35. Market Status
+36. Current Price: WDC
+37. Today’s Closing Price: WDC
+38. Previous Closing Price: WDC
+39. Current Weekly Performance Change $ and %: WDC
+40. RSI-14: WDC
+41. MACD: WDC
+42. SMA 20/50/200: WDC
+43. EMA 20/50/200: WDC
+44. SMA 5/10: WDC
+45. EMA 5/10: WDC
+46. Options Quote: WDC 1/16/26 $150 Call
+47. Options Quote: WDC 1/16/26 $100 Put
+48. Support & Resistance Levels: WDC
+49. Technical Analysis: WDC
+50. Price on 1/1/25: WDC
+51. Daily bars from 1/1/25 - 3/31/25: WDC
+
+// Multi-Ticker Test Test Sequence
+52. Current Price: AMD, INTC, AVGO
+53. Today’s Closing Price: AMD, INTC, AVGO
+54. Previous Closing Price: AMD, INTC, AVGO
+55. Current Weekly Performance Change $ and %: AMD, INTC, AVGO
+56. RSI-14: AMD, INTC, AVGO
+57. MACD: AMD, INTC, AVGO
+58. SMA 20/50/200: AMD, INTC, AVGO
+59. EMA 20/50/200: AMD, INTC, AVGO
+60. SMA 5/10: AMD, INTC, AVGO
+61. EMA 5/10: AMD, INTC, AVGO
+62. Support & Resistance Levels: AMD, INTC, AVGO
+63. Technical Analysis: AMD, INTC, AVGO
+64. Price on 1/1/25: AMD, INTC, AVGO
+65. Daily bars from 1/1/25 - 3/31/25: AMD, INTC, AVGO
+
+
+D. Validate ALL changes by running the new validation script 'test_CLI_regression.sh' and then reviewing final results and contents of EACH response to ensure they match expected responses with proper tool calls.
+
 
 ---
 
