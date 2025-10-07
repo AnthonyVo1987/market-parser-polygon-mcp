@@ -194,7 +194,9 @@
       "Bash(do echo \"=== Loop $i ===\")",
       "Bash(find:*)",
       "Bash(./test_cli_regression.sh:*)",
-      "mcp__serena__activate_project"
+      "mcp__serena__activate_project",
+      "mcp__docs-openai-agents__search_openai_agents_docs",
+      "mcp__docs-openai-agents__search_openai_agents_code"
     ],
     "deny": [],
     "ask": [],
