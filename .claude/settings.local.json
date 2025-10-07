@@ -197,7 +197,9 @@
       "Bash(bc:*)",
       "Bash(do echo \"=== Loop $i Statistics ===\")",
       "Bash(do if [ -f \"$file\" ])",
-      "Bash(do echo \"=== Loop $i ===\")"
+      "Bash(do echo \"=== Loop $i ===\")",
+      "Bash(find:*)",
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.main import app; print(''✅ Backend imports successful'')\")"
     ],
     "deny": [],
     "ask": [],
