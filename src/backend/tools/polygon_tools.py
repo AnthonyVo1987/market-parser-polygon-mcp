@@ -585,148 +585,6 @@ async def get_ta_macd(
             }
         )
 
-
-@function_tool
-async def get_stock_quote_multi(tickers: list[str], market_type: str = "stocks") -> str:
-    """Get snapshot quotes for multiple ticker symbols from Polygon.io API.
-
-    Use this tool when the user requests quotes for MULTIPLE ticker symbols
-    (2 or more), market snapshots with multiple stocks, or comparative analysis
-    across multiple tickers.
-
-    This tool provides real-time snapshot data for multiple tickers in a single
-    API call via Polygon.io direct API.
-
-    Args:
-        tickers: List of ticker symbols to get snapshots for (e.g., ["SPY", "QQQ", "IWM"])
-        market_type: Asset class type - "stocks", "options", "forex", or "crypto" (default: "stocks")
-
-    Returns:
-        JSON string containing multi-ticker snapshot data with format:
-        {
-            "status": "success",
-            "market_type": "stocks",
-            "tickers": [
-                {
-                    "ticker": "SPY",
-                    "day": {"c": 450.25, "h": 451.00, "l": 449.50, "o": 450.00, ...},
-                    "min": {...},
-                    "prevDay": {...},
-                    "todaysChange": 2.50,
-                    "todaysChangePerc": 0.56,
-                    "updated": 1696531200000
-                },
-                ...
-            ],
-            "count": 3,
-            "source": "Polygon.io"
-        }
-
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "source": "Polygon.io"
-        }
-
-    Note:
-        - Optimized for multiple ticker queries (2+ symbols)
-        - Returns comprehensive snapshot data: day, minute, previous day
-        - For SINGLE ticker quotes, use get_stock_quote() instead
-        - Data updates in real-time from Polygon.io servers
-        - This is a direct API call (not using MCP server)
-
-    Examples:
-        - "Stock Snapshot: SPY, QQQ, IWM"
-        - "AAPL and MSFT prices"
-        - "Market snapshot: TSLA, NVDA, AMD"
-        - "Compare GOOGL, META, AMZN"
-    """
-    try:
-        # Call Polygon API with lazy client initialization
-        client = _get_polygon_client()
-        snapshots = client.get_snapshot_all(market_type, tickers)
-
-        # Check if API returned valid data
-        if not snapshots:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": f"No snapshot data returned from Polygon.io for {tickers}.",
-                    "source": "Polygon.io",
-                }
-            )
-
-        # Process snapshots into structured format
-        ticker_data = []
-        for snapshot in snapshots:
-            ticker_info = {
-                "ticker": getattr(snapshot, "ticker", ""),
-                "day": {},
-                "min": {},
-                "prevDay": {},
-                "todaysChange": getattr(snapshot, "todaysChange", 0.0),
-                "todaysChangePerc": getattr(snapshot, "todaysChangePerc", 0.0),
-                "updated": getattr(snapshot, "updated", 0),
-            }
-
-            # Extract day data
-            if hasattr(snapshot, "day") and snapshot.day:
-                day = snapshot.day
-                ticker_info["day"] = {
-                    "c": getattr(day, "c", 0.0),
-                    "h": getattr(day, "h", 0.0),
-                    "l": getattr(day, "l", 0.0),
-                    "o": getattr(day, "o", 0.0),
-                    "v": getattr(day, "v", 0),
-                    "vw": getattr(day, "vw", 0.0),
-                }
-
-            # Extract minute data
-            if hasattr(snapshot, "min") and snapshot.min:
-                minute = snapshot.min
-                ticker_info["min"] = {
-                    "c": getattr(minute, "c", 0.0),
-                    "h": getattr(minute, "h", 0.0),
-                    "l": getattr(minute, "l", 0.0),
-                    "o": getattr(minute, "o", 0.0),
-                    "v": getattr(minute, "v", 0),
-                }
-
-            # Extract previous day data
-            if hasattr(snapshot, "prevDay") and snapshot.prevDay:
-                prev = snapshot.prevDay
-                ticker_info["prevDay"] = {
-                    "c": getattr(prev, "c", 0.0),
-                    "h": getattr(prev, "h", 0.0),
-                    "l": getattr(prev, "l", 0.0),
-                    "o": getattr(prev, "o", 0.0),
-                    "v": getattr(prev, "v", 0),
-                    "vw": getattr(prev, "vw", 0.0),
-                }
-
-            ticker_data.append(ticker_info)
-
-        return json.dumps(
-            {
-                "status": "success",
-                "market_type": market_type,
-                "tickers": ticker_data,
-                "count": len(ticker_data),
-                "source": "Polygon.io",
-            }
-        )
-
-    except Exception as e:
-        return json.dumps(
-            {
-                "error": "API Error",
-                "message": f"Polygon.io API error: {str(e)}",
-                "source": "Polygon.io",
-            }
-        )
-
-
 @function_tool
 async def get_options_quote_single(underlying_asset: str, option_contract: str) -> str:
     """
@@ -805,7 +663,7 @@ async def get_options_quote_single(underlying_asset: str, option_contract: str) 
 
         ❌ Do NOT use for:
            - Multiple options contracts (use get_snapshot_all with market_type='options')
-           - Stock quotes (use get_stock_quote for single, get_stock_quote_multi for multiple)
+           - Stock quotes (use get_stock_quote; for multiple tickers use parallel get_stock_quote calls)
            - Historical options data (use OHLC bar tools)
     """
     try:
@@ -1014,7 +872,7 @@ async def get_OHLC_bars_custom_date_range(  # pylint: disable=too-many-positiona
         ❌ Do NOT use for:
            - Single specific date (use get_OHLC_bars_specific_date)
            - Previous trading day close (use get_OHLC_bars_previous_close)
-           - Real-time quotes (use get_stock_quote or get_stock_quote_multi)
+           - Real-time quotes (use get_stock_quote; for multiple use parallel calls)
            - Options data (use get_options_quote_single)
     """
     try:
@@ -1169,7 +1027,7 @@ async def get_OHLC_bars_specific_date(ticker: str, date: str, adjusted: bool = T
         ❌ Do NOT use for:
            - Custom date ranges (use get_OHLC_bars_custom_date_range)
            - Previous trading day close (use get_OHLC_bars_previous_close)
-           - Real-time quotes (use get_stock_quote or get_stock_quote_multi)
+           - Real-time quotes (use get_stock_quote; for multiple use parallel calls)
            - Multiple dates (use get_OHLC_bars_custom_date_range)
            - Options data (use get_options_quote_single)
     """
@@ -1313,10 +1171,10 @@ async def get_OHLC_bars_previous_close(ticker: str, adjusted: bool = True) -> st
            - User wants latest historical bar (not real-time)
 
         ❌ Do NOT use for:
-           - Real-time current price (use get_stock_quote or get_stock_quote_multi)
+           - Real-time current price (use get_stock_quote; for multiple use parallel calls)
            - Specific historical date (use get_OHLC_bars_specific_date)
            - Custom date ranges (use get_OHLC_bars_custom_date_range)
-           - Multiple tickers (use get_stock_quote_multi then specify previous close in context)
+           - Multiple tickers (use parallel get_stock_quote calls then specify previous close in context)
            - Options data (use get_options_quote_single)
     """
     try:

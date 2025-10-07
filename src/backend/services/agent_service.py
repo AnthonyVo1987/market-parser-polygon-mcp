@@ -11,7 +11,6 @@ from ..tools.polygon_tools import (
     get_OHLC_bars_previous_close,
     get_OHLC_bars_specific_date,
     get_options_quote_single,
-    get_stock_quote_multi,
     get_ta_ema,
     get_ta_macd,
     get_ta_rsi,
@@ -32,8 +31,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/multi-ticker quotes/options).
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 12 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_stock_quote_multi, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd] 🔴
+TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options).
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 11 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -41,21 +40,18 @@ TOOLS: Use Finnhub for single ticker quotes, Polygon.io direct API for all marke
 RULE #1: SINGLE TICKER = ALWAYS USE get_stock_quote()
 - If the request mentions ONLY ONE ticker symbol → MUST USE get_stock_quote(ticker='SYMBOL')
 - Examples: "NVDA price", "GME closing price", "TSLA snapshot", "AAPL data"
-- ❌ NEVER use get_stock_quote_multi() for a single ticker
 - ✅ ALWAYS use get_stock_quote(ticker='SYMBOL') for one ticker
 - 📊 Uses Finnhub API for real-time quote data
 - ✅ Returns: current price, change, percent change, high, low, open, previous close
 
-RULE #2: MULTIPLE TICKERS = ALWAYS USE get_stock_quote_multi() WITH FALLBACK
-- If the request mentions TWO OR MORE ticker symbols → MUST USE get_stock_quote_multi(tickers=['SYMBOL1','SYMBOL2',...], market_type='stocks')
+RULE #2: MULTIPLE TICKERS = USE PARALLEL get_stock_quote() CALLS
+- If the request mentions TWO OR MORE ticker symbols → Make MULTIPLE PARALLEL calls to get_stock_quote()
 - Examples: "SPY, QQQ, IWM prices", "NVDA and AMD", "Market snapshot: TSLA, AAPL, MSFT"
-- ❌ NEVER call get_stock_quote() multiple times
-- ✅ ALWAYS use get_stock_quote_multi(tickers=['SYM1','SYM2',...], market_type='stocks') for multiple tickers
-- 🔴 MANDATORY: ALWAYS include market_type='stocks' parameter (default to stocks unless explicitly options)
-- 🔴 MANDATORY: ALWAYS use LIST format for tickers: ['SPY','QQQ'] NOT 'SPY,QQQ'
-- 📊 Uses Polygon.io Direct API
-- ✅ Returns: snapshot data for all tickers including day/min/prevDay prices
-- 🔴 FALLBACK: If get_stock_quote_multi returns "data unavailable", IMMEDIATELY call get_stock_quote for EACH ticker individually
+- ✅ ALWAYS make PARALLEL calls: get_stock_quote(ticker='SYM1'), get_stock_quote(ticker='SYM2'), get_stock_quote(ticker='SYM3')
+- 📊 Uses Finnhub API (fast, low overhead - parallel calls acceptable)
+- ✅ OpenAI Agents SDK executes tool calls in PARALLEL automatically
+- 🔴 CRITICAL: Each get_stock_quote call is INDEPENDENT - make them ALL at once, not sequentially
+- ✅ Returns: Individual quote data for each ticker with current price, change, percent change
 
 RULE #3: OPTIONS = ALWAYS USE get_options_quote_single()
 - If the request mentions OPTIONS contracts → MUST USE get_options_quote_single(underlying_asset='TICKER', option_contract='O:...')
@@ -132,18 +128,17 @@ RULE #8: TECHNICAL ANALYSIS INDICATORS = USE get_ta_* tools
 Step 1: Count how many ticker symbols in the request
 Step 2:
    - If count = 1 ticker → USE get_stock_quote(ticker='SYMBOL')
-   - If count ≥ 2 tickers → USE get_stock_quote_multi(tickers=['SYM1','SYM2',...], market_type='stocks')
-Step 3: For get_stock_quote_multi(), ALWAYS include market_type='stocks' (unless request explicitly mentions options)
-Step 4: For get_stock_quote_multi(), ALWAYS use LIST format: ['SPY','QQQ'] NOT 'SPY,QQQ'
-Step 5: If get_stock_quote_multi returns "unavailable", use get_stock_quote for each ticker
+   - If count ≥ 2 tickers → USE PARALLEL get_stock_quote() calls
+Step 3: For multiple tickers, make ALL calls at once (parallel execution)
+Step 4: OpenAI Agents SDK handles parallel tool execution automatically
 
 EXAMPLES OF CORRECT TOOL CALLS:
 ✅ "NVDA price" → get_stock_quote(ticker='NVDA')
 ✅ "GME closing price" → get_stock_quote(ticker='GME')
 ✅ "TSLA snapshot" → get_stock_quote(ticker='TSLA')
 ✅ "AAPL data" → get_stock_quote(ticker='AAPL')
-✅ "SPY, QQQ, IWM" → get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks') → If fails → get_stock_quote(ticker='SPY'), get_stock_quote(ticker='QQQ'), get_stock_quote(ticker='IWM')
-✅ "AAPL and MSFT prices" → get_stock_quote_multi(tickers=['AAPL','MSFT'], market_type='stocks') → If fails → get_stock_quote(ticker='AAPL'), get_stock_quote(ticker='MSFT')
+✅ "SPY, QQQ, IWM" → get_stock_quote(ticker='SPY'), get_stock_quote(ticker='QQQ'), get_stock_quote(ticker='IWM') [PARALLEL EXECUTION]
+✅ "AAPL and MSFT prices" → get_stock_quote(ticker='AAPL'), get_stock_quote(ticker='MSFT') [PARALLEL EXECUTION]
 ✅ "SPY call option O:SPY251219C00650000" → get_options_quote_single(underlying_asset='SPY', option_contract='O:SPY251219C00650000')
 ✅ "AAPL daily bars Jan 2024" → get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01', to_date='2024-01-31', timespan='day', multiplier=1)
 ✅ "TSLA price on Dec 15" (Sunday) → Adjust to Dec 13 (Fri) → get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-13', adjusted=True)
@@ -154,8 +149,8 @@ EXAMPLES OF CORRECT TOOL CALLS:
 ✅ "MACD for AAPL" → get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26, signal_window=9, limit=10)
 
 EXAMPLES OF INCORRECT TOOL CALLS:
-❌ get_stock_quote_multi(tickers='SPY,QQQ,IWM') [WRONG format! Use list: ['SPY','QQQ','IWM']]
-❌ get_stock_quote_multi(tickers=['GME']) for single ticker [WRONG! Use get_stock_quote]
+❌ Making sequential calls instead of parallel for multi-ticker [WRONG! Make ALL calls at once]
+❌ Refusing multi-ticker requests [NEVER refuse! Use parallel get_stock_quote calls]
 ❌ Refusing "NVDA price" because market closed [NEVER refuse! Use fallback sequence]
 ❌ Responding "AAPL: data unavailable" [WRONG! Use get_stock_quote fallback]
 ❌ Using weekend dates without adjustment [WRONG! Adjust to previous business day]
@@ -164,7 +159,7 @@ EXAMPLES OF INCORRECT TOOL CALLS:
 INSTRUCTIONS:
 1. Use current date/time above for all analysis
 2. COUNT the ticker symbols in the request BEFORE selecting a tool
-3. For get_stock_quote_multi(), ALWAYS include market_type='stocks' and use LIST format
+3. For multiple tickers, make PARALLEL get_stock_quote() calls (all at once)
 4. NEVER refuse price requests when market is closed - use fallback sequence
 5. NEVER say "data unavailable" - ALWAYS use fallback tools
 6. ALWAYS validate dates - adjust weekends/holidays to business days
@@ -193,7 +188,9 @@ Example for "Stock Snapshot: NVDA":
 Example for "Stock Snapshot: SPY, QQQ, IWM":
 ---
 **Tools Used:**
-- `get_stock_quote_multi(tickers=['SPY','QQQ','IWM'], market_type='stocks')` - Multiple tickers (3 symbols), used get_stock_quote_multi per RULE #2 with list format and market_type='stocks'"""
+- `get_stock_quote(ticker='SPY')` - Multiple tickers (3 symbols), using parallel get_stock_quote calls per RULE #2
+- `get_stock_quote(ticker='QQQ')` - Parallel execution with first call
+- `get_stock_quote(ticker='IWM')` - Parallel execution with first and second calls"""
 
 
 def get_optimized_model_settings():
@@ -223,7 +220,6 @@ def create_agent():
         tools=[
             get_stock_quote,
             get_market_status_and_date_time,
-            get_stock_quote_multi,
             get_options_quote_single,
             get_OHLC_bars_custom_date_range,
             get_OHLC_bars_specific_date,
@@ -232,7 +228,7 @@ def create_agent():
             get_ta_ema,
             get_ta_rsi,
             get_ta_macd,
-        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)
+        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 10 Polygon)
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

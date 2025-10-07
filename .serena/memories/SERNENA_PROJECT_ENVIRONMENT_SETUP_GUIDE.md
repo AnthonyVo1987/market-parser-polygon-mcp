@@ -174,12 +174,11 @@ from src.backend.main import app
 from src.backend.services.agent_service import create_agent
 from src.backend.tools.polygon_tools import (
     get_market_status_and_date_time,
-    get_stock_quote_multi,
     get_ta_sma,
     get_OHLC_bars_custom_date_range
 )
 print('✅ Core project imports successful')
-print('✅ All 12 AI agent tools import correctly')
+print('✅ All 11 AI agent tools import correctly')
 "
 ```
 

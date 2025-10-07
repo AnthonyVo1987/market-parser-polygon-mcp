@@ -39,10 +39,7 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Remove CSS analysis entirely from entire code base and any references in docs and Serena Memories
-2. Remove /api/v1/system/status endpoint from entire code base and any references in docs and Serena Memories
-3. Remove anything related to "Prompt Template" System from entire code base and any references in docs and Serena Memories
-4. Remove anything related to "emoji in responses" from entire code base and any references in docs and Serena Memories
+1. Completely remove the tool 'get_stock_quote_multi' and instead have AI Agent Instructions be updated to just use multiple tool calls for 'get_stock_quote' if multiple tickers are requested. This should streamline and reduce amount of tool calls and since the direct calls to 'get_stock_quote' have low overhead, AI Agent is now allowed to call it multiple times
 
 ---
 

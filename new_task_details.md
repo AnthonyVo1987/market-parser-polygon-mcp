@@ -23,7 +23,7 @@ VIOLATION PENALTIES:
 
 - If you use tools only once and stop, you're failing
 - If you follow a rigid order instead of using tools as needed, you're failing
-- If you don't use tools throughout the entire process, you're failingplan
+- If you don't use tools throughout the entire process, you're failing
 
 SUCCESS CRITERIA:
 
@@ -84,27 +84,34 @@ Use Serena Tools to update project memories to reflect all the new changes and n
    - ⚠️ **DO NOT RUN `git add` YET**
 
 2. **VERIFY EVERYTHING IS COMPLETE**:
+
    ```bash
    git status  # Review ALL changed/new files
    git diff    # Review ALL changes
    ```
+
    - Ensure ALL work is done
    - Ensure ALL files are present
 
 3. **STAGE EVERYTHING AT ONCE**:
+
    ```bash
    git add -A  # Stage ALL files in ONE command
    ```
+
    - ⚠️ This is the FIRST time you run `git add`
    - ⚠️ Stage ALL related files together
 
 4. **VERIFY STAGING IMMEDIATELY**:
+
    ```bash
    git status  # Verify ALL files staged, NOTHING unstaged
    ```
+
    - If anything is missing: `git add [missing-file]`
 
 5. **COMMIT IMMEDIATELY** (within 60 seconds of staging):
+
    ```bash
    git commit -m "$(cat <<'EOF'
    [TAG] Descriptive commit message
@@ -120,11 +127,13 @@ Use Serena Tools to update project memories to reflect all the new changes and n
    ```
 
 6. **PUSH IMMEDIATELY**:
+
    ```bash
    git push
    ```
 
 **WHAT BELONGS IN ATOMIC COMMIT:**
+
 - ✅ Code changes (backend + frontend)
 - ✅ Test reports (evidence of passing tests)
 - ✅ Documentation updates (CLAUDE.md, README.md, etc.)
@@ -133,6 +142,7 @@ Use Serena Tools to update project memories to reflect all the new changes and n
 - ✅ Task plan updates (TODO_task_plan.md, etc.)
 
 **❌ NEVER DO THIS:**
+
 - ❌ Stage files early during development
 - ❌ Stage files "as you go"
 - ❌ Run `git add` before ALL work is complete

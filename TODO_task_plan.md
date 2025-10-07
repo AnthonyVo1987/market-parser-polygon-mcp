@@ -1,677 +1,470 @@
-# TODO Task Plan: Legacy Feature Cleanup Implementation
+# TODO Task Plan: Remove get_stock_quote_multi Tool
 
-**Created**: 2025-10-06
-**Task**: Remove 4 legacy deprecated features from entire codebase
-**Research Document**: RESEARCH_FINDINGS_LEGACY_CLEANUP.md
-
----
-
-## 🔴 CRITICAL: MANDATORY TOOL USAGE THROUGHOUT ALL PHASES
-
-**You MUST use ALL available tools AS OFTEN AS NEEDED throughout implementation:**
-
-- ✅ Sequential-Thinking: For analysis, planning, and complex reasoning at EVERY phase
-- ✅ Serena Tools: For code symbol manipulation, pattern search, and memory updates
-- ✅ Standard Read/Write/Edit: For file modifications and verification
-- ✅ NEVER stop using tools - continue until task completion
+**Task ID**: Remove get_stock_quote_multi tool
+**Created**: 2025-10-07
+**Status**: PLANNING COMPLETE - READY FOR AUTONOMOUS IMPLEMENTATION
 
 ---
 
-## Implementation Overview
+## 🎯 TASK OBJECTIVE
 
-**Total Tasks**: 4 legacy feature removals
-**Files to Delete**: 1 (system.py)
-**Files to Modify**: 5-7 (api_models, main, routers/__init__, performance.tsx, response_utils, docs)
-**Docs to Update**: 3-4 (CLAUDE.md, AGENTS.md, api-integration-guide.md, README.md)
-**Estimated Risk**: LOW
-**Expected Performance Gain**: 1-2% CPU reduction
+Remove the `get_stock_quote_multi` tool completely and update AI Agent Instructions to use multiple parallel calls to `get_stock_quote` instead. This streamlines the codebase and leverages the OpenAI Agents SDK's native parallel tool execution capability.
 
 ---
 
-## PHASE 1: Backend Cleanup (Tasks 2 & 3)
+## 📊 RESEARCH FINDINGS SUMMARY
 
-### ✅ TASK 1.1: Delete system.py Router File
+### Current Implementation
 
-**Status**: ⏸️ PENDING
+- **Tool Definition**: `get_stock_quote_multi` at lines 588-726 in `src/backend/tools/polygon_tools.py` (139 lines)
+- **API Used**: Polygon.io Direct API `client.get_snapshot_all(market_type, tickers)`
+- **Function**: Wraps Polygon API to fetch multiple ticker snapshots in single call
+- **Parameters**: `tickers: list[str]`, `market_type: str = "stocks"`
+- **Returns**: JSON with snapshot data for all tickers
 
-**Action**:
-```bash
-rm src/backend/routers/system.py
+### Current Integrations
+
+1. **Agent Service** (`src/backend/services/agent_service.py`):
+   - Import at line 14: `from ..tools.polygon_tools import get_stock_quote_multi`
+   - Tools list at line 226: `get_stock_quote_multi,`
+   - Total: 2 integration points
+
+2. **Agent Instructions** (`src/backend/services/agent_service.py`, lines 23-196):
+   - Line 36: Tool list includes `get_stock_quote_multi`
+   - Lines 49-58: RULE #2 - Complete section dedicated to multi-ticker usage
+   - Lines 130-138: Decision tree references
+   - Lines 145-146: Examples with multi-ticker calls
+   - Lines 157-158: Incorrect usage examples
+   - Lines 167, 196: Additional references in instructions and examples
+   - Total: 15+ references across 173 lines of instructions
+
+3. **Test Suite** (`CLI_test_regression.sh`):
+   - Test #3 (line 70): "Stock Snapshot: SPY, QQQ, IWM"
+   - Test #12 (line 79): "Multi-ticker quotes: AAPL, MSFT, GOOGL"
+   - Total: 2 test cases affected
+
+4. **Documentation**:
+   - `.serena/memories/project_architecture.md`: Line 108
+   - `.serena/memories/polygon_mcp_removal_history.md`: Lines 47, 91
+   - `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md`: Line 177
+   - `.serena/memories/ai_agent_instructions_oct_2025.md`: Lines 30, 47, 48, 190, 195, 237
+   - `.serena/memories/tech_stack.md`: Line 55
+   - Total: 6 documentation files
+
+### Replacement Tool
+
+- **Tool**: `get_stock_quote` in `src/backend/tools/finnhub_tools.py` (line 23)
+- **API Used**: Finnhub API (fast, low overhead)
+- **Current Usage**: Single ticker quotes only
+- **New Usage Pattern**: Multiple parallel calls for multiple tickers
+
+### Impact Assessment
+
+- **Tool Count**: Reduces from 12 to 11 tools ✅
+- **Code Reduction**: Removes ~139 lines of wrapper code ✅
+- **Performance**: Finnhub API is fast - parallel calls acceptable ✅
+- **Architecture**: Leverages OpenAI Agents SDK native parallel execution ✅
+- **Test Impact**: 2 tests will show new parallel call pattern ✅
+
+---
+
+## 📋 IMPLEMENTATION CHECKLIST
+
+### ✅ PHASE 0: RESEARCH & PLANNING
+
+- [x] Complete Sequential-Thinking analysis
+- [x] Locate get_stock_quote_multi definition and all references
+- [x] Map all integration points (code, tests, docs)
+- [x] Analyze impact and replacement strategy
+- [x] Create comprehensive TODO_task_plan.md
+
+### 🔧 PHASE 1: CODE IMPLEMENTATION (USE SERENA TOOLS)
+
+#### 1.1 Remove Tool from polygon_tools.py
+
+- [ ] **Use Sequential-Thinking** to plan precise removal strategy
+- [ ] **Use Serena find_symbol** to verify exact location of `get_stock_quote_multi` function
+- [ ] **Use Serena replace_symbol_body** OR **delete_lines** to remove function (lines 588-726)
+- [ ] **Verify removal** by reading the file section to ensure clean removal
+
+**Success Criteria**: Function completely removed, file still valid Python
+
+#### 1.2 Update agent_service.py Imports
+
+- [ ] **Use Sequential-Thinking** to plan import removal strategy
+- [ ] **Use Serena find_symbol** to locate import statement at line 14
+- [ ] **Use Serena replace_lines** to remove `get_stock_quote_multi` from imports
+- [ ] **Verify import section** is clean and syntactically correct
+
+**Success Criteria**: Import removed, no syntax errors
+
+#### 1.3 Remove Tool from Agent Tools List
+
+- [ ] **Use Sequential-Thinking** to plan tools list update
+- [ ] **Use Serena find_symbol** with `name_path="create_agent"` to locate function
+- [ ] **Use Serena replace_symbol_body** to update tools list (remove line 226)
+- [ ] **Verify tools list** has 11 tools (not 12) and proper formatting
+
+**Success Criteria**: Tools list updated, 11 tools registered
+
+#### 1.4 Rewrite Agent Instructions - NEW RULE #2
+
+- [ ] **Use Sequential-Thinking** to design new RULE #2 for parallel calls
+- [ ] **Use Serena find_symbol** to locate `get_enhanced_agent_instructions` function
+- [ ] **Use Serena replace_symbol_body** to rewrite instructions with new RULE #2:
+
+**NEW RULE #2 Content** (to replace lines 49-58):
+
+```
+RULE #2: MULTIPLE TICKERS = USE PARALLEL get_stock_quote() CALLS
+- If the request mentions TWO OR MORE ticker symbols → Make MULTIPLE PARALLEL calls to get_stock_quote()
+- Examples: "SPY, QQQ, IWM prices", "NVDA and AMD", "Market snapshot: TSLA, AAPL, MSFT"
+- ✅ ALWAYS make PARALLEL calls: get_stock_quote(ticker='SYM1'), get_stock_quote(ticker='SYM2'), get_stock_quote(ticker='SYM3')
+- 📊 Uses Finnhub API (fast, low overhead - parallel calls acceptable)
+- ✅ OpenAI Agents SDK executes tool calls in PARALLEL automatically
+- 🔴 CRITICAL: Each get_stock_quote call is INDEPENDENT - make them ALL at once, not sequentially
+- ✅ Returns: Individual quote data for each ticker with current price, change, percent change
 ```
 
-**Impact**:
-- Removes /api/v1/system/status endpoint (Task 2)
-- Removes prompt_templates_loaded=0 usage (Task 3 partial)
+**Success Criteria**: RULE #2 emphasizes parallel calls, no mention of get_stock_quote_multi
 
-**Verification**: File no longer exists
+#### 1.5 Update Tool Count in Instructions
 
-**Tool Usage**: Standard Bash
+- [ ] **Use Serena replace_lines** to update line 36 from "12 SUPPORTED TOOLS" to "11 SUPPORTED TOOLS"
+- [ ] **Update tool list** at line 36 to remove `get_stock_quote_multi` from the enumeration
 
----
+**Success Criteria**: Tool count accurate (11), list excludes get_stock_quote_multi
 
-### ✅ TASK 1.2: Update api_models.py - Remove 3 Classes + 1 Field
+#### 1.6 Update Decision Tree Section
 
-**Status**: ⏸️ PENDING
+- [ ] **Use Serena replace_lines** to update lines 130-138 (Decision Tree section):
 
-**Actions**:
+**NEW Decision Tree** (to replace lines 130-138):
 
-1. **Remove docstring reference** (Line 5):
-   - Find: "for the FastAPI endpoints that expose PromptTemplateManager functionality."
-   - Replace with: "for the FastAPI endpoints."
+```
+📋 DECISION TREE FOR STOCK QUOTES:
 
-2. **Remove SystemMetrics class** (Lines 64-70):
-   - Entire class deletion including:
-     - `api_version: str`
-     - `prompt_templates_loaded: int`
-     - `supported_analysis_types: List[str]`
-     - `uptime_seconds: Optional[float]`
-
-3. **Remove SystemStatusResponse class** (Lines 72-75):
-   - Entire class deletion
-
-**Verification**:
-```bash
-# Should return no results
-grep -n "SystemMetrics\|SystemStatusResponse\|PromptTemplate" src/backend/api_models.py
+Step 1: Count how many ticker symbols in the request
+Step 2:
+   - If count = 1 ticker → USE get_stock_quote(ticker='SYMBOL')
+   - If count ≥ 2 tickers → USE PARALLEL get_stock_quote() calls
+Step 3: For multiple tickers, make ALL calls at once (parallel execution)
+Step 4: OpenAI Agents SDK handles parallel tool execution automatically
 ```
 
-**Tool Usage**: Serena find_symbol + delete_lines OR Standard Edit tool
+**Success Criteria**: Decision tree reflects parallel call pattern
 
----
+#### 1.7 Update Examples Section
 
-### ✅ TASK 1.3: Update main.py - Remove Router Registration
+- [ ] **Use Serena replace_lines** to update examples at lines 145-146:
 
-**Status**: ⏸️ PENDING
+**NEW Examples** (to replace lines 145-146):
 
-**Actions**:
-
-1. **Find router import**:
-   - Search for: `from backend.routers import system_router` OR `system`
-
-2. **Remove import line**:
-   - Delete the import statement
-
-3. **Remove router registration**:
-   - Search for: `app.include_router(system_router`
-   - Delete the registration line
-
-**Verification**:
-```bash
-# Should return no results
-grep -n "system_router\|system.router" src/backend/main.py
+```
+✅ "SPY, QQQ, IWM" → get_stock_quote(ticker='SPY'), get_stock_quote(ticker='QQQ'), get_stock_quote(ticker='IWM') [PARALLEL EXECUTION]
+✅ "AAPL and MSFT prices" → get_stock_quote(ticker='AAPL'), get_stock_quote(ticker='MSFT') [PARALLEL EXECUTION]
 ```
 
-**Tool Usage**: Serena search_for_pattern + Standard Edit
+**Success Criteria**: Examples show parallel call syntax
 
----
+#### 1.8 Remove Incorrect Usage Examples
 
-### ✅ TASK 1.4: Update routers/__init__.py - Remove Export
+- [ ] **Use Serena replace_lines** to update lines 157-158, remove get_stock_quote_multi references:
 
-**Status**: ⏸️ PENDING
+**NEW Incorrect Examples** (to replace lines 157-158):
 
-**Actions**:
-
-1. **Find system router export**:
-   - Search for: `from .system import router as system_router`
-
-2. **Remove export line**:
-   - Delete the export statement
-
-**Verification**:
-```bash
-# Should return no results
-grep -n "system" src/backend/routers/__init__.py
+```
+❌ Making sequential calls instead of parallel [WRONG! Make ALL calls at once]
+❌ Refusing multi-ticker requests [NEVER refuse! Use parallel get_stock_quote calls]
 ```
 
-**Tool Usage**: Standard Read + Edit
+**Success Criteria**: No mention of get_stock_quote_multi in examples
 
+#### 1.9 Update Final Example Section
+
+- [ ] **Use Serena replace_lines** to update lines 193-196 (final examples):
+
+**NEW Final Example**:
+
+```
+Example for "Stock Snapshot: SPY, QQQ, IWM":
 ---
-
-## PHASE 2: Frontend Cleanup (Task 1)
-
-### ✅ TASK 2.1: Remove CSS Analysis Function from performance.tsx
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Use Serena to find analyzeCSSPerformance function**:
-   ```
-   mcp__serena__find_symbol(name_path="analyzeCSSPerformance", relative_path="src/frontend/utils/performance.tsx")
-   ```
-
-2. **Locate exact line range** for function body
-
-3. **Remove entire function** using Serena delete_symbol OR delete_lines
-
-4. **Find all calls** to analyzeCSSPerformance:
-   ```
-   mcp__serena__find_referencing_symbols(name_path="analyzeCSSPerformance", relative_path="src/frontend/utils/performance.tsx")
-   ```
-
-5. **Remove function calls** from ChatInterface_OpenAI.tsx (if any)
-
-**Verification**:
-```bash
-# Should return no results
-grep -rn "analyzeCSSPerformance" src/frontend/
+**Tools Used:**
+- `get_stock_quote(ticker='SPY')` - Multiple tickers (3 symbols), using parallel get_stock_quote calls per RULE #2
+- `get_stock_quote(ticker='QQQ')` - Parallel execution with first call
+- `get_stock_quote(ticker='IWM')` - Parallel execution with first and second calls
 ```
 
-**Tool Usage**: Serena find_symbol + find_referencing_symbols + delete operations
+**Success Criteria**: Examples demonstrate parallel call pattern with reasoning
+
+#### 1.10 Verify Code Integrity
+
+- [ ] **Use Sequential-Thinking** to review all code changes
+- [ ] **Use Serena search_for_pattern** to verify NO remaining references to `get_stock_quote_multi`
+- [ ] **Import test**: Run `python -c "from src.backend.services.agent_service import create_agent; print('✅ Imports successful')"`
+- [ ] **Agent creation test**: Run `python -c "from src.backend.services.agent_service import create_agent; agent = create_agent(); print(f'✅ Agent has {len(agent.tools)} tools')"`
+
+**Success Criteria**: No import errors, agent has 11 tools
 
 ---
 
-## PHASE 3: CLI Cleanup (Task 4)
+### 🧪 PHASE 2: CLI TESTING (MANDATORY - DO NOT SKIP)
 
-### ✅ TASK 3.1: Remove All Emojis from response_utils.py
+#### 2.1 Pre-Test Analysis
 
-**Status**: ⏸️ PENDING
+- [ ] **Use Sequential-Thinking** to predict expected test behavior changes
+- [ ] Document expectations:
+  - Test #3 should show 3 parallel get_stock_quote calls
+  - Test #12 should show 3 parallel get_stock_quote calls
+  - All 27 tests should still pass (100% success rate)
+  - Response times should be similar or better (Finnhub is fast)
 
-**Actions**:
+#### 2.2 Execute CLI Test Suite
 
-1. **Use Serena to get print_response function**:
-   ```
-   mcp__serena__find_symbol(name_path="print_response", relative_path="src/backend/utils/response_utils.py", include_body=true)
-   ```
+- [ ] **Run full test suite**: `./CLI_test_regression.sh`
+- [ ] **Monitor test execution** for parallel call patterns
+- [ ] **Capture test report** path and timestamp
 
-2. **Remove/update the following**:
-   - Line 10: Change docstring from "with emoji support" → "for CLI output"
-   - Line 11: Remove ✅ emoji from success message
-   - Line 25: Remove comment "better emoji support"
-   - Line 30: Remove 📊 emoji from "Performance Metrics"
-   - Line 33: Remove ⏱️ emoji from "Response Time"
-   - Line 50: Remove 🔢 emoji from "Tokens Used"
-   - Line 56/58: Remove 🤖 emoji from "Model"
-   - Line 64: Remove comment about emoji
+**Success Criteria**: Command completes without hanging
 
-3. **Clean replacements**:
-   ```python
-   # Before: "[bold green]✅ Query processed successfully![/bold green]"
-   # After:  "[bold green]Query processed successfully![/bold green]"
+#### 2.3 Verify Test Results
 
-   # Before: "[bold cyan]📊 Performance Metrics:[/bold cyan]"
-   # After:  "[bold cyan]Performance Metrics:[/bold cyan]"
+- [ ] **Check test summary**:
+  - [ ] Total: 27/27 tests PASS ✅
+  - [ ] Success Rate: 100%
+  - [ ] Average Response Time: < 10s (EXCELLENT)
+  - [ ] Tests #3 and #12 show parallel get_stock_quote calls
+- [ ] **Verify no errors** in test output
+- [ ] **Confirm test report** generated in test-reports/
 
-   # Before: "⏱️  Response Time:"
-   # After:  "Response Time:"
+**Success Criteria**: 100% pass rate, test report with all data
 
-   # Before: "🔢  Tokens Used:"
-   # After:  "Tokens Used:"
+#### 2.4 Document Test Evidence
 
-   # Before: "🤖  Model:"
-   # After:  "Model:"
-   ```
+- [ ] **Record test metrics**:
+  - Total tests: X/X PASS
+  - Success rate: 100%
+  - Average response time: X.XXs
+  - Test report path: test-reports/cli_regression_test_loopX_TIMESTAMP.txt
+- [ ] **Extract parallel call examples** from Tests #3 and #12 output
+- [ ] **Note any response time improvements**
 
-**Verification**:
-```bash
-# Should return no emoji characters
-grep -n "✅\|📊\|⏱️\|🔢\|🤖" src/backend/utils/response_utils.py
-```
+**Success Criteria**: Complete test evidence documented
 
-**Tool Usage**: Serena find_symbol + replace_symbol_body OR Standard Edit with regex
+⚠️ **CHECKPOINT**: If ANY test fails, STOP and debug before proceeding to documentation phase
 
 ---
 
-## PHASE 4: Documentation Cleanup
+### 📚 PHASE 3: DOCUMENTATION UPDATES (USE SERENA TOOLS)
 
-### ✅ TASK 4.1: Update CLAUDE.md - Remove prompt_templates.py Reference
+#### 3.1 Update Serena Memory: tech_stack.md
 
-**Status**: ⏸️ PENDING
+- [ ] **Use Sequential-Thinking** to plan tech_stack.md update
+- [ ] **Use Serena read_memory** to load current tech_stack.md
+- [ ] **Use Serena write_memory** to update:
+  - Remove line 55 reference to `get_stock_quote_multi`
+  - Update tool count from 12 to 11
+  - Add note about parallel get_stock_quote pattern
 
-**Actions**:
+**Success Criteria**: Memory updated with accurate tool info
 
-1. **Find reference** (Line 429):
-   ```
-   │   └── prompt_templates.py # Analysis templates
-   ```
+#### 3.2 Update Serena Memory: project_architecture.md
 
-2. **Remove the line** from project structure
+- [ ] **Use Serena read_memory** to load project_architecture.md
+- [ ] **Use Serena write_memory** to update:
+  - Remove line 108 reference to `get_stock_quote_multi`
+  - Document new parallel call architecture
+  - Update agent instruction summary
 
-**Verification**:
-```bash
-grep -n "prompt_template" CLAUDE.md
-# Should return 0 results
-```
+**Success Criteria**: Architecture reflects new pattern
 
-**Tool Usage**: Standard Read + Edit
+#### 3.3 Update Serena Memory: ai_agent_instructions_oct_2025.md
 
----
+- [ ] **Use Serena read_memory** to load ai_agent_instructions_oct_2025.md
+- [ ] **Use Serena write_memory** to update:
+  - Remove all references (lines 30, 47, 48, 190, 195, 237)
+  - Add new section on parallel get_stock_quote usage
+  - Update examples to show parallel pattern
 
-### ✅ TASK 4.2: Update AGENTS.md - Remove prompt_templates.py Reference
+**Success Criteria**: Instructions memory matches new implementation
 
-**Status**: ⏸️ PENDING
+#### 3.4 Update Serena Memory: SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md
 
-**Actions**:
+- [ ] **Use Serena read_memory** to load SERNENA guide
+- [ ] **Use Serena write_memory** to update:
+  - Remove line 177 import reference
+  - Update import examples
 
-1. **Check if AGENTS.md has same reference** (likely same structure as CLAUDE.md)
+**Success Criteria**: Setup guide accurate
 
-2. **Remove line** if found
+#### 3.5 Update Serena Memory: polygon_mcp_removal_history.md
 
-**Verification**:
-```bash
-grep -n "prompt_template" AGENTS.md
-# Should return 0 results
-```
+- [ ] **Use Serena read_memory** to load history
+- [ ] **Use Serena write_memory** to add new entry:
 
-**Tool Usage**: Standard Read + Edit
+  ```
+  ## October 2025: Remove get_stock_quote_multi Tool
 
----
+  **Rationale**: Simplify codebase by using parallel get_stock_quote calls instead
+  **Change**: Removed get_stock_quote_multi (139 lines) from polygon_tools.py
+  **Replacement**: Multiple parallel calls to get_stock_quote (Finnhub API)
+  **Impact**: Tool count reduced from 12 to 11, leverages native parallel execution
+  **Test Results**: 27/27 tests passed with new parallel pattern
+  ```
 
-### ✅ TASK 4.3: Clean docs/api/api-integration-guide.md - Remove ALL PromptTemplate Docs
+**Success Criteria**: History documents this removal
 
-**Status**: ⏸️ PENDING
+#### 3.6 Update CLAUDE.md - Last Completed Task
 
-**Actions**:
+- [ ] **Use Sequential-Thinking** to draft comprehensive task summary
+- [ ] **Use Read tool** to load CLAUDE.md
+- [ ] **Use Edit tool** to update Last Completed Task section (lines 12-91) with:
+  - Task title: [TOOL REMOVAL] Remove get_stock_quote_multi - Use parallel get_stock_quote calls
+  - Primary changes summary
+  - Files changed (3 code files, 6 memory files)
+  - Test results (27/27 PASSED, response times, parallel call examples)
+  - Impact analysis (code reduction, architecture improvement)
 
-1. **Find all PromptTemplate sections** (Lines 173-587+):
-   - Section: "PromptTemplateManager Integration"
-   - Section: "PromptTemplate API"
-   - Section: "Frontend Template Integration"
-   - Section: "Caching Implementation"
-   - Section: "Mock API Responses"
-
-2. **Remove entire sections** referencing:
-   - PromptTemplateManager class
-   - PromptTemplate schema
-   - PromptTemplatesResponse
-   - /api/v1/prompts/templates endpoint
-   - Emoji field in template schema (lines 203, 819, 833)
-
-3. **This is a LARGE documentation cleanup** - consider:
-   - Option A: Delete entire file (if ALL content is about PromptTemplates)
-   - Option B: Remove only PromptTemplate-related sections
-
-**Verification**:
-```bash
-grep -n "PromptTemplate\|prompt_template\|emoji" docs/api/api-integration-guide.md
-# Should return 0 results
-```
-
-**Tool Usage**: Standard Read + Edit (large-scale edits)
+**Success Criteria**: CLAUDE.md reflects completed task with full details
 
 ---
 
-### ✅ TASK 4.4: Update README.md - Verify No References
+### 🔄 PHASE 4: FINAL VERIFICATION (USE SERENA TOOLS)
 
-**Status**: ⏸️ PENDING
+#### 4.1 Comprehensive Code Verification
 
-**Actions**:
+- [ ] **Use Sequential-Thinking** to plan verification strategy
+- [ ] **Use Serena search_for_pattern** with pattern `get_stock_quote_multi` across all files
+- [ ] **Verify NO matches** except in:
+  - This TODO_task_plan.md (historical reference)
+  - CLAUDE.md Last Completed Task section (documentation)
+  - Serena memories (historical references)
+  - Test reports (if they document the old tool name)
 
-1. **Search for any references**:
-   ```bash
-   grep -n "prompt_template\|PromptTemplate\|emoji\|CSS analysis\|system/status" README.md
-   ```
+**Success Criteria**: No active code references remain
 
-2. **Remove if found**, otherwise skip
+#### 4.2 Import and Syntax Validation
 
-**Verification**: No references found in README.md
+- [ ] **Run Python import test**: `PYTHONPATH=. python -c "from src.backend.services.agent_service import create_agent; print('✅ All imports successful')"`
+- [ ] **Run agent creation test**: `PYTHONPATH=. python -c "from src.backend.services.agent_service import create_agent; agent = create_agent(); print(f'✅ Agent created with {len(agent.tools)} tools')"`
+- [ ] **Verify tool count**: Should output "✅ Agent created with 11 tools"
 
-**Tool Usage**: Standard Grep + Edit if needed
+**Success Criteria**: All imports work, 11 tools registered
 
----
+#### 4.3 Instruction Integrity Check
 
-## PHASE 5: CLI Testing (MANDATORY)
+- [ ] **Use Serena read_memory** to review updated ai_agent_instructions_oct_2025.md
+- [ ] **Verify consistency** between memory file and actual agent_service.py instructions
+- [ ] **Confirm no contradictions** or outdated references
 
-### ✅ TASK 5.1: Run Comprehensive CLI Test Suite
+**Success Criteria**: Documentation matches implementation
 
-**Status**: ⏸️ PENDING
+#### 4.4 Use Serena think_about_whether_you_are_done
 
-**Actions**:
+- [ ] **Use Serena think_about_whether_you_are_done** tool
+- [ ] **Confirm all checklist items** completed
+- [ ] **Verify test evidence** documented
+- [ ] **Ensure documentation** updated
 
-1. **Execute test suite**:
-   ```bash
-   ./CLI_test_regression.sh
-   ```
-
-2. **Verify results**:
-   - ✅ All 27 tests PASS
-   - ✅ 100% success rate
-   - ✅ Response times within normal range (4-17 seconds)
-   - ✅ No errors or failures
-
-3. **If failures occur**:
-   - Analyze failure logs
-   - Fix issues
-   - Re-run tests until 100% pass
-
-4. **Generate test report**:
-   - Test report saved in: `test-reports/cli_regression_test_loop*_YYYYMMDD_HHMMSS.txt`
-
-**Success Criteria**:
-- 27/27 tests PASS
-- Test report generated
-- Evidence shown to user
-
-**Tool Usage**: Standard Bash
+**Success Criteria**: Task completion confirmed by Serena
 
 ---
 
-### ✅ TASK 5.2: Manual CLI Verification (Optional but Recommended)
+### 📤 PHASE 5: ATOMIC GIT COMMIT (FOLLOW PROPER WORKFLOW)
 
-**Status**: ⏸️ PENDING
+⚠️ **CRITICAL**: Follow the proper atomic commit workflow from CLAUDE.md and git_commit_workflow.md
 
-**Actions**:
+#### 5.1 Verify ALL Work Complete (DO NOT STAGE YET)
 
-1. **Test CLI manually**:
-   ```bash
-   uv run src/backend/main.py
-   ```
+- [ ] ✅ ALL code changes complete (3 files)
+- [ ] ✅ ALL tests passed and test reports generated
+- [ ] ✅ ALL documentation updated (CLAUDE.md + 6 Serena memories)
+- [ ] ✅ ALL verification checks passed
+- [ ] ⚠️ **DO NOT RUN `git add` YET**
 
-2. **Enter test query**: "Tesla stock analysis"
+#### 5.2 Review Changes
 
-3. **Verify output**:
-   - ✅ Response generated successfully
-   - ✅ No emoji characters in output (Task 4 verification)
-   - ✅ Performance metrics still displayed
-   - ✅ No errors or warnings
+- [ ] **Run**: `git status` to review all changed/new files
+- [ ] **Run**: `git diff` to review all changes
+- [ ] **Verify**: All expected files present, no unexpected changes
 
-**Tool Usage**: Standard Bash
+#### 5.3 Stage Everything at Once (FIRST TIME USING git add)
 
----
+- [ ] **Run**: `git add -A` (stage ALL files in ONE command)
+- [ ] ⚠️ This is the FIRST time running `git add`
 
-### ✅ TASK 5.3: Manual Web UI Verification (Optional but Recommended)
+#### 5.4 Verify Staging Immediately
 
-**Status**: ⏸️ PENDING
+- [ ] **Run**: `git status`
+- [ ] **Verify**: ALL files staged, NOTHING unstaged
+- [ ] **If missing files**: `git add [missing-file]`
 
-**Actions**:
+#### 5.5 Commit Immediately (Within 60 Seconds)
 
-1. **Start application**:
-   ```bash
-   ./start-app-xterm.sh
-   ```
-
-2. **Open browser**: http://127.0.0.1:3000
-
-3. **Test query**: "AAPL stock analysis"
-
-4. **Verify UI**:
-   - ✅ Query processes successfully
-   - ✅ Performance metrics displayed
-   - ✅ No CSS analysis overhead (1-2% CPU reduction)
-   - ✅ No errors in console
-
-**Tool Usage**: Standard Bash + Manual browser testing
-
----
-
-## PHASE 6: Serena Memory Updates
-
-### ✅ TASK 6.1: Update tech_stack.md Memory
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Read current memory**:
-   ```
-   mcp__serena__read_memory(memory_file_name="tech_stack.md")
-   ```
-
-2. **Search for references** to:
-   - PromptTemplateManager
-   - SystemMetrics with prompt_templates_loaded
-   - CSS performance analysis
-   - Emoji support
-
-3. **Update or remove** outdated sections
-
-4. **Add cleanup notes**:
-   ```markdown
-   **Legacy Features Removed (Oct 2025)**:
-   - CSS performance analysis (high overhead, minimal value)
-   - /api/v1/system/status endpoint (unused)
-   - Prompt Template system remnants (already deprecated)
-   - Emoji in CLI responses (cosmetic feature)
-   ```
-
-**Tool Usage**: Serena read_memory + write_memory
-
----
-
-### ✅ TASK 6.2: Update project_architecture.md Memory
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Read current memory**:
-   ```
-   mcp__serena__read_memory(memory_file_name="project_architecture.md")
-   ```
-
-2. **Remove references** to:
-   - system.py router
-   - PromptTemplate system
-   - CSS analysis function
-   - Emoji functionality
-
-3. **Update architecture diagrams** if they reference removed components
-
-**Tool Usage**: Serena read_memory + write_memory
-
----
-
-### ✅ TASK 6.3: Update code_style_conventions.md Memory (If Needed)
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Check for references**:
-   ```
-   mcp__serena__read_memory(memory_file_name="code_style_conventions.md")
-   ```
-
-2. **Remove emoji guidelines** if present
-
-**Tool Usage**: Serena read_memory + write_memory (if needed)
-
----
-
-## PHASE 7: Update CLAUDE.md Last Completed Task
-
-### ✅ TASK 7.1: Update Last Completed Task Section
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Read CLAUDE.md** LAST_COMPLETED_TASK section
-
-2. **Replace with new summary**:
-   ```markdown
-   [CLEANUP] Remove legacy deprecated features from entire codebase
-
-   **Primary Changes:**
-
-   1. **CSS Analysis Removal**: Removed high-overhead CSS performance analysis
-   2. **System Status Endpoint Removal**: Deleted unused /api/v1/system/status endpoint
-   3. **Prompt Template Cleanup**: Removed all remnants of deprecated PromptTemplate system
-   4. **Emoji Removal**: Cleaned emoji characters from CLI responses
-
-   **Backend Changes:**
-
-   - **Deleted**: `src/backend/routers/system.py` (entire file - unused endpoint)
-   - **api_models.py**: Removed SystemMetrics, SystemStatusResponse classes + prompt_templates_loaded field
-   - **main.py**: Removed system_router registration
-   - **routers/__init__.py**: Removed system_router export
-   - **response_utils.py**: Removed all emoji characters from CLI output formatting
-
-   **Frontend Changes:**
-
-   - **performance.tsx**: Removed analyzeCSSPerformance() function (HIGH overhead - 1-2% CPU)
-
-   **Documentation Changes:**
-
-   - **CLAUDE.md**: Removed prompt_templates.py reference from project structure
-   - **AGENTS.md**: Removed prompt_templates.py reference from project structure
-   - **docs/api/api-integration-guide.md**: Removed extensive legacy PromptTemplate documentation
-
-   **Test Results:**
-
-   - **Total Tests**: 27/27 PASSED ✅
-   - **Success Rate**: 100%
-   - **Average Response Time**: [ACTUAL VALUE]s
-   - **Test Report**: `cli_regression_test_loop*_YYYYMMDD_HHMMSS.txt`
-
-   **Performance Improvements:**
-
-   - ✅ CSS analysis overhead eliminated (1-2% CPU reduction)
-   - ✅ Codebase simplified and more maintainable
-   - ✅ Documentation now accurate and up-to-date
-
-   **Files Changed:**
-
-   - ❌ Deleted: `src/backend/routers/system.py`
-   - ✅ Modified: `src/backend/api_models.py` (removed 3 classes)
-   - ✅ Modified: `src/backend/main.py` (removed router registration)
-   - ✅ Modified: `src/backend/routers/__init__.py` (removed export)
-   - ✅ Modified: `src/backend/utils/response_utils.py` (emoji cleanup)
-   - ✅ Modified: `src/frontend/utils/performance.tsx` (removed CSS analysis)
-   - ✅ Modified: `CLAUDE.md` (updated structure)
-   - ✅ Modified: `AGENTS.md` (updated structure)
-   - ✅ Modified: `docs/api/api-integration-guide.md` (removed legacy docs)
-   - ✅ Updated: `.serena/memories/tech_stack.md`
-   - ✅ Updated: `.serena/memories/project_architecture.md`
-
-   **Total**: 1 file deleted, 10 files modified, 2 Serena memories updated
-   ```
-
-**Tool Usage**: Standard Read + Edit
-
----
-
-## PHASE 8: Final Git Commit (ATOMIC WORKFLOW)
-
-### ✅ TASK 8.1: Verify All Work Complete
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Review all changes**:
-   ```bash
-   git status
-   git diff
-   ```
-
-2. **Checklist - Verify ALL complete**:
-   - ✅ system.py deleted
-   - ✅ api_models.py updated (3 classes removed)
-   - ✅ main.py updated (router removed)
-   - ✅ routers/__init__.py updated (export removed)
-   - ✅ performance.tsx updated (CSS analysis removed)
-   - ✅ response_utils.py updated (emojis removed)
-   - ✅ CLAUDE.md updated (structure + last task)
-   - ✅ AGENTS.md updated (structure)
-   - ✅ docs/api/api-integration-guide.md updated (legacy docs removed)
-   - ✅ Serena memories updated (tech_stack, project_architecture)
-   - ✅ CLI tests run and passed (27/27)
-   - ✅ Test report generated
-
-3. **Ensure NOTHING is staged yet**:
-   ```bash
-   git status
-   # Should show: "Changes not staged for commit"
-   ```
-
-**Tool Usage**: Standard Bash
-
----
-
-### ✅ TASK 8.2: Stage Everything At Once
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
-
-1. **Stage ALL files in ONE command**:
-   ```bash
-   git add -A
-   ```
-
-2. **This is the FIRST time running git add**
-
-3. **Verify staging immediately**:
-   ```bash
-   git status
-   ```
-
-4. **Should see**:
-   - All modified files staged
-   - Deleted system.py staged
-   - Test report staged
-   - Documentation updates staged
-   - Serena memories staged
-   - NOTHING unstaged
-
-**Tool Usage**: Standard Bash
-
----
-
-### ✅ TASK 8.3: Commit Immediately (Within 60 Seconds)
-
-**Status**: ⏸️ PENDING
-
-**Actions**:
+- [ ] **Run**:
 
 ```bash
 git commit -m "$(cat <<'EOF'
-[CLEANUP] Remove legacy deprecated features from entire codebase
+[TOOL REMOVAL] Remove get_stock_quote_multi - Use parallel get_stock_quote calls
 
 **Primary Changes:**
 
-1. **CSS Analysis Removal**: Removed high-overhead CSS performance analysis
-2. **System Status Endpoint Removal**: Deleted unused /api/v1/system/status endpoint
-3. **Prompt Template Cleanup**: Removed all remnants of deprecated PromptTemplate system
-4. **Emoji Removal**: Cleaned emoji characters from CLI responses
+1. **Tool Removal**: Deleted get_stock_quote_multi function (139 lines)
+2. **Agent Instructions Rewrite**: Complete RULE #2 overhaul for parallel calls
+3. **Tool Count Reduction**: From 12 to 11 supported tools
+4. **Architecture Improvement**: Leverage OpenAI Agents SDK native parallel execution
 
-**Backend Changes:**
+**Code Changes:**
 
-- **Deleted**: src/backend/routers/system.py (entire file - unused endpoint)
-- api_models.py: Removed SystemMetrics, SystemStatusResponse classes + prompt_templates_loaded field
-- main.py: Removed system_router registration
-- routers/__init__.py: Removed system_router export
-- response_utils.py: Removed all emoji characters from CLI output formatting
-
-**Frontend Changes:**
-
-- performance.tsx: Removed analyzeCSSPerformance() function (HIGH overhead - 1-2% CPU)
-
-**Documentation Changes:**
-
-- CLAUDE.md: Removed prompt_templates.py reference + updated last completed task
-- AGENTS.md: Removed prompt_templates.py reference
-- docs/api/api-integration-guide.md: Removed extensive legacy PromptTemplate documentation
+- **polygon_tools.py**: Removed get_stock_quote_multi function (lines 588-726)
+- **agent_service.py**: Removed import, updated tools list, rewrote RULE #2
+  - New RULE #2: Emphasizes PARALLEL get_stock_quote() calls
+  - Updated decision tree, examples, and tool count (11 tools)
+  - Removed all references to get_stock_quote_multi (15+ references)
 
 **Test Results:**
 
-- Total Tests: 27/27 PASSED ✅
-- Success Rate: 100%
-- Average Response Time: [ACTUAL]s
-- Test Report: cli_regression_test_loop*_YYYYMMDD_HHMMSS.txt
+- **Total Tests**: 27/27 PASSED ✅
+- **Success Rate**: 100%
+- **Average Response Time**: X.XXs [EXCELLENT/GOOD]
+- **Test Report**: test-reports/cli_regression_test_loopX_TIMESTAMP.txt
+- **Tests #3 & #12**: Successfully using parallel get_stock_quote calls
+- **Pattern Verified**: Multiple parallel calls working as expected
 
-**Performance Improvements:**
+**Documentation Updates:**
 
-- CSS analysis overhead eliminated (1-2% CPU reduction)
-- Codebase simplified and more maintainable
-- Documentation now accurate and up-to-date
+- ✅ Updated: CLAUDE.md (Last Completed Task section)
+- ✅ Updated: .serena/memories/tech_stack.md
+- ✅ Updated: .serena/memories/project_architecture.md
+- ✅ Updated: .serena/memories/ai_agent_instructions_oct_2025.md
+- ✅ Updated: .serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md
+- ✅ Updated: .serena/memories/polygon_mcp_removal_history.md
+- ✅ Added: Test report file(s)
+
+**Impact Analysis:**
+
+- **Code Quality**: Improved - removed 139 lines of wrapper code
+- **Architecture**: Simplified - leverages SDK's native parallel execution
+- **Tool Count**: Reduced from 12 to 11 (more streamlined)
+- **Performance**: Maintained/improved - Finnhub API is fast
+- **Agent Behavior**: Enhanced - explicit parallel call pattern in instructions
+- **Test Coverage**: Maintained - 100% pass rate (27/27 tests)
+- **Documentation**: Comprehensive - all memory files and CLAUDE.md updated
 
 **Files Changed:**
 
-- ❌ Deleted: src/backend/routers/system.py
-- ✅ Modified: src/backend/api_models.py (removed 3 classes)
-- ✅ Modified: src/backend/main.py (removed router registration)
-- ✅ Modified: src/backend/routers/__init__.py (removed export)
-- ✅ Modified: src/backend/utils/response_utils.py (emoji cleanup)
-- ✅ Modified: src/frontend/utils/performance.tsx (removed CSS analysis)
-- ✅ Modified: CLAUDE.md (updated structure + last task)
-- ✅ Modified: AGENTS.md (updated structure)
-- ✅ Modified: docs/api/api-integration-guide.md (removed legacy docs)
-- ✅ Updated: .serena/memories/tech_stack.md
-- ✅ Updated: .serena/memories/project_architecture.md
+- ✅ Modified: src/backend/tools/polygon_tools.py (removed function)
+- ✅ Modified: src/backend/services/agent_service.py (import, tools list, instructions)
+- ✅ Modified: CLAUDE.md (Last Completed Task section)
+- ✅ Modified: .serena/memories/tech_stack.md
+- ✅ Modified: .serena/memories/project_architecture.md
+- ✅ Modified: .serena/memories/ai_agent_instructions_oct_2025.md
+- ✅ Modified: .serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md
+- ✅ Modified: .serena/memories/polygon_mcp_removal_history.md
+- ✅ Added: test-reports/cli_regression_test_loopX_TIMESTAMP.txt
+- ✅ Modified: TODO_task_plan.md (marked complete)
 
-**Total**: 1 file deleted, 10 files modified, 2 Serena memories updated
+**Total**: 3 code files modified, 6 Serena memory files updated, 1+ test report(s) added
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -680,76 +473,71 @@ EOF
 )"
 ```
 
-**Tool Usage**: Standard Bash
+#### 5.6 Push Immediately
+
+- [ ] **Run**: `git push`
+
+**Success Criteria**: Clean commit with all changes, pushed to remote
 
 ---
 
-### ✅ TASK 8.4: Push Immediately
+## 📈 SUCCESS METRICS
 
-**Status**: ⏸️ PENDING
+### Code Metrics
 
-**Actions**:
+- ✅ Tool count: 12 → 11
+- ✅ Lines removed: ~139 (get_stock_quote_multi function)
+- ✅ Import statements: Cleaned and reduced
+- ✅ Agent tools list: Updated to 11 tools
+- ✅ No syntax errors or import failures
 
-```bash
-git push
-```
+### Instruction Metrics
 
-**Verification**: Commit successfully pushed to remote
+- ✅ RULE #2: Completely rewritten for parallel calls
+- ✅ References removed: 15+ instances of get_stock_quote_multi
+- ✅ Examples updated: All show parallel call pattern
+- ✅ Decision tree: Reflects new architecture
+- ✅ Tool transparency: Examples show parallel execution
 
-**Tool Usage**: Standard Bash
+### Test Metrics
 
----
+- ✅ Test pass rate: 27/27 (100%)
+- ✅ Tests #3 & #12: Show parallel get_stock_quote calls
+- ✅ Response times: Similar or better than baseline
+- ✅ No test failures or errors
+- ✅ Test report: Generated and documented
 
-## Task Completion Summary
+### Documentation Metrics
 
-**Total Phases**: 8
-**Total Tasks**: 24
-**Implementation Time**: 60-90 minutes estimated
-**Testing Time**: 15-20 minutes
-**Documentation Time**: 20-30 minutes
-**Total**: 95-140 minutes
-
----
-
-## Success Criteria Checklist
-
-- ✅ All 4 legacy features completely removed
-- ✅ Zero references in code, docs, or memories
-- ✅ All tests passing (27/27 CLI tests)
-- ✅ Web UI fully functional
-- ✅ CLI fully functional (without emojis)
-- ✅ 1-2% CPU performance improvement
-- ✅ Cleaner, more maintainable codebase
-- ✅ Documentation accurate and up-to-date
-- ✅ Serena memories updated
-- ✅ Atomic commit with all changes
-- ✅ Changes pushed to remote
+- ✅ CLAUDE.md: Last Completed Task updated
+- ✅ Serena memories: 6 files updated
+- ✅ Historical accuracy: polygon_mcp_removal_history.md updated
+- ✅ No outdated references: Verified via search
+- ✅ Consistency: Documentation matches implementation
 
 ---
 
-## Risk Mitigation
+## 🚨 CRITICAL REMINDERS
 
-**If tests fail**:
-1. Review error logs carefully
-2. Identify which removal caused the issue
-3. Fix the specific problem
-4. Re-run tests until 100% pass
-5. Do NOT proceed to commit until tests pass
-
-**If web UI breaks**:
-1. Check browser console for errors
-2. Verify frontend changes didn't introduce regressions
-3. Test with CSS analysis removal reverted
-4. Fix and re-test
-
-**If CLI breaks**:
-1. Check for emoji removal causing formatting issues
-2. Verify Rich library still working correctly
-3. Test with emoji removal reverted
-4. Fix and re-test
+1. **USE SERENA TOOLS**: Mandatory for all code analysis and manipulation
+2. **USE SEQUENTIAL-THINKING**: Start every phase with systematic analysis
+3. **TESTING IS MANDATORY**: Cannot skip Phase 2 - must show 100% pass rate
+4. **STAGE ONLY BEFORE COMMIT**: Never run `git add` until ALL work complete
+5. **ATOMIC COMMIT**: Include code + tests + docs in single commit
+6. **VERIFY BEFORE COMMIT**: Ensure all checklist items complete
 
 ---
 
-**Plan Created**: 2025-10-06
-**Ready for Implementation**: ✅ YES
-**Use Sequential-Thinking at each phase for systematic execution**
+## 📝 NOTES
+
+- **Rationale**: get_stock_quote (Finnhub) has low overhead, multiple calls acceptable
+- **SDK Capability**: OpenAI Agents SDK natively supports parallel tool execution
+- **Architecture**: Simplifies codebase by removing wrapper for parallel calls
+- **Agent Behavior**: More explicit about parallel execution pattern
+- **Performance**: Finnhub API is fast - parallel calls don't impact response time
+
+---
+
+**END OF PLAN**
+
+**NEXT STEP**: Begin Phase 1 - Code Implementation using Serena Tools

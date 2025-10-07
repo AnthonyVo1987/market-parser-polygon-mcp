@@ -199,7 +199,10 @@
       "Bash(do if [ -f \"$file\" ])",
       "Bash(do echo \"=== Loop $i ===\")",
       "Bash(find:*)",
-      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.main import app; print(''✅ Backend imports successful'')\")"
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.main import app; print(''✅ Backend imports successful'')\")",
+      "Bash(PYTHONPATH=. python3 -c \"from src.backend.services.agent_service import create_agent; print(''✅ All imports successful'')\")",
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.services.agent_service import create_agent; print(''✅ All imports successful'')\")",
+      "Bash(PYTHONPATH=. uv run python -c \"from src.backend.services.agent_service import create_agent; agent = create_agent(); print(f''✅ Agent created with {len(agent.tools)} tools'')\")"
     ],
     "deny": [],
     "ask": [],
