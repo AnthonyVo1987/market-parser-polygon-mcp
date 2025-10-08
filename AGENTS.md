@@ -12,78 +12,57 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[INFRASTRUCTURE] Remove AI Model Selector + Fix Token Display + Fix Performance Indicators
+## OpenAI Prompt Caching Integration
 
-**Primary Changes:**
+**Status:** ✅ Implemented (October 2025)
+**Feature:** OpenAI API Prompt Caching for cost reduction and latency improvement
 
-1. **AI Model Selector Removal**: Completely removed model selection infrastructure (GPT-5-Nano only)
-2. **Token Display Enhancement**: Split total tokens into Input/Output/Total display
-3. **Performance Indicators Fix**: Fixed FCP/LCP/CLS stuck on "Calculating..."
+### How It Works
 
-**Backend Changes:**
+1. **Automatic Caching**: Prompts >1024 tokens are automatically cached by OpenAI
+2. **Cache Duration**: 5-10 minutes of inactivity, maximum 1 hour
+3. **Cache Scope**: Organization-level (shared within same OpenAI organization)
+4. **Agent Instructions**: Cached on EVERY request (massive cost savings)
 
-- **Deleted**: `src/backend/routers/models.py` (entire file - model selection endpoints)
-- **api_models.py**: Removed 6 model selection classes (CustomModel, AIModelId, AIModel, ModelListResponse, ModelSelectionRequest, ModelSelectionResponse)
-- **api_models.py**: Added `inputTokens` and `outputTokens` fields to ResponseMetadata (kept `tokenCount` for backward compatibility)
-- **token_utils.py**: Added `extract_token_usage_from_context_wrapper()` with dual naming convention support (input/output and prompt/completion)
-- **routers/chat.py**: Updated to extract and populate all three token fields (total, input, output)
-- **main.py**: Removed models_router registration
-- **routers/\_\_init\_\_.py**: Removed models_router export
+### Token Display
 
-**Frontend Changes:**
+**CLI Output:**
 
-- **Deleted**: `src/frontend/types/ai_models.ts` (entire file - model types)
-- **chat_OpenAI.ts**: Added `inputTokens` and `outputTokens` to MessageMetadata and ResponseMetadata interfaces
-- **ChatInterface_OpenAI.tsx**: Removed model selection code, added token metadata mapping
-- **ChatMessage_OpenAI.tsx**: Updated token display with "Input: X | Output: Y | Total: Z" format and backward compatibility fallback
-- **api_OpenAI.ts**: Removed model parameter from sendChatMessage(), removed fetchModels() and selectModel() functions
-- **performance.tsx**: Fixed metrics initialization from `0` to `undefined` for proper "Calculating..." display
+```
+   Tokens Used: 16,413 (Input: 16,183, Output: 230) | Cached Input: 7,936
+```
 
-**Token Usage Architecture:**
+**GUI Output:**
 
-- **Extraction**: `context_wrapper.usage` object from OpenAI Agents SDK
-- **Compatibility**: Supports both `input_tokens`/`output_tokens` AND `prompt_tokens`/`completion_tokens`
-- **API Fields**: `tokenCount` (deprecated), `inputTokens`, `outputTokens`
-- **Display Logic**: Shows separate counts with fallback to total if input/output unavailable
+```
+Input: 16,183 | Output: 230 | Total: 16,413 | Cached Input: 7,936
+```
 
-**Performance Indicators Fix:**
+### Cost Savings
 
-- **Issue**: FCP, LCP, CLS initialized to `0` causing falsy evaluation
-- **Fix**: Changed initialization to `undefined` for proper conditional rendering
-- **Result**: UI correctly shows "Calculating..." until actual metrics are measured
+- **Cached Input Tokens**: 50% cost reduction
+- **Latency Improvement**: Up to 80% faster for cached prompts >10K tokens
+- **Typical Savings**: 30-50% cost reduction in persistent sessions
 
-**Test Results:**
+### Implementation Details
 
-- **Total Tests**: 27/27 PASSED ✅
-- **Success Rate**: 100%
-- **Average Response Time**: 7.34s ⭐ EXCELLENT
-- **Response Time Range**: 4.11s - 17.14s
-- **Test Report**: `cli_regression_test_loop1_20251005_181607.txt`
+- **Backend**: `token_utils.py` extracts cached tokens from OpenAI Agents SDK
+- **API Models**: `api_models.py` includes `cachedInputTokens` and `cachedOutputTokens`
+- **CLI Display**: `response_utils.py` shows cached token metrics
+- **Frontend**: `ChatMessage_OpenAI.tsx` displays cached tokens in GUI
 
-**Documentation Updates:**
+### Best Practices
 
-✅ Updated tech_stack.md with token tracking architecture
-✅ Updated tech_stack.md with performance indicators fix
-✅ Updated tech_stack.md with model selector removal details
-✅ Documented OpenAI API dual naming convention support
+1. **Prompt Structure**: Static content (instructions, tools) at START, dynamic (user query) at END
+2. **Tool Ordering**: Keep tools in same order across requests
+3. **Message History**: Append new messages to END of array
+4. **Cache Invalidation**: Any change to static content clears cache
 
-**Files Changed:**
+### References
 
-- ❌ Deleted: `src/backend/routers/models.py`
-- ❌ Deleted: `src/frontend/types/ai_models.ts`
-- ✅ Modified: `src/backend/api_models.py` (removed 6 classes, added 2 fields)
-- ✅ Modified: `src/backend/utils/token_utils.py` (added new extraction function)
-- ✅ Modified: `src/backend/routers/chat.py` (token extraction logic)
-- ✅ Modified: `src/backend/main.py` (removed router)
-- ✅ Modified: `src/backend/routers/__init__.py` (removed export)
-- ✅ Modified: `src/frontend/types/chat_OpenAI.ts` (added 2 fields to 2 interfaces)
-- ✅ Modified: `src/frontend/components/ChatInterface_OpenAI.tsx` (removed model code, added token mapping)
-- ✅ Modified: `src/frontend/components/ChatMessage_OpenAI.tsx` (new token display format)
-- ✅ Modified: `src/frontend/services/api_OpenAI.ts` (removed model functions)
-- ✅ Modified: `src/frontend/utils/performance.tsx` (metrics initialization fix)
-- ✅ Updated: `.serena/memories/tech_stack.md`
-
-**Total**: 2 files deleted, 11 files modified
+- **OpenAI Docs**: <https://platform.openai.com/docs/guides/prompt-caching>
+- **Implementation Example**: examples/Prompt_Caching101.ipynb
+- **Serena Guide**: `.serena/memories/prompt_caching_guide.md`
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -230,28 +209,34 @@ SUCCESS CRITERIA:
    - ⚠️ **DO NOT RUN `git add` YET**
 
 2. **VERIFY EVERYTHING IS COMPLETE**:
+
    ```bash
    git status  # Review ALL changed/new files
    git diff    # Review ALL changes
    ```
 
 3. **STAGE EVERYTHING AT ONCE**:
+
    ```bash
    git add -A  # Stage ALL files in ONE command
    ```
+
    - ⚠️ This is the FIRST time you run `git add`
 
 4. **VERIFY STAGING IMMEDIATELY**:
+
    ```bash
    git status  # Verify ALL files staged, NOTHING unstaged
    ```
 
 5. **COMMIT IMMEDIATELY** (within 60 seconds):
+
    ```bash
    git commit -m "message"
    ```
 
 6. **PUSH IMMEDIATELY**:
+
    ```bash
    git push
    ```
@@ -403,7 +388,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run ./test_cli_regression.sh
+# Testing: Run ./test_cli_regression.sh to execute 35-test suite
 
 # Code quality
 npm run lint              # All linting
@@ -453,14 +438,3 @@ netstat -tlnp | grep :8000
 
 - Ensure both `POLYGON_API_KEY` and `OPENAI_API_KEY` are set in `.env`
 - Verify API keys are valid and have sufficient credits
-
-## Disclaimer
-
-**Warning:** This application uses AI and large language models.
-Outputs may contain inaccuracies and should not be treated as financial
-advice. Always verify information independently before making financial
-decisions. Use for informational purposes only.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
