@@ -136,5 +136,7 @@ class ResponseMetadata(BaseModel):
     )  # Deprecated: use input/output tokens
     input_tokens: Optional[int] = Field(None, alias="inputTokens")
     output_tokens: Optional[int] = Field(None, alias="outputTokens")
+    cached_input_tokens: Optional[int] = Field(None, alias="cachedInputTokens")
+    cached_output_tokens: Optional[int] = Field(None, alias="cachedOutputTokens")
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=None)

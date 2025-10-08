@@ -173,6 +173,8 @@ const ChatInterface_OpenAI = memo(function ChatInterface_OpenAI() {
                 tokenCount: apiResponse.metadata.tokenCount,
                 inputTokens: apiResponse.metadata.inputTokens,
                 outputTokens: apiResponse.metadata.outputTokens,
+                cachedInputTokens: apiResponse.metadata.cachedInputTokens,
+                cachedOutputTokens: apiResponse.metadata.cachedOutputTokens,
                 model: apiResponse.metadata.model,
                 processingTime: apiResponse.metadata.processingTime,
                 requestId: apiResponse.metadata.requestId,

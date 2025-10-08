@@ -281,6 +281,18 @@ const ChatMessage_OpenAI = memo(
                     Input: {message.metadata.inputTokens.toLocaleString()} |
                     Output: {message.metadata.outputTokens.toLocaleString()} |
                     Total: {(message.metadata.inputTokens + message.metadata.outputTokens).toLocaleString()}
+                    {(message.metadata.cachedInputTokens || message.metadata.cachedOutputTokens) && (
+                      <>
+                        {' | '}
+                        {message.metadata.cachedInputTokens ? (
+                          <>Cached Input: {message.metadata.cachedInputTokens.toLocaleString()}</>
+                        ) : null}
+                        {message.metadata.cachedInputTokens && message.metadata.cachedOutputTokens ? ' | ' : null}
+                        {message.metadata.cachedOutputTokens ? (
+                          <>Cached Output: {message.metadata.cachedOutputTokens.toLocaleString()}</>
+                        ) : null}
+                      </>
+                    )}
                   </span>
                 ) : message.metadata.tokenCount ? (
                   <span className='footer-metric'>

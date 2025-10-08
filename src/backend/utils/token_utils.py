@@ -26,8 +26,9 @@ def extract_token_usage_from_context_wrapper(result: Any) -> Optional[Dict[str, 
         result: The result object from Runner.run()
 
     Returns:
-        dict or None: Dictionary with 'total_tokens', 'input_tokens', and 'output_tokens'
-                      if available, None otherwise
+        dict or None: Dictionary with 'total_tokens', 'input_tokens', 'output_tokens',
+                      'cached_input_tokens', and 'cached_output_tokens' if available,
+                      None otherwise
     """
     try:
         if hasattr(result, "context_wrapper") and result.context_wrapper:
@@ -42,11 +43,38 @@ def extract_token_usage_from_context_wrapper(result: Any) -> Optional[Dict[str, 
                 usage, "completion_tokens", None
             )
 
+            # Extract cached tokens from OpenAI Prompt Caching API
+            # Responses API uses input_tokens_details.cached_tokens
+            # Chat Completions API uses prompt_tokens_details.cached_tokens
+            cached_input_tokens = None
+            cached_output_tokens = None
+
+            # Try Responses API format (OpenAI Agents SDK v0.2.9)
+            if hasattr(usage, "input_tokens_details") and usage.input_tokens_details:
+                cached_input_tokens = getattr(
+                    usage.input_tokens_details, "cached_tokens", 0
+                )
+
+            # Fallback to Chat Completions API format
+            if cached_input_tokens is None and hasattr(usage, "prompt_tokens_details"):
+                if usage.prompt_tokens_details:
+                    cached_input_tokens = getattr(
+                        usage.prompt_tokens_details, "cached_tokens", 0
+                    )
+
+            # Output cached tokens (if available in future API versions)
+            if hasattr(usage, "output_tokens_details") and usage.output_tokens_details:
+                cached_output_tokens = getattr(
+                    usage.output_tokens_details, "cached_tokens", 0
+                )
+
             if total is not None:
                 return {
                     "total_tokens": total,
                     "input_tokens": input_tokens,
                     "output_tokens": output_tokens,
+                    "cached_input_tokens": cached_input_tokens or 0,
+                    "cached_output_tokens": cached_output_tokens or 0,
                 }
     except Exception:
         # Graceful fallback if context_wrapper is not available

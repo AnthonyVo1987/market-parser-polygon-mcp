@@ -16,6 +16,8 @@ export interface MessageMetadata {
   readonly tokenCount?: number;  // Deprecated: use inputTokens and outputTokens
   readonly inputTokens?: number;
   readonly outputTokens?: number;
+  readonly cachedInputTokens?: number;
+  readonly cachedOutputTokens?: number;
   readonly model?: string;
   readonly processingTime?: number;
   readonly requestId?: string;
@@ -36,6 +38,8 @@ export interface ResponseMetadata {
   readonly tokenCount?: number;  // Deprecated: use inputTokens and outputTokens
   readonly inputTokens?: number;
   readonly outputTokens?: number;
+  readonly cachedInputTokens?: number;
+  readonly cachedOutputTokens?: number;
   readonly model?: string;
   readonly timestamp?: string;
   readonly processingTime?: number;

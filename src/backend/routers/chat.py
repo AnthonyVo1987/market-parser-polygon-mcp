@@ -96,6 +96,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         token_count = token_usage.get("total_tokens") if token_usage else None
         input_tokens = token_usage.get("input_tokens") if token_usage else None
         output_tokens = token_usage.get("output_tokens") if token_usage else None
+        cached_input_tokens = token_usage.get("cached_input_tokens") if token_usage else None
+        cached_output_tokens = token_usage.get("cached_output_tokens") if token_usage else None
 
         # Calculate processing time
         processing_time = time.perf_counter() - start_time
@@ -109,6 +111,8 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             tokenCount=token_count,  # Deprecated: kept for backward compatibility
             inputTokens=input_tokens,
             outputTokens=output_tokens,
+            cachedInputTokens=cached_input_tokens,
+            cachedOutputTokens=cached_output_tokens,
         )
 
         # Log performance metrics for baseline measurement and monitoring

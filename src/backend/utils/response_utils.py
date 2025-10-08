@@ -34,26 +34,34 @@ def print_response(result):
             console.print(f"   Response Time: {result.metadata.processing_time:.3f}s")
 
         # Extract token information using official OpenAI Agents SDK
-        token_count = None
-        input_tokens = None
-        output_tokens = None
+        from .token_utils import extract_token_usage_from_context_wrapper
 
-        # Try to get token data from official SDK context_wrapper
-        if hasattr(result, "context_wrapper") and result.context_wrapper:
-            usage = result.context_wrapper.usage
-            if hasattr(usage, "total_tokens"):
-                token_count = usage.total_tokens
-            if hasattr(usage, "input_tokens"):
-                input_tokens = usage.input_tokens
-            if hasattr(usage, "output_tokens"):
-                output_tokens = usage.output_tokens
+        token_usage = extract_token_usage_from_context_wrapper(result)
 
-        # Display token information
-        if token_count:
-            token_display = f"   Tokens Used: {token_count:,}"
-            if input_tokens and output_tokens:
-                token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
-            console.print(token_display)
+        if token_usage:
+            token_count = token_usage.get("total_tokens")
+            input_tokens = token_usage.get("input_tokens")
+            output_tokens = token_usage.get("output_tokens")
+            cached_input = token_usage.get("cached_input_tokens", 0)
+            cached_output = token_usage.get("cached_output_tokens", 0)
+
+            # Display token information with caching metrics
+            if token_count:
+                token_display = f"   Tokens Used: {token_count:,}"
+
+                if input_tokens and output_tokens:
+                    token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
+
+                    # Show cache hit information if any tokens were cached
+                    if cached_input > 0 or cached_output > 0:
+                        cache_parts = []
+                        if cached_input > 0:
+                            cache_parts.append(f"Cached Input: {cached_input:,}")
+                        if cached_output > 0:
+                            cache_parts.append(f"Cached Output: {cached_output:,}")
+                        token_display += f" | {', '.join(cache_parts)}"
+
+                console.print(token_display)
 
         # Display model information
         if hasattr(result.metadata, "model"):

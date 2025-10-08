@@ -279,10 +279,23 @@ FINNHUB_API_KEY=your_key_here
 - Adds `X-Process-Time` header
 - Logs performance metrics
 
-**Token Tracking:**
-- Extracts from OpenAI response metadata
-- Supports dual naming: `input_tokens`/`prompt_tokens`
-- Tracks input, output, total tokens
+**Token Tracking & Prompt Caching:**
+- **Extraction Flow**:
+  1. OpenAI Agents SDK captures usage in `context_wrapper.usage`
+  2. `token_utils.extract_token_usage_from_context_wrapper()` extracts:
+     - `total_tokens`, `input_tokens`, `output_tokens` (standard)
+     - `cached_input_tokens`, `cached_output_tokens` (prompt caching)
+  3. CLI: `response_utils.py` displays all token metrics
+  4. API: `chat.py` returns tokens via `ResponseMetadata` model
+  5. Frontend: `ChatMessage_OpenAI.tsx` displays in message footer
+- **Prompt Caching** (October 2025):
+  - Backend: `token_utils.py` extracts `input_tokens_details.cached_tokens`
+  - API Models: `ResponseMetadata` includes cached token fields
+  - CLI Display: Shows "Cached Input: X" when cache hits occur
+  - Frontend Display: Shows cached tokens in message metadata
+  - Cache Hit Indicator: `cached_tokens > 0` means cache was used
+  - Cost Optimization: Agent instructions cached on every request (>1024 tokens)
+  - Savings: 50% cost reduction on cached input tokens, up to 80% latency improvement
 
 **Frontend Display:**
 - Real-time performance metrics

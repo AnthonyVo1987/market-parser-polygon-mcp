@@ -46,6 +46,19 @@
 - **Token Tracking**: Dual naming convention support (input_tokens/prompt_tokens)
 - **Parallel Execution**: Native parallel tool execution for multiple ticker queries
 
+#### OpenAI Prompt Caching (October 2025)
+- **Status**: Fully Integrated
+- **API Version**: Responses API (OpenAI Agents SDK v0.2.9)
+- **Automatic Activation**: Prompts >1024 tokens cached automatically
+- **Cache Hit Detection**: `input_tokens_details.cached_tokens` field
+- **Cost Savings**: 50% on cached input tokens, up to 80% latency reduction
+- **Implementation**:
+  - `token_utils.py`: Extracts cached tokens from SDK usage object
+  - `response_utils.py`: CLI display with cache hit information
+  - `chat.py`: API includes cachedInputTokens/cachedOutputTokens
+  - Frontend: TypeScript types and React component display
+- **Cache Optimization**: Agent instructions cached (sent with every message)
+
 ### Direct API Tools (11 Total)
 
 **Finnhub Custom API (1 tool):**

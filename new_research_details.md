@@ -39,9 +39,14 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Comprehensive Documents audit and review to migrate ALL testing to use the new 'test_cli_regression.sh' script only.  Delete the old 'CLI_test_regression.sh' script too.  Make sure Serena memories are also updated to use 'test_cli_regression.sh' now.  'test_cli_regression.sh' is now the single source of truth for testing.  I have already made some updates and edits to files, but you need to verify any other fixes.  I left my changes uncomitted since there could be more fixes needed. I also deleted old test reports too. README.md is also severely outdated.
+1. Enhance & Update ALL AI Prompts\Code to integrate and take advantage of official OpenAI API Prompt Caching Feature & Techniques to Reduce latency and Costs
+- AI Agent instructions are sent for EVERY message, so there are massive benefits using Prompt Caching Techniques
+- AI Agent responses will also have massive benefits using Prompt Caching Techniques so that additional anlaysis can re-use cached data that was previously retreived from the Agent
+- User Input Requests may have some potential benefits using Prompt Caching Techniques, depending on the inputs. I.E., if User supplies external data, like a Full Options Chain and\or additional Technical Analysis Indicators not currently supported, AI Agent can benefit can use the cached user input data for their responses.  IE. If user only supplies a simple request that does NOT have any data that would help, such as "What is the current Market status", there are minimal benefits to caching.  So User Input Requests caching impact will very and be dynamic so the ROI can be unpredicatble
 
-2. Comprehensive Documents audit and review to remove any references to Playwright testing E2E etc because that has been deprecated and there will be a new GUI\Browser testing infrastructure TBD to be integrated later
+2. Update CLI & GUI Token Footer message output to also ouput and provide the Cached Input, Cached Output Tokens.  So now footer will have Token counts for Input, Output, Cached Input, Cached Output
+
+3. Comprehensive Document updates and serena memory updates with the new Prompt Caching Features
 
 
 ---

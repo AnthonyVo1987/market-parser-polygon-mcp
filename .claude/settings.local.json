@@ -199,7 +199,15 @@
       "mcp__docs-openai-agents__search_openai_agents_code",
       "Bash(kill:*)",
       "Bash(timeout:*)",
-      "Bash(echo \"Exit code: $?\")"
+      "Bash(echo \"Exit code: $?\")",
+      "mcp__docs-openai-python__search_openai_python_docs",
+      "mcp__docs-openai-cookbook__search_openai_cookbook_docs",
+      "mcp__docs-openai-python__search_openai_python_code",
+      "mcp__docs-openai-cookbook__search_openai_cookbook_code",
+      "mcp__docs-openai-cookbook__fetch_generic_url_content",
+      "mcp__docs-openai-python__fetch_generic_url_content",
+      "mcp__docs-openai-agents__fetch_generic_url_content",
+      "WebFetch(domain:platform.openai.com)"
     ],
     "deny": [],
     "ask": [],

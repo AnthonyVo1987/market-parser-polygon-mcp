@@ -82,6 +82,58 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 **Total**: 3 code files modified/created, 3 documentation files updated, 1 test report added
 <!-- LAST_COMPLETED_TASK_END -->
 
+## OpenAI Prompt Caching Integration
+
+**Status:** ✅ Implemented (October 2025)
+**Feature:** OpenAI API Prompt Caching for cost reduction and latency improvement
+
+### How It Works
+
+1. **Automatic Caching**: Prompts >1024 tokens are automatically cached by OpenAI
+2. **Cache Duration**: 5-10 minutes of inactivity, maximum 1 hour
+3. **Cache Scope**: Organization-level (shared within same OpenAI organization)
+4. **Agent Instructions**: Cached on EVERY request (massive cost savings)
+
+### Token Display
+
+**CLI Output:**
+
+```
+   Tokens Used: 16,413 (Input: 16,183, Output: 230) | Cached Input: 7,936
+```
+
+**GUI Output:**
+
+```
+Input: 16,183 | Output: 230 | Total: 16,413 | Cached Input: 7,936
+```
+
+### Cost Savings
+
+- **Cached Input Tokens**: 50% cost reduction
+- **Latency Improvement**: Up to 80% faster for cached prompts >10K tokens
+- **Typical Savings**: 30-50% cost reduction in persistent sessions
+
+### Implementation Details
+
+- **Backend**: `token_utils.py` extracts cached tokens from OpenAI Agents SDK
+- **API Models**: `api_models.py` includes `cachedInputTokens` and `cachedOutputTokens`
+- **CLI Display**: `response_utils.py` shows cached token metrics
+- **Frontend**: `ChatMessage_OpenAI.tsx` displays cached tokens in GUI
+
+### Best Practices
+
+1. **Prompt Structure**: Static content (instructions, tools) at START, dynamic (user query) at END
+2. **Tool Ordering**: Keep tools in same order across requests
+3. **Message History**: Append new messages to END of array
+4. **Cache Invalidation**: Any change to static content clears cache
+
+### References
+
+- **OpenAI Docs**: https://platform.openai.com/docs/guides/prompt-caching
+- **Implementation Example**: examples/Prompt_Caching101.ipynb
+- **Serena Guide**: `.serena/memories/prompt_caching_guide.md`
+
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
 🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
