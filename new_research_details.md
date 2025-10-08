@@ -39,15 +39,62 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Enhance & Update ALL AI Prompts\Code to integrate and take advantage of official OpenAI API Prompt Caching Feature & Techniques to Reduce latency and Costs
-- AI Agent instructions are sent for EVERY message, so there are massive benefits using Prompt Caching Techniques
-- AI Agent responses will also have massive benefits using Prompt Caching Techniques so that additional anlaysis can re-use cached data that was previously retreived from the Agent
-- User Input Requests may have some potential benefits using Prompt Caching Techniques, depending on the inputs. I.E., if User supplies external data, like a Full Options Chain and\or additional Technical Analysis Indicators not currently supported, AI Agent can benefit can use the cached user input data for their responses.  IE. If user only supplies a simple request that does NOT have any data that would help, such as "What is the current Market status", there are minimal benefits to caching.  So User Input Requests caching impact will very and be dynamic so the ROI can be unpredicatble
+1. Add new AI Agent Tool using direct Polygon Python API\SDK to get the upcoming options expirations dates based on the ticker and current date.  The new tool will be called 'get_options_expiration_dates', and let's set a max number of dates requested to be 10x dates MAX, but the input parameters can range between 1-10 next upcoming dates.  
 
-2. Update CLI & GUI Token Footer message output to also ouput and provide the Cached Input, Cached Output Tokens.  So now footer will have Token counts for Input, Output, Cached Input, Cached Output
+2. Update test script 'test_cli_regression.sh' with test cases changes that re-order the sequence, modifies some test cases, and adds new test cases for the new 'get_options_expiration_dates' tool for AI Agents:
+'
 
-3. Comprehensive Document updates and serena memory updates with the new Prompt Caching Features
+   # SPY Test Sequence
 
+    "Market Status"
+    "Current Price: \$SPY"
+    "Today's Closing Price: \$SPY"
+    "Yesterday's Closing Price: \$SPY"
+    "Last week's Performance: \$SPY"
+    "Stock Price on the previous week's Friday: \$SPY"
+    "Daily Stock Price bars Analysis from the last 2 trading weeks: \$SPY"
+    "RSI-14: \$SPY"
+    "MACD: \$SPY"
+    "SMA 20/50/200: \$SPY"
+    "EMA 20/50/200: SPY"
+    "Support & Resistance Levels: \$SPY"
+    "Technical Analysis: \$SPY"
+    "Get the currently upcoming 5x Options Expiration Dates for: \$SPY"
+    "Get the currently upcoming 10x Options Expiration Dates for: \$SPY"
+    "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$SPY"
+    "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$SPY"
+
+   # NVDA Test Sequence
+
+    "Market Status"
+    "Current Price: \$NVDA"
+    "Today's Closing Price: \$NVDA"
+    "Yesterday's Closing Price: \$NVDA"
+    "Last week's Performance: \$NVDA"
+    "Stock Price on the previous week's Friday: \$NVDA"
+    "Daily Stock Price bars Analysis from the last 2 trading weeks: \$NVDA"
+    "RSI-14: \$NVDA"
+    "MACD: \$NVDA"
+    "SMA 20/50/200: \$NVDA"
+    "EMA 20/50/200: NVDA"
+    "Support & Resistance Levels: \$NVDA"
+    "Technical Analysis: \$NVDA"
+    "Get the currently upcoming 5x Options Expiration Dates for: \$NVDA"
+    "Get the currently upcoming 10x Options Expiration Dates for: \$NVDA"
+    "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$NVDA"
+    "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$NVDA"
+
+   # Multi-Ticker Test Sequence
+
+    "Current Price: \$WDC, \$AMD, \$GME"
+    "Today's Closing Price: \$WDC, \$AMD, \$GME"
+    "Yesterday's Closing Price: \$WDC, \$AMD, \$GME"
+    "Last week's Performance: \$WDC, \$AMD, \$GME"
+    "Daily bars Analysis from the last 2 trading weeks: \$WDC, \$AMD, \$GME"
+    "Get the currently upcoming 5x Options Expiration Dates for: \$WDC, \$AMD, \$GME"
+'
+
+3. Validate updated 'test_cli_regression.sh' test script with the new test casee and verify and confirm results are expected
 
 ---
 
