@@ -52,10 +52,10 @@ npm run backend:cli
 ### CLI Regression Testing
 ```bash
 # Single test loop (27 tests)
-./CLI_test_regression.sh
+./test_cli_regression.sh
 
 # Multiple test loops (e.g., 10 loops)
-./CLI_test_regression.sh 10
+./test_cli_regression.sh 10
 ```
 
 **Test Coverage:**
@@ -316,7 +316,7 @@ lsof -i :3000
 ./start-app-xterm.sh
 
 # Run CLI regression tests
-./CLI_test_regression.sh
+./test_cli_regression.sh
 
 # Lint and fix all issues
 npm run lint:fix
@@ -344,7 +344,7 @@ npm run lint:fix
 npm run type-check
 
 # 4. Test changes
-./CLI_test_regression.sh
+./test_cli_regression.sh
 
 # 5. Commit (proper atomic workflow - see git_commit_workflow.md)
 git status

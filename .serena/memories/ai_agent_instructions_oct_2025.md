@@ -283,7 +283,6 @@ Tools Used: No tool calls needed - using existing data from previous queries (SM
 
 **Testing:**
 - `test_cli_regression.sh` - NEW 35-test suite (Oct 7 evening)
-- `CLI_test_regression.sh` - Legacy 27-test suite (deprecated)
 - `test-reports/` - Test results
 
 ## Maintenance Notes

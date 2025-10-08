@@ -42,7 +42,7 @@ market-parser-polygon-mcp/
 ├── package.json             # Node.js dependencies
 ├── uv.lock                  # Python lock file
 ├── package-lock.json        # Node.js lock file
-└── CLI_test_regression.sh   # Comprehensive validation script (27 tests)
+└── test_cli_regression.sh   # Comprehensive validation script (27 tests)
 ```
 
 ## 🚨 Emergency Environment Reset Procedure
@@ -301,7 +301,7 @@ pkill -f "vite"
 
 ```bash
 # Run the comprehensive 27-test regression suite
-./CLI_test_regression.sh
+./test_cli_regression.sh
 ```
 
 **Expected Output (Oct 6, 2025 Format):**
@@ -440,12 +440,12 @@ uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
 **If you see this issue:**
 ```bash
 # Verify script has been updated
-grep -c "awk.*BEGIN.*printf" CLI_test_regression.sh
+grep -c "awk.*BEGIN.*printf" test_cli_regression.sh
 
 # Should show 10+ matches (awk calculations present)
 
 # If script still uses bc, update from latest version in repo
-git checkout master -- CLI_test_regression.sh
+git checkout master -- test_cli_regression.sh
 ```
 
 ## 📊 Success Validation Checklist
@@ -473,7 +473,7 @@ For rapid recovery when you know the issue:
 rm -rf .venv node_modules package-lock.json uv.lock dist/ dev-dist/
 uv sync
 npm install --legacy-peer-deps
-./CLI_test_regression.sh
+./test_cli_regression.sh
 ```
 
 ## 📊 Recent Successful Re-Initializations

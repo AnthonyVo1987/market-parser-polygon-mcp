@@ -136,7 +136,7 @@ SUCCESS CRITERIA:
 
 ✅ **MUST DO:**
 
-- Execute test suite (e.g., `./CLI_test_regression.sh`)
+- Execute test suite (e.g., `./test_cli_regression.sh`)
 - Show test results to user (pass/fail counts, response times)
 - Verify 100% success rate
 - Provide test report file path
@@ -172,7 +172,7 @@ SUCCESS CRITERIA:
 ```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. RUN test suite: ./CLI_test_regression.sh ✅
+3. RUN test suite: ./test_cli_regression.sh ✅
 4. Show results: 16/16 PASS, 100% success ✅
 5. Provide test report path ✅
 6. Update documentation with test results ✅
@@ -392,7 +392,7 @@ Ask questions like:
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: Playwright E2E test suite
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 35 tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
@@ -405,7 +405,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing with Playwright MCP Tools only - see `/tests/playwright/mcp_test_script_basic.md`
+# Testing: Run ./test_cli_regression.sh to execute 35-test suite
 
 # Code quality
 npm run lint              # All linting
@@ -425,7 +425,6 @@ src/
 │   └── config/         # Configuration loader
 config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
-tests/playwright/        # E2E test suite
 ```
 
 ## Troubleshooting

@@ -42,7 +42,7 @@ __Prerequisites:__ uv, Node.js 18+, API keys in .env
 - __Window Positioning__: Places backend and frontend terminals side-by-side (xterm) or separate sessions (tmux)
 - __Font Configuration__: Uses readable DejaVu Sans Mono font (xterm mode)
 - __Enhanced Display__: Better window titles and layout
-- __Status__: ✅ FULLY TESTED - 5/5 successful tests with Playwright validation
+- __Status__: ✅ FULLY TESTED - Both startup scripts working correctly
 
 ## What the Scripts Do
 

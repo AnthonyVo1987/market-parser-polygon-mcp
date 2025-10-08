@@ -352,7 +352,7 @@ def create_agent():
 - **Current**: 27 comprehensive tests (Phase 5: verified parallel execution)
 
 ### Test Script
-**File**: `CLI_test_regression.sh`
+**File**: `test_cli_regression.sh`
 - Tests all 27 prompts in single session
 - Validates session persistence
 - Tracks performance metrics

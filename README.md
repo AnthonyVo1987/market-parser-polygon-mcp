@@ -8,45 +8,6 @@ optimized AI prompts with direct analysis buttons, and **enhanced performance
 with GPT-5 model-specific rate limiting and quick response optimization** for
 faster financial insights.
 
-## STANDARDIZED TEST PROMPTS
-
-**CRITICAL:** All testing MUST use these standardized prompts to ensure
-consistent, quick responses (30-60 seconds) and avoid false failures from
-complex prompts.
-
-### Quick Response Test Prompts (Use These Only)
-
-1. **"Quick Response Needed with minimal tool calls: What is the current
-   Market Status?"**
-2. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Single Stock Snapshot NVDA"**
-3. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Full Market Snapshot: SPY, QQQ, IWM"**
-4. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, what was the closing price of GME today?"**
-5. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, how is SOUN performance doing this week?"**
-6. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Gainers"**
-7. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Top Market Movers Today for Losers"**
-8. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Support & Resistance Levels NVDA"**
-9. **"Quick Response Needed with minimal tool calls: Based on Market Status
-   Date, Technical Analysis SPY"**
-
-**MANDATORY RULES:**
-
-- ✅ Use ONLY these prompts for testing
-- ✅ Copy prompts EXACTLY as written
-- ✅ Expected response time: **6-10 seconds** (Post-MCP removal: 70% faster)
-- ❌ DO NOT create custom prompts
-- ❌ DO NOT modify these prompts
-- ❌ DO NOT use complex, open-ended queries
-
-**📋 COMPLETE PROMPT REFERENCE:** For the full standardized test prompts
-documentation, see `tests/playwright/test_prompts.md`
-
 ## Features
 
 ### 🚀 **Optimized AI Prompts**
@@ -68,11 +29,12 @@ documentation, see `tests/playwright/test_prompts.md`
 
 ### 📊 **Enhanced Performance**
 
-**🏆 10-Run Performance Baseline (Oct 2025):**
-- **Average Response Time**: 6.10s (EXCELLENT rating)
-- **Performance Range**: 5.25s - 7.57s across all runs
-- **Consistency**: 0.80s standard deviation (highly reliable)
-- **Success Rate**: 100% (160/160 tests PASSED)
+**🏆 Latest Test Results (Oct 2025):**
+- **Total Tests**: 35/35 PASSED ✅
+- **Success Rate**: 100%
+- **Average Response Time**: 11.62s (EXCELLENT rating)
+- **Performance Range**: 2.188s - 31.599s
+- **Session Duration**: 6 min 36 sec (persistent session)
 - **Improvement**: 70% faster than legacy MCP architecture
 
 **Technical Optimizations:**
@@ -130,24 +92,17 @@ The startup scripts automatically manage all development servers and
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
 ./start-app-xterm.sh
 
-# Option 2: Main startup script (CURRENTLY BROKEN - DO NOT USE)
-# ./start-app.sh  # ⚠️ BROKEN: Script gets stuck and blocks execution
+# Option 2: Main startup script (NOW WORKING - FIXED)
+./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
 
 # Option 3: Use npm scripts
 npm run start:app:xterm    # XTerm version (RECOMMENDED)
-npm run start:app          # Main script (CURRENTLY BROKEN)
+npm run start:app          # Main script (NOW WORKING)
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ## Script Variants
-
-### start-app.sh (CURRENTLY BROKEN - DO NOT USE)
-
-- **Status**: ❌ BROKEN - Script gets stuck and blocks execution
-- **Issue**: Cannot proceed to sleep 15 or Playwright testing
-- **Action**: Keep script file but do not use until fixed
-- **Alternative**: Use start-app-xterm.sh instead
 
 ### start-app-xterm.sh (XTerm Version)
 
@@ -249,6 +204,34 @@ KEY TAKEAWAYS
 ──────────────────────────────────────────────────
 ```
 
+## Testing
+
+**Primary Test Suite:** `test_cli_regression.sh` (35 comprehensive tests)
+
+**Test Coverage:**
+- SPY test sequence (15 tests): Market status, prices, TA indicators, options, OHLC
+- NVDA test sequence (15 tests): Same pattern as SPY
+- Multi-ticker WDC/AMD/INTC (5 tests): Parallel call validation
+
+**Features:**
+- Persistent session (all 35 tests in single CLI session)
+- Chat history analysis validation
+- Parallel tool call verification
+- OHLC display validation
+- Support/Resistance redundant call detection
+
+**Latest Results:**
+- Total: 35/35 PASSED ✅
+- Success Rate: 100%
+- Average: 11.62s per query (EXCELLENT)
+- Range: 2.188s - 31.599s
+- Session Duration: 6 min 36 sec
+
+**Run tests:**
+```bash
+./test_cli_regression.sh
+```
+
 ## Performance Optimizations
 
 ### UI Performance Improvements
@@ -289,11 +272,11 @@ maintaining visual quality:
 
 ## Architecture
 
-- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
+- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Direct Polygon Python API integration
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
 - **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
 - **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
-- **Testing**: Playwright E2E test suite with standardized quick response prompts
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 35 comprehensive tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 - **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
 - **Report Management**: GUI Copy/Export buttons replace CLI report saving functionality
@@ -308,7 +291,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing with Playwright MCP Tools only - see `/tests/playwright/mcp_test_script_basic.md`
+# Testing: Run ./test_cli_regression.sh (35 tests, persistent session)
 
 # Code quality
 npm run lint              # All linting
@@ -328,7 +311,6 @@ src/
 │   └── config/         # Configuration loader
 config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
-tests/playwright/        # E2E test suite
 ```
 
 ## Troubleshooting

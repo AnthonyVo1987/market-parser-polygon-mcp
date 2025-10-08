@@ -23,7 +23,7 @@ MANDATORY TOOL USAGE PATTERNS:
 3. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
 4. Use Filesystem Tools for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
 5. Use Standard Read/Write/Edit for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-6. Use Playwright Tools for Testing with Browser automation for React GUI & App Validation
+6. Use CLI Testing (test_cli_regression.sh) for comprehensive testing (35 tests, persistent session)
 7. 🔴 REPEAT any tool as needed throughout the process
 8. 🔴 NEVER stop using tools - continue using them until task completion
 

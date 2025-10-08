@@ -332,27 +332,6 @@ FINNHUB_API_KEY=your_key_here
 - ✅ Parallel tool calls executing properly (max 3 per batch)
 - ✅ All 35 test responses are CORRECT (not just completed)
 
-#### Legacy Test Suite: CLI_test_regression.sh (27 tests)
-**Status:** Deprecated (replaced by test_cli_regression.sh)
-
-**Previous Performance (Oct 7, 2025 Afternoon):**
-- **Total**: 27/27 PASSED ✅
-- **Average**: 7.31s per query (EXCELLENT)
-- **Range**: 4.848s - 11.580s
-- **Test Report**: `cli_regression_test_loop1_20251007_141546.txt`
-
-**Previous Baseline (10-Run, Oct 2025):**
-- **Total**: 270/270 tests (100%)
-- **Average**: 6.10s per query
-- **Range**: 5.25s - 7.57s
-- **Std Dev**: 0.80s (highly consistent)
-
-### E2E Testing (Playwright)
-
-**Status:** Available but not primary test method
-**Location:** `tests/playwright/`
-**Note:** CLI regression tests are primary testing method
-
 ## Performance Architecture
 
 ### Optimizations
@@ -570,7 +549,6 @@ FINNHUB_API_KEY=your_key_here
 
 **Testing:**
 - Primary: test_cli_regression.sh (35 tests)
-- Legacy: CLI_test_regression.sh (27 tests, deprecated)
 - Latest report: test-reports/test_cli_regression_loop1_2025-10-07_20-30.log
 
 **Latest Improvements:**

@@ -33,7 +33,7 @@
 ### Development Tools
 - **Python Linting**: pylint, black, isort, mypy
 - **JS/TS Linting**: ESLint, Prettier, TypeScript compiler
-- **Testing**: Playwright E2E, CLI regression tests
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 35 tests, 100% pass rate)
 - **Performance**: Lighthouse CI, React Scan
 - **Version Control**: Git
 

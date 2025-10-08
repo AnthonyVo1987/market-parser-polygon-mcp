@@ -225,7 +225,7 @@
 10. Update `README.md` (if needed)
 
 ### Phase 5: Testing & Verification
-11. Run `./CLI_test_regression.sh` to verify all functionality intact
+11. Run `./test_cli_regression.sh` to verify all functionality intact
 12. Verify web UI still works correctly
 13. Verify CLI still works correctly (without emojis)
 

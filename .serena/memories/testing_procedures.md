@@ -3,7 +3,7 @@
 ## Primary Test Script
 
 ### CLI Regression Test Suite (RECOMMENDED)
-**Script:** `CLI_test_regression.sh`
+**Script:** `test_cli_regression.sh`
 
 **Purpose:** Tests all 27 standardized prompts in a SINGLE CLI session with proper session persistence validation.
 
@@ -20,10 +20,10 @@
 **Usage:**
 ```bash
 # Single test loop (27 tests)
-./CLI_test_regression.sh
+./test_cli_regression.sh
 
 # Multiple test loops (e.g., 10 loops for baseline)
-./CLI_test_regression.sh 10
+./test_cli_regression.sh 10
 ```
 
 **Test Coverage (27 tests total):**
@@ -425,23 +425,23 @@ fi
 
 ### Quick Test (Single Loop)
 ```bash
-./CLI_test_regression.sh
+./test_cli_regression.sh
 ```
 
 ### Performance Validation (3 Loops - Recommended)
 ```bash
-./CLI_test_regression.sh 3
+./test_cli_regression.sh 3
 ```
 
 ### Performance Baseline (10 Loops - Comprehensive)
 ```bash
-./CLI_test_regression.sh 10
+./test_cli_regression.sh 10
 ```
 
 ### Custom Loop Count
 ```bash
 # 5 loops
-./CLI_test_regression.sh 5
+./test_cli_regression.sh 5
 ```
 
 ### Viewing Results
@@ -530,7 +530,7 @@ See `task_completion_checklist.md` for full checklist. Testing requirements:
 
 ```bash
 # 1. Run CLI regression test (3-loop validation recommended)
-./CLI_test_regression.sh 3
+./test_cli_regression.sh 3
 
 # 2. Verify results
 # - All 81/81 tests PASSED (100% success rate for 3 loops)
@@ -554,10 +554,10 @@ Multi-loop testing establishes performance baselines and validates consistency.
 ### Usage
 ```bash
 # 3-loop validation (recommended for most changes)
-./CLI_test_regression.sh 3
+./test_cli_regression.sh 3
 
 # 10-loop baseline (recommended for performance validation)
-./CLI_test_regression.sh 10
+./test_cli_regression.sh 10
 ```
 
 ### Output Format (Enhanced Oct 6, 2025)
@@ -687,7 +687,7 @@ Potential improvements for testing infrastructure:
 6. **Load Testing** - Test concurrent user scenarios
 7. **Error Injection** - Test error handling and recovery
 8. **Visual Regression Testing** - Frontend screenshot comparison
-9. **End-to-End Web Testing** - Playwright tests for full web flow
+9. **CLI Regression Testing** - Comprehensive test suite with 35 tests (test_cli_regression.sh)
 
 ## Test Report Archive
 

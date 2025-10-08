@@ -328,7 +328,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ## Testing Conventions
 
 ### Test File Naming
-- CLI tests: `CLI_test_regression.sh`
+- CLI tests: `test_cli_regression.sh`
 - Test reports: `test-reports/` directory
 
 ### Test Prompts

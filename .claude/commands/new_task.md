@@ -46,7 +46,7 @@ All specialists MUST ALWAYS USE THESE TOOLS FOR ALL Task(s)
 - **Context7 Tools**: Use for Researching Best, Robust, & Up to Date Implementation Practices & Library documentation lookups
 - **Filesystem Tools**: Use for Batch File operations (3+), file discovery, configuration management, metadata analysis, project organization, project structure analysis, and documentation generation for comprehensive project management; Use standard Read/Write/Edit for single-file content modifications
 - **Standard Read/Write/Edit Tools**: Use for single-file content modifications, simple edits, and direct file operations; use Serena/Filesystem for complex analysis, batch operations, and project management
-- **Playwright Tools**: Use for Testing with Browser automation for React GUI & App Validation
+- **CLI Testing**: Use test_cli_regression.sh for comprehensive testing (35 tests, persistent session)
 
 ---
 
