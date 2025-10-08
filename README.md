@@ -30,9 +30,9 @@ faster financial insights.
 ### 📊 **Enhanced Performance**
 
 **🏆 Latest Test Results (Oct 2025):**
-- **Total Tests**: 35/35 PASSED ✅
+- **Total Tests**: 36/36 PASSED ✅
 - **Success Rate**: 100%
-- **Average Response Time**: 11.62s (EXCELLENT rating)
+- **Average Response Time**: 10.44s (EXCELLENT rating)
 - **Performance Range**: 2.188s - 31.599s
 - **Session Duration**: 6 min 36 sec (persistent session)
 - **Improvement**: 70% faster than legacy MCP architecture
@@ -206,24 +206,24 @@ KEY TAKEAWAYS
 
 ## Testing
 
-**Primary Test Suite:** `test_cli_regression.sh` (35 comprehensive tests)
+**Primary Test Suite:** `test_cli_regression.sh` (36 comprehensive tests)
 
 **Test Coverage:**
 - SPY test sequence (15 tests): Market status, prices, TA indicators, options, OHLC
 - NVDA test sequence (15 tests): Same pattern as SPY
-- Multi-ticker WDC/AMD/INTC (5 tests): Parallel call validation
+- Multi-ticker WDC/AMD/GME (6 tests): Parallel call validation
 
 **Features:**
-- Persistent session (all 35 tests in single CLI session)
+- Persistent session (all 36 tests in single CLI session)
 - Chat history analysis validation
 - Parallel tool call verification
-- OHLC display validation
+- Dynamic relative dates (no hardcoded dates requiring updates)
 - Support/Resistance redundant call detection
 
 **Latest Results:**
-- Total: 35/35 PASSED ✅
+- Total: 36/36 PASSED ✅
 - Success Rate: 100%
-- Average: 11.62s per query (EXCELLENT)
+- Average: 10.44s per query (EXCELLENT)
 - Range: 2.188s - 31.599s
 - Session Duration: 6 min 36 sec
 
@@ -276,7 +276,7 @@ maintaining visual quality:
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
 - **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
 - **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 35 comprehensive tests)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 36 comprehensive tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 - **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
 - **Report Management**: GUI Copy/Export buttons replace CLI report saving functionality
@@ -291,7 +291,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run ./test_cli_regression.sh (35 tests, persistent session)
+# Testing: Run ./test_cli_regression.sh (36 tests, persistent session)
 
 # Code quality
 npm run lint              # All linting

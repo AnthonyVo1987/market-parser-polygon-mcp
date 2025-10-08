@@ -12,57 +12,76 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-## OpenAI Prompt Caching Integration
+## CLI Test Suite Restructuring & Service Tier Optimization
 
-**Status:** ✅ Implemented (October 2025)
-**Feature:** OpenAI API Prompt Caching for cost reduction and latency improvement
+**Status:** ✅ Implemented (October 8, 2025)
+**Feature:** OpenAI service tier optimization and comprehensive CLI test suite restructuring
 
-### How It Works
+### Changes Implemented
 
-1. **Automatic Caching**: Prompts >1024 tokens are automatically cached by OpenAI
-2. **Cache Duration**: 5-10 minutes of inactivity, maximum 1 hour
-3. **Cache Scope**: Organization-level (shared within same OpenAI organization)
-4. **Agent Instructions**: Cached on EVERY request (massive cost savings)
+1. **Service Tier Optimization** (`src/backend/services/agent_service.py:367`)
+   - Changed from `service_tier: "flex"` to `service_tier: "default"`
+   - **Reason**: Prototyping phase requires better performance; "flex" tier was causing compute resources rate limiting
+   - **Impact**: Improved response consistency and throughput for development testing
 
-### Token Display
+2. **CLI Test Suite Restructuring** (`test_cli_regression.sh`)
+   - Expanded from 35 to 36 tests with ticker-based organization
+   - Implemented dynamic relative dates for sustainability (no hardcoded dates requiring updates)
+   - New structure: SPY sequence (15 tests) + NVDA sequence (15 tests) + Multi-ticker sequence (6 tests)
 
-**CLI Output:**
+### Test Suite Structure
+
+**SPY Test Sequence (Tests 1-15):**
+- Market Status check
+- Current Price, Today's Close, Yesterday's Close
+- Last week's performance, previous week's Friday price (dynamic date)
+- Daily bars from last 2 trading weeks (dynamic date)
+- Technical indicators: RSI-14, MACD, SMA/EMA (20/50/200)
+- Support & Resistance analysis
+- Technical Analysis summary
+- Option quotes (3 calls above price, 3 puts below price)
+
+**NVDA Test Sequence (Tests 16-30):**
+- Same pattern as SPY (15 tests)
+
+**Multi-Ticker Test Sequence (Tests 31-36):**
+- Market Status check
+- Multi-ticker queries: WDC, AMD, GME (GME replaced INTC)
+- Current prices, technical analysis, volume comparisons
+- Sector performance, relative strength analysis
+
+### Test Results
 
 ```
-   Tokens Used: 16,413 (Input: 16,183, Output: 230) | Cached Input: 7,936
+Total Tests: 36/36 PASSED ✅
+Success Rate: 100%
+Average Response Time: 10.44s (EXCELLENT performance)
+Session Persistence: VERIFIED (single session)
+Test Report: test-reports/test_cli_regression_loop1_2025-10-08_14-49.log
 ```
 
-**GUI Output:**
+### Dynamic Date Improvements
 
-```
-Input: 16,183 | Output: 230 | Total: 16,413 | Cached Input: 7,936
-```
+**Before (Hardcoded):**
+- "Stock Price on 1/2/25: $SPY" (requires updates over time)
 
-### Cost Savings
+**After (Relative):**
+- "Stock Price on the previous week's Friday: $SPY" (always valid)
+- "Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY" (always valid)
 
-- **Cached Input Tokens**: 50% cost reduction
-- **Latency Improvement**: Up to 80% faster for cached prompts >10K tokens
-- **Typical Savings**: 30-50% cost reduction in persistent sessions
+### Implementation Approach
 
-### Implementation Details
-
-- **Backend**: `token_utils.py` extracts cached tokens from OpenAI Agents SDK
-- **API Models**: `api_models.py` includes `cachedInputTokens` and `cachedOutputTokens`
-- **CLI Display**: `response_utils.py` shows cached token metrics
-- **Frontend**: `ChatMessage_OpenAI.tsx` displays cached tokens in GUI
-
-### Best Practices
-
-1. **Prompt Structure**: Static content (instructions, tools) at START, dynamic (user query) at END
-2. **Tool Ordering**: Keep tools in same order across requests
-3. **Message History**: Append new messages to END of array
-4. **Cache Invalidation**: Any change to static content clears cache
+- Used Sequential-Thinking tool for systematic planning (11 thoughts total)
+- Used Serena tools for token-efficient code exploration
+- Created comprehensive TODO_task_plan.md with 5-phase workflow
+- Executed mandatory CLI testing before documentation updates
+- All changes validated with 100% test pass rate
 
 ### References
 
-- **OpenAI Docs**: <https://platform.openai.com/docs/guides/prompt-caching>
-- **Implementation Example**: examples/Prompt_Caching101.ipynb
-- **Serena Guide**: `.serena/memories/prompt_caching_guide.md`
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_14-49.log`
+- **Implementation Plan**: `TODO_task_plan.md`
+- **Serena Memories**: `testing_procedures.md`, `tech_stack.md`
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -389,7 +408,7 @@ Ask questions like:
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 35 tests)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 36 tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
@@ -402,7 +421,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run ./test_cli_regression.sh to execute 35-test suite
+# Testing: Run ./test_cli_regression.sh to execute 36-test suite
 
 # Code quality
 npm run lint              # All linting

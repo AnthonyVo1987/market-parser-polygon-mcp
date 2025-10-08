@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# CLI Test Regression Script - NEW 35-Test Suite with Chat History Analysis
-# Tests all 35 standardized test prompts sequentially in a SINGLE CLI session
+# CLI Test Regression Script - NEW 36-Test Suite with Chat History Analysis
+# Tests all 36 standardized test prompts sequentially in a SINGLE CLI session
 # Designed to validate parallel tool calls (max 3) and chat history data reuse
 # Properly handles session persistence and accurate response time tracking
 #
@@ -15,8 +15,8 @@
 # Test Coverage:
 # - SPY Test Sequence: Tests 1-15 (15 tests)
 # - NVDA Test Sequence: Tests 16-30 (15 tests)
-# - Multi-Ticker Test Sequence: Tests 31-35 (5 tests)
-# Total: 35 tests per loop
+# - Multi-Ticker Test Sequence: Tests 31-36 (6 tests)
+# Total: 36 tests per loop
 #
 # Test Design Philosophy:
 # - Sequential ticker testing validates chat history analysis
@@ -56,97 +56,99 @@ RESULTS_DIR="test-reports"
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 CLI Test Regression - NEW 35 Test Suite${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - NEW 36 Test Suite${NC}"
 echo -e "${CYAN}===========================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 35 tests in same session per loop)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 36 tests in same session per loop)"
 echo -e "Test Features: ${GREEN}Parallel Tool Calls (max 3)${NC}, ${GREEN}Chat History Analysis${NC}"
 echo ""
 
-# The 35 standardized test prompts organized by ticker sequence
+# The 36 standardized test prompts organized by ticker sequence
 declare -a prompts=(
-    # SPY Test Sequence (Tests 1-15)
+    # SPY Test Sequence (Tests 1-14)
     "Market Status"
     "Current Price: \$SPY"
     "Today's Closing Price: \$SPY"
     "Yesterday's Closing Price: \$SPY"
     "Last week's Performance: \$SPY"
-    "RSI-14: SPY"
-    "MACD: SPY"
-    "SMA 20/50/200: SPY"
+    "Stock Price on the previous week's Friday: \$SPY"
+    "Daily Stock Price bars Analysis from the last 2 trading weeks: \$SPY"
+    "RSI-14: \$SPY"
+    "MACD: \$SPY"
+    "SMA 20/50/200: \$SPY"
     "EMA 20/50/200: SPY"
-    "First 3 Call Options expiring this Friday above current price (show strike prices): SPY"
-    "First 3 Put Options expiring this Friday below current price (show strike prices): SPY"
-    "Support & Resistance Levels: SPY"
-    "Technical Analysis: SPY"
-    "Price on 1/2/25: \$SPY"
-    "Daily bars from 1/2/25 - 3/31/25: SPY"
-    # NVDA Test Sequence (Tests 16-30)
+    "Support & Resistance Levels: \$SPY"
+    "Technical Analysis: \$SPY"
+    "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$SPY"
+    "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$SPY"
+    # NVDA Test Sequence (Tests 15-28)
     "Market Status"
     "Current Price: \$NVDA"
     "Today's Closing Price: \$NVDA"
     "Yesterday's Closing Price: \$NVDA"
     "Last week's Performance: \$NVDA"
-    "RSI-14: NVDA"
-    "MACD: NVDA"
-    "SMA 20/50/200: NVDA"
+    "Stock Price on the previous week's Friday: \$NVDA"
+    "Daily Stock Price bars Analysis from the last 2 trading weeks: \$NVDA"
+    "RSI-14: \$NVDA"
+    "MACD: \$NVDA"
+    "SMA 20/50/200: \$NVDA"
     "EMA 20/50/200: NVDA"
-    "First 3 Call Options expiring this Friday above current price (show strike prices): NVDA"
-    "First 3 Put Options expiring this Friday below current price (show strike prices): NVDA"
-    "Support & Resistance Levels: NVDA"
-    "Technical Analysis: NVDA"
-    "Price on 1/2/25: \$NVDA"
-    "Daily bars from 1/2/25 - 3/31/25: NVDA"
-    # Multi-Ticker Test Sequence (Tests 31-35)
-    "Current Price: \$WDC, \$AMD, \$INTC"
-    "Today's Closing Price: \$WDC, \$AMD, \$INTC"
-    "Yesterday's Closing Price: \$WDC, \$AMD, \$INTC"
-    "Last week's Performance: \$WDC, \$AMD, \$INTC"
-    "Daily bars from 1/2/25 - 3/31/25: WDC, AMD, INTC"
+    "Support & Resistance Levels: \$NVDA"
+    "Technical Analysis: \$NVDA"
+    "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$NVDA"
+    "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$NVDA"
+    # Multi-Ticker Test Sequence (Tests 29-33)
+    "Market Status"
+    "Current Price: \$WDC, \$AMD, \$GME"
+    "Today's Closing Price: \$WDC, \$AMD, \$GME"
+    "Yesterday's Closing Price: \$WDC, \$AMD, \$GME"
+    "Last week's Performance: \$WDC, \$AMD, \$GME"
+    "Daily bars Analysis from the last 2 trading weeks: \$WDC, \$AMD, \$GME"
 )
 
 declare -a test_names=(
-    # SPY Test Sequence (Tests 1-15)
+    # SPY Test Sequence (Tests 1-14)
     "Test_1_Market_Status"
     "Test_2_SPY_Current_Price"
     "Test_3_SPY_Today_Closing_Price"
     "Test_4_SPY_Yesterday_Closing_Price"
     "Test_5_SPY_Last_Week_Performance"
-    "Test_6_SPY_RSI_14"
-    "Test_7_SPY_MACD"
-    "Test_8_SPY_SMA_20_50_200"
-    "Test_9_SPY_EMA_20_50_200"
-    "Test_10_SPY_3_Call_Options_This_Friday"
-    "Test_11_SPY_3_Put_Options_This_Friday"
+    "Test_6_SPY_Previous_Week_Friday_Price"
+    "Test_7_SPY_Last_2_Weeks_Daily_Bars"
+    "Test_8_SPY_RSI_14"
+    "Test_9_SPY_MACD"
+    "Test_10_SPY_SMA_20_50_200"
+    "Test_11_SPY_EMA_20_50_200"
     "Test_12_SPY_Support_Resistance"
     "Test_13_SPY_Technical_Analysis"
-    "Test_14_SPY_Price_On_Date"
-    "Test_15_SPY_Daily_Bars_Q1"
-    # NVDA Test Sequence (Tests 16-30)
+    "Test_14_SPY_3_Call_Options_This_Friday"
+    "Test_15_SPY_3_Put_Options_This_Friday"
+    # NVDA Test Sequence (Tests 15-28)
     "Test_16_Market_Status"
     "Test_17_NVDA_Current_Price"
     "Test_18_NVDA_Today_Closing_Price"
     "Test_19_NVDA_Yesterday_Closing_Price"
     "Test_20_NVDA_Last_Week_Performance"
-    "Test_21_NVDA_RSI_14"
-    "Test_22_NVDA_MACD"
-    "Test_23_NVDA_SMA_20_50_200"
-    "Test_24_NVDA_EMA_20_50_200"
-    "Test_25_NVDA_3_Call_Options_This_Friday"
-    "Test_26_NVDA_3_Put_Options_This_Friday"
+    "Test_21_NVDA_Previous_Week_Friday_Price"
+    "Test_22_NVDA_Last_2_Weeks_Daily_Bars"
+    "Test_23_NVDA_RSI_14"
+    "Test_24_NVDA_MACD"
+    "Test_25_NVDA_SMA_20_50_200"
+    "Test_26_NVDA_EMA_20_50_200"
     "Test_27_NVDA_Support_Resistance"
     "Test_28_NVDA_Technical_Analysis"
-    "Test_29_NVDA_Price_On_Date"
-    "Test_30_NVDA_Daily_Bars_Q1"
-    # Multi-Ticker Test Sequence (Tests 31-35)
-    "Test_31_Multi_Current_Price_WDC_AMD_INTC"
-    "Test_32_Multi_Today_Closing_Price_WDC_AMD_INTC"
-    "Test_33_Multi_Yesterday_Closing_Price_WDC_AMD_INTC"
-    "Test_34_Multi_Last_Week_Performance_WDC_AMD_INTC"
-    "Test_35_Multi_Daily_Bars_Q1_WDC_AMD_INTC"
+    "Test_29_NVDA_3_Call_Options_This_Friday"
+    "Test_30_NVDA_3_Put_Options_This_Friday"
+    # Multi-Ticker Test Sequence (Tests 29-33)
+    "Test_31_Multi_Market_Status"
+    "Test_32_Multi_Current_Price_WDC_AMD_GME"
+    "Test_33_Multi_Today_Closing_Price_WDC_AMD_GME"
+    "Test_34_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
+    "Test_35_Multi_Last_Week_Performance_WDC_AMD_GME"
+    "Test_36_Multi_Last_2_Weeks_Daily_Bars_WDC_AMD_GME"
 )
 
 # Initialize test tracking
@@ -184,7 +186,7 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     echo "exit" >> "$INPUT_FILE"
 
     echo -e "${CYAN}🚀 Starting CLI Regression Test (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
-    echo -e "${CYAN}Session will run all 35 tests sequentially${NC}"
+    echo -e "${CYAN}Session will run all 36 tests sequentially${NC}"
     echo -e "Output file: $OUTPUT_FILE"
     echo ""
 

@@ -39,9 +39,9 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Add new AI Agent Tool using direct Polygon Python API\SDK to get the upcoming options expirations dates based on the ticker and current date.  The new tool will be called 'get_options_expiration_dates', and let's set a max number of dates requested to be 10x dates MAX, but the input parameters can range between 1-10 next upcoming dates.  
+1. Change current "service_tier": "flex" to "service_tier": "default" in src/backend/services/agent_service.py to fix OPenAI Compute Resources Rate Limiting issues using "flex" service_tier.  Flex is cheaper, BUT has lower performance, so we wil ljust use service_tier default for now since we are still prototyping and testing.  In the future, there will be a TBD feature to put back flex and have a fallback to default in case we got rate limited, but for now , we will go with just default.
 
-2. Update test script 'test_cli_regression.sh' with test cases changes that re-order the sequence, modifies some test cases, and adds new test cases for the new 'get_options_expiration_dates' tool for AI Agents:
+2. Update test script 'test_cli_regression.sh' with test cases changes that re-order the testing sequences & modifies some test cases:
 '
 
    # SPY Test Sequence
@@ -59,8 +59,6 @@ SUCCESS CRITERIA:
     "EMA 20/50/200: SPY"
     "Support & Resistance Levels: \$SPY"
     "Technical Analysis: \$SPY"
-    "Get the currently upcoming 5x Options Expiration Dates for: \$SPY"
-    "Get the currently upcoming 10x Options Expiration Dates for: \$SPY"
     "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$SPY"
     "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$SPY"
 
@@ -79,19 +77,17 @@ SUCCESS CRITERIA:
     "EMA 20/50/200: NVDA"
     "Support & Resistance Levels: \$NVDA"
     "Technical Analysis: \$NVDA"
-    "Get the currently upcoming 5x Options Expiration Dates for: \$NVDA"
-    "Get the currently upcoming 10x Options Expiration Dates for: \$NVDA"
     "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$NVDA"
     "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$NVDA"
 
    # Multi-Ticker Test Sequence
 
+    "Market Status"
     "Current Price: \$WDC, \$AMD, \$GME"
     "Today's Closing Price: \$WDC, \$AMD, \$GME"
     "Yesterday's Closing Price: \$WDC, \$AMD, \$GME"
     "Last week's Performance: \$WDC, \$AMD, \$GME"
     "Daily bars Analysis from the last 2 trading weeks: \$WDC, \$AMD, \$GME"
-    "Get the currently upcoming 5x Options Expiration Dates for: \$WDC, \$AMD, \$GME"
 '
 
 3. Validate updated 'test_cli_regression.sh' test script with the new test casee and verify and confirm results are expected

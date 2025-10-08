@@ -364,7 +364,7 @@ def get_optimized_model_settings():
         verbosity="low",
         max_tokens=128000,
         include_usage=True,  # Enable official token usage tracking
-        extra_args={"service_tier": "flex", "user": "financial_analysis_agent"},
+        extra_args={"service_tier": "default", "user": "financial_analysis_agent"},
     )
 
 

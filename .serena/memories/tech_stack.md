@@ -8,6 +8,7 @@
 - **Package Manager**: uv 0.8.19
 - **AI Integration**: OpenAI Agents SDK v0.2.9
 - **AI Model**: GPT-5-Nano (EXCLUSIVE - no model selection)
+- **Service Tier**: "default" (optimized for prototyping, better performance than "flex")
 - **API Libraries**:
   - `openai-agents==0.2.9` (OpenAI Agents SDK)
   - `openai>=1.99.0,<1.100.0` (OpenAI Python SDK)
@@ -33,7 +34,7 @@
 ### Development Tools
 - **Python Linting**: pylint, black, isort, mypy
 - **JS/TS Linting**: ESLint, Prettier, TypeScript compiler
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 35 tests, 100% pass rate)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 36 tests, 100% pass rate)
 - **Performance**: Lighthouse CI, React Scan
 - **Version Control**: Git
 
@@ -41,10 +42,19 @@
 
 ### OpenAI Agents SDK v0.2.9
 - **Primary Model**: GPT-5-Nano (200K TPM rate limit)
+- **Service Tier**: "default" (changed from "flex" Oct 8, 2025 - see below)
 - **Integration Pattern**: Direct API tools (no MCP)
 - **Performance**: 70% faster than legacy MCP architecture
 - **Token Tracking**: Dual naming convention support (input_tokens/prompt_tokens)
 - **Parallel Execution**: Native parallel tool execution for multiple ticker queries
+
+#### Service Tier Configuration (Updated Oct 8, 2025)
+- **Current Setting**: `service_tier: "default"` (in agent_service.py:367)
+- **Previous Setting**: `service_tier: "flex"`
+- **Change Reason**: Prototyping phase requires better performance; "flex" tier was causing compute resources rate limiting
+- **Impact**: Improved response consistency and throughput for development testing
+- **Configuration Location**: `src/backend/services/agent_service.py:367`
+- **Validation**: 36/36 tests PASSED with 10.44s avg (EXCELLENT rating)
 
 #### OpenAI Prompt Caching (October 2025)
 - **Status**: Fully Integrated
@@ -165,12 +175,19 @@ dev = [
 
 ## Performance Metrics
 
-### Current Performance (Post-Tool-Removal Oct 2025)
+### Current Performance (Post-Service-Tier-Change Oct 8, 2025)
+- **Average Response Time**: 10.44s (EXCELLENT rating)
+- **Success Rate**: 100% (36/36 tests passed)
+- **Performance Range**: 2.188s - 31.599s
+- **Consistency**: High (all tests completed successfully)
+- **Parallel Execution**: OpenAI Agents SDK handles parallel get_stock_quote calls natively
+- **Test Suite**: 36 tests organized by ticker (SPY 15 + NVDA 15 + Multi 6)
+
+### Previous Performance (Post-Tool-Removal Oct 7, 2025)
 - **Average Response Time**: 7.31s (EXCELLENT rating)
 - **Success Rate**: 100% (27/27 tests passed)
 - **Performance Range**: 4.848s - 11.580s
-- **Consistency**: High (all tests completed successfully)
-- **Parallel Execution**: OpenAI Agents SDK handles parallel get_stock_quote calls natively
+- **Test Suite**: 27 tests (mixed organization)
 
 ### Optimization Features
 - **Direct API**: No MCP server overhead
@@ -178,6 +195,36 @@ dev = [
 - **Token Tracking**: Real-time input/output token monitoring
 - **Response Timing**: FastAPI middleware for precise measurement
 - **Quick Response**: Minimal tool calls enforcement for speed
+- **Service Tier**: "default" for better prototyping performance
+
+## Testing Infrastructure (Updated Oct 8, 2025)
+
+### CLI Regression Test Suite
+- **Script**: `test_cli_regression.sh`
+- **Total Tests**: 36 tests (updated from 27)
+- **Test Organization**: Ticker-based sequences
+  - SPY Test Sequence: Tests 1-15 (15 tests)
+  - NVDA Test Sequence: Tests 16-30 (15 tests)
+  - Multi-Ticker Test Sequence: Tests 31-36 (6 tests - WDC, AMD, GME)
+- **Dynamic Dates**: Queries use relative dates (no hardcoded dates requiring updates)
+  - Example: "Stock Price on the previous week's Friday: $SPY"
+  - Example: "Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY"
+- **Session Persistence**: All tests run in single CLI session
+- **Calculation Engine**: awk-based (universal compatibility, no bc dependency)
+- **Output Format**: 2 decimal precision, human-readable duration (MM min SS sec)
+
+### Test Results (Oct 8, 2025)
+- **Total**: 36/36 PASSED (100%)
+- **Avg Response Time**: 10.44s (EXCELLENT)
+- **Duration**: 6 min 36 sec
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_14-49.log`
+- **Performance Rating**: EXCELLENT (< 20s threshold)
+
+### Test Execution Requirements
+- **Mandatory**: Before all commits, after agent service changes, before PRs
+- **Recommended**: After changing prompts, during optimization work
+- **Validation**: 3-loop runs for comprehensive validation, 10-loop for baselines
+- **Evidence**: Test reports must be included in commits
 
 ## Legacy Feature Cleanup (Oct 2025)
 
@@ -222,27 +269,6 @@ dev = [
 - **Reason**: Unnecessary wrapper - SDK handles parallel execution natively
 - **Benefit**: Simplified codebase, reduced tool count from 12 to 11, leverages native parallel execution
 
-### Test Results (Post-Cleanup)
-
-**CLI Regression Test Results (Latest - Oct 7, 2025):**
-- **Total Tests**: 27/27 PASSED ✅
-- **Success Rate**: 100%
-- **Average Response Time**: 7.31s (EXCELLENT)
-- **Response Range**: 4.848s - 11.580s
-- **Test Report**: `cli_regression_test_loop1_20251007_141546.txt`
-
-**Previous Cleanup Results:**
-- **Total Tests**: 27/27 PASSED ✅
-- **Success Rate**: 100%
-- **Average Response Time**: 7.95s (EXCELLENT)
-- **Response Range**: 3.004s - 24.614s
-- **Test Report**: `cli_regression_test_loop1_20251006_211035.txt`
-
-**Files Changed:**
-- **Deleted**: 3 files (system.py, api-integration-guide.md, get_stock_quote_multi function)
-- **Modified**: 12 files (polygon_tools.py, agent_service.py, api_models, main, routers/__init__, performance.tsx, response_utils, CLAUDE.md, AGENTS.md, README.md, 2 Serena memories)
-- **Total Impact**: Clean codebase, improved performance, accurate documentation, simplified architecture
-
 ### Performance Benefits
 - **CPU Usage**: 1-2% reduction from CSS analysis removal
 - **Code Quality**: Simpler, more maintainable codebase
@@ -250,3 +276,26 @@ dev = [
 - **API Surface**: Cleaner with unused endpoint removed
 - **Tool Count**: Reduced from 12 to 11 tools
 - **Architecture**: Leverages OpenAI Agents SDK native parallel execution
+
+## Recent Updates (Oct 8, 2025)
+
+### Service Tier Optimization
+- **File**: `src/backend/services/agent_service.py:367`
+- **Change**: `service_tier: "flex"` → `service_tier: "default"`
+- **Reason**: Prototyping phase requires better performance; "flex" tier was causing compute resources rate limiting
+- **Impact**: Improved response consistency and throughput
+- **Validation**: 36/36 tests PASSED with 10.44s avg (EXCELLENT rating)
+
+### Test Suite Restructuring
+- **Previous**: 27 tests (mixed organization)
+- **New**: 36 tests organized by ticker (SPY 15 + NVDA 15 + Multi 6)
+- **Dynamic Dates**: Queries use relative dates instead of hardcoded dates
+- **Sustainability**: No date updates required over time
+- **Ticker Changes**: GME replaced INTC in multi-ticker sequence
+- **Test Results**: 36/36 PASSED, 10.44s avg, EXCELLENT rating
+
+### Documentation Updates
+- **CLAUDE.md**: Updated Last Completed Task Summary with service tier change and test restructuring
+- **README.md**: Updated all test count references from 35 to 36
+- **Serena Memories**: Updated testing_procedures.md and tech_stack.md
+- **Test Reports**: `test-reports/test_cli_regression_loop1_2025-10-08_14-49.log`
