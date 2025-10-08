@@ -4,11 +4,12 @@
 
 Market Parser is a Python CLI and React web application for natural language financial queries using Direct Polygon/Finnhub API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
 
-**Key Architectural Change (Oct 2025):**
-- **Migrated from MCP to Direct API** (Phase 4 Complete)
-- **70% performance improvement** (6.10s avg vs 20s legacy)
-- **Removed get_stock_quote_multi wrapper** (Phase 5 Complete - Oct 2025)
-- **All 11 tools now use Direct Python APIs** (no MCP overhead, parallel execution for multi-ticker)
+**Key Architectural Changes (Oct 2025):**
+- **Migrated from MCP to Direct API** (70% performance improvement)
+- **Removed get_stock_quote_multi wrapper** (leverages SDK parallel execution)
+- **Fixed OHLC display requirements** (show actual data, not just "retrieved")
+- **Enhanced chat history analysis** (prevent redundant Support/Resistance calls)
+- **All 11 tools now use Direct Python APIs** (no MCP overhead)
 
 ## System Architecture
 
@@ -31,11 +32,13 @@ Market Parser is a Python CLI and React web application for natural language fin
                     │   OpenAI Agents SDK       │
                     │   v0.2.9 (GPT-5-Nano)     │
                     │   Parallel Tool Execution │
+                    │   Chat History Analysis   │
                     └─────────────┬─────────────┘
                                   │
                     ┌─────────────▼─────────────┐
                     │   AI Agent Tools (11)     │
                     │   Direct API Integration  │
+                    │   OHLC Display Fix        │
                     └─────────┬────────┬────────┘
                               │        │
                     ┌─────────▼──┐  ┌─▼────────┐
@@ -71,7 +74,7 @@ Market Parser is a Python CLI and React web application for natural language fin
 ### Agent Service (services/agent_service.py)
 
 **Functions:**
-- `get_enhanced_agent_instructions()` - Returns optimized system prompt with RULE #2 for parallel calls
+- `get_enhanced_agent_instructions()` - Returns optimized system prompt with 9 RULES
 - `get_optimized_model_settings()` - Returns GPT-5-Nano config
 - `create_agent()` - Creates OpenAI agent with all 11 tools
 
@@ -82,12 +85,27 @@ Market Parser is a Python CLI and React web application for natural language fin
 - **Parallel Tool Calls**: Enabled (critical for multi-ticker queries)
 - **Rate Limits**: 200K TPM (GPT-5-Nano specific)
 
-**System Prompt Features:**
-- RULE #2: Multiple tickers = parallel get_stock_quote() calls
-- Streamlined instructions (no verbose disclaimers)
-- Quick response enforcement
-- Minimal tool calls requirement
-- Structured output format (KEY TAKEAWAYS + DETAILED ANALYSIS)
+**System Prompt Features (9 RULES):**
+- **RULE #1**: Single ticker = get_stock_quote()
+- **RULE #2**: Multiple tickers = parallel get_stock_quote() calls (max 3 per batch)
+- **RULE #3**: Options = get_options_quote_single()
+- **RULE #4**: Market status = get_market_status_and_date_time()
+- **RULE #5**: OHLC data with **CRITICAL DISPLAY REQUIREMENTS** (Oct 7 fix)
+- **RULE #6**: Work with available data
+- **RULE #7**: Market closed = still provide data
+- **RULE #8**: Technical analysis - check chat history first
+- **RULE #9**: Chat history analysis with **Scenario 5** for Support/Resistance (Oct 7 fix)
+
+**Latest Fixes (Oct 7, 2025 Evening):**
+1. **RULE #5 OHLC Display Requirements:**
+   - For custom date range: MUST show start open, end close, $ and % change, period high/low, trading days
+   - For specific date: MUST show Date, Open, High, Low, Close, Volume
+   - NEVER just say "data retrieved" without actual numbers
+   - Good vs bad response examples included
+2. **RULE #9 Scenario 5 (Support & Resistance):**
+   - Explicitly tells AI to use existing price/SMA/EMA data
+   - Prevents redundant TA tool calls when all data already retrieved
+   - 29% performance improvement (5.491s → 3.900s)
 
 ### Direct API Tools (11 Total)
 
@@ -95,10 +113,10 @@ Market Parser is a Python CLI and React web application for natural language fin
 **File:** `src/backend/tools/finnhub_tools.py`
 
 **Tools:**
-1. `get_stock_quote(symbol: str)` - Real-time stock quotes (supports parallel calls for multiple tickers)
+1. `get_stock_quote(symbol: str)` - Real-time stock quotes
    - Uses `finnhub-python>=2.4.25`
    - Returns: current price, change, percent change, high, low, open, previous close
-   - **New Usage**: Called in parallel for multi-ticker queries per RULE #2
+   - **Supports parallel calls** for multi-ticker queries (max 3 per batch)
 
 **Implementation:**
 - `_get_finnhub_client()` - Singleton client initialization
@@ -112,8 +130,8 @@ Market Parser is a Python CLI and React web application for natural language fin
 2. `get_options_quote_single(ticker: str)` - Single option quote
 
 **OHLC Data Tools:**
-3. `get_OHLC_bars_custom_date_range(...)` - OHLC bars for date range
-4. `get_OHLC_bars_specific_date(...)` - OHLC bars for specific date
+3. `get_OHLC_bars_custom_date_range(...)` - OHLC bars for date range (**Display fix applied**)
+4. `get_OHLC_bars_specific_date(...)` - OHLC bars for specific date (**Display fix applied**)
 5. `get_OHLC_bars_previous_close(...)` - Previous close OHLC
 
 **Technical Analysis Tools:**
@@ -121,7 +139,9 @@ Market Parser is a Python CLI and React web application for natural language fin
 7. `get_ta_ema(...)` - Exponential Moving Average
 8. `get_ta_rsi(...)` - Relative Strength Index
 9. `get_ta_macd(...)` - MACD
-10. ~~`get_stock_quote_multi(...)`~~ - **REMOVED Oct 2025** (replaced by parallel get_stock_quote calls)
+
+**Removed (Oct 7, 2025):**
+- ~~`get_stock_quote_multi(...)`~~ - Replaced by parallel get_stock_quote() calls
 
 **Implementation:**
 - `_get_polygon_client()` - Singleton client initialization
@@ -229,9 +249,11 @@ FINNHUB_API_KEY=your_key_here
 
 3. **AI Agent Processing** (OpenAI Agents SDK)
    - Analyzes query
+   - **STEP 0**: Checks chat history for existing data (RULE #9)
    - Determines which tools to call
-   - For multi-ticker: Makes PARALLEL get_stock_quote() calls
+   - For multi-ticker: Makes PARALLEL get_stock_quote() calls (RULE #2)
    - Executes Direct API tool calls (no MCP)
+   - **OHLC Fix**: Shows actual data (start, end, change, high, low, days)
    - Generates structured response
 
 4. **Tool Execution** (Direct API)
@@ -268,77 +290,62 @@ FINNHUB_API_KEY=your_key_here
 - Response time display
 - Model name display
 
-## Migration History
-
-### Phase 5: Remove get_stock_quote_multi Tool (Oct 2025) ✅ COMPLETE
-
-**Rationale:**
-- Unnecessary wrapper function
-- OpenAI Agents SDK handles parallel execution natively
-- Finnhub API is fast - parallel calls acceptable
-- Simplifies codebase
-
-**Changes:**
-- ✅ Removed get_stock_quote_multi (139 lines)
-- ✅ Updated agent instructions RULE #2 to emphasize parallel calls
-- ✅ Updated tool count from 12 to 11
-- ✅ All tests pass 27/27 (100% success rate)
-
-**New Architecture:**
-- **Multi-ticker queries**: Agent makes parallel get_stock_quote() calls
-- **Example**: "SPY, QQQ, IWM" → 3 parallel calls to get_stock_quote
-- **Performance**: 7.31s average (EXCELLENT)
-
-### Phase 4: MCP Removal (Oct 2025) ✅ COMPLETE
-
-**Migration completed:**
-- ✅ All 12 tools migrated to Direct API
-- ✅ MCP server completely removed
-- ✅ Performance improved 70% (6.10s avg vs 20s legacy)
-- ✅ Token tracking enhanced (dual naming support)
-- ✅ Model selector removed (GPT-5-Nano only)
-
-**Architecture Changes:**
-- **Before**: FastAPI → OpenAI Agent → MCP Server → Polygon/Finnhub APIs
-- **After**: FastAPI → OpenAI Agent → Direct Polygon/Finnhub Python SDKs
-
-**Performance Gains:**
-- **Response Time**: 20s → 6.10s (70% faster)
-- **Overhead**: Removed MCP server latency
-- **Reliability**: Direct API calls (no MCP middleman)
-- **Consistency**: 0.80s std dev (highly reliable)
-
 ## Testing Architecture
 
-### CLI Regression Testing
+### CLI Regression Testing (PRIMARY)
 
-**Script:** `CLI_test_regression.sh`
-- 27 standardized test prompts
-- Single persistent CLI session
-- Response time tracking
-- Success rate monitoring
+#### New Test Suite: test_cli_regression.sh (35 tests) ⭐ CURRENT
+**Created:** Oct 7, 2025 Evening
+**Status:** Primary test suite
 
 **Test Coverage:**
-- Market data queries (7 tests including multi-ticker)
-- Technical analysis (15 tests)
-- OHLC/options data (5 tests)
+- **SPY Sequence** (15 tests): Market status, prices, TA indicators, options, OHLC
+- **NVDA Sequence** (15 tests): Same pattern as SPY
+- **Multi-Ticker WDC/AMD/INTC** (5 tests): Parallel call validation
 
-**Latest Performance (Oct 7, 2025):**
+**Features:**
+- Persistent session (all 35 tests in single CLI session)
+- Chat history analysis validation
+- Parallel tool call verification
+- OHLC display validation
+- Support/Resistance redundant call detection
+- Response time tracking per test
+- Success rate monitoring
+
+**Latest Performance (Oct 7, 2025 Evening):**
+- **Total**: 35/35 PASSED ✅
+- **Success Rate**: 100%
+- **Average**: 11.62s per query (EXCELLENT)
+- **Range**: 2.188s - 31.599s
+- **Test 12 (Support & Resistance)**: 3.900s (vs previous 5.491s) - 29% faster ✅
+- **Test 15 (SPY OHLC Q1)**: Shows actual data (start: 589.39, end: 559.39, change: -4.31%, high: 613.23, low: 549.83, 60 days) ✅
+- **Test 30 (NVDA OHLC Q1)**: Shows actual data ✅
+- **Test 35 (Multi OHLC Q1)**: Shows actual data for all 3 tickers ✅
+- **Chat History Reuse**: Test 32 correctly used existing data (no new calls) ✅
+- **Parallel Calls**: Tests 31, 33, 34 correctly made parallel calls for 3 tickers ✅
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-07_20-30.log`
+
+**Validation Results:**
+- ✅ OHLC display fix verified (shows actual data, not just "retrieved")
+- ✅ Support & Resistance fix verified (no redundant calls, 29% faster)
+- ✅ Chat history analysis working correctly
+- ✅ Parallel tool calls executing properly (max 3 per batch)
+- ✅ All 35 test responses are CORRECT (not just completed)
+
+#### Legacy Test Suite: CLI_test_regression.sh (27 tests)
+**Status:** Deprecated (replaced by test_cli_regression.sh)
+
+**Previous Performance (Oct 7, 2025 Afternoon):**
+- **Total**: 27/27 PASSED ✅
 - **Average**: 7.31s per query (EXCELLENT)
 - **Range**: 4.848s - 11.580s
-- **Success Rate**: 100% (27/27 tests)
 - **Test Report**: `cli_regression_test_loop1_20251007_141546.txt`
 
 **Previous Baseline (10-Run, Oct 2025):**
+- **Total**: 270/270 tests (100%)
 - **Average**: 6.10s per query
 - **Range**: 5.25s - 7.57s
-- **Std Dev**: 0.80s
-- **Success Rate**: 100% (270/270 tests)
-
-**Test Reports:**
-- Saved to `test-reports/` directory
-- Timestamped filenames
-- Includes performance metrics
+- **Std Dev**: 0.80s (highly consistent)
 
 ### E2E Testing (Playwright)
 
@@ -355,7 +362,8 @@ FINNHUB_API_KEY=your_key_here
 - Shared HTTP session (aiohttp)
 - Direct API calls (no MCP overhead)
 - Minimal tool calls enforcement
-- Parallel tool execution for multi-ticker
+- Parallel tool execution for multi-ticker (max 3 per batch)
+- Chat history analysis (avoid redundant calls)
 
 **Frontend:**
 - Optimized CSS (no backdrop filters, complex shadows)
@@ -368,6 +376,8 @@ FINNHUB_API_KEY=your_key_here
 - GPT-5-Nano optimization (200K TPM rate limit)
 - Quick response enforcement
 - Parallel tool calls enabled
+- Chat history analysis (RULE #9)
+- OHLC display requirements (RULE #5)
 
 ### Performance Metrics
 
@@ -377,10 +387,20 @@ FINNHUB_API_KEY=your_key_here
 - **CLS**: < 0.1 (50%+ improvement)
 - **TTI**: < 1s (70%+ improvement)
 
-**API Performance (Latest):**
+**API Performance (Latest - Oct 7 Evening):**
+- **Average Response**: 11.62s (EXCELLENT)
+- **Success Rate**: 100% (35/35 tests)
+- **OHLC Display**: Now shows actual data instead of "retrieved"
+- **Support & Resistance**: 29% faster (no redundant calls)
+- **Parallel Execution**: Working correctly for multi-ticker (max 3)
+
+**API Performance (Oct 7 Afternoon):**
 - **Average Response**: 7.31s (EXCELLENT)
-- **Success Rate**: 100%
-- **Parallel Execution**: Working correctly for multi-ticker
+- **Success Rate**: 100% (27/27 tests)
+
+**API Performance (Post-MCP Removal):**
+- **Average Response**: 6.10s (EXCELLENT)
+- **Improvement**: 70% faster than legacy MCP (20s avg)
 
 ## Deployment Architecture
 
@@ -445,7 +465,7 @@ FINNHUB_API_KEY=your_key_here
 
 ### Shared
 - `config/app.config.json` - Centralized non-sensitive config
-- `.gitignore` - Git ignore patterns
+- `.gitignore` - Git ignore patterns (updated for test-reports/*.log)
 - `.env.example` - Environment variable template
 
 ## Security Considerations
@@ -463,38 +483,98 @@ FINNHUB_API_KEY=your_key_here
 - Regular updates via `uv` and `npm`
 - Pinned versions in `pyproject.toml` and `package-lock.json`
 
-## Tool Removal History (Oct 2025)
+## Migration & Fix History
 
-### get_stock_quote_multi Removal
+### Oct 7, 2025 Evening: OHLC Display + Support/Resistance Fixes ✅ COMPLETE
 
-**Context:** Simplified architecture by removing unnecessary wrapper function.
+**Problem 1: OHLC Useless Responses**
+- AI said "data retrieved" without actual prices/ranges/changes
+- Users got no useful information from OHLC queries
 
-**Removed:**
-- **Function**: `get_stock_quote_multi(tickers: list[str], market_type: str)` (139 lines)
-- **File**: `src/backend/tools/polygon_tools.py` (lines 588-726)
-- **Import**: Removed from `agent_service.py`
-- **Tools List**: Removed from create_agent() tools array
+**Fix 1: RULE #5 Display Requirements**
+- Added "CRITICAL DISPLAY REQUIREMENTS FOR OHLC BARS" section
+- For custom date range: MUST show start open, end close, $ and % change, period high/low, trading days
+- For specific date: MUST show Date, Open, High, Low, Close, Volume
+- NEVER just say "data retrieved"
+- Good vs bad response examples
 
-**Replacement:**
-- **Pattern**: Multiple parallel calls to `get_stock_quote()`
-- **Example**: "SPY, QQQ, IWM" → get_stock_quote('SPY'), get_stock_quote('QQQ'), get_stock_quote('IWM')
-- **Execution**: OpenAI Agents SDK handles parallel execution automatically
+**Problem 2: Support/Resistance Redundant Calls**
+- AI called get_ta_sma/ema/rsi/macd AGAIN even when all data already existed
+- Wasted time and API calls (5.491s response time)
 
-**Agent Instructions Updated:**
-- **RULE #2**: Completely rewritten to emphasize parallel get_stock_quote() calls
-- **Tool Count**: Updated from 12 to 11 supported tools
-- **Decision Tree**: Updated to reflect parallel call pattern
-- **Examples**: All multi-ticker examples show parallel calls
+**Fix 2: RULE #9 Scenario 5**
+- Added explicit scenario for Support & Resistance
+- Tells AI to use existing price, SMA/EMA data instead of making new calls
+- 29% performance improvement (5.491s → 3.900s)
 
-**Test Results:**
-- **Total**: 27/27 PASSED ✅
-- **Success Rate**: 100%
-- **Average Time**: 7.31s (EXCELLENT)
-- **Multi-Ticker Tests**: Tests #3 and #12 passed with parallel pattern
+**New Test Suite:**
+- Created test_cli_regression.sh with 35 comprehensive tests
+- SPY sequence (15), NVDA sequence (15), Multi-ticker (5)
+- Validates OHLC display, chat history analysis, parallel calls
 
-**Benefits:**
-- ✅ Simplified codebase (removed 139 lines)
-- ✅ Leverages SDK native parallel execution
+**Results:**
+- ✅ 35/35 tests PASSED (100% success rate)
+- ✅ OHLC responses now show actual data (start, end, change, high, low, days)
+- ✅ Support & Resistance 29% faster (no redundant calls)
+- ✅ Chat history analysis working correctly
+- ✅ All test responses verified as CORRECT (not just completed)
+- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-07_20-30.log
+
+### Oct 7, 2025 Afternoon: get_stock_quote_multi Removal ✅ COMPLETE
+
+**Rationale:** Unnecessary wrapper function, SDK handles parallel execution natively
+
+**Changes:**
+- ✅ Removed get_stock_quote_multi (139 lines)
+- ✅ Updated RULE #2 to emphasize parallel calls
 - ✅ Tool count reduced from 12 to 11
-- ✅ No performance regression
-- ✅ Clear parallel execution pattern in instructions
+- ✅ All tests pass 27/27 (100% success rate)
+
+**New Architecture:**
+- Multi-ticker queries: Agent makes parallel get_stock_quote() calls
+- Example: "SPY, QQQ, IWM" → 3 parallel calls (max 3 per batch)
+- Performance: 7.31s average (EXCELLENT)
+
+### Oct 2025: MCP Removal ✅ COMPLETE
+
+**Migration completed:**
+- ✅ All 12 tools migrated to Direct API (now 11 after tool removal)
+- ✅ MCP server completely removed
+- ✅ Performance improved 70% (6.10s avg vs 20s legacy)
+- ✅ Token tracking enhanced (dual naming support)
+- ✅ Model selector removed (GPT-5-Nano only)
+
+**Architecture Changes:**
+- **Before**: FastAPI → OpenAI Agent → MCP Server → Polygon/Finnhub APIs
+- **After**: FastAPI → OpenAI Agent → Direct Polygon/Finnhub Python SDKs
+
+**Performance Gains:**
+- **Response Time**: 20s → 6.10s (70% faster)
+- **Overhead**: Removed MCP server latency
+- **Reliability**: Direct API calls (no MCP middleman)
+
+## Current State Summary (Oct 7, 2025 Evening)
+
+**Architecture:**
+- 11 Direct API tools (1 Finnhub + 10 Polygon)
+- No MCP overhead
+- Parallel execution (max 3 per batch)
+- Chat history analysis
+- OHLC display requirements enforced
+
+**Performance:**
+- 35/35 tests passing (100%)
+- 11.62s average (EXCELLENT)
+- Support & Resistance 29% faster
+- OHLC responses show actual data
+
+**Testing:**
+- Primary: test_cli_regression.sh (35 tests)
+- Legacy: CLI_test_regression.sh (27 tests, deprecated)
+- Latest report: test-reports/test_cli_regression_loop1_2025-10-07_20-30.log
+
+**Latest Improvements:**
+- ✅ OHLC display fix (show actual data)
+- ✅ Support/Resistance redundant call fix
+- ✅ New comprehensive test suite
+- ✅ All test responses verified as CORRECT

@@ -65,8 +65,8 @@ Here is the consolidated and sequentially numbered list of your test cases:
 13. Options Quote: SPY 1/16/26 $600 Put
 14. Support & Resistance Levels: SPY
 15. Technical Analysis: SPY
-16. Price on 1/1/25: SPY
-17. Daily bars from 1/1/25 - 3/31/25: SPY
+16. Price on 1/2/25: SPY
+17. Daily bars from 1/2/25 - 3/31/25: SPY
 
 // NVDA Test Sequence
 18. Market Status
@@ -84,8 +84,8 @@ Here is the consolidated and sequentially numbered list of your test cases:
 30. Options Quote: NVDA 1/16/26 $180 Put
 31. Support & Resistance Levels: NVDA
 32. Technical Analysis: NVDA
-33. Price on 1/1/25: NVDA
-34. Daily bars from 1/1/25 - 3/31/25: NVDA
+33. Price on 1/2/25: NVDA
+34. Daily bars from 1/2/25 - 3/31/25: NVDA
 
 // WDC Test Sequence
 35. Market Status
@@ -103,8 +103,8 @@ Here is the consolidated and sequentially numbered list of your test cases:
 47. Options Quote: WDC 1/16/26 $100 Put
 48. Support & Resistance Levels: WDC
 49. Technical Analysis: WDC
-50. Price on 1/1/25: WDC
-51. Daily bars from 1/1/25 - 3/31/25: WDC
+50. Price on 1/2/25: WDC
+51. Daily bars from 1/2/25 - 3/31/25: WDC
 
 // Multi-Ticker Test Test Sequence
 52. Current Price: AMD, INTC, AVGO
@@ -113,14 +113,22 @@ Here is the consolidated and sequentially numbered list of your test cases:
 55. Current Weekly Performance Change $ and %: AMD, INTC, AVGO
 56. RSI-14: AMD, INTC, AVGO
 57. MACD: AMD, INTC, AVGO
-58. SMA 20/50/200: AMD, INTC, AVGO
-59. EMA 20/50/200: AMD, INTC, AVGO
-60. SMA 5/10: AMD, INTC, AVGO
-61. EMA 5/10: AMD, INTC, AVGO
+58. SMA 20/50/200: AMD
+58. SMA 20/50/200: INTC
+58. SMA 20/50/200: AVGO
+58. EMA 20/50/200: AMD
+58. EMA 20/50/200: INTC
+58. EMA 20/50/200: AVGO
+60. SMA 5/10: AMD
+60. SMA 5/10: INTC
+60. SMA 5/10: AVGO
+60. EMA 5/10: AMD
+60. EMA 5/10: INTC
+60. EMA 5/10: AVGO
 62. Support & Resistance Levels: AMD, INTC, AVGO
 63. Technical Analysis: AMD, INTC, AVGO
-64. Price on 1/1/25: AMD, INTC, AVGO
-65. Daily bars from 1/1/25 - 3/31/25: AMD, INTC, AVGO
+64. Price on 1/2/25: AMD, INTC, AVGO
+65. Daily bars from 1/2/25 - 3/31/25: AMD, INTC, AVGO
 
 
 D. Validate ALL changes by running the new validation script 1x loop 'test_CLI_regression.sh' and then reviewing final results and contents of EACH response to ensure they match expected responses with proper tool calls

@@ -81,6 +81,7 @@ credentials.json
 .taskmaster/
 scripts/
 *.log
+!test-reports/*.log
 logs/
 !logs/.gitkeep
 !.serena/logs/

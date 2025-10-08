@@ -1,22 +1,27 @@
 #!/bin/bash
 
-# CLI Test Regression Script - Single Source of Truth
-# Tests all 27 standardized test prompts sequentially in a SINGLE CLI session
+# CLI Test Regression Script - NEW 35-Test Suite with Chat History Analysis
+# Tests all 35 standardized test prompts sequentially in a SINGLE CLI session
+# Designed to validate parallel tool calls (max 3) and chat history data reuse
 # Properly handles session persistence and accurate response time tracking
 #
-# Usage: ./CLI_test_regression.sh [LOOP_COUNT]
+# Usage: ./test_cli_regression.sh [LOOP_COUNT]
 #   LOOP_COUNT: Number of test loops to run (1-10, default: 1)
 #   Examples:
-#     ./CLI_test_regression.sh     # Run 1 loop (default)
-#     ./CLI_test_regression.sh 3   # Run 3 loops
-#     ./CLI_test_regression.sh 10  # Run 10 loops (max)
+#     ./test_cli_regression.sh     # Run 1 loop (default)
+#     ./test_cli_regression.sh 3   # Run 3 loops
+#     ./test_cli_regression.sh 10  # Run 10 loops (max)
 #
 # Test Coverage:
-# - 7 original market data tests
-# - 4 TA indicator tests (original)
-# - 5 OHLC/options tests (original)
-# - 11 NEW TA indicator tests (SPY-specific SMA/EMA/MACD variants)
-# Total: 27 tests per loop
+# - SPY Test Sequence: Tests 1-15 (15 tests)
+# - NVDA Test Sequence: Tests 16-30 (15 tests)
+# - Multi-Ticker Test Sequence: Tests 31-35 (5 tests)
+# Total: 35 tests per loop
+#
+# Test Design Philosophy:
+# - Sequential ticker testing validates chat history analysis
+# - Same question types repeated for each ticker tests data reuse
+# - Multi-ticker tests validate parallel tool call batching (max 3)
 
 # Colors for output
 RED='\033[0;31m'
@@ -44,87 +49,104 @@ if [ "$LOOP_COUNT" -lt 1 ] || [ "$LOOP_COUNT" -gt 10 ]; then
 fi
 
 # Test configuration
-MAX_RESPONSE_TIME=120  # 2 minutes max per response
+MAX_RESPONSE_TIME=60  # 1 minute max per response
 CLI_CMD="uv run src/backend/main.py"
 RESULTS_DIR="test-reports"
 
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 CLI Test Regression - 27 Test Suite${NC}"
-echo -e "${CYAN}=======================================${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - NEW 35 Test Suite${NC}"
+echo -e "${CYAN}===========================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 27 tests in same session per loop)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 35 tests in same session per loop)"
+echo -e "Test Features: ${GREEN}Parallel Tool Calls (max 3)${NC}, ${GREEN}Chat History Analysis${NC}"
 echo ""
 
-# The 27 standardized test prompts
-# Tests 1-16: Original test suite
-# Tests 17-27: New TA indicator tests (SPY-specific)
+# The 35 standardized test prompts organized by ticker sequence
 declare -a prompts=(
-    # Original 16 tests
-    "What the current Market Status?"
-    "Stock Snapshot: NVDA"
-    "Stock Snapshot: SPY, QQQ, IWM"
-    "What was closing price today for: SPY"
-    "Current weekly Price Change $ and % for: SPY"
+    # SPY Test Sequence (Tests 1-15)
+    "Market Status"
+    "Current Price: \$SPY"
+    "Today's Closing Price: \$SPY"
+    "Yesterday's Closing Price: \$SPY"
+    "Last week's Performance: \$SPY"
+    "RSI-14: SPY"
+    "MACD: SPY"
+    "SMA 20/50/200: SPY"
+    "EMA 20/50/200: SPY"
+    "First 3 Call Options expiring this Friday above current price (show strike prices): SPY"
+    "First 3 Put Options expiring this Friday below current price (show strike prices): SPY"
     "Support & Resistance Levels: SPY"
     "Technical Analysis: SPY"
-    "SMA for SPY"
-    "20-day EMA for NVDA"
-    "RSI analysis for SPY"
-    "MACD for AAPL"
-    "Multi-ticker quotes: AAPL, MSFT, GOOGL"
-    "Options quote for SPY December 650 call O:SPY251219C00650000"
-    "AAPL daily bars from January 1 to March 31, 2024"
-    "TSLA price on December 13, 2024"
-    "SPY previous trading day close"
-    # New TA indicator tests (Tests 17-27)
-    "SPY MACD"
-    "SPY 20-day SMA"
-    "SPY 50-day SMA"
-    "SPY 200-day SMA"
-    "SPY 20-day EMA"
-    "SPY 50-day EMA"
-    "SPY 200-day EMA"
-    "SPY 5-day SMA"
-    "SPY 10-day SMA"
-    "SPY 5-day EMA"
-    "SPY 10-day EMA"
+    "Price on 1/2/25: \$SPY"
+    "Daily bars from 1/2/25 - 3/31/25: SPY"
+    # NVDA Test Sequence (Tests 16-30)
+    "Market Status"
+    "Current Price: \$NVDA"
+    "Today's Closing Price: \$NVDA"
+    "Yesterday's Closing Price: \$NVDA"
+    "Last week's Performance: \$NVDA"
+    "RSI-14: NVDA"
+    "MACD: NVDA"
+    "SMA 20/50/200: NVDA"
+    "EMA 20/50/200: NVDA"
+    "First 3 Call Options expiring this Friday above current price (show strike prices): NVDA"
+    "First 3 Put Options expiring this Friday below current price (show strike prices): NVDA"
+    "Support & Resistance Levels: NVDA"
+    "Technical Analysis: NVDA"
+    "Price on 1/2/25: \$NVDA"
+    "Daily bars from 1/2/25 - 3/31/25: NVDA"
+    # Multi-Ticker Test Sequence (Tests 31-35)
+    "Current Price: \$WDC, \$AMD, \$INTC"
+    "Today's Closing Price: \$WDC, \$AMD, \$INTC"
+    "Yesterday's Closing Price: \$WDC, \$AMD, \$INTC"
+    "Last week's Performance: \$WDC, \$AMD, \$INTC"
+    "Daily bars from 1/2/25 - 3/31/25: WDC, AMD, INTC"
 )
 
 declare -a test_names=(
-    # Original 16 tests
-    "Test_1_Market_Status_Query"
-    "Test_2_Single_Stock_Snapshot_NVDA"
-    "Test_3_Multi_Stock_Snapshot_SPY_QQQ_IWM"
-    "Test_4_Closing_Price_Query_SPY"
-    "Test_5_Weekly_Performance_Analysis_SPY"
-    "Test_6_Support_Resistance_SPY"
-    "Test_7_Technical_Analysis_SPY"
-    "Test_8_SMA_Indicator_SPY"
-    "Test_9_EMA_Indicator_NVDA"
-    "Test_10_RSI_Indicator_SPY"
-    "Test_11_MACD_Indicator_AAPL"
-    "Test_12_Multi_Ticker_Quote_AAPL_MSFT_GOOGL"
-    "Test_13_Options_Quote_SPY_Call"
-    "Test_14_OHLC_Custom_Date_Range_AAPL"
-    "Test_15_OHLC_Specific_Date_TSLA"
-    "Test_16_OHLC_Previous_Close_SPY"
-    # New TA indicator tests (Tests 17-27)
-    "Test_17_SPY_MACD"
-    "Test_18_SPY_SMA_20"
-    "Test_19_SPY_SMA_50"
-    "Test_20_SPY_SMA_200"
-    "Test_21_SPY_EMA_20"
-    "Test_22_SPY_EMA_50"
-    "Test_23_SPY_EMA_200"
-    "Test_24_SPY_SMA_5"
-    "Test_25_SPY_SMA_10"
-    "Test_26_SPY_EMA_5"
-    "Test_27_SPY_EMA_10"
+    # SPY Test Sequence (Tests 1-15)
+    "Test_1_Market_Status"
+    "Test_2_SPY_Current_Price"
+    "Test_3_SPY_Today_Closing_Price"
+    "Test_4_SPY_Yesterday_Closing_Price"
+    "Test_5_SPY_Last_Week_Performance"
+    "Test_6_SPY_RSI_14"
+    "Test_7_SPY_MACD"
+    "Test_8_SPY_SMA_20_50_200"
+    "Test_9_SPY_EMA_20_50_200"
+    "Test_10_SPY_3_Call_Options_This_Friday"
+    "Test_11_SPY_3_Put_Options_This_Friday"
+    "Test_12_SPY_Support_Resistance"
+    "Test_13_SPY_Technical_Analysis"
+    "Test_14_SPY_Price_On_Date"
+    "Test_15_SPY_Daily_Bars_Q1"
+    # NVDA Test Sequence (Tests 16-30)
+    "Test_16_Market_Status"
+    "Test_17_NVDA_Current_Price"
+    "Test_18_NVDA_Today_Closing_Price"
+    "Test_19_NVDA_Yesterday_Closing_Price"
+    "Test_20_NVDA_Last_Week_Performance"
+    "Test_21_NVDA_RSI_14"
+    "Test_22_NVDA_MACD"
+    "Test_23_NVDA_SMA_20_50_200"
+    "Test_24_NVDA_EMA_20_50_200"
+    "Test_25_NVDA_3_Call_Options_This_Friday"
+    "Test_26_NVDA_3_Put_Options_This_Friday"
+    "Test_27_NVDA_Support_Resistance"
+    "Test_28_NVDA_Technical_Analysis"
+    "Test_29_NVDA_Price_On_Date"
+    "Test_30_NVDA_Daily_Bars_Q1"
+    # Multi-Ticker Test Sequence (Tests 31-35)
+    "Test_31_Multi_Current_Price_WDC_AMD_INTC"
+    "Test_32_Multi_Today_Closing_Price_WDC_AMD_INTC"
+    "Test_33_Multi_Yesterday_Closing_Price_WDC_AMD_INTC"
+    "Test_34_Multi_Last_Week_Performance_WDC_AMD_INTC"
+    "Test_35_Multi_Daily_Bars_Q1_WDC_AMD_INTC"
 )
 
 # Initialize test tracking
@@ -149,9 +171,9 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     declare -a test_results=()
     declare -a test_durations=()
 
-    # Generate unique timestamp for this loop - FORMAT: YYYY-MM-DD_HH-MM
+    # Generate unique timestamp for this loop - NEW FORMAT: YYYY-MM-DD_HH-MM
     LOOP_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
-    OUTPUT_FILE="$RESULTS_DIR/cli_regression_test_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
+    OUTPUT_FILE="$RESULTS_DIR/test_cli_regression_loop${loop_num}_${LOOP_TIMESTAMP}.log"
     RAW_OUTPUT="/tmp/cli_output_loop${loop_num}_${LOOP_TIMESTAMP}.log"
     INPUT_FILE="/tmp/test_input_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
 
@@ -162,7 +184,7 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     echo "exit" >> "$INPUT_FILE"
 
     echo -e "${CYAN}🚀 Starting CLI Regression Test (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
-    echo -e "${CYAN}Session will run all 27 tests sequentially${NC}"
+    echo -e "${CYAN}Session will run all 35 tests sequentially${NC}"
     echo -e "Output file: $OUTPUT_FILE"
     echo ""
 

@@ -12,67 +12,74 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[TOOL REMOVAL] Remove get_stock_quote_multi - Use parallel get_stock_quote calls
+[AI AGENT FIX] Fix OHLC bars display + Support/Resistance redundant calls + New 35-test suite
 
 **Primary Changes:**
 
-1. **Tool Removal**: Deleted get_stock_quote_multi function (139 lines)
-2. **Agent Instructions Rewrite**: Complete RULE #2 overhaul for parallel calls
-3. **Tool Count Reduction**: From 12 to 11 supported tools
-4. **Architecture Improvement**: Leverage OpenAI Agents SDK native parallel execution
+1. **OHLC Display Fix**: Added critical display requirements to RULE #5 (show actual data, not just "data retrieved")
+2. **Support & Resistance Fix**: Enhanced RULE #9 with Scenario 5 to prevent redundant TA tool calls
+3. **New Test Suite**: Created test_cli_regression.sh with 35 comprehensive tests (vs old 27)
+4. **Chat History Analysis**: Validated intelligent data reuse across session
+5. **.gitignore Update**: Allow test-reports/*.log files to be committed
 
 **Code Changes:**
 
-- **polygon_tools.py**: Removed get_stock_quote_multi function (lines 588-726, 139 lines)
-- **agent_service.py**: Removed import, updated tools list, rewrote RULE #2
-  - New RULE #2: Emphasizes PARALLEL get_stock_quote() calls
-  - Updated decision tree, examples, and tool count (11 tools)
-  - Removed all references to get_stock_quote_multi (15+ references)
+- **agent_service.py (RULE #5)**: Added "CRITICAL DISPLAY REQUIREMENTS FOR OHLC BARS" section
+  - For custom date range: MUST show start open, end close, $ and % change, period high/low, trading days
+  - For specific date: MUST show Date, Open, High, Low, Close, Volume
+  - NEVER just say "data retrieved" without actual numbers
+  - Added good vs bad response examples
+- **agent_service.py (RULE #9)**: Added Scenario 5 - Support & Resistance Levels
+  - Explicitly tells AI to use existing price/SMA/EMA data instead of making new calls
+  - Prevents redundant tool calls when all TA data already retrieved
+- **test_cli_regression.sh**: New 35-test suite with persistent session validation
+  - SPY test sequence (15 tests)
+  - NVDA test sequence (15 tests)
+  - Multi-ticker WDC/AMD/INTC tests (5 tests)
+  - Validates parallel calls, chat history analysis, OHLC display
+- **.gitignore**: Updated line 84 to allow test-reports/*.log files
 
 **Test Results:**
 
-- **Total Tests**: 27/27 PASSED ✅
+- **Total Tests**: 35/35 PASSED ✅
 - **Success Rate**: 100%
-- **Average Response Time**: 7.31s ⭐ EXCELLENT
-- **Response Range**: 4.848s - 11.580s
-- **Test Report**: `cli_regression_test_loop1_20251007_141546.txt`
-- **Tests #3 & #12**: Successfully using parallel get_stock_quote calls
-- **Pattern Verified**: Multiple parallel calls working as expected
+- **Average Response Time**: 11.62s ⭐ EXCELLENT
+- **Response Range**: 2.188s - 31.599s
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-07_20-30.log`
+- **Test 12 (Support & Resistance)**: 3.900s (vs previous 5.491s) - redundant call fix verified ✅
+- **Test 15 (SPY OHLC Q1)**: Shows actual data (start: 589.39, end: 559.39, change: -4.31%, high: 613.23, low: 549.83, 60 days) ✅
+- **Test 30 (NVDA OHLC Q1)**: Shows actual data (start: 136.00, end: 108.38, change: -20.30%, high: 147.79, low: 103.65, 60 days) ✅
+- **Test 35 (Multi OHLC Q1)**: Shows actual data for all 3 tickers (WDC, AMD, INTC) ✅
+- **Chat History Reuse**: Test 32 correctly used existing data (no new calls) ✅
+- **Parallel Calls**: Tests 31, 33, 34 correctly made parallel calls for 3 tickers ✅
 
 **Documentation Updates:**
 
 - ✅ Updated: `CLAUDE.md` (Last Completed Task section)
-- ✅ Updated: `.serena/memories/tech_stack.md`
-- ✅ Updated: `.serena/memories/project_architecture.md`
 - ✅ Updated: `.serena/memories/ai_agent_instructions_oct_2025.md`
-- ✅ Updated: `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md`
-- ✅ Updated: `.serena/memories/polygon_mcp_removal_history.md`
+- ✅ Updated: `.serena/memories/project_architecture.md`
 - ✅ Added: Test report file
 
 **Impact Analysis:**
 
-- **Code Quality**: Improved - removed 139 lines of wrapper code
-- **Architecture**: Simplified - leverages SDK's native parallel execution
-- **Tool Count**: Reduced from 12 to 11 (more streamlined)
-- **Performance**: Maintained/improved - Finnhub API is fast
-- **Agent Behavior**: Enhanced - explicit parallel call pattern in instructions
-- **Test Coverage**: Maintained - 100% pass rate (27/27 tests)
-- **Documentation**: Comprehensive - all memory files and CLAUDE.md updated
+- **Code Quality**: Improved - explicit OHLC display requirements prevent useless responses
+- **Agent Behavior**: Fixed - no more redundant TA calls for Support & Resistance
+- **Test Coverage**: Expanded - 35 comprehensive tests vs previous 27 tests
+- **Performance**: Excellent - 11.62s average, 100% success rate
+- **Chat History**: Validated - intelligent data reuse working correctly
+- **OHLC Responses**: Fixed - now shows actual data instead of just "data retrieved"
 
 **Files Changed:**
 
-- ✅ Modified: `src/backend/tools/polygon_tools.py` (removed function)
-- ✅ Modified: `src/backend/services/agent_service.py` (import, tools list, instructions)
+- ✅ Modified: `src/backend/services/agent_service.py` (RULE #5 display requirements, RULE #9 Scenario 5)
+- ✅ Modified: `.gitignore` (allow test-reports/*.log)
+- ✅ Created: `test_cli_regression.sh` (new 35-test suite)
 - ✅ Modified: `CLAUDE.md` (Last Completed Task section)
-- ✅ Modified: `.serena/memories/tech_stack.md`
-- ✅ Modified: `.serena/memories/project_architecture.md`
 - ✅ Modified: `.serena/memories/ai_agent_instructions_oct_2025.md`
-- ✅ Modified: `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md`
-- ✅ Modified: `.serena/memories/polygon_mcp_removal_history.md`
-- ✅ Added: `test-reports/cli_regression_test_loop1_20251007_141546.txt`
-- ✅ Modified: `TODO_task_plan.md` (marked complete)
+- ✅ Modified: `.serena/memories/project_architecture.md`
+- ✅ Added: `test-reports/test_cli_regression_loop1_2025-10-07_20-30.log`
 
-**Total**: 3 code files modified, 6 Serena memory files updated, 1 test report added
+**Total**: 3 code files modified/created, 3 documentation files updated, 1 test report added
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
