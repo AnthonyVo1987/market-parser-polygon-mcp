@@ -86,6 +86,20 @@ MANDATORY TOOL USAGE PATTERNS:
 3. REPEAT any tool as needed throughout the process
 4. 🔴 NEVER stop using tools - continue using them until task completion
 
+### Serena Tool Setup
+
+Before using Serena tools for code analysis, get the initial instructions to understand optimal usage:
+
+- **Primary Method (Preferred)**: Use `mcp__serena__initial_instructions` tool
+- **Fallback Method**: If tool fails, use `mcp__serena__read_memory` with memory name: `serena_initial_instructions`
+
+These instructions provide critical guidance on:
+
+- Token-efficient code exploration using symbolic tools
+- Proper file reading vs. full file scanning
+- Symbol overview and targeted symbol reads
+- Pattern searching for flexible searches
+
 VIOLATION PENALTIES:
 
 - If you use tools only once and stop, you're failing
@@ -175,9 +189,9 @@ SUCCESS CRITERIA:
 
 ## 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW
 
-**MANDATORY: Stage ONLY Immediately Before Commit**
+### MANDATORY: Stage ONLY Immediately Before Commit
 
-### The Fatal Mistake: Early Staging
+#### The Fatal Mistake: Early Staging
 
 **NEVER stage files early during development. Staging is the LAST step before committing.**
 

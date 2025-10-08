@@ -91,7 +91,8 @@
 First, get the tool instructions and current Serena configuration and project status:
 
 1. **Get Serena Documentation & Initial Instructions**
-   - First, use Serena `mcp_serena_initial_instructions` tool to understand how to use Serena tools
+   - **Primary Method (Preferred)**: Use `mcp__serena__initial_instructions` tool to understand how to use Serena tools
+   - **Fallback Method**: If tool fails, use `mcp__serena__read_memory` with memory name: `serena_initial_instructions`
 
 2. **Get Current Configuration**
    - Use `mcp_serena_get_current_config` to verify Serena version, active project, context, and modes

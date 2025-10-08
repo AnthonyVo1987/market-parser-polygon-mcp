@@ -18,7 +18,9 @@ When you invoke `/resync`, I will:
 • High level summary of current status of the project
 • High level summary of Last Completed Task Summary from CLAUDE.md
 
-3. Use SERENA 'initial_instructions' tool understand optimal Serena Tools usage for new tasks
+3. Get Serena Initial Instructions to understand optimal Serena Tools usage:
+   - **Primary Method (Preferred)**: Use `mcp__serena__initial_instructions` tool
+   - **Fallback Method**: If tool fails, use `mcp__serena__read_memory` with memory name: `serena_initial_instructions`
 
 4. DO NOT PERFORM ANY NEW TASKS YET OR READ ANY OTHER FILES OR DOCS OTHER THAN CLAUDE.md for resync
 
