@@ -39,13 +39,15 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Investigate & fix new tool 'get_call_options_chain' & 'get_put_options_chain' failures from 'tmp/cli_output_loop1_2025-10-09_10-26.log':
+1. Implement Options Chain Tables - Pure prompt engineering
 
-- Both new tools are incorrectly showing MORE than just 10x strikes, flooding the entire message.  It was supposed to be ENFORCED to have 10x total strikes MAX for EACH of the tool calls, so input parameters are incorrect by allowing more than 10x strikes fetched
+2. Implement Emoji Responses - Pure prompt engineering
 
-2. Update 'test_cli_regression.sh' to now output the temporary test run log under the top level 'tmp' folder in the PROJECT.  Currently the logs are outputting to the ROOT LINUX 'tmp', which is system level and is a violation.. We should NOT be creating files or logs outside the scope of the project folder hierchy.
+3. Update 'test_cli_regression.sh' with new test cases for both SPY & NVDA: After "Get the xx Put Options Chain Expiring this Friday", add these new test cases:
 
-3. Validate by running 1x loop of 'test_cli_regression.sh' AND ACTUALLY VIEW THE RESPONSES AND DO NOT BLINDLY JUST SEE TEST PASSED WITHOUT SEEING THE ACTUAL CONTENT.  Fix any issues in code and\or script if needed After validating notify user to review results first, so do NOT proceed with serenea updates or commits yet until user reviews the latest test results of your fixes to confirm the issues are truly fixed or not.
+- "Analyze the Options Chain Data for <ticker> and provide potential Call & Put Wall(s) Strike Prices"
+
+4. Validate by running 1x loop of 'test_cli_regression.sh' AND ACTUALLY VIEW THE RESPONSES AND DO NOT BLINDLY JUST SEE TEST PASSED WITHOUT SEEING THE ACTUAL CONTENT.  Fix any issues in code and\or script if needed After validating notify user to review results first, so do NOT proceed with serenea updates or commits yet until user reviews the latest test results of your fixes to confirm the issues are truly fixed or not.
 
 ---
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# CLI Test Regression Script - NEW 36-Test Suite with Chat History Analysis
-# Tests all 36 standardized test prompts sequentially in a SINGLE CLI session
+# CLI Test Regression Script - NEW 38-Test Suite with Chat History Analysis
+# Tests all 38 standardized test prompts sequentially in a SINGLE CLI session
 # Designed to validate parallel tool calls (max 3) and chat history data reuse
 # Properly handles session persistence and accurate response time tracking
 #
@@ -13,10 +13,10 @@
 #     ./test_cli_regression.sh 10  # Run 10 loops (max)
 #
 # Test Coverage:
-# - SPY Test Sequence: Tests 1-15 (15 tests - includes 2 options chain tests)
-# - NVDA Test Sequence: Tests 16-30 (15 tests - includes 2 options chain tests)
-# - Multi-Ticker Test Sequence: Tests 31-36 (6 tests)
-# Total: 36 tests per loop
+# - SPY Test Sequence: Tests 1-16 (16 tests - includes 2 options chain tests + 1 wall analysis)
+# - NVDA Test Sequence: Tests 17-32 (16 tests - includes 2 options chain tests + 1 wall analysis)
+# - Multi-Ticker Test Sequence: Tests 33-38 (6 tests)
+# Total: 38 tests per loop
 #
 # Test Design Philosophy:
 # - Sequential ticker testing validates chat history analysis
@@ -56,19 +56,19 @@ RESULTS_DIR="test-reports"
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 CLI Test Regression - NEW 36 Test Suite${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - NEW 38 Test Suite${NC}"
 echo -e "${CYAN}===========================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 36 tests in same session per loop)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 38 tests in same session per loop)"
 echo -e "Test Features: ${GREEN}Parallel Tool Calls (max 3)${NC}, ${GREEN}Chat History Analysis${NC}, ${GREEN}Options Chain Tests${NC}"
 echo ""
 
-# The 36 standardized test prompts organized by ticker sequence
+# The 38 standardized test prompts organized by ticker sequence
 declare -a prompts=(
-    # SPY Test Sequence (Tests 1-15)
+    # SPY Test Sequence (Tests 1-16)
     "Market Status"
     "Current Price: \$SPY"
     "Today's Closing Price: \$SPY"
@@ -84,7 +84,8 @@ declare -a prompts=(
     "Technical Analysis: \$SPY"
     "Get the SPY Call Options Chain Expiring this Friday"
     "Get the SPY Put Options Chain Expiring this Friday"
-    # NVDA Test Sequence (Tests 16-30)
+    "Analyze the Options Chain Data for SPY and provide potential Call & Put Wall(s) Strike Prices"
+    # NVDA Test Sequence (Tests 17-31)
     "Market Status"
     "Current Price: \$NVDA"
     "Today's Closing Price: \$NVDA"
@@ -100,7 +101,8 @@ declare -a prompts=(
     "Technical Analysis: \$NVDA"
     "Get the NVDA Call Options Chain Expiring this Friday"
     "Get the NVDA Put Options Chain Expiring this Friday"
-    # Multi-Ticker Test Sequence (Tests 31-36)
+    "Analyze the Options Chain Data for NVDA and provide potential Call & Put Wall(s) Strike Prices"
+    # Multi-Ticker Test Sequence (Tests 32-37)
     "Market Status"
     "Current Price: \$WDC, \$AMD, \$GME"
     "Today's Closing Price: \$WDC, \$AMD, \$GME"
@@ -126,29 +128,31 @@ declare -a test_names=(
     "Test_13_SPY_Technical_Analysis"
     "Test_14_SPY_Call_Options_Chain"
     "Test_15_SPY_Put_Options_Chain"
-    # NVDA Test Sequence (Tests 16-30)
-    "Test_16_Market_Status"
-    "Test_17_NVDA_Current_Price"
-    "Test_18_NVDA_Today_Closing_Price"
-    "Test_19_NVDA_Yesterday_Closing_Price"
-    "Test_20_NVDA_Last_Week_Performance"
-    "Test_21_NVDA_Previous_Week_Friday_Price"
-    "Test_22_NVDA_Last_2_Weeks_Daily_Bars"
-    "Test_23_NVDA_RSI_14"
-    "Test_24_NVDA_MACD"
-    "Test_25_NVDA_SMA_20_50_200"
-    "Test_26_NVDA_EMA_20_50_200"
-    "Test_27_NVDA_Support_Resistance"
-    "Test_28_NVDA_Technical_Analysis"
-    "Test_29_NVDA_Call_Options_Chain"
-    "Test_30_NVDA_Put_Options_Chain"
-    # Multi-Ticker Test Sequence (Tests 31-36)
-    "Test_31_Multi_Market_Status"
-    "Test_32_Multi_Current_Price_WDC_AMD_GME"
-    "Test_33_Multi_Today_Closing_Price_WDC_AMD_GME"
-    "Test_34_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
-    "Test_35_Multi_Last_Week_Performance_WDC_AMD_GME"
-    "Test_36_Multi_Last_2_Weeks_Daily_Bars_WDC_AMD_GME"
+    "Test_16_SPY_Options_Wall_Analysis"
+    # NVDA Test Sequence (Tests 17-31)
+    "Test_17_Market_Status"
+    "Test_18_NVDA_Current_Price"
+    "Test_19_NVDA_Today_Closing_Price"
+    "Test_20_NVDA_Yesterday_Closing_Price"
+    "Test_21_NVDA_Last_Week_Performance"
+    "Test_22_NVDA_Previous_Week_Friday_Price"
+    "Test_23_NVDA_Last_2_Weeks_Daily_Bars"
+    "Test_24_NVDA_RSI_14"
+    "Test_25_NVDA_MACD"
+    "Test_26_NVDA_SMA_20_50_200"
+    "Test_27_NVDA_EMA_20_50_200"
+    "Test_28_NVDA_Support_Resistance"
+    "Test_29_NVDA_Technical_Analysis"
+    "Test_30_NVDA_Call_Options_Chain"
+    "Test_31_NVDA_Put_Options_Chain"
+    "Test_32_NVDA_Options_Wall_Analysis"
+    # Multi-Ticker Test Sequence (Tests 33-38)
+    "Test_33_Multi_Market_Status"
+    "Test_34_Multi_Current_Price_WDC_AMD_GME"
+    "Test_35_Multi_Today_Closing_Price_WDC_AMD_GME"
+    "Test_36_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
+    "Test_37_Multi_Last_Week_Performance_WDC_AMD_GME"
+    "Test_38_Multi_Last_2_Weeks_Daily_Bars_WDC_AMD_GME"
 )
 
 # Initialize test tracking
@@ -190,7 +194,7 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     echo "exit" >> "$INPUT_FILE"
 
     echo -e "${CYAN}🚀 Starting CLI Regression Test (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
-    echo -e "${CYAN}Session will run all 36 tests sequentially${NC}"
+    echo -e "${CYAN}Session will run all 38 tests sequentially${NC}"
     echo -e "Output file: $OUTPUT_FILE"
     echo ""
 
