@@ -39,58 +39,24 @@ SUCCESS CRITERIA:
 
 <Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Change current "service_tier": "flex" to "service_tier": "default" in src/backend/services/agent_service.py to fix OPenAI Compute Resources Rate Limiting issues using "flex" service_tier.  Flex is cheaper, BUT has lower performance, so we wil ljust use service_tier default for now since we are still prototyping and testing.  In the future, there will be a TBD feature to put back flex and have a fallback to default in case we got rate limited, but for now , we will go with just default.
+1. Need to enforce AI Agent that they MUST FETCH SMA\EMA 20/50/200 when requested and cannot skip for TA fetching.  This applies for ANY of the TA tools to be enforced: RSI, MCD, SMA, EMA etc - AI Agent CANNOT skip TA tool calls unless there was a already a previous tool call for the data.
 
-2. Update test script 'test_cli_regression.sh' with test cases changes that re-order the testing sequences & modifies some test cases:
-'
+Here was the incorrect AI Agent logic why they skipped SMA20 that violated: " • I pulled SMA-50 and SMA-200; SMA-20 value is approximated from latest 20-day
+   window data (rounded here as 178.22). If you want the exact 20-day figure, I
+   can fetch it."
 
-   # SPY Test Sequence
+AI Agent CANNOT APPROXIMATE TA. THe only way they can skip a TA tool call is IF there was a previous TA tool call for example SMA20, then of course they can re-use the data from the previos TA tool call.  But in this case, the AI Agent did NOT have a previous SMA-20 tool call, and instead approximated it from a 20 day data window etc, which is a violation.
 
-    "Market Status"
-    "Current Price: \$SPY"
-    "Today's Closing Price: \$SPY"
-    "Yesterday's Closing Price: \$SPY"
-    "Last week's Performance: \$SPY"
-    "Stock Price on the previous week's Friday: \$SPY"
-    "Daily Stock Price bars Analysis from the last 2 trading weeks: \$SPY"
-    "RSI-14: \$SPY"
-    "MACD: \$SPY"
-    "SMA 20/50/200: \$SPY"
-    "EMA 20/50/200: SPY"
-    "Support & Resistance Levels: \$SPY"
-    "Technical Analysis: \$SPY"
-    "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$SPY"
-    "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$SPY"
+"
 
-   # NVDA Test Sequence
+- Test 10 (SPY SMA) - Lines 321-340:
+- Response shows "SPY SMA-20: 650.12" but Tools Used only shows window=50 and window=200
+- SMA-20 value was NOT actually fetched from API - this is either hallucinated or using stale cache!
+"
 
-    "Market Status"
-    "Current Price: \$NVDA"
-    "Today's Closing Price: \$NVDA"
-    "Yesterday's Closing Price: \$NVDA"
-    "Last week's Performance: \$NVDA"
-    "Stock Price on the previous week's Friday: \$NVDA"
-    "Daily Stock Price bars Analysis from the last 2 trading weeks: \$NVDA"
-    "RSI-14: \$NVDA"
-    "MACD: \$NVDA"
-    "SMA 20/50/200: \$NVDA"
-    "EMA 20/50/200: NVDA"
-    "Support & Resistance Levels: \$NVDA"
-    "Technical Analysis: \$NVDA"
-    "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$NVDA"
-    "Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$NVDA"
+2. Completely remove the AI Agent Tool 'get_options_quote_single' and any AI Agent instructions related to it, and also remove the test cases in 'test_cli_regression.sh' for "Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices):" & ""Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices):".  The current tool is NOT very useful to ONLY grab a single options quote.  SO there will be a later TBD feature to implement a new tool that will fetch the FULL Options Chain quotes that will fetch multiple strikes that is more efficient.  We will remove the current inefficient single options quote for now
 
-   # Multi-Ticker Test Sequence
-
-    "Market Status"
-    "Current Price: \$WDC, \$AMD, \$GME"
-    "Today's Closing Price: \$WDC, \$AMD, \$GME"
-    "Yesterday's Closing Price: \$WDC, \$AMD, \$GME"
-    "Last week's Performance: \$WDC, \$AMD, \$GME"
-    "Daily bars Analysis from the last 2 trading weeks: \$WDC, \$AMD, \$GME"
-'
-
-3. Validate updated 'test_cli_regression.sh' test script with the new test casee and verify and confirm results are expected
+3. Validate fixes by re-running 1x loop of 'test_cli_regression.sh' AND ACTUALLY VIEW THE RESPONSES AND DO NOT BLINDLY JUST SEE TEST PASSED WITHOUT SEEING THE ACTUAL CONTENT.  After validating  notify user to review results first, so do NOT proceed with serenea updates or commits yet until user reviews the latest test results of your fixes to confirm the issues are trul fixed or not.
 
 ---
 

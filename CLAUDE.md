@@ -12,76 +12,106 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-## CLI Test Suite Restructuring & Service Tier Optimization
+## TA Tool Enforcement & Options Tool Removal
 
 **Status:** ✅ Implemented (October 8, 2025)
-**Feature:** OpenAI service tier optimization and comprehensive CLI test suite restructuring
+**Feature:** Enforce strict TA indicator fetching and remove deprecated options tool
+
+### Problem Statement
+
+1. **TA Tool Enforcement Issue**: AI Agent was approximating SMA-20 from 20-day OHLC data instead of fetching via `get_ta_sma` tool
+   - Violation example: "I pulled SMA-50 and SMA-200; SMA-20 value is approximated from latest 20-day window data"
+   - Agent was NOT making required tool calls for all requested indicators
+
+2. **Options Tool Inefficiency**: `get_options_quote_single` only fetches single option quotes (inefficient)
+   - Will be replaced with full options chain fetcher in future
+   - Needed complete removal from codebase
 
 ### Changes Implemented
 
-1. **Service Tier Optimization** (`src/backend/services/agent_service.py:367`)
-   - Changed from `service_tier: "flex"` to `service_tier: "default"`
-   - **Reason**: Prototyping phase requires better performance; "flex" tier was causing compute resources rate limiting
-   - **Impact**: Improved response consistency and throughput for development testing
+**1. Agent Instructions - TA Enforcement** (`src/backend/services/agent_service.py`)
+- Added comprehensive TA enforcement rules in RULE #7:
+  - Agent **MUST FETCH** each requested TA indicator via dedicated tool calls
+  - Agent **CANNOT APPROXIMATE** or calculate TA values from OHLC data
+  - Data reuse ONLY allowed if EXACT same indicator was previously fetched
+  - Explicit examples of violations and correct behavior
 
-2. **CLI Test Suite Restructuring** (`test_cli_regression.sh`)
-   - Expanded from 35 to 36 tests with ticker-based organization
-   - Implemented dynamic relative dates for sustainability (no hardcoded dates requiring updates)
-   - New structure: SPY sequence (15 tests) + NVDA sequence (15 tests) + Multi-ticker sequence (6 tests)
+**2. Options Tool Complete Removal**
+- **Agent Service** (`src/backend/services/agent_service.py`):
+  - Removed `get_options_quote_single` from imports and tools list
+  - Deleted entire RULE #3 about options
+  - Updated tool count from 11 to 10
+  - Renumbered subsequent rules (RULE #4→#3, RULE #5→#4, etc.)
 
-### Test Suite Structure
+- **Tools Definition** (`src/backend/tools/polygon_tools.py`):
+  - Completely removed `get_options_quote_single` function (176 lines deleted)
+  - Removed docstring references to options tool (3 locations in OHLC tools)
 
-**SPY Test Sequence (Tests 1-15):**
-- Market Status check
-- Current Price, Today's Close, Yesterday's Close
-- Last week's performance, previous week's Friday price (dynamic date)
-- Daily bars from last 2 trading weeks (dynamic date)
-- Technical indicators: RSI-14, MACD, SMA/EMA (20/50/200)
-- Support & Resistance analysis
-- Technical Analysis summary
-- Option quotes (3 calls above price, 3 puts below price)
-
-**NVDA Test Sequence (Tests 16-30):**
-- Same pattern as SPY (15 tests)
-
-**Multi-Ticker Test Sequence (Tests 31-36):**
-- Market Status check
-- Multi-ticker queries: WDC, AMD, GME (GME replaced INTC)
-- Current prices, technical analysis, volume comparisons
-- Sector performance, relative strength analysis
+- **Test Suite** (`test_cli_regression.sh`):
+  - Removed 4 options test cases (2 SPY Call/Put, 2 NVDA Call/Put)
+  - Updated test count from 36 to 32 tests
+  - Updated test numbering: SPY 13, NVDA 13, Multi 6
+  - Updated all comments and headers
 
 ### Test Results
 
 ```
-Total Tests: 36/36 PASSED ✅
+Total Tests: 32/32 PASSED ✅ (reduced from 36)
 Success Rate: 100%
-Average Response Time: 10.44s (EXCELLENT performance)
+Average Response Time: 7.88s (EXCELLENT performance)
+Session Duration: 4 min 15 sec
 Session Persistence: VERIFIED (single session)
-Test Report: test-reports/test_cli_regression_loop1_2025-10-08_14-49.log
+Test Report: test-reports/test_cli_regression_loop1_2025-10-08_17-52.log
 ```
 
-### Dynamic Date Improvements
+### Critical Verification - TA Enforcement
 
-**Before (Hardcoded):**
-- "Stock Price on 1/2/25: $SPY" (requires updates over time)
+**Test 10 (SPY SMA 20/50/200) - VERIFIED ✅**
+```
+Tools Used:
+• get_ta_sma(ticker='SPY', window=20) - Retrieved SMA-20
+• get_ta_sma(ticker='SPY', window=50) - Retrieved SMA-50
+• get_ta_sma(ticker='SPY', window=200) - Retrieved SMA-200
+```
+**Result:** Agent made ALL 3 tool calls - NO approximation ✅
 
-**After (Relative):**
-- "Stock Price on the previous week's Friday: $SPY" (always valid)
-- "Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY" (always valid)
+**Test 23 (NVDA SMA 20/50/200) - VERIFIED ✅**
+```
+Response: NVDA SMA-20: 180.88, SMA-50: 178.78, SMA-200: 143.90
+Tools Used:
+• get_ta_sma(ticker='NVDA', window=20) - Retrieved SMA-20
+• get_ta_sma(ticker='NVDA', window=50) - Retrieved SMA-50
+• get_ta_sma(ticker='NVDA', window=200) - Retrieved SMA-200
+```
+**Result:** Agent made ALL 3 tool calls - NO approximation ✅
+
+**Additional Verification:**
+- ✅ No "approximat" language found in any test responses
+- ✅ No "option" references in test output (tool completely removed)
+- ✅ All TA tests show explicit tool calls for each requested indicator
 
 ### Implementation Approach
 
-- Used Sequential-Thinking tool for systematic planning (11 thoughts total)
-- Used Serena tools for token-efficient code exploration
+- Used Sequential-Thinking tool for systematic research and planning (6 thoughts)
+- Used Serena tools for token-efficient code analysis and symbol manipulation
 - Created comprehensive TODO_task_plan.md with 5-phase workflow
+- **CRITICAL**: Verified actual response content (not just PASS status) per user requirement
 - Executed mandatory CLI testing before documentation updates
 - All changes validated with 100% test pass rate
 
+### Impact
+
+- **Tool Count**: Reduced from 11 to 10 (removed options tool)
+- **Test Suite**: Reduced from 36 to 32 tests (removed 4 options tests)
+- **TA Accuracy**: Enforced - agent now MUST fetch all requested indicators
+- **Code Quality**: Cleaner codebase with deprecated tool removed
+- **Performance**: 7.88s avg response time (EXCELLENT rating)
+
 ### References
 
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_14-49.log`
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_17-52.log`
 - **Implementation Plan**: `TODO_task_plan.md`
-- **Serena Memories**: `testing_procedures.md`, `tech_stack.md`
+- **Serena Memories**: `tech_stack.md` (updated with tool count and TA enforcement)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -408,7 +438,7 @@ Ask questions like:
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 36 tests)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 32 tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
@@ -421,7 +451,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run ./test_cli_regression.sh to execute 36-test suite
+# Testing: Run ./test_cli_regression.sh to execute 32-test suite
 
 # Code quality
 npm run lint              # All linting

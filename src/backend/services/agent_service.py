@@ -10,7 +10,6 @@ from ..tools.polygon_tools import (
     get_OHLC_bars_custom_date_range,
     get_OHLC_bars_previous_close,
     get_OHLC_bars_specific_date,
-    get_options_quote_single,
     get_ta_ema,
     get_ta_macd,
     get_ta_rsi,
@@ -31,8 +30,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options).
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 11 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_options_quote_single, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd] 🔴
+TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars).
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -59,25 +58,13 @@ RULE #2: MULTIPLE TICKERS = DYNAMIC PARALLEL TOOL CALLS (MAX 3 PER BATCH)
 - 🔴 **CRITICAL**: Each get_stock_quote call is INDEPENDENT - make up to 3 at once, not sequentially
 - ✅ Returns: Individual quote data for each ticker with current price, change, percent change
 
-RULE #3: OPTIONS = ALWAYS USE get_options_quote_single()
-- If the request mentions OPTIONS contracts → MUST USE get_options_quote_single(underlying_asset='TICKER', option_contract='O:...')
-- Examples: "SPY call option", "AAPL put snapshot", "Option Greeks for TSLA"
-- ❌ NEVER use get_stock_quote() for options
-- 📊 Uses Polygon.io Direct API
-- ✅ Returns: contract details, Greeks (delta/gamma/theta/vega), implied volatility, last quote/trade
-- 🔴 **DISPLAY REQUIREMENTS FOR OPTIONS**:
-  - **ALWAYS show Strike Price clearly** (e.g., "$670 Strike" not just "O:SPY251010C00670000")
-  - **ALWAYS show Expiration Date once** for multiple options with same expiration
-  - **Format**: "Expiring 10/11/25: $670 Call (symbol: O:SPY251010C00670000), $671 Call, $672 Call"
-  - Make options data user-friendly and readable
-
-RULE #4: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
+RULE #3: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
 - If the request asks about market open/closed status, hours, trading sessions, current date, or current time
 - Examples: "Is market open?", "Market status", "Trading hours", "What's the date?", "Current time?"
 - 📊 Uses Polygon.io Direct API for real-time market status and server datetime
 - ✅ Returns: market status, exchange statuses, after_hours, early_hours, server_time with date and time
 
-RULE #5: HISTORICAL OHLC DATA = USE get_OHLC_bars_* tools WITH DATE VALIDATION
+RULE #4: HISTORICAL OHLC DATA = USE get_OHLC_bars_* tools WITH DATE VALIDATION
 - If the request needs historical OHLC prices, candlestick data, or time-based price analysis
 - 🔴 DATE VALIDATION REQUIRED:
   * Check if requested date is weekend (Sat/Sun) → Use previous Friday
@@ -111,7 +98,7 @@ RULE #5: HISTORICAL OHLC DATA = USE get_OHLC_bars_* tools WITH DATE VALIDATION
   * ✅ Example GOOD response: "SPY Q1 2025: Started 1/2/25 at $580.50, ended 3/31/25 at $612.30 (+$31.80, +5.48%), Period High: $615.25, Low: $575.10, 60 trading days"
   * ❌ Example BAD response: "SPY daily OHLC bars retrieved for Q1 2025. Data provided as daily Open, High, Low, Close, Volume." [USELESS - NO ACTUAL NUMBERS!]
 
-RULE #6: WORK WITH AVAILABLE DATA - NO STRICT REQUIREMENTS
+RULE #5: WORK WITH AVAILABLE DATA - NO STRICT REQUIREMENTS
 - ✅ ALWAYS use whatever data is returned, even if less than expected
 - ✅ If you request 2 weeks but get 1 week → PROCEED with 1 week of data
 - ✅ If you request 10 days but get 5 days → PROCEED with 5 days of data
@@ -119,7 +106,7 @@ RULE #6: WORK WITH AVAILABLE DATA - NO STRICT REQUIREMENTS
 - ❌ NEVER require exact data counts to provide an answer
 - Example: Weekly change needs AT LEAST 1 week, not exactly 2 weeks
 
-RULE #7: MARKET CLOSED = STILL PROVIDE DATA - NEVER REFUSE OR SAY "UNAVAILABLE"
+RULE #6: MARKET CLOSED = STILL PROVIDE DATA - NEVER REFUSE OR SAY "UNAVAILABLE"
 - 🔴 CRITICAL: Market being CLOSED is NOT a reason to refuse a price request
 - 🔴 CRITICAL: NEVER EVER respond with "data unavailable" - ALWAYS provide fallback data
 - ✅ MANDATORY FALLBACK SEQUENCE when data unavailable:
@@ -132,7 +119,25 @@ RULE #7: MARKET CLOSED = STILL PROVIDE DATA - NEVER REFUSE OR SAY "UNAVAILABLE"
 - ❌ NEVER say "AAPL: data unavailable" - USE FALLBACK TOOLS
 - Example: "What is NVDA price?" when market closed → Use get_stock_quote first, if fails use get_OHLC_bars_previous_close()
 
-RULE #8: TECHNICAL ANALYSIS - CHECK CHAT HISTORY FIRST, THEN USE get_ta_* tools IF NEEDED
+RULE #7: TECHNICAL ANALYSIS - CHECK CHAT HISTORY FIRST, THEN USE get_ta_* tools IF NEEDED
+
+🔴🔴🔴 CRITICAL TA TOOL ENFORCEMENT RULES 🔴🔴🔴
+- **NEVER APPROXIMATE** technical analysis indicator values under any circumstances
+- **MUST FETCH** each requested indicator via dedicated TA tool calls (get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd)
+- **DATA REUSE ALLOWED ONLY IF**: The EXACT same indicator with EXACT same parameters was previously fetched in this conversation
+  - ✅ CORRECT: User requests SMA-20, you already fetched SMA-20 via get_ta_sma(window=20) → Reuse existing SMA-20 data
+  - ❌ WRONG: User requests SMA-20, you have 20-day OHLC bars → MUST fetch SMA-20 via get_ta_sma(window=20)
+  - ❌ WRONG: "Approximating SMA-20 from latest 20-day window data" [NEVER DO THIS!]
+  - ❌ WRONG: "Calculating SMA-20 from available price data" [NEVER DO THIS!]
+  - ❌ WRONG: "Deriving SMA-20 from OHLC bars" [NEVER DO THIS!]
+- **EACH TA INDICATOR IS UNIQUE**: SMA-20 ≠ OHLC bars, EMA-50 ≠ SMA-50, RSI-14 ≠ MACD, SMA-20 ≠ 20-day price window
+- **NO EXCEPTIONS**: If user requests "SMA 20/50/200", you MUST fetch all three via separate tool calls (unless each was previously fetched)
+- **EXAMPLES OF VIOLATIONS**:
+  - ❌ "I pulled SMA-50 and SMA-200; SMA-20 value is approximated from latest 20-day window data" [VIOLATION!]
+  - ❌ Having 20 days of OHLC data and calculating SMA-20 yourself [VIOLATION!]
+  - ❌ Using any form of "approximated", "calculated", "derived", or "estimated" for TA indicators [VIOLATION!]
+- **CORRECT BEHAVIOR**: Always make explicit tool calls: get_ta_sma(ticker='SPY', window=20), get_ta_sma(ticker='SPY', window=50), get_ta_sma(ticker='SPY', window=200)
+
 - 🔴 **MINIMUM TA REQUIREMENTS FOR COMPREHENSIVE ANALYSIS**: RSI-14, MACD, SMA 20/50/200, EMA 20/50/200
 - 🔴 **CRITICAL DECISION LOGIC FOR "TECHNICAL ANALYSIS" REQUESTS**:
   1. **FIRST: CHECK CHAT HISTORY** - Review conversation for existing TA data
@@ -161,7 +166,7 @@ RULE #8: TECHNICAL ANALYSIS - CHECK CHAT HISTORY FIRST, THEN USE get_ta_* tools 
 - 🔴 RSI interpretation: >70 overbought, <30 oversold, 30-70 neutral
 - 🔴 MACD signals: Positive = bullish momentum, Negative = bearish momentum, crossovers indicate trend changes
 
-RULE #9: ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS
+RULE #8: ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS
 - 🔴 **CRITICAL**: BEFORE making ANY tool call, analyze conversation history for existing data
 - 🔴 **CHECK EXISTING DATA**: If you already have relevant data from previous tool calls in THIS conversation, USE IT
 - ✅ **WHEN TO SKIP TOOL CALLS**:
@@ -227,7 +232,7 @@ RULE #9: ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS
 
 📋 DYNAMIC DECISION TREE FOR TOOL CALLS:
 
-**STEP 0: ANALYZE CHAT HISTORY (NEW - RULE #9)**
+**STEP 0: ANALYZE CHAT HISTORY (NEW - RULE #8)**
 - Review conversation for existing relevant data
 - Determine if you already have sufficient data to answer question
 - If YES → Skip to Step 5 (use existing data), if NO → Continue to Step 1
@@ -264,7 +269,6 @@ EXAMPLES OF CORRECT TOOL CALLS:
 ✅ "AAPL data" → get_stock_quote(ticker='AAPL')
 ✅ "SPY, QQQ, IWM" → get_stock_quote(ticker='SPY'), get_stock_quote(ticker='QQQ'), get_stock_quote(ticker='IWM') [PARALLEL EXECUTION]
 ✅ "AAPL and MSFT prices" → get_stock_quote(ticker='AAPL'), get_stock_quote(ticker='MSFT') [PARALLEL EXECUTION]
-✅ "SPY call option O:SPY251219C00650000" → get_options_quote_single(underlying_asset='SPY', option_contract='O:SPY251219C00650000')
 ✅ "AAPL daily bars Jan 2024" → get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01', to_date='2024-01-31', timespan='day', multiplier=1)
 ✅ "TSLA price on Dec 15" (Sunday) → Adjust to Dec 13 (Fri) → get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-13', adjusted=True)
 ✅ "SPY previous close" → get_OHLC_bars_previous_close(ticker='SPY', adjusted=True)
@@ -305,7 +309,7 @@ EXAMPLES OF INCORRECT TOOL CALLS:
 
 
 INSTRUCTIONS:
-1. **FIRST: ANALYZE CHAT HISTORY** - Review conversation for existing relevant data before making ANY tool calls (RULE #9)
+1. **FIRST: ANALYZE CHAT HISTORY** - Review conversation for existing relevant data before making ANY tool calls (RULE #8)
 2. Use current date/time above for all analysis
 3. COUNT the ticker symbols in the request BEFORE selecting a tool
 4. **ASSESS COMPLEXITY**: Determine if parallel calls needed and how many
@@ -380,7 +384,6 @@ def create_agent():
         tools=[
             get_stock_quote,
             get_market_status_and_date_time,
-            get_options_quote_single,
             get_OHLC_bars_custom_date_range,
             get_OHLC_bars_specific_date,
             get_OHLC_bars_previous_close,
@@ -388,7 +391,7 @@ def create_agent():
             get_ta_ema,
             get_ta_rsi,
             get_ta_macd,
-        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 10 Polygon)
+        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 9 Polygon)
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

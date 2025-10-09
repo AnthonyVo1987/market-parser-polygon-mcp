@@ -207,7 +207,9 @@
       "mcp__docs-openai-cookbook__fetch_generic_url_content",
       "mcp__docs-openai-python__fetch_generic_url_content",
       "mcp__docs-openai-agents__fetch_generic_url_content",
-      "WebFetch(domain:platform.openai.com)"
+      "WebFetch(domain:platform.openai.com)",
+      "WebFetch(domain:polygon.io)",
+      "Read(///**)"
     ],
     "deny": [],
     "ask": [],

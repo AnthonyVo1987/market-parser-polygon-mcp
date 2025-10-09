@@ -27,14 +27,14 @@
   - PWA support with vite-plugin-pwa
 
 ### Data Sources
-- **Polygon.io**: Direct Python API integration (10 tools)
+- **Polygon.io**: Direct Python API integration (9 tools, updated Oct 8, 2025)
 - **Finnhub**: Custom Python API integration (1 tool)
-- **Total AI Agent Tools**: 11 (no MCP overhead)
+- **Total AI Agent Tools**: 10 (reduced from 11, updated Oct 8, 2025)
 
 ### Development Tools
 - **Python Linting**: pylint, black, isort, mypy
 - **JS/TS Linting**: ESLint, Prettier, TypeScript compiler
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 36 tests, 100% pass rate)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 32 tests, 100% pass rate)
 - **Performance**: Lighthouse CI, React Scan
 - **Version Control**: Git
 
@@ -69,14 +69,13 @@
   - Frontend: TypeScript types and React component display
 - **Cache Optimization**: Agent instructions cached (sent with every message)
 
-### Direct API Tools (11 Total)
+### Direct API Tools (10 Total - Updated Oct 8, 2025)
 
 **Finnhub Custom API (1 tool):**
 - `get_stock_quote` - Real-time stock quotes from Finnhub (supports parallel calls for multiple tickers)
 
-**Polygon Direct API (10 tools):**
+**Polygon Direct API (9 tools - Updated Oct 8, 2025):**
 - `get_market_status_and_date_time` - Market status and current datetime
-- `get_options_quote_single` - Single option quote
 - `get_OHLC_bars_custom_date_range` - OHLC bars for custom date range
 - `get_OHLC_bars_specific_date` - OHLC bars for specific date
 - `get_OHLC_bars_previous_close` - Previous close OHLC bars
@@ -85,12 +84,30 @@
 - `get_ta_rsi` - Relative Strength Index (RSI)
 - `get_ta_macd` - Moving Average Convergence Divergence (MACD)
 
+**REMOVED Oct 8, 2025:**
+- `get_options_quote_single` - Single option quote (removed - inefficient, will be replaced with full options chain tool in future)
+
+### TA Tool Enforcement (Updated Oct 8, 2025)
+
+**CRITICAL AGENT INSTRUCTION RULES:**
+- AI Agent **MUST FETCH** each requested TA indicator via dedicated tool calls
+- AI Agent **CANNOT APPROXIMATE** or calculate TA values from OHLC data
+- **Data Reuse Policy**: Only allowed if EXACT same indicator with EXACT same parameters was previously fetched
+- **Examples of VIOLATIONS**:
+  - ❌ "I pulled SMA-50 and SMA-200; SMA-20 value is approximated from latest 20-day window data"
+  - ❌ Having 20 days of OHLC data and calculating SMA-20 manually
+  - ❌ Using "approximated", "calculated", "derived", or "estimated" for TA indicators
+
+**Enforcement Location**: `src/backend/services/agent_service.py` - RULE #7
+**Validation**: Test 10 (SPY SMA) and Test 23 (NVDA SMA) verified all 3 tool calls made (no approximation)
+
 ### Migration History
 - **Phase 4 Complete** (Oct 2025): ALL MCP tools migrated to Direct API
 - **MCP Server**: Completely removed
 - **Performance Gain**: 70% faster (removed MCP server overhead)
 - **Architecture**: Direct Python API integration replaces MCP entirely
 - **Phase 5 Complete** (Oct 2025): Removed get_stock_quote_multi wrapper, now using parallel get_stock_quote calls
+- **Phase 6 Complete** (Oct 8, 2025): Removed get_options_quote_single, reduced tool count to 10
 
 ## Development Environment
 
@@ -175,19 +192,19 @@ dev = [
 
 ## Performance Metrics
 
-### Current Performance (Post-Service-Tier-Change Oct 8, 2025)
+### Current Performance (Oct 8, 2025 - Post-TA-Enforcement & Options-Removal)
+- **Average Response Time**: 7.88s (EXCELLENT rating)
+- **Success Rate**: 100% (32/32 tests passed)
+- **Performance Range**: 3.861s - 15.317s
+- **Test Suite**: 32 tests (SPY 13 + NVDA 13 + Multi 6)
+- **Session Duration**: 4 min 15 sec
+- **Consistency**: High (all tests completed successfully)
+
+### Previous Performance (Post-Service-Tier-Change Oct 8, 2025)
 - **Average Response Time**: 10.44s (EXCELLENT rating)
 - **Success Rate**: 100% (36/36 tests passed)
 - **Performance Range**: 2.188s - 31.599s
-- **Consistency**: High (all tests completed successfully)
-- **Parallel Execution**: OpenAI Agents SDK handles parallel get_stock_quote calls natively
 - **Test Suite**: 36 tests organized by ticker (SPY 15 + NVDA 15 + Multi 6)
-
-### Previous Performance (Post-Tool-Removal Oct 7, 2025)
-- **Average Response Time**: 7.31s (EXCELLENT rating)
-- **Success Rate**: 100% (27/27 tests passed)
-- **Performance Range**: 4.848s - 11.580s
-- **Test Suite**: 27 tests (mixed organization)
 
 ### Optimization Features
 - **Direct API**: No MCP server overhead
@@ -196,16 +213,17 @@ dev = [
 - **Response Timing**: FastAPI middleware for precise measurement
 - **Quick Response**: Minimal tool calls enforcement for speed
 - **Service Tier**: "default" for better prototyping performance
+- **TA Tool Enforcement**: Prevents unnecessary approximation, ensures data accuracy
 
 ## Testing Infrastructure (Updated Oct 8, 2025)
 
 ### CLI Regression Test Suite
 - **Script**: `test_cli_regression.sh`
-- **Total Tests**: 36 tests (updated from 27)
+- **Total Tests**: 32 tests (reduced from 36 - removed 4 options tests)
 - **Test Organization**: Ticker-based sequences
-  - SPY Test Sequence: Tests 1-15 (15 tests)
-  - NVDA Test Sequence: Tests 16-30 (15 tests)
-  - Multi-Ticker Test Sequence: Tests 31-36 (6 tests - WDC, AMD, GME)
+  - SPY Test Sequence: Tests 1-13 (13 tests)
+  - NVDA Test Sequence: Tests 14-26 (13 tests)
+  - Multi-Ticker Test Sequence: Tests 27-32 (6 tests - WDC, AMD, GME)
 - **Dynamic Dates**: Queries use relative dates (no hardcoded dates requiring updates)
   - Example: "Stock Price on the previous week's Friday: $SPY"
   - Example: "Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY"
@@ -213,12 +231,13 @@ dev = [
 - **Calculation Engine**: awk-based (universal compatibility, no bc dependency)
 - **Output Format**: 2 decimal precision, human-readable duration (MM min SS sec)
 
-### Test Results (Oct 8, 2025)
-- **Total**: 36/36 PASSED (100%)
-- **Avg Response Time**: 10.44s (EXCELLENT)
-- **Duration**: 6 min 36 sec
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_14-49.log`
-- **Performance Rating**: EXCELLENT (< 20s threshold)
+### Test Results (Oct 8, 2025 - TA Enforcement & Options Removal)
+- **Total**: 32/32 PASSED (100%)
+- **Avg Response Time**: 7.88s (EXCELLENT)
+- **Duration**: 4 min 15 sec
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_17-52.log`
+- **Performance Rating**: EXCELLENT (< 30s threshold)
+- **TA Verification**: All SMA/EMA tests verified - agent fetches ALL indicators (no approximation)
 
 ### Test Execution Requirements
 - **Mandatory**: Before all commits, after agent service changes, before PRs
@@ -228,7 +247,7 @@ dev = [
 
 ## Legacy Feature Cleanup (Oct 2025)
 
-**Context:** Removed 4 deprecated legacy features from entire codebase for improved performance and maintainability.
+**Context:** Removed 5 deprecated legacy features from entire codebase for improved performance and maintainability.
 
 ### Features Removed
 
@@ -269,15 +288,45 @@ dev = [
 - **Reason**: Unnecessary wrapper - SDK handles parallel execution natively
 - **Benefit**: Simplified codebase, reduced tool count from 12 to 11, leverages native parallel execution
 
+**6. get_options_quote_single Tool (Oct 8, 2025):**
+- **Impact**: Complete tool removal (176 lines from polygon_tools.py)
+- **Location**: `src/backend/tools/polygon_tools.py` (function deleted)
+- **Agent Service**: Removed from imports, tools list, and instructions
+- **Test Suite**: Removed 4 options test cases (2 SPY, 2 NVDA)
+- **Reason**: Inefficient single-quote tool, will be replaced with full options chain fetcher in future
+- **Benefit**: Tool count reduced from 11 to 10, test count from 36 to 32, cleaner codebase
+
 ### Performance Benefits
 - **CPU Usage**: 1-2% reduction from CSS analysis removal
 - **Code Quality**: Simpler, more maintainable codebase
 - **Documentation**: Accurate and up-to-date
 - **API Surface**: Cleaner with unused endpoint removed
-- **Tool Count**: Reduced from 12 to 11 tools
+- **Tool Count**: Reduced from 12 to 10 tools
+- **Test Suite**: Reduced from 36 to 32 tests (removed deprecated options tests)
 - **Architecture**: Leverages OpenAI Agents SDK native parallel execution
 
 ## Recent Updates (Oct 8, 2025)
+
+### TA Tool Enforcement & Options Tool Removal
+- **File**: `src/backend/services/agent_service.py`
+- **Change 1**: Added comprehensive TA enforcement rules (RULE #7)
+  - Agent MUST fetch all requested TA indicators via tool calls
+  - Agent CANNOT approximate TA values from OHLC data
+  - Explicit examples of violations and correct behavior
+- **Change 2**: Removed get_options_quote_single tool
+  - Deleted from imports and tools list
+  - Removed RULE #3 about options
+  - Updated tool count from 11 to 10
+  - Renumbered subsequent rules
+- **File**: `src/backend/tools/polygon_tools.py`
+  - Completely removed get_options_quote_single function (176 lines)
+  - Removed docstring references to options tool (3 locations)
+- **File**: `test_cli_regression.sh`
+  - Removed 4 options test cases (2 SPY, 2 NVDA)
+  - Updated test count from 36 to 32
+  - Updated all test numbering and comments
+- **Validation**: 32/32 tests PASSED, 7.88s avg, EXCELLENT rating
+- **TA Verification**: Tests 10 and 23 confirmed all SMA indicators fetched (no approximation)
 
 ### Service Tier Optimization
 - **File**: `src/backend/services/agent_service.py:367`
@@ -288,14 +337,15 @@ dev = [
 
 ### Test Suite Restructuring
 - **Previous**: 27 tests (mixed organization)
-- **New**: 36 tests organized by ticker (SPY 15 + NVDA 15 + Multi 6)
+- **Updated**: 36 tests organized by ticker (SPY 15 + NVDA 15 + Multi 6)
+- **Current**: 32 tests (SPY 13 + NVDA 13 + Multi 6)
 - **Dynamic Dates**: Queries use relative dates instead of hardcoded dates
 - **Sustainability**: No date updates required over time
 - **Ticker Changes**: GME replaced INTC in multi-ticker sequence
-- **Test Results**: 36/36 PASSED, 10.44s avg, EXCELLENT rating
+- **Test Results**: 32/32 PASSED, 7.88s avg, EXCELLENT rating
 
 ### Documentation Updates
-- **CLAUDE.md**: Updated Last Completed Task Summary with service tier change and test restructuring
-- **README.md**: Updated all test count references from 35 to 36
-- **Serena Memories**: Updated testing_procedures.md and tech_stack.md
-- **Test Reports**: `test-reports/test_cli_regression_loop1_2025-10-08_14-49.log`
+- **CLAUDE.md**: Updated Last Completed Task Summary with TA enforcement and options removal
+- **README.md**: Updated all test count references from 36 to 32
+- **Serena Memories**: Updated tech_stack.md with tool count and TA enforcement details
+- **Test Reports**: `test-reports/test_cli_regression_loop1_2025-10-08_17-52.log`
