@@ -209,7 +209,9 @@
       "mcp__docs-openai-agents__fetch_generic_url_content",
       "WebFetch(domain:platform.openai.com)",
       "WebFetch(domain:polygon.io)",
-      "Read(///**)"
+      "Read(///**)",
+      "Bash(time:*)",
+      "Bash(mcp__serena__find_file:*)"
     ],
     "deny": [],
     "ask": [],
