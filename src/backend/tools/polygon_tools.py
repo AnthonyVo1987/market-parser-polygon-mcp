@@ -607,7 +607,7 @@ async def get_call_options_chain(ticker: str, current_price: float, expiration_d
         {
             "ticker Call Options Chain: expiration_date": {
                 "$strike1": {
-                    "close": X.XX,
+                    "price": X.XX,
                     "delta": X.XX,
                     "gamma": X.XX,
                     "theta": X.XX,
@@ -645,9 +645,9 @@ async def get_call_options_chain(ticker: str, current_price: float, expiration_d
     try:
         # Call Polygon API with lazy client initialization
         client = _get_polygon_client()
-        options_chain = []
-
-        for option in client.list_snapshot_options_chain(
+        
+        # Get options chain with explicit 10-strike limit enforcement
+        options_chain = list(client.list_snapshot_options_chain(
             ticker,
             params={
                 "strike_price.gte": current_price,
@@ -657,8 +657,7 @@ async def get_call_options_chain(ticker: str, current_price: float, expiration_d
                 "limit": 10,
                 "sort": "strike_price",
             },
-        ):
-            options_chain.append(option)
+        ))[:10]  # Explicitly slice to ensure exactly 10 strikes maximum
 
         # Check if API returned valid data
         if not options_chain:
@@ -676,7 +675,7 @@ async def get_call_options_chain(ticker: str, current_price: float, expiration_d
             # Extract strike price
             strike = getattr(option.details, "strike_price", 0.0) if hasattr(option, "details") else 0.0
 
-            # Extract day close price
+            # Extract day close price (option price)
             close = getattr(option.day, "close", 0.0) if hasattr(option, "day") else 0.0
 
             # Extract Greeks
@@ -694,13 +693,13 @@ async def get_call_options_chain(ticker: str, current_price: float, expiration_d
             # Format strike as dollar key
             strike_key = f"${strike:.2f}"
 
-            # Round all values to 2 decimals
+            # Round all values to 2 decimals with None-safe handling
             formatted_chain[strike_key] = {
-                "close": round(close, 2),
-                "delta": round(delta, 2),
-                "gamma": round(gamma, 2),
-                "theta": round(theta, 2),
-                "implied_volatility": round(iv, 2),
+                "price": round(close if close is not None else 0.0, 2),
+                "delta": round(delta if delta is not None else 0.0, 2),
+                "gamma": round(gamma if gamma is not None else 0.0, 2),
+                "theta": round(theta if theta is not None else 0.0, 2),
+                "implied_volatility": round(iv if iv is not None else 0.0, 2),
                 "volume": volume,
                 "open_interest": oi,
             }
@@ -742,7 +741,7 @@ async def get_put_options_chain(ticker: str, current_price: float, expiration_da
         {
             "ticker Put Options Chain: expiration_date": {
                 "$strike1": {
-                    "close": X.XX,
+                    "price": X.XX,
                     "delta": X.XX,
                     "gamma": X.XX,
                     "theta": X.XX,
@@ -780,9 +779,9 @@ async def get_put_options_chain(ticker: str, current_price: float, expiration_da
     try:
         # Call Polygon API with lazy client initialization
         client = _get_polygon_client()
-        options_chain = []
-
-        for option in client.list_snapshot_options_chain(
+        
+        # Get options chain with explicit 10-strike limit enforcement
+        options_chain = list(client.list_snapshot_options_chain(
             ticker,
             params={
                 "strike_price.lte": current_price,
@@ -792,8 +791,7 @@ async def get_put_options_chain(ticker: str, current_price: float, expiration_da
                 "limit": 10,
                 "sort": "strike_price",
             },
-        ):
-            options_chain.append(option)
+        ))[:10]  # Explicitly slice to ensure exactly 10 strikes maximum
 
         # Check if API returned valid data
         if not options_chain:
@@ -811,7 +809,7 @@ async def get_put_options_chain(ticker: str, current_price: float, expiration_da
             # Extract strike price
             strike = getattr(option.details, "strike_price", 0.0) if hasattr(option, "details") else 0.0
 
-            # Extract day close price
+            # Extract day close price (option price)
             close = getattr(option.day, "close", 0.0) if hasattr(option, "day") else 0.0
 
             # Extract Greeks
@@ -829,13 +827,13 @@ async def get_put_options_chain(ticker: str, current_price: float, expiration_da
             # Format strike as dollar key
             strike_key = f"${strike:.2f}"
 
-            # Round all values to 2 decimals
+            # Round all values to 2 decimals with None-safe handling
             formatted_chain[strike_key] = {
-                "close": round(close, 2),
-                "delta": round(delta, 2),
-                "gamma": round(gamma, 2),
-                "theta": round(theta, 2),
-                "implied_volatility": round(iv, 2),
+                "price": round(close if close is not None else 0.0, 2),
+                "delta": round(delta if delta is not None else 0.0, 2),
+                "gamma": round(gamma if gamma is not None else 0.0, 2),
+                "theta": round(theta if theta is not None else 0.0, 2),
+                "implied_volatility": round(iv if iv is not None else 0.0, 2),
                 "volume": volume,
                 "open_interest": oi,
             }

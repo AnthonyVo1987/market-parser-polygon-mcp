@@ -176,8 +176,12 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     # Generate unique timestamp for this loop - NEW FORMAT: YYYY-MM-DD_HH-MM
     LOOP_TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
     OUTPUT_FILE="$RESULTS_DIR/test_cli_regression_loop${loop_num}_${LOOP_TIMESTAMP}.log"
-    RAW_OUTPUT="/tmp/cli_output_loop${loop_num}_${LOOP_TIMESTAMP}.log"
-    INPUT_FILE="/tmp/test_input_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
+
+    # Create tmp directory for test artifacts (project-level, not system /tmp)
+    mkdir -p tmp
+
+    RAW_OUTPUT="./tmp/cli_output_loop${loop_num}_${LOOP_TIMESTAMP}.log"
+    INPUT_FILE="./tmp/test_input_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
 
     # Create input file with all prompts and exit at the end
     for prompt in "${prompts[@]}"; do

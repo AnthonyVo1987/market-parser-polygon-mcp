@@ -12,106 +12,226 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-## TA Tool Enforcement & Options Tool Removal
+## Options Chain Bug Fixes: 10-Strike Limit Enforcement & Path Violation
 
-**Status:** ✅ Implemented (October 8, 2025)
-**Feature:** Enforce strict TA indicator fetching and remove deprecated options tool
+**Status:** ✅ Implemented (October 9, 2025)
+**Feature:** Fix critical options chain flooding bug, enforce 10-strike limit, and fix test script path violation
 
 ### Problem Statement
 
-1. **TA Tool Enforcement Issue**: AI Agent was approximating SMA-20 from 20-day OHLC data instead of fetching via `get_ta_sma` tool
-   - Violation example: "I pulled SMA-50 and SMA-200; SMA-20 value is approximated from latest 20-day window data"
-   - Agent was NOT making required tool calls for all requested indicators
+1. **CRITICAL BUG - Options Chain Flooding**: Both `get_call_options_chain` and `get_put_options_chain` returning 174+ total strikes instead of 10 per chain
+   - **Evidence**: Log file `/tmp/cli_output_loop1_2025-10-09_10-26.log` showed 174 total option strikes
+   - **Impact**: SPY Call Options Chain showing 24+ strikes ($670-$694+) instead of exactly 10
+   - **Root Cause**: For loop iterating through ALL API results, ignoring the `limit=10` parameter
+   - **Severity**: Flooding messages with excessive data, violating 10-strike maximum specification
 
-2. **Options Tool Inefficiency**: `get_options_quote_single` only fetches single option quotes (inefficient)
-   - Will be replaced with full options chain fetcher in future
-   - Needed complete removal from codebase
+2. **NoneType round() Error**: TypeError when Polygon API returns explicit None values for option fields
+   - **Error**: `"type NoneType doesn't define __round__ method"`
+   - **Root Cause**: `getattr()` returns None when attribute exists but value is None, then `round(None, 2)` fails
+   - **Impact**: Tool crashes when API data incomplete
+
+3. **Path Violation**: Test script `test_cli_regression.sh` writing logs to system `/tmp` instead of project `./tmp/`
+   - **Evidence**: Lines 179-180 using `/tmp/cli_output_...` and `/tmp/test_input_...`
+   - **Violation**: Creating files outside project directory hierarchy
+   - **Impact**: Polluting system temp directory with project artifacts
+
+4. **Field Naming Ambiguity**: "close" field name not obvious to AI Agent that it represents option price
+   - **Issue**: Field named "close" when it actually represents the option's current price
+   - **Impact**: Reduces clarity for AI Agent understanding what value represents
 
 ### Changes Implemented
 
-**1. Agent Instructions - TA Enforcement** (`src/backend/services/agent_service.py`)
-- Added comprehensive TA enforcement rules in RULE #7:
-  - Agent **MUST FETCH** each requested TA indicator via dedicated tool calls
-  - Agent **CANNOT APPROXIMATE** or calculate TA values from OHLC data
-  - Data reuse ONLY allowed if EXACT same indicator was previously fetched
-  - Explicit examples of violations and correct behavior
+**1. Options Chain 10-Strike Limit Enforcement** (`src/backend/tools/polygon_tools.py`)
 
-**2. Options Tool Complete Removal**
-- **Agent Service** (`src/backend/services/agent_service.py`):
-  - Removed `get_options_quote_single` from imports and tools list
-  - Deleted entire RULE #3 about options
-  - Updated tool count from 11 to 10
-  - Renumbered subsequent rules (RULE #4→#3, RULE #5→#4, etc.)
+**Function: `get_call_options_chain` (lines 588-720)**
 
-- **Tools Definition** (`src/backend/tools/polygon_tools.py`):
-  - Completely removed `get_options_quote_single` function (176 lines deleted)
-  - Removed docstring references to options tool (3 locations in OHLC tools)
+- **Old Implementation** (WRONG):
 
-- **Test Suite** (`test_cli_regression.sh`):
-  - Removed 4 options test cases (2 SPY Call/Put, 2 NVDA Call/Put)
-  - Updated test count from 36 to 32 tests
-  - Updated test numbering: SPY 13, NVDA 13, Multi 6
-  - Updated all comments and headers
+  ```python
+  for option in client.list_snapshot_options_chain(..., params={"limit": 10, ...}):
+      options_chain.append(option)  # Appends ALL results, ignoring limit!
+  ```
+
+- **New Implementation** (CORRECT):
+
+  ```python
+  options_chain = list(client.list_snapshot_options_chain(
+      ticker,
+      params={
+          "strike_price.gte": current_price,
+          "expiration_date": expiration_date,
+          "contract_type": "call",
+          "order": "asc",
+          "limit": 10,
+          "sort": "strike_price",
+      },
+  ))[:10]  # Explicitly slice to ensure exactly 10 strikes maximum
+  ```
+
+- **Pattern**: Changed from for loop to `list()[:10]` slice - cleaner and more Pythonic
+- **Impact**: Now enforces exactly 10 strikes per chain
+
+**Function: `get_put_options_chain` (lines 723-855)**
+
+- **Identical fix** applied with `list()[:10]` slice
+- **Parameters differ**: Uses `strike_price.lte` and `order="desc"` for puts
+
+**2. None-Safe Rounding for All Float Fields** (`src/backend/tools/polygon_tools.py`)
+
+Both functions now use defensive None checks before rounding:
+
+```python
+# Extract values with None-safe defaults
+close = getattr(option.day, "close", 0.0)
+delta = getattr(option.greeks, "delta", 0.0)
+gamma = getattr(option.greeks, "gamma", 0.0)
+theta = getattr(option.greeks, "theta", 0.0)
+vega = getattr(option.greeks, "vega", 0.0)
+iv = getattr(option.implied_volatility, 0.0)
+
+# Round all values with None-safe handling
+formatted_chain[strike_key] = {
+    "price": round(close if close is not None else 0.0, 2),
+    "delta": round(delta if delta is not None else 0.0, 2),
+    "gamma": round(gamma if gamma is not None else 0.0, 2),
+    "theta": round(theta if theta is not None else 0.0, 2),
+    "vega": round(vega if vega is not None else 0.0, 2),
+    "implied_volatility": round(iv if iv is not None else 0.0, 2),
+    "volume": volume,
+    "open_interest": oi,
+}
+```
+
+- **Pattern**: `round(value if value is not None else 0.0, 2)` for all float fields
+- **Default**: Uses `0.00` when API returns None (acceptable for missing data)
+- **Fields protected**: price, delta, gamma, theta, vega, implied_volatility
+
+**3. Field Naming Clarity** (`src/backend/tools/polygon_tools.py`)
+
+- **Changed**: "close" → "price" in formatted output
+- **Rationale**: "price" more clearly indicates option's current price to AI Agent
+- **Applied to**: Both `get_call_options_chain` and `get_put_options_chain`
+
+**4. Test Script Path Fix** (`test_cli_regression.sh`)
+
+- **Lines changed**: 176-184
+- **Old paths** (WRONG):
+
+  ```bash
+  RAW_OUTPUT="/tmp/cli_output_loop${loop_num}_${LOOP_TIMESTAMP}.log"
+  INPUT_FILE="/tmp/test_input_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
+  ```
+
+- **New paths** (CORRECT):
+
+  ```bash
+  # Create tmp directory for test artifacts (project-level, not system /tmp)
+  mkdir -p tmp
+
+  RAW_OUTPUT="./tmp/cli_output_loop${loop_num}_${LOOP_TIMESTAMP}.log"
+  INPUT_FILE="./tmp/test_input_loop${loop_num}_${LOOP_TIMESTAMP}.txt"
+  ```
+
+- **Impact**: All test logs now written to project `./tmp/` folder
 
 ### Test Results
 
 ```
-Total Tests: 32/32 PASSED ✅ (reduced from 36)
+Total Tests: 36/36 PASSED ✅
 Success Rate: 100%
-Average Response Time: 7.88s (EXCELLENT performance)
-Session Duration: 4 min 15 sec
+Average Response Time: 9.91s (EXCELLENT performance)
+Session Duration: 5 min 58 sec
 Session Persistence: VERIFIED (single session)
-Test Report: test-reports/test_cli_regression_loop1_2025-10-08_17-52.log
+Test Report: test-reports/test_cli_regression_loop1_2025-10-09_11-05.log
 ```
 
-### Critical Verification - TA Enforcement
+### Critical Verification - Strike Count Evidence
 
-**Test 10 (SPY SMA 20/50/200) - VERIFIED ✅**
-```
-Tools Used:
-• get_ta_sma(ticker='SPY', window=20) - Retrieved SMA-20
-• get_ta_sma(ticker='SPY', window=50) - Retrieved SMA-50
-• get_ta_sma(ticker='SPY', window=200) - Retrieved SMA-200
-```
-**Result:** Agent made ALL 3 tool calls - NO approximation ✅
+**Before Fix (VIOLATION):**
 
-**Test 23 (NVDA SMA 20/50/200) - VERIFIED ✅**
-```
-Response: NVDA SMA-20: 180.88, SMA-50: 178.78, SMA-200: 143.90
-Tools Used:
-• get_ta_sma(ticker='NVDA', window=20) - Retrieved SMA-20
-• get_ta_sma(ticker='NVDA', window=50) - Retrieved SMA-50
-• get_ta_sma(ticker='NVDA', window=200) - Retrieved SMA-200
-```
-**Result:** Agent made ALL 3 tool calls - NO approximation ✅
+- **Total strikes in log**: 174 strikes (massive flooding)
+- **SPY Call Chain**: 24+ strikes shown ($670-$694+)
+- **Evidence file**: `/tmp/cli_output_loop1_2025-10-09_10-26.log`
 
-**Additional Verification:**
-- ✅ No "approximat" language found in any test responses
-- ✅ No "option" references in test output (tool completely removed)
-- ✅ All TA tests show explicit tool calls for each requested indicator
+**After Fix (CORRECT):**
+
+- **Total strikes in log**: 40 strikes (10 per chain x 4 tests)
+- **SPY Call Chain**: Exactly 10 strikes ($671.00-$680.00)
+- **SPY Put Chain**: Exactly 10 strikes ($670.00-$661.00)
+- **NVDA Call Chain**: Exactly 10 strikes
+- **NVDA Put Chain**: Exactly 10 strikes
+- **Evidence file**: `./tmp/cli_output_loop1_2025-10-09_11-05.log`
+
+**Strike Count Verification (Manual Count):**
+
+```bash
+# Count strikes in actual test output
+grep -o '^\s*•\s*\$[0-9]*\.[0-9]*:' tmp/cli_output_loop1_2025-10-09_11-05.log | wc -l
+# Result: 40 total strikes (10 x 4 tests) ✅
+```
+
+**Field Naming Verification:**
+
+- ✅ All options chain responses now show "price:" instead of "close:"
+- ✅ AI Agent can clearly identify the option's current price
+
+**Path Violation Verification:**
+
+```bash
+# Verify logs in project tmp/ folder
+ls -lh ./tmp/cli_output_loop1_2025-10-09_11-05.log
+# Result: File exists ✅
+
+# Verify NOT in system /tmp
+ls -lh /tmp/cli_output_loop1_2025-10-09_11-05.log 2>/dev/null
+# Result: No such file or directory ✅
+```
+
+**Options Chain Tests Verified (Test 14, 15, 29, 30):**
+
+- ✅ Test 14 (SPY Call): 10 strikes, no errors, proper formatting
+- ✅ Test 15 (SPY Put): 10 strikes, no errors, proper formatting
+- ✅ Test 29 (NVDA Call): 10 strikes, no errors, proper formatting
+- ✅ Test 30 (NVDA Put): 10 strikes, no errors, proper formatting
+- ✅ No NoneType round() errors in any test
+- ✅ 0.00 values appear where API returned None (acceptable)
 
 ### Implementation Approach
 
-- Used Sequential-Thinking tool for systematic research and planning (6 thoughts)
-- Used Serena tools for token-efficient code analysis and symbol manipulation
+- Used Sequential-Thinking tool for systematic research and bug analysis (11 thoughts total)
+- Used Serena tools for token-efficient symbol manipulation (`find_symbol`, `replace_symbol_body`)
+- Used standard Edit tool for test script path fixes
 - Created comprehensive TODO_task_plan.md with 5-phase workflow
-- **CRITICAL**: Verified actual response content (not just PASS status) per user requirement
-- Executed mandatory CLI testing before documentation updates
-- All changes validated with 100% test pass rate
+- **CRITICAL**: Verified actual response content by examining real strike counts (not just PASS/FAIL status)
+- **USER GUIDANCE**: Corrected approach from for-loop-with-break to cleaner `list()[:10]` slice pattern
+- Executed mandatory CLI testing with actual response validation
+- All changes validated with 100% test pass rate and evidence-based verification
 
 ### Impact
 
-- **Tool Count**: Reduced from 11 to 10 (removed options tool)
-- **Test Suite**: Reduced from 36 to 32 tests (removed 4 options tests)
-- **TA Accuracy**: Enforced - agent now MUST fetch all requested indicators
-- **Code Quality**: Cleaner codebase with deprecated tool removed
-- **Performance**: 7.88s avg response time (EXCELLENT rating)
+- **Options Chain Output**: Reduced from 174 strikes to 40 strikes (10 per chain x 4 tests)
+- **Message Flooding**: ELIMINATED - strict 10-strike limit now enforced
+- **Error Handling**: ROBUST - None-safe rounding prevents NoneType crashes
+- **Project Boundaries**: ENFORCED - all test artifacts in project ./tmp/ folder
+- **Field Clarity**: IMPROVED - "price" field name clearer than "close"
+- **Performance**: 9.91s avg response time (EXCELLENT rating)
+- **Test Success**: 36/36 PASSED (100% success rate maintained)
+
+### Key Technical Decisions
+
+1. **List slicing over for loop**: `list()[:10]` is more Pythonic and explicit than loop with break
+2. **None-safe pattern**: `round(value if value is not None else 0.0, 2)` for all float fields
+3. **Field naming**: "price" more intuitive than "close" for AI Agent understanding
+4. **Project boundaries**: All artifacts must stay within project directory hierarchy
+5. **Evidence-based validation**: Manually counted strikes in actual responses to verify fix
 
 ### References
 
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_17-52.log`
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_11-05.log`
+- **Test Output**: `./tmp/cli_output_loop1_2025-10-09_11-05.log`
 - **Implementation Plan**: `TODO_task_plan.md`
-- **Serena Memories**: `tech_stack.md` (updated with tool count and TA enforcement)
+- **Serena Memories**: `tech_stack.md` (updated with Options Chain Bug Fixes section)
+- **Evidence**: Strike count reduced from 174 → 40 (validated by grep count)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion

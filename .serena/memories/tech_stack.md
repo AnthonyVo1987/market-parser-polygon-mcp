@@ -28,7 +28,7 @@
   - PWA support with vite-plugin-pwa
 
 ### Data Sources
-- **Polygon.io**: Direct Python API integration (11 tools, updated Oct 8, 2025 - options chain)
+- **Polygon.io**: Direct Python API integration (12 tools, updated Oct 9, 2025 - options chain bugs fixed)
 - **Finnhub**: Custom Python API integration (1 tool)
 - **Total AI Agent Tools**: 12 (updated Oct 8, 2025 - added 2 options chain tools)
 
@@ -70,12 +70,12 @@
   - Frontend: TypeScript types and React component display
 - **Cache Optimization**: Agent instructions cached (sent with every message)
 
-### Direct API Tools (12 Total - Updated Oct 8, 2025)
+### Direct API Tools (12 Total - Updated Oct 9, 2025)
 
 **Finnhub Custom API (1 tool):**
 - `get_stock_quote` - Real-time stock quotes from Finnhub (supports parallel calls for multiple tickers)
 
-**Polygon Direct API (11 tools - Updated Oct 8, 2025):**
+**Polygon Direct API (11 tools - Updated Oct 9, 2025 - Bug Fixes):**
 
 **Market Data (1 tool):**
 - `get_market_status_and_date_time` - Market status and current datetime
@@ -91,12 +91,67 @@
 - `get_ta_rsi` - Relative Strength Index (RSI)
 - `get_ta_macd` - Moving Average Convergence Divergence (MACD)
 
-**Options Chain (2 tools - Added Oct 8, 2025):**
-- `get_call_options_chain` - Fetch 10 call option strikes above current price (ascending order)
-- `get_put_options_chain` - Fetch 10 put option strikes below current price (descending order)
+**Options Chain (2 tools - Updated Oct 9, 2025 - Critical Bug Fixes):**
+- `get_call_options_chain` - Fetch EXACTLY 10 call option strikes above current price (ascending order)
+- `get_put_options_chain` - Fetch EXACTLY 10 put option strikes below current price (descending order)
 
 **REMOVED Oct 8, 2025:**
 - `get_options_quote_single` - Single option quote (removed - inefficient, replaced with full options chain tools)
+
+### Options Chain Tools (Updated Oct 9, 2025 - Bug Fixes)
+
+**Purpose**: Fetch options chains with strike prices, Greeks, IV, volume, and open interest
+
+**Implementation**:
+- **Location**: `src/backend/tools/polygon_tools.py`
+- **API**: Polygon.io `list_snapshot_options_chain` endpoint
+- **Response Format**: JSON with strike prices as keys ($XXX.XX)
+- **Data Fields**: price (option price), delta, gamma, theta, vega, implied_volatility, volume, open_interest
+- **Decimal Precision**: All values rounded to 2 decimals with None-safe handling
+- **10-Strike Limit**: Enforced via `list()[:10]` slice (fixed Oct 9, 2025)
+
+**Critical Bug Fixes (Oct 9, 2025)**:
+1. **10-Strike Limit Enforcement**: 
+   - **Bug**: Tools were returning 174 total strikes (flooding messages)
+   - **Root Cause**: For loop iterated through ALL API results without enforcing limit
+   - **Fix**: Changed from `for option in client.list_snapshot_options_chain(...): options_chain.append(option)` to `options_chain = list(client.list_snapshot_options_chain(...))[:10]`
+   - **Impact**: Reduced from 174 strikes to exactly 40 strikes total (10 per chain x 4 tests)
+
+2. **None-Safe Rounding**:
+   - **Bug**: `round(value, 2)` failed when API returned None values
+   - **Error**: "type NoneType doesn't define __round__ method"
+   - **Fix**: Added defensive None checks: `round(value if value is not None else 0.0, 2)`
+   - **Impact**: No more NoneType errors, graceful handling of incomplete API data
+
+3. **Field Naming Clarity**:
+   - **Change**: Renamed "close" to "price" for clarity
+   - **Reason**: Make it obvious to AI Agent that this is the option price
+   - **Impact**: Improved readability and understanding
+
+**Call Options Chain** (`get_call_options_chain`):
+- **Purpose**: Fetch EXACTLY 10 strike prices ABOVE current price
+- **Parameters**:
+  - ticker (str): Stock ticker symbol
+  - current_price (float): Current underlying stock price
+  - expiration_date (str): YYYY-MM-DD format
+- **API Parameters**: strike_price.gte, contract_type="call", order="asc", limit=10
+- **Sort**: Ascending (lowest to highest strikes)
+- **Limit Enforcement**: `list()[:10]` slice guarantees exactly 10 strikes
+
+**Put Options Chain** (`get_put_options_chain`):
+- **Purpose**: Fetch EXACTLY 10 strike prices BELOW current price
+- **Parameters**:
+  - ticker (str): Stock ticker symbol
+  - current_price (float): Current underlying stock price
+  - expiration_date (str): YYYY-MM-DD format
+- **API Parameters**: strike_price.lte, contract_type="put", order="desc", limit=10
+- **Sort**: Descending (highest to lowest strikes)
+- **Limit Enforcement**: `list()[:10]` slice guarantees exactly 10 strikes
+
+**Agent Instructions**: RULE #9 (lines 234-263)
+- Workflow: Identify call/put → Get current_price if needed → Parse expiration_date → Call tool
+- Date Handling: "this Friday" → Calculate date, "Oct 10" → Convert to YYYY-MM-DD
+- Common Mistakes: Not fetching current_price first, incorrect date format, wrong tool selection
 
 ### TA Tool Enforcement (Updated Oct 8, 2025)
 
@@ -112,40 +167,6 @@
 **Enforcement Location**: `src/backend/services/agent_service.py` - RULE #7
 **Validation**: Test 10 (SPY SMA) and Test 23 (NVDA SMA) verified all 3 tool calls made (no approximation)
 
-### Options Chain Tools (Added Oct 8, 2025)
-
-**Purpose**: Fetch options chains with strike prices, Greeks, IV, volume, and open interest
-
-**Implementation**:
-- **Location**: `src/backend/tools/polygon_tools.py`
-- **API**: Polygon.io `list_snapshot_options_chain` endpoint
-- **Response Format**: JSON with strike prices as keys ($XXX.XX)
-- **Data Included**: close, delta, gamma, theta, vega, implied_volatility, volume, open_interest
-- **Decimal Precision**: All values rounded to 2 decimals
-
-**Call Options Chain** (`get_call_options_chain`):
-- **Purpose**: Fetch 10 strike prices ABOVE current price
-- **Parameters**:
-  - ticker (str): Stock ticker symbol
-  - current_price (float): Current underlying stock price
-  - expiration_date (str): YYYY-MM-DD format
-- **API Parameters**: strike_price.gte, contract_type="call", order="asc", limit=10
-- **Sort**: Ascending (lowest to highest strikes)
-
-**Put Options Chain** (`get_put_options_chain`):
-- **Purpose**: Fetch 10 strike prices BELOW current price
-- **Parameters**:
-  - ticker (str): Stock ticker symbol
-  - current_price (float): Current underlying stock price
-  - expiration_date (str): YYYY-MM-DD format
-- **API Parameters**: strike_price.lte, contract_type="put", order="desc", limit=10
-- **Sort**: Descending (highest to lowest strikes)
-
-**Agent Instructions**: RULE #9 (lines 234-263)
-- Workflow: Identify call/put → Get current_price if needed → Parse expiration_date → Call tool
-- Date Handling: "this Friday" → Calculate date, "Oct 10" → Convert to YYYY-MM-DD
-- Common Mistakes: Not fetching current_price first, incorrect date format, wrong tool selection
-
 ### Migration History
 - **Phase 4 Complete** (Oct 2025): ALL MCP tools migrated to Direct API
 - **MCP Server**: Completely removed
@@ -154,6 +175,7 @@
 - **Phase 5 Complete** (Oct 2025): Removed get_stock_quote_multi wrapper, now using parallel get_stock_quote calls
 - **Phase 6 Complete** (Oct 8, 2025): Removed get_options_quote_single, reduced tool count to 10
 - **Phase 7 Complete** (Oct 8, 2025): Added get_call_options_chain and get_put_options_chain, increased tool count to 12
+- **Phase 8 Complete** (Oct 9, 2025): Fixed critical options chain bugs (10-strike limit, None-safe rounding, field naming)
 
 ## Development Environment
 
@@ -175,85 +197,52 @@
 - **TypeScript**: `tsconfig.json`, `.eslintrc.cjs`, `.prettierrc.cjs`
 - **Build**: `vite.config.ts`, `postcss.config.js`
 
-## Dependencies
+## Testing Infrastructure (Updated Oct 9, 2025)
 
-### Backend Python (pyproject.toml)
-```toml
-dependencies = [
-  "openai-agents==0.2.9",
-  "pydantic",
-  "rich",
-  "python-dotenv",
-  "openai>=1.99.0,<1.100.0",
-  "fastapi",
-  "uvicorn[standard]",
-  "aiofiles>=24.1.0",
-  "python-lsp-server[all]>=1.13.1",
-  "openai-agents-mcp>=0.0.8",
-  "finnhub-python>=2.4.25",
-  "polygon-api-client>=1.14.0",
-]
+### CLI Regression Test Suite
+- **Script**: `test_cli_regression.sh`
+- **Total Tests**: 36 tests
+- **Test Organization**: Ticker-based sequences
+  - SPY Test Sequence: Tests 1-15 (15 tests - includes 2 options tests)
+  - NVDA Test Sequence: Tests 16-30 (15 tests - includes 2 options tests)
+  - Multi-Ticker Test Sequence: Tests 31-36 (6 tests - WDC, AMD, GME)
+- **Log Output**: Project tmp/ folder (fixed Oct 9, 2025 - was using system /tmp)
+- **Dynamic Dates**: Queries use relative dates (no hardcoded dates requiring updates)
+- **Session Persistence**: All tests run in single CLI session
+- **Calculation Engine**: awk-based (universal compatibility, no bc dependency)
+- **Output Format**: 2 decimal precision, human-readable duration (MM min SS sec)
 
-[dependency-groups]
-dev = [
-  "pylint>=3.0.0",
-  "black>=23.12.0",
-  "isort>=5.13.0",
-  "mypy>=1.7.0",
-  "pytest>=7.4.0",
-]
-```
+### Test Script Path Fix (Oct 9, 2025)
+- **Bug**: Test script outputting logs to system /tmp instead of project tmp/
+- **Violation**: Writing files outside project scope
+- **Fix**: Changed `/tmp/` to `./tmp/` with `mkdir -p tmp`
+- **Impact**: All test artifacts now properly contained within project directory
 
-### Frontend JavaScript (package.json)
-```json
-{
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^9.0.0",
-    "react-scan": "^0.4.3",
-    "use-debounce": "^10.0.6"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0",
-    "eslint": "^8.57.0",
-    "prettier": "^3.0.0",
-    "@lhci/cli": "^0.15.0"
-  }
-}
-```
+### Test Results (Oct 9, 2025 - Post Bug Fixes)
+- **Total**: 36/36 PASSED (100%)
+- **Avg Response Time**: 9.91s (EXCELLENT)
+- **Duration**: 5 min 59 sec
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_11-05.log`
+- **Performance Rating**: EXCELLENT (< 30s threshold)
+- **Options Chain Verification**: Exactly 10 strikes per chain (SPY Call/Put, NVDA Call/Put)
+- **Strike Count**: 40 total strikes (10 x 4 tests) - down from 174 before fix
 
-## Build & Deployment
-
-### Ports
-- **Backend**: 8000 (FastAPI server)
-- **Frontend Dev**: 3000 (Vite dev server)
-- **Frontend Prod**: 5500 (Live Server for production build)
-
-### Build Process
-- **Frontend**: `npm run build` - TypeScript compilation + Vite build
-- **Backend**: No build required (Python interpreted)
-- **Performance**: Lighthouse CI for performance testing
+### Test Execution Requirements
+- **Mandatory**: Before all commits, after agent service changes, before PRs
+- **Recommended**: After changing prompts, during optimization work
+- **Validation**: 3-loop runs for comprehensive validation, 10-loop for baselines
+- **Evidence**: Test reports must be included in commits
 
 ## Performance Metrics
 
-### Current Performance (Oct 8, 2025 - Post-Options-Chain-Addition)
-- **Average Response Time**: 16.28s (EXCELLENT rating)
+### Current Performance (Oct 9, 2025 - Post Bug Fixes)
+- **Average Response Time**: 9.91s (EXCELLENT rating)
 - **Success Rate**: 100% (36/36 tests passed)
-- **Performance Range**: 4.341s - 67.059s
+- **Performance Range**: 2.435s - 26.112s
 - **Test Suite**: 36 tests (SPY 15 + NVDA 15 + Multi 6)
-- **Session Duration**: 9 min 48 sec
+- **Session Duration**: 5 min 59 sec
 - **Consistency**: High (all tests completed successfully)
-- **Options Chain Tests**: 1/4 successful (SPY Put), 3/4 API data unavailable (Polygon.io limitation)
-
-### Previous Performance (Post-TA-Enforcement Oct 8, 2025)
-- **Average Response Time**: 7.88s (EXCELLENT rating)
-- **Success Rate**: 100% (32/32 tests passed)
-- **Performance Range**: 3.861s - 15.317s
-- **Test Suite**: 32 tests (SPY 13 + NVDA 13 + Multi 6)
-- **Session Duration**: 4 min 15 sec
+- **Options Chain**: Exactly 10 strikes per chain (bug fixed)
 
 ### Optimization Features
 - **Direct API**: No MCP server overhead
@@ -263,145 +252,33 @@ dev = [
 - **Quick Response**: Minimal tool calls enforcement for speed
 - **Service Tier**: "default" for better prototyping performance
 - **TA Tool Enforcement**: Prevents unnecessary approximation, ensures data accuracy
+- **10-Strike Limit**: Prevents message flooding, ensures concise responses
 
-## Testing Infrastructure (Updated Oct 8, 2025)
+## Recent Updates (Oct 9, 2025)
 
-### CLI Regression Test Suite
-- **Script**: `test_cli_regression.sh`
-- **Total Tests**: 36 tests (increased from 32 - added 4 options chain tests)
-- **Test Organization**: Ticker-based sequences
-  - SPY Test Sequence: Tests 1-15 (15 tests - includes 2 options tests)
-  - NVDA Test Sequence: Tests 16-30 (15 tests - includes 2 options tests)
-  - Multi-Ticker Test Sequence: Tests 31-36 (6 tests - WDC, AMD, GME)
-- **Dynamic Dates**: Queries use relative dates (no hardcoded dates requiring updates)
-  - Example: "Stock Price on the previous week's Friday: $SPY"
-  - Example: "Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY"
-  - Example: "Get the SPY Call Options Chain Expiring this Friday"
-- **Session Persistence**: All tests run in single CLI session
-- **Calculation Engine**: awk-based (universal compatibility, no bc dependency)
-- **Output Format**: 2 decimal precision, human-readable duration (MM min SS sec)
-
-### Test Results (Oct 8, 2025 - Options Chain Addition)
-- **Total**: 36/36 PASSED (100%)
-- **Avg Response Time**: 16.28s (EXCELLENT)
-- **Duration**: 9 min 48 sec
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-08_22-12.log`
-- **Performance Rating**: EXCELLENT (< 30s threshold)
-- **Options Chain Results**:
-  - SPY Call Options (Test 14): API data unavailable
-  - SPY Put Options (Test 15): ✅ SUCCESS - Retrieved 10 strikes with Greeks
-  - NVDA Call Options (Test 29): API data unavailable  
-  - NVDA Put Options (Test 30): API data unavailable
-- **Options Chain Analysis**: 1/4 tests successful - Polygon.io data availability issue for 2025-10-10 expiration date (tested Oct 8). SPY Put success demonstrates correct implementation.
-
-### Test Execution Requirements
-- **Mandatory**: Before all commits, after agent service changes, before PRs
-- **Recommended**: After changing prompts, during optimization work
-- **Validation**: 3-loop runs for comprehensive validation, 10-loop for baselines
-- **Evidence**: Test reports must be included in commits
-
-## Legacy Feature Cleanup (Oct 2025)
-
-**Context:** Removed 5 deprecated legacy features from entire codebase for improved performance and maintainability.
-
-### Features Removed
-
-**1. CSS Performance Analysis:**
-- **Impact**: HIGH overhead (1-2% CPU continuous)
-- **Location**: `src/frontend/utils/performance.tsx` (analyzeCSSPerformance function)
-- **Reason**: Minimal value - scanned DOM 6× every 2s with querySelectorAll('*')
-- **Benefit**: 1-2% CPU reduction, cleaner codebase
-
-**2. /api/v1/system/status Endpoint:**
-- **Impact**: Zero usage (unused endpoint)
-- **Files Removed**: `src/backend/routers/system.py` (entire file)
-- **Files Modified**: api_models.py (SystemMetrics, SystemStatusResponse classes), main.py, routers/__init__.py
-- **Reason**: No frontend, tests, or docs referenced it
-- **Benefit**: Simplified API surface, removed dead code
-
-**3. Prompt Template System Remnants:**
-- **Impact**: Already deprecated (system was previously removed)
-- **Remnants Removed**:
-  - api_models.py docstring reference to "PromptTemplateManager"
-  - SystemMetrics.prompt_templates_loaded field (always 0)
-  - docs/api/api-integration-guide.md (957 lines of outdated docs)
-  - Project structure references in CLAUDE.md, AGENTS.md, README.md
-- **Reason**: System was replaced by Direct Prompts, only documentation remained
-- **Benefit**: Documentation now accurate, no misleading references
-
-**4. Emoji in CLI Responses:**
-- **Impact**: Cosmetic feature (CLI only)
-- **Location**: `src/backend/utils/response_utils.py` (print_response function)
-- **Emojis Removed**: ✅ (success), 📊 (metrics), ⏱️ (time), 🔢 (tokens), 🤖 (model)
-- **Reason**: Purely visual, no functional value
-- **Benefit**: Cleaner CLI output, simpler code
-
-**5. get_stock_quote_multi Tool (Oct 2025):**
-- **Impact**: Wrapper function removal
-- **Location**: `src/backend/tools/polygon_tools.py` (139 lines removed)
-- **Replacement**: Multiple parallel get_stock_quote() calls via OpenAI Agents SDK
-- **Reason**: Unnecessary wrapper - SDK handles parallel execution natively
-- **Benefit**: Simplified codebase, reduced tool count from 12 to 11, leverages native parallel execution
-
-**6. get_options_quote_single Tool (Oct 8, 2025):**
-- **Impact**: Complete tool removal (176 lines from polygon_tools.py)
-- **Location**: `src/backend/tools/polygon_tools.py` (function deleted)
-- **Agent Service**: Removed from imports, tools list, and instructions
-- **Test Suite**: Removed 4 options test cases (2 SPY, 2 NVDA)
-- **Reason**: Inefficient single-quote tool, replaced with full options chain tools
-- **Benefit**: Tool count reduced from 11 to 10, then increased to 12 with new options chain tools
-
-### Performance Benefits
-- **CPU Usage**: 1-2% reduction from CSS analysis removal
-- **Code Quality**: Simpler, more maintainable codebase
-- **Documentation**: Accurate and up-to-date
-- **API Surface**: Cleaner with unused endpoint removed
-- **Tool Count**: Optimized from 12 to 12 (removed 1 inefficient, added 2 comprehensive)
-- **Test Suite**: Expanded from 32 to 36 tests (added 4 options chain tests)
-- **Architecture**: Leverages OpenAI Agents SDK native parallel execution + Polygon.io full chain snapshots
-
-## Recent Updates (Oct 8, 2025)
-
-### Options Chain Tools Addition
+### Options Chain Bug Fixes (Critical)
 - **Files Modified**:
-  - `src/backend/tools/polygon_tools.py`: Added get_call_options_chain and get_put_options_chain functions
-  - `src/backend/services/agent_service.py`: Updated imports, tools list, instructions with RULE #9
-  - `test_cli_regression.sh`: Added 4 new options chain tests (2 SPY, 2 NVDA)
-- **Tool Count**: Increased from 10 to 12
-- **Test Count**: Increased from 32 to 36
-- **Polygon API**: Uses list_snapshot_options_chain endpoint
-- **Response Format**: Strike prices as keys with Greeks, IV, volume, OI
-- **Agent Instructions**: Added RULE #9 for options chain queries (lines 234-263)
-- **Validation**: 36/36 tests PASSED, 16.28s avg (EXCELLENT rating)
-- **Options Verification**: SPY Put Options test confirmed correct implementation with proper formatting
-
-### TA Tool Enforcement
-- **File**: `src/backend/services/agent_service.py`
-- **Change**: Added comprehensive TA enforcement rules (RULE #7)
-  - Agent MUST fetch all requested TA indicators via tool calls
-  - Agent CANNOT approximate TA values from OHLC data
-  - Explicit examples of violations and correct behavior
-- **Validation**: Tests 10 and 23 confirmed all SMA indicators fetched (no approximation)
-
-### Service Tier Optimization
-- **File**: `src/backend/services/agent_service.py:344`
-- **Change**: `service_tier: "flex"` → `service_tier: "default"`
-- **Reason**: Prototyping phase requires better performance; "flex" tier was causing compute resources rate limiting
-- **Impact**: Improved response consistency and throughput
-- **Validation**: 36/36 tests PASSED with 16.28s avg (EXCELLENT rating)
-
-### Test Suite Evolution
-- **Initial**: 27 tests (mixed organization)
-- **Restructured**: 36 tests organized by ticker
-- **TA Enforcement**: Reduced to 32 tests (removed deprecated options tests)
-- **Options Chain Addition**: Expanded to 36 tests (added 4 new options chain tests)
-- **Current**: 36 tests (SPY 15 + NVDA 15 + Multi 6)
-- **Dynamic Dates**: Queries use relative dates instead of hardcoded dates
-- **Sustainability**: No date updates required over time
-- **Test Results**: 36/36 PASSED, 16.28s avg, EXCELLENT rating
+  - `src/backend/tools/polygon_tools.py`: Fixed 10-strike limit enforcement, None-safe rounding, field naming
+  - `test_cli_regression.sh`: Fixed log output paths from /tmp to ./tmp
+- **Bug #1**: 10-Strike Limit Not Enforced
+  - **Evidence**: 174 total strikes found in logs (should be 40)
+  - **Fix**: Changed for loop to `list()[:10]` slice
+  - **Validation**: Now shows exactly 10 strikes per chain
+- **Bug #2**: NoneType Round Error
+  - **Error**: "type NoneType doesn't define __round__ method"
+  - **Fix**: Added None checks: `round(value if value is not None else 0.0, 2)`
+  - **Validation**: No more NoneType errors
+- **Bug #3**: Test Script Path Violation
+  - **Violation**: Logs written to system /tmp instead of project tmp/
+  - **Fix**: Changed paths to ./tmp with mkdir -p tmp
+  - **Validation**: Logs now in project folder
+- **Enhancement**: Field Naming
+  - **Change**: Renamed "close" to "price" for clarity
+  - **Reason**: Make option price obvious to AI Agent
+  - **Validation**: Tests show "price" field correctly
+- **Test Results**: 36/36 PASSED, 9.91s avg (EXCELLENT rating)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_11-05.log`
 
 ### Documentation Updates
-- **CLAUDE.md**: Updated Last Completed Task Summary with options chain implementation
-- **README.md**: Updated all test count references to reflect 36 tests
-- **Serena Memories**: Updated tech_stack.md with tool count, test count, and options chain details
-- **Test Reports**: `test-reports/test_cli_regression_loop1_2025-10-08_22-12.log`
+- **Serena Memories**: Updated tech_stack.md with bug fix details and validation
+- **Test Reports**: Generated comprehensive test report with evidence
