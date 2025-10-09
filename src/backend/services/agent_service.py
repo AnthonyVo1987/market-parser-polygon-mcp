@@ -6,10 +6,12 @@ from openai.types.shared import Reasoning
 from ..config import settings
 from ..tools.finnhub_tools import get_stock_quote
 from ..tools.polygon_tools import (
+    get_call_options_chain,
     get_market_status_and_date_time,
     get_OHLC_bars_custom_date_range,
     get_OHLC_bars_previous_close,
     get_OHLC_bars_specific_date,
+    get_put_options_chain,
     get_ta_ema,
     get_ta_macd,
     get_ta_rsi,
@@ -30,8 +32,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars).
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd] 🔴
+TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 12 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -229,6 +231,36 @@ RULE #8: ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS
 ❌ User asks about 3 tickers, you have data for 2 → Making calls for ALL 3 [WASTE! Only call for missing 1 ticker]
 ❌ **Already have SPY SMA/EMA/RSI/MACD, user asks "Support & Resistance" → Making NEW TA calls [CRITICAL WASTE!]**
 
+RULE #9: OPTIONS CHAIN = USE get_call_options_chain OR get_put_options_chain
+- 🔴 **WHEN TO USE**: User requests call options chain or put options chain data
+- 🔴 **CALL OPTIONS**: Fetch 10 strike prices ABOVE current underlying price (ascending order)
+  - Tool: get_call_options_chain(ticker, current_price, expiration_date)
+  - Example: "SPY Call Options Chain expiring Oct 10" → get_call_options_chain(ticker='SPY', current_price=673.0, expiration_date='2025-10-10')
+- 🔴 **PUT OPTIONS**: Fetch 10 strike prices BELOW current underlying price (descending order)
+  - Tool: get_put_options_chain(ticker, current_price, expiration_date)
+  - Example: "NVDA Put Options Chain expiring this Friday" → get_put_options_chain(ticker='NVDA', current_price=<current>, expiration_date=<this_friday>)
+- 🔴 **REQUIRED PARAMETERS**:
+  - ticker (str): Stock ticker symbol
+  - current_price (float): Current underlying stock price - use get_stock_quote if needed
+  - expiration_date (str): Expiration date in YYYY-MM-DD format
+- 🔴 **DATE HANDLING**:
+  - "this Friday" → Calculate next Friday's date in YYYY-MM-DD format
+  - "Oct 10" or "October 10" → Convert to YYYY-MM-DD format (2025-10-10)
+  - Always validate date is a future trading day
+- 📊 **RESPONSE FORMAT**: Returns JSON with strike prices as keys
+  - Each strike includes: close, delta, gamma, theta, implied_volatility, volume, open_interest
+  - All values rounded to 2 decimals
+- 📊 Uses Polygon.io Direct API for options chain snapshots
+- ✅ **WORKFLOW**:
+  1. Identify if request is for calls or puts
+  2. Get current_price via get_stock_quote if not already available
+  3. Parse/calculate expiration_date in YYYY-MM-DD format
+  4. Call appropriate tool with all 3 required parameters
+- ❌ **COMMON MISTAKES**:
+  - Not fetching current_price before calling options chain tool
+  - Incorrect date format (must be YYYY-MM-DD)
+  - Using get_stock_quote for options data (wrong tool!)
+
 
 📋 DYNAMIC DECISION TREE FOR TOOL CALLS:
 
@@ -391,7 +423,9 @@ def create_agent():
             get_ta_ema,
             get_ta_rsi,
             get_ta_macd,
-        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 9 Polygon)
+            get_call_options_chain,
+            get_put_options_chain,
+        ],  # Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

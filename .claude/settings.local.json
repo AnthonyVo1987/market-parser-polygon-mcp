@@ -211,7 +211,8 @@
       "WebFetch(domain:polygon.io)",
       "Read(///**)",
       "Bash(time:*)",
-      "Bash(mcp__serena__find_file:*)"
+      "Bash(mcp__serena__find_file:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": [],

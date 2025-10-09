@@ -1,237 +1,348 @@
-# TODO Task Plan: Fix AI Agent TA Tool Enforcement & Remove Options Tool
+# TODO Task Plan: Implement Options Chain Tools
 
-## Research Summary
+**Task:** Create `get_call_options_chain` and `get_put_options_chain` tools with full integration
 
-**Completed Research Findings:**
-
-1. **TA Tool Enforcement Issue**: Agent instructions allow chat history reuse too liberally - AI Agent approximates SMA-20 from 20-day OHLC data instead of fetching via `get_ta_sma` tool
-2. **Options Tool References Found**:
-   - `src/backend/services/agent_service.py`: 6 references (import, tools list, instructions)
-   - `src/backend/tools/polygon_tools.py`: 7 references (function definition + docstrings)
-   - `test_cli_regression.sh`: 4 test cases (2 for SPY, 2 for NVDA)
+**Status:** Planning Complete - Ready for Implementation
 
 ---
 
-## Implementation Plan
+## 📋 IMPLEMENTATION CHECKLIST
 
-### Phase 1: Agent Instructions Updates (TA Tool Enforcement)
+### PHASE 1: ✅ RESEARCH (COMPLETED)
 
-**File**: `src/backend/services/agent_service.py`
+- [x] Research Polygon.io `list_snapshot_options_chain` API endpoint
+- [x] Analyze existing tool patterns in `polygon_tools.py`
+- [x] Study agent instruction structure in `agent_service.py`
+- [x] Review test suite structure in `test_cli_regression.sh`
+- [x] Understand response formatting requirements (2 decimal precision)
 
-**Task 1.1**: Update RULE #8 to Prohibit TA Approximation
-
-- [ ] Use Serena `find_symbol` to read `get_enhanced_agent_instructions` function body
-- [ ] Locate RULE #8 section on Technical Analysis
-- [ ] Add explicit enforcement rule BEFORE the existing RULE #8 content:
-
-```
-🔴 CRITICAL TA TOOL ENFORCEMENT RULES:
-- **NEVER APPROXIMATE** technical analysis indicator values
-- **MUST FETCH** each requested indicator via dedicated TA tool calls
-- **DATA REUSE ALLOWED ONLY IF**: The EXACT same indicator was previously fetched
-  - ✅ CORRECT: User requests SMA-20, you already fetched SMA-20 → Reuse existing SMA-20 data
-  - ❌ WRONG: User requests SMA-20, you have 20-day OHLC bars → MUST fetch SMA-20 via get_ta_sma
-  - ❌ WRONG: "Approximating SMA-20 from latest 20-day window data"
-- **EACH TA INDICATOR IS UNIQUE**: SMA-20 ≠ OHLC bars, EMA-50 ≠ SMA-50, RSI-14 ≠ MACD
-- **NO EXCEPTIONS**: If user requests SMA 20/50/200, you MUST fetch all three via tool calls (unless previously fetched in this conversation)
-```
-
-- [ ] Update the existing RULE #8 content to reference this new enforcement section
-- [ ] Add example scenarios showing correct vs incorrect TA tool usage
-
-**Task 1.2**: Update RULE #9 Chat History Analysis for TA
-
-- [ ] Locate RULE #9 examples section
-- [ ] Update examples to show correct TA tool behavior:
-  - **Scenario**: User requests "SPY SMA 20/50/200", no existing TA data
-  - **CORRECT**: Make 3 tool calls: `get_ta_sma(ticker='SPY', window=20)`, `get_ta_sma(ticker='SPY', window=50)`, `get_ta_sma(ticker='SPY', window=200)`
-  - **WRONG**: Fetch OHLC bars and approximate SMA-20 from 20-day window
-
-**Task 1.3**: Update "Tools Used" Transparency Requirement
-
-- [ ] Add note that ALL TA tool calls must be explicitly listed
-- [ ] Emphasize that approximations or derived values must never appear in "Tools Used"
+**Research Findings:**
+- Polygon Python SDK method: `client.list_snapshot_options_chain(underlying_asset, params={})`
+- Returns: `Iterator[OptionContractSnapshot]` with pagination
+- Response includes: day, details, greeks, implied_volatility, open_interest
+- Tool pattern: @function_tool, async, JSON returns, lazy client init
+- Agent has 10 tools currently, will become 12 after additions
 
 ---
 
-### Phase 2: Remove Options Tool References
+### PHASE 2: PLANNING (IN PROGRESS)
 
-**Task 2.1**: Remove from Agent Service
+#### Tool Implementation Requirements
 
-**File**: `src/backend/services/agent_service.py`
-
-- [ ] Use Serena `find_symbol` to read the `create_agent` function
-- [ ] Remove `get_options_quote_single,` from the tools list (line 383)
-- [ ] Use Serena `search_for_pattern` to find the import statement
-- [ ] Remove `get_options_quote_single,` from imports (line 13)
-
-**Task 2.2**: Remove from Agent Instructions
-
-**File**: `src/backend/services/agent_service.py` (within `get_enhanced_agent_instructions`)
-
-- [ ] Remove `get_options_quote_single` from the supported tools list (line 35)
-  - Update count from "11 SUPPORTED TOOLS" to "10 SUPPORTED TOOLS"
-- [ ] **DELETE ENTIRE RULE #3** (lines 62-73):
-  - Section title: "RULE #3: OPTIONS = ALWAYS USE get_options_quote_single()"
-  - All examples and descriptions
-  - Display requirements for options
-- [ ] Remove options example from correct tool calls section (line 267)
-- [ ] Update RULE numbering: Current RULE #4 becomes RULE #3, RULE #5 becomes RULE #4, etc.
-- [ ] Search for any other "option" references in instructions and remove
-
-**Task 2.3**: Update Decision Tree and Examples
-
-- [ ] Remove options-related decision points from the DECISION TREE section
-- [ ] Remove options examples from "EXAMPLES OF CORRECT TOOL CALLS"
-- [ ] Remove any "WRONG" examples that reference options
-
-**Task 2.4**: Remove Tool Definition (Keep for Reference)
-
-**File**: `src/backend/tools/polygon_tools.py`
-
-- [ ] Use Serena `find_symbol` to locate `get_options_quote_single` function (line 589)
-- [ ] **COMMENT OUT** the entire function (lines 589-660) with a note:
-  ```python
-  # REMOVED: get_options_quote_single tool - replaced by future full options chain tool
-  # Removal date: 2025-10-08
-  # Reason: Single quote tool inefficient, will be replaced with full options chain fetcher
+**Tool 1: `get_call_options_chain`**
+- **Purpose:** Fetch 10 Call Option strike prices ABOVE current price
+- **Location:** `src/backend/tools/polygon_tools.py`
+- **Parameters:**
+  - `ticker` (str, required): Stock ticker symbol
+  - `current_price` (float, required): Current underlying stock price
+  - `expiration_date` (str, required): Expiration date (YYYY-MM-DD format)
+- **API Call Parameters (hardcoded):**
+  - `strike_price.gte`: current_price
+  - `expiration_date`: expiration_date
+  - `contract_type`: "call"
+  - `order`: "asc"
+  - `limit`: 10
+  - `sort`: "strike_price"
+- **Response Format:**
+  ```json
+  {
+    "ticker_symbol Call Options Chain: expiration_date": {
+      "$strike1": {"close": X.XX, "delta": X.XX, "gamma": X.XX, "theta": X.XX, "implied_volatility": X.XX, "volume": XXXX, "open_interest": XXXX},
+      "$strike2": {...}
+    }
+  }
   ```
-- [ ] Keep the commented code for reference/future implementation
-- [ ] Update any docstrings in other functions that reference `get_options_quote_single`
+
+**Tool 2: `get_put_options_chain`**
+- **Purpose:** Fetch 10 Put Option strike prices BELOW current price
+- **Location:** `src/backend/tools/polygon_tools.py`
+- **Parameters:**
+  - `ticker` (str, required): Stock ticker symbol
+  - `current_price` (float, required): Current underlying stock price
+  - `expiration_date` (str, required): Expiration date (YYYY-MM-DD format)
+- **API Call Parameters (hardcoded):**
+  - `strike_price.lte`: current_price
+  - `expiration_date`: expiration_date
+  - `contract_type`: "put"
+  - `order`: "desc"
+  - `limit`: 10
+  - `sort`: "strike_price"
+- **Response Format:**
+  ```json
+  {
+    "ticker_symbol Put Options Chain: expiration_date": {
+      "$strike1": {"close": X.XX, "delta": X.XX, "gamma": X.XX, "theta": X.XX, "implied_volatility": X.XX, "volume": XXXX, "open_interest": XXXX},
+      "$strike2": {...}
+    }
+  }
+  ```
 
 ---
 
-### Phase 3: Remove Options Test Cases
+### PHASE 3: IMPLEMENTATION
 
-**File**: `test_cli_regression.sh`
+#### 3.1 Create Options Chain Tools
 
-**Task 3.1**: Remove SPY Options Test Cases
+**File:** `src/backend/tools/polygon_tools.py`
 
-- [ ] Use standard Read tool to view test_cli_regression.sh around lines 85-86
-- [ ] Remove line 85: `"Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$SPY"`
-- [ ] Remove line 86: `"Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$SPY"`
+- [ ] Use Serena `insert_after_symbol` to add `get_call_options_chain` after `get_ta_macd`
+  - [ ] Add @function_tool decorator
+  - [ ] Define async function with type hints
+  - [ ] Add comprehensive docstring (Args, Returns, Note, Examples)
+  - [ ] Implement logic:
+    - [ ] Get Polygon client via `_get_polygon_client()`
+    - [ ] Call `client.list_snapshot_options_chain()` with call parameters
+    - [ ] Extract and format response data
+    - [ ] Round all values to 2 decimals
+    - [ ] Return JSON string with formatted chain
+    - [ ] Handle errors with proper error JSON
 
-**Task 3.2**: Remove NVDA Options Test Cases
+- [ ] Use Serena `insert_after_symbol` to add `get_put_options_chain` after `get_call_options_chain`
+  - [ ] Add @function_tool decorator
+  - [ ] Define async function with type hints
+  - [ ] Add comprehensive docstring (Args, Returns, Note, Examples)
+  - [ ] Implement logic:
+    - [ ] Get Polygon client via `_get_polygon_client()`
+    - [ ] Call `client.list_snapshot_options_chain()` with put parameters
+    - [ ] Extract and format response data
+    - [ ] Round all values to 2 decimals
+    - [ ] Return JSON string with formatted chain
+    - [ ] Handle errors with proper error JSON
 
-- [ ] Use standard Read tool to view test_cli_regression.sh around lines 101-102
-- [ ] Remove line 101: `"Get First 3 Call Option Quotes expiring this Friday above current price (show strike prices): \$NVDA"`
-- [ ] Remove line 102: `"Get First 3 Put Option Quotes expiring this Friday below current price (show strike prices): \$NVDA"`
+#### 3.2 Update Agent Service
 
-**Task 3.3**: Update Test Count
+**File:** `src/backend/services/agent_service.py`
 
-- [ ] Verify total test count in script header/comments
-- [ ] Update from 35 tests to 31 tests (removed 4 options tests)
-- [ ] Update any expected pass count assertions
+- [ ] Use Serena `find_symbol` to locate import section (lines 7-17)
+- [ ] Use Serena `replace_symbol_body` or Edit to add imports:
+  ```python
+  from ..tools.polygon_tools import (
+      ...,
+      get_call_options_chain,  # Add this
+      get_put_options_chain,   # Add this
+  )
+  ```
 
----
+- [ ] Use Serena to update agent tools list (lines 384-394):
+  - [ ] Add `get_call_options_chain` to tools list
+  - [ ] Add `get_put_options_chain` to tools list
+  - [ ] Update comment: "Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)" → "12 Polygon"
 
-### Phase 4: CLI Testing & Validation
+- [ ] Use Serena or Edit to update agent instructions (line 34):
+  - [ ] Change tool count from 10 to 12
+  - [ ] Update tool list to include: `get_call_options_chain, get_put_options_chain`
 
-**Task 4.1**: Run Test Suite
+- [ ] Use Serena or Edit to add new RULE #9 for Options Chain queries:
+  ```
+  RULE #9: OPTIONS CHAIN = USE get_call_options_chain OR get_put_options_chain
+  - If request asks for call options chain, use get_call_options_chain(ticker, current_price, expiration_date)
+  - If request asks for put options chain, use get_put_options_chain(ticker, current_price, expiration_date)
+  - Agent must determine: ticker, current_price (via get_stock_quote if needed), expiration_date
+  - Call options: Strike prices ABOVE current price (ascending order)
+  - Put options: Strike prices BELOW current price (descending order)
+  - Returns formatted chain with Greeks, IV, volume, open interest
+  - Examples:
+    * "SPY Call Options Chain expiring Oct 10" → get_call_options_chain(ticker='SPY', current_price=673.0, expiration_date='2025-10-10')
+    * "NVDA Put Options Chain expiring this Friday" → get_put_options_chain(ticker='NVDA', current_price=<current>, expiration_date=<this_friday>)
+  ```
 
-- [ ] Execute: `./test_cli_regression.sh`
-- [ ] Wait for completion (approximately 5-6 minutes)
-- [ ] Capture test report filename
+#### 3.3 Update Test Suite
 
-**Task 4.2**: Verify Response Content (CRITICAL)
+**File:** `test_cli_regression.sh`
 
-🔴 **MANDATORY**: Must verify ACTUAL response content, NOT just PASS status
+- [ ] Use Read to understand current test structure
+- [ ] Use Serena `search_for_pattern` to locate SPY Technical Analysis test (around line 150-160)
+- [ ] Use Edit to add 2 SPY options tests after SPY TA test:
+  ```bash
+  # Test X: SPY Call Options Chain
+  echo "Test X: SPY Call Options Chain Expiring this Friday"
+  echo "Get the SPY Call Options Chain Expiring this Friday" | uv run src/backend/main.py >> "$OUTPUT_FILE"
 
-- [ ] Use Read tool to open the test report log file
-- [ ] **FOR TA TESTS** (e.g., Test 10 "SPY SMA"):
-  - [ ] Find the "Tools Used" section in the response
-  - [ ] Verify ALL requested indicators were fetched (SMA-20, SMA-50, SMA-200)
-  - [ ] Confirm NO approximation language (e.g., "approximated from 20-day window")
-  - [ ] Check that response shows actual fetched values, not derived/calculated values
-- [ ] **FOR OPTIONS TESTS**:
-  - [ ] Verify the 4 options test cases no longer exist
-  - [ ] Confirm no errors related to missing options tool
-- [ ] **FOR OTHER TESTS**:
-  - [ ] Spot-check 5-10 random tests to ensure responses contain actual data
-  - [ ] Verify responses are coherent and not hallucinated
+  # Test X+1: SPY Put Options Chain
+  echo "Test X+1: SPY Put Options Chain Expiring this Friday"
+  echo "Get the SPY Put Options Chain Expiring this Friday" | uv run src/backend/main.py >> "$OUTPUT_FILE"
+  ```
 
-**Task 4.3**: Document Findings
+- [ ] Use Serena `search_for_pattern` to locate NVDA Technical Analysis test
+- [ ] Use Edit to add 2 NVDA options tests after NVDA TA test:
+  ```bash
+  # Test Y: NVDA Call Options Chain
+  echo "Test Y: NVDA Call Options Chain Expiring this Friday"
+  echo "Get the NVDA Call Options Chain Expiring this Friday" | uv run src/backend/main.py >> "$OUTPUT_FILE"
 
-- [ ] Create validation report with:
-  - Total tests run (should be 31)
-  - Pass/fail count
-  - TA test verification results (did agent fetch all indicators?)
-  - Any issues or anomalies found
-  - Response content quality assessment
+  # Test Y+1: NVDA Put Options Chain
+  echo "Test Y+1: NVDA Put Options Chain Expiring this Friday"
+  echo "Get the NVDA Put Options Chain Expiring this Friday" | uv run src/backend/main.py >> "$OUTPUT_FILE"
+  ```
 
----
-
-### Phase 5: Report to User
-
-**Task 5.1**: Prepare Test Results Summary
-
-- [ ] Summarize test execution results
-- [ ] Highlight TA tool enforcement verification
-- [ ] Note options tool removal success
-- [ ] Flag any issues or concerns
-
-**Task 5.2**: Present to User for Review
-
-- [ ] **DO NOT** proceed with Serena updates yet
-- [ ] **DO NOT** commit changes yet
-- [ ] Present findings and await user confirmation
-- [ ] If issues found, return to implementation phase
-
----
-
-## Success Criteria
-
-- ✅ All 31 tests pass (35 original - 4 options tests removed)
-- ✅ TA tests show ALL requested indicators fetched via tool calls
-- ✅ NO approximation language in TA responses
-- ✅ Options tool completely removed from agent service
-- ✅ Options instructions removed from agent instructions
-- ✅ Options test cases removed from test suite
-- ✅ Test response content verified manually (not just PASS status)
-- ✅ User reviews and approves results before final commits
-
----
-
-## Tools to Use
-
-**Sequential-Thinking**: For complex analysis and decision-making throughout implementation
-
-**Serena Tools**:
-- `find_symbol`: Locate functions to edit
-- `search_for_pattern`: Find all references to remove
-- `replace_symbol_body`: Update agent instructions function (if body replacement needed)
-- `replace_lines`: For targeted line-by-line edits
-
-**Standard Tools**:
-- `Read`: View test results and verify content
-- `Edit`: Make precise text replacements in agent instructions and test script
-- `Bash`: Run test suite
-
----
-
-## Risk Mitigation
-
-**Risk 1**: Agent instructions become too strict and refuse valid requests
-- **Mitigation**: Include clear examples of when data reuse IS allowed
-- **Testing**: Verify multi-turn conversations still work correctly
-
-**Risk 2**: Removing options tool breaks other functionality
-- **Mitigation**: Comment out tool code instead of deleting, keep for reference
-- **Testing**: Run full test suite to ensure no cascade failures
-
-**Risk 3**: Test verification misses subtle issues
-- **Mitigation**: Read actual response content, not just PASS/FAIL status
-- **Testing**: Manually verify TA tool calls in "Tools Used" sections
-
-**Risk 4**: Rule renumbering causes confusion in instructions
-- **Mitigation**: Carefully update all cross-references to rule numbers
-- **Testing**: Read through entire instructions to ensure coherence
+- [ ] Use Edit to update test count from 32 to 36 tests
+- [ ] Use Edit to update test organization comment:
+  ```bash
+  # Test Organization: 36 total tests
+  # - SPY Test Sequence: Tests 1-15 (15 tests - added 2 options tests)
+  # - NVDA Test Sequence: Tests 16-30 (15 tests - added 2 options tests)
+  # - Multi-Ticker Test Sequence: Tests 31-36 (6 tests)
+  ```
 
 ---
 
-## Implementation Notes
+### PHASE 4: 🔴 CLI TESTING (MANDATORY)
 
-- **CRITICAL**: This is a RESEARCH → PLANNING phase. Do NOT implement yet until user approves plan.
-- After implementation, testing is MANDATORY before any commits
-- Response content verification is NON-NEGOTIABLE (per user's explicit requirement)
-- User must review test results before proceeding to Serena updates/commits
+**🔴 CRITICAL: MUST RUN TESTS BEFORE PROCEEDING TO PHASE 5**
+
+- [ ] Execute test suite: `./test_cli_regression.sh`
+- [ ] Verify results:
+  - [ ] All 36/36 tests PASS (100% success rate)
+  - [ ] Test report generated in `test-reports/`
+  - [ ] No errors or failures in output
+  - [ ] Session persistence verified
+- [ ] **CRITICAL VERIFICATION:** Actually VIEW the test responses for options chain tests
+  - [ ] SPY Call Options test shows formatted chain with strike prices
+  - [ ] SPY Put Options test shows formatted chain with strike prices
+  - [ ] NVDA Call Options test shows formatted chain with strike prices
+  - [ ] NVDA Put Options test shows formatted chain with strike prices
+  - [ ] All responses show Greeks (delta, gamma, theta, vega)
+  - [ ] All values rounded to 2 decimals
+  - [ ] Response format matches specification in `new_research_details.md`
+- [ ] Show test results to user:
+  - [ ] Display test summary output
+  - [ ] Show pass/fail counts
+  - [ ] Provide test report file path
+  - [ ] Show performance metrics (response times)
+- [ ] If failures occur:
+  - [ ] Analyze failure reasons
+  - [ ] Fix code issues
+  - [ ] Re-run tests until 100% pass rate achieved
+
+**⚠️ DO NOT PROCEED TO PHASE 5 WITHOUT:**
+- ✅ 36/36 tests PASSED
+- ✅ Test results shown to user
+- ✅ Test report path provided
+- ✅ Options chain responses manually verified
+
+---
+
+### PHASE 5: UPDATE SERENA MEMORIES
+
+**Only proceed after Phase 4 tests pass 100%**
+
+- [ ] Use Serena `read_memory` to load `tech_stack.md`
+- [ ] Use Serena `write_memory` to update `tech_stack.md`:
+  - [ ] Update "Direct API Tools" section:
+    - [ ] Change "Polygon Direct API (9 tools)" to "(11 tools)"
+    - [ ] Add `get_call_options_chain` to tool list
+    - [ ] Add `get_put_options_chain` to tool list
+    - [ ] Update total tools from 10 to 12
+  - [ ] Add new "Options Chain Tools" subsection:
+    ```
+    **Options Chain (2 tools - Added Oct 8, 2025):**
+    - `get_call_options_chain` - Fetch 10 call option strikes above current price
+    - `get_put_options_chain` - Fetch 10 put option strikes below current price
+    ```
+  - [ ] Update test suite section:
+    - [ ] Change test count from 32 to 36
+    - [ ] Update organization: SPY 15 + NVDA 15 + Multi 6
+    - [ ] Add note about 4 new options chain tests
+  - [ ] Update "Recent Updates" section with Oct 8, 2025 entry
+
+---
+
+### PHASE 6: FINAL GIT COMMIT
+
+**🔴 ATOMIC COMMIT WORKFLOW - FOLLOW EXACTLY**
+
+#### Step 1: Complete ALL Work FIRST (DO NOT stage yet)
+- [ ] Verify all code changes complete
+- [ ] Verify all tests passed
+- [ ] Verify all documentation updated
+- [ ] Verify all Serena memories updated
+- [ ] **DO NOT RUN `git add` YET**
+
+#### Step 2: Review All Changes
+- [ ] Run `git status` to see all changed files
+- [ ] Run `git diff` to review all changes
+- [ ] Verify completeness:
+  - [ ] Code: `polygon_tools.py` (2 new tools)
+  - [ ] Agent: `agent_service.py` (imports, tools list, instructions)
+  - [ ] Tests: `test_cli_regression.sh` (4 new tests, count updates)
+  - [ ] Report: Test report file in `test-reports/`
+  - [ ] Docs: `CLAUDE.md` (Last Completed Task updated)
+  - [ ] Memory: `tech_stack.md` (tool count, test count updated)
+  - [ ] Plan: `TODO_task_plan.md` (this file)
+
+#### Step 3: Stage Everything at Once
+- [ ] Run `git add -A` (FIRST and ONLY staging command)
+- [ ] **This is the FIRST time running `git add`**
+
+#### Step 4: Verify Staging
+- [ ] Run `git status`
+- [ ] Verify ALL files staged, NOTHING unstaged
+- [ ] If anything missing, add it now
+
+#### Step 5: Commit Immediately (within 60 seconds)
+- [ ] Run commit command with HEREDOC message:
+  ```bash
+  git commit -m "$(cat <<'EOF'
+  [OPTIONS-CHAIN] Implement Call & Put Options Chain tools with Polygon.io API
+
+  - Create get_call_options_chain tool (10 strikes above current price)
+  - Create get_put_options_chain tool (10 strikes below current price)
+  - Both tools use Polygon.io list_snapshot_options_chain endpoint
+  - Response formatting: Strike prices as keys with Greeks, IV, volume, OI
+  - All values rounded to 2 decimals per specification
+  - Update agent_service.py: Add imports, tools list, new RULE #9
+  - Update tool count from 10 to 12 (1 Finnhub + 11 Polygon)
+  - Add 4 new test cases to test_cli_regression.sh:
+    - SPY Call Options Chain (Test 14)
+    - SPY Put Options Chain (Test 15)
+    - NVDA Call Options Chain (Test 27)
+    - NVDA Put Options Chain (Test 28)
+  - Update test count from 32 to 36 tests
+  - Test organization: SPY 15 + NVDA 15 + Multi 6
+  - Test results: 36/36 PASSED (100% success rate)
+  - Update tech_stack.md: Tool count 10→12, test count 32→36
+  - Update CLAUDE.md: Last Completed Task Summary
+
+  Test Results:
+  - Total: 36/36 PASSED
+  - Success Rate: 100%
+  - Average Response Time: X.XXs (EXCELLENT)
+  - Test Report: test-reports/test_cli_regression_loopX_YYYY-MM-DD_HH-MM.log
+  - Options Chain Verification: All 4 tests show formatted chains with Greeks
+
+  🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+  Co-Authored-By: Claude <noreply@anthropic.com>
+  EOF
+  )"
+  ```
+
+#### Step 6: Push Immediately
+- [ ] Run `git push`
+- [ ] Verify push successful
+
+---
+
+## 🎯 SUCCESS CRITERIA
+
+**Task is complete when:**
+- ✅ Both options chain tools implemented and working
+- ✅ Agent service updated with new tools and instructions
+- ✅ Test suite updated with 4 new test cases
+- ✅ ALL 36/36 tests passing (100% success rate)
+- ✅ Test results shown to user
+- ✅ Options chain responses manually verified
+- ✅ Serena memories updated
+- ✅ CLAUDE.md updated with task summary
+- ✅ Atomic git commit completed and pushed
+
+---
+
+## 📝 NOTES
+
+- **Tool Pattern:** Follow existing pattern in `polygon_tools.py` (see `get_ta_sma` as reference)
+- **Response Format:** Must match specification in `new_research_details.md` exactly
+- **Decimal Precision:** All numeric values must be rounded to 2 decimals
+- **Error Handling:** Comprehensive try/except with descriptive error JSON
+- **Testing:** MANDATORY - cannot skip or claim completion without test execution
+- **Commit Workflow:** Stage ONLY immediately before commit, never during development

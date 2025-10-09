@@ -585,6 +585,276 @@ async def get_ta_macd(
             }
         )
 
+
+@function_tool
+async def get_call_options_chain(ticker: str, current_price: float, expiration_date: str) -> str:
+    """Get Call Options Chain with 10 strike prices above current underlying price.
+
+    Use this tool when the user requests call options chain, call option strikes,
+    OTM calls, or upside call options for a specific expiration date.
+
+    Fetches 10 call option contracts with strike prices ABOVE the current stock price,
+    sorted in ascending order. Returns Greeks (delta, gamma, theta, vega), implied
+    volatility, volume, and open interest for each strike.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA")
+        current_price: Current underlying stock price (use get_stock_quote to obtain)
+        expiration_date: Option expiration date in YYYY-MM-DD format (e.g., "2025-10-10")
+
+    Returns:
+        JSON string containing formatted call options chain:
+        {
+            "ticker Call Options Chain: expiration_date": {
+                "$strike1": {
+                    "close": X.XX,
+                    "delta": X.XX,
+                    "gamma": X.XX,
+                    "theta": X.XX,
+                    "implied_volatility": X.XX,
+                    "volume": XXXX,
+                    "open_interest": XXXX
+                },
+                ...
+            }
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "source": "Polygon.io"
+        }
+
+    Note:
+        - Fetches 10 strikes ABOVE current price (out-of-the-money calls)
+        - Strike prices sorted in ascending order
+        - Delta: 0 to 1 (probability of expiring ITM)
+        - Gamma: Rate of delta change
+        - Theta: Time decay (typically negative)
+        - Vega: Sensitivity to volatility changes
+        - All values rounded to 2 decimals
+        - Requires valid expiration date (market must be trading options on that date)
+
+    Examples:
+        - "SPY Call Options Chain expiring Oct 10"
+        - "Get NVDA call options expiring this Friday"
+        - "Show me AAPL OTM call strikes"
+        - "Call option chain for TSLA Oct expiration"
+    """
+    try:
+        # Call Polygon API with lazy client initialization
+        client = _get_polygon_client()
+        options_chain = []
+
+        for option in client.list_snapshot_options_chain(
+            ticker,
+            params={
+                "strike_price.gte": current_price,
+                "expiration_date": expiration_date,
+                "contract_type": "call",
+                "order": "asc",
+                "limit": 10,
+                "sort": "strike_price",
+            },
+        ):
+            options_chain.append(option)
+
+        # Check if API returned valid data
+        if not options_chain:
+            return json.dumps(
+                {
+                    "error": "No data",
+                    "message": f"No call options data returned from Polygon.io for {ticker} expiring {expiration_date}.",
+                    "source": "Polygon.io",
+                }
+            )
+
+        # Format response with strike prices as keys
+        formatted_chain = {}
+        for option in options_chain:
+            # Extract strike price
+            strike = getattr(option.details, "strike_price", 0.0) if hasattr(option, "details") else 0.0
+
+            # Extract day close price
+            close = getattr(option.day, "close", 0.0) if hasattr(option, "day") else 0.0
+
+            # Extract Greeks
+            greeks = getattr(option, "greeks", None)
+            delta = getattr(greeks, "delta", 0.0) if greeks else 0.0
+            gamma = getattr(greeks, "gamma", 0.0) if greeks else 0.0
+            theta = getattr(greeks, "theta", 0.0) if greeks else 0.0
+            vega = getattr(greeks, "vega", 0.0) if greeks else 0.0
+
+            # Extract IV, volume, OI
+            iv = getattr(option, "implied_volatility", 0.0)
+            volume = getattr(option.day, "volume", 0) if hasattr(option, "day") else 0
+            oi = getattr(option, "open_interest", 0)
+
+            # Format strike as dollar key
+            strike_key = f"${strike:.2f}"
+
+            # Round all values to 2 decimals
+            formatted_chain[strike_key] = {
+                "close": round(close, 2),
+                "delta": round(delta, 2),
+                "gamma": round(gamma, 2),
+                "theta": round(theta, 2),
+                "implied_volatility": round(iv, 2),
+                "volume": volume,
+                "open_interest": oi,
+            }
+
+        # Return formatted response
+        return json.dumps(
+            {f"{ticker} Call Options Chain: {expiration_date}": formatted_chain}, indent=2
+        )
+
+    except Exception as e:
+        # Handle unexpected errors
+        return json.dumps(
+            {
+                "error": "API request failed",
+                "message": f"Failed to retrieve call options chain from Polygon.io: {str(e)}",
+                "source": "Polygon.io",
+            }
+        )
+
+
+@function_tool
+async def get_put_options_chain(ticker: str, current_price: float, expiration_date: str) -> str:
+    """Get Put Options Chain with 10 strike prices below current underlying price.
+
+    Use this tool when the user requests put options chain, put option strikes,
+    OTM puts, or downside put options for a specific expiration date.
+
+    Fetches 10 put option contracts with strike prices BELOW the current stock price,
+    sorted in descending order. Returns Greeks (delta, gamma, theta, vega), implied
+    volatility, volume, and open interest for each strike.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA")
+        current_price: Current underlying stock price (use get_stock_quote to obtain)
+        expiration_date: Option expiration date in YYYY-MM-DD format (e.g., "2025-10-10")
+
+    Returns:
+        JSON string containing formatted put options chain:
+        {
+            "ticker Put Options Chain: expiration_date": {
+                "$strike1": {
+                    "close": X.XX,
+                    "delta": X.XX,
+                    "gamma": X.XX,
+                    "theta": X.XX,
+                    "implied_volatility": X.XX,
+                    "volume": XXXX,
+                    "open_interest": XXXX
+                },
+                ...
+            }
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "source": "Polygon.io"
+        }
+
+    Note:
+        - Fetches 10 strikes BELOW current price (out-of-the-money puts)
+        - Strike prices sorted in descending order
+        - Delta: -1 to 0 (negative for puts, probability of expiring ITM)
+        - Gamma: Rate of delta change
+        - Theta: Time decay (typically negative)
+        - Vega: Sensitivity to volatility changes
+        - All values rounded to 2 decimals
+        - Requires valid expiration date (market must be trading options on that date)
+
+    Examples:
+        - "SPY Put Options Chain expiring Oct 10"
+        - "Get NVDA put options expiring this Friday"
+        - "Show me AAPL OTM put strikes"
+        - "Put option chain for TSLA Oct expiration"
+    """
+    try:
+        # Call Polygon API with lazy client initialization
+        client = _get_polygon_client()
+        options_chain = []
+
+        for option in client.list_snapshot_options_chain(
+            ticker,
+            params={
+                "strike_price.lte": current_price,
+                "expiration_date": expiration_date,
+                "contract_type": "put",
+                "order": "desc",
+                "limit": 10,
+                "sort": "strike_price",
+            },
+        ):
+            options_chain.append(option)
+
+        # Check if API returned valid data
+        if not options_chain:
+            return json.dumps(
+                {
+                    "error": "No data",
+                    "message": f"No put options data returned from Polygon.io for {ticker} expiring {expiration_date}.",
+                    "source": "Polygon.io",
+                }
+            )
+
+        # Format response with strike prices as keys
+        formatted_chain = {}
+        for option in options_chain:
+            # Extract strike price
+            strike = getattr(option.details, "strike_price", 0.0) if hasattr(option, "details") else 0.0
+
+            # Extract day close price
+            close = getattr(option.day, "close", 0.0) if hasattr(option, "day") else 0.0
+
+            # Extract Greeks
+            greeks = getattr(option, "greeks", None)
+            delta = getattr(greeks, "delta", 0.0) if greeks else 0.0
+            gamma = getattr(greeks, "gamma", 0.0) if greeks else 0.0
+            theta = getattr(greeks, "theta", 0.0) if greeks else 0.0
+            vega = getattr(greeks, "vega", 0.0) if greeks else 0.0
+
+            # Extract IV, volume, OI
+            iv = getattr(option, "implied_volatility", 0.0)
+            volume = getattr(option.day, "volume", 0) if hasattr(option, "day") else 0
+            oi = getattr(option, "open_interest", 0)
+
+            # Format strike as dollar key
+            strike_key = f"${strike:.2f}"
+
+            # Round all values to 2 decimals
+            formatted_chain[strike_key] = {
+                "close": round(close, 2),
+                "delta": round(delta, 2),
+                "gamma": round(gamma, 2),
+                "theta": round(theta, 2),
+                "implied_volatility": round(iv, 2),
+                "volume": volume,
+                "open_interest": oi,
+            }
+
+        # Return formatted response
+        return json.dumps(
+            {f"{ticker} Put Options Chain: {expiration_date}": formatted_chain}, indent=2
+        )
+
+    except Exception as e:
+        # Handle unexpected errors
+        return json.dumps(
+            {
+                "error": "API request failed",
+                "message": f"Failed to retrieve put options chain from Polygon.io: {str(e)}",
+                "source": "Polygon.io",
+            }
+        )
+
 @function_tool
 async def get_OHLC_bars_custom_date_range(  # pylint: disable=too-many-positional-arguments
     ticker: str,
