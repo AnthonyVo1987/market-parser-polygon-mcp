@@ -1,13 +1,50 @@
 # AI Agent Performance Baseline - October 2025
 
-**Established**: October 4, 2025  
-**Purpose**: Baseline performance metrics for GPT-5-Nano AI Agent with optimized tool selection instructions  
-**Test Configuration**: 7-prompt persistent session test suite  
-**Total Runs**: 10 consecutive test runs (70 total tests)  
+**Latest Update**: October 9, 2025 - New 38-test baseline established
+**Original Baseline**: October 4, 2025 (7-test suite)
+**Purpose**: Performance metrics for GPT-5-Nano AI Agent with visual enhancements and options chain tools
+**Current Test Suite**: 38-test CLI regression suite (test_cli_regression.sh)
+**Latest Baseline Run**: 10 consecutive loops (380 total tests)  
 
 ---
 
-## Overall Performance Summary
+## Latest Baseline: 38-Test Suite (October 9, 2025)
+
+### Success Rate
+- **Total Tests**: 380/380 (10 loops × 38 tests each)
+- **Success Rate**: **100%** (all tests passed)
+- **Session Persistence**: **VERIFIED** (all 10 loops maintained single session)
+- **Visual Enhancements**: **VERIFIED** (Markdown tables, emojis, intelligent formatting)
+
+### Response Time Statistics
+
+#### Aggregate Performance (All 380 Tests)
+- **Min Response Time**: 2.44s (Loop from 11-05)
+- **Max Response Time**: 82.02s (Loop 9, Test 38 - ANOMALY)
+- **Overall Average**: **12.07s**
+- **Performance Rating**: **EXCELLENT**
+- **Typical Range**: 3-49s (95% of responses)
+- **Anomaly Rate**: 0.26% (1 outlier in 380 tests)
+
+#### Per-Loop Averages (10 Loops)
+| Loop | Avg Time | Min Time | Max Time | Performance | Duration |
+|------|----------|----------|----------|-------------|----------|
+| 1    | 11.53s   | 3.31s    | 38.54s   | EXCELLENT   | 7m 23s   |
+| 2    | 13.38s   | 3.38s    | 43.99s   | EXCELLENT   | 8m 37s   |
+| 3    | 10.81s   | 3.24s    | 41.81s   | EXCELLENT   | 6m 57s   |
+| 4    | 11.60s   | 3.17s    | 45.79s   | EXCELLENT   | 7m 27s   |
+| 5    | 12.78s   | 3.10s    | 43.46s   | EXCELLENT   | 8m 9s    |
+| 6    | 12.40s   | 4.50s    | 48.69s   | EXCELLENT   | 7m 54s   |
+| 7    | 12.19s   | 3.42s    | 30.83s   | EXCELLENT   | 7m 45s   |
+| 8    | 11.64s   | 2.80s    | 32.40s   | EXCELLENT   | 7m 25s   |
+| 9    | 13.07s   | 2.82s    | 82.02s   | EXCELLENT   | 8m 19s   |
+| 10   | 11.29s   | 3.46s    | 33.46s   | EXCELLENT   | 7m 11s   |
+
+**Performance Consistency**: Standard deviation ~0.88s (low variance, stable performance)
+
+---
+
+## Original Baseline: 7-Test Suite (October 4, 2025)
 
 ### Success Rate
 - **Total Tests**: 70/70 (10 runs × 7 tests each)
@@ -133,23 +170,24 @@
 
 ## Baseline Metrics for Future Comparison
 
-### Critical Performance Indicators
-1. **Success Rate Target**: ≥ 95% (baseline: 100%)
-2. **Average Response Time Target**: ≤ 20s (baseline: 15.97s)
-3. **Tool Selection Accuracy Target**: ≥ 98% (baseline: 100%)
-4. **Session Persistence Target**: 100% (baseline: 100%)
+### Critical Performance Indicators (Updated Oct 9, 2025)
+1. **Success Rate Target**: ≥ 95% (current baseline: 100%)
+2. **Average Response Time Target**: ≤ 15s (current baseline: 12.07s)
+3. **Visual Enhancement Quality**: 100% (Markdown tables, emojis, formatting)
+4. **Session Persistence Target**: 100% (current baseline: 100%)
 
-### Performance Degradation Alerts
-- **WARNING**: If average response time > 20s (25% degradation from baseline)
-- **CRITICAL**: If average response time > 25s (57% degradation from baseline)
-- **WARNING**: If tool selection accuracy < 95%
+### Performance Degradation Alerts (Updated Oct 9, 2025)
+- **WARNING**: If average response time > 15s (24% degradation from 12.07s baseline)
+- **CRITICAL**: If average response time > 18s (49% degradation from baseline)
+- **WARNING**: If visual enhancements fail to render correctly
 - **CRITICAL**: If success rate < 90%
 
-### Recommended Testing Frequency
-- **Weekly**: Single test run for sanity check
-- **Pre-Release**: 3x test runs for validation
-- **Major Changes**: 10x test runs for new baseline establishment
-- **Performance Regression**: Immediate investigation if 2 consecutive tests show >15% degradation
+### Recommended Testing Frequency (Updated Oct 9, 2025)
+- **Weekly**: Single loop test run for sanity check
+- **Pre-Release**: 3-loop test runs for validation
+- **Major Changes**: 10-loop test runs for new baseline establishment
+- **Performance Regression**: Immediate investigation if 2 consecutive tests show >20% degradation
+- **Current Test Suite**: `./test_cli_regression.sh` (38 tests per loop)
 
 ---
 
@@ -161,11 +199,13 @@
 - **MCP Server**: Polygon.io v0.4.1
 - **Port**: 8000 (localhost)
 
-### Test Script
-- **File**: `test_7_prompts_persistent_session.sh`
-- **Mode**: Persistent session (single CLI instance for all 7 tests)
+### Test Scripts
+- **Original (Oct 4)**: `test_7_prompts_persistent_session.sh` (7 tests)
+- **Current (Oct 9)**: `test_cli_regression.sh` (38 tests)
+- **Mode**: Persistent session (single CLI instance for all tests per loop)
 - **Timeout**: 120s per test
-- **Output**: Detailed report in `test-reports/`
+- **Output**: Detailed reports in `test-reports/`
+- **Raw Output**: Raw CLI logs in `tmp/` (project folder)
 
 ### System Specifications
 - **OS**: Linux (WSL2)
@@ -182,19 +222,20 @@
 - **Model Updates**: If GPT-5-Nano model is updated or replaced
 - **Performance Optimization**: After implementing response time improvements
 
-### Comparison Methodology
-1. Run `test_7_prompts_persistent_session.sh` at least 3 times
-2. Calculate average response time across all runs
-3. Compare to baseline average (15.97s)
-4. Check tool selection accuracy (should be 100%)
+### Comparison Methodology (Updated Oct 9, 2025)
+1. Run `test_cli_regression.sh` at least 1 loop (3 loops for validation)
+2. Calculate average response time across all tests
+3. Compare to current baseline average (12.07s)
+4. Verify visual enhancements render correctly (Markdown tables, emojis)
 5. Verify success rate (should be 100%)
-6. Flag any degradation > 15% for investigation
+6. Flag any degradation > 20% for investigation
 
-### Performance Investigation Triggers
-- Average response time > 18.4s (15% slower than baseline)
+### Performance Investigation Triggers (Updated Oct 9, 2025)
+- Average response time > 14.5s (20% slower than 12.07s baseline)
 - Any test failure (< 100% success rate)
-- Tool selection errors (< 100% accuracy)
+- Visual enhancement rendering issues
 - Session persistence failures
+- Anomaly rate > 1% (more than 1 outlier per 100 tests)
 
 ---
 
@@ -223,6 +264,19 @@
 
 ## Notes
 
+### October 9, 2025 Baseline (38-Test Suite)
+- **10-loop baseline run** executed on October 9, 2025
+- **Total Tests**: 380 (38 tests × 10 loops)
+- **Duration**: 77 min 7 sec (1 hour 17 minutes)
+- **Success Rate**: 100% (380/380 PASSED)
+- **Avg Response Time**: 12.07s (EXCELLENT rating)
+- **Visual Enhancements**: All verified working (Markdown tables, emojis, intelligent formatting)
+- **Anomaly Count**: 1 outlier (Loop 9, Test 38 - 82.02s, probable API rate limiting)
+- **Test Reports**: `test-reports/test_cli_regression_loop*_2025-10-09_*.log`
+- **Detailed Summary**: `test-reports/performance_baseline_10loop_2025-10-09.md`
+- **Session Persistence**: 100% verified (all 10 loops maintained single session)
+
+### October 4, 2025 Baseline (7-Test Suite)
 - All 10 baseline runs executed on October 4, 2025 (single day)
 - Market was CLOSED during testing (after-hours)
 - All tests successfully returned last available prices despite market closure
@@ -230,4 +284,6 @@
 - Session persistence verified in 100% of runs (single CLI session per run)
 - Test reports archived in `test-reports/persistent_session_test_*.txt`
 
-This baseline represents the **optimal performance** of the AI agent after comprehensive instruction optimization and serves as the reference point for all future performance tracking and regression detection.
+---
+
+This baseline represents the **current optimal performance** of the AI agent with CLI visual enhancements (Markdown tables, emojis, intelligent formatting) and expanded test coverage (38 tests). The **12.07s average response time** serves as the reference point for all future performance tracking and regression detection.

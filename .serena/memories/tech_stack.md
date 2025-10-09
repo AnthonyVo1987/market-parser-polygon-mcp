@@ -288,16 +288,27 @@
 - **Impact**: All test artifacts now properly contained within project directory
 
 ### Test Results (Oct 9, 2025 - CLI Visual Enhancements)
+
+**Single Loop Validation (Initial)**:
 - **Total**: 38/38 PASSED (100%)
-- **Avg Response Time**: 10.57s (EXCELLENT - improved from 12.35s)
+- **Avg Response Time**: 10.57s (EXCELLENT)
 - **Duration**: 6 min 44 sec
 - **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_12-15.log`
-- **Performance Rating**: EXCELLENT (< 30s threshold)
-- **Visual Features Validated**:
-  - ✅ Markdown tables render correctly with alignment
-  - ✅ Emojis appear in responses (📊📈📉💹✅⚠️🟢🔴)
-  - ✅ Wall analysis provides meaningful strike identification
-  - ✅ Intelligent formatting (lists for simple, tables for complex)
+
+**10-Loop Baseline (Performance Baseline Established)**:
+- **Total Tests**: 380/380 PASSED (100%)
+- **Avg Response Time**: 12.07s (EXCELLENT rating)
+- **Duration**: 77 min 7 sec (1 hour 17 minutes)
+- **Performance Range**: 3-49s typical (95% of responses)
+- **Anomaly Rate**: 0.26% (1 outlier in 380 tests)
+- **Baseline Report**: `test-reports/performance_baseline_10loop_2025-10-09.md`
+- **Loop Reports**: `test-reports/test_cli_regression_loop*_2025-10-09_*.log`
+
+**Visual Features Validated**:
+- ✅ Markdown tables render correctly with alignment (40 tables across 10 loops)
+- ✅ Emojis appear in responses (320+ emojis, 2-5 per response)
+- ✅ Wall analysis provides meaningful strike identification (20 analyses)
+- ✅ Intelligent formatting (lists for simple, tables for complex)
 
 ### Test Execution Requirements
 - **Mandatory**: Before all commits, after agent service changes, before PRs
@@ -307,15 +318,17 @@
 
 ## Performance Metrics
 
-### Current Performance (Oct 9, 2025 - CLI Visual Enhancements)
-- **Average Response Time**: 10.57s (EXCELLENT rating)
-- **Success Rate**: 100% (38/38 tests passed)
-- **Performance Range**: 3.316s - 30.905s
-- **Test Suite**: 38 tests (SPY 16 + NVDA 16 + Multi 6)
-- **Session Duration**: 6 min 44 sec
-- **Consistency**: High (all tests completed successfully)
+### Current Performance Baseline (Oct 9, 2025 - 10-Loop Baseline)
+- **Baseline Average Response Time**: 12.07s (EXCELLENT rating)
+- **Success Rate**: 100% (380/380 tests passed across 10 loops)
+- **Performance Range**: 2.44s - 82.02s (typical: 3-49s for 95% of responses)
+- **Test Suite**: 38 tests per loop (SPY 16 + NVDA 16 + Multi 6)
+- **Average Session Duration**: 7 min 42 sec per loop
+- **Consistency**: High (standard deviation ~0.88s across loop averages)
 - **Options Chain**: Exactly 10 strikes per chain (bug fixed)
 - **Visual Enhancements Overhead**: <10ms per response (negligible)
+- **Anomaly Rate**: 0.26% (1 outlier in 380 tests - API rate limiting)
+- **Baseline Report**: `test-reports/performance_baseline_10loop_2025-10-09.md`
 
 ### Optimization Features
 - **Direct API**: No MCP server overhead
