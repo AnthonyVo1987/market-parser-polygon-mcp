@@ -9,6 +9,7 @@ Market Parser is a Python CLI and React web application for natural language fin
 - **Removed get_stock_quote_multi wrapper** (leverages SDK parallel execution)
 - **Fixed OHLC display requirements** (show actual data, not just "retrieved")
 - **Enhanced chat history analysis** (prevent redundant Support/Resistance calls)
+- **Eliminated frontend code duplication** (157 lines deleted, simplified markdown rendering)
 - **All 11 tools now use Direct Python APIs** (no MCP overhead)
 
 ## System Architecture
@@ -26,6 +27,7 @@ Market Parser is a Python CLI and React web application for natural language fin
                     ┌─────────────▼─────────────┐
                     │      FastAPI Backend      │
                     │    (uvicorn on :8000)     │
+                    │   Generates Markdown      │
                     └─────────────┬─────────────┘
                                   │
                     ┌─────────────▼─────────────┐
@@ -70,6 +72,7 @@ Market Parser is a Python CLI and React web application for natural language fin
 - CORS enabled for http://127.0.0.1:3000
 - Async request handling
 - Shared HTTP session for efficiency
+- **Markdown generation** - Single source of truth for all interfaces
 
 ### Agent Service (services/agent_service.py)
 
@@ -179,7 +182,60 @@ FINNHUB_API_KEY=your_key_here
 **Key Components:**
 - `ChatInterface` - User input and message display
 - `MessageList` - Renders chat messages
+- `ChatMessage_OpenAI` - Individual message component (simplified Oct 9)
 - `PerformanceMetrics` - Real-time performance display
+
+### Markdown Rendering Architecture (Oct 9, 2025 Simplification)
+
+**Before (Duplicate Code ❌):**
+```
+Backend → Generates Markdown
+    ├── CLI → Rich library renders (with styling)
+    └── GUI → 157 lines of custom React components render (with styling)
+                ↑ DUPLICATE FORMATTING LOGIC
+```
+
+**After (Zero Duplication ✅):**
+```
+Backend → Generates Markdown (Single Source of Truth)
+    ├── CLI → Rich library renders
+    └── GUI → Default react-markdown renders
+                ↑ NO CUSTOM FORMATTING CODE
+```
+
+**Implementation Details:**
+
+**File:** `src/frontend/components/ChatMessage_OpenAI.tsx`
+
+**Deleted (157 lines total):**
+- `createMarkdownComponents()` function (154 lines) - Custom React components for p, h1, h2, h3, ul, ol, li, strong, em, blockquote, code
+- `markdownComponents` useMemo declaration (2 lines)
+- `ComponentPropsWithoutRef` import (1 line)
+
+**Simplified:**
+```typescript
+// BEFORE:
+<Markdown components={markdownComponents}>
+  {formattedMessage.formattedContent}
+</Markdown>
+
+// AFTER:
+<Markdown>
+  {formattedMessage.formattedContent}
+</Markdown>
+```
+
+**Benefits:**
+1. **Zero Code Duplication** - Backend owns all formatting decisions
+2. **Simplified Maintenance** - Changes only in backend, frontend auto-inherits
+3. **Better Performance** - Default react-markdown is lightweight, no custom component overhead
+4. **Cleaner Codebase** - 157 lines deleted, simpler component structure
+
+**Test Results (Oct 9, 2025):**
+- CLI Regression: 38/38 PASSED (100%)
+- Average Response Time: 11.14s (EXCELLENT)
+- Frontend: User validated and approved GUI appearance
+- No visual regression, all markdown rendering works correctly
 
 ### State Management
 
@@ -200,7 +256,7 @@ FINNHUB_API_KEY=your_key_here
 **Response Format:**
 ```typescript
 {
-  response: string;           // Agent's formatted response
+  response: string;           // Agent's formatted markdown response
   input_tokens?: number;      // Input token count
   output_tokens?: number;     // Output token count
   total_tokens?: number;      // Total token count
@@ -254,7 +310,7 @@ FINNHUB_API_KEY=your_key_here
    - For multi-ticker: Makes PARALLEL get_stock_quote() calls (RULE #2)
    - Executes Direct API tool calls (no MCP)
    - **OHLC Fix**: Shows actual data (start, end, change, high, low, days)
-   - Generates structured response
+   - Generates structured markdown response
 
 4. **Tool Execution** (Direct API)
    - Polygon Direct API: 10 tools
@@ -262,15 +318,17 @@ FINNHUB_API_KEY=your_key_here
    - No MCP server overhead
    - Direct Python SDK calls
 
-5. **Response Generation**
-   - Agent formats response (KEY TAKEAWAYS + DETAILED ANALYSIS)
+5. **Response Generation** (Markdown Format)
+   - Agent formats response as markdown (KEY TAKEAWAYS + DETAILED ANALYSIS)
    - Backend extracts token usage from OpenAI response
    - Middleware measures response time
+   - **Single markdown format** for both CLI and GUI
 
 6. **Response Delivery**
-   - Backend sends JSON response
-   - Frontend/CLI displays formatted output
-   - Performance metrics shown
+   - Backend sends JSON response with markdown content
+   - **CLI**: Rich library renders markdown in terminal
+   - **Frontend**: react-markdown renders markdown in browser (default styling)
+   - Performance metrics shown in both interfaces
 
 ### Performance Tracking
 
@@ -307,43 +365,48 @@ FINNHUB_API_KEY=your_key_here
 
 ### CLI Regression Testing (PRIMARY)
 
-#### New Test Suite: test_cli_regression.sh (35 tests) ⭐ CURRENT
-**Created:** Oct 7, 2025 Evening
+#### Latest Test Suite: test_cli_regression.sh (38 tests) ⭐ CURRENT
+**Updated:** Oct 9, 2025
 **Status:** Primary test suite
 
 **Test Coverage:**
 - **SPY Sequence** (15 tests): Market status, prices, TA indicators, options, OHLC
 - **NVDA Sequence** (15 tests): Same pattern as SPY
-- **Multi-Ticker WDC/AMD/INTC** (5 tests): Parallel call validation
+- **Multi-Ticker WDC/AMD/GME** (5 tests): Parallel call validation
+- **Visual Enhancement Tests** (3 tests): Markdown tables, emoji responses, wall analysis
 
 **Features:**
-- Persistent session (all 35 tests in single CLI session)
+- Persistent session (all 38 tests in single CLI session)
 - Chat history analysis validation
 - Parallel tool call verification
 - OHLC display validation
 - Support/Resistance redundant call detection
+- **Markdown table rendering validation**
+- **Emoji response validation**
 - Response time tracking per test
 - Success rate monitoring
 
-**Latest Performance (Oct 7, 2025 Evening):**
-- **Total**: 35/35 PASSED ✅
+**Latest Performance (Oct 9, 2025):**
+- **Total**: 38/38 PASSED ✅
 - **Success Rate**: 100%
-- **Average**: 11.62s per query (EXCELLENT)
-- **Range**: 2.188s - 31.599s
-- **Test 12 (Support & Resistance)**: 3.900s (vs previous 5.491s) - 29% faster ✅
-- **Test 15 (SPY OHLC Q1)**: Shows actual data (start: 589.39, end: 559.39, change: -4.31%, high: 613.23, low: 549.83, 60 days) ✅
-- **Test 30 (NVDA OHLC Q1)**: Shows actual data ✅
-- **Test 35 (Multi OHLC Q1)**: Shows actual data for all 3 tickers ✅
-- **Chat History Reuse**: Test 32 correctly used existing data (no new calls) ✅
-- **Parallel Calls**: Tests 31, 33, 34 correctly made parallel calls for 3 tickers ✅
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-07_20-30.log`
+- **Average**: 11.14s per query (EXCELLENT - within 12.07s baseline)
+- **Session Duration**: 7 min 6 sec
+- **Markdown Tables**: All options chain tables rendered correctly ✅
+- **Emoji Responses**: Consistent 2-5 emojis per response ✅
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_16-57.log`
 
 **Validation Results:**
 - ✅ OHLC display fix verified (shows actual data, not just "retrieved")
-- ✅ Support & Resistance fix verified (no redundant calls, 29% faster)
+- ✅ Support & Resistance fix verified (no redundant calls)
 - ✅ Chat history analysis working correctly
 - ✅ Parallel tool calls executing properly (max 3 per batch)
-- ✅ All 35 test responses are CORRECT (not just completed)
+- ✅ Markdown table formatting validated
+- ✅ Emoji responses validated
+- ✅ All test responses are CORRECT (not just completed)
+
+#### Previous Test Suite: test_cli_regression.sh (35 tests)
+**Created:** Oct 7, 2025 Evening
+**Status:** Superseded by 38-test suite
 
 ## Performance Architecture
 
@@ -356,12 +419,15 @@ FINNHUB_API_KEY=your_key_here
 - Minimal tool calls enforcement
 - Parallel tool execution for multi-ticker (max 3 per batch)
 - Chat history analysis (avoid redundant calls)
+- **Markdown generation** (single source of truth)
 
 **Frontend:**
 - Optimized CSS (no backdrop filters, complex shadows)
 - Simple transitions (opacity, color only)
 - Media queries (not container queries)
 - Efficient bundle size (Vite tree shaking)
+- **Simplified markdown rendering** (no custom components, 157 lines deleted)
+- Default react-markdown rendering (lightweight)
 
 **AI Agent:**
 - Streamlined system prompts (40-50% token reduction)
@@ -379,16 +445,17 @@ FINNHUB_API_KEY=your_key_here
 - **CLS**: < 0.1 (50%+ improvement)
 - **TTI**: < 1s (70%+ improvement)
 
-**API Performance (Latest - Oct 7 Evening):**
+**API Performance (Latest - Oct 9, 2025):**
+- **Average Response**: 11.14s (EXCELLENT - within 12.07s baseline)
+- **Success Rate**: 100% (38/38 tests)
+- **Frontend**: Simplified markdown rendering (157 lines deleted)
+- **No Performance Regression**: Maintaining baseline performance
+
+**API Performance (Oct 7 Evening):**
 - **Average Response**: 11.62s (EXCELLENT)
 - **Success Rate**: 100% (35/35 tests)
-- **OHLC Display**: Now shows actual data instead of "retrieved"
+- **OHLC Display**: Shows actual data instead of "retrieved"
 - **Support & Resistance**: 29% faster (no redundant calls)
-- **Parallel Execution**: Working correctly for multi-ticker (max 3)
-
-**API Performance (Oct 7 Afternoon):**
-- **Average Response**: 7.31s (EXCELLENT)
-- **Success Rate**: 100% (27/27 tests)
 
 **API Performance (Post-MCP Removal):**
 - **Average Response**: 6.10s (EXCELLENT)
@@ -477,6 +544,44 @@ FINNHUB_API_KEY=your_key_here
 
 ## Migration & Fix History
 
+### Oct 9, 2025: Frontend Code Duplication Elimination ✅ COMPLETE
+
+**Problem:**
+- Frontend had 157 lines of duplicate formatting code
+- Custom React components replicated backend markdown formatting logic
+- Maintenance burden: changes needed in 2 places (backend + frontend)
+
+**Solution:**
+- Deleted `createMarkdownComponents()` function (154 lines)
+- Deleted `markdownComponents` useMemo declaration (2 lines)
+- Removed `components` prop from Markdown component
+- Removed unused `ComponentPropsWithoutRef` import (1 line)
+- Use default react-markdown rendering
+
+**Architecture Change:**
+- **Before**: Backend generates markdown → CLI (Rich) + GUI (157 lines custom React components)
+- **After**: Backend generates markdown → CLI (Rich) + GUI (default react-markdown)
+- **Result**: Zero code duplication, backend is single source of truth
+
+**Benefits:**
+- ✅ 157 lines deleted from frontend
+- ✅ Zero formatting code duplication
+- ✅ Simplified maintenance (changes only in backend)
+- ✅ Better performance (no custom component overhead)
+- ✅ Cleaner codebase
+
+**Test Results:**
+- CLI Regression: 38/38 PASSED (100%)
+- Average Response Time: 11.14s (EXCELLENT)
+- Frontend: User validated and approved GUI appearance
+- No visual regression
+
+**Documentation:**
+- Created CORRECTED_ARCHITECTURE_RESEARCH.md (453 lines analysis)
+- Created RESEARCH_SUMMARY.md (279 lines summary)
+- Created SOLUTION_SUMMARY.md (106 lines quick guide)
+- Updated .serena/memories/tech_stack.md
+
 ### Oct 7, 2025 Evening: OHLC Display + Support/Resistance Fixes ✅ COMPLETE
 
 **Problem 1: OHLC Useless Responses**
@@ -510,7 +615,6 @@ FINNHUB_API_KEY=your_key_here
 - ✅ Support & Resistance 29% faster (no redundant calls)
 - ✅ Chat history analysis working correctly
 - ✅ All test responses verified as CORRECT (not just completed)
-- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-07_20-30.log
 
 ### Oct 7, 2025 Afternoon: get_stock_quote_multi Removal ✅ COMPLETE
 
@@ -545,7 +649,7 @@ FINNHUB_API_KEY=your_key_here
 - **Overhead**: Removed MCP server latency
 - **Reliability**: Direct API calls (no MCP middleman)
 
-## Current State Summary (Oct 7, 2025 Evening)
+## Current State Summary (Oct 9, 2025)
 
 **Architecture:**
 - 11 Direct API tools (1 Finnhub + 10 Polygon)
@@ -553,19 +657,22 @@ FINNHUB_API_KEY=your_key_here
 - Parallel execution (max 3 per batch)
 - Chat history analysis
 - OHLC display requirements enforced
+- **Simplified frontend** (157 lines deleted, zero code duplication)
 
 **Performance:**
-- 35/35 tests passing (100%)
-- 11.62s average (EXCELLENT)
-- Support & Resistance 29% faster
+- 38/38 tests passing (100%)
+- 11.14s average (EXCELLENT)
+- Support & Resistance optimized
 - OHLC responses show actual data
+- Frontend simplified with no performance regression
 
 **Testing:**
-- Primary: test_cli_regression.sh (35 tests)
-- Latest report: test-reports/test_cli_regression_loop1_2025-10-07_20-30.log
+- Primary: test_cli_regression.sh (38 tests)
+- Latest report: test-reports/test_cli_regression_loop1_2025-10-09_16-57.log
 
 **Latest Improvements:**
+- ✅ Frontend code duplication eliminated (157 lines deleted)
+- ✅ Simplified markdown rendering (backend is single source of truth)
 - ✅ OHLC display fix (show actual data)
 - ✅ Support/Resistance redundant call fix
-- ✅ New comprehensive test suite
 - ✅ All test responses verified as CORRECT

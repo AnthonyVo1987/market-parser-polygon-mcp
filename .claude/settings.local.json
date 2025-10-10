@@ -212,7 +212,8 @@
       "Read(///**)",
       "Bash(time:*)",
       "Bash(mcp__serena__find_file:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git show:*)"
     ],
     "deny": [],
     "ask": [],
