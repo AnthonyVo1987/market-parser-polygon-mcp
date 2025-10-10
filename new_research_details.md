@@ -44,7 +44,21 @@ SUCCESS CRITERIA:
 
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 
-- 
+1. Research how to Fix Architectural Flaw that creates a new OpenAI agent for EVERY AI Chat message by just creating a single Persistent agent for the chat session
+
+- I discovered a potential performance inefficiency and flaw in our code where AI agents are created. 
+- Every time user messages are sent so basically every request in response creates a brand new agent every time and this has been an incorrect architecture from day one 
+- This is not matching the best practices for ChatBox or AI Agents in general because it wasted so many token and is more overhead having to re-create an agent every time so we need to correct this and make it right 
+- The expected outcome is when the app starts up and then there is a user request, that’s when the agent gets created and that agent is persistent throughout the entire session that way, the agent could have a back-and-forth with the user with its own memory and context just like a real world usage where there’s a persistent agent
+-  it’s been a design flaw since daw 1 to re-create an agent for every message and that makes zero sense because agents only need to be created one time and the entire chat will use the same agent persistent
+-  this will not only optimize performance, but also reduce token usage because every time an agent is created we are  sending the entire AI agent system prompt every time whereas we have a persistent agent it wouldn’t be sending the entire instruction prompt every time because it would be in the cache so we really need to fix this major fundamental architectural flaw
+-  so you need to make the fix to the CLI code which will then be inherited by the GUI code since GUI code is just a visual "wrapper" for the CLI backend "core code"
+
+
+The tests have passed with correct results so let's addon another enhancement task for display output formatting:
+- For simple responses with not too much data, AI Agent should simply format response in Numbered\Bulleted List to prioritize speed response
+- For more complex responses, such as with heavy amount of data, AI Agent should now format the response in easy to read Markdown Tables for User viewing
+- Re-test after the changes, and if test results all pass as expected with proper response, you may proceed automously with all remaining tasks and phases to close out the new enhancements
 
 ---
 
