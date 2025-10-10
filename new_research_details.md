@@ -37,64 +37,57 @@ SUCCESS CRITERIA:
 
 ---
 
-<Research Topic Details for new Change Request(s)> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. USE ULTRA-THINK to Research implementing a re-architecture of the Front End REACT AI ChatBot GUI code:
-
-You misunderstood the requirements.  I never said a shared session.  Here is what I want:
-
-CLI Open: User 1 query and AI Agent responds.  CLI can ONLY be used on a PC, which has some limitations.  Can't use on Mobile, Ipads, or deploy the app to AWS as a CLI.
-
-GUI Open: User 2 query, and AI Agent responds. It could be same or different questions as User 1, but basically the content, formatting , responses etc will NOT be unique.  User 2 using the GUI version is almsot like the User trying to use the CLI version, but it is in GUI interface instead that can be used by PC, Mobile, Ipads, etc.  This can be deployed as AWS app since it is a GUI.
-
-So give me multiple options that can do this.  NOTHING about a shared session.  If user is at a PC, they can use the CLI version if they want.  BUt if they are on the go or they want a more visual usage, they can just use the GUI instead, with no loss of functionality compared to CLI . THAT is what I mean by being "the same", NOT a shared session.
-
-So research AGAIN correctly.  Maybe "wrapper" is the wrong usage or strategy, so  give me multiple choices that balance simplicity, with low performance overhead.
-
-2. Validate changes by running just ./test_cli_regression.sh to verify nothing is broken in the backend
-
-3. After you confirmed that the new changes did NOT break anything in the backend by running the tests, notify user to then start testing the Frontend GUI code because you do NOT have access to test frontend code..  You will wait for user feedback to check out the changes first, so no commits yet.
+🔴 CRITICAL: FOLLOW THE ENTIRE WORKFLOW PHASES IN ORDER FOR THE REQUESTED NEW CHANGES. RESEARCH -> PLANNING -> IMPLEMENTATION -> TESTING -> SERENA -> COMMIT 🔴
 
 ---
 
-<Planning Phase> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
+<Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
+
+- 
+
+---
+
+<Phase 2: Planning> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Planning PHASE 🔴
 
 Based on the Research, Analysis & Scoping from previous task(s), delete the current file 'TODO_task_plan.md' and then create a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
 
 ---
 
-<Implementation Phase>
+<Phase 3: Implementation> 🔴 CRITICAL: NOW YOU MAY START IMPLEMENTING DURING THIS PHASE 🔴
 
 You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to Implement all code changes, test suite updates, and agent instruction modifications according to the TODO_task_plan.md
 
 ---
 
-<CLI Testing Phase> 🔴 MANDATORY CHECKPOINT - DO NOT SKIP 🔴
+<Phase 4: Testing>
 
-⚠️ __CRITICAL: You MUST run tests BEFORE claiming completion__ ⚠️
-⚠️ __CRITICAL: Task is INCOMPLETE without test execution and results__ ⚠️
+  🔴 MANDATORY CHECKPOINT - DO NOT SKIP 🔴
 
-__REQUIRED ACTIONS:__
+⚠️ **CRITICAL: You MUST run tests BEFORE claiming completion** ⚠️
+⚠️ **CRITICAL: Task is INCOMPLETE without test execution and results** ⚠️
 
-1. ✅ __Execute the test suite:__
+**REQUIRED ACTIONS:**
+
+1. ✅ **Execute the test suite:**
 
    ```bash
    ./test_cli_regression.sh
    ```
 
-2. ✅ __Verify test results:__
+2. ✅ **Verify test results:**
    - All tests PASS (must show 100% success rate)
    - Test report generated in test-reports/
    - No errors or failures in output
    - Session persistence verified
 
-3. ✅ __Show evidence to user:__
+3. ✅ **Show evidence to user:**
    - Display test summary output
    - Show pass/fail counts (must be X/X PASS)
    - Provide test report file path
    - Show performance metrics (response times)
 
-__❌ ENFORCEMENT RULES:__
+**❌ ENFORCEMENT RULES:**
 
 - Code without test execution = Code NOT implemented
 - No test results = Task INCOMPLETE
@@ -102,39 +95,39 @@ __❌ ENFORCEMENT RULES:__
 - Cannot claim "done" without showing test evidence
 - Test failures must be fixed and re-tested
 
-__✅ ONLY PROCEED to next phase after:__
+**✅ ONLY PROCEED to next phase after:**
 
 - Test suite executed successfully
 - 100% pass rate achieved
 - Test results displayed to user
 - Test report path provided
 
-🔴 __IF YOU SKIP THIS PHASE, THE ENTIRE TASK IS INVALID__ 🔴
+🔴 **IF YOU SKIP THIS PHASE, THE ENTIRE TASK IS INVALID** 🔴
 
 ---
 
-<Serena Update Memories Phase>
+<Phase 5: Serena Project Memories Update Phase>
 
-Update Serena memory files with new tool information, architecture changes, and test results (ONLY after tests pass)
+Use Serena Tools to update Serena project memory files
 
 ---
 
-<Final Git Commit Phase> 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW 🔴
+<Phase 6: Final Git Commit Phase> 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW 🔴
 
-__MANDATORY: Stage ONLY Immediately Before Commit__
+**MANDATORY: Stage ONLY Immediately Before Commit**
 
-__CORRECT Workflow (follow EXACTLY):__
+**CORRECT Workflow (follow EXACTLY):**
 
-1. __DO ALL WORK FIRST__ (DO NOT stage anything yet):
+1. **DO ALL WORK FIRST** (DO NOT stage anything yet):
    - ✅ Complete ALL code changes
    - ✅ Run ALL tests and generate test reports
    - ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
    - ✅ Update ALL config files (.claude/settings.local.json, etc.)
    - ✅ Update ALL Serena memories
    - ✅ Update ALL task plans
-   - ⚠️ __DO NOT RUN `git add` YET__
+   - ⚠️ **DO NOT RUN `git add` YET**
 
-2. __VERIFY EVERYTHING IS COMPLETE__:
+2. **VERIFY EVERYTHING IS COMPLETE**:
 
    ```bash
    git status  # Review ALL changed/new files
@@ -144,7 +137,7 @@ __CORRECT Workflow (follow EXACTLY):__
    - Ensure ALL work is done
    - Ensure ALL files are present
 
-3. __STAGE EVERYTHING AT ONCE__:
+3. **STAGE EVERYTHING AT ONCE**:
 
    ```bash
    git add -A  # Stage ALL files in ONE command
@@ -153,7 +146,7 @@ __CORRECT Workflow (follow EXACTLY):__
    - ⚠️ This is the FIRST time you run `git add`
    - ⚠️ Stage ALL related files together
 
-4. __VERIFY STAGING IMMEDIATELY__:
+4. **VERIFY STAGING IMMEDIATELY**:
 
    ```bash
    git status  # Verify ALL files staged, NOTHING unstaged
@@ -161,7 +154,7 @@ __CORRECT Workflow (follow EXACTLY):__
 
    - If anything is missing: `git add [missing-file]`
 
-5. __COMMIT IMMEDIATELY__ (within 60 seconds of staging):
+5. **COMMIT IMMEDIATELY** (within 60 seconds of staging):
 
    ```bash
    git commit -m "$(cat <<'EOF'
@@ -177,13 +170,13 @@ __CORRECT Workflow (follow EXACTLY):__
    )"
    ```
 
-6. __PUSH IMMEDIATELY__:
+6. **PUSH IMMEDIATELY**:
 
    ```bash
    git push
    ```
 
-__WHAT BELONGS IN ATOMIC COMMIT:__
+**WHAT BELONGS IN ATOMIC COMMIT:**
 
 - ✅ Code changes (backend + frontend)
 - ✅ Test reports (evidence of passing tests)
@@ -192,7 +185,7 @@ __WHAT BELONGS IN ATOMIC COMMIT:__
 - ✅ Config changes (.claude/settings.local.json, etc.)
 - ✅ Task plan updates (TODO_task_plan.md, etc.)
 
-__❌ NEVER DO THIS:__
+**❌ NEVER DO THIS:**
 
 - ❌ Stage files early during development
 - ❌ Stage files "as you go"
@@ -201,52 +194,6 @@ __❌ NEVER DO THIS:__
 - ❌ Commit without test reports
 - ❌ Commit without documentation updates
 
-__Reference:__ See `.serena/memories/git_commit_workflow.md` for complete details
+**Reference:** See `.serena/memories/git_commit_workflow.md` for complete details
 
 ---
-
-Here are broker APIs that offer brokerage accounts and support simple API key authentication for programmatic access:
-
-### 1. Alpaca
-
-- __Authentication__: API key and secret
-- __Requirements__: Funded brokerage account (U.S. clients and select international locations)
-- __Coverage__: Equities and options trading, market data, paper trading
-- __Features__: Commission-free U.S. stock and options trading, live and historical market data, algorithmic and automated support.[1]
-
-### 2. Tradier
-
-- __Authentication__: API key (simple) or OAuth2
-- __Requirements__: Funded brokerage account (for live trading); sandbox/developer account for simulated data access
-- __Coverage__: U.S. stocks and options
-- __Features__: Commission-free trading (Pro), options Greek data, flexible and well-documented for integration.[1]
-
-### 3. Webull
-
-- __Authentication__: API token/key (community-supported access)
-- __Requirements__: U.S. brokerage account
-- __Coverage__: Stocks, options, cryptocurrencies
-- __Features__: Commission-free trading, popular for bot development; official support for direct API key varies by integration.[1]
-
-### 4. Moomoo
-
-- __Authentication__: API key (reported simple setup)
-- __Requirements__: Funded brokerage account (U.S. and some other markets)
-- __Coverage__: Stocks, options
-- __Features__: Commission-free offers, basic automation support.[1]
-
-***
-Broker APIs like Interactive Brokers offer powerful access, but authentication typically involves more complex OAuth flows or additional configuration—not just a one-step API key for every feature.[3]
-
-For most individual algo developers and automated workflows, __Alpaca__ and __Tradier__ are the leading choices for true simple API key authentication combined with full brokerage account functionality.[3][1]
-
-[1](https://investingintheweb.com/brokers/best-api-brokers/)
-[2](https://wrtrading.com/broker/trading-apis/)
-[3](https://www.wikijob.co.uk/trading/forex/brokers-with-api-access)
-[4](https://brokerlistings.com/apis)
-[5](https://www.reddit.com/r/algotrading/comments/143vem8/python_developers_what_broker_and_api_do_you_use/)
-[6](https://brokerchooser.com/best-brokers/best-brokers-for-algo-trading)
-[7](https://www.interactivebrokers.com/en/trading/ib-api.php)
-[8](https://konfigthis.com/blog/asset-management-integrations/)
-[9](https://www.daytrading.com/apis)
-[10](https://stackoverflow.com/questions/59327/what-online-brokers-offer-apis)
