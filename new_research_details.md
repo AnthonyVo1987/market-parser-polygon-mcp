@@ -37,17 +37,23 @@ SUCCESS CRITERIA:
 
 ---
 
-<Research Topic Details> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
+<Research Topic Details for new Change Request(s)> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS PHASE 🔴
 
-1. Implement Options Chain Tables - Pure prompt engineering
+1. USE ULTRA-THINK to Research implementing a re-architecture of the Front End REACT AI ChatBot GUI code:
 
-2. Implement Emoji Responses - Pure prompt engineering
+You misunderstood the requirements.  I never said a shared session.  Here is what I want:
 
-3. Update 'test_cli_regression.sh' with new test cases for both SPY & NVDA: After "Get the xx Put Options Chain Expiring this Friday", add these new test cases:
+CLI Open: User 1 query and AI Agent responds.  CLI can ONLY be used on a PC, which has some limitations.  Can't use on Mobile, Ipads, or deploy the app to AWS as a CLI.
 
-- "Analyze the Options Chain Data for <ticker> and provide potential Call & Put Wall(s) Strike Prices"
+GUI Open: User 2 query, and AI Agent responds. It could be same or different questions as User 1, but basically the content, formatting , responses etc will NOT be unique.  User 2 using the GUI version is almsot like the User trying to use the CLI version, but it is in GUI interface instead that can be used by PC, Mobile, Ipads, etc.  This can be deployed as AWS app since it is a GUI.
 
-4. Validate by running 1x loop of 'test_cli_regression.sh' AND ACTUALLY VIEW THE RESPONSES AND DO NOT BLINDLY JUST SEE TEST PASSED WITHOUT SEEING THE ACTUAL CONTENT.  Fix any issues in code and\or script if needed After validating notify user to review results first, so do NOT proceed with serenea updates or commits yet until user reviews the latest test results of your fixes to confirm the issues are truly fixed or not.
+So give me multiple options that can do this.  NOTHING about a shared session.  If user is at a PC, they can use the CLI version if they want.  BUt if they are on the go or they want a more visual usage, they can just use the GUI instead, with no loss of functionality compared to CLI . THAT is what I mean by being "the same", NOT a shared session.
+
+So research AGAIN correctly.  Maybe "wrapper" is the wrong usage or strategy, so  give me multiple choices that balance simplicity, with low performance overhead.
+
+2. Validate changes by running just ./test_cli_regression.sh to verify nothing is broken in the backend
+
+3. After you confirmed that the new changes did NOT break anything in the backend by running the tests, notify user to then start testing the Frontend GUI code because you do NOT have access to test frontend code..  You will wait for user feedback to check out the changes first, so no commits yet.
 
 ---
 
@@ -198,3 +204,49 @@ __❌ NEVER DO THIS:__
 __Reference:__ See `.serena/memories/git_commit_workflow.md` for complete details
 
 ---
+
+Here are broker APIs that offer brokerage accounts and support simple API key authentication for programmatic access:
+
+### 1. Alpaca
+
+- __Authentication__: API key and secret
+- __Requirements__: Funded brokerage account (U.S. clients and select international locations)
+- __Coverage__: Equities and options trading, market data, paper trading
+- __Features__: Commission-free U.S. stock and options trading, live and historical market data, algorithmic and automated support.[1]
+
+### 2. Tradier
+
+- __Authentication__: API key (simple) or OAuth2
+- __Requirements__: Funded brokerage account (for live trading); sandbox/developer account for simulated data access
+- __Coverage__: U.S. stocks and options
+- __Features__: Commission-free trading (Pro), options Greek data, flexible and well-documented for integration.[1]
+
+### 3. Webull
+
+- __Authentication__: API token/key (community-supported access)
+- __Requirements__: U.S. brokerage account
+- __Coverage__: Stocks, options, cryptocurrencies
+- __Features__: Commission-free trading, popular for bot development; official support for direct API key varies by integration.[1]
+
+### 4. Moomoo
+
+- __Authentication__: API key (reported simple setup)
+- __Requirements__: Funded brokerage account (U.S. and some other markets)
+- __Coverage__: Stocks, options
+- __Features__: Commission-free offers, basic automation support.[1]
+
+***
+Broker APIs like Interactive Brokers offer powerful access, but authentication typically involves more complex OAuth flows or additional configuration—not just a one-step API key for every feature.[3]
+
+For most individual algo developers and automated workflows, __Alpaca__ and __Tradier__ are the leading choices for true simple API key authentication combined with full brokerage account functionality.[3][1]
+
+[1](https://investingintheweb.com/brokers/best-api-brokers/)
+[2](https://wrtrading.com/broker/trading-apis/)
+[3](https://www.wikijob.co.uk/trading/forex/brokers-with-api-access)
+[4](https://brokerlistings.com/apis)
+[5](https://www.reddit.com/r/algotrading/comments/143vem8/python_developers_what_broker_and_api_do_you_use/)
+[6](https://brokerchooser.com/best-brokers/best-brokers-for-algo-trading)
+[7](https://www.interactivebrokers.com/en/trading/ib-api.php)
+[8](https://konfigthis.com/blog/asset-management-integrations/)
+[9](https://www.daytrading.com/apis)
+[10](https://stackoverflow.com/questions/59327/what-online-brokers-offer-apis)

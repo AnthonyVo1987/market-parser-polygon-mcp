@@ -1,5 +1,4 @@
 import {
-  ComponentPropsWithoutRef,
   lazy,
   memo,
   Suspense,
@@ -20,162 +19,6 @@ import MessageCopyButton, {
 interface ChatMessage_OpenAIProps {
   message: Message;
 }
-
-// Custom components for markdown rendering - moved inside component to use useMemo
-const createMarkdownComponents = () => ({
-  p: ({ children, ...props }: ComponentPropsWithoutRef<'p'>) => (
-    <p
-      {...props}
-      style={{
-        marginBottom: 'var(--space-2)',
-        lineHeight: 'var(--leading-relaxed)',
-        fontFamily: 'var(--font-inter)',
-      }}
-    >
-      {children}
-    </p>
-  ),
-  h1: ({ children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
-    <h1
-      {...props}
-      style={{
-        marginBottom: 'var(--space-3)',
-        fontSize: 'var(--text-xl)',
-        fontWeight: 'var(--font-bold)',
-        color: 'var(--neutral-50)',
-        fontFamily: 'var(--font-inter)',
-      }}
-    >
-      {children}
-    </h1>
-  ),
-  h2: ({ children, ...props }: ComponentPropsWithoutRef<'h2'>) => (
-    <h2
-      {...props}
-      style={{
-        marginBottom: 'var(--space-2)',
-        fontSize: 'var(--text-lg)',
-        fontWeight: 'var(--font-semibold)',
-        color: 'var(--neutral-100)',
-        fontFamily: 'var(--font-inter)',
-      }}
-    >
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }: ComponentPropsWithoutRef<'h3'>) => (
-    <h3
-      {...props}
-      style={{
-        marginBottom: 'var(--space-2)',
-        fontSize: 'var(--text-base)',
-        fontWeight: 'var(--font-medium)',
-        color: 'var(--neutral-200)',
-        fontFamily: 'var(--font-inter)',
-      }}
-    >
-      {children}
-    </h3>
-  ),
-  ul: ({ children, ...props }: ComponentPropsWithoutRef<'ul'>) => (
-    <ul {...props} style={{ marginBottom: '8px', paddingLeft: '20px' }}>
-      {children}
-    </ul>
-  ),
-  ol: ({ children, ...props }: ComponentPropsWithoutRef<'ol'>) => (
-    <ol {...props} style={{ marginBottom: '8px', paddingLeft: '20px' }}>
-      {children}
-    </ol>
-  ),
-  li: ({ children, ...props }: ComponentPropsWithoutRef<'li'>) => (
-    <li
-      {...props}
-      style={{
-        marginBottom: '4px',
-      }}
-    >
-      {children}
-    </li>
-  ),
-  strong: ({ children, ...props }: ComponentPropsWithoutRef<'strong'>) => (
-    <strong
-      {...props}
-      style={{
-        fontWeight: '600',
-      }}
-    >
-      {children}
-    </strong>
-  ),
-  em: ({ children, ...props }: ComponentPropsWithoutRef<'em'>) => (
-    <em {...props} style={{ fontStyle: 'italic' }}>
-      {children}
-    </em>
-  ),
-  blockquote: ({
-    children,
-    ...props
-  }: ComponentPropsWithoutRef<'blockquote'>) => (
-    <blockquote
-      {...props}
-      style={{
-        background: '#f8fafc',
-        padding: '12px',
-        borderRadius: '8px',
-        margin: '8px 0',
-        borderLeft: '4px solid #e2e8f0',
-        fontStyle: 'italic',
-      }}
-    >
-      {children}
-    </blockquote>
-  ),
-  code: ({
-    children,
-    className,
-    ...props
-  }: ComponentPropsWithoutRef<'code'> & { className?: string }) => {
-    const isInline = !className;
-    return isInline ? (
-      <code
-        {...props}
-        style={{
-          backgroundColor: 'var(--glass-surface-light)',
-          /* backdrop-filter removed for performance */
-          border: 'var(--glass-border-highlight)',
-          padding: 'var(--space-1) var(--space-2)',
-          borderRadius: 'var(--radius-md)',
-          fontSize: 'var(--text-sm)',
-          fontFamily: 'var(--font-mono)',
-          color: 'var(--primary-300)',
-          wordBreak: 'break-word',
-          overflowWrap: 'break-word',
-        }}
-      >
-        {children}
-      </code>
-    ) : (
-      <pre
-        className='code-block'
-        style={{
-          backgroundColor: 'var(--glass-surface-dark)',
-          /* backdrop-filter removed for performance */
-          border: 'var(--glass-border-highlight)',
-          padding: 'var(--space-3)',
-          borderRadius: 'var(--radius-lg)',
-          overflowX: 'auto',
-          maxWidth: '100%',
-          marginBottom: 'var(--space-2)',
-          whiteSpace: 'pre',
-          color: 'var(--neutral-100)',
-          fontFamily: 'var(--font-mono)',
-        }}
-      >
-        <code {...props}>{children}</code>
-      </pre>
-    );
-  },
-});
 
 const ChatMessage_OpenAI = memo(
   function ChatMessage_OpenAI({ message }: ChatMessage_OpenAIProps) {
@@ -199,9 +42,6 @@ const ChatMessage_OpenAI = memo(
         metadata: message.metadata,
       });
     }, [message.content, message.timestamp, message.metadata, message.sender]);
-
-    // Memoize markdown components configuration for performance
-    const markdownComponents = useMemo(() => createMarkdownComponents(), []);
 
     // Memoize expensive message processing computations
     // const messageMetadata = useMemo(
@@ -244,7 +84,7 @@ const ChatMessage_OpenAI = memo(
                   <div className='markdown-loading'>Loading content...</div>
                 }
               >
-                <Markdown components={markdownComponents}>
+                <Markdown>
                   {formattedMessage.formattedContent}
                 </Markdown>
               </Suspense>
