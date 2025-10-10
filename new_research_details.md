@@ -44,7 +44,7 @@ SUCCESS CRITERIA:
 
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 
-1. Research how to Fix Architectural Flaw that creates a new OpenAI agent for EVERY AI Chat message by just creating a single Persistent agent for the chat session
+1. ULTRA-THINK to Research how to Fix Architectural Flaw that creates a new OpenAI agent for EVERY AI Chat message by just creating a single Persistent agent for the chat session
 
 - I discovered a potential performance inefficiency and flaw in our code where AI agents are created. 
 - Every time user messages are sent so basically every request in response creates a brand new agent every time and this has been an incorrect architecture from day one 
@@ -86,7 +86,7 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 1. ✅ **Execute the test suite:**
 
    ```bash
-   ./test_cli_regression.sh
+   chmod +x test_cli_regression.sh && ./test_cli_regression.sh
    ```
 
 2. ✅ **Verify test results:**

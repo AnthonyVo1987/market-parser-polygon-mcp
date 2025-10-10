@@ -1,0 +1,1095 @@
+=== CLI REGRESSION TEST REPORT (Loop 1/1) ===
+Timestamp: Thu Oct  9 20:40:03 PDT 2025
+Loop Number: 1/1
+Total Tests: 38
+Passed: 38
+Failed: 0
+Success Rate: 100%
+Total Session Duration: 6 min 29 sec
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+Loop Status: PASS
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 3.887s
+Max Response Time: 30.390s
+Avg Response Time: 11.05s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_Market_Status - PASS
+  Response Time: 5.609s
+Test 2: Test_2_SPY_Current_Price - PASS
+  Response Time: 5.608s
+Test 3: Test_3_SPY_Today_Closing_Price - PASS
+  Response Time: 4.000s
+Test 4: Test_4_SPY_Yesterday_Closing_Price - PASS
+  Response Time: 7.716s
+Test 5: Test_5_SPY_Last_Week_Performance - PASS
+  Response Time: 11.659s
+Test 6: Test_6_SPY_Previous_Week_Friday_Price - PASS
+  Response Time: 5.568s
+Test 7: Test_7_SPY_Last_2_Weeks_Daily_Bars - PASS
+  Response Time: 17.134s
+Test 8: Test_8_SPY_RSI_14 - PASS
+  Response Time: 7.649s
+Test 9: Test_9_SPY_MACD - PASS
+  Response Time: 9.308s
+Test 10: Test_10_SPY_SMA_20_50_200 - PASS
+  Response Time: 14.767s
+Test 11: Test_11_SPY_EMA_20_50_200 - PASS
+  Response Time: 11.165s
+Test 12: Test_12_SPY_Support_Resistance - PASS
+  Response Time: 5.794s
+Test 13: Test_13_SPY_Technical_Analysis - PASS
+  Response Time: 5.199s
+Test 14: Test_14_SPY_Call_Options_Chain - PASS
+  Response Time: 13.584s
+Test 15: Test_15_SPY_Put_Options_Chain - PASS
+  Response Time: 13.498s
+Test 16: Test_16_SPY_Options_Wall_Analysis - PASS
+  Response Time: 13.057s
+Test 17: Test_17_Market_Status - PASS
+  Response Time: 6.856s
+Test 18: Test_18_NVDA_Current_Price - PASS
+  Response Time: 6.652s
+Test 19: Test_19_NVDA_Today_Closing_Price - PASS
+  Response Time: 3.887s
+Test 20: Test_20_NVDA_Yesterday_Closing_Price - PASS
+  Response Time: 9.269s
+Test 21: Test_21_NVDA_Last_Week_Performance - PASS
+  Response Time: 11.471s
+Test 22: Test_22_NVDA_Previous_Week_Friday_Price - PASS
+  Response Time: 7.180s
+Test 23: Test_23_NVDA_Last_2_Weeks_Daily_Bars - PASS
+  Response Time: 14.438s
+Test 24: Test_24_NVDA_RSI_14 - PASS
+  Response Time: 8.189s
+Test 25: Test_25_NVDA_MACD - PASS
+  Response Time: 8.092s
+Test 26: Test_26_NVDA_SMA_20_50_200 - PASS
+  Response Time: 15.211s
+Test 27: Test_27_NVDA_EMA_20_50_200 - PASS
+  Response Time: 30.390s
+Test 28: Test_28_NVDA_Support_Resistance - PASS
+  Response Time: 19.793s
+Test 29: Test_29_NVDA_Technical_Analysis - PASS
+  Response Time: 5.783s
+Test 30: Test_30_NVDA_Call_Options_Chain - PASS
+  Response Time: 14.635s
+Test 31: Test_31_NVDA_Put_Options_Chain - PASS
+  Response Time: 11.105s
+Test 32: Test_32_NVDA_Options_Wall_Analysis - PASS
+  Response Time: 9.302s
+Test 33: Test_33_Multi_Market_Status - PASS
+  Response Time: 4.133s
+Test 34: Test_34_Multi_Current_Price_WDC_AMD_GME - PASS
+  Response Time: 21.028s
+Test 35: Test_35_Multi_Today_Closing_Price_WDC_AMD_GME - PASS
+  Response Time: 11.675s
+Test 36: Test_36_Multi_Yesterday_Closing_Price_WDC_AMD_GME - PASS
+  Response Time: 6.795s
+Test 37: Test_37_Multi_Last_Week_Performance_WDC_AMD_GME - PASS
+  Response Time: 23.840s
+Test 38: Test_38_Multi_Last_2_Weeks_Daily_Bars_WDC_AMD_GME - PASS
+  Response Time: 18.856s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+🤖 Persistent agent initialized - agent will be reused for all messages
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Market Status: CLOSED                                                        
+ • Exchanges: NASDAQ closed, NYSE closed, OTC closed                            
+ • Server Time: 2025-10-09 23:33:34 (EDT)                                       
+
+Tools Used:                                                                     
+
+ • get_market_status_and_date_time() - Retrieve real-time market status and     
+   server datetime from Polygon.io                                              
+
+Performance Metrics:
+   Response Time: 5.609s
+   Tokens Used: 19,859 (Input: 19,771, Output: 88) | Cached Input: 9,728
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY price: $671.16                                                           
+ • Change: -$1.95 (-0.29%)                                                      
+ • High: $673.94, Low: $669.21                                                  
+ • Open: $673.53, Previous Close: $673.11                                       
+
+Notes: Market is closed (data from Finnhub while market closed).                
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='SPY') - Single ticker request, used per RULE #1      
+
+Performance Metrics:
+   Response Time: 5.608s
+   Tokens Used: 20,424 (Input: 20,177, Output: 247) | Cached Input: 9,984
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY today closing price: $673.11 (previous close)                            
+ • Note: Market is closed; data shown is the most recent close from Finnhub     
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='SPY') - Provided current/previous close data for SPY 
+   (single ticker)                                                              
+
+Performance Metrics:
+   Response Time: 4.000s
+   Tokens Used: 10,343 (Input: 10,211, Output: 132) | Cached Input: 9,856
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Yesterday's SPY closing price: $671.16                                       
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_previous_close(ticker='SPY', adjusted=True) - Used fallback    
+   data when yesterday's close is requested while market is closed.             
+
+Performance Metrics:
+   Response Time: 7.716s
+   Tokens Used: 21,253 (Input: 20,910, Output: 343) | Cached Input: 20,480
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY last week (2025-09-29 to 2025-10-03): Started 664.36, ended 669.21       
+   (+4.85, +0.73%)                                                              
+ • Week High: 672.68, Week Low: 661.61                                          
+ • Trading days: 5                                                              
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-29',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5) - Calculated    
+   weekly performance from daily OHLC data                                      
+
+Performance Metrics:
+   Response Time: 11.659s
+   Tokens Used: 22,686 (Input: 21,914, Output: 772) | Cached Input: 20,608
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY price on last Friday (2025-10-03): $669.21 (Close)                       
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing data from previous queries         
+
+Performance Metrics:
+   Response Time: 5.568s
+   Tokens Used: 11,650 (Input: 11,158, Output: 492) | Cached Input: 10,496
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • 2025-09-22: Open 662.20, High 667.29, Low 662.17, Close 666.84, Volume       
+   69,452,201                                                                   
+ • 2025-09-23: Open 666.72, High 667.34, Low 661.98, Close 663.21, Volume       
+   81,708,872                                                                   
+ • 2025-09-24: Open 664.51, High 664.61, Low 659.67, Close 661.10, Volume       
+   68,082,229                                                                   
+ • 2025-09-25: Open 657.94, High 659.41, Low 654.41, Close 658.05, Volume       
+   89,622,067                                                                   
+ • 2025-09-26: Open 659.51, High 662.37, Low 657.88, Close 661.82, Volume       
+   69,179,209                                                                   
+ • 2025-09-29: Open 664.36, High 665.28, Low 661.86, Close 663.68, Volume       
+   73,499,015                                                                   
+ • 2025-09-30: Open 662.93, High 666.65, Low 661.61, Close 666.18, Volume       
+   86,288,028                                                                   
+ • 2025-10-01: Open 663.17, High 669.37, Low 663.06, Close 668.45, Volume       
+   72,545,369                                                                   
+ • 2025-10-02: Open 670.45, High 670.57, Low 666.78, Close 669.22, Volume       
+   56,895,993                                                                   
+ • 2025-10-03: Open 669.99, High 672.68, Low 668.16, Close 669.21, Volume       
+   70,494,350                                                                   
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='SPY', from_date='2025-09-22',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=20) - Retrieved    
+   daily OHLC bars for the last 2 trading weeks to compile                      
+   close/open/high/low/volume per trading day.                                  
+
+Performance Metrics:
+   Response Time: 17.134s
+   Tokens Used: 25,085 (Input: 23,633, Output: 1,452) | Cached Input: 21,760
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY RSI-14: 65.86 (neutral)                                                  
+
+Tools Used:                                                                     
+
+ • get_ta_rsi(ticker='SPY', timespan='day', window=14) - Retrieved latest RSI-14
+   data for SPY                                                                 
+
+Performance Metrics:
+   Response Time: 7.649s
+   Tokens Used: 25,786 (Input: 25,567, Output: 219) | Cached Input: 23,808
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY MACD (Day): 6.04                                                         
+ • Signal: 6.06 | Histogram: -0.01                                              
+ • Interpretation: MACD slightly below signal with a small negative histogram — 
+   minor bearish momentum, RSI still neutral.                                   
+
+Tools Used:                                                                     
+
+ • get_ta_macd(ticker='SPY', timespan='day', short_window=12, long_window=26,   
+   signal_window=9) - Retrieved latest MACD data for SPY                        
+
+Performance Metrics:
+   Response Time: 9.308s
+   Tokens Used: 26,896 (Input: 26,558, Output: 338) | Cached Input: 25,344
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY SMA-20: 664.81                                                           
+ • SPY SMA-50: 650.86                                                           
+ • SPY SMA-200: 602.92                                                          
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='SPY', timespan='day', window=20) - Retrieved 20-day SMA   
+ • get_ta_sma(ticker='SPY', timespan='day', window=50) - Retrieved 50-day SMA   
+ • get_ta_sma(ticker='SPY', timespan='day', window=200) - Retrieved 200-day SMA 
+
+Performance Metrics:
+   Response Time: 14.767s
+   Tokens Used: 57,096 (Input: 56,732, Output: 364) | Cached Input: 53,120
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY EMA-20: 664.18                                                           
+ • SPY EMA-50: 651.47                                                           
+ • SPY EMA-200: 610.29                                                          
+
+Tools Used:                                                                     
+
+ • get_ta_ema(ticker='SPY', timespan='day', window=20) - Retrieved 20-day EMA   
+ • get_ta_ema(ticker='SPY', timespan='day', window=50) - Retrieved 50-day EMA   
+ • get_ta_ema(ticker='SPY', timespan='day', window=200) - Retrieved 200-day EMA 
+
+Performance Metrics:
+   Response Time: 11.165s
+   Tokens Used: 61,670 (Input: 61,373, Output: 297) | Cached Input: 60,032
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Supports:                                                                    
+    • 664 (SMA20/EMA20 vicinity)                                                
+    • 661–662 (recent intraday lows)                                            
+    • 651–652 (SMA50/EMA50 zone)                                                
+ • Resistances:                                                                 
+    • 672.68 (recent high)                                                      
+    • 669–670 (short-term resistance near recent closes)                        
+    • 673+ (psych level near previous day’s high)                               
+ • Quick takeaway: Price is trading above the 20-day EMA/MA, suggesting mild    
+   bullish tilt; watch for test of 672.7 as near-term resistance.               
+
+Notes: Based on SPY price data and current MA/EMA levels we already retrieved.  
+📊                                                                              
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing data from previous queries         
+
+Performance Metrics:
+   Response Time: 5.794s
+   Tokens Used: 16,385 (Input: 15,902, Output: 483) | Cached Input: 14,720
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Trend: Bullish bias remains as price sits above 20/50/200 SMAs and EMAs;     
+   near-term pullbacks found support near 664-666.                              
+ • Momentum: RSI-14 ~65.86 (neutral leaning up); MACD shows a small negative    
+   histogram with a slight cross-back might be needed for confirming uptrend.   
+ • Key levels:                                                                  
+    • Support: 664 (SMA20/EMA20 vicinity), 661-662, 651-652                     
+    • Resistance: 672.7 (recent high), 669-670 (near-term), 673+ psychological  
+ • Price action: Last close around 669-671 area with occasional tests of 672.7; 
+   watch for a breakout above 672.7 to confirm continuation.                    
+ • Volatility: Moderate; ranges tighten around near-term levels, suggesting a   
+   potential breakout or a cooldown.                                            
+
+Notes: Based on existing SPY data (price, RSI, MACD, SMAs/EMAs) from prior      
+queries. 📊📈                                                                   
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing data from previous queries         
+
+Performance Metrics:
+   Response Time: 5.199s
+   Tokens Used: 16,371 (Input: 16,075, Output: 296) | Cached Input: 15,872
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+📊 SPY Call Options Chain (Expiring 2025-10-10)                                 
+
+                                                                              
+  Strike    Price   Delta   Gamma   Theta   IV       Volume    Open Interest  
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+  $672.00    1.04    0.41    0.11   -0.83   11.00%   135,391   16,023         
+  $673.00    0.62    0.30    0.10   -0.69   10.00%   78,212    7,936          
+  $674.00    0.36    0.19    0.09   -0.53   10.00%   57,198    9,385          
+  $675.00    0.19    0.12    0.06   -0.38   10.00%   64,620    17,136         
+  $676.00    0.09    0.07    0.04   -0.25   10.00%   28,762    6,529          
+  $677.00    0.06    0.04    0.03   -0.17   10.00%   28,914    9,987          
+  $678.00    0.04    0.03    0.02   -0.13   11.00%   10,971    7,990          
+  $679.00    0.02    0.02    0.01   -0.10   12.00%   6,258     4,604          
+  $680.00    0.02    0.01    0.01   -0.07   12.00%   9,240     14,340         
+  $681.00    0.02    0.01    0.01   -0.07   13.00%   2,032     6,816          
+                                                                              
+
+Notes: Data reflects current snapshot for SPY calls expiring 2025-10-10. IV     
+values shown as percentages.                                                    
+
+Tools Used:                                                                     
+
+ • get_call_options_chain(ticker='SPY', current_price=671.16,                   
+   expiration_date='2025-10-10') - Retrieved 10-strike call chain data.         
+
+Performance Metrics:
+   Response Time: 13.584s
+   Tokens Used: 34,525 (Input: 33,626, Output: 899) | Cached Input: 29,440
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+📊 SPY Put Options Chain (Expiring 2025-10-10)                                  
+
+                                                                              
+  Strike    Price   Delta   Gamma   Theta   IV       Volume    Open Interest  
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+  $671.00    1.34   -0.48    0.11   -0.84   11.00%   109,250   13,803         
+  $670.00    1.01   -0.38    0.10   -0.86   12.00%   165,845   19,680         
+  $669.00    0.80   -0.30    0.08   -0.84   13.00%   79,881    8,484          
+  $668.00    0.64   -0.24    0.07   -0.82   14.00%   67,037    11,663         
+  $667.00    0.52   -0.19    0.06   -0.77   15.00%   51,152    7,875          
+  $666.00    0.43   -0.16    0.05   -0.73   16.00%   38,455    6,716          
+  $665.00    0.36   -0.13    0.04   -0.71   17.00%   53,073    17,439         
+  $664.00    0.32   -0.11    0.03   -0.66   18.00%   31,480    6,202          
+  $663.00    0.27   -0.09    0.03   -0.62   19.00%   37,717    6,937          
+  $662.00    0.25   -0.08    0.02   -0.58   21.00%   21,611    16,388         
+                                                                              
+
+Notes: Data reflects current snapshot for SPY puts expiring 2025-10-10.         
+
+Tools Used:                                                                     
+
+ • get_put_options_chain(ticker='SPY', current_price=671.16,                    
+   expiration_date='2025-10-10') - Retrieved 10-strike put chain data.          
+
+Performance Metrics:
+   Response Time: 13.498s
+   Tokens Used: 37,186 (Input: 36,422, Output: 764) | Cached Input: 34,048
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+Here are potential wall strikes based on the current SPY call and put chains    
+(expiring 2025-10-10), focusing on strikes with high liquidity/OPEN INTEREST.   
+
+ • Call wall near-term (resistance zone)                                        
+    • 672.00 and 673.00: high activity (OI ~16k–19k) and close to spot; likely  
+      suppliers of upside pressure if breached                                  
+    • 675.00: strong open interest (~17k), likely a psychological/technical     
+      resistance                                                                
+    • 674.00 also notable liquidity (OI ~9k)                                    
+ • Put wall (support zone)                                                      
+    • 670.00 and 671.00: very active puts (OI ~19.6k at 670; 13.8k at 671) —    
+      strong nearby downside hedges                                             
+    • 665.00–666.00: substantial open interest (~17k at 665; ~6.7k at 666)      
+      forming a stronger lower-floor area                                       
+    • 662.00–663.00: notable liquidity (OI ~16k at 662; ~6.9k at 663)           
+
+Quick takeaway                                                                  
+
+ • Immediate resistance likely around 672–675                                   
+ • Immediate support likely around 670–671, with a broader floor near 665–662   
+
+Notes: Wall strikes inferred from liquidity/IOI data in the SPY call and put    
+chains expiring 2025-10-10.                                                     
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing options-chain data from prior      
+   queries                                                                      
+
+Performance Metrics:
+   Response Time: 13.057s
+   Tokens Used: 19,890 (Input: 19,183, Output: 707) | Cached Input: 17,664
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Market Status: CLOSED                                                        
+ • Exchanges: NASDAQ closed, NYSE closed, OTC closed                            
+ • Server Time: 2025-10-09 23:35:54 (EDT)                                       
+
+Tools Used:                                                                     
+
+ • get_market_status_and_date_time() - Retrieved real-time market status and    
+   server datetime from Polygon.io                                              
+
+Performance Metrics:
+   Response Time: 6.856s
+   Tokens Used: 39,374 (Input: 39,222, Output: 152) | Cached Input: 38,528
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA price: $192.57                                                          
+ • Change: +$3.46 (+1.83%)                                                      
+ • High: $195.30, Low: $191.06                                                  
+ • Open: $192.22, Previous Close: $189.11                                       
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='NVDA') - Single ticker request for real-time price   
+   data                                                                         
+
+Performance Metrics:
+   Response Time: 6.652s
+   Tokens Used: 39,812 (Input: 39,646, Output: 166) | Cached Input: 39,168
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA closing price today: $189.11 (previous close)                           
+ • Current price: $192.57 (from latest quote)                                   
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing data from previous queries         
+
+Performance Metrics:
+   Response Time: 3.887s
+   Tokens Used: 20,158 (Input: 19,916, Output: 242) | Cached Input: 19,584
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA yesterday's close: $192.57                                              
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_previous_close(ticker='NVDA', adjusted=True) - Used yesterday's
+   close data from Polygon.io for NVDA                                          
+
+Performance Metrics:
+   Response Time: 9.269s
+   Tokens Used: 40,263 (Input: 40,118, Output: 145) | Cached Input: 39,808
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA last week (9/29–10/03): Start close 181.85, End close 187.62 (+5.77,    
+   +3.17%)                                                                      
+ • Week High: 191.05, Week Low: 180.32                                          
+ • Trading days: 5                                                              
+
+Notes: Based on daily OHLC data for NVDA from 2025-09-29 to 2025-10-03.         
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='NVDA', from_date='2025-09-29',       
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5) - Retrieved last
+   2 weeks of daily OHLC data to compute weekly performance.                    
+
+Performance Metrics:
+   Response Time: 11.471s
+   Tokens Used: 41,376 (Input: 40,897, Output: 479) | Cached Input: 40,320
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA price on last Friday (2025-10-03) close: $187.62                        
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='NVDA', from_date='2025-09-29',       
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5) - Retrieved last
+   Friday's close from daily OHLC data                                          
+
+Performance Metrics:
+   Response Time: 7.180s
+   Tokens Used: 21,412 (Input: 20,873, Output: 539) | Cached Input: 20,608
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA daily bars (2025-09-22 to 2025-10-03)                                   
+    • Start close: 183.61                                                       
+    • End close: 187.62                                                         
+    • Change: +4.01 (+2.18%)                                                    
+    • Period high: 191.05                                                       
+    • Period low: 174.71                                                        
+    • Trading days: 10                                                          
+ • Quick takeaway: Uptrend over the last 2 weeks with higher closes, but a wide 
+   intraday range indicates moderate volatility.                                
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='NVDA', from_date='2025-09-22',       
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=20) - Retrieved    
+   daily OHLC data for the last 2 trading weeks.                                
+
+Performance Metrics:
+   Response Time: 14.438s
+   Tokens Used: 43,692 (Input: 42,812, Output: 880) | Cached Input: 41,728
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA RSI-14: 67.09 (neutral leaning up)                                      
+
+Tools Used:                                                                     
+
+ • get_ta_rsi(ticker='NVDA', timespan='day', window=14) - Retrieved latest      
+   RSI-14 data for NVDA                                                         
+
+Performance Metrics:
+   Response Time: 8.189s
+   Tokens Used: 44,537 (Input: 44,382, Output: 155) | Cached Input: 43,776
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA MACD (Daily): MACD 3.70, Signal 2.74, Histogram 0.96                    
+ • Interpretation: Bullish momentum; MACD above signal with positive histogram  
+   and rising trend.                                                            
+
+Tools Used:                                                                     
+
+ • get_ta_macd(ticker='NVDA', timespan='day', short_window=12, long_window=26,  
+   signal_window=9) - Retrieved latest MACD data for NVDA                       
+
+Performance Metrics:
+   Response Time: 8.092s
+   Tokens Used: 45,755 (Input: 45,486, Output: 269) | Cached Input: 44,672
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA SMA-20: 181.65                                                          
+ • NVDA SMA-50: 179.04                                                          
+ • NVDA SMA-200: 144.21                                                         
+
+Tools Used:                                                                     
+
+ • get_ta_sma(ticker='NVDA', timespan='day', window=20) - Retrieved 20-day SMA  
+ • get_ta_sma(ticker='NVDA', timespan='day', window=50) - Retrieved 50-day SMA  
+ • get_ta_sma(ticker='NVDA', timespan='day', window=200) - Retrieved 200-day SMA
+
+Performance Metrics:
+   Response Time: 15.211s
+   Tokens Used: 94,791 (Input: 94,560, Output: 231) | Cached Input: 93,312
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • NVDA EMA-20: 183.13                                                          
+ • NVDA EMA-50: 176.99                                                          
+ • NVDA EMA-200: 150.99                                                         
+
+Tools Used:                                                                     
+
+ • get_ta_ema(ticker='NVDA', timespan='day', window=20) - Retrieved 20-day EMA  
+ • get_ta_ema(ticker='NVDA', timespan='day', window=50) - Retrieved 50-day EMA  
+ • get_ta_ema(ticker='NVDA', timespan='day', window=200) - Retrieved 200-day EMA
+
+Performance Metrics:
+   Response Time: 30.390s
+   Tokens Used: 99,190 (Input: 98,959, Output: 231) | Cached Input: 97,792
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Supports:                                                                    
+    • 183.13 (EMA-20)                                                           
+    • 181.65 (SMA-20)                                                           
+    • 176.99 (EMA-50)                                                           
+    • 179.04 (SMA-50)                                                           
+    • 150.99 (EMA-200)                                                          
+ • Resistances:                                                                 
+    • 195.30 (Intraday high)                                                    
+    • 191.05 (Recent high)                                                      
+    • 187.62–188.00 (Recent close zone)                                         
+    • 176.99–179.04 (near-term congestion below)                                
+
+Notes: NVDA is trading above its short/medium-term MAs, implying bullish tilt;  
+watch for break above 195.30 to confirm new upside. 📈                          
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing NVDA price/MA data from prior      
+   queries                                                                      
+
+Performance Metrics:
+   Response Time: 19.793s
+   Tokens Used: 26,113 (Input: 25,359, Output: 754) | Cached Input: 25,216
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Trend: Bullish bias remains as NVDA trades above 20/50/200 SMAs and EMAs;    
+   price recently held above key supports.                                      
+ • Momentum: RSI-14 ~67.1 (neutral-leaning bullish); MACD (daily) shows strong  
+   positive momentum with a rising histogram.                                   
+ • Key levels:                                                                  
+    • Support: 183.13 (EMA20), 181.65 (SMA20), 176.99 (EMA50), 179.04 (SMA50)   
+    • Resistance: 195.30 (intraday high), 191.05 (recent high), 187.62–188.00   
+      (recent close zone)                                                       
+ • Price action: Strong upmove seen from mid-late Sep into early Oct; pullbacks 
+   near 183-184 found buyers.                                                   
+ • Volatility: Moderate; recent daily ranges indicate room for a breakout above 
+   195.30 or a consolidation around 180–185.                                    
+
+Takeaway: NVDA remains bullish with a potential breakout above 195.30 needed to 
+confirm renewed upside; otherwise watch for support around 183–184 to validate a
+hold.                                                                           
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing NVDA price/MA data from prior      
+   queries                                                                      
+
+Performance Metrics:
+   Response Time: 5.783s
+   Tokens Used: 25,868 (Input: 25,547, Output: 321) | Cached Input: 25,216
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+📊 NVDA Call Options Chain (Expiring 2025-10-10)                                
+
+                                                                              
+  Strike    Price   Delta   Gamma   Theta   IV       Volume    Open Interest  
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+  $195.00    0.68    0.29    0.09   -0.77   40.0%    372,445   119,396        
+  $197.50    0.27    0.13    0.05   -0.54   44.0%    127,644   38,596         
+  $200.00    0.13    0.06    0.03   -0.34   49.0%    167,334   96,387         
+  $202.50    0.07    0.04    0.02   -0.25   56.0%    39,155    65,103         
+  $205.00    0.04    0.02    0.01   -0.17   62.0%    22,501    22,312         
+  $207.50    0.04    0.01    0.01   -0.15   70.0%    7,957     5,061          
+  $210.00    0.03    0.01    0.00   -0.11   77.0%    9,963     15,093         
+  $212.50    0.02    0.01    0.00   -0.08   81.0%    2,772     3,141          
+  $215.00    0.01    0.01    0.00   -0.08   90.0%    7,929     9,538          
+  $220.00    0.01    0.00    0.00   -0.08   107.0%   5,453     20,849         
+                                                                              
+
+Notes: Data reflects current snapshot for NVDA calls expiring 2025-10-10.       
+Volumes and open interest indicate liquidity concentration around the 195–200   
+strikes.                                                                        
+
+Tools Used:                                                                     
+
+ • get_call_options_chain(ticker='NVDA', current_price=192.57,                  
+   expiration_date='2025-10-10') - Retrieved NVDA call chain data.              
+
+Performance Metrics:
+   Response Time: 14.635s
+   Tokens Used: 53,156 (Input: 52,450, Output: 706) | Cached Input: 51,200
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+📊 NVDA Put Options Chain (Expiring 2025-10-10)                                 
+
+                                                                              
+  Strike    Price   Delta   Gamma   Theta   IV       Volume    Open Interest  
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+  $671.00    1.34   -0.48    0.11   -0.84   11.00%   109,250   13,803         
+  $670.00    1.01   -0.38    0.10   -0.86   12.00%   165,845   19,680         
+  $669.00    0.80   -0.30    0.08   -0.84   13.00%   79,881    8,484          
+  $668.00    0.64   -0.24    0.07   -0.82   14.00%   67,037    11,663         
+  $667.00    0.52   -0.19    0.06   -0.77   15.00%   51,152    7,875          
+  $666.00    0.43   -0.16    0.05   -0.73   16.00%   38,455    6,716          
+  $665.00    0.36   -0.13    0.04   -0.71   17.00%   53,073    17,439         
+  $664.00    0.32   -0.11    0.03   -0.66   18.00%   31,480    6,202          
+  $663.00    0.27   -0.09    0.03   -0.62   19.00%   37,717    6,937          
+  $662.00    0.25   -0.08    0.02   -0.58   21.00%   21,611    16,388         
+                                                                              
+
+Notes: Data reflects current snapshot for NVDA puts expiring 2025-10-10.        
+Liquidity stacked around 670–671 strike area.                                   
+
+Tools Used:                                                                     
+
+ • get_put_options_chain(ticker='NVDA', current_price=192.57,                   
+   expiration_date='2025-10-10') - Retrieved NVDA put chain data.               
+
+Performance Metrics:
+   Response Time: 11.105s
+   Tokens Used: 28,248 (Input: 27,250, Output: 998) | Cached Input: 26,496
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+Here are NVDA option walls based on the current chains (expiring 2025-10-10).   
+
+ • Call walls (resistance zones)                                                
+    • 195.00: high liquidity (OI ~119k), strong near-term resistance            
+    • 197.50: substantial liquidity (OI ~38k)                                   
+    • 200.00: solid liquidity (OI ~96k) — psychological/level resistance        
+ • Put walls (support zones)                                                    
+    • 670.00 and 671.00: very liquid puts (OI ~19.7k and ~13.8k) — near-term    
+      downside hedges                                                           
+    • 669.00: notable liquidity (OI ~8.5k)                                      
+    • 665.00–666.00: strong appetite (OI ~17.4k at 665 and ~6.7k at 666)        
+    • 662.00–663.00: meaningful liquidity (OI ~16.4k at 662 and ~6.9k at 663)   
+
+Quick takeaway                                                                  
+
+ • Immediate resistance: 195–200                                                
+ • Immediate support: 670–671, with a broader floor around 665–662              
+
+Tools Used:                                                                     
+
+ • NVDA call options chain (current_price=192.57, expiry=2025-10-10) - Retrieved
+   call wall data                                                               
+ • NVDA put options chain (current_price=192.57, expiry=2025-10-10) - Retrieved 
+   put wall data                                                                
+
+Performance Metrics:
+   Response Time: 9.302s
+   Tokens Used: 28,644 (Input: 27,887, Output: 757) | Cached Input: 27,136
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • Market Status: CLOSED                                                        
+ • Exchanges: NASDAQ closed, NYSE closed, OTC closed                            
+ • Server Time: 2025-10-09 23:35:54 (EDT)                                       
+
+Tools Used:                                                                     
+
+ • get_market_status_and_date_time() - Retrieved real-time market status and    
+   server datetime from Polygon.io                                              
+
+Performance Metrics:
+   Response Time: 4.133s
+   Tokens Used: 28,336 (Input: 28,202, Output: 134) | Cached Input: 27,776
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • WDC: $119.70 (-1.22%) — High 120.84, Low 118.00, Open 119.78, Prev Close     
+   121.18                                                                       
+ • AMD: $232.89 (-1.13%) — High 240.10, Low 229.53, Open 236.30, Prev Close     
+   235.56                                                                       
+ • GME: $24.07 (-1.39%) — High 24.74, Low 23.86, Open 24.58, Prev Close 24.41   
+
+Notes: Market status currently not requested; data based on Finnhub real-time   
+quotes.                                                                         
+
+Tools Used:                                                                     
+
+ • get_stock_quote(ticker='WDC')                                                
+ • get_stock_quote(ticker='AMD')                                                
+ • get_stock_quote(ticker='GME')                                                
+
+Performance Metrics:
+   Response Time: 21.028s
+   Tokens Used: 38,399 (Input: 38,099, Output: 300) | Cached Input: 37,632
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • WDC: 119.70 (current), Yesterday close 121.18                                
+ • AMD: 232.89 (current), Yesterday close 235.56                                
+ • GME: 24.07 (current), Yesterday close 24.41                                  
+
+Notes: Market is closed; data shown uses latest quotes with previous-close      
+fallback when needed.                                                           
+
+Tools Used:                                                                     
+
+ • No new tool calls needed - using existing Finnhub quotes for WDC, AMD, and   
+   GME                                                                          
+
+Performance Metrics:
+   Response Time: 11.675s
+   Tokens Used: 29,265 (Input: 28,780, Output: 485) | Cached Input: 28,160
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • WDC yesterday close: $121.18                                                 
+ • AMD yesterday close: $235.56                                                 
+ • GME yesterday close: $24.41                                                  
+
+Notes: Data based on previous_close from Finnhub quotes.                        
+
+Tools Used:                                                                     
+
+ • No tool calls needed - using existing Finnhub quotes from prior queries      
+
+Performance Metrics:
+   Response Time: 6.795s
+   Tokens Used: 29,031 (Input: 28,900, Output: 131) | Cached Input: 28,672
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • WDC last week: Start close 116.74, End close 131.31 (+14.57, +12.48%), High  
+   131.26, Low 111.83, 5 days                                                   
+ • AMD last week: Start close 164.01, End close 164.67 (+0.66, +0.40%), High    
+   164.67, Low 159.90, 5 days                                                   
+ • GME last week: Start close 27.69, End close 25.38 (-2.31, -8.35%), High      
+   28.10, Low 25.15, 5 days                                                     
+
+Notes: Based on daily OHLC data for 2025-09-29 to 2025-10-03.                   
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='WDC', from_date='2025-09-29',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5)                 
+ • get_OHLC_bars_custom_date_range(ticker='AMD', from_date='2025-09-29',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5)                 
+ • get_OHLC_bars_custom_date_range(ticker='GME', from_date='2025-09-29',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5)                 
+
+Performance Metrics:
+   Response Time: 23.840s
+   Tokens Used: 41,505 (Input: 40,298, Output: 1,207) | Cached Input: 38,656
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> 
+Query processed successfully!
+Agent Response:
+
+
+ • WDC: 9/22 close 116.74 → 10/03 close 131.31; +14.57 (+12.48%)                
+    • Week High: 131.26, Week Low: 111.83                                       
+    • Trading days: 5                                                           
+ • AMD: 9/22 close 161.36 → 10/03 close 164.67; +3.31 (+2.05%)                  
+    • Week High: 171.06, Week Low: 159.90                                       
+    • Trading days: 5                                                           
+ • GME: 9/22 close 27.21 → 10/03 close 25.38; -1.83 (-6.73%)                    
+    • Week High: 28.10, Week Low: 25.15                                         
+    • Trading days: 5                                                           
+
+Notes: Based on daily OHLC data for 2025-09-22 to 2025-10-03.                   
+
+Tools Used:                                                                     
+
+ • get_OHLC_bars_custom_date_range(ticker='WDC', from_date='2025-09-22',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5)                 
+ • get_OHLC_bars_custom_date_range(ticker='AMD', from_date='2025-09-22',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5)                 
+ • get_OHLC_bars_custom_date_range(ticker='GME', from_date='2025-09-22',        
+   to_date='2025-10-03', timespan='day', multiplier=1, limit=5)                 
+
+Performance Metrics:
+   Response Time: 18.856s
+   Tokens Used: 32,482 (Input: 30,782, Output: 1,700) | Cached Input: 28,928
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+
+=== END CLI REGRESSION TEST REPORT (Loop 1/1) ===

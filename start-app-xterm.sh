@@ -73,7 +73,7 @@ else
         echo "   CentOS/RHEL: sudo yum install xterm"
         echo "   macOS: Install via Homebrew: brew install xterm"
         echo ""
-        echo "Alternatively, use the main startup script: ./start-app.sh"
+        echo "Alternatively, use the main startup script: chmod +x start-app.sh && ./start-app.sh"
         exit 1
     fi
 fi

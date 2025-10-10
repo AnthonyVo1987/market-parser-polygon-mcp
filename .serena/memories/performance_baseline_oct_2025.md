@@ -187,7 +187,7 @@
 - **Pre-Release**: 3-loop test runs for validation
 - **Major Changes**: 10-loop test runs for new baseline establishment
 - **Performance Regression**: Immediate investigation if 2 consecutive tests show >20% degradation
-- **Current Test Suite**: `./test_cli_regression.sh` (38 tests per loop)
+- **Current Test Suite**: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh` (38 tests per loop)
 
 ---
 

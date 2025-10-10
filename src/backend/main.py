@@ -21,13 +21,13 @@ from fastapi.middleware.cors import CORSMiddleware
 # Import configuration from separate module
 try:
     # Try relative imports first (when run as module)
-    from .cli import cli_async
+    from .cli import cli_async, initialize_persistent_agent
     from .config import settings
     from .dependencies import set_shared_resources
     from .routers import chat_router, health_router
 except ImportError:
     # Fallback to absolute imports (when run directly)
-    from backend.cli import cli_async
+    from backend.cli import cli_async, initialize_persistent_agent
     from backend.config import settings
     from backend.dependencies import set_shared_resources
     from backend.routers import chat_router, health_router
@@ -36,28 +36,39 @@ load_dotenv()
 
 # Global shared resources for FastAPI lifespan management
 shared_session = None
+shared_agent = None
 
 
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):  # pylint: disable=unused-argument
-    """FastAPI lifespan management for shared session instance."""
-    global shared_session
+    """FastAPI lifespan management for shared session and agent instances.
+    
+    Following the architecture principle from commit b866f0a:
+    - CLI owns core business logic (initialize_persistent_agent function)
+    - FastAPI imports and calls this function (no duplication)
+    """
+    global shared_session, shared_agent
 
     # Startup: Create shared instances
     try:
         # Initialize session
         shared_session = SQLiteSession(settings.agent_session_name)
+        
+        # Initialize persistent agent using shared CLI function (no duplication)
+        shared_agent = initialize_persistent_agent()
 
         # Set shared resources for dependency injection
-        set_shared_resources(shared_session)
+        set_shared_resources(shared_session, shared_agent)
 
-        # Initialization complete
+        print("✅ FastAPI initialized with persistent agent (following b866f0a pattern)")
     except Exception as e:
         # Log initialization error and re-raise
         print(f"Initialization failed: {e}")
         raise
 
     yield
+
+    # Cleanup: Close shared instances (if needed in future)
 
     # Cleanup: Close shared instances (if needed in future)
 

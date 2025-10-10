@@ -133,7 +133,7 @@ SUCCESS CRITERIA:
 
 ✅ **MUST DO:**
 
-- Execute test suite (e.g., `./test_cli_regression.sh`)
+- Execute test suite (e.g., `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`)
 - Show test results to user (pass/fail counts, response times)
 - Verify 100% success rate
 - Provide test report file path
@@ -169,7 +169,7 @@ SUCCESS CRITERIA:
 ```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. RUN test suite: ./test_cli_regression.sh ✅
+3. RUN test suite: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
 4. Show results: 16/16 PASS, 100% success ✅
 5. Provide test report path ✅
 6. Update documentation with test results ✅
@@ -298,10 +298,10 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
-./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Option 2: Main startup script (NOW WORKING - FIXED)
-./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
+chmod +x start-app.sh && ./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
 ```
 
 **Prerequisites:** uv, Node.js 18+, API keys in .env
@@ -402,7 +402,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run ./test_cli_regression.sh to execute 35-test suite
+# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 35-test suite
 
 # Code quality
 npm run lint              # All linting

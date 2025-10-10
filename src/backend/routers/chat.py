@@ -5,14 +5,13 @@ import uuid
 from datetime import datetime
 from typing import Optional
 
-from agents import Runner
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 
 from ..api_models import ResponseMetadata
+from ..cli import process_query
 from ..config import settings
-from ..dependencies import get_session
-from ..services import create_agent
+from ..dependencies import get_agent, get_session
 from ..utils.token_utils import (
     extract_token_count_from_context_wrapper,
     extract_token_usage_from_context_wrapper,
@@ -39,9 +38,15 @@ class ChatResponse(BaseModel):
 
 @router.post("/", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest) -> ChatResponse:
-    """Process a financial query and return the response using direct prompts."""
+    """Process a financial query and return the response.
+    
+    Following the architecture principle from commit b866f0a:
+    - GUI imports and calls CLI core business logic (process_query function)
+    - No duplication of agent creation or query processing
+    """
     # Get shared resources from dependency injection
     shared_session = get_session()
+    shared_agent = get_agent()
 
     request_id = str(uuid.uuid4())[:8]
 
@@ -74,22 +79,17 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
     start_time = time.perf_counter()
 
     try:
-        # Use shared instances instead of creating new ones
-        # Call the AI model with the unified prompt system
+        # Call shared CLI processing function (core business logic - no duplication)
         try:
-            # Get or create agent using factory function
-            analysis_agent = create_agent()
-
-            # Run the financial analysis agent with the user message
-            result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
-
+            result = await process_query(shared_agent, shared_session, stripped_message)
+            
             # Extract the response
             response_text = str(result.final_output)
 
         except Exception as e:
             response_text = f"Error: Unable to process request. {str(e)}"
 
-        # Extract token data using official OpenAI Agents SDK
+        # Extract token data using official OpenAI Agents SDK (GUI-specific wrapper)
         token_usage = extract_token_usage_from_context_wrapper(result)
 
         # Extract individual token counts
@@ -102,7 +102,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
         # Calculate processing time
         processing_time = time.perf_counter() - start_time
 
-        # Create response metadata with timing and token information
+        # Create response metadata with timing and token information (GUI-specific wrapper)
         response_metadata = ResponseMetadata(
             model=settings.available_models[0],
             timestamp=datetime.now().isoformat(),
@@ -115,11 +115,7 @@ async def chat_endpoint(request: ChatRequest) -> ChatResponse:
             cachedOutputTokens=cached_output_tokens,
         )
 
-        # Log performance metrics for baseline measurement and monitoring
-
-        # Log token usage if available in metadata
-        # Token usage logging removed for performance
-
+        # Return HTTP response (GUI-specific wrapper)
         return ChatResponse(response=response_text, metadata=response_metadata)
 
     except HTTPException:

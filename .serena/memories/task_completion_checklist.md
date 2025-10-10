@@ -48,7 +48,7 @@ npm run check:all
 #### CLI Regression Testing
 ```bash
 # Run CLI regression test suite (27 tests)
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 # Expected results:
 # - 27/27 tests PASSED (100% success rate)
@@ -83,7 +83,7 @@ npm run check:all
 ```
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. RUN test suite: ./test_cli_regression.sh ✅
+3. RUN test suite: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
 4. Show results: 27/27 PASS, 100% success ✅
 5. Provide test report path ✅
 6. Update documentation with test results ✅
@@ -146,7 +146,7 @@ npm run check:all
 #### Server Health Check
 ```bash
 # Start servers
-./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Verify backend health
 curl http://127.0.0.1:8000/health
@@ -163,7 +163,7 @@ npm run status
 #### Performance Testing (if changes affect performance)
 ```bash
 # Run performance baseline
-./test_cli_regression.sh 10
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh 10
 
 # Check average response time
 # Expected: ~6-8 seconds average
@@ -305,7 +305,7 @@ git status
 2. **Testing Phase (MANDATORY):**
    ```bash
    # Execute tests
-   ./test_cli_regression.sh
+   chmod +x test_cli_regression.sh && ./test_cli_regression.sh
    
    # Verify results
    # - Check test report in test-reports/
@@ -343,7 +343,7 @@ git status
 
 1. **Fix the bug in code**
 2. **Run quality checks** (`npm run check:all`)
-3. **Run tests** (`./test_cli_regression.sh`)
+3. **Run tests** (`chmod +x test_cli_regression.sh && ./test_cli_regression.sh`)
 4. **Update documentation** (if needed)
 5. **Commit with atomic workflow** (`git add -A` → `git commit` → `git push`)
 
@@ -421,7 +421,7 @@ git status
    ```
 3. **Restart servers**:
    ```bash
-   ./start-app-xterm.sh
+   chmod +x start-app-xterm.sh && ./start-app-xterm.sh
    ```
 
 ## Summary Checklist

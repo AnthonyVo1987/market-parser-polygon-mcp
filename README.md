@@ -90,10 +90,10 @@ The startup scripts automatically manage all development servers and
 
 ```bash
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
-./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Option 2: Main startup script (NOW WORKING - FIXED)
-./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
+chmod +x start-app.sh && ./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
 
 # Option 3: Use npm scripts
 npm run start:app:xterm    # XTerm version (RECOMMENDED)
@@ -229,7 +229,7 @@ KEY TAKEAWAYS
 
 **Run tests:**
 ```bash
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
 ## Performance Optimizations
@@ -291,7 +291,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run ./test_cli_regression.sh (36 tests, persistent session)
+# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh (36 tests, persistent session)
 
 # Code quality
 npm run lint              # All linting

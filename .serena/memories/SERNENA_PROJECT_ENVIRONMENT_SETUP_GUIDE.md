@@ -301,7 +301,7 @@ pkill -f "vite"
 
 ```bash
 # Run the comprehensive 27-test regression suite
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
 **Expected Output (Oct 6, 2025 Format):**
@@ -473,7 +473,7 @@ For rapid recovery when you know the issue:
 rm -rf .venv node_modules package-lock.json uv.lock dist/ dev-dist/
 uv sync
 npm install --legacy-peer-deps
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
 ## 📊 Recent Successful Re-Initializations

@@ -12,6 +12,44 @@ from .utils import print_error, print_response
 from .utils.token_utils import extract_token_count_from_context_wrapper
 
 
+def initialize_persistent_agent():
+    """Initialize persistent agent for the session.
+
+    This is the SINGLE SOURCE OF TRUTH for agent initialization.
+    Both CLI and GUI modes use this function to create their agent instance.
+
+    Following the architecture principle from commit b866f0a:
+    - CLI owns core business logic (this function)
+    - GUI imports and calls this function (no duplication)
+
+    Returns:
+        Agent: The initialized financial analysis agent
+    """
+    return create_agent()
+
+
+async def process_query(agent, session, user_input):
+    """Process a user query using the persistent agent.
+
+    This is the CORE BUSINESS LOGIC for query processing.
+    Both CLI and GUI modes call this function (no duplication).
+
+    Following the architecture principle from commit b866f0a:
+    - CLI owns core business logic (this function)
+    - GUI imports and calls this function (no duplication)
+
+    Args:
+        agent: The persistent agent instance
+        session: The SQLite session for conversation memory
+        user_input: The user's query string
+
+    Returns:
+        RunResult: The result from Runner.run() containing the agent's response
+    """
+    result = await Runner.run(agent, user_input, session=session)
+    return result
+
+
 async def cli_async():
     """Run the interactive CLI loop."""
     print("Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.")
@@ -21,7 +59,11 @@ async def cli_async():
         cli_session = SQLiteSession(settings.cli_session_name)
         print(f"📊 CLI session '{settings.cli_session_name}' initialized for conversation memory")
 
-        await _run_cli_loop(cli_session)
+        # Create persistent agent ONCE for the entire session (following b866f0a pattern)
+        analysis_agent = initialize_persistent_agent()
+        print("🤖 Persistent agent initialized - agent will be reused for all messages")
+
+        await _run_cli_loop(cli_session, analysis_agent)
 
     except Exception as e:
         print_error(e, "Startup Error")
@@ -36,8 +78,13 @@ async def cli_async():
             print(f"Warning: Cleanup failed: {cleanup_error}")
 
 
-async def _run_cli_loop(cli_session):
-    """Run the main CLI input loop."""
+async def _run_cli_loop(cli_session, analysis_agent):
+    """Run the main CLI input loop.
+    
+    Args:
+        cli_session: The SQLite session for conversation memory
+        analysis_agent: The persistent agent instance (reused for all messages)
+    """
     while True:
         try:
             user_input = input("> ").strip()
@@ -49,8 +96,8 @@ async def _run_cli_loop(cli_session):
                 print("Please enter a valid query (at least 2 characters).")
                 continue
 
-            # Process the user input
-            result = await _process_user_input(cli_session, user_input)
+            # Process the user input with persistent agent
+            result = await _process_user_input(cli_session, analysis_agent, user_input)
 
             # Display the response with full result object for metadata
             print_response(result)
@@ -66,17 +113,23 @@ async def _run_cli_loop(cli_session):
             print_error(e, "Unexpected Error")
 
 
-async def _process_user_input(cli_session, user_input):
-    """Process a single user input and return the result."""
+async def _process_user_input(cli_session, analysis_agent, user_input):
+    """Process a single user input and return the result.
+    
+    Args:
+        cli_session: The SQLite session for conversation memory
+        analysis_agent: The persistent agent instance (reused for all messages)
+        user_input: The user's query string
+    
+    Returns:
+        RunResult: The result with CLI-specific metadata attached
+    """
     try:
         # Start timing for performance metrics
         start_time = time.perf_counter()
 
-        # Get or create agent using factory function
-        analysis_agent = create_agent()
-
-        # Run the financial analysis agent with the user message
-        result = await Runner.run(analysis_agent, user_input, session=cli_session)
+        # Call shared processing function (core business logic - no duplication)
+        result = await process_query(analysis_agent, cli_session, user_input)
 
         # Calculate processing time
         processing_time = time.perf_counter() - start_time
@@ -84,7 +137,7 @@ async def _process_user_input(cli_session, user_input):
         # Extract token data using official OpenAI Agents SDK
         token_count = extract_token_count_from_context_wrapper(result)
 
-        # Create metadata object for CLI response
+        # Create metadata object for CLI response (CLI-specific wrapper)
         cli_metadata = ResponseMetadata(
             model=settings.available_models[0],
             timestamp=datetime.now().isoformat(),

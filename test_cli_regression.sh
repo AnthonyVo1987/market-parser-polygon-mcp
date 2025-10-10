@@ -5,12 +5,12 @@
 # Designed to validate parallel tool calls (max 3) and chat history data reuse
 # Properly handles session persistence and accurate response time tracking
 #
-# Usage: ./test_cli_regression.sh [LOOP_COUNT]
+# Usage: chmod +x test_cli_regression.sh && ./test_cli_regression.sh [LOOP_COUNT]
 #   LOOP_COUNT: Number of test loops to run (1-10, default: 1)
 #   Examples:
-#     ./test_cli_regression.sh     # Run 1 loop (default)
-#     ./test_cli_regression.sh 3   # Run 3 loops
-#     ./test_cli_regression.sh 10  # Run 10 loops (max)
+#     chmod +x test_cli_regression.sh && ./test_cli_regression.sh     # Run 1 loop (default)
+#     chmod +x test_cli_regression.sh && ./test_cli_regression.sh 3   # Run 3 loops
+#     chmod +x test_cli_regression.sh && ./test_cli_regression.sh 10  # Run 10 loops (max)
 #
 # Test Coverage:
 # - SPY Test Sequence: Tests 1-16 (16 tests - includes 2 options chain tests + 1 wall analysis)

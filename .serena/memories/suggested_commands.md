@@ -5,10 +5,10 @@
 ### One-Click Startup (Recommended)
 ```bash
 # XTerm startup (RECOMMENDED - WORKING)
-./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Main startup (NOW WORKING - FIXED with timeout)
-./start-app.sh
+chmod +x start-app.sh && ./start-app.sh
 
 # Via npm scripts
 npm run start:app:xterm    # XTerm version (recommended)
@@ -52,10 +52,10 @@ npm run backend:cli
 ### CLI Regression Testing
 ```bash
 # Single test loop (27 tests)
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 # Multiple test loops (e.g., 10 loops)
-./test_cli_regression.sh 10
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh 10
 ```
 
 **Test Coverage:**
@@ -313,10 +313,10 @@ lsof -i :3000
 ### Most Used Commands
 ```bash
 # Start app (one-click)
-./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Run CLI regression tests
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 # Lint and fix all issues
 npm run lint:fix
@@ -334,7 +334,7 @@ npm run status
 ### Development Workflow
 ```bash
 # 1. Start development servers
-./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # 2. Make code changes
 # ... edit files ...
@@ -344,7 +344,7 @@ npm run lint:fix
 npm run type-check
 
 # 4. Test changes
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 # 5. Commit (proper atomic workflow - see git_commit_workflow.md)
 git status

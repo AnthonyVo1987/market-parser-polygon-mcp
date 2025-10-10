@@ -294,7 +294,7 @@ If default markdown styling is too plain, use **Option 2 (CSS)**:
 
 ### Backend Testing (Mandatory)
 ```bash
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 - Verify CLI still works (markdown rendering)
 - Ensure backend sends markdown correctly
@@ -366,7 +366,7 @@ git checkout master
 
 ### Step 3: Test Backend
 ```bash
-./test_cli_regression.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 # Verify 100% pass rate
 ```
 

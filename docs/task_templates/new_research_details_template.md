@@ -61,7 +61,7 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 1. ✅ **Execute the test suite:**
 
    ```bash
-   ./test_cli_regression.sh
+   chmod +x test_cli_regression.sh && ./test_cli_regression.sh
    ```
 
 2. ✅ **Verify test results:**

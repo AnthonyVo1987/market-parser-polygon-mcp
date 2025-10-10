@@ -61,7 +61,7 @@ Backend → Markdown → GUI (default markdown renders)
 
 1. **Delete custom components** (153 lines)
 2. **Use default react-markdown**
-3. **Test CLI**: `./test_cli_regression.sh` (must pass 100%)
+3. **Test CLI**: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh` (must pass 100%)
 4. **Test GUI**: User validates frontend appearance
 5. **Commit**: Atomic commit with test results
 
@@ -98,7 +98,7 @@ If default styling too plain, add 10-15 lines of CSS:
 
 ## Testing
 
-**Backend**: `./test_cli_regression.sh` (must pass)
+**Backend**: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh` (must pass)
 **Frontend**: User validates GUI appearance
 
 ---
