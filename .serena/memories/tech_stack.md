@@ -152,6 +152,51 @@
 - `src/backend/tools/__init__.py`: Updated imports (polygon → tradier for options chain)
 - `src/backend/services/agent_service.py`: Updated imports, RULE #9, tool list, tool count (11→10)
 
+## Bid/Ask Display Fix (Oct 10, 2025 - COMPLETE)
+
+### Task 3: Fix Options Chain Display Format
+**Problem**: Agent was displaying single "Price" or "Price (mid)" column instead of separate Bid and Ask columns
+**Root Cause**: RULE #9 instructions specified single "price" field in table format, causing agent to calculate midpoint
+**Solution**: Updated RULE #9 to explicitly require both Bid and Ask columns, prohibit midpoint calculations
+
+### Implementation Details
+**File Modified**: `src/backend/services/agent_service.py` (RULE #9, lines 256-272)
+
+**Changes Made**:
+1. Line 257: Changed "price" → "bid, ask" in response format description
+2. Line 261: Added explicit warning "DO NOT calculate or show midpoint/average prices"
+3. Lines 263-265: Updated table format from single "Price" column to separate "Bid" and "Ask" columns
+4. Line 268: Added instruction "Show BOTH Bid and Ask columns (DO NOT combine into single column)"
+
+**Before (WRONG)**:
+```
+| Strike  | Price | Delta | Gamma | Theta | Vega | IV     | Volume   | Open Interest |
+|---------|-------|-------|-------|-------|------|--------|----------|---------------|
+| $XXX.XX | X.XX  | X.XX  | X.XX  | X.XX  | X.XX | XX.XX% | X,XXX    | X,XXX         |
+```
+
+**After (CORRECT)**:
+```
+| Strike  | Bid  | Ask  | Delta | Gamma | Theta | Vega | IV     | Volume   | Open Interest |
+|---------|------|------|-------|-------|-------|------|--------|----------|---------------|
+| $XXX.XX | X.XX | X.XX | X.XX  | X.XX  | X.XX  | X.XX | XX.XX% | X,XXX    | X,XXX         |
+```
+
+### Test Results (44/44 PASSED - 100% Success Rate)
+- **Total Tests**: 44 (all tests passed with correct Bid/Ask display)
+- **Avg Response Time**: 12.95s (EXCELLENT rating)
+- **Session Duration**: 9 min 31 sec
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_22-58.log`
+
+### Options Chain Display Verification (4/4 CORRECT)
+- **Test 17**: SPY Call Options - Shows separate "Bid    Ask" columns ✅
+- **Test 18**: SPY Put Options - Shows separate "Bid    Ask" columns ✅
+- **Test 36**: NVDA Call Options - Shows separate "Bid    Ask" columns ✅
+- **Test 37**: NVDA Put Options - Shows separate "Bid    Ask" columns ✅
+
+### Key Fix
+**Critical Change**: Backend functions were ALREADY returning separate bid/ask fields correctly. The issue was in the AGENT INSTRUCTIONS (RULE #9) which told the agent to display a single "price" column. The agent was following instructions by calculating the midpoint. Updating RULE #9 to explicitly require both columns fixed the display issue without any backend code changes.
+
 ### Migration Complete (14 Phases Total)
 - **Phase 14**: Tradier Options Chain Migration + Interval Bug Fix ✅ COMPLETE (Oct 10, 2025)
 - **Phase 13**: Tradier Historical Pricing Migration ✅ COMPLETE (Oct 10, 2025)
@@ -185,22 +230,22 @@
 
 ## Performance Metrics
 
-### Current Performance Baseline (Oct 10, 2025 - Options Chain Migration + Interval Bug Fix - LATEST)
-- **Baseline Average Response Time**: 11.16s (EXCELLENT rating)
+### Current Performance Baseline (Oct 10, 2025 - Bid/Ask Display Fix - LATEST)
+- **Baseline Average Response Time**: 12.95s (EXCELLENT rating)
 - **Success Rate**: 100% (44/44 tests passed)
-- **Performance Range**: 2.885s - 32.108s (42 tests <30s EXCELLENT, 2 tests 30-45s GOOD)
+- **Performance Range**: 3.293s - 55.172s (40 tests <30s EXCELLENT, 1 test 30-45s GOOD, 3 tests 45-90s ACCEPTABLE)
 - **Test Suite**: 44 tests per loop (SPY 19 + NVDA 19 + Multi 6)
-- **Average Session Duration**: 8 min 12 sec per loop
+- **Average Session Duration**: 9 min 31 sec per loop
 - **Tool Count**: 10 tools (down from 11, -9% reduction from Phase 13)
-- **Options Chain Performance** (Tradier API):
-  - SPY Call/Put Options: 11-15s (EXCELLENT)
-  - NVDA Call/Put Options: 18-32s (EXCELLENT-GOOD)
+- **Options Chain Performance** (Tradier API with Bid/Ask Display):
+  - SPY Call/Put Options: 11-12s (EXCELLENT) ✅ Now shows separate Bid/Ask columns
+  - NVDA Call/Put Options: 17-22s (EXCELLENT) ✅ Now shows separate Bid/Ask columns
   - Client-side filtering to 10 strikes (fast processing)
-  - Bid/Ask fields returned separately (more accurate pricing)
+  - Bid/Ask fields displayed separately in table (no midpoint calculation)
 - **Historical Pricing Performance** (Interval Bug Fix Verified):
-  - Daily interval (5 days): 6-14s (EXCELLENT)
-  - Weekly interval (2 weeks): 6-15s (EXCELLENT) - now correctly uses weekly
-  - Monthly interval (1 month): 12-14s (EXCELLENT) - now correctly uses daily for month-long data
-  - Multi-ticker historical: 13-26s (EXCELLENT)
+  - Daily interval (5 days): 4-11s (EXCELLENT)
+  - Weekly interval (2 weeks): 6-8s (EXCELLENT) - correctly uses weekly
+  - Monthly interval (1 month): 6-12s (EXCELLENT) - correctly uses daily for month-long data
+  - Multi-ticker historical: 46-55s (ACCEPTABLE)
   - Interval selection: ✅ FIXED - correctly identifies daily/weekly/monthly based on query
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_22-31.log`
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_22-58.log`

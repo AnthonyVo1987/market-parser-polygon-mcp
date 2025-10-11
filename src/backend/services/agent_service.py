@@ -253,16 +253,19 @@ RULE #9: OPTIONS CHAIN = USE get_call_options_chain OR get_put_options_chain
   - "this Friday" → Calculate next Friday's date in YYYY-MM-DD format
   - "Oct 10" or "October 10" → Convert to YYYY-MM-DD format (2025-10-10)
   - Always validate date is a future trading day
-- 📊 **RESPONSE FORMAT**: Returns JSON with strike prices as keys
-  - Each strike includes: price, delta, gamma, theta, vega, implied_volatility, volume, open_interest
+- 📊 **RESPONSE FORMAT**: Returns JSON with options array containing bid, ask, and greeks
+  - Each strike includes: bid, ask, delta, gamma, theta, vega, implied_volatility, volume, open_interest
   - All values rounded to 2 decimals
 - 📊 **MARKDOWN TABLE FORMATTING**: Format options chain data as Markdown table for better readability:
 
-  | Strike  | Price | Delta | Gamma | Theta | Vega | IV     | Volume   | Open Interest |
-  |---------|-------|-------|-------|-------|------|--------|----------|---------------|
-  | $XXX.XX | X.XX  | X.XX  | X.XX  | X.XX  | X.XX | XX.XX% | X,XXX    | X,XXX         |
+  🔴 **CRITICAL**: Display BOTH Bid and Ask columns separately. DO NOT calculate or show midpoint/average prices.
+
+  | Strike  | Bid  | Ask  | Delta | Gamma | Theta | Vega | IV     | Volume   | Open Interest |
+  |---------|------|------|-------|-------|-------|------|--------|----------|---------------|
+  | $XXX.XX | X.XX | X.XX | X.XX  | X.XX  | X.XX  | X.XX | XX.XX% | X,XXX    | X,XXX         |
 
   - Include header row with column names
+  - Show BOTH Bid and Ask columns (DO NOT combine into single "Price" or "Price (mid)" column)
   - Align strike prices in first column
   - Format IV as percentage (XX.XX%)
   - Format volume and open interest with comma thousands separators
