@@ -5,13 +5,10 @@ from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..tools.finnhub_tools import get_stock_quote
-from ..tools.tradier_tools import get_options_expiration_dates
+from ..tools.tradier_tools import get_options_expiration_dates, get_stock_price_history
 from ..tools.polygon_tools import (
     get_call_options_chain,
     get_market_status_and_date_time,
-    get_OHLC_bars_custom_date_range,
-    get_OHLC_bars_previous_close,
-    get_OHLC_bars_specific_date,
     get_put_options_chain,
     get_ta_ema,
     get_ta_macd,
@@ -33,8 +30,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Tradier for all ticker quotes and market status (supports multi-ticker), Tradier for options expiration dates, Polygon.io direct API for all market data (TA indicators/OHLC bars/options chains).
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 13 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_market_status_and_date_time, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
+TOOLS: Use Tradier for all ticker quotes, market status (supports multi-ticker), options expiration dates, and historical pricing; Polygon.io direct API for technical indicators and options chains.
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 11 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -65,39 +62,47 @@ RULE #3: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time(
 - 📊 Uses Tradier API for real-time market status and server datetime
 - ✅ Returns: market status, exchange statuses, after_hours, early_hours, server_time with date and time
 
-RULE #4: HISTORICAL OHLC DATA = USE get_OHLC_bars_* tools WITH DATE VALIDATION
-- If the request needs historical OHLC prices, candlestick data, or time-based price analysis
-- 🔴 DATE VALIDATION REQUIRED:
-  * Check if requested date is weekend (Sat/Sun) → Use previous Friday
-  * Check if requested date is holiday → Use previous business day
-  * Check if requested date is future → Use most recent available date
-- 🔴 DECISION TREE FOR OHLC BARS:
-  Step 1: Identify date requirement
-  Step 2a: Custom date range (from X to Y) → USE get_OHLC_bars_custom_date_range(ticker, from_date, to_date, timespan, multiplier, limit)
-  Step 2b: Single specific date (on X date) → USE get_OHLC_bars_specific_date(ticker, date, adjusted)
-  Step 2c: Previous trading day close → USE get_OHLC_bars_previous_close(ticker, adjusted)
-- 📊 All use Polygon.io Direct API
-- ✅ Examples:
-  * "AAPL daily bars Jan-Mar 2024" → get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01', to_date='2024-03-31', timespan='day', multiplier=1)
-  * "TSLA price on Dec 15, 2024" (Sunday) → Adjust to Dec 13, 2024 (Friday) → get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-13', adjusted=True)
-  * "SPY previous close" → get_OHLC_bars_previous_close(ticker='SPY', adjusted=True)
-- 🔴 Date format: YYYY-MM-DD
-- 🔴 Timespan options: minute, hour, day, week, month, quarter, year
-- 🔴 adjusted=True accounts for splits/dividends
-- 🔴 FALLBACK: If specific date fails, use get_OHLC_bars_previous_close() for last available data
-- 🔴 CRITICAL DISPLAY REQUIREMENTS FOR OHLC BARS:
-  * **For custom date range queries, ALWAYS show in response:**
+RULE #4: HISTORICAL STOCK PRICE DATA = USE get_stock_price_history FROM TRADIER
+- If the request needs historical stock prices, OHLC bars, price performance over time, or daily/weekly/monthly data
+- 🔴 **SINGLE UNIFIED TOOL**: Use get_stock_price_history() for ALL historical price data requests
+- 🔴 **MULTI-INTERVAL SUPPORT**: Single tool handles daily, weekly, AND monthly intervals
+- 📊 **Uses Tradier API** for historical pricing (fast, reliable, unified)
+- 🔴 **REQUIRED PARAMETERS**:
+  * ticker (str): Stock ticker symbol
+  * start_date (str): Start date in YYYY-MM-DD format
+  * end_date (str): End date in YYYY-MM-DD format
+  * interval (str): Time interval - "daily" (default), "weekly", or "monthly"
+- 🔴 **INTERVAL SELECTION LOGIC**:
+  * User says "last X days" or "daily" → interval="daily"
+  * User says "last X weeks" or "weekly" → interval="weekly"
+  * User says "last X months" or "monthly" → interval="monthly"
+  * **Default to "daily"** if ambiguous or not specified
+- 🔴 **DATE CALCULATION EXAMPLES**:
+  * "Stock price performance the last 5 trading days" → Calculate start_date as 7 days ago, end_date as today, interval="daily"
+  * "Stock price performance the last 2 weeks" → Calculate start_date as 14 days ago, end_date as today, interval="weekly"
+  * "Stock price performance the last month" → Calculate start_date as 30 days ago, end_date as today, interval="monthly"
+  * "SPY from Jan 1 to Mar 31, 2025" → start_date="2025-01-01", end_date="2025-03-31", interval="daily"
+- ✅ **USAGE EXAMPLES**:
+  * "Stock Price Performance the last 5 Trading Days: SPY" → get_stock_price_history(ticker='SPY', start_date='2025-10-03', end_date='2025-10-10', interval='daily')
+  * "Stock Price Performance the last 2 Weeks: NVDA" → get_stock_price_history(ticker='NVDA', start_date='2025-09-26', end_date='2025-10-10', interval='weekly')
+  * "Stock Price Performance the last month: AAPL" → get_stock_price_history(ticker='AAPL', start_date='2025-09-10', end_date='2025-10-10', interval='monthly')
+- 🔴 **RESPONSE FORMAT**: Returns JSON with bars array containing date, open, high, low, close, volume
+- 🔴 **CRITICAL DISPLAY REQUIREMENTS**:
+  * **ALWAYS show in response:**
     - Start date and opening price (first bar's open)
     - End date and closing price (last bar's close)
     - Price change ($ amount and % change from start to end)
     - Period high and low prices
-    - Number of trading days in the period
-  * **For specific date queries, ALWAYS show:**
-    - Date, Open, High, Low, Close, Volume
+    - Number of bars/trading periods returned
   * ❌ NEVER just say "data retrieved" or "bars retrieved" without showing actual numbers
   * ❌ NEVER say "If you'd like, I can show the data" - ALWAYS show key data immediately
-  * ✅ Example GOOD response: "SPY Q1 2025: Started 1/2/25 at $580.50, ended 3/31/25 at $612.30 (+$31.80, +5.48%), Period High: $615.25, Low: $575.10, 60 trading days"
-  * ❌ Example BAD response: "SPY daily OHLC bars retrieved for Q1 2025. Data provided as daily Open, High, Low, Close, Volume." [USELESS - NO ACTUAL NUMBERS!]
+  * ✅ Example GOOD response: "SPY last 5 days: Started 10/3 at $580.50, ended 10/10 at $589.20 (+$8.70, +1.50%), Period High: $591.13, Low: $580.50, 5 bars"
+  * ❌ Example BAD response: "SPY daily bars retrieved. Data provided as daily Open, High, Low, Close, Volume." [USELESS - NO ACTUAL NUMBERS!]
+- 🔴 **DATE VALIDATION**:
+  * Agent should calculate dates based on current date (see datetime context at top)
+  * Tradier API automatically handles weekends/holidays (returns only trading days)
+  * No need for manual weekend/holiday adjustment
+- 🔴 **PERFORMANCE OPTIMIZATION**: One tool call handles all interval types (daily/weekly/monthly) - no need for multiple tools
 
 RULE #5: WORK WITH AVAILABLE DATA - NO STRICT REQUIREMENTS
 - ✅ ALWAYS use whatever data is returned, even if less than expected
@@ -112,13 +117,12 @@ RULE #6: MARKET CLOSED = STILL PROVIDE DATA - NEVER REFUSE OR SAY "UNAVAILABLE"
 - 🔴 CRITICAL: NEVER EVER respond with "data unavailable" - ALWAYS provide fallback data
 - ✅ MANDATORY FALLBACK SEQUENCE when data unavailable:
   1. Try get_stock_quote (Tradier) - returns last trade even when closed
-  2. If that fails, try get_OHLC_bars_previous_close()
-  3. If that fails, try get_OHLC_bars_custom_date_range() for last 5 days
-  4. ONLY after all fallbacks fail, explain data limitation with last known info
+  2. If that fails, try get_stock_price_history() for last 5 trading days
+  3. ONLY after all fallbacks fail, explain data limitation with last known info
 - ❌ NEVER respond with "unavailable" or "data not returned; market closed"
 - ❌ NEVER ask user to retry or wait for market to open
 - ❌ NEVER say "AAPL: data unavailable" - USE FALLBACK TOOLS
-- Example: "What is NVDA price?" when market closed → Use get_stock_quote first, if fails use get_OHLC_bars_previous_close()
+- Example: "What is NVDA price?" when market closed → Use get_stock_quote first, if fails use get_stock_price_history() for recent data
 
 RULE #7: TECHNICAL ANALYSIS - CHECK CHAT HISTORY FIRST, THEN USE get_ta_* tools IF NEEDED
 
@@ -385,9 +389,9 @@ EXAMPLES OF CORRECT TOOL CALLS:
 ✅ "AAPL data" → get_stock_quote(ticker='AAPL')
 ✅ "SPY, QQQ, IWM" → get_stock_quote(ticker='SPY,QQQ,IWM') [SINGLE CALL WITH COMMA-SEPARATED TICKERS]
 ✅ "AAPL and MSFT prices" → get_stock_quote(ticker='AAPL,MSFT') [SINGLE CALL WITH COMMA-SEPARATED TICKERS]
-✅ "AAPL daily bars Jan 2024" → get_OHLC_bars_custom_date_range(ticker='AAPL', from_date='2024-01-01', to_date='2024-01-31', timespan='day', multiplier=1)
-✅ "TSLA price on Dec 15" (Sunday) → Adjust to Dec 13 (Fri) → get_OHLC_bars_specific_date(ticker='TSLA', date='2024-12-13', adjusted=True)
-✅ "SPY previous close" → get_OHLC_bars_previous_close(ticker='SPY', adjusted=True)
+✅ "Stock Price Performance the last 5 Trading Days: SPY" → get_stock_price_history(ticker='SPY', start_date='2025-10-03', end_date='2025-10-10', interval='daily')
+✅ "Stock Price Performance the last 2 Weeks: NVDA" → get_stock_price_history(ticker='NVDA', start_date='2025-09-26', end_date='2025-10-10', interval='weekly')
+✅ "Stock Price Performance the last month: AAPL" → get_stock_price_history(ticker='AAPL', start_date='2025-09-10', end_date='2025-10-10', interval='monthly')
 ✅ "SMA for SPY" → get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10)
 ✅ "20-day EMA NVDA" → get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10)
 ✅ "RSI analysis SPY" → get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10)
@@ -417,8 +421,8 @@ EXAMPLES OF INCORRECT TOOL CALLS:
 ✅ Previous: Retrieved AMD, INTC prices, User asks: "AMD, INTC, AVGO prices" →
     ONLY NEW CALL: get_stock_quote(ticker='AVGO') - Reuse existing AMD/INTC data, get only missing AVGO
 
-✅ Previous: Have SPY OHLC bars (Jan-Mar), User asks: "SPY price movement in Q1" →
-    NO TOOL CALLS - Analyze existing OHLC bar data from chat history
+✅ Previous: Have SPY historical price data (Jan-Mar), User asks: "SPY price movement in Q1" →
+    NO TOOL CALLS - Analyze existing historical price data from chat history
 
 
 INSTRUCTIONS:
@@ -493,17 +497,15 @@ def create_agent():
         tools=[
             get_stock_quote,
             get_options_expiration_dates,
+            get_stock_price_history,
             get_market_status_and_date_time,
-            get_OHLC_bars_custom_date_range,
-            get_OHLC_bars_specific_date,
-            get_OHLC_bars_previous_close,
             get_ta_sma,
             get_ta_ema,
             get_ta_rsi,
             get_ta_macd,
             get_call_options_chain,
             get_put_options_chain,
-        ],  # Tradier + Polygon direct API tools (2 Tradier + 10 Polygon)
+        ],  # Tradier + Polygon direct API tools (3 Tradier + 8 Polygon)
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

@@ -47,7 +47,7 @@ ULTRA-THINK to Research the requested task(s):
 1. Research updating migrating and replacing some AI Agent tools to use Tradier API Endpoints
 - https://docs.tradier.com/reference/brokerage-api-markets-get-history
 - Update AI Agent instructions for the updated tools
-- Test the new tools by issuing some manual CLI test cases to confirm the new tool API endpoints are working correctly
+- Test the new tools by issueing some manual CLI test cases to confirm the new tool API endpoints are working correctly
 - Fix any issues if needed from testing to make the tool tests work properly
 
 
@@ -250,11 +250,6 @@ print(response.text)
 }
 ```
 
-
-2. If quick test of the new tool works, add new test cases in 'test_cli_regression.sh':
-- Replace "Daily Stock Price bars Analysis from the last 2 trading weeks:xxx" with "Stock Price Performance the last 5 Trading Days: xxx"
-- After "Stock Price Performance the last 5 Trading Days: xxx", add new test case: "Stock Price Performance the last 2 Weeks: xxx"
-- After "Stock Price Performance the last 2 Weeks: xxx" add new test case: "Stock Price Performance the last month: xxx"
 
 ---
 
