@@ -1,0 +1,41 @@
+Market Status
+Current Price: $SPY
+Today's Closing Price: $SPY
+Yesterday's Closing Price: $SPY
+Last week's Performance: $SPY
+Stock Price on the previous week's Friday: $SPY
+Stock Price Performance the last 5 Trading Days: $SPY
+Stock Price Performance the last 2 Weeks: $SPY
+Stock Price Performance the last month: $SPY
+Get technical analysis indicators for SPY
+Perform technical analysis for SPY based on the indicators
+Support & Resistance Levels: $SPY
+Technical Analysis: $SPY
+Get options expiration dates for SPY
+Get the SPY Call Options Chain Expiring this Friday
+Get the SPY Put Options Chain Expiring this Friday
+Analyze the Options Chain Data for SPY and provide potential Call & Put Wall(s) Strike Prices
+Market Status
+Current Price: $NVDA
+Today's Closing Price: $NVDA
+Yesterday's Closing Price: $NVDA
+Last week's Performance: $NVDA
+Stock Price on the previous week's Friday: $NVDA
+Stock Price Performance the last 5 Trading Days: $NVDA
+Stock Price Performance the last 2 Weeks: $NVDA
+Stock Price Performance the last month: $NVDA
+Get technical analysis indicators for NVDA
+Perform technical analysis for NVDA based on the indicators
+Support & Resistance Levels: $NVDA
+Technical Analysis: $NVDA
+Get options expiration dates for NVDA
+Get the NVDA Call Options Chain Expiring this Friday
+Get the NVDA Put Options Chain Expiring this Friday
+Analyze the Options Chain Data for NVDA and provide potential Call & Put Wall(s) Strike Prices
+Market Status
+Current Price: $WDC, $AMD, $GME
+Today's Closing Price: $WDC, $AMD, $GME
+Yesterday's Closing Price: $WDC, $AMD, $GME
+Last week's Performance: $WDC, $AMD, $GME
+Stock Price Performance the last 2 Weeks: $WDC, $AMD, $GME
+exit

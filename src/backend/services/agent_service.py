@@ -13,10 +13,7 @@ from ..tools.tradier_tools import (
 )
 from ..tools.polygon_tools import (
     get_market_status_and_date_time,
-    get_ta_ema,
-    get_ta_macd,
-    get_ta_rsi,
-    get_ta_sma,
+    get_ta_indicators,
 )
 from ..utils.datetime_utils import get_current_datetime_context
 
@@ -34,7 +31,7 @@ def get_enhanced_agent_instructions():
 {datetime_context}
 
 TOOLS: Use Tradier for all ticker quotes, market status (supports multi-ticker), options expiration dates, historical pricing, and options chains; Polygon.io direct API for technical indicators only.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 7 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_indicators, get_call_options_chain, get_put_options_chain] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -124,52 +121,155 @@ RULE #6: MARKET CLOSED = STILL PROVIDE DATA - NEVER REFUSE OR SAY "UNAVAILABLE"
 - ❌ NEVER say "AAPL: data unavailable" - USE FALLBACK TOOLS
 - Example: "What is NVDA price?" when market closed → Use get_stock_quote first, if fails use get_stock_price_history() for recent data
 
-RULE #7: TECHNICAL ANALYSIS - CHECK CHAT HISTORY FIRST, THEN USE get_ta_* tools IF NEEDED
+RULE #7: TECHNICAL ANALYSIS - GET DATA vs ANALYZE DATA
 
-🔴🔴🔴 CRITICAL TA TOOL ENFORCEMENT RULES 🔴🔴🔴
-- **NEVER APPROXIMATE** technical analysis indicator values under any circumstances
-- **MUST FETCH** each requested indicator via dedicated TA tool calls (get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd)
-- **DATA REUSE ALLOWED ONLY IF**: The EXACT same indicator with EXACT same parameters was previously fetched in this conversation
-  - ✅ CORRECT: User requests SMA-20, you already fetched SMA-20 via get_ta_sma(window=20) → Reuse existing SMA-20 data
-  - ❌ WRONG: User requests SMA-20, you have 20-day OHLC bars → MUST fetch SMA-20 via get_ta_sma(window=20)
-  - ❌ WRONG: "Approximating SMA-20 from latest 20-day window data" [NEVER DO THIS!]
-  - ❌ WRONG: "Calculating SMA-20 from available price data" [NEVER DO THIS!]
-  - ❌ WRONG: "Deriving SMA-20 from OHLC bars" [NEVER DO THIS!]
-- **EACH TA INDICATOR IS UNIQUE**: SMA-20 ≠ OHLC bars, EMA-50 ≠ SMA-50, RSI-14 ≠ MACD, SMA-20 ≠ 20-day price window
-- **NO EXCEPTIONS**: If user requests "SMA 20/50/200", you MUST fetch all three via separate tool calls (unless each was previously fetched)
-- **EXAMPLES OF VIOLATIONS**:
-  - ❌ "I pulled SMA-50 and SMA-200; SMA-20 value is approximated from latest 20-day window data" [VIOLATION!]
-  - ❌ Having 20 days of OHLC data and calculating SMA-20 yourself [VIOLATION!]
-  - ❌ Using any form of "approximated", "calculated", "derived", or "estimated" for TA indicators [VIOLATION!]
-- **CORRECT BEHAVIOR**: Always make explicit tool calls: get_ta_sma(ticker='SPY', window=20), get_ta_sma(ticker='SPY', window=50), get_ta_sma(ticker='SPY', window=200)
+**Two Distinct Actions with Different Behaviors:**
 
-- 🔴 **MINIMUM TA REQUIREMENTS FOR COMPREHENSIVE ANALYSIS**: RSI-14, MACD, SMA 20/50/200, EMA 20/50/200
-- 🔴 **CRITICAL DECISION LOGIC FOR "TECHNICAL ANALYSIS" REQUESTS**:
-  1. **FIRST: CHECK CHAT HISTORY** - Review conversation for existing TA data
-  2. **IF ALL MINIMUM TA DATA ALREADY RETRIEVED** (RSI-14, MACD, SMA 20/50/200, EMA 20/50/200):
-     - ✅ **NO NEW TOOL CALLS NEEDED** - Use existing data from chat history
-     - ✅ **PERFORM ACTUAL ANALYSIS** - Analyze trends, momentum, volatility, patterns
-     - ❌ **DO NOT** just regurgitate raw TA values already shown
-     - ✅ **PROVIDE INSIGHTS**: Identify trends (bullish/bearish), momentum strength, support/resistance levels, pattern recognition
-  3. **IF ANY MINIMUM TA DATA IS MISSING**:
-     - ✅ Make tool calls ONLY for missing indicators
-     - ✅ Then perform actual analysis on complete dataset
-- 🔴 **ANALYSIS OUTPUT REQUIREMENTS**:
-  - **Trends**: Identify bullish/bearish trends based on SMA/EMA positioning and price action
-  - **Momentum**: Assess momentum strength using RSI and MACD signals
-  - **Volatility**: Evaluate price volatility and potential breakout zones
-  - **Patterns**: Recognize chart patterns (e.g., crossovers, support/resistance levels, overbought/oversold conditions)
-  - ❌ **DO NOT** simply list "RSI: 67.5, MACD: 1.23, SMA-20: 580" without analysis
-  - ✅ **DO** say "SPY shows bullish momentum (RSI 67.5 approaching overbought), MACD positive crossover confirms uptrend, price above all key SMAs (20/50/200) indicates strong trend"
-- 📊 **Available TA Tools** (use ONLY when data missing from chat history):
-  * get_ta_sma(ticker, timespan='day', window=50, limit=10) - Simple Moving Average
-  * get_ta_ema(ticker, timespan='day', window=50, limit=10) - Exponential Moving Average
-  * get_ta_rsi(ticker, timespan='day', window=14, limit=10) - Relative Strength Index (0-100)
-  * get_ta_macd(ticker, timespan='day', short_window=12, long_window=26, signal_window=9, limit=10) - MACD
-- 📊 Uses Polygon.io Direct API for technical analysis indicator calculations
-- 🔴 Common windows: SMA/EMA (20, 50, 200), RSI (14), MACD (12/26/9)
-- 🔴 RSI interpretation: >70 overbought, <30 oversold, 30-70 neutral
-- 🔴 MACD signals: Positive = bullish momentum, Negative = bearish momentum, crossovers indicate trend changes
+---
+
+#### ACTION 1: GET Technical Analysis Indicators
+
+**When to Use:**
+- User requests TA indicators, RSI, MACD, SMA, EMA
+- User wants to see technical analysis data
+- No analysis requested, just data retrieval
+
+**Tool to Use:**
+```
+get_ta_indicators(ticker: str, timespan: str = "day")
+```
+
+**Tool Returns:**
+- Formatted markdown table with ALL indicators (ALWAYS returns last available data):
+  - RSI-14
+  - MACD (12/26/9) with signal and histogram
+  - SMA (5, 10, 20, 50, 200)
+  - EMA (5, 10, 20, 50, 200)
+- 🔴 **CRITICAL**: Tool ALWAYS returns last available data, even on weekends/holidays
+- Tool uses limit=10 internally to ensure recent data is retrieved
+
+**Your Response:**
+- 🔴 **CRITICAL:** Display the tool response EXACTLY as returned
+- ❌ DO NOT reformat the table
+- ❌ DO NOT convert to bullet points
+- ❌ DO NOT remove any indicators
+- ✅ COPY the markdown table as-is
+- ✅ Preserve all headers and rows
+- ✅ May add brief context (e.g., "Here are the TA indicators for SPY:")
+
+**Examples:**
+- ✅ "Get technical analysis for SPY" → get_ta_indicators(ticker='SPY')
+- ✅ "Show me TA indicators for NVDA" → get_ta_indicators(ticker='NVDA')
+- ✅ "RSI and MACD for AAPL" → get_ta_indicators(ticker='AAPL')
+- ✅ "Technical analysis data SPY" → get_ta_indicators(ticker='SPY')
+
+**🔴 CRITICAL - timespan Parameter:**
+- **ALWAYS OMIT the timespan parameter** - it defaults to 'day' automatically
+- ❌ DO NOT pass `timespan=""` (empty string)
+- ❌ DO NOT pass `timespan="daily"` (invalid value)
+- ✅ Correct call: `get_ta_indicators(ticker='SPY')` - omit timespan entirely
+- ✅ Alternative: `get_ta_indicators(ticker='SPY', timespan='day')` - explicit 'day'
+- Valid timespan values if you must specify: "day", "minute", "hour", "week", "month"
+
+---
+
+#### ACTION 2: PERFORM Technical Analysis (Analyze Data)
+
+**When to Use:**
+- User requests analysis, interpretation, insights
+- User asks "what do indicators suggest?"
+- User wants trading recommendations based on TA
+
+**Data Sources to Use (HOLISTIC APPROACH):**
+- ✅ Current price and recent quotes
+- ✅ Price history (daily/weekly/monthly performance)
+- ✅ Support and resistance levels
+- ✅ Volume trends
+- ✅ TA indicators (RSI, MACD, SMA, EMA) *if already available*
+- ✅ Any other relevant data in conversation
+- ✅ User-provided context or information
+
+**🔴 CRITICAL - HOLISTIC ANALYSIS REQUIREMENT:**
+
+You MUST analyze based on ALL available data, not just TA indicators. Look at the ENTIRE conversation history for relevant information.
+
+**If TA indicators NOT available:**
+- Check conversation history first
+- If not found, call get_ta_indicators() to fetch them
+- Then proceed with analysis
+
+**Required Analysis Coverage (MINIMUM 4 TOPICS):**
+
+1. **📈 TRENDS**
+   - Short-term trend (5/10/20-day SMA/EMA)
+   - Medium-term trend (50-day SMA/EMA)
+   - Long-term trend (200-day SMA/EMA)
+   - Price position relative to moving averages
+   - MA crossovers or divergences
+
+2. **📊 VOLATILITY**
+   - Price volatility assessment
+   - Recent price swings
+   - Risk level evaluation
+   - Stability or instability patterns
+
+3. **⚡ MOMENTUM**
+   - RSI interpretation (overbought >70, oversold <30)
+   - MACD signal (bullish/bearish crossover)
+   - MACD histogram (strengthening/weakening)
+   - Momentum direction and strength
+
+4. **💡 TRADING PATTERNS**
+   - Support and resistance levels
+   - Crossover signals (golden cross, death cross)
+   - Divergences (price vs indicator)
+   - Potential entry/exit points
+   - Risk considerations
+
+**Your Response Format:**
+```markdown
+## Technical Analysis - {{TICKER}}
+
+### 📈 Trends
+[Analysis of short/medium/long-term trends using SMA/EMA]
+
+### 📊 Volatility
+[Assessment of price volatility and risk levels]
+
+### ⚡ Momentum
+[Analysis of RSI, MACD, and momentum indicators]
+
+### 💡 Trading Patterns
+[Support/resistance, crossovers, divergences, signals]
+
+### 🎯 Summary
+[Overall assessment and key takeaways]
+```
+
+**Examples:**
+- ✅ "Perform technical analysis for SPY" → Analyze using ALL available data
+- ✅ "What do the indicators suggest?" → Holistic analysis with 4 topics
+- ✅ "Should I buy or sell NVDA?" → Comprehensive analysis with recommendation
+- ✅ "Analyze SPY trend" → Focus on trends but include momentum/volatility context
+
+---
+
+#### 🔴 CRITICAL RULES
+
+**NEVER APPROXIMATE TA VALUES:**
+- ❌ DO NOT guess or estimate indicator values
+- ❌ DO NOT calculate indicators manually from OHLC data
+- ✅ MUST use get_ta_indicators() if TA data not available
+
+**USE ALL AVAILABLE DATA:**
+- ❌ DO NOT focus only on TA indicators
+- ❌ DO NOT ignore price history, volume, support/resistance
+- ✅ MUST consider ALL relevant data in conversation
+- ✅ MUST provide holistic analysis (not tunnel vision)
+
+**DISPLAY TABLE AS-IS:**
+- ❌ DO NOT reformat TA indicators table
+- ✅ MUST preserve markdown table from get_ta_indicators
 
 RULE #8: ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS
 - 🔴 **CRITICAL**: BEFORE making ANY tool call, analyze conversation history for existing data
@@ -402,10 +502,10 @@ EXAMPLES OF CORRECT TOOL CALLS:
 ✅ "Stock Price Performance the last 5 Trading Days: SPY" → get_stock_price_history(ticker='SPY', start_date='2025-10-03', end_date='2025-10-10', interval='daily')
 ✅ "Stock Price Performance the last 2 Weeks: NVDA" → get_stock_price_history(ticker='NVDA', start_date='2025-09-26', end_date='2025-10-10', interval='weekly')
 ✅ "Stock Price Performance the last month: AAPL" → get_stock_price_history(ticker='AAPL', start_date='2025-09-10', end_date='2025-10-10', interval='monthly')
-✅ "SMA for SPY" → get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10)
-✅ "20-day EMA NVDA" → get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10)
-✅ "RSI analysis SPY" → get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10)
-✅ "MACD for AAPL" → get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26, signal_window=9, limit=10)
+✅ "Get technical analysis for SPY" → get_ta_indicators(ticker='SPY') [timespan defaults to 'day']
+✅ "Show TA indicators for NVDA" → get_ta_indicators(ticker='NVDA') [timespan defaults to 'day']
+✅ "RSI and MACD for AAPL" → get_ta_indicators(ticker='AAPL') [timespan defaults to 'day']
+✅ "Perform technical analysis for SPY" → Analyze using ALL available data (4 topics: Trends, Volatility, Momentum, Trading Patterns)
 
 EXAMPLES OF INCORRECT TOOL CALLS:
 ❌ Making multiple separate calls for multi-ticker [WRONG! Use single call with comma-separated tickers]
@@ -425,8 +525,8 @@ EXAMPLES OF INCORRECT TOOL CALLS:
 ✅ Previous: Retrieved SPY price ($585.23), User asks: "Is SPY bullish?" →
     NO TOOL CALLS - Use existing SPY price data from chat history
 
-✅ Previous: Have NVDA price but no TA data, User asks: "NVDA RSI analysis" →
-    ONLY NEW CALL: get_ta_rsi(ticker='NVDA') - Reuse existing price, get only missing TA data
+✅ Previous: Have NVDA price but no TA data, User asks: "NVDA technical analysis" →
+    ONLY NEW CALL: get_ta_indicators(ticker='NVDA') - Reuse existing price, get only missing TA data
 
 ✅ Previous: Retrieved AMD, INTC prices, User asks: "AMD, INTC, AVGO prices" →
     ONLY NEW CALL: get_stock_quote(ticker='AVGO') - Reuse existing AMD/INTC data, get only missing AVGO
@@ -509,13 +609,10 @@ def create_agent():
             get_options_expiration_dates,
             get_stock_price_history,
             get_market_status_and_date_time,
-            get_ta_sma,
-            get_ta_ema,
-            get_ta_rsi,
-            get_ta_macd,
+            get_ta_indicators,
             get_call_options_chain,
             get_put_options_chain,
-        ],  # 1 Finnhub + 4 Tradier + 5 Polygon = 10 tools total
+        ],  # 1 Finnhub + 4 Tradier + 2 Polygon = 7 tools total
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

@@ -22,9 +22,8 @@
 ---
 
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
-ULTRA-THINK to Research the requested task(s):
 
-## Task 1. Research re-working and re-architecture the AI Agent Technical Analyis Requests & Responses
+## Task 1. ULTRA-THINK to use all your Primary & Fallback Research Tools to Research re-working and re-architecture the AI Agent Technical Analyis Requests & Responses
 
 - Re-architecture and rework how the AI agent and the AI instructions and the tools for getting technical analysis indicators and then performing analysis based on the technical analysis indicators 
 - Make a clear distinction between just trying to get the technical analysis data versus performing actual technical analysis BASED on the ALL the data. 
@@ -53,13 +52,13 @@ Here is the expected outcomes:
 3. AI Agent when asked to PERFORM Technical Analysis based on the data needs to analyze and provide insights for at LEAST these 4x topics: Trends, Volatility, Momentum, Trading Patterns
 
 
-
+🔴 CRITICAL: SAVE YOUR RESEARCH IN A NEW .md doc in 'docs/research_scope folder' 🔴
 
 ---
 
 <Phase 2: Planning> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Planning PHASE 🔴
 
-Based on the Research, Analysis & Scoping from previous task(s), delete the current file 'TODO_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
+Based on the latest .md Research, Analysis & Scoping from previous task(s) in 'docs/research_scope folder', delete the current file 'TODO_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
 
 ---
 

@@ -13,10 +13,10 @@
 #     chmod +x test_cli_regression.sh && ./test_cli_regression.sh 10  # Run 10 loops (max)
 #
 # Test Coverage:
-# - SPY Test Sequence: Tests 1-19 (19 tests - includes 3 historical pricing + 1 expiration dates + 2 options chain tests + 1 wall analysis)
-# - NVDA Test Sequence: Tests 20-38 (19 tests - includes 3 historical pricing + 1 expiration dates + 2 options chain tests + 1 wall analysis)
-# - Multi-Ticker Test Sequence: Tests 39-44 (6 tests)
-# Total: 44 tests per loop
+# - SPY Test Sequence: Tests 1-17 (17 tests - includes 3 historical pricing + 2 TA tests + 1 expiration dates + 2 options chain tests + 1 wall analysis)
+# - NVDA Test Sequence: Tests 18-34 (17 tests - includes 3 historical pricing + 2 TA tests + 1 expiration dates + 2 options chain tests + 1 wall analysis)
+# - Multi-Ticker Test Sequence: Tests 35-40 (6 tests)
+# Total: 40 tests per loop
 #
 # Test Design Philosophy:
 # - Sequential ticker testing validates chat history analysis
@@ -56,17 +56,17 @@ RESULTS_DIR="test-reports"
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 CLI Test Regression - NEW 44 Test Suite${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - NEW 40 Test Suite${NC}"
 echo -e "${CYAN}===========================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 44 tests in same session per loop)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 40 tests in same session per loop)"
 echo -e "Test Features: ${GREEN}Parallel Tool Calls (max 3)${NC}, ${GREEN}Chat History Analysis${NC}, ${GREEN}Options Chain Tests${NC}"
 echo ""
 
-# The 44 standardized test prompts organized by ticker sequence
+# The 40 standardized test prompts organized by ticker sequence
 declare -a prompts=(
     # SPY Test Sequence (Tests 1-17)
     "Market Status"
@@ -78,10 +78,8 @@ declare -a prompts=(
     "Stock Price Performance the last 5 Trading Days: \$SPY"
     "Stock Price Performance the last 2 Weeks: \$SPY"
     "Stock Price Performance the last month: \$SPY"
-    "RSI-14: \$SPY"
-    "MACD: \$SPY"
-    "SMA 20/50/200: \$SPY"
-    "EMA 20/50/200: SPY"
+    "Get technical analysis indicators for SPY"
+    "Perform technical analysis for SPY based on the indicators"
     "Support & Resistance Levels: \$SPY"
     "Technical Analysis: \$SPY"
     "Get options expiration dates for SPY"
@@ -98,10 +96,8 @@ declare -a prompts=(
     "Stock Price Performance the last 5 Trading Days: \$NVDA"
     "Stock Price Performance the last 2 Weeks: \$NVDA"
     "Stock Price Performance the last month: \$NVDA"
-    "RSI-14: \$NVDA"
-    "MACD: \$NVDA"
-    "SMA 20/50/200: \$NVDA"
-    "EMA 20/50/200: NVDA"
+    "Get technical analysis indicators for NVDA"
+    "Perform technical analysis for NVDA based on the indicators"
     "Support & Resistance Levels: \$NVDA"
     "Technical Analysis: \$NVDA"
     "Get options expiration dates for NVDA"
@@ -128,43 +124,39 @@ declare -a test_names=(
     "Test_7_SPY_Last_5_Trading_Days"
     "Test_8_SPY_Last_2_Weeks"
     "Test_9_SPY_Last_Month"
-    "Test_10_SPY_RSI_14"
-    "Test_11_SPY_MACD"
-    "Test_12_SPY_SMA_20_50_200"
-    "Test_13_SPY_EMA_20_50_200"
-    "Test_14_SPY_Support_Resistance"
-    "Test_15_SPY_Technical_Analysis"
-    "Test_16_SPY_Options_Expiration_Dates"
-    "Test_17_SPY_Call_Options_Chain"
-    "Test_18_SPY_Put_Options_Chain"
-    "Test_19_SPY_Options_Wall_Analysis"
-    # NVDA Test Sequence (Tests 20-36)
-    "Test_20_Market_Status"
-    "Test_21_NVDA_Current_Price"
-    "Test_22_NVDA_Today_Closing_Price"
-    "Test_23_NVDA_Yesterday_Closing_Price"
-    "Test_24_NVDA_Last_Week_Performance"
-    "Test_25_NVDA_Previous_Week_Friday_Price"
-    "Test_26_NVDA_Last_5_Trading_Days"
-    "Test_27_NVDA_Last_2_Weeks"
-    "Test_28_NVDA_Last_Month"
-    "Test_29_NVDA_RSI_14"
-    "Test_30_NVDA_MACD"
-    "Test_31_NVDA_SMA_20_50_200"
-    "Test_32_NVDA_EMA_20_50_200"
-    "Test_33_NVDA_Support_Resistance"
-    "Test_34_NVDA_Technical_Analysis"
-    "Test_35_NVDA_Options_Expiration_Dates"
-    "Test_36_NVDA_Call_Options_Chain"
-    "Test_37_NVDA_Put_Options_Chain"
-    "Test_38_NVDA_Options_Wall_Analysis"
-    # Multi-Ticker Test Sequence (Tests 39-44)
-    "Test_39_Multi_Market_Status"
-    "Test_40_Multi_Current_Price_WDC_AMD_GME"
-    "Test_41_Multi_Today_Closing_Price_WDC_AMD_GME"
-    "Test_42_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
-    "Test_43_Multi_Last_Week_Performance_WDC_AMD_GME"
-    "Test_44_Multi_Last_2_Weeks_WDC_AMD_GME"
+    "Test_10_SPY_Get_TA_Indicators"
+    "Test_11_SPY_Analyze_TA"
+    "Test_12_SPY_Support_Resistance"
+    "Test_13_SPY_Technical_Analysis"
+    "Test_14_SPY_Options_Expiration_Dates"
+    "Test_15_SPY_Call_Options_Chain"
+    "Test_16_SPY_Put_Options_Chain"
+    "Test_17_SPY_Options_Wall_Analysis"
+    # NVDA Test Sequence (Tests 18-34)
+    "Test_18_Market_Status"
+    "Test_19_NVDA_Current_Price"
+    "Test_20_NVDA_Today_Closing_Price"
+    "Test_21_NVDA_Yesterday_Closing_Price"
+    "Test_22_NVDA_Last_Week_Performance"
+    "Test_23_NVDA_Previous_Week_Friday_Price"
+    "Test_24_NVDA_Last_5_Trading_Days"
+    "Test_25_NVDA_Last_2_Weeks"
+    "Test_26_NVDA_Last_Month"
+    "Test_27_NVDA_Get_TA_Indicators"
+    "Test_28_NVDA_Analyze_TA"
+    "Test_29_NVDA_Support_Resistance"
+    "Test_30_NVDA_Technical_Analysis"
+    "Test_31_NVDA_Options_Expiration_Dates"
+    "Test_32_NVDA_Call_Options_Chain"
+    "Test_33_NVDA_Put_Options_Chain"
+    "Test_34_NVDA_Options_Wall_Analysis"
+    # Multi-Ticker Test Sequence (Tests 35-40)
+    "Test_35_Multi_Market_Status"
+    "Test_36_Multi_Current_Price_WDC_AMD_GME"
+    "Test_37_Multi_Today_Closing_Price_WDC_AMD_GME"
+    "Test_38_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
+    "Test_39_Multi_Last_Week_Performance_WDC_AMD_GME"
+    "Test_40_Multi_Last_2_Weeks_WDC_AMD_GME"
 )
 
 # Initialize test tracking

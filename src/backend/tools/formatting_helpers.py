@@ -222,3 +222,155 @@ def create_price_history_summary(
     lines.append("Source: Tradier")
 
     return "\n".join(lines)
+
+
+def create_ta_indicators_table(ticker: str, indicators: dict) -> str:
+    """Create formatted markdown table for technical analysis indicators.
+
+    Consolidates ALL TA indicators into a single comprehensive table with:
+    - RSI-14
+    - MACD (12/26/9) with signal and histogram
+    - SMA (5, 10, 20, 50, 200)
+    - EMA (5, 10, 20, 50, 200)
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "NVDA")
+        indicators: Dict containing all indicator data:
+            {
+                "rsi": {"value": float, "timestamp": str} or None,
+                "macd": {
+                    "macd": float,
+                    "signal": float,
+                    "histogram": float,
+                    "timestamp": str
+                } or None,
+                "sma_values": [
+                    {"window": int, "value": float, "timestamp": str},
+                    ...
+                ] or [],
+                "ema_values": [
+                    {"window": int, "value": float, "timestamp": str},
+                    ...
+                ] or []
+            }
+
+    Returns:
+        Formatted markdown string with:
+        - Emoji header (📊)
+        - Current date line
+        - Markdown table with 14 rows (or fewer if some indicators failed)
+        - Source attribution
+
+    Example:
+        ```
+        📊 Technical Analysis Indicators - SPY
+        Current Date: 2025-10-11
+
+        | Indicator | Period | Value | Timestamp |
+        |-----------|--------|-------|-----------|
+        | RSI       | 14     | 62.45 | 2025-10-11 |
+        | MACD      | 12/26  | 2.34  | 2025-10-11 |
+        | Signal    | 9      | 1.87  | 2025-10-11 |
+        | Histogram | -      | 0.47  | 2025-10-11 |
+        | SMA       | 5      | 654.23 | 2025-10-11 |
+        ...
+
+        Source: Polygon.io API
+        ```
+    """
+    from datetime import datetime
+
+    # Get current date for display
+    current_date = datetime.now().strftime("%Y-%m-%d")
+
+    # Build markdown response
+    lines = []
+    lines.append(f"📊 Technical Analysis Indicators - {ticker}")
+    lines.append(f"Current Date: {current_date}")
+    lines.append("")
+
+    # Table header
+    lines.append("| Indicator | Period | Value | Timestamp |")
+    lines.append("|-----------|--------|-------|-----------|")
+
+    # RSI row
+    if indicators.get("rsi"):
+        rsi = indicators["rsi"]
+        value = f"{rsi['value']:.2f}" if isinstance(rsi.get("value"), (int, float)) else "N/A"
+        timestamp = rsi.get("timestamp", "N/A")
+        # Convert Unix timestamp (int/float) to date string
+        if isinstance(timestamp, (int, float)):
+            from datetime import datetime
+            timestamp = datetime.fromtimestamp(timestamp / 1000).strftime("%Y-%m-%d")
+        elif isinstance(timestamp, str) and "T" in timestamp:
+            timestamp = timestamp.split("T")[0]  # Extract date only
+        lines.append(f"| RSI       | 14     | {value:6} | {timestamp} |")
+    else:
+        lines.append(f"| RSI       | 14     | N/A    | N/A        |")
+
+    # MACD rows (3 rows: MACD line, Signal line, Histogram)
+    if indicators.get("macd"):
+        macd = indicators["macd"]
+        macd_value = f"{macd['macd']:.2f}" if isinstance(macd.get("macd"), (int, float)) else "N/A"
+        signal_value = f"{macd['signal']:.2f}" if isinstance(macd.get("signal"), (int, float)) else "N/A"
+        histogram_value = f"{macd['histogram']:.2f}" if isinstance(macd.get("histogram"), (int, float)) else "N/A"
+        timestamp = macd.get("timestamp", "N/A")
+        # Convert Unix timestamp (int/float) to date string
+        if isinstance(timestamp, (int, float)):
+            from datetime import datetime
+            timestamp = datetime.fromtimestamp(timestamp / 1000).strftime("%Y-%m-%d")
+        elif isinstance(timestamp, str) and "T" in timestamp:
+            timestamp = timestamp.split("T")[0]  # Extract date only
+
+        lines.append(f"| MACD      | 12/26  | {macd_value:6} | {timestamp} |")
+        lines.append(f"| Signal    | 9      | {signal_value:6} | {timestamp} |")
+        lines.append(f"| Histogram | -      | {histogram_value:6} | {timestamp} |")
+    else:
+        lines.append(f"| MACD      | 12/26  | N/A    | N/A        |")
+        lines.append(f"| Signal    | 9      | N/A    | N/A        |")
+        lines.append(f"| Histogram | -      | N/A    | N/A        |")
+
+    # SMA rows (5 rows: windows 5, 10, 20, 50, 200)
+    sma_values = indicators.get("sma_values", [])
+    expected_sma_windows = [5, 10, 20, 50, 200]
+    sma_dict = {sma["window"]: sma for sma in sma_values}
+
+    for window in expected_sma_windows:
+        if window in sma_dict:
+            sma = sma_dict[window]
+            value = f"{sma['value']:.2f}" if isinstance(sma.get("value"), (int, float)) else "N/A"
+            timestamp = sma.get("timestamp", "N/A")
+            # Convert Unix timestamp (int/float) to date string
+            if isinstance(timestamp, (int, float)):
+                from datetime import datetime
+                timestamp = datetime.fromtimestamp(timestamp / 1000).strftime("%Y-%m-%d")
+            elif isinstance(timestamp, str) and "T" in timestamp:
+                timestamp = timestamp.split("T")[0]  # Extract date only
+            lines.append(f"| SMA       | {window:<6} | {value:6} | {timestamp} |")
+        else:
+            lines.append(f"| SMA       | {window:<6} | N/A    | N/A        |")
+
+    # EMA rows (5 rows: windows 5, 10, 20, 50, 200)
+    ema_values = indicators.get("ema_values", [])
+    expected_ema_windows = [5, 10, 20, 50, 200]
+    ema_dict = {ema["window"]: ema for ema in ema_values}
+
+    for window in expected_ema_windows:
+        if window in ema_dict:
+            ema = ema_dict[window]
+            value = f"{ema['value']:.2f}" if isinstance(ema.get("value"), (int, float)) else "N/A"
+            timestamp = ema.get("timestamp", "N/A")
+            # Convert Unix timestamp (int/float) to date string
+            if isinstance(timestamp, (int, float)):
+                from datetime import datetime
+                timestamp = datetime.fromtimestamp(timestamp / 1000).strftime("%Y-%m-%d")
+            elif isinstance(timestamp, str) and "T" in timestamp:
+                timestamp = timestamp.split("T")[0]  # Extract date only
+            lines.append(f"| EMA       | {window:<6} | {value:6} | {timestamp} |")
+        else:
+            lines.append(f"| EMA       | {window:<6} | N/A    | N/A        |")
+
+    lines.append("")
+    lines.append("Source: Polygon.io API")
+
+    return "\n".join(lines)
