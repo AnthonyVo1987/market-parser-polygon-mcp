@@ -39,9 +39,9 @@
       "type": "http",
       "url": "https://gitmcp.io/openai/openai-agents-python"
     },
-    "docs-polygon-python": {
+    "docs-tradier-python": {
       "type": "http",
-      "url": "https://gitmcp.io/polygon-io/client-python"
+      "url": "https://gitmcp.io/rleonard21/PyTradier"
     }
   }
 }

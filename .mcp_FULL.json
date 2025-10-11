@@ -57,6 +57,10 @@
     "docs-finnhub": {
       "type": "http",
       "url": "https://gitmcp.io/Finnhub-Stock-API/finnhub-python"
+    },
+    "docs-tradier-python": {
+      "type": "http",
+      "url": "https://gitmcp.io/rleonard21/PyTradier"
     }
   }
 }
