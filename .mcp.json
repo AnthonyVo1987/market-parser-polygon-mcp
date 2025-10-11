@@ -38,10 +38,6 @@
     "docs-openai-agents": {
       "type": "http",
       "url": "https://gitmcp.io/openai/openai-agents-python"
-    },
-    "docs-tradier-python": {
-      "type": "http",
-      "url": "https://gitmcp.io/rleonard21/PyTradier"
     }
   }
 }

@@ -411,10 +411,11 @@ NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
 # Option 1: XTerm startup script (RECOMMENDED - WORKING)
-chmod +x start-app-xterm.sh && chmod +x start-app-xterm.sh && ./start-app-xterm.sh
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Option 2: Main startup script (NOW WORKING - FIXED)
-chmod +x start-app.sh && chmod +x start-app.sh && ./start-app.sh
+chmod +x start-app.sh && ./start-app.sh
+
   # ✅ WORKING: Script now exits cleanly with timeout
 ```
 

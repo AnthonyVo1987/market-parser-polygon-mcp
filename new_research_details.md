@@ -44,13 +44,63 @@ SUCCESS CRITERIA:
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 ULTRA-THINK to Research the requested task(s):
 
-1. Use 'docs-tradier-python' and web fetch if needed to research adding new AI Agent Tool "get_options_expiration_dates" using "Tradier Brokerage API" and the python library and code from 'docs-tradier-python'.
-
+1. Research adding new AI Agent Tool "get_options_expiration_dates" using "Tradier Python Brokerage API" 
+- https://docs.tradier.com/reference/brokerage-api-markets-get-options-expirations
 - This new tool needs to take an Input ticker, and the will fetch ALL valid Options Expirations Dates for the requested ticker
 - My Tradier API key is stored in my .env file under "TRADIER_API_KEY"
 - Update AI Agent instructions to use the new tool if needed to fetch options expirations dates for a specific ticker
 - Test the new tools by calling the CLI and testing with requested for each of the following tickers one at a time: SPY, NVDAS, SOUN
 - Fix any issues if needed from testing to make the tool tests work properly
+
+Here is a the example API endpoint Python Call & Response :
+
+```
+import requests
+
+url = "https://api.tradier.com/v1/markets/options/expirations?symbol=NVDA"
+
+headers = {
+    "Accept": "application/json",
+    "authorization": "Bearer 8XP1DYNiWBSOLfCIXtEmJ4NeRIEC"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+
+```
+{
+  "expirations": {
+    "date": [
+      "2025-10-17",
+      "2025-10-24",
+      "2025-10-31",
+      "2025-11-07",
+      "2025-11-14",
+      "2025-11-21",
+      "2025-11-28",
+      "2025-12-19",
+      "2026-01-16",
+      "2026-02-20",
+      "2026-03-20",
+      "2026-04-17",
+      "2026-05-15",
+      "2026-06-18",
+      "2026-08-21",
+      "2026-09-18",
+      "2026-12-18",
+      "2027-01-15",
+      "2027-06-17",
+      "2027-12-17",
+      "2028-01-21"
+    ]
+  }
+}
+```
+
+
+
 
 2. If quick test of the new tool works, add new test case in 'test_cli_regression.sh' after "Technical Analysis: " for SPY and NVDA to retreive the OPtions Expiraton Dates.  Then run the full test and review the responses to ensure the new tool works as expected.
 
