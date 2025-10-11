@@ -5,11 +5,14 @@ from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..tools.finnhub_tools import get_stock_quote
-from ..tools.tradier_tools import get_options_expiration_dates, get_stock_price_history
-from ..tools.polygon_tools import (
+from ..tools.tradier_tools import (
     get_call_options_chain,
-    get_market_status_and_date_time,
+    get_options_expiration_dates,
     get_put_options_chain,
+    get_stock_price_history,
+)
+from ..tools.polygon_tools import (
+    get_market_status_and_date_time,
     get_ta_ema,
     get_ta_macd,
     get_ta_rsi,
@@ -30,8 +33,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Tradier for all ticker quotes, market status (supports multi-ticker), options expiration dates, and historical pricing; Polygon.io direct API for technical indicators and options chains.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 11 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
+TOOLS: Use Tradier for all ticker quotes, market status (supports multi-ticker), options expiration dates, historical pricing, and options chains; Polygon.io direct API for technical indicators only.
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -264,7 +267,7 @@ RULE #9: OPTIONS CHAIN = USE get_call_options_chain OR get_put_options_chain
   - Format IV as percentage (XX.XX%)
   - Format volume and open interest with comma thousands separators
   - Example: "📊 SPY Call Options Chain (Expiring 2025-10-10)" followed by table
-- 📊 Uses Polygon.io Direct API for options chain snapshots
+- 📊 Uses Tradier API for options chain data with client-side filtering
 - ✅ **WORKFLOW**:
   1. Identify if request is for calls or puts
   2. Get current_price via get_stock_quote if not already available
@@ -505,7 +508,7 @@ def create_agent():
             get_ta_macd,
             get_call_options_chain,
             get_put_options_chain,
-        ],  # Tradier + Polygon direct API tools (3 Tradier + 8 Polygon)
+        ],  # 1 Finnhub + 4 Tradier + 5 Polygon = 10 tools total
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )
