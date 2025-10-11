@@ -37,28 +37,22 @@ SUCCESS CRITERIA:
 
 ---
 
-
 🔴 CRITICAL: FOLLOW THE ENTIRE WORKFLOW PHASES IN ORDER FOR THE REQUESTED NEW CHANGES. RESEARCH -> PLANNING -> IMPLEMENTATION -> TESTING -> SERENA -> COMMIT 🔴
 
 ---
 
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
+ULTRA-THINK to Research the requested task(s):
 
-1. ULTRA-THINK to Research how to Fix Architectural Flaw that creates a new OpenAI agent for EVERY AI Chat message by just creating a single Persistent agent for the chat session
+1. Use 'docs-tradier-python' and web fetch if needed to research adding new AI Agent Tool "get_options_expiration_dates" using "Tradier Brokerage API" and the python library and code from 'docs-tradier-python'.
 
-- I discovered a potential performance inefficiency and flaw in our code where AI agents are created. 
-- Every time user messages are sent so basically every request in response creates a brand new agent every time and this has been an incorrect architecture from day one 
-- This is not matching the best practices for ChatBox or AI Agents in general because it wasted so many token and is more overhead having to re-create an agent every time so we need to correct this and make it right 
-- The expected outcome is when the app starts up and then there is a user request, that’s when the agent gets created and that agent is persistent throughout the entire session that way, the agent could have a back-and-forth with the user with its own memory and context just like a real world usage where there’s a persistent agent
--  it’s been a design flaw since daw 1 to re-create an agent for every message and that makes zero sense because agents only need to be created one time and the entire chat will use the same agent persistent
--  this will not only optimize performance, but also reduce token usage because every time an agent is created we are  sending the entire AI agent system prompt every time whereas we have a persistent agent it wouldn’t be sending the entire instruction prompt every time because it would be in the cache so we really need to fix this major fundamental architectural flaw
--  so you need to make the fix to the CLI code which will then be inherited by the GUI code since GUI code is just a visual "wrapper" for the CLI backend "core code"
+- This new tool needs to take an Input ticker, and the will fetch ALL valid Options Expirations Dates for the requested ticker
+- My Tradier API key is stored in my .env file under "TRADIER_API_KEY"
+- Update AI Agent instructions to use the new tool if needed to fetch options expirations dates for a specific ticker
+- Test the new tools by calling the CLI and testing with requested for each of the following tickers one at a time: SPY, NVDAS, SOUN
+- Fix any issues if needed from testing to make the tool tests work properly
 
-
-The tests have passed with correct results so let's addon another enhancement task for display output formatting:
-- For simple responses with not too much data, AI Agent should simply format response in Numbered\Bulleted List to prioritize speed response
-- For more complex responses, such as with heavy amount of data, AI Agent should now format the response in easy to read Markdown Tables for User viewing
-- Re-test after the changes, and if test results all pass as expected with proper response, you may proceed automously with all remaining tasks and phases to close out the new enhancements
+2. If quick test of the new tool works, add new test case in 'test_cli_regression.sh' after "Technical Analysis: " for SPY and NVDA to retreive the OPtions Expiraton Dates.  Then run the full test and review the responses to ensure the new tool works as expected.
 
 ---
 
