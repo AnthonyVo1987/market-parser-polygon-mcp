@@ -9,173 +9,74 @@ Market Parser is a Python CLI and React web application for natural
 language financial queries using the Polygon.io MCP server and OpenAI
 GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 
+
+
+## Quick Start
+
+### CLI Interface
+
+```bash
+uv run src/backend/main.py
+
+> Tesla stock analysis
+KEY TAKEAWAYS
+• TSLA showing bullish momentum...
+```
+
+**One-Click Application Startup (Recommended):**
+
+The startup scripts automatically START all development servers BUT **DOES
+NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
+
+```bash
+# Option 1: XTerm startup script (RECOMMENDED - WORKING)
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
+
+# Option 2: Main startup script (NOW WORKING - FIXED)
+chmod +x start-app.sh && ./start-app.sh
+
+  # ✅ WORKING: Script now exits cleanly with timeout
+```
+
+
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-## Frontend Code Duplication Elimination: Simplified Markdown Rendering
+[FIX] Options Chain Bid/Ask Display - RULE #9 Agent Instructions Update
 
-**Status:** ✅ Complete (October 9, 2025)
-**Feature:** Eliminate 157 lines of duplicate frontend formatting code, simplify markdown rendering architecture
+**Problem:** Agent displaying single "Price (mid)" column instead of separate Bid and Ask columns
+**Root Cause:** Backend functions WERE correct (returning bid/ask fields), but RULE #9 agent instructions specified single "price" column format
+**Solution:** Updated RULE #9 to explicitly require both Bid and Ask columns, prohibit midpoint calculations
 
-### Problem Solved
+**Files Modified:**
+- src/backend/services/agent_service.py (RULE #9, lines 256-272)
+  - Changed "price" → "bid, ask" in response format description (line 257)
+  - Added explicit warning "DO NOT calculate or show midpoint/average prices" (line 261)
+  - Updated table format from single "Price" column to separate "Bid" and "Ask" columns (lines 263-265)
+  - Added instruction "Show BOTH Bid and Ask columns" (line 268)
 
-**Issue:** Frontend had **157 lines of duplicate formatting code** replicating backend markdown formatting logic
+**Test Results:**
+- ✅ 44/44 tests PASSED (100% success rate)
+- ✅ 12.95s average response time (EXCELLENT rating)
+- ✅ All options chain tests (17, 18, 36, 37) show separate Bid/Ask columns
+- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-10_22-58.log
 
-**Root Cause:**
-- Backend generates markdown for both CLI and GUI
-- CLI uses Rich library for rendering (clean)
-- GUI used 157 lines of custom React components (duplicate logic in `ChatMessage_OpenAI.tsx`)
-- Maintenance burden: changes needed in 2 places
+**Documentation Updates:**
+- .serena/memories/tech_stack.md - Added Bid/Ask display fix section (45 lines)
+- CLAUDE.md - Updated last completed task summary with comprehensive fix details
 
-### Solution Implemented
+**Verification:**
+Quick manual tests confirmed SPY call/put options show "Bid    Ask" columns (NOT "Price (mid)")
+Full CLI regression suite validated all 44 tests passing with correct Bid/Ask display
 
-**File Modified:** `src/frontend/components/ChatMessage_OpenAI.tsx`
+**Key Fix:**
+Backend was ALREADY correct - issue was purely in AGENT INSTRUCTIONS (RULE #9)
+Updating RULE #9 fixed display without any backend code changes
+Lesson: Always verify actual output matches requirements
 
-**Code Deleted (157 lines total):**
-1. ✅ `createMarkdownComponents()` function (154 lines)
-   - Custom React components: p, h1, h2, h3, ul, ol, li, strong, em, blockquote, code
-   - All had inline styling duplicating backend formatting decisions
-2. ✅ `markdownComponents` useMemo declaration (2 lines)
-3. ✅ `ComponentPropsWithoutRef` import (1 line)
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-**Simplified Rendering:**
-```typescript
-// BEFORE:
-<Markdown components={markdownComponents}>
-  {formattedMessage.formattedContent}
-</Markdown>
-
-// AFTER:
-<Markdown>
-  {formattedMessage.formattedContent}
-</Markdown>
-```
-
-**Result:** 157 lines deleted, zero code duplication
-
-### Architecture Transformation
-
-**BEFORE (Duplicate Code ❌):**
-```
-Backend → Generates Markdown
-    ├── CLI → Rich library renders (with styling)
-    └── GUI → 157 lines custom React components (with styling)
-                ↑ DUPLICATE FORMATTING LOGIC
-```
-
-**AFTER (Zero Duplication ✅):**
-```
-Backend → Generates Markdown (Single Source of Truth)
-    ├── CLI → Rich library renders
-    └── GUI → Default react-markdown renders
-                ↑ NO CUSTOM FORMATTING CODE
-```
-
-### Test Results & Validation
-
-**CLI Regression Suite:**
-- ✅ **38/38 PASSED** (100% success rate)
-- ✅ **11.14s** average response time (EXCELLENT - within 12.07s baseline)
-- ✅ **7 min 6 sec** session duration
-- ✅ **Test Report:** `test-reports/test_cli_regression_loop1_2025-10-09_16-57.log`
-
-**Frontend Validation:**
-- ✅ User validated and approved GUI appearance
-- ✅ No visual regression
-- ✅ All markdown rendering works correctly (headings, lists, code blocks, tables)
-- ✅ Options chain tables render beautifully
-- ✅ Emoji responses display correctly
-
-### Key Benefits
-
-**1. Zero Code Duplication:**
-- Backend owns all formatting decisions (markdown generation)
-- Frontend is pure presentation layer
-- Single source of truth maintained
-
-**2. Simplified Maintenance:**
-- Changes only needed in backend
-- Frontend automatically inherits all formatting updates
-- No need to sync 2 codebases
-
-**3. Better Performance:**
-- Default react-markdown is lightweight
-- No custom component overhead
-- Faster rendering and initial load
-
-**4. Cleaner Codebase:**
-- **-157 lines** in frontend
-- Simpler component structure
-- Easier to understand and maintain
-
-### Implementation Details
-
-**Tool Usage:**
-- Sequential-Thinking: 11 thoughts total
-  - Planning: 3 thoughts (tool selection strategy)
-  - Implementation: 4 thoughts (deletion strategy & verification)
-  - Testing: 1 thought (test result analysis)
-  - Serena Updates: 2 thoughts (memory planning & verification)
-  - Final Verification: 1 thought (completion check)
-- Standard Edit: TypeScript file modifications (correct tool for React/TypeScript)
-- Standard Write: Documentation and memory updates
-
-**Workflow Compliance:**
-- ✅ Planning Phase: Created proper implementation plan
-- ✅ Implementation Phase: Used Sequential-Thinking and correct tools
-- ✅ CLI Testing Phase: Ran test suite with 100% pass rate
-- ✅ Frontend Testing: User validated and approved
-- ✅ Serena Update Phase: Updated tech_stack.md memory
-- ✅ Git Commit Phase: Atomic commit with all changes
-
-### Documentation Created
-
-**Research & Analysis:**
-- `CORRECTED_ARCHITECTURE_RESEARCH.md` - Full architectural analysis (453 lines)
-- `RESEARCH_SUMMARY.md` - Executive summary with comparison table (279 lines)
-- `SOLUTION_SUMMARY.md` - Quick 1-page implementation guide (106 lines)
-
-**Updated Files:**
-- `.serena/memories/tech_stack.md` - Added "Frontend Code Duplication Elimination" section (110 lines)
-- `TODO_task_plan.md` - Implementation plan with tool enforcement (768 lines)
-
-### Impact Summary
-
-**Frontend:**
-- ✅ 157 lines deleted
-- ✅ Simplified to pure presentation layer
-- ✅ No custom formatting logic
-- ✅ Default markdown rendering
-
-**Backend:**
-- ✅ No changes required
-- ✅ Already generates markdown correctly
-- ✅ Single source of truth maintained
-
-**CLI:**
-- ✅ No changes required
-- ✅ Rich rendering unchanged
-- ✅ 100% test pass rate
-
-**Maintenance:**
-- ✅ Changes only in backend
-- ✅ Frontend auto-inherits
-- ✅ No duplicate code paths
-
-### References
-
-- **Commit:** `b866f0a784d9607b5557c7116a62b6bab6521ffb`
-- **Test Report:** `test-reports/test_cli_regression_loop1_2025-10-09_16-57.log`
-- **Serena Memories:**
-  - `.serena/memories/tech_stack.md` (updated with frontend simplification)
-  - `.serena/memories/project_architecture.md` (updated with new markdown rendering architecture)
-- **Architecture Docs:**
-  - `CORRECTED_ARCHITECTURE_RESEARCH.md`
-  - `RESEARCH_SUMMARY.md`
-  - `SOLUTION_SUMMARY.md`
-
-**Previous Baseline:** Performance Baseline (Oct 9, 2025) - 12.07s average (380 tests, 100% success)
-**Current Task:** Frontend refactor maintains performance (11.14s average, 38 tests, 100% success)
+Co-Authored-By: Claude <noreply@anthropic.com>
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
@@ -504,7 +405,7 @@ Ask questions like:
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 38 tests)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 40 tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
@@ -517,7 +418,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 38-test suite
+# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 40-test suite
 
 # Code quality
 npm run lint              # All linting

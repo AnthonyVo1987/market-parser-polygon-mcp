@@ -104,31 +104,7 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[CATEGORY] Brief task description
-
-**Context:**
-- Why this task was needed
-- What architectural changes were made
-
-**Changes Made:**
-- Detailed list of all changes
-- Files modified
-- Test results
-
-**Performance/Metrics (if applicable):**
-- Test results (e.g., 27/27 tests passing)
-- Performance metrics (e.g., 6.10s avg response time)
-- Success rates
-
-**Files Changed:**
-- ✅ Modified: path/to/file1
-- ✅ Added: path/to/file2
-- ✅ Deleted: path/to/file3
-- **Total**: X files changed
-
-**Key Achievements:**
-- ✅ Achievement 1
-- ✅ Achievement 2
+High Level Task Summary between 10-20 lines at MOST to give an overview
 <!-- LAST_COMPLETED_TASK_END -->
 ```
 
