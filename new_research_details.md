@@ -24,24 +24,36 @@
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 ULTRA-THINK to Research the requested task(s):
 
-## Task 1. Research updating\migrating all the response formatting logic from AI agent instructions to more deterministic response formatting by completely offloading to the python AI Agent tools and logic.
+## Task 1. Research re-working and re-architecture the AI Agent Technical Analyis Requests & Responses
 
-- Every tool itself is completely responsible for the output markdown formatting, that way the AI agent spends less time post-processing and less token usage trying to format or filter or clean up the data\response for the user, now we’ll just handle that in the tools itself since the tools directly have the raw payload from the API endpoint calls. 
-- It’s just quicker to have the tools directly or either have helper functions in each tool to post process filter, re-organize and clean up the formatting into markdown. and then the tool response back to the AI agent will have the cleaned up response formatting already performed.
-- Now all the AA agent has to do can just Easily just directly use the response from the tool after doing a quick sanity check that the response for request it was actually correct
-- It can clean up any potential formatting issues that may have got missed during the initial Pythong Tool post-processing instead of having to create the entire response format itself
-- So in each of the tools, it needs to do the cleanup to convert any of those API end points responses into more user readable, pretty printed numbered bullet points and or markdown tables and charts if needed, depending on the data complexity
-- this should be a lot quicker to have the tools perform all the formatting and processing since now since all the API end points are always deterministic and in the same formatting every time and the Python tools can create the helper formatting functions to also be deterministic every time to have a standardized formatting because the current way if we rely on the AI agent on the formatting, it may not be a deterministic in the formatting and may change every now and then depending on how the AI decides to format the instructions
+- Re-architecture and rework how the AI agent and the AI instructions and the tools for getting technical analysis indicators and then performing analysis based on the technical analysis indicators 
+- Make a clear distinction between just trying to get the technical analysis data versus performing actual technical analysis BASED on the ALL the data. 
+- This will help remove ambiguity because sometimes the AI agent gets confused and doesn’t fetch technical analysis data when it needs to, or it already has enough data but then it fetches it again,  or it just fetch TA, and doesn’t analyze, etc, so we’ll have a clear distinction between getting the data and performing analysis on the data.
+- Instead of having four individual granular 'get_ta_xxx' tools for the EMA SMA, MacD and RSI, we’re gonna consolidate and remove those individual tools and instead create a brand new tool AI Agent Tool called 'get_ta_indicators' that will bundle and perform the multiple tool calls to retrieve the data directly in the python tool
+- that way this can improve performance because now when an AI agent wants to get TA data they can call the single tool and then all the Python code will call the relevant API end points to retrieve the data and clean it up and reformat it and post-process it a clean markdown table , and table is needed because it is data havy. 
+- That way the agent doesn’t have to spend time with the tool calls itself, and the Python tool code will handle it so AI just needs to output the data
+- So now there’s a clear distinction when AI agents requested to get or retrieve technical and announce indicators data. 
+- They know that this is just a get operation and not performing an analysis and they have a tool for it and then if there’s a request to the perform analysis based on the data now we can focus on checking if it has enough information to perform analysis or not, and they could perform the analysis based on all the data in the user chat and not just the technical analysis data 
+- so that’s one other issue we found when we were asked to perform the technical analysis by AI agent sometimes it has tunnel vision and literally just focuses on the four technical indicators, but it should be taking a holistic dynamic approach because if the user previously got a bunch of request and responses regarding the current price or yesterday‘s price or even the last two weeks performance or even the last months performance, maybe they also have some support and resistance levels, etc. that all could be used as part of the technical analysis so if all the data is available, AI agent use all that data one requested to analyze it only some is available then analyze based on what you got this is makes it so it’s not strict and rigid and holistic and dynamic based on whatever data is available because sometimes maybe the user will provide some data as part of their request and that is also could be useful for the agent to perform analysis on
 
-Update Options Chain Markdown Table Display Formatting & Data
-- Strike prices do NOT need decimals if price are whole Integers. Only need to show decimals if there is a non-integer. IE $185, $190, $192.50, $197. etc
-- Add $ Units to Strike, Bid, Ask Column Headers
-- Remove completely Vega & Theta columns and data for now to just have essential Greeks
-- IV: Just use integer percent with no decimals : IE. 50%, 150%, 25% etc
-- Use 'Vol' & 'OI' for Volume and Open Intrest abbreviations
-- Reorder columns as follows: Strike, Bid, Ask, Delta, Vol, OI, IV, Gamma, Theta
+-  for the tests, perform manual testing of the new functions and then you have to update the test suite in 'test_cli_regression.sh' as follows:
+-  now we need to break it up into two separate actions so replace the current technical analysis test prompt with a request to get technical analysis indicator data.
+-  After that, now an additional test case to request the AI agent to actually perform technical analysis indicator based on the data
 
-- Perform quick manual testing of all tool outputs and verify output responses and check for proper formatting
+Here is the expected outcomes:
+1. NEW single tool 'get_ta_indicators' that will perform ALL of the listed Polygon API Calls in batches to prevent rate limiting issues, post-process and reformat the data in markdown table, and then provide response to AI Agent:
+- Batch 1: RSI-14, MACD
+- Batch 2: SMA 5/10/20/50/200
+- Batch 3: EMA 5/10/20/50/200
+- After all 3x batches received with data, now the tool can post-process and format the response
+- End result is that to the AI Agent, a single tool call of 'get_ta_indicators' is a black box and AI Agent has no idea all of the intermediate steps and procedures inside the tool call itself, completely offloading so the most complex and performance impacting tasks to the Python Tool code and help freeing up AI Agent Bandwidth and Context
+
+2. COMMENT OUT ONLY the tools code get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd so that we can still keep some backward compatiblity in the future.  We will comment it out to remove compiling in unused code, but it can always serve as a reference and guide in the future.  AI Agent instructions also need to be updated
+
+3. AI Agent when asked to PERFORM Technical Analysis based on the data needs to analyze and provide insights for at LEAST these 4x topics: Trends, Volatility, Momentum, Trading Patterns
+
+
+
 
 ---
 
