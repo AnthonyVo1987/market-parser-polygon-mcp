@@ -44,20 +44,78 @@ SUCCESS CRITERIA:
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 ULTRA-THINK to Research the requested task(s):
 
-1. Research adding new AI Agent Tool "get_options_expiration_dates" using "Tradier Python Brokerage API" 
-- https://docs.tradier.com/reference/brokerage-api-markets-get-options-expirations
-- This new tool needs to take an Input ticker, and the will fetch ALL valid Options Expirations Dates for the requested ticker
-- My Tradier API key is stored in my .env file under "TRADIER_API_KEY"
-- Update AI Agent instructions to use the new tool if needed to fetch options expirations dates for a specific ticker
-- Test the new tools by calling the CLI and testing with requested for each of the following tickers one at a time: SPY, NVDAS, SOUN
+1. Research updating some AI Agent tools to use Tradier API Endpoints
+- https://docs.tradier.com/reference/brokerage-api-markets-get-quotes
+- https://docs.tradier.com/reference/brokerage-api-markets-get-clock
+- Update AI Agent instructions for the updated tools
+- Test the new tools by calling the CLI and testing with requested for each of the following tickers one at a time, and then a multi test: SPY, NVDA, SOUN, QQQ, IWM
 - Fix any issues if needed from testing to make the tool tests work properly
+
+
+1. 'get_stock_quote' to use Tradier Endpoint:
+- 'get_stock_quote' can now be used for both SINGLE AND MULTI Tickers within a single tool call
+- So we only need the new 'get_stock_quote' to handle any number of tickers in a single tool call
 
 Here is a the example API endpoint Python Call & Response :
 
 ```
 import requests
 
-url = "https://api.tradier.com/v1/markets/options/expirations?symbol=NVDA"
+url = "https://api.tradier.com/v1/markets/quotes?symbols=SPY"
+
+headers = {
+    "Accept": "application/json",
+    "authorization": "Bearer <TRADIER_API_KEY>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+
+```
+{
+  "quotes": {
+    "quote": {
+      "symbol": "SPY",
+      "description": "SPDR S&P 500",
+      "exch": "P",
+      "type": "etf",
+      "last": 653.02,
+      "change": -18.14,
+      "volume": 159422590,
+      "open": 672.13,
+      "high": 673.95,
+      "low": 652.84,
+      "close": 653.02,
+      "bid": 652.1,
+      "ask": 652.14,
+      "change_percentage": -2.71,
+      "average_volume": 70675102,
+      "last_volume": 0,
+      "trade_date": 1760140800001,
+      "prevclose": 671.16,
+      "week_52_high": 673.94,
+      "week_52_low": 481.8,
+      "bidsize": 3,
+      "bidexch": "P",
+      "bid_date": 1760140793000,
+      "asksize": 1,
+      "askexch": "P",
+      "ask_date": 1760140797000,
+      "root_symbols": "SPY"
+    }
+  }
+}
+```
+
+
+For multi tickers, here is the example call:
+
+```
+import requests
+
+url = "https://api.tradier.com/v1/markets/quotes?symbols=WDC%2CAMD%2CGME"
 
 headers = {
     "Accept": "application/json",
@@ -71,30 +129,130 @@ print(response.text)
 
 ```
 {
-  "expirations": {
-    "date": [
-      "2025-10-17",
-      "2025-10-24",
-      "2025-10-31",
-      "2025-11-07",
-      "2025-11-14",
-      "2025-11-21",
-      "2025-11-28",
-      "2025-12-19",
-      "2026-01-16",
-      "2026-02-20",
-      "2026-03-20",
-      "2026-04-17",
-      "2026-05-15",
-      "2026-06-18",
-      "2026-08-21",
-      "2026-09-18",
-      "2026-12-18",
-      "2027-01-15",
-      "2027-06-17",
-      "2027-12-17",
-      "2028-01-21"
+  "quotes": {
+    "quote": [
+      {
+        "symbol": "WDC",
+        "description": "Western Digital Corp",
+        "exch": "Q",
+        "type": "stock",
+        "last": 115.42,
+        "change": -4.28,
+        "volume": 7046192,
+        "open": 120,
+        "high": 121.945,
+        "low": 115.03,
+        "close": 115.42,
+        "bid": 114.11,
+        "ask": 115,
+        "change_percentage": -3.58,
+        "average_volume": 4793527,
+        "last_volume": 377808,
+        "trade_date": 1760126400192,
+        "prevclose": 119.7,
+        "week_52_high": 137.4,
+        "week_52_low": 28.83,
+        "bidsize": 1,
+        "bidexch": "Q",
+        "bid_date": 1760140720000,
+        "asksize": 1,
+        "askexch": "Q",
+        "ask_date": 1760140544000,
+        "root_symbols": "WDC,WDC1"
+      },
+      {
+        "symbol": "AMD",
+        "description": "Advanced Micro Devices Inc",
+        "exch": "Q",
+        "type": "stock",
+        "last": 214.9,
+        "change": -17.99,
+        "volume": 118656636,
+        "open": 232.77,
+        "high": 234.22,
+        "low": 213.2001,
+        "close": 214.9,
+        "bid": 215.12,
+        "ask": 215.2,
+        "change_percentage": -7.73,
+        "average_volume": 55628230,
+        "last_volume": 0,
+        "trade_date": 1760127300013,
+        "prevclose": 232.89,
+        "week_52_high": 240.1,
+        "week_52_low": 76.48,
+        "bidsize": 2,
+        "bidexch": "Q",
+        "bid_date": 1760140799000,
+        "asksize": 1,
+        "askexch": "U",
+        "ask_date": 1760140786000,
+        "root_symbols": "AMD,AMD1"
+      },
+      {
+        "symbol": "GME",
+        "description": "GameStop Corp",
+        "exch": "N",
+        "type": "stock",
+        "last": 23.3,
+        "change": -0.77,
+        "volume": 9744316,
+        "open": 24.08,
+        "high": 24.2,
+        "low": 23.28,
+        "close": 23.3,
+        "bid": 23.3,
+        "ask": 23.35,
+        "change_percentage": -3.2,
+        "average_volume": 8665599,
+        "last_volume": 0,
+        "trade_date": 1760137200001,
+        "prevclose": 24.07,
+        "week_52_high": 35.81,
+        "week_52_low": 20.35,
+        "bidsize": 83,
+        "bidexch": "P",
+        "bid_date": 1760140799000,
+        "asksize": 4,
+        "askexch": "P",
+        "ask_date": 1760140780000,
+        "root_symbols": "GME,GME1"
+      }
     ]
+  }
+}
+```
+
+
+
+2. 'get_market_status_and_date_time' to use Tradier Endpoint:
+
+Here is a the example API endpoint Python Call & Response :
+
+```
+import requests
+
+url = "https://api.tradier.com/v1/markets/clock"
+
+headers = {
+    "Accept": "application/json",
+    "authorization": "Bearer <TRADIER_API_KEY>"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+
+```
+{
+  "clock": {
+    "date": "2021-02-01",
+    "description": "open",
+    "state": "open",
+    "timestamp": 1612196262,
+    "next_state": "post",
+    "next_change": 1612213200
   }
 }
 ```

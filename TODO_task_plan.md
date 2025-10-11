@@ -1,1036 +1,917 @@
-# TODO Implementation Plan: Add Tradier Options Expiration Dates Tool
+# TODO: Tradier API Migration Implementation Plan
 
-**Task**: Add new AI Agent Tool "get_options_expiration_dates" using Tradier Python Brokerage API
-
-**Status**: Phase 2 - Planning Complete, Ready for Implementation
+**Status:** Planning Complete - Ready for Implementation
+**Created:** October 10, 2025
+**Task:** Migrate `get_stock_quote` and `get_market_status_and_date_time` tools from Finnhub/Polygon to Tradier API
 
 ---
 
 ## 🔴 CRITICAL: MANDATORY TOOL USAGE ENFORCEMENT
 
-**YOU MUST use the following tools systematically throughout implementation:**
+**YOU MUST use tools AS OFTEN AS NEEDED throughout the ENTIRE implementation:**
 
 1. **Sequential-Thinking** - Use for:
-   - Code structure analysis before writing
-   - Decision-making for implementation approach
-   - Verification of changes before committing
+   - Complex problem analysis
+   - Implementation strategy decisions
+   - Error diagnosis and debugging
+   - Edge case handling
+   - Max 8 thoughts per use, can invoke multiple times
 
 2. **Serena Tools** - Use for:
-   - `find_symbol`: Locate existing functions to understand patterns
-   - `get_symbols_overview`: Understand file structures
-   - `insert_after_symbol`: Add new functions/imports
-   - `replace_symbol_body`: Modify agent instructions
-   - `write_memory`: Update project memories
+   - Code analysis (find_symbol, get_symbols_overview)
+   - Symbol manipulation (replace_symbol_body, insert_after_symbol)
+   - Pattern search with context (search_for_pattern)
+   - Finding references (find_referencing_symbols)
+   - Memory management (write_memory, read_memory)
 
 3. **Standard Tools** - Use for:
-   - `Read`: View file contents
-   - `Edit`: Simple text modifications
-   - `Bash`: Run tests and validation
+   - Simple file reads (Read)
+   - Simple file writes (Write)
+   - Simple file edits (Edit)
+   - Bash commands (Bash)
 
-**VIOLATION = FAILURE**: Using wrong tools or skipping tool usage will result in implementation failure.
+**VIOLATION PENALTIES:**
+- Using tools only once = FAILING
+- Following rigid order instead of using as needed = FAILING
+- Not using tools throughout entire process = FAILING
+- Using wrong tool for operation (e.g., Standard for batch operations) = FAILING
+
+**SUCCESS CRITERIA:**
+- Tools used MULTIPLE times throughout task
+- Tools used in DIFFERENT orders based on need
+- CONTINUOUS tool usage from start to finish
+- CORRECT tool selection based on operation type
 
 ---
 
 ## Phase 1: Research ✅ COMPLETE
 
-- ✅ Researched Tradier API endpoint structure
-- ✅ Analyzed existing tool patterns (finnhub_tools.py, polygon_tools.py)
-- ✅ Reviewed OpenAI custom tools reference guide
-- ✅ Understood agent service integration points
-- ✅ Reviewed test suite structure
-
-**Key Findings**:
-- Tool Pattern: @function_tool decorator, async def, comprehensive docstring
-- API Pattern: requests library with Bearer token authentication
-- Integration: Import in agent_service.py, add to tools list, update instructions
-- Testing: Add tests after "Technical Analysis" for SPY (Test 14) and NVDA (Test 30)
+**Status:** ✅ Complete
+**Findings:**
+- Tradier API endpoints identified and analyzed
+- Current implementations reviewed (finnhub_tools.py, polygon_tools.py)
+- Agent instructions analyzed (RULE #1, #2, #3)
+- Edge cases and error handling requirements documented
+- Response structure differences understood (single object vs multi array)
+- Backward compatibility requirements defined
 
 ---
 
 ## Phase 2: Planning ✅ COMPLETE
 
-**Implementation Strategy**:
-
-### File Changes Required (5 files):
-1. `src/backend/tools/tradier_tools.py` - NEW FILE
-2. `src/backend/tools/__init__.py` - MODIFY
-3. `src/backend/services/agent_service.py` - MODIFY
-4. `test_cli_regression.sh` - MODIFY
-5. `.env` - VERIFY (TRADIER_API_KEY exists)
-
-### Agent Instructions Updates:
-- Line 36: Update tool count (12 → 13)
-- Line 35: Add Tradier mention to TOOLS description
-- After RULE #9: Add RULE #10 for options expiration dates
+**Status:** ✅ Complete
+**Output:** This implementation plan
 
 ---
 
-## Phase 3: Implementation (PENDING - Use Tools Systematically)
+## Phase 3: Implementation 🔴 START HERE
 
-### 🔴 CRITICAL: Use Sequential-Thinking Before Each Major Step
+### 3.1: Environment Setup
 
-### Step 1: Create tradier_tools.py ⏳ PENDING
+**Task:** Add TRADIER_API_KEY to environment configuration
 
-**Tool Enforcement**:
-- ✅ Use Sequential-Thinking to plan file structure
-- ✅ Use Standard Write to create new file
-- ✅ Follow finnhub_tools.py pattern exactly
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan environment setup strategy
+- [ ] Use **Read** to check current .env file structure
+- [ ] Use **Edit** to add TRADIER_API_KEY to .env file
+- [ ] Use **Bash** to verify .env file has new key
 
-**Implementation Checklist**:
-```python
-# File: src/backend/tools/tradier_tools.py
+**Steps:**
+1. [ ] Read `.env` file to understand current structure
+2. [ ] Add `TRADIER_API_KEY=your_key_here` line to `.env`
+3. [ ] Verify `.env` file has all required keys (TRADIER_API_KEY, POLYGON_API_KEY, OPENAI_API_KEY)
+4. [ ] Document environment setup in comments
 
-# 1. Module docstring (lines 1-4)
-"""
-Tradier custom tools for OpenAI AI Agent.
-Provides options expiration dates via Tradier API.
-"""
-
-# 2. Imports (lines 6-9)
-import json
-import os
-import requests
-from agents import function_tool
-
-# 3. Helper function for client/API key (lines 11-18)
-def _get_tradier_api_key():
-    """Get Tradier API key from environment.
-
-    Lazy initialization ensures .env is loaded before accessing API key.
-    """
-    return os.getenv("TRADIER_API_KEY")
-
-# 4. Main tool function (lines 20-120)
-@function_tool
-async def get_options_expiration_dates(ticker: str) -> str:
-    """Get valid options expiration dates for a ticker from Tradier API.
-
-    Use this tool when the user requests options expiration dates for a specific ticker.
-    This provides all available expiration dates for options contracts on the underlying stock.
-
-    Args:
-        ticker: Stock ticker symbol (e.g., "AAPL", "SPY", "NVDA").
-                Must be a valid ticker symbol.
-
-    Returns:
-        JSON string containing expiration dates array with format:
-        {
-            "ticker": "NVDA",
-            "expiration_dates": [
-                "2025-10-17",
-                "2025-10-24",
-                "2025-10-31",
-                ...
-            ],
-            "count": 21,
-            "source": "Tradier"
-        }
-
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
-
-    Note:
-        - Returns all available expiration dates for the ticker
-        - Dates are in YYYY-MM-DD format
-        - Dates are sorted chronologically (earliest to latest)
-        - Includes weekly and monthly expiration dates
-        - Data updates daily
-
-    Examples:
-        - "Get options expiration dates for SPY"
-        - "What are the available expiration dates for NVDA options?"
-        - "Show me TSLA options expiration dates"
-    """
-    try:
-        # Validate ticker input
-        if not ticker or not ticker.strip():
-            return json.dumps({
-                "error": "Invalid ticker",
-                "message": "Ticker symbol cannot be empty",
-                "ticker": ticker
-            })
-
-        # Clean ticker (uppercase, strip whitespace)
-        ticker = ticker.strip().upper()
-
-        # Get API key
-        api_key = _get_tradier_api_key()
-        if not api_key:
-            return json.dumps({
-                "error": "Configuration error",
-                "message": "TRADIER_API_KEY not found in environment",
-                "ticker": ticker
-            })
-
-        # Call Tradier API
-        url = f"https://api.tradier.com/v1/markets/options/expirations?symbol={ticker}"
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        }
-
-        response = requests.get(url, headers=headers, timeout=10)
-
-        # Check HTTP status
-        if response.status_code != 200:
-            return json.dumps({
-                "error": "API request failed",
-                "message": f"Tradier API returned status {response.status_code}",
-                "ticker": ticker
-            })
-
-        # Parse response
-        data = response.json()
-
-        # Extract expiration dates
-        expirations = data.get("expirations", {})
-        dates = expirations.get("date", [])
-
-        # Check if we got valid data
-        if not dates:
-            return json.dumps({
-                "error": "No data",
-                "message": f"No expiration dates available for ticker: {ticker}. Verify ticker symbol is valid.",
-                "ticker": ticker
-            })
-
-        # Ensure dates is a list (API returns single string if only 1 date)
-        if isinstance(dates, str):
-            dates = [dates]
-
-        # Format response
-        return json.dumps({
-            "ticker": ticker,
-            "expiration_dates": dates,
-            "count": len(dates),
-            "source": "Tradier"
-        })
-
-    except requests.exceptions.Timeout:
-        return json.dumps({
-            "error": "Timeout",
-            "message": f"Tradier API request timed out for {ticker}",
-            "ticker": ticker
-        })
-    except requests.exceptions.RequestException as e:
-        return json.dumps({
-            "error": "Network error",
-            "message": f"Failed to connect to Tradier API: {str(e)}",
-            "ticker": ticker
-        })
-    except Exception as e:
-        return json.dumps({
-            "error": "Unexpected error",
-            "message": f"Failed to retrieve expiration dates for {ticker}: {str(e)}",
-            "ticker": ticker
-        })
-```
-
-**Validation**:
-- File created successfully
-- Imports are correct
-- Function signature matches pattern
-- Docstring is comprehensive
-- Error handling is robust
+**Success Criteria:**
+- [ ] TRADIER_API_KEY present in .env
+- [ ] No duplicate entries
+- [ ] File format preserved
 
 ---
 
-### Step 2: Update tools/__init__.py ⏳ PENDING
+### 3.2: Migrate get_stock_quote Tool
 
-**Tool Enforcement**:
-- ✅ Use Serena `find_symbol` to see current __all__ list
-- ✅ Use Standard Edit to add import and export
+**Task:** Replace Finnhub implementation with Tradier API in finnhub_tools.py
 
-**Implementation**:
-```python
-# Add import
-from .tradier_tools import get_options_expiration_dates
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan migration strategy and edge case handling
+- [ ] Use **Serena find_symbol** to locate get_stock_quote function
+- [ ] Use **Serena replace_symbol_body** to replace function implementation
+- [ ] Use **Serena find_referencing_symbols** to check if any other code references this function
+- [ ] Use **Read** to verify changes after implementation
 
-# Update __all__
-__all__ = ["get_stock_quote", "get_options_expiration_dates"]
-```
+**Steps:**
+1. [ ] **Sequential-Thinking**: Analyze migration strategy
+   - Single vs multi-ticker response handling
+   - URL encoding approach
+   - Error handling strategy
+   - Backward compatibility preservation
 
-**Validation**:
-- Import added correctly
-- __all__ list updated
-- No syntax errors
+2. [ ] **Read Current Implementation:**
+   - [ ] Use Serena find_symbol with `name_path="/get_stock_quote"`, `relative_path="src/backend/tools/finnhub_tools.py"`, `include_body=True`
+   - [ ] Analyze current function signature and return format
 
----
+3. [ ] **Design New Implementation:**
+   - [ ] Parameter: Keep `ticker: str` for single ticker backward compatibility
+   - [ ] Support comma-separated tickers: "SPY,NVDA,SOUN"
+   - [ ] Implement response structure detection:
+     ```python
+     if isinstance(data['quotes']['quote'], list):
+         # Multi-ticker response
+     else:
+         # Single ticker response
+     ```
+   - [ ] Map Tradier fields to current response format:
+     - `symbol` → `ticker`
+     - `last` → `current_price`
+     - `change` → `change`
+     - `change_percentage` → `percent_change`
+     - `high` → `high`
+     - `low` → `low`
+     - `open` → `open`
+     - `prevclose` → `previous_close`
 
-### Step 3: Import Tradier tool in agent_service.py ⏳ PENDING
+4. [ ] **Implement New Function:**
+   ```python
+   @function_tool
+   async def get_stock_quote(ticker: str) -> str:
+       """Get real-time stock quote from Tradier API.
 
-**Tool Enforcement**:
-- ✅ Use Serena `find_symbol` to locate import section
-- ✅ Use Serena `insert_after_symbol` OR Standard Edit to add import
+       Use this tool when the user requests a stock quote, current price,
+       or real-time market data for one or more ticker symbols.
 
-**Implementation Location**: Line ~8 (after finnhub import)
-```python
-from ..tools.finnhub_tools import get_stock_quote
-from ..tools.tradier_tools import get_options_expiration_dates  # NEW
-from ..tools.polygon_tools import (
-    get_call_options_chain,
-    ...
-)
-```
+       Args:
+           ticker: Stock ticker symbol(s). Can be:
+                   - Single ticker: "AAPL"
+                   - Multiple tickers: "AAPL,TSLA,NVDA" (comma-separated)
+                   Must be valid ticker(s) from major US exchanges.
 
-**Validation**:
-- Import added in correct location
-- No circular imports
-- No syntax errors
+       Returns:
+           JSON string containing quote data. For single ticker:
+           {
+               "ticker": "AAPL",
+               "current_price": 178.50,
+               "change": 2.30,
+               "percent_change": 1.31,
+               "high": 179.20,
+               "low": 176.80,
+               "open": 177.00,
+               "previous_close": 176.20,
+               "source": "Tradier"
+           }
 
----
+           For multiple tickers, returns array of quote objects.
+       """
+       try:
+           # Get API key from environment
+           api_key = os.getenv("TRADIER_API_KEY")
+           if not api_key:
+               return json.dumps({"error": "TRADIER_API_KEY not configured"})
 
-### Step 4: Add tool to agent tools list ⏳ PENDING
+           # Build request
+           url = "https://api.tradier.com/v1/markets/quotes"
+           headers = {
+               "Accept": "application/json",
+               "Authorization": f"Bearer {api_key}"
+           }
+           params = {"symbols": ticker}  # requests handles URL encoding
 
-**Tool Enforcement**:
-- ✅ Use Serena `find_symbol` with name_path="create_agent" to locate function
-- ✅ Use Sequential-Thinking to plan where to insert
-- ✅ Use Serena `replace_symbol_body` OR Standard Edit to add to tools list
+           # Make request
+           response = requests.get(url, headers=headers, params=params, timeout=10)
+           response.raise_for_status()
 
-**Implementation Location**: Line ~478-490 in create_agent() function
-```python
-analysis_agent = Agent(
-    name="Financial Analysis Agent",
-    instructions=get_enhanced_agent_instructions(),
-    tools=[
-        get_stock_quote,
-        get_options_expiration_dates,  # NEW - Add after get_stock_quote
-        get_market_status_and_date_time,
-        get_OHLC_bars_custom_date_range,
-        ...
-        get_call_options_chain,
-        get_put_options_chain,
-    ],
-    model=settings.default_active_model,
-    model_settings=get_optimized_model_settings(),
-)
-```
+           data = response.json()
+           quotes_data = data.get("quotes", {}).get("quote")
 
-**Validation**:
-- Tool added to list
-- Proper position (after get_stock_quote)
-- Comma syntax correct
-- No syntax errors
+           if not quotes_data:
+               return json.dumps({"error": "No quote data returned"})
 
----
+           # Handle single vs multi-ticker response
+           if isinstance(quotes_data, list):
+               # Multi-ticker response
+               results = []
+               for quote in quotes_data:
+                   results.append(_format_tradier_quote(quote))
+               return json.dumps(results, indent=2)
+           else:
+               # Single ticker response
+               return json.dumps(_format_tradier_quote(quotes_data), indent=2)
 
-### Step 5: Update agent instructions ⏳ PENDING
+       except requests.exceptions.RequestException as e:
+           return json.dumps({"error": f"Tradier API request failed: {str(e)}"})
+       except Exception as e:
+           return json.dumps({"error": f"Unexpected error: {str(e)}"})
 
-**Tool Enforcement**:
-- ✅ Use Sequential-Thinking to plan instruction updates
-- ✅ Use Serena `find_symbol` with name_path="get_enhanced_agent_instructions"
-- ✅ Use Serena `replace_symbol_body` OR Standard Edit to update
+   def _format_tradier_quote(quote: dict) -> dict:
+       """Format Tradier quote data to match current response structure."""
+       return {
+           "ticker": quote.get("symbol", ""),
+           "current_price": quote.get("last", 0.0),
+           "change": quote.get("change", 0.0),
+           "percent_change": quote.get("change_percentage", 0.0),
+           "high": quote.get("high", 0.0),
+           "low": quote.get("low", 0.0),
+           "open": quote.get("open", 0.0),
+           "previous_close": quote.get("prevclose", 0.0),
+           "source": "Tradier"
+       }
+   ```
 
-**Three Updates Required**:
+5. [ ] **Replace Function Using Serena:**
+   - [ ] Use Serena replace_symbol_body with `name_path="/get_stock_quote"`, `relative_path="src/backend/tools/finnhub_tools.py"`, `body="<new implementation>"`
 
-#### Update 1: Tool count (Line 36)
-**Before**:
-```
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 12 SUPPORTED TOOLS: [...]
-```
+6. [ ] **Add Helper Function:**
+   - [ ] Use Serena insert_after_symbol to add `_format_tradier_quote` helper function after `get_stock_quote`
 
-**After**:
-```
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 13 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_market_status_and_date_time, ...]
-```
+7. [ ] **Update Imports:**
+   - [ ] Check if `requests` is already imported in finnhub_tools.py
+   - [ ] Check if `os` is already imported
+   - [ ] Add imports if needed using Serena insert_before_symbol
 
-#### Update 2: TOOLS description (Line 35)
-**Before**:
-```
-TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
-```
+8. [ ] **Verify Implementation:**
+   - [ ] Use Read to review entire finnhub_tools.py file
+   - [ ] Verify function signature unchanged (backward compatibility)
+   - [ ] Verify error handling comprehensive
+   - [ ] Verify response format matches current structure
 
-**After**:
-```
-TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Tradier for options expiration dates, Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
-```
-
-#### Update 3: Add RULE #10 (After RULE #9, before emoji formatting section)
-**Insert Location**: After line 273 (after RULE #9 ends)
-
-**New Content**:
-```python
-RULE #10: OPTIONS EXPIRATION DATES = USE get_options_expiration_dates
-- 🔴 **WHEN TO USE**: User requests available expiration dates for options contracts
-- 🔴 **REQUIRED PARAMETER**: ticker (str) - Stock ticker symbol
-- 🔴 **RESPONSE FORMAT**: JSON with array of expiration dates in YYYY-MM-DD format
-- 🔴 **USE CASES**:
-  - "What are the available expiration dates for SPY options?"
-  - "Get options expiration dates for NVDA"
-  - "Show me TSLA options expiration dates"
-  - "When do AAPL options expire?"
-- 🔴 **DATA SOURCE**: Tradier API (all available expiration dates)
-- 🔴 **DATE FORMAT**: YYYY-MM-DD (chronologically sorted)
-- 🔴 **INCLUDES**: Both weekly and monthly expirations
-- 📊 **WORKFLOW**:
-  1. Identify user is requesting expiration dates
-  2. Extract ticker symbol from request
-  3. Call get_options_expiration_dates(ticker='SYMBOL')
-  4. Present dates in readable format
-- 📊 **DISPLAY FORMAT**: Present dates as comma-separated list or bullet points
-  - Example: "SPY options expiration dates: 2025-10-17, 2025-10-24, 2025-10-31, 2025-11-07..."
-  - Or: "Available NVDA expiration dates:\n• 2025-10-17\n• 2025-10-24\n• 2025-10-31..."
-- ❌ **COMMON MISTAKES**:
-  - Using get_call_options_chain or get_put_options_chain when user only wants expiration dates
-  - Not calling the tool when user asks about "when options expire"
-  - Confusing expiration dates with options chain data
-
-```
-
-**Validation**:
-- Tool count updated (12 → 13)
-- Tool list includes get_options_expiration_dates
-- TOOLS description mentions Tradier
-- RULE #10 added with comprehensive guidance
-- No formatting errors
-- Instructions remain coherent
-
----
-
-### Step 6: Update test_cli_regression.sh ⏳ PENDING
-
-**Tool Enforcement**:
-- ✅ Use Sequential-Thinking to plan test insertion points
-- ✅ Use Standard Read to review test structure
-- ✅ Use Standard Edit to add new test cases
-
-**Two Test Cases to Add**:
-
-#### Test Case 1: SPY Options Expiration Dates
-**Insert Location**: After Test 13 "Technical Analysis: $SPY" (becomes new Test 14)
-**Shift existing tests**: Test 14→16 become Test 15→17
-
-**Add to prompts array** (line ~84):
-```bash
-"Technical Analysis: \$SPY"
-"Get options expiration dates for SPY"  # NEW TEST 14
-"Get the SPY Call Options Chain Expiring this Friday"
-```
-
-**Add to test_names array** (line ~128):
-```bash
-"Test_13_SPY_Technical_Analysis"
-"Test_14_SPY_Options_Expiration_Dates"  # NEW TEST NAME
-"Test_15_SPY_Call_Options_Chain"  # RENUMBERED (was Test_14)
-```
-
-#### Test Case 2: NVDA Options Expiration Dates
-**Insert Location**: After Test 29 "Technical Analysis: $NVDA" (becomes new Test 30)
-**Shift existing tests**: Test 30→32 become Test 31→33
-
-**Add to prompts array** (line ~101):
-```bash
-"Technical Analysis: \$NVDA"
-"Get options expiration dates for NVDA"  # NEW TEST 30
-"Get the NVDA Call Options Chain Expiring this Friday"
-```
-
-**Add to test_names array** (line ~145):
-```bash
-"Test_29_NVDA_Technical_Analysis"
-"Test_30_NVDA_Options_Expiration_Dates"  # NEW TEST NAME
-"Test_31_NVDA_Call_Options_Chain"  # RENUMBERED (was Test_30)
-```
-
-**Update Test Count**:
-- Line 3: Comment "# CLI Test Regression Script - NEW 38-Test Suite" → "# CLI Test Regression Script - NEW 40-Test Suite"
-- Line 16: "# - SPY Test Sequence: Tests 1-16" → "# - SPY Test Sequence: Tests 1-17"
-- Line 17: "# - NVDA Test Sequence: Tests 17-32" → "# - NVDA Test Sequence: Tests 18-33"
-- Line 18: "# - Multi-Ticker Test Sequence: Tests 33-38" → "# - Multi-Ticker Test Sequence: Tests 34-40"
-- Line 19: "# Total: 38 tests per loop" → "# Total: 40 tests per loop"
-- Line 159: "total_tests=${#prompts[@]}" (auto-calculated, no change needed)
-
-**Validation**:
-- 2 new test cases added (SPY + NVDA)
-- Test numbers properly renumbered
-- Total test count: 40 (was 38)
-- Test sequence integrity maintained
-- Comments updated
+**Success Criteria:**
+- [ ] Function accepts single ticker: "AAPL"
+- [ ] Function accepts multi-ticker: "AAPL,TSLA,NVDA"
+- [ ] Response structure matches current format
+- [ ] Error handling for authentication, network, invalid ticker
+- [ ] Timeout set to 10 seconds
+- [ ] No Finnhub SDK dependencies remaining
 
 ---
 
-### Step 7: Verify .env has TRADIER_API_KEY ⏳ PENDING
+### 3.3: Migrate get_market_status_and_date_time Tool
 
-**Tool Enforcement**:
-- ✅ Use Bash to check .env file
+**Task:** Replace Polygon implementation with Tradier API in polygon_tools.py
 
-**Command**:
-```bash
-cat .env | grep TRADIER_API_KEY
-```
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan timestamp conversion and state mapping strategy
+- [ ] Use **Serena find_symbol** to locate get_market_status_and_date_time function
+- [ ] Use **Serena replace_symbol_body** to replace function implementation
+- [ ] Use **Read** to verify changes after implementation
 
-**Expected Output**:
-```
-TRADIER_API_KEY=<your_key_here>
-```
+**Steps:**
+1. [ ] **Sequential-Thinking**: Analyze migration strategy
+   - Tradier state to current response mapping
+   - Unix timestamp to ISO datetime conversion
+   - early_hours and after_hours flag logic
+   - Exchange status population strategy
 
-**If Missing**: Add to .env file (user must provide key)
+2. [ ] **Read Current Implementation:**
+   - [ ] Use Serena find_symbol with `name_path="/get_market_status_and_date_time"`, `relative_path="src/backend/tools/polygon_tools.py"`, `include_body=True`
+   - [ ] Analyze current function signature and return format
 
-**Validation**:
-- TRADIER_API_KEY exists in .env
-- Key value is not empty
+3. [ ] **Design New Implementation:**
+   - [ ] State mapping:
+     - "open" → market_status="open"
+     - "closed" → market_status="closed"
+     - "pre" → market_status="extended-hours", early_hours=true
+     - "post" → market_status="extended-hours", after_hours=true
+   - [ ] Timestamp conversion:
+     - Tradier: Unix epoch milliseconds (1760140800001)
+     - Target: ISO datetime "2025-10-05T14:30:00Z"
+     - Python: `datetime.fromtimestamp(timestamp/1000, tz=timezone.utc).isoformat()`
+   - [ ] Exchange status: Use overall market state for all exchanges (backward compatibility)
+
+4. [ ] **Implement New Function:**
+   ```python
+   @function_tool
+   async def get_market_status_and_date_time() -> str:
+       """Get current market status and date/time from Tradier API.
+
+       Returns:
+           JSON string containing market status and datetime with format:
+           {
+               "market_status": "open" | "closed" | "extended-hours",
+               "after_hours": true | false,
+               "early_hours": true | false,
+               "exchanges": {
+                   "nasdaq": "open" | "closed" | "extended-hours",
+                   "nyse": "open" | "closed" | "extended-hours",
+                   "otc": "open" | "closed" | "extended-hours"
+               },
+               "server_time": "2025-10-05T14:30:00Z",
+               "date": "2025-10-05",
+               "time": "14:30:00",
+               "source": "Tradier"
+           }
+       """
+       try:
+           # Get API key from environment
+           api_key = os.getenv("TRADIER_API_KEY")
+           if not api_key:
+               return json.dumps({"error": "TRADIER_API_KEY not configured"})
+
+           # Build request
+           url = "https://api.tradier.com/v1/markets/clock"
+           headers = {
+               "Accept": "application/json",
+               "Authorization": f"Bearer {api_key}"
+           }
+
+           # Make request
+           response = requests.get(url, headers=headers, timeout=10)
+           response.raise_for_status()
+
+           data = response.json()
+           clock_data = data.get("clock", {})
+
+           if not clock_data:
+               return json.dumps({"error": "No clock data returned"})
+
+           # Map Tradier state to current response format
+           state = clock_data.get("state", "closed")
+           market_status = _map_tradier_state(state)
+           early_hours = (state == "pre")
+           after_hours = (state == "post")
+
+           # Convert Unix timestamp to ISO datetime
+           timestamp = clock_data.get("timestamp", 0)
+           server_time_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+           server_time = server_time_dt.isoformat()
+           date_str = server_time_dt.strftime("%Y-%m-%d")
+           time_str = server_time_dt.strftime("%H:%M:%S")
+
+           # Build response with exchange status (use overall state for all)
+           exchange_status = market_status
+
+           return json.dumps({
+               "market_status": market_status,
+               "after_hours": after_hours,
+               "early_hours": early_hours,
+               "exchanges": {
+                   "nasdaq": exchange_status,
+                   "nyse": exchange_status,
+                   "otc": exchange_status
+               },
+               "server_time": server_time,
+               "date": date_str,
+               "time": time_str,
+               "source": "Tradier"
+           }, indent=2)
+
+       except requests.exceptions.RequestException as e:
+           return json.dumps({"error": f"Tradier API request failed: {str(e)}"})
+       except Exception as e:
+           return json.dumps({"error": f"Unexpected error: {str(e)}"})
+
+   def _map_tradier_state(state: str) -> str:
+       """Map Tradier market state to current response format."""
+       if state == "open":
+           return "open"
+       elif state in ["pre", "post"]:
+           return "extended-hours"
+       else:  # closed
+           return "closed"
+   ```
+
+5. [ ] **Replace Function Using Serena:**
+   - [ ] Use Serena replace_symbol_body with `name_path="/get_market_status_and_date_time"`, `relative_path="src/backend/tools/polygon_tools.py"`, `body="<new implementation>"`
+
+6. [ ] **Add Helper Function:**
+   - [ ] Use Serena insert_after_symbol to add `_map_tradier_state` helper function after `get_market_status_and_date_time`
+
+7. [ ] **Update Imports:**
+   - [ ] Check current imports in polygon_tools.py
+   - [ ] Ensure `datetime`, `timezone` imported from datetime module
+   - [ ] Ensure `requests` imported
+   - [ ] Ensure `os` imported
+   - [ ] Add missing imports using Serena insert_before_symbol
+
+8. [ ] **Verify Implementation:**
+   - [ ] Use Read to review entire polygon_tools.py file
+   - [ ] Verify function signature unchanged (backward compatibility)
+   - [ ] Verify timestamp conversion correct
+   - [ ] Verify state mapping handles all cases
+   - [ ] Verify response format matches current structure
+
+**Success Criteria:**
+- [ ] Function returns market status ("open", "closed", "extended-hours")
+- [ ] Correctly sets early_hours flag when state="pre"
+- [ ] Correctly sets after_hours flag when state="post"
+- [ ] Timestamp converts correctly to ISO format
+- [ ] Date and time fields extracted correctly
+- [ ] Exchange status populated for backward compatibility
+- [ ] No Polygon SDK dependencies remaining for this function
 
 ---
 
-## Phase 4: Testing (MANDATORY - DO NOT SKIP)
+### 3.4: Update Agent Instructions
 
-### 🔴 CRITICAL: Testing is REQUIRED for Task Completion
+**Task:** Update RULE #1, #2, and #3 in agent_service.py to reflect Tradier API usage
 
-### Step 8: Quick CLI Test with 3 Tickers ⏳ PENDING
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan instruction updates strategy
+- [ ] Use **Serena search_for_pattern** to locate RULE #1, #2, #3 in agent_service.py
+- [ ] Use **Edit** to update agent instructions (multi-line text replacement)
+- [ ] Use **Read** to verify changes after implementation
 
-**Tool Enforcement**:
-- ✅ Use Bash to run CLI
-- ✅ Test each ticker individually
+**Steps:**
+1. [ ] **Sequential-Thinking**: Analyze instruction update strategy
+   - Decide whether to merge RULE #1 and #2 or keep separate
+   - Plan wording changes for Tradier API references
+   - Ensure multi-ticker support clearly documented
 
-**Test Commands**:
-```bash
-# Test 1: SPY
-echo "Get options expiration dates for SPY" | uv run src/backend/main.py
+2. [ ] **Locate Current Instructions:**
+   - [ ] Use Serena search_for_pattern with `substring_pattern="RULE #1: SINGLE TICKER"`, `relative_path="src/backend/services/agent_service.py"`, `context_lines_before=2`, `context_lines_after=10`
+   - [ ] Use Serena search_for_pattern with `substring_pattern="RULE #2: MULTIPLE TICKERS"`, `relative_path="src/backend/services/agent_service.py"`, `context_lines_before=2`, `context_lines_after=10`
+   - [ ] Use Serena search_for_pattern with `substring_pattern="RULE #3: MARKET STATUS"`, `relative_path="src/backend/services/agent_service.py"`, `context_lines_before=2`, `context_lines_after=10`
 
-# Test 2: NVDA
-echo "Get options expiration dates for NVDA" | uv run src/backend/main.py
+3. [ ] **Update RULE #1:**
+   - [ ] Change title from "SINGLE TICKER" to "STOCK QUOTE (SINGLE OR MULTI-TICKER)"
+   - [ ] Update: "📊 Uses Finnhub API" → "📊 Uses Tradier API"
+   - [ ] Add note about multi-ticker support: "Supports comma-separated tickers (e.g., 'AAPL,TSLA,NVDA')"
+   - [ ] Keep same use case description and examples
 
-# Test 3: SOUN
-echo "Get options expiration dates for SOUN" | uv run src/backend/main.py
-```
+   **New RULE #1:**
+   ```
+   RULE #1: STOCK QUOTE (SINGLE OR MULTI-TICKER) = ALWAYS USE get_stock_quote()
+   - If the request mentions ONE OR MORE ticker symbols → MUST USE get_stock_quote(ticker='SYMBOL') or get_stock_quote(ticker='SYM1,SYM2,SYM3')
+   - 📊 Uses Tradier API for real-time quote data
+   - ✅ Supports single ticker: get_stock_quote(ticker='AAPL')
+   - ✅ Supports multiple tickers: get_stock_quote(ticker='AAPL,TSLA,NVDA') (comma-separated, no spaces)
+   - ✅ Returns: current price, change, percent change, high, low, open, previous close
+   ```
 
-**Expected Output for Each**:
-- Ticker symbol confirmed
-- Array of expiration dates in YYYY-MM-DD format
-- Count of dates returned
-- Source: "Tradier"
-- Response time < 10s
+4. [ ] **Update RULE #2:**
+   - [ ] Keep rule separate for clarity (backward compatibility)
+   - [ ] Update to reference Tradier's native multi-ticker support
+   - [ ] Remove parallel call instructions
+   - [ ] Emphasize single tool call with comma-separated tickers
 
-**Validation**:
-- All 3 tickers return valid data
-- No errors or exceptions
-- Dates are properly formatted
-- Tool is working correctly
+   **New RULE #2:**
+   ```
+   RULE #2: MULTIPLE TICKERS = SINGLE TOOL CALL WITH COMMA-SEPARATED TICKERS
+   - **ANALYZE REQUEST COMPLEXITY FIRST**: Count ticker symbols in user request
+   - **Single Ticker (count = 1)**: Use get_stock_quote(ticker='SYMBOL')
+   - **Multiple Tickers (count = 2+)**: Use SINGLE CALL with comma-separated tickers
+     - Example: get_stock_quote(ticker='AAPL,TSLA,NVDA')
+     - Format: Comma-separated, NO SPACES between tickers
+     - Maximum: No hard limit, but keep under 10 tickers for performance
+   - 📊 Uses Tradier API (supports native multi-ticker queries - NO parallel calls needed)
+   - ✅ Returns: Array of quote objects, one per ticker
+   ```
+
+5. [ ] **Update RULE #3:**
+   - [ ] Update: "Uses Polygon.io Direct API" → "Uses Tradier API"
+   - [ ] Keep same use case description
+   - [ ] Update response field descriptions if needed
+
+   **New RULE #3:**
+   ```
+   RULE #3: MARKET STATUS & DATE/TIME = ALWAYS USE get_market_status_and_date_time()
+   - If the request asks about market open/closed status, hours, trading sessions, current date, or current time
+   - 📊 Uses Tradier API for real-time market status and server datetime
+   - ✅ Returns: market status, exchange statuses, after_hours, early_hours, server_time with date and time
+   ```
+
+6. [ ] **Apply Changes:**
+   - [ ] Use Edit to replace RULE #1 text
+   - [ ] Use Edit to replace RULE #2 text
+   - [ ] Use Edit to replace RULE #3 text
+
+7. [ ] **Verify Changes:**
+   - [ ] Use Read to review updated agent_service.py
+   - [ ] Verify all Finnhub references removed
+   - [ ] Verify all Polygon references removed (for these tools)
+   - [ ] Verify instructions are clear and unambiguous
+
+**Success Criteria:**
+- [ ] RULE #1 updated to reflect Tradier API and multi-ticker support
+- [ ] RULE #2 updated to remove parallel calls, emphasize single call with comma-separated tickers
+- [ ] RULE #3 updated to reflect Tradier API
+- [ ] No references to Finnhub or Polygon for these specific tools
+- [ ] Instructions clear and consistent with new implementation
 
 ---
 
-### Step 9: Run Full Test Suite ⏳ PENDING
+## Phase 4: Testing 🔴 MANDATORY - DO NOT SKIP
 
-**Tool Enforcement**:
-- ✅ MANDATORY: Use Bash to execute test suite
-- ✅ MANDATORY: Show results to user
+### 4.1: Quick Manual Testing
 
-**Command**:
-```bash
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-```
+**Task:** Test each tool individually with CLI to verify basic functionality
 
-**Expected Results**:
-- **Total Tests**: 40/40 PASSED (100% success rate)
-- **New Tests**: Test 14 (SPY expirations) and Test 30 (NVDA expirations) both PASS
-- **Average Response Time**: < 15s (EXCELLENT rating)
-- **Test Report**: `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`
-- **Session Persistence**: VERIFIED (single session for all tests)
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan testing strategy and analyze test results
+- [ ] Use **Bash** to run CLI tests
+- [ ] Use **Read** to review test output logs
 
-**IF ANY TEST FAILS**:
-1. Review test report log file
-2. Identify failure cause
-3. Fix implementation
-4. Re-run tests
-5. Repeat until 100% pass rate
+**Steps:**
+1. [ ] **Sequential-Thinking**: Plan testing strategy
+   - Test order: Single ticker → Multi-ticker → Market status
+   - Expected response format verification
+   - Error case testing
 
-**Validation**:
-- Test suite executed successfully
-- 40/40 tests PASSED (100%)
-- Test report generated
-- Evidence provided to user
-- Performance metrics acceptable
+2. [ ] **Test get_stock_quote - Single Ticker:**
+   - [ ] Run: `uv run src/backend/main.py` with prompt "Get quote for SPY"
+   - [ ] Verify response has all 8 fields
+   - [ ] Verify source="Tradier"
+   - [ ] Check response time
+   - [ ] Save output for review
+
+3. [ ] **Test get_stock_quote - Multi-Ticker:**
+   - [ ] Run: `uv run src/backend/main.py` with prompt "Get quotes for SPY, NVDA, SOUN"
+   - [ ] Verify response is array of quote objects
+   - [ ] Verify all 3 tickers present
+   - [ ] Verify each has all 8 fields
+   - [ ] Check response time
+   - [ ] Save output for review
+
+4. [ ] **Test get_market_status_and_date_time:**
+   - [ ] Run: `uv run src/backend/main.py` with prompt "Is the market open?"
+   - [ ] Verify market_status field present
+   - [ ] Verify date and time fields present
+   - [ ] Verify exchange statuses present
+   - [ ] Check response time
+   - [ ] Save output for review
+
+5. [ ] **Test All Required Tickers:**
+   - [ ] SPY: "Get quote for SPY"
+   - [ ] NVDA: "Get quote for NVDA"
+   - [ ] SOUN: "Get quote for SOUN"
+   - [ ] QQQ: "Get quote for QQQ"
+   - [ ] IWM: "Get quote for IWM"
+   - [ ] Multi: "Get quotes for SPY, NVDA, SOUN, QQQ, IWM"
+
+6. [ ] **Sequential-Thinking**: Analyze test results
+   - Check if all responses match expected format
+   - Verify Tradier API is being called
+   - Identify any unexpected behavior
+   - Plan fixes if needed
+
+**Success Criteria:**
+- [ ] All single ticker tests return correct format
+- [ ] Multi-ticker test returns array of quotes
+- [ ] Market status test returns correct format
+- [ ] All responses use source="Tradier"
+- [ ] No errors or exceptions
+- [ ] Response times reasonable (<3 seconds)
+
+---
+
+### 4.2: Regression Test Suite
+
+**Task:** Run full test_cli_regression.sh suite to ensure no breaking changes
+
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to analyze test results and diagnose failures
+- [ ] Use **Bash** to run test suite
+- [ ] Use **Read** to review test report
+- [ ] Use **Bash** to fix issues if tests fail
+
+**Steps:**
+1. [ ] **Sequential-Thinking**: Plan regression testing approach
+   - Understand current test suite structure
+   - Plan for 100% pass rate requirement
+   - Strategy for diagnosing failures if they occur
+
+2. [ ] **Run Full Test Suite:**
+   ```bash
+   chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+   ```
+
+3. [ ] **Review Test Results:**
+   - [ ] Use Read to review test report in test-reports/ directory
+   - [ ] Verify 100% success rate (X/X PASSED)
+   - [ ] Check average response time
+   - [ ] Check session persistence
+   - [ ] Identify any failures or errors
+
+4. [ ] **If Tests Fail:**
+   - [ ] **Sequential-Thinking**: Analyze failure patterns
+     - Identify which tests failed
+     - Determine root cause
+     - Plan fix strategy
+   - [ ] Fix identified issues using appropriate tools
+   - [ ] Re-run test suite
+   - [ ] Repeat until 100% pass rate achieved
+
+5. [ ] **Document Test Results:**
+   - [ ] Note test report file path
+   - [ ] Note pass/fail counts
+   - [ ] Note average response time
+   - [ ] Note any performance changes vs baseline
+
+**Success Criteria:**
+- [ ] 100% test pass rate (38/38 PASSED or similar)
+- [ ] Test report generated in test-reports/
+- [ ] No errors or failures in output
+- [ ] Response times within acceptable range (≤12 seconds average)
+- [ ] Session persistence verified
+
+**🔴 ENFORCEMENT:**
+- [ ] Code without test execution = Code NOT implemented
+- [ ] No test results = Task INCOMPLETE
+- [ ] Cannot proceed to next phase without 100% pass rate
+- [ ] Must show test evidence to user
+
+---
+
+### 4.3: Edge Case Testing
+
+**Task:** Test error handling and edge cases
+
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan edge case testing
+- [ ] Use **Bash** to run edge case tests
+- [ ] Use **Read** to review error responses
+
+**Steps:**
+1. [ ] **Sequential-Thinking**: Plan edge case testing
+   - Invalid ticker
+   - Empty ticker string
+   - Missing API key scenario
+   - Network error simulation
+
+2. [ ] **Test Invalid Ticker:**
+   - [ ] Run: `uv run src/backend/main.py` with prompt "Get quote for INVALIDTICKER123"
+   - [ ] Verify graceful error handling
+   - [ ] Verify error message is clear
+
+3. [ ] **Test Empty Ticker:**
+   - [ ] Run: `uv run src/backend/main.py` with prompt "Get quote for "
+   - [ ] Verify graceful error handling
+
+4. [ ] **Test Missing API Key (if possible):**
+   - [ ] Temporarily remove TRADIER_API_KEY from .env
+   - [ ] Run test
+   - [ ] Verify error message indicates missing API key
+   - [ ] Restore API key
+
+5. [ ] **Document Edge Case Results:**
+   - [ ] Note error handling behavior
+   - [ ] Verify user-friendly error messages
+   - [ ] Identify any improvements needed
+
+**Success Criteria:**
+- [ ] Invalid ticker returns clear error message
+- [ ] Empty ticker handled gracefully
+- [ ] Missing API key error is informative
+- [ ] No crashes or unhandled exceptions
 
 ---
 
 ## Phase 5: Serena Project Memories Update
 
-### Step 10: Update tech_stack.md Memory ⏳ PENDING
+### 5.1: Update tech_stack.md Memory
 
-**Tool Enforcement**:
-- ✅ Use Serena `read_memory` to get current content
-- ✅ Use Sequential-Thinking to plan updates
-- ✅ Use Serena `write_memory` to save updates
+**Task:** Document Tradier API integration in Serena memory
 
-**Updates Required**:
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to plan memory update content
+- [ ] Use **Serena read_memory** to read current tech_stack.md
+- [ ] Use **Serena write_memory** to update tech_stack.md
 
-1. **Data Sources Section** (Line ~30):
-   - Add Tradier to the list
-   - Update tool counts
+**Steps:**
+1. [ ] **Sequential-Thinking**: Plan memory update
+   - What information to add
+   - Where to add it in existing structure
+   - How to format for future reference
 
-**Before**:
-```markdown
-- **Polygon.io**: Direct Python API integration (12 tools)
-- **Finnhub**: Custom Python API integration (1 tool)
-- **Total AI Agent Tools**: 12
-```
+2. [ ] **Read Current Memory:**
+   - [ ] Use Serena read_memory with `memory_file_name="tech_stack.md"`
 
-**After**:
-```markdown
-- **Polygon.io**: Direct Python API integration (11 tools)
-- **Finnhub**: Custom Python API integration (1 tool)
-- **Tradier**: Custom Python API integration (1 tool)
-- **Total AI Agent Tools**: 13 (updated Oct 10, 2025)
-```
+3. [ ] **Update Memory:**
+   - [ ] Use Serena write_memory with `memory_name="tech_stack.md"`
+   - [ ] Add section: "Tradier API Integration"
+   - [ ] Document:
+     - Tools migrated: get_stock_quote, get_market_status_and_date_time
+     - Tradier endpoints used
+     - Migration date
+     - Key implementation details
+     - Multi-ticker support
+     - Backward compatibility notes
 
-2. **Direct API Tools Section** (Line ~200):
-   - Add new section for Tradier tools
-
-**Add after "Finnhub Custom API (1 tool):"**:
-```markdown
-**Tradier Custom API (1 tool - Added Oct 10, 2025):**
-- `get_options_expiration_dates` - Get all valid options expiration dates for a ticker
-```
-
-3. **Recent Updates Section** (at bottom):
-   - Add entry for this change
-
-**Add new entry**:
-```markdown
-### Tradier Options Expiration Tool (Oct 10, 2025)
-- **Tool Added**: `get_options_expiration_dates`
-- **Purpose**: Fetch all available options expiration dates for a ticker
-- **API**: Tradier Brokerage API (markets/options/expirations endpoint)
-- **Integration**: Custom Python tool using requests library
-- **Authentication**: Bearer token via TRADIER_API_KEY env variable
-- **Response Format**: JSON with array of dates in YYYY-MM-DD format
-- **Agent Instructions**: New RULE #10 added for usage guidance
-- **Test Coverage**: 2 new tests added (SPY Test 14, NVDA Test 30)
-- **Total Tools**: 13 (was 12)
-- **Test Results**: 40/40 PASSED (100% success rate)
-```
-
-**Validation**:
-- tech_stack.md memory updated
-- Tool counts accurate
-- Tradier section added
-- Recent updates documented
+**Success Criteria:**
+- [ ] tech_stack.md updated with Tradier integration details
+- [ ] Information complete and accurate
+- [ ] Formatted consistently with existing content
 
 ---
 
-### Step 11: Update testing_procedures.md Memory ⏳ PENDING
+### 5.2: Update testing_procedures.md Memory (if exists)
 
-**Tool Enforcement**:
-- ✅ Use Serena `read_memory` to get current content
-- ✅ Use Sequential-Thinking to plan updates
-- ✅ Use Serena `write_memory` to save updates
+**Task:** Document new testing requirements for Tradier tools
 
-**Updates Required**:
+**Mandatory Tool Usage:**
+- [ ] Use **Serena list_memories** to check if testing_procedures.md exists
+- [ ] Use **Sequential-Thinking** to plan testing documentation
+- [ ] Use **Serena read_memory** to read current testing_procedures.md (if exists)
+- [ ] Use **Serena write_memory** to update testing_procedures.md
 
-1. **Test Coverage Section** (Line ~30):
-   - Update test counts
+**Steps:**
+1. [ ] **Check Memory Exists:**
+   - [ ] Use Serena list_memories
+   - [ ] Identify if testing_procedures.md or similar exists
 
-**Before**:
-```markdown
-**Test Coverage (36 tests total - NEW Oct 8, 2025):**
+2. [ ] **If Exists:**
+   - [ ] Use Serena read_memory
+   - [ ] **Sequential-Thinking**: Plan updates
+   - [ ] Use Serena write_memory to add:
+     - Tradier API testing requirements
+     - Multi-ticker test cases
+     - Edge case test scenarios
 
-1. **SPY Test Sequence (Tests 1-15)**:
-...
-2. **NVDA Test Sequence (Tests 16-30)**:
-...
-3. **Multi-Ticker Test Sequence (Tests 31-36)**:
-```
-
-**After**:
-```markdown
-**Test Coverage (40 tests total - UPDATED Oct 10, 2025):**
-
-1. **SPY Test Sequence (Tests 1-17)**:
-   - Market Status
-   - Current Price: $SPY
-   - Today's Closing Price: $SPY
-   - Yesterday's Closing Price: $SPY
-   - Last week's Performance: $SPY
-   - Stock Price on the previous week's Friday: $SPY (dynamic date)
-   - Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY (dynamic date)
-   - RSI-14: $SPY
-   - MACD: $SPY
-   - SMA 20/50/200: $SPY
-   - EMA 20/50/200: SPY
-   - Support & Resistance Levels: $SPY
-   - Technical Analysis: $SPY
-   - **Get options expiration dates for SPY** (NEW TEST 14)
-   - Get First 3 Call Option Quotes expiring this Friday: $SPY
-   - Get First 3 Put Option Quotes expiring this Friday: $SPY
-   - Options Wall Analysis: $SPY
-
-2. **NVDA Test Sequence (Tests 18-33)**:
-   - Same pattern as SPY (16 tests)
-   - **Get options expiration dates for NVDA** (NEW TEST 30)
-
-3. **Multi-Ticker Test Sequence (Tests 34-40)**:
-   - Market Status
-   - Current Price: $WDC, $AMD, $GME
-   - MACD Analysis: $WDC, $AMD, $GME
-   - Average Trading Volume comparison: $WDC, $AMD, $GME
-   - Technical Analysis: $WDC, $AMD, $GME
-   - Relative Strength Analysis: $WDC, $AMD, $GME
-   - Daily bars Analysis from the last 2 trading weeks: $WDC, $AMD, $GME
-```
-
-2. **Expected Performance Section**:
-   - Update test counts
-
-**Update all references**:
-- "36 tests" → "40 tests"
-- "36/36" → "40/40"
-
-3. **Recent Updates Section** (at bottom):
-   - Add entry for test changes
-
-**Add new entry**:
-```markdown
-### Oct 10, 2025: Tradier Options Expiration Tests Added
-
-**New Test Cases:**
-- Test 14: SPY Options Expiration Dates
-- Test 30: NVDA Options Expiration Dates
-
-**Test Prompts:**
-- "Get options expiration dates for SPY"
-- "Get options expiration dates for NVDA"
-
-**Purpose**: Validate new Tradier API integration for fetching options expiration dates
-
-**Test Suite Updates:**
-- Total tests: 38 → 40
-- SPY sequence: 16 tests → 17 tests
-- NVDA sequence: 16 tests → 17 tests (including renumbering)
-- Multi-ticker: Unchanged (6 tests)
-
-**Expected Output:**
-- JSON with ticker, expiration_dates array, count, source
-- Dates in YYYY-MM-DD format
-- Response time < 10s
-- No errors
-
-**Test Results:**
-- Total: 40/40 PASSED (100%)
-- New tests: Both PASSED
-- Performance: EXCELLENT rating maintained
-```
-
-**Validation**:
-- testing_procedures.md memory updated
-- Test counts accurate (40 total)
-- New tests documented
-- Test sequences properly renumbered
+**Success Criteria:**
+- [ ] Testing procedures updated (if memory exists)
+- [ ] Tradier testing documented
+- [ ] Multi-ticker testing documented
 
 ---
 
-## Phase 6: Final Git Commit (Atomic Commit Workflow)
+## Phase 6: Final Git Commit 🔴 ATOMIC COMMIT WORKFLOW
 
-### 🔴 CRITICAL: Follow Proper Atomic Commit Workflow
+### 6.1: Pre-Commit Verification
 
-### Step 12: Update CLAUDE.md Documentation ⏳ PENDING
+**Task:** Verify ALL work is complete before staging
 
-**Tool Enforcement**:
-- ✅ Use Standard Edit to update CLAUDE.md
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to verify completion checklist
+- [ ] Use **Bash** to run git status and git diff
+- [ ] Use **Read** to review any uncertain changes
 
-**Update Location**: Replace "Last Completed Task Summary" section (lines 12-179)
+**Steps:**
+1. [ ] **Sequential-Thinking**: Verify completion
+   - Check all implementation steps complete
+   - Check all tests passed
+   - Check all documentation updated
+   - Check all Serena memories updated
 
-**New Content**: Create comprehensive summary following the template pattern
+2. [ ] **Verify Work Complete:**
+   - [ ] All code changes done (finnhub_tools.py, polygon_tools.py, agent_service.py)
+   - [ ] All tests run and passing (100% success rate)
+   - [ ] All documentation updated (CLAUDE.md if needed)
+   - [ ] All Serena memories updated (tech_stack.md, testing_procedures.md)
+   - [ ] .env file has TRADIER_API_KEY
+   - [ ] This TODO_task_plan.md updated with completion status
 
-**Validation**:
-- CLAUDE.md updated with complete task summary
-- Test results included
-- Performance metrics documented
+3. [ ] **Review Changes:**
+   ```bash
+   git status  # See all changed files
+   git diff    # Review all changes
+   ```
 
----
+4. [ ] **Verify Nothing Staged Yet:**
+   - [ ] Confirm staging area is EMPTY
+   - [ ] ⚠️ DO NOT run `git add` yet
 
-### Step 13: Verify ALL Work Complete ⏳ PENDING
-
-**Tool Enforcement**:
-- ✅ Use Bash to check git status
-- ✅ Review all changes
-
-**Commands**:
-```bash
-# Review all changed/new files
-git status
-
-# Review all changes in detail
-git diff
-```
-
-**Checklist**:
-- [ ] tradier_tools.py created
-- [ ] tools/__init__.py updated
-- [ ] agent_service.py updated (imports + tools list + instructions)
-- [ ] test_cli_regression.sh updated (2 new tests)
-- [ ] .env has TRADIER_API_KEY
-- [ ] Quick CLI tests completed successfully
-- [ ] Full test suite: 40/40 PASSED
-- [ ] Test report generated
-- [ ] tech_stack.md memory updated
-- [ ] testing_procedures.md memory updated
-- [ ] CLAUDE.md updated
-- [ ] TODO_task_plan.md exists (this file)
-
-**Validation**:
-- ALL checklist items complete
-- ALL files ready for commit
-- NO unstaged changes remaining
+**Success Criteria:**
+- [ ] All work verified complete
+- [ ] All changes reviewed
+- [ ] Staging area still EMPTY
+- [ ] Ready for atomic commit
 
 ---
 
-### Step 14: Stage All Files At Once ⏳ PENDING
+### 6.2: Atomic Commit and Push
 
-**Tool Enforcement**:
-- ✅ CRITICAL: This is the FIRST time running git add
-- ✅ Stage ALL files in ONE command
+**Task:** Stage ALL files at once, commit immediately, push immediately
 
-**Command**:
-```bash
-git add -A
-```
+**Mandatory Tool Usage:**
+- [ ] Use **Bash** for git commands
+- [ ] Use **Sequential-Thinking** if any issues arise
 
-**Validation**:
-- All files staged
-- Nothing left unstaged
+**Steps:**
+1. [ ] **Stage Everything at Once:**
+   ```bash
+   git add -A  # Stage ALL files in ONE command
+   ```
+   - [ ] This is the FIRST time running `git add`
+   - [ ] All related files staged together
 
----
+2. [ ] **Verify Staging Immediately:**
+   ```bash
+   git status  # Verify ALL files staged, NOTHING unstaged
+   ```
+   - [ ] If anything missing: `git add [missing-file]`
 
-### Step 15: Verify Staging Immediately ⏳ PENDING
+3. [ ] **Commit Immediately (within 60 seconds):**
+   ```bash
+   git commit -m "$(cat <<'EOF'
+   [TRADIER] Migrate get_stock_quote and get_market_status_and_date_time to Tradier API
 
-**Tool Enforcement**:
-- ✅ Use Bash to verify staging
+   - Migrate get_stock_quote from Finnhub to Tradier API
+     - Add multi-ticker support (comma-separated tickers)
+     - Handle single object vs array response structure
+     - Map Tradier fields to current response format
+     - Update source field to "Tradier"
 
-**Command**:
-```bash
-git status
-```
+   - Migrate get_market_status_and_date_time from Polygon to Tradier API
+     - Map Tradier state ("open", "closed", "pre", "post") to current format
+     - Convert Unix timestamp to ISO datetime
+     - Populate exchange statuses for backward compatibility
+     - Update source field to "Tradier"
 
-**Expected Output**:
-```
-Changes to be committed:
-  new file:   src/backend/tools/tradier_tools.py
-  modified:   src/backend/tools/__init__.py
-  modified:   src/backend/services/agent_service.py
-  modified:   test_cli_regression.sh
-  modified:   .serena/memories/tech_stack.md
-  modified:   .serena/memories/testing_procedures.md
-  modified:   CLAUDE.md
-  new file:   TODO_task_plan.md
-  new file:   test-reports/test_cli_regression_loop1_*.log
-```
+   - Update agent instructions (RULE #1, #2, #3)
+     - RULE #1: Expand to support multi-ticker
+     - RULE #2: Update to use single call with comma-separated tickers
+     - RULE #3: Update Polygon reference to Tradier
 
-**Validation**:
-- ALL changed files staged
-- NOTHING unstaged
-- Ready for commit
+   - Add TRADIER_API_KEY to .env
 
----
+   - Testing results:
+     - All single ticker tests PASSED (SPY, NVDA, SOUN, QQQ, IWM)
+     - Multi-ticker test PASSED (SPY,NVDA,SOUN,QQQ,IWM)
+     - Market status test PASSED
+     - Full regression suite: X/X PASSED (100% success rate)
+     - Test report: test-reports/test_cli_regression_loopX_2025-10-10_XX-XX.log
 
-### Step 16: Create Atomic Commit IMMEDIATELY ⏳ PENDING
+   - Update Serena memories:
+     - tech_stack.md: Document Tradier API integration
+     - testing_procedures.md: Add Tradier testing requirements (if exists)
 
-**Tool Enforcement**:
-- ✅ Use Bash to commit within 60 seconds of staging
-- ✅ Use HEREDOC format for commit message
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-**Command**:
-```bash
-git commit -m "$(cat <<'EOF'
-[TRADIER] Add options expiration dates tool for AI Agent
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   EOF
+   )"
+   ```
 
-- Add new AI Agent tool: get_options_expiration_dates
-- Integration: Tradier Brokerage API (markets/options/expirations)
-- Authentication: Bearer token via TRADIER_API_KEY env variable
-- Response format: JSON with array of dates in YYYY-MM-DD format
-- Total tools: 12 → 13
+4. [ ] **Push Immediately:**
+   ```bash
+   git push
+   ```
 
-Code Changes:
-- NEW: src/backend/tools/tradier_tools.py (120 lines)
-  - Async function with @function_tool decorator
-  - Comprehensive error handling (timeout, network, validation)
-  - Follows OpenAI custom tools best practices
-- MODIFIED: src/backend/tools/__init__.py
-  - Import get_options_expiration_dates
-  - Export in __all__ list
-- MODIFIED: src/backend/services/agent_service.py
-  - Import Tradier tool
-  - Add to agent tools list (position 2, after get_stock_quote)
-  - Update TOOLS description (added Tradier mention)
-  - Update tool count: 12 → 13 tools (line 36)
-  - Add RULE #10: Options expiration dates usage guidance
-
-Test Changes:
-- MODIFIED: test_cli_regression.sh
-  - Add Test 14: SPY options expiration dates
-  - Add Test 30: NVDA options expiration dates
-  - Update test counts: 38 → 40 tests
-  - Renumber subsequent tests (14→17 become 15→18, etc.)
-  - Update test sequence documentation
-
-Test Results:
-- Total: 40/40 PASSED (100% success rate)
-- New Tests: Both PASSED (Test 14 SPY, Test 30 NVDA)
-- Avg Response Time: [X.XX]s (EXCELLENT rating)
-- Session Duration: [X] min [XX] sec
-- Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-
-Quick CLI Tests:
-- SPY: ✅ Valid expiration dates returned
-- NVDA: ✅ Valid expiration dates returned
-- SOUN: ✅ Valid expiration dates returned
-
-Documentation Updates:
-- MODIFIED: .serena/memories/tech_stack.md
-  - Add Tradier to Data Sources section
-  - Update tool counts (12 → 13)
-  - Add Tradier Custom API section
-  - Document new tool in Recent Updates
-- MODIFIED: .serena/memories/testing_procedures.md
-  - Update test coverage section (38 → 40 tests)
-  - Document new test cases (Test 14, Test 30)
-  - Update test sequences and renumbering
-  - Add Recent Updates entry
-- MODIFIED: CLAUDE.md
-  - Update Last Completed Task Summary section
-  - Document complete implementation details
-  - Include test results and validation
-
-Implementation Details:
-- Pattern: Followed finnhub_tools.py structure exactly
-- API: Tradier markets/options/expirations endpoint
-- Error Handling: Timeout, network, validation, empty data
-- Response: JSON with ticker, expiration_dates, count, source
-- Agent Instructions: RULE #10 provides comprehensive usage guidance
-- Tool Position: After get_stock_quote (logical grouping)
-
-Architecture:
-- Direct API integration (no MCP)
-- Async/await for non-blocking I/O
-- Environment variable for API key
-- Consistent with existing tool patterns
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
-```
-
-**Validation**:
-- Commit created successfully
-- Commit message comprehensive
-- All files included in commit
+**Success Criteria:**
+- [ ] All files staged in single `git add -A` command
+- [ ] Commit created within 60 seconds of staging
+- [ ] Commit message comprehensive and accurate
+- [ ] Push successful
+- [ ] No uncommitted changes remaining
 
 ---
 
-### Step 17: Push to Remote IMMEDIATELY ⏳ PENDING
+## Phase 7: Task Completion Verification
 
-**Tool Enforcement**:
-- ✅ Use Bash to push within 60 seconds of commit
+### 7.1: Final Checklist
 
-**Command**:
-```bash
-git push
-```
+**Mandatory Tool Usage:**
+- [ ] Use **Sequential-Thinking** to verify all phases complete
 
-**Expected Output**:
-```
-Counting objects: X, done.
-Delta compression using up to N threads.
-Compressing objects: 100% (X/X), done.
-Writing objects: 100% (X/X), done.
-Total X (delta Y), reused 0 (delta 0)
-To github.com:user/market-parser-polygon-mcp.git
-   abc1234..def5678  master -> master
-```
+**Final Verification:**
+- [ ] Phase 1: Research ✅
+- [ ] Phase 2: Planning ✅
+- [ ] Phase 3: Implementation ✅
+  - [ ] Environment setup complete
+  - [ ] get_stock_quote migrated
+  - [ ] get_market_status_and_date_time migrated
+  - [ ] Agent instructions updated
+- [ ] Phase 4: Testing ✅
+  - [ ] Quick manual tests passed
+  - [ ] Regression suite 100% pass rate
+  - [ ] Edge cases tested
+- [ ] Phase 5: Serena Updates ✅
+  - [ ] tech_stack.md updated
+  - [ ] testing_procedures.md updated (if exists)
+- [ ] Phase 6: Git Commit ✅
+  - [ ] Atomic commit complete
+  - [ ] Push successful
 
-**Validation**:
-- Push successful
-- All changes in remote repository
-- Task COMPLETE
-
----
-
-## Success Criteria
-
-**Task is COMPLETE when ALL of the following are TRUE**:
-
-✅ tradier_tools.py created with get_options_expiration_dates function
-✅ tools/__init__.py exports new tool
-✅ agent_service.py imports and registers tool
-✅ Agent instructions updated (tool count, RULE #10)
-✅ test_cli_regression.sh has 2 new tests (40 total)
-✅ Quick CLI tests: SPY, NVDA, SOUN all return valid data
-✅ Full test suite: 40/40 PASSED (100%)
-✅ Test report generated and reviewed
-✅ tech_stack.md memory updated
-✅ testing_procedures.md memory updated
-✅ CLAUDE.md Last Completed Task updated
-✅ All files staged with git add -A
-✅ Atomic commit created with comprehensive message
-✅ Changes pushed to remote repository
+**Success Criteria:**
+- [ ] All phases complete
+- [ ] All tools working with Tradier API
+- [ ] All tests passing
+- [ ] All documentation updated
+- [ ] All changes committed and pushed
+- [ ] Task complete ✅
 
 ---
 
-## Tool Usage Tracking
+## Summary
 
-**This plan enforces MANDATORY tool usage throughout implementation. Track usage here:**
+**Migration Overview:**
+- **Tool 1:** get_stock_quote (Finnhub → Tradier)
+  - Added multi-ticker support
+  - Maintained backward compatibility
+  - Updated agent instructions
 
-### Phase 3: Implementation
-- [ ] Sequential-Thinking: Plan tradier_tools.py structure
-- [ ] Standard Write: Create tradier_tools.py
-- [ ] Serena find_symbol: Locate __all__ in __init__.py
-- [ ] Standard Edit: Update __init__.py
-- [ ] Serena find_symbol: Locate import section in agent_service.py
-- [ ] Serena insert_after_symbol OR Standard Edit: Add Tradier import
-- [ ] Serena find_symbol: Locate create_agent function
-- [ ] Sequential-Thinking: Plan tools list insertion
-- [ ] Serena replace_symbol_body OR Standard Edit: Add to tools list
-- [ ] Sequential-Thinking: Plan agent instructions updates
-- [ ] Serena find_symbol: Locate get_enhanced_agent_instructions
-- [ ] Serena replace_symbol_body OR Standard Edit: Update instructions
-- [ ] Sequential-Thinking: Plan test insertions
-- [ ] Standard Read: Review test structure
-- [ ] Standard Edit: Add 2 new test cases
-- [ ] Bash: Verify TRADIER_API_KEY in .env
+- **Tool 2:** get_market_status_and_date_time (Polygon → Tradier)
+  - Mapped state to current format
+  - Converted timestamp format
+  - Maintained backward compatibility
 
-### Phase 4: Testing
-- [ ] Bash: Quick test SPY
-- [ ] Bash: Quick test NVDA
-- [ ] Bash: Quick test SOUN
-- [ ] Bash: Run full test suite (MANDATORY)
-- [ ] Bash: Review test results
+**Key Achievements:**
+- ✅ Tradier API integration complete
+- ✅ Multi-ticker support added to get_stock_quote
+- ✅ All tests passing (100% success rate)
+- ✅ Agent instructions updated
+- ✅ Documentation updated
+- ✅ Atomic commit complete
 
-### Phase 5: Serena Updates
-- [ ] Serena read_memory: Get tech_stack.md content
-- [ ] Sequential-Thinking: Plan tech_stack.md updates
-- [ ] Serena write_memory: Update tech_stack.md
-- [ ] Serena read_memory: Get testing_procedures.md content
-- [ ] Sequential-Thinking: Plan testing_procedures.md updates
-- [ ] Serena write_memory: Update testing_procedures.md
+**Files Modified:**
+1. src/backend/tools/finnhub_tools.py
+2. src/backend/tools/polygon_tools.py
+3. src/backend/services/agent_service.py
+4. .env
+5. .serena/memories/tech_stack.md
+6. .serena/memories/testing_procedures.md (if exists)
 
-### Phase 6: Git Commit
-- [ ] Standard Edit: Update CLAUDE.md
-- [ ] Bash: git status (review changes)
-- [ ] Bash: git diff (review details)
-- [ ] Bash: git add -A (stage all at once)
-- [ ] Bash: git status (verify staging)
-- [ ] Bash: git commit (atomic commit)
-- [ ] Bash: git push (immediate push)
-
-**FAILURE = Not using tools as specified above**
-
----
-
-## Implementation Status
-
-**Current Phase**: Phase 2 - Planning ✅ COMPLETE
-**Next Phase**: Phase 3 - Implementation ⏳ READY TO START
-
-**Planning Complete**: All implementation steps documented with tool enforcement
-
-**Ready for Phase 3**: Begin implementation following this plan systematically
-
----
-
-**Last Updated**: October 10, 2025
-**Status**: Planning Phase Complete, Implementation Phase Ready
+**Testing:**
+- Single ticker tests: SPY, NVDA, SOUN, QQQ, IWM ✅
+- Multi-ticker test: SPY,NVDA,SOUN,QQQ,IWM ✅
+- Market status test ✅
+- Full regression suite: 100% pass rate ✅

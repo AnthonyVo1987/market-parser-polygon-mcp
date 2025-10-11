@@ -1,40 +1,35 @@
 """
-Finnhub custom tools for OpenAI AI Agent.
-Provides real-time stock quote data via Finnhub API.
+Tradier custom tools for OpenAI AI Agent.
+Provides real-time stock quote data via Tradier API.
 """
 
 import json
 import os
 
-import finnhub
+import requests
 from agents import function_tool
-
-
-def _get_finnhub_client():
-    """Get Finnhub client with API key from environment.
-
-    Lazy initialization ensures .env is loaded before accessing API key.
-    """
-    api_key = os.getenv("FINNHUB_API_KEY")
-    return finnhub.Client(api_key=api_key)
 
 
 @function_tool
 async def get_stock_quote(ticker: str) -> str:
-    """Get real-time stock quote from Finnhub API.
+    """Get real-time stock quote from Tradier API.
 
     Use this tool when the user requests a stock quote, current price,
-    or real-time market data for a single ticker symbol.
+    or real-time market data for one or more ticker symbols.
 
-    This tool provides real-time price data via Finnhub API,
-    replacing the Polygon.io get_snapshot_ticker tool.
+    This tool provides real-time price data via Tradier API,
+    supporting both single and multiple ticker queries.
 
     Args:
-        ticker: Stock ticker symbol (e.g., "AAPL", "TSLA", "NVDA").
-                Must be a valid ticker from major US exchanges.
+        ticker: Stock ticker symbol(s). Can be:
+                - Single ticker: "AAPL"
+                - Multiple tickers: "AAPL,TSLA,NVDA" (comma-separated, no spaces)
+                Must be valid ticker(s) from major US exchanges.
 
     Returns:
-        JSON string containing quote data with format:
+        JSON string containing quote data.
+        
+        For single ticker:
         {
             "ticker": "AAPL",
             "current_price": 178.50,
@@ -44,8 +39,10 @@ async def get_stock_quote(ticker: str) -> str:
             "low": 176.80,
             "open": 177.00,
             "previous_close": 176.20,
-            "source": "Finnhub"
+            "source": "Tradier"
         }
+
+        For multiple tickers, returns array of quote objects.
 
         Or error format:
         {
@@ -58,12 +55,12 @@ async def get_stock_quote(ticker: str) -> str:
         - Supports major US stock exchanges (NYSE, NASDAQ, etc.)
         - Data updates in real-time during market hours
         - Returns last available price when market is closed
-        - Rate limits apply based on Finnhub API tier
+        - Handles up to 10 tickers per request for optimal performance
 
     Examples:
         - "Get AAPL stock quote"
         - "What's the current price of TSLA?"
-        - "NVDA quote"
+        - "Get quotes for AAPL, TSLA, NVDA"
     """
     try:
         # Validate ticker input
@@ -79,12 +76,34 @@ async def get_stock_quote(ticker: str) -> str:
         # Clean ticker (uppercase, strip whitespace)
         ticker = ticker.strip().upper()
 
-        # Call Finnhub API with lazy client initialization
-        client = _get_finnhub_client()
-        quote_data = client.quote(ticker)
+        # Get API key from environment
+        api_key = os.getenv("TRADIER_API_KEY")
+        if not api_key:
+            return json.dumps(
+                {
+                    "error": "Configuration error",
+                    "message": "TRADIER_API_KEY not configured in environment",
+                    "ticker": ticker,
+                }
+            )
+
+        # Build request to Tradier API
+        url = "https://api.tradier.com/v1/markets/quotes"
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
+        params = {"symbols": ticker}  # requests handles URL encoding
+
+        # Make API request with timeout
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+
+        data = response.json()
+        quotes_data = data.get("quotes", {}).get("quote")
 
         # Check if API returned valid data
-        if not quote_data or quote_data.get("c") == 0:
+        if not quotes_data:
             return json.dumps(
                 {
                     "error": "No data",
@@ -93,27 +112,60 @@ async def get_stock_quote(ticker: str) -> str:
                 }
             )
 
-        # Format response
+        # Handle single vs multi-ticker response structure
+        if isinstance(quotes_data, list):
+            # Multi-ticker response - return array of formatted quotes
+            results = []
+            for quote in quotes_data:
+                results.append(_format_tradier_quote(quote))
+            return json.dumps(results, indent=2)
+        else:
+            # Single ticker response - return single formatted quote
+            return json.dumps(_format_tradier_quote(quotes_data), indent=2)
+
+    except requests.exceptions.Timeout:
         return json.dumps(
             {
+                "error": "Timeout",
+                "message": f"Request timed out while fetching quote for {ticker}",
                 "ticker": ticker,
-                "current_price": round(quote_data.get("c", 0), 2),
-                "change": round(quote_data.get("d", 0), 2),
-                "percent_change": round(quote_data.get("dp", 0), 2),
-                "high": round(quote_data.get("h", 0), 2),
-                "low": round(quote_data.get("l", 0), 2),
-                "open": round(quote_data.get("o", 0), 2),
-                "previous_close": round(quote_data.get("pc", 0), 2),
-                "source": "Finnhub",
             }
         )
-
-    except Exception as e:
-        # Handle unexpected errors
+    except requests.exceptions.RequestException as e:
         return json.dumps(
             {
                 "error": "API request failed",
+                "message": f"Tradier API request failed: {str(e)}",
+                "ticker": ticker,
+            }
+        )
+    except Exception as e:
+        return json.dumps(
+            {
+                "error": "Unexpected error",
                 "message": f"Failed to retrieve quote for {ticker}: {str(e)}",
                 "ticker": ticker,
             }
         )
+
+
+def _format_tradier_quote(quote: dict) -> dict:
+    """Format Tradier quote data to match expected response structure.
+    
+    Args:
+        quote: Raw quote data from Tradier API
+        
+    Returns:
+        Formatted quote dictionary with standardized field names
+    """
+    return {
+        "ticker": quote.get("symbol", ""),
+        "current_price": round(quote.get("last", 0.0), 2),
+        "change": round(quote.get("change", 0.0), 2),
+        "percent_change": round(quote.get("change_percentage", 0.0), 2),
+        "high": round(quote.get("high", 0.0), 2),
+        "low": round(quote.get("low", 0.0), 2),
+        "open": round(quote.get("open", 0.0), 2),
+        "previous_close": round(quote.get("prevclose", 0.0), 2),
+        "source": "Tradier"
+    }

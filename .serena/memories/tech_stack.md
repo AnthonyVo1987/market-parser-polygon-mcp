@@ -29,10 +29,10 @@
   - PWA support with vite-plugin-pwa
 
 ### Data Sources
-- **Polygon.io**: Direct Python API integration (12 tools, updated Oct 9, 2025 - options chain bugs fixed)
-- **Finnhub**: Custom Python API integration (1 tool)
-- **Tradier**: Custom HTTP API integration (1 tool, added Oct 10, 2025 - options expiration dates)
-- **Total AI Agent Tools**: 13 (updated Oct 10, 2025 - added Tradier options expiration dates tool)
+- **Polygon.io**: Direct Python API integration (10 tools, updated Oct 10, 2025 - market status migrated to Tradier)
+- **Tradier**: Custom HTTP API integration (3 tools, updated Oct 10, 2025 - stock quotes, market status, options expiration dates)
+- **Finnhub**: REMOVED Oct 10, 2025 - migrated to Tradier
+- **Total AI Agent Tools**: 13 (updated Oct 10, 2025 - Tradier migration complete)
 
 ### Development Tools
 - **Python Linting**: pylint, black, isort, mypy
@@ -258,16 +258,12 @@ agent = initialize_persistent_agent()
 
 ### Direct API Tools (13 Total - Updated Oct 10, 2025)
 
-**Finnhub Custom API (1 tool):**
-- `get_stock_quote` - Real-time stock quotes from Finnhub (supports parallel calls for multiple tickers)
-
-**Tradier Custom HTTP API (1 tool - Added Oct 10, 2025):**
-- `get_options_expiration_dates` - Fetch ALL valid options expiration dates for a ticker from Tradier API
-
-**Polygon Direct API (11 tools - Updated Oct 9, 2025 - Bug Fixes):**
-
-**Market Data (1 tool):**
+**Tradier Custom HTTP API (3 tools - Updated Oct 10, 2025):**
+- `get_stock_quote` - Real-time stock quotes (supports single and multi-ticker in ONE call)
 - `get_market_status_and_date_time` - Market status and current datetime
+- `get_options_expiration_dates` - Fetch ALL valid options expiration dates for a ticker
+
+**Polygon Direct API (10 tools - Updated Oct 10, 2025):**
 
 **OHLC Bars (3 tools):**
 - `get_OHLC_bars_custom_date_range` - OHLC bars for custom date range
@@ -348,6 +344,301 @@ agent = initialize_persistent_agent()
 - `src/backend/tools/__init__.py` - Export get_options_expiration_dates
 - `src/backend/services/agent_service.py` - Import tool, add to tools list, RULE #10
 - `test_cli_regression.sh` - Added 2 test cases (Test 14, Test 31)
+
+### Tradier API Migration (Oct 10, 2025 - Stock Quotes & Market Status)
+
+**Problem Solved**: Migrated two critical tools from Finnhub and Polygon APIs to Tradier API for unified data provider and enhanced multi-ticker support.
+
+**Solution**: Complete migration of `get_stock_quote` (Finnhub → Tradier) and `get_market_status_and_date_time` (Polygon → Tradier) with backward compatibility and multi-ticker enhancements.
+
+#### Migration Overview
+
+**Tool 1: `get_stock_quote` (Finnhub → Tradier)**:
+- **Old**: Finnhub Python SDK (`finnhub.Client`)
+- **New**: Tradier HTTP API (`requests.get()`)
+- **File**: `src/backend/tools/finnhub_tools.py` (renamed functionality, kept filename)
+- **Key Enhancement**: Native multi-ticker support in single call
+- **API Endpoint**: `https://api.tradier.com/v1/markets/quotes`
+
+**Tool 2: `get_market_status_and_date_time` (Polygon → Tradier)**:
+- **Old**: Polygon Python SDK (`polygon.RESTClient`)
+- **New**: Tradier HTTP API (`requests.get()`)
+- **File**: `src/backend/tools/polygon_tools.py` (replaced function, kept other Polygon tools)
+- **Key Enhancement**: Unified market status with Tradier stock quotes
+- **API Endpoint**: `https://api.tradier.com/v1/markets/clock`
+
+#### Implementation Details: get_stock_quote
+
+**Location**: `src/backend/tools/finnhub_tools.py` (renamed from Finnhub to Tradier)
+
+**Old Implementation (Finnhub)**:
+```python
+@function_tool
+async def get_stock_quote(ticker: str) -> str:
+    finnhub_client = _get_finnhub_client()
+    quote = finnhub_client.quote(ticker)
+    # Returns: c, h, l, o, pc, t
+```
+
+**New Implementation (Tradier)**:
+```python
+@function_tool
+async def get_stock_quote(ticker: str) -> str:
+    """Get real-time stock quote from Tradier API.
+
+    Args:
+        ticker: Single ticker ("AAPL") or multiple tickers ("AAPL,TSLA,NVDA")
+
+    Returns:
+        JSON with: current_price, change, percent_change, high, low, open, previous_close
+    """
+    # Tradier API call with requests
+    url = "https://api.tradier.com/v1/markets/quotes"
+    headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
+    params = {"symbols": ticker}  # Handles comma-separated tickers
+
+    # Multi-ticker response handling
+    if isinstance(quotes_data, list):
+        return json.dumps([_format_tradier_quote(q) for q in quotes_data])
+    else:
+        return json.dumps(_format_tradier_quote(quotes_data))
+```
+
+**Key Changes**:
+1. ✅ **Library**: `finnhub-python` → `requests` (removed SDK dependency)
+2. ✅ **Authentication**: SDK client → Bearer token via `TRADIER_API_KEY`
+3. ✅ **Multi-Ticker**: Single ticker only → Single + Multi-ticker support
+4. ✅ **Response Structure**: Finnhub fields → Tradier fields with formatter
+5. ✅ **Error Handling**: Enhanced with timeout, HTTP status, network errors
+
+**Response Format Mapping**:
+```python
+# Finnhub → Tradier field mapping
+{
+    "ticker": quote.get("symbol"),           # symbol → ticker
+    "current_price": quote.get("last"),      # c → last
+    "change": quote.get("change"),           # (calculated) → change
+    "percent_change": quote.get("change_percentage"),  # (calculated) → change_percentage
+    "high": quote.get("high"),               # h → high
+    "low": quote.get("low"),                 # l → low
+    "open": quote.get("open"),               # o → open
+    "previous_close": quote.get("prevclose"), # pc → prevclose
+    "source": "Tradier"                      # NEW: data source tracking
+}
+```
+
+**Multi-Ticker Support**:
+- **Single Ticker**: `ticker='AAPL'` → Returns single object
+- **Multi-Ticker**: `ticker='AAPL,TSLA,NVDA'` → Returns array of objects
+- **Format**: Comma-separated, no spaces between tickers
+- **Detection**: `isinstance(quotes_data, list)` check handles both cases
+- **Maximum**: Keep under 10 tickers for optimal performance
+
+#### Implementation Details: get_market_status_and_date_time
+
+**Location**: `src/backend/tools/polygon_tools.py` (replaced function, kept file)
+
+**Old Implementation (Polygon)**:
+```python
+@function_tool
+async def get_market_status_and_date_time() -> str:
+    polygon_client = _get_polygon_client()
+    status = polygon_client.get_market_status()
+    # Returns: market_status, after_hours, early_hours, exchanges, server_time
+```
+
+**New Implementation (Tradier)**:
+```python
+@function_tool
+async def get_market_status_and_date_time() -> str:
+    """Get current market status and date/time from Tradier API."""
+    url = "https://api.tradier.com/v1/markets/clock"
+    headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
+
+    # Unix timestamp → ISO datetime conversion
+    timestamp = clock_data.get("timestamp", 0)
+    server_time_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+
+    # State mapping: open/closed/pre/post → open/closed/extended-hours
+    state = clock_data.get("state", "closed")
+    market_status = _map_tradier_state(state)
+```
+
+**Key Changes**:
+1. ✅ **Library**: `polygon-api-client` → `requests` (removed SDK dependency)
+2. ✅ **Authentication**: SDK client → Bearer token via `TRADIER_API_KEY`
+3. ✅ **Timestamp**: Native datetime → Unix timestamp conversion
+4. ✅ **State Mapping**: 4 states (open/closed/pre/post) → 3 states (open/closed/extended-hours)
+5. ✅ **Exchange Status**: Per-exchange granularity → Unified market state for all exchanges
+
+**State Mapping**:
+```python
+def _map_tradier_state(state: str) -> str:
+    """Map Tradier market state to expected response format."""
+    if state == "open":
+        return "open"
+    elif state in ["pre", "post"]:
+        return "extended-hours"  # Pre-market and after-hours combined
+    else:  # closed
+        return "closed"
+```
+
+**Backward Compatibility**:
+- ✅ Same response structure maintained
+- ✅ Same field names preserved
+- ✅ Exchange-level status populated (NASDAQ, NYSE, OTC)
+- ✅ No breaking changes to agent instructions or API consumers
+
+#### Agent Instructions Updates
+
+**Files Modified**: `src/backend/services/agent_service.py`
+
+**Updated Sections**:
+1. **Line 36 - TOOLS description**:
+   - OLD: "Finnhub for quotes, Polygon for market status"
+   - NEW: "Tradier for quotes and market status (supports multi-ticker)"
+
+2. **Lines 42-48 - RULE #1 (Stock Quotes)**:
+   - OLD: Single ticker only with Finnhub
+   - NEW: Single + Multi-ticker support with Tradier
+   - Added: Multi-ticker examples and comma-separated format
+
+3. **Lines 50-60 - RULE #2 (Multi-Ticker Strategy)**:
+   - OLD: Make parallel get_stock_quote calls for multiple tickers
+   - NEW: Single call with comma-separated tickers (e.g., 'AAPL,TSLA,NVDA')
+   - Emphasis: "ONE tool call handles ALL tickers"
+
+4. **Lines 62-66 - RULE #3 (Market Status)**:
+   - OLD: Polygon.io API
+   - NEW: Tradier API
+   - Maintained: Same use cases and examples
+
+5. **Line 114 - Fallback sequence**:
+   - OLD: "Try get_stock_quote (Finnhub)"
+   - NEW: "Try get_stock_quote (Tradier)"
+
+6. **Lines 363-370 - Decision tree**:
+   - Updated multi-ticker strategy to use comma-separated tickers
+
+7. **Lines 381-408 - Examples**:
+   - Updated with Tradier multi-ticker examples
+   - Removed Finnhub references
+
+8. **Lines 424-438 - INSTRUCTIONS**:
+   - Updated tool usage patterns for Tradier
+
+9. **Lines 458-461 - Tool transparency**:
+   - Updated examples to show Tradier with multi-ticker
+
+10. **Line 506 - Tools list comment**:
+    - OLD: "Finnhub + Polygon direct API tools (1 Finnhub + 11 Polygon)"
+    - NEW: "Tradier + Polygon direct API tools (2 Tradier + 10 Polygon)"
+
+#### Files Modified Summary
+
+**Tool Implementations**:
+- `src/backend/tools/finnhub_tools.py` - Migrated get_stock_quote to Tradier (172 lines)
+- `src/backend/tools/polygon_tools.py` - Migrated get_market_status_and_date_time to Tradier (partial file)
+
+**Agent Configuration**:
+- `src/backend/services/agent_service.py` - Updated 10+ instruction sections
+
+**Environment**:
+- `.env` - Added `TRADIER_API_KEY` environment variable
+
+#### Test Results (Oct 10, 2025)
+
+**Full Regression Suite**:
+- **Total**: 40/40 tests PASSED (100% success rate)
+- **Avg Response Time**: 10.67s (EXCELLENT rating)
+- **Session Duration**: 7 min 8 sec
+- **Session Persistence**: VERIFIED (single session)
+
+**Key Validations**:
+- ✅ **Multi-Ticker Tests** (Tests 36-40): All PASSED
+  - Test 36: Multi Current Price WDC, AMD, GME - PASS (20.749s)
+  - Test 37: Multi Today Closing Price - PASS (10.568s)
+  - Test 38: Multi Yesterday Closing Price - PASS (9.479s)
+  - Test 39: Multi Last Week Performance - PASS (23.298s)
+  - Test 40: Multi Last 2 Weeks Daily Bars - PASS (21.369s)
+
+- ✅ **Market Status Tests** (Tests 1, 18, 35): All PASSED
+  - Test 1: Market Status - PASS (5.725s)
+  - Test 18: Market Status - PASS (4.804s)
+  - Test 35: Multi Market Status - PASS (11.002s)
+
+- ✅ **Single Ticker Tests** (SPY & NVDA sequences): All PASSED
+  - SPY sequence: Tests 2-17 (16 tests, all PASS)
+  - NVDA sequence: Tests 19-34 (16 tests, all PASS)
+
+**Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_20-29.log`
+
+#### Benefits & Impact
+
+**1. Unified Data Provider**:
+- Single API (Tradier) for quotes, market status, and options expiration dates
+- Reduced API key management (one less provider)
+- Consistent data source and authentication pattern
+
+**2. Multi-Ticker Efficiency**:
+- OLD: 3 tickers = 3 parallel API calls to Finnhub
+- NEW: 3 tickers = 1 API call to Tradier
+- Benefit: Reduced API rate limit pressure, faster response times
+
+**3. Simplified Architecture**:
+- Removed Finnhub SDK dependency
+- Standardized on `requests` library for all HTTP APIs
+- Consistent error handling patterns across tools
+
+**4. Backward Compatibility**:
+- Zero breaking changes to API consumers
+- Same response structure maintained
+- Existing agent instructions enhanced, not replaced
+
+**5. Better Error Handling**:
+- Comprehensive timeout handling (10s timeout)
+- HTTP status code validation
+- Network error recovery
+- Descriptive error messages
+
+#### Performance Analysis
+
+**Response Times (Before vs After)**:
+- **Before** (Oct 9 baseline): 12.07s avg (38 tests)
+- **After** (Oct 10 migration): 10.67s avg (40 tests)
+- **Improvement**: 1.4s faster (11.6% improvement)
+- **Rating**: Both EXCELLENT (<30s)
+
+**Multi-Ticker Performance**:
+- 3 tickers: 10-20s response time (within EXCELLENT range)
+- Comparable to previous parallel call performance
+- Native API support eliminates parallel call overhead
+
+**Market Status Performance**:
+- Tradier: 4.8-11s response time
+- Previous Polygon: Similar performance
+- Benefit: Same endpoint as stock quotes (data consistency)
+
+#### Migration Rationale
+
+**Why Tradier?**
+1. **Native Multi-Ticker Support**: Single API call handles multiple tickers
+2. **Unified Platform**: Quotes, market status, and options in one API
+3. **Real-Time Data**: Market data updates in real-time during market hours
+4. **Better Rate Limits**: More generous rate limits for prototyping
+5. **Comprehensive Documentation**: Clear API docs and examples
+
+**Why Remove Finnhub?**
+1. **Limited to Single Ticker**: No native multi-ticker support
+2. **Separate API**: Required separate API key and SDK
+3. **SDK Dependency**: Finnhub Python SDK adds unnecessary dependency
+4. **Redundant**: Tradier provides same data with better features
+
+**Why Migrate Market Status from Polygon?**
+1. **Unified Data Source**: All quote-related data from same API
+2. **Data Consistency**: Market status from same provider as quotes
+3. **Reduced API Calls**: Polygon now only used for TA indicators and OHLC data
+4. **Cleaner Architecture**: Tradier for real-time data, Polygon for historical/technical data
 
 ### Options Chain Tools (Updated Oct 9, 2025 - Bug Fixes)
 
@@ -431,6 +722,7 @@ agent = initialize_persistent_agent()
 - **Phase 9 Complete** (Oct 9, 2025): CLI Visual Enhancements (Markdown tables, emojis, intelligent formatting)
 - **Phase 10 Complete** (Oct 2025): Persistent Agent Architecture (1x agent per lifecycle, CLI = core, GUI = wrapper)
 - **Phase 11 Complete** (Oct 10, 2025): Tradier Options Expiration Dates Tool (1 new tool, tool count 12→13)
+- **Phase 12 Complete** (Oct 10, 2025): Tradier API Migration (stock quotes + market status, Finnhub removed, tool count 13 maintained)
 
 ## Development Environment
 
@@ -514,16 +806,18 @@ agent = initialize_persistent_agent()
 
 ## Performance Metrics
 
-### Current Performance Baseline (Oct 10, 2025 - With Tradier Tool)
-- **Baseline Average Response Time**: 11.03s (EXCELLENT rating)
+### Current Performance Baseline (Oct 10, 2025 - Tradier Migration Complete)
+- **Baseline Average Response Time**: 10.67s (EXCELLENT rating)
 - **Success Rate**: 100% (40/40 tests passed)
-- **Performance Range**: 2.607s - 31.846s (39 tests under 30s, 1 test at 31.8s GOOD)
+- **Performance Range**: 2.488s - 31.267s (39 tests EXCELLENT <30s, 1 test GOOD 31.267s)
 - **Test Suite**: 40 tests per loop (SPY 17 + NVDA 17 + Multi 6)
-- **Average Session Duration**: 7 min 22 sec per loop
-- **New Tool Performance**: 
-  - SPY expiration dates: 8.596s (EXCELLENT)
-  - NVDA expiration dates: 14.511s (EXCELLENT)
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_19-25.log`
+- **Average Session Duration**: 7 min 8 sec per loop
+- **Performance Improvement**: 11.6% faster vs Oct 9 baseline (12.07s → 10.67s)
+- **Tradier Tool Performance**:
+  - Multi-ticker quotes: 9-23s (EXCELLENT)
+  - Market status: 4.8-11s (EXCELLENT)
+  - Options expiration dates: 6-14s (EXCELLENT)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_20-29.log`
 
 ### Previous Performance Baseline (Oct 9, 2025 - 10-Loop Baseline)
 - **Baseline Average Response Time**: 12.07s (EXCELLENT rating)
@@ -548,7 +842,24 @@ agent = initialize_persistent_agent()
 - **Persistent Agent**: 50% token savings via prompt caching after first message
 - **Tradier Integration**: Dedicated tool for options expiration dates (faster than options chain tools)
 
-## Recent Updates (Oct 10, 2025 - Tradier Options Expiration Dates Tool)
+## Recent Updates (Oct 10, 2025)
+
+### Tradier API Migration: Stock Quotes & Market Status (LATEST)
+- **Problem**: Multiple API providers (Finnhub, Polygon, Tradier) causing complexity and limited multi-ticker support
+- **Solution**: Migrate get_stock_quote (Finnhub → Tradier) and get_market_status_and_date_time (Polygon → Tradier)
+- **Integration**: Direct HTTP API using requests library
+- **Files Modified**:
+  - `src/backend/tools/finnhub_tools.py`: Migrated get_stock_quote to Tradier (172 lines)
+  - `src/backend/tools/polygon_tools.py`: Migrated get_market_status_and_date_time to Tradier (partial file)
+  - `src/backend/services/agent_service.py`: Updated 10+ agent instruction sections
+- **Key Benefits**:
+  - Unified data provider (Tradier) for quotes, market status, and options
+  - Native multi-ticker support (single API call for multiple tickers)
+  - Removed Finnhub SDK dependency
+  - 11.6% performance improvement (12.07s → 10.67s avg)
+  - Backward compatible (zero breaking changes)
+- **Test Results**: 40/40 PASSED, 10.67s avg (EXCELLENT rating)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_20-29.log`
 
 ### Tradier Options Expiration Dates Tool Implementation
 - **Problem**: No dedicated tool for fetching available options expiration dates

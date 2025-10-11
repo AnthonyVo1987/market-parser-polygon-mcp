@@ -5,8 +5,9 @@ Provides direct Polygon Python Library API access for market status, datetime, a
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
+import requests
 from agents import function_tool
 from polygon import RESTClient
 
@@ -22,13 +23,13 @@ def _get_polygon_client():
 
 @function_tool
 async def get_market_status_and_date_time() -> str:
-    """Get current market status and date/time from Polygon.io API.
+    """Get current market status and date/time from Tradier API.
 
     Use this tool when the user requests market status, trading hours,
     current date/time, or whether markets are open/closed.
 
     This tool provides real-time market status and server datetime via
-    Polygon.io direct API, replacing the MCP-based get_market_status tool.
+    Tradier API, replacing the Polygon.io direct API.
 
     Args:
         None - retrieves current market status automatically.
@@ -47,22 +48,22 @@ async def get_market_status_and_date_time() -> str:
             "server_time": "2025-10-05T14:30:00Z",
             "date": "2025-10-05",
             "time": "14:30:00",
-            "source": "Polygon.io"
+            "source": "Tradier"
         }
 
         Or error format:
         {
             "error": "error_type",
             "message": "descriptive error message",
-            "source": "Polygon.io"
+            "source": "Tradier"
         }
 
     Note:
         - Provides combined market status and datetime in single call
-        - Data updates in real-time from Polygon.io servers
+        - Data updates in real-time from Tradier servers
         - Includes pre-market (early_hours) and after-market (after_hours) status
         - Server time is in UTC timezone
-        - This is a direct API call (not using MCP server)
+        - This is a direct API call via HTTP
 
     Examples:
         - "Is the market open?"
@@ -72,68 +73,116 @@ async def get_market_status_and_date_time() -> str:
         - "Are markets open for trading?"
     """
     try:
-        # Call Polygon API with lazy client initialization
-        client = _get_polygon_client()
-        market_status = client.get_market_status()
-
-        # Check if API returned valid data
-        if not market_status:
+        # Get API key from environment
+        api_key = os.getenv("TRADIER_API_KEY")
+        if not api_key:
             return json.dumps(
                 {
-                    "error": "No data",
-                    "message": "No market status data returned from Polygon.io API.",
-                    "source": "Polygon.io",
+                    "error": "Configuration error",
+                    "message": "TRADIER_API_KEY not configured in environment",
+                    "source": "Tradier",
                 }
             )
 
-        # Extract server time and parse for date/time components
-        server_time = market_status.server_time or ""
-        date_str = ""
-        time_str = ""
+        # Build request to Tradier API
+        url = "https://api.tradier.com/v1/markets/clock"
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
 
-        if server_time:
-            try:
-                # Parse ISO timestamp to extract date and time
-                dt = datetime.fromisoformat(server_time.replace("Z", "+00:00"))
-                date_str = dt.strftime("%Y-%m-%d")
-                time_str = dt.strftime("%H:%M:%S")
-            except (ValueError, AttributeError):
-                # If parsing fails, use original string
-                date_str = server_time.split("T")[0] if "T" in server_time else ""
-                time_str = server_time.split("T")[1].replace("Z", "") if "T" in server_time else ""
+        # Make API request with timeout
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
 
-        # Extract exchange statuses safely
-        exchanges_data = {}
-        if market_status.exchanges:
-            exchanges_data = {
-                "nasdaq": market_status.exchanges.nasdaq or "unknown",
-                "nyse": market_status.exchanges.nyse or "unknown",
-                "otc": market_status.exchanges.otc or "unknown",
-            }
+        data = response.json()
+        clock_data = data.get("clock", {})
 
-        # Format response
+        # Check if API returned valid data
+        if not clock_data:
+            return json.dumps(
+                {
+                    "error": "No data",
+                    "message": "No clock data returned from Tradier API.",
+                    "source": "Tradier",
+                }
+            )
+
+        # Extract state and map to current response format
+        state = clock_data.get("state", "closed")
+        market_status = _map_tradier_state(state)
+        early_hours = (state == "pre")
+        after_hours = (state == "post")
+
+        # Convert Unix timestamp to ISO datetime
+        timestamp = clock_data.get("timestamp", 0)
+        server_time_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        server_time = server_time_dt.isoformat()
+        date_str = server_time_dt.strftime("%Y-%m-%d")
+        time_str = server_time_dt.strftime("%H:%M:%S")
+
+        # Build response with exchange status (use overall state for all exchanges)
+        exchange_status = market_status
+
         return json.dumps(
             {
-                "market_status": market_status.market or "unknown",
-                "after_hours": market_status.after_hours or False,
-                "early_hours": market_status.early_hours or False,
-                "exchanges": exchanges_data,
+                "market_status": market_status,
+                "after_hours": after_hours,
+                "early_hours": early_hours,
+                "exchanges": {
+                    "nasdaq": exchange_status,
+                    "nyse": exchange_status,
+                    "otc": exchange_status,
+                },
                 "server_time": server_time,
                 "date": date_str,
                 "time": time_str,
-                "source": "Polygon.io",
-            }
+                "source": "Tradier",
+            },
+            indent=2
         )
 
-    except Exception as e:
-        # Handle unexpected errors
+    except requests.exceptions.Timeout:
+        return json.dumps(
+            {
+                "error": "Timeout",
+                "message": "Request timed out while fetching market status",
+                "source": "Tradier",
+            }
+        )
+    except requests.exceptions.RequestException as e:
         return json.dumps(
             {
                 "error": "API request failed",
-                "message": f"Failed to retrieve market status from Polygon.io: {str(e)}",
-                "source": "Polygon.io",
+                "message": f"Tradier API request failed: {str(e)}",
+                "source": "Tradier",
             }
         )
+    except Exception as e:
+        return json.dumps(
+            {
+                "error": "Unexpected error",
+                "message": f"Failed to retrieve market status from Tradier: {str(e)}",
+                "source": "Tradier",
+            }
+        )
+
+
+def _map_tradier_state(state: str) -> str:
+    """Map Tradier market state to expected response format.
+    
+    Args:
+        state: Tradier market state ("open", "closed", "pre", "post")
+        
+    Returns:
+        Mapped market status ("open", "closed", "extended-hours")
+    """
+    if state == "open":
+        return "open"
+    elif state in ["pre", "post"]:
+        return "extended-hours"
+    else:  # closed
+        return "closed"
 
 
 @function_tool
