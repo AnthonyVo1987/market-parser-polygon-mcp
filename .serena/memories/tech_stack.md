@@ -14,6 +14,7 @@
   - `openai>=1.99.0,<1.100.0` (OpenAI Python SDK)
   - `finnhub-python>=2.4.25` (Finnhub Direct API)
   - `polygon-api-client>=1.14.0` (Polygon Python SDK)
+  - `requests>=2.31.0` (Tradier HTTP API)
   - Direct Polygon Python API integration (no MCP)
 
 ### Frontend
@@ -30,12 +31,13 @@
 ### Data Sources
 - **Polygon.io**: Direct Python API integration (12 tools, updated Oct 9, 2025 - options chain bugs fixed)
 - **Finnhub**: Custom Python API integration (1 tool)
-- **Total AI Agent Tools**: 12 (updated Oct 8, 2025 - added 2 options chain tools)
+- **Tradier**: Custom HTTP API integration (1 tool, added Oct 10, 2025 - options expiration dates)
+- **Total AI Agent Tools**: 13 (updated Oct 10, 2025 - added Tradier options expiration dates tool)
 
 ### Development Tools
 - **Python Linting**: pylint, black, isort, mypy
 - **JS/TS Linting**: ESLint, Prettier, TypeScript compiler
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 38 tests, updated Oct 9, 2025)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 40 tests, updated Oct 10, 2025)
 - **Performance**: Lighthouse CI, React Scan
 - **Version Control**: Git
 
@@ -254,10 +256,13 @@ agent = initialize_persistent_agent()
 - Numerical value alignment
 - Reasonable column widths
 
-### Direct API Tools (12 Total - Updated Oct 9, 2025)
+### Direct API Tools (13 Total - Updated Oct 10, 2025)
 
 **Finnhub Custom API (1 tool):**
 - `get_stock_quote` - Real-time stock quotes from Finnhub (supports parallel calls for multiple tickers)
+
+**Tradier Custom HTTP API (1 tool - Added Oct 10, 2025):**
+- `get_options_expiration_dates` - Fetch ALL valid options expiration dates for a ticker from Tradier API
 
 **Polygon Direct API (11 tools - Updated Oct 9, 2025 - Bug Fixes):**
 
@@ -281,6 +286,68 @@ agent = initialize_persistent_agent()
 
 **REMOVED Oct 8, 2025:**
 - `get_options_quote_single` - Single option quote (removed - inefficient, replaced with full options chain tools)
+
+### Tradier Options Expiration Dates Tool (Added Oct 10, 2025)
+
+**Purpose**: Fetch ALL available options expiration dates for a ticker from Tradier API
+
+**Implementation**:
+- **Location**: `src/backend/tools/tradier_tools.py`
+- **API**: Tradier Brokerage API `/v1/markets/options/expirations` endpoint
+- **Authentication**: Bearer token via `TRADIER_API_KEY` environment variable
+- **Response Format**: JSON with array of expiration dates in YYYY-MM-DD format
+- **Error Handling**: Comprehensive error handling for API failures, timeouts, invalid tickers
+
+**Tool Function** (`get_options_expiration_dates`):
+- **Purpose**: Fetch ALL valid options expiration dates for a ticker
+- **Parameters**:
+  - ticker (str): Stock ticker symbol (e.g., "AAPL", "SPY", "NVDA")
+- **Returns**: JSON string with format:
+  ```json
+  {
+    "ticker": "SPY",
+    "expiration_dates": ["2025-10-17", "2025-10-24", ...],
+    "count": 31,
+    "source": "Tradier"
+  }
+  ```
+- **Date Format**: YYYY-MM-DD (ISO 8601)
+- **Sorting**: Chronologically (earliest to latest)
+- **Includes**: Both weekly and monthly expiration dates
+- **Data Updates**: Daily from Tradier
+
+**Error Handling**:
+- Invalid ticker: Returns error with descriptive message
+- Configuration error: TRADIER_API_KEY not found
+- API request failed: HTTP status code errors
+- No data: No expiration dates available (verify ticker)
+- Timeout: Request timed out (10s timeout)
+- Network error: Failed to connect to API
+- Edge case: Single date returned as string, converted to list
+
+**Agent Instructions**: RULE #10 (lines 276-299)
+- **When to Use**: User requests available expiration dates for options contracts
+- **Workflow**: 
+  1. Identify user is requesting expiration dates
+  2. Extract ticker symbol from request
+  3. Call get_options_expiration_dates(ticker='SYMBOL')
+  4. Present dates in readable format
+- **Display Format**: Comma-separated list or bullet points
+- **Common Mistakes**: Using options chain tools when only expiration dates needed
+
+**Test Results (Oct 10, 2025)**:
+- **Quick Test**: SPY (31 dates), NVDA (21 dates), SOUN (11 dates) - All PASS
+- **Full Suite**: 40/40 tests PASSED (100% success rate)
+  - Test 14: SPY Options Expiration Dates - PASS (8.596s)
+  - Test 31: NVDA Options Expiration Dates - PASS (14.511s)
+- **Performance**: 11.03s average response time (EXCELLENT rating)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_19-25.log`
+
+**Files Modified**:
+- `src/backend/tools/tradier_tools.py` - New tool implementation (156 lines)
+- `src/backend/tools/__init__.py` - Export get_options_expiration_dates
+- `src/backend/services/agent_service.py` - Import tool, add to tools list, RULE #10
+- `test_cli_regression.sh` - Added 2 test cases (Test 14, Test 31)
 
 ### Options Chain Tools (Updated Oct 9, 2025 - Bug Fixes)
 
@@ -363,6 +430,7 @@ agent = initialize_persistent_agent()
 - **Phase 8 Complete** (Oct 9, 2025): Fixed critical options chain bugs (10-strike limit, None-safe rounding, field naming)
 - **Phase 9 Complete** (Oct 9, 2025): CLI Visual Enhancements (Markdown tables, emojis, intelligent formatting)
 - **Phase 10 Complete** (Oct 2025): Persistent Agent Architecture (1x agent per lifecycle, CLI = core, GUI = wrapper)
+- **Phase 11 Complete** (Oct 10, 2025): Tradier Options Expiration Dates Tool (1 new tool, tool count 12→13)
 
 ## Development Environment
 
@@ -376,6 +444,7 @@ agent = initialize_persistent_agent()
 - `POLYGON_API_KEY` - Polygon.io API key
 - `OPENAI_API_KEY` - OpenAI API key
 - `FINNHUB_API_KEY` - Finnhub API key
+- `TRADIER_API_KEY` - Tradier API key (added Oct 10, 2025)
 
 ### Configuration Files
 - **Centralized Config**: `config/app.config.json` (non-sensitive settings)
@@ -384,26 +453,35 @@ agent = initialize_persistent_agent()
 - **TypeScript**: `tsconfig.json`, `.eslintrc.cjs`, `.prettierrc.cjs`
 - **Build**: `vite.config.ts`, `postcss.config.js`
 
-## Testing Infrastructure (Updated Oct 9, 2025 - Visual Enhancements)
+## Testing Infrastructure (Updated Oct 10, 2025 - Tradier Tool Tests)
 
 ### CLI Regression Test Suite
 - **Script**: `test_cli_regression.sh`
-- **Total Tests**: 38 tests (updated Oct 9, 2025 - added 2 Wall analysis tests)
+- **Total Tests**: 40 tests (updated Oct 10, 2025 - added 2 options expiration dates tests)
 - **Test Organization**: Ticker-based sequences
-  - SPY Test Sequence: Tests 1-16 (16 tests - includes 2 options + 1 wall analysis)
-  - NVDA Test Sequence: Tests 17-32 (16 tests - includes 2 options + 1 wall analysis)
-  - Multi-Ticker Test Sequence: Tests 33-38 (6 tests - WDC, AMD, GME)
+  - SPY Test Sequence: Tests 1-17 (17 tests - includes 1 expiration dates + 2 options chains + 1 wall analysis)
+  - NVDA Test Sequence: Tests 18-34 (17 tests - includes 1 expiration dates + 2 options chains + 1 wall analysis)
+  - Multi-Ticker Test Sequence: Tests 35-40 (6 tests - WDC, AMD, GME)
 - **Log Output**: Project tmp/ folder (fixed Oct 9, 2025 - was using system /tmp)
 - **Dynamic Dates**: Queries use relative dates (no hardcoded dates requiring updates)
 - **Session Persistence**: All tests run in single CLI session
 - **Calculation Engine**: awk-based (universal compatibility, no bc dependency)
 - **Output Format**: 2 decimal precision, human-readable duration (MM min SS sec)
 
-### New Test Cases (Oct 9, 2025)
-- **Test 16**: SPY Options Chain Wall Analysis - "Analyze the Options Chain Data for SPY and provide potential Call & Put Wall(s) Strike Prices"
-- **Test 32**: NVDA Options Chain Wall Analysis - "Analyze the Options Chain Data for NVDA and provide potential Call & Put Wall(s) Strike Prices"
+### New Test Cases (Oct 10, 2025 - Tradier Options Expiration Dates)
+- **Test 14**: SPY Options Expiration Dates - "Get options expiration dates for SPY"
+- **Test 31**: NVDA Options Expiration Dates - "Get options expiration dates for NVDA"
+- **Purpose**: Validate Tradier tool fetches ALL available expiration dates for a ticker
+- **Expected Output**: List of dates in YYYY-MM-DD format with count and source
+- **Test Results**: 
+  - Test 14: PASS (8.596s response time)
+  - Test 31: PASS (14.511s response time)
+
+### Existing Test Cases (Oct 9, 2025 - Options Chain Wall Analysis)
+- **Test 16**: SPY Options Chain Wall Analysis (now Test 17 after renumbering)
+- **Test 32**: NVDA Options Chain Wall Analysis (now Test 34 after renumbering)
 - **Purpose**: Validate AI Agent can identify support/resistance levels from options chain data
-- **Expected Output**: Call walls (resistance), Put walls (support), strike prices with OI/volume data, implications
+- **Expected Output**: Call walls (resistance), Put walls (support), strike prices with OI/volume data
 
 ### Test Script Path Fix (Oct 9, 2025)
 - **Bug**: Test script outputting logs to system /tmp instead of project tmp/
@@ -411,28 +489,22 @@ agent = initialize_persistent_agent()
 - **Fix**: Changed `/tmp/` to `./tmp/` with `mkdir -p tmp`
 - **Impact**: All test artifacts now properly contained within project directory
 
-### Test Results (Oct 9, 2025 - CLI Visual Enhancements)
+### Test Results (Oct 10, 2025 - Tradier Tool Integration)
 
-**Single Loop Validation (Initial)**:
-- **Total**: 38/38 PASSED (100%)
-- **Avg Response Time**: 10.57s (EXCELLENT)
-- **Duration**: 6 min 44 sec
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_12-15.log`
+**Full Suite Validation (40 Tests)**:
+- **Total**: 40/40 PASSED (100%)
+- **Avg Response Time**: 11.03s (EXCELLENT)
+- **Duration**: 7 min 22 sec
+- **Session Persistence**: VERIFIED (single session)
+- **New Tests**:
+  - Test 14: SPY Options Expiration Dates - PASS (8.596s)
+  - Test 31: NVDA Options Expiration Dates - PASS (14.511s)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_19-25.log`
 
-**10-Loop Baseline (Performance Baseline Established)**:
-- **Total Tests**: 380/380 PASSED (100%)
-- **Avg Response Time**: 12.07s (EXCELLENT rating)
-- **Duration**: 77 min 7 sec (1 hour 17 minutes)
-- **Performance Range**: 3-49s typical (95% of responses)
-- **Anomaly Rate**: 0.26% (1 outlier in 380 tests)
-- **Baseline Report**: `test-reports/performance_baseline_10loop_2025-10-09.md`
-- **Loop Reports**: `test-reports/test_cli_regression_loop*_2025-10-09_*.log`
-
-**Visual Features Validated**:
-- ✅ Markdown tables render correctly with alignment (40 tables across 10 loops)
-- ✅ Emojis appear in responses (320+ emojis, 2-5 per response)
-- ✅ Wall analysis provides meaningful strike identification (20 analyses)
-- ✅ Intelligent formatting (lists for simple, tables for complex)
+**Quick Test Validation (Individual Tickers)**:
+- **SPY**: 31 expiration dates, 9.844s response time - PASS
+- **NVDA**: 21 expiration dates, 6.842s response time - PASS
+- **SOUN**: 11 expiration dates, 6.391s response time - PASS
 
 ### Test Execution Requirements
 - **Mandatory**: Before all commits, after agent service changes, before PRs
@@ -442,15 +514,24 @@ agent = initialize_persistent_agent()
 
 ## Performance Metrics
 
-### Current Performance Baseline (Oct 9, 2025 - 10-Loop Baseline)
+### Current Performance Baseline (Oct 10, 2025 - With Tradier Tool)
+- **Baseline Average Response Time**: 11.03s (EXCELLENT rating)
+- **Success Rate**: 100% (40/40 tests passed)
+- **Performance Range**: 2.607s - 31.846s (39 tests under 30s, 1 test at 31.8s GOOD)
+- **Test Suite**: 40 tests per loop (SPY 17 + NVDA 17 + Multi 6)
+- **Average Session Duration**: 7 min 22 sec per loop
+- **New Tool Performance**: 
+  - SPY expiration dates: 8.596s (EXCELLENT)
+  - NVDA expiration dates: 14.511s (EXCELLENT)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_19-25.log`
+
+### Previous Performance Baseline (Oct 9, 2025 - 10-Loop Baseline)
 - **Baseline Average Response Time**: 12.07s (EXCELLENT rating)
 - **Success Rate**: 100% (380/380 tests passed across 10 loops)
 - **Performance Range**: 2.44s - 82.02s (typical: 3-49s for 95% of responses)
 - **Test Suite**: 38 tests per loop (SPY 16 + NVDA 16 + Multi 6)
 - **Average Session Duration**: 7 min 42 sec per loop
 - **Consistency**: High (standard deviation ~0.88s across loop averages)
-- **Options Chain**: Exactly 10 strikes per chain (bug fixed)
-- **Visual Enhancements Overhead**: <10ms per response (negligible)
 - **Anomaly Rate**: 0.26% (1 outlier in 380 tests - API rate limiting)
 - **Baseline Report**: `test-reports/performance_baseline_10loop_2025-10-09.md`
 
@@ -465,10 +546,29 @@ agent = initialize_persistent_agent()
 - **10-Strike Limit**: Prevents message flooding, ensures concise responses
 - **Intelligent Formatting**: Lists for speed (simple), tables for clarity (complex)
 - **Persistent Agent**: 50% token savings via prompt caching after first message
+- **Tradier Integration**: Dedicated tool for options expiration dates (faster than options chain tools)
 
-## Recent Updates (Oct 2025 - Persistent Agent Architecture)
+## Recent Updates (Oct 10, 2025 - Tradier Options Expiration Dates Tool)
 
-### Persistent Agent Architecture Implementation
+### Tradier Options Expiration Dates Tool Implementation
+- **Problem**: No dedicated tool for fetching available options expiration dates
+- **Solution**: Add Tradier Brokerage API integration with get_options_expiration_dates tool
+- **Integration**: Direct HTTP API using requests library
+- **Files Created**:
+  - `src/backend/tools/tradier_tools.py`: New tool implementation (156 lines)
+- **Files Modified**:
+  - `src/backend/tools/__init__.py`: Export get_options_expiration_dates
+  - `src/backend/services/agent_service.py`: Import tool, add to tools list (position 2), RULE #10
+  - `test_cli_regression.sh`: Added 2 test cases (Test 14, Test 31), updated to 40 tests
+- **Key Benefits**:
+  - Dedicated tool for expiration dates (faster than options chain tools)
+  - Comprehensive error handling (invalid ticker, timeout, network errors)
+  - Clean date format (YYYY-MM-DD, chronologically sorted)
+  - Includes both weekly and monthly expirations
+- **Test Results**: 40/40 PASSED, 11.03s avg (EXCELLENT rating)
+- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-10_19-25.log`
+
+### Persistent Agent Architecture Implementation (Oct 2025)
 - **Problem**: App was creating NEW agent for EVERY message (token waste, no prompt caching)
 - **Solution**: Create ONE persistent agent per lifecycle, reuse for all messages
 - **Architecture**: CLI = Single Source of Truth, GUI = Wrapper (following commit b866f0a)

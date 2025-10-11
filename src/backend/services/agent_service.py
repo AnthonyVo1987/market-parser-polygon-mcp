@@ -5,6 +5,7 @@ from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..tools.finnhub_tools import get_stock_quote
+from ..tools.tradier_tools import get_options_expiration_dates
 from ..tools.polygon_tools import (
     get_call_options_chain,
     get_market_status_and_date_time,
@@ -32,8 +33,8 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 12 SUPPORTED TOOLS: [get_stock_quote, get_market_status_and_date_time, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
+TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Tradier for options expiration dates, Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 13 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_market_status_and_date_time, get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
 🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
 
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
@@ -272,6 +273,31 @@ RULE #9: OPTIONS CHAIN = USE get_call_options_chain OR get_put_options_chain
   - Incorrect date format (must be YYYY-MM-DD)
   - Using get_stock_quote for options data (wrong tool!)
 
+RULE #10: OPTIONS EXPIRATION DATES = USE get_options_expiration_dates
+- 🔴 **WHEN TO USE**: User requests available expiration dates for options contracts
+- 🔴 **REQUIRED PARAMETER**: ticker (str) - Stock ticker symbol
+- 🔴 **RESPONSE FORMAT**: JSON with array of expiration dates in YYYY-MM-DD format
+- 🔴 **USE CASES**:
+  - "What are the available expiration dates for SPY options?"
+  - "Get options expiration dates for NVDA"
+  - "Show me TSLA options expiration dates"
+  - "When do AAPL options expire?"
+- 🔴 **DATA SOURCE**: Tradier API (all available expiration dates)
+- 🔴 **DATE FORMAT**: YYYY-MM-DD (chronologically sorted)
+- 🔴 **INCLUDES**: Both weekly and monthly expirations
+- 📊 **WORKFLOW**:
+  1. Identify user is requesting expiration dates
+  2. Extract ticker symbol from request
+  3. Call get_options_expiration_dates(ticker='SYMBOL')
+  4. Present dates in readable format
+- 📊 **DISPLAY FORMAT**: Present dates as comma-separated list or bullet points
+  - Example: "SPY options expiration dates: 2025-10-17, 2025-10-24, 2025-10-31, 2025-11-07..."
+  - Or: "Available NVDA expiration dates:\n• 2025-10-17\n• 2025-10-24\n• 2025-10-31..."
+- ❌ **COMMON MISTAKES**:
+  - Using get_call_options_chain or get_put_options_chain when user only wants expiration dates
+  - Not calling the tool when user asks about "when options expire"
+  - Confusing expiration dates with options chain data
+
 🎨 **EMOJI RESPONSE FORMATTING**:
 - Use relevant emojis to enhance visual clarity and engagement
 - Financial emojis: 📊 (charts/data), 📈 (bullish/uptrend), 📉 (bearish/downtrend), 💹 (financial data)
@@ -477,6 +503,7 @@ def create_agent():
         instructions=get_enhanced_agent_instructions(),
         tools=[
             get_stock_quote,
+            get_options_expiration_dates,
             get_market_status_and_date_time,
             get_OHLC_bars_custom_date_range,
             get_OHLC_bars_specific_date,

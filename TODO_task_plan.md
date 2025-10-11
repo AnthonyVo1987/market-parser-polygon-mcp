@@ -1,694 +1,1036 @@
-# 🔴 REVISED IMPLEMENTATION PLAN: Persistent Agent Architecture (Following b866f0a Principle)
+# TODO Implementation Plan: Add Tradier Options Expiration Dates Tool
 
-## 🎯 ARCHITECTURE PRINCIPLE (from Commit b866f0a)
+**Task**: Add new AI Agent Tool "get_options_expiration_dates" using Tradier Python Brokerage API
 
-**Core Principle:** CLI = Single Source of Truth, GUI = Wrapper (Zero Duplication)
-
-**Commit b866f0a Pattern:**
-- ✅ Backend generates markdown (ONE place)
-- ✅ CLI renders it with Rich
-- ✅ GUI renders it with react-markdown
-- ✅ No duplicate formatting code
-
-**Applying Same Principle to Agent Persistence:**
-- ✅ CLI creates persistent agent logic (ONE place)
-- ✅ CLI mode uses it directly
-- ✅ GUI mode calls CLI functions (no duplication)
-- ✅ No duplicate agent creation code
+**Status**: Phase 2 - Planning Complete, Ready for Implementation
 
 ---
 
-## 📋 RESEARCH FINDINGS (CORRECTED)
+## 🔴 CRITICAL: MANDATORY TOOL USAGE ENFORCEMENT
 
-### ✅ OpenAI Agents SDK Best Practices
+**YOU MUST use the following tools systematically throughout implementation:**
 
-**CORRECT Pattern:**
+1. **Sequential-Thinking** - Use for:
+   - Code structure analysis before writing
+   - Decision-making for implementation approach
+   - Verification of changes before committing
+
+2. **Serena Tools** - Use for:
+   - `find_symbol`: Locate existing functions to understand patterns
+   - `get_symbols_overview`: Understand file structures
+   - `insert_after_symbol`: Add new functions/imports
+   - `replace_symbol_body`: Modify agent instructions
+   - `write_memory`: Update project memories
+
+3. **Standard Tools** - Use for:
+   - `Read`: View file contents
+   - `Edit`: Simple text modifications
+   - `Bash`: Run tests and validation
+
+**VIOLATION = FAILURE**: Using wrong tools or skipping tool usage will result in implementation failure.
+
+---
+
+## Phase 1: Research ✅ COMPLETE
+
+- ✅ Researched Tradier API endpoint structure
+- ✅ Analyzed existing tool patterns (finnhub_tools.py, polygon_tools.py)
+- ✅ Reviewed OpenAI custom tools reference guide
+- ✅ Understood agent service integration points
+- ✅ Reviewed test suite structure
+
+**Key Findings**:
+- Tool Pattern: @function_tool decorator, async def, comprehensive docstring
+- API Pattern: requests library with Bearer token authentication
+- Integration: Import in agent_service.py, add to tools list, update instructions
+- Testing: Add tests after "Technical Analysis" for SPY (Test 14) and NVDA (Test 30)
+
+---
+
+## Phase 2: Planning ✅ COMPLETE
+
+**Implementation Strategy**:
+
+### File Changes Required (5 files):
+1. `src/backend/tools/tradier_tools.py` - NEW FILE
+2. `src/backend/tools/__init__.py` - MODIFY
+3. `src/backend/services/agent_service.py` - MODIFY
+4. `test_cli_regression.sh` - MODIFY
+5. `.env` - VERIFY (TRADIER_API_KEY exists)
+
+### Agent Instructions Updates:
+- Line 36: Update tool count (12 → 13)
+- Line 35: Add Tradier mention to TOOLS description
+- After RULE #9: Add RULE #10 for options expiration dates
+
+---
+
+## Phase 3: Implementation (PENDING - Use Tools Systematically)
+
+### 🔴 CRITICAL: Use Sequential-Thinking Before Each Major Step
+
+### Step 1: Create tradier_tools.py ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Sequential-Thinking to plan file structure
+- ✅ Use Standard Write to create new file
+- ✅ Follow finnhub_tools.py pattern exactly
+
+**Implementation Checklist**:
 ```python
-# Create agent ONCE
-agent = Agent(name="Assistant", instructions="...")
-session = SQLiteSession("conversation_123")
+# File: src/backend/tools/tradier_tools.py
 
-# REUSE agent for all messages
-result = await Runner.run(agent, "First message", session=session)
-result = await Runner.run(agent, "Second message", session=session)
-```
+# 1. Module docstring (lines 1-4)
+"""
+Tradier custom tools for OpenAI AI Agent.
+Provides options expiration dates via Tradier API.
+"""
 
-### ❌ Current Implementation (WRONG - Code Duplication)
+# 2. Imports (lines 6-9)
+import json
+import os
+import requests
+from agents import function_tool
 
-**CLI (`src/backend/cli.py:76`):**
-```python
-async def _process_user_input(cli_session, user_input):
-    analysis_agent = create_agent()  # ❌ DUPLICATE AGENT CREATION
-    result = await Runner.run(analysis_agent, user_input, session=cli_session)
-```
+# 3. Helper function for client/API key (lines 11-18)
+def _get_tradier_api_key():
+    """Get Tradier API key from environment.
 
-**GUI (`src/backend/routers/chat.py:80`):**
-```python
-async def chat_endpoint(request: ChatRequest):
-    analysis_agent = create_agent()  # ❌ DUPLICATE AGENT CREATION
-    result = await Runner.run(analysis_agent, stripped_message, session=shared_session)
-```
-
-**Problem:** Same agent creation and running logic in TWO places (violates b866f0a principle)
-
----
-
-## 🔧 CORRECT ARCHITECTURE SOLUTION
-
-### Execution Model (from main.py)
-
-```python
-# main.py
-if __name__ == "__main__":
-    if sys.argv[1] == "--server":
-        # FastAPI mode: uvicorn.run(app)
-    else:
-        # CLI mode: asyncio.run(cli_async())
-```
-
-**Key Insight:** CLI and FastAPI are **mutually exclusive** - never run simultaneously.
-
-### ✅ Revised Architecture (Zero Duplication)
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ CLI Module (src/backend/cli.py) - SINGLE SOURCE OF TRUTH   │
-│ ─────────────────────────────────────────────────────────── │
-│ • initialize_persistent_agent() → Creates agent ONCE       │
-│ • process_query(agent, session, input) → Core logic        │
-└─────────────────────────────────────────────────────────────┘
-         ↓                                  ↓
-    ┌─────────┐                        ┌─────────┐
-    │ CLI Mode│                        │ GUI Mode│
-    │─────────│                        │─────────│
-    │ Creates │                        │ Imports │
-    │ agent   │                        │ CLI     │
-    │ Calls   │                        │ Calls   │
-    │ process │                        │ process │
-    │ Prints  │                        │ Returns │
-    │ output  │                        │ HTTP    │
-    └─────────┘                        └─────────┘
-```
-
-**Key Changes:**
-1. ✅ ONE `initialize_persistent_agent()` function in CLI (not duplicated)
-2. ✅ ONE `process_query()` function in CLI (core business logic)
-3. ✅ GUI router **imports and calls** CLI functions (no duplication)
-4. ✅ Each mode creates its own agent instance using shared initialization
-5. ✅ Zero code duplication (follows b866f0a principle)
-
----
-
-## 📝 DETAILED TASK CHECKLIST
-
-### 🔴 PHASE 1: RESEARCH ✅ COMPLETED
-
-- [x] Research OpenAI Agents SDK persistence patterns
-- [x] Analyze commit b866f0a architecture principle
-- [x] Identify code duplication in CLI and GUI
-- [x] Understand main.py execution model (CLI vs FastAPI modes)
-- [x] Confirm GUI should call CLI functions (not duplicate logic)
-
----
-
-### 🔴 PHASE 2: PLANNING ✅ IN PROGRESS
-
-- [x] Revise implementation plan following b866f0a principle
-- [x] Document CLI as single source of truth
-- [x] Define shared functions approach (no duplication)
-- [ ] Review plan for completeness before implementation
-
----
-
-### 🔴 PHASE 3: IMPLEMENTATION
-
-**🔴 CRITICAL: You MUST use Sequential-Thinking + Serena Tools for ALL tasks**
-
----
-
-#### Task 3.1: Create Shared Agent Initialization in CLI
-**File:** `src/backend/cli.py`
-**Tool Requirement:** Serena `insert_after_symbol` or `insert_before_symbol`
-
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan new shared functions in CLI
-2. [ ] **Serena `get_symbols_overview`:** Analyze current CLI structure
-3. [ ] **Serena `insert_before_symbol`:** Add `initialize_persistent_agent()` function
-4. [ ] Create function: `def initialize_persistent_agent() -> Agent`
-5. [ ] Function calls `create_agent()` and returns agent instance
-6. [ ] Add docstring explaining this is the single source of truth
-7. [ ] **Sequential-Thinking:** Verify function placement and design
-
-**Expected New Function:**
-```python
-def initialize_persistent_agent():
-    """Initialize persistent agent for the session.
-
-    This is the SINGLE SOURCE OF TRUTH for agent initialization.
-    Both CLI and GUI modes use this function to create their agent instance.
-
-    Returns:
-        Agent: The initialized financial analysis agent
+    Lazy initialization ensures .env is loaded before accessing API key.
     """
-    return create_agent()
-```
+    return os.getenv("TRADIER_API_KEY")
 
----
+# 4. Main tool function (lines 20-120)
+@function_tool
+async def get_options_expiration_dates(ticker: str) -> str:
+    """Get valid options expiration dates for a ticker from Tradier API.
 
-#### Task 3.2: Create Shared Query Processing in CLI
-**File:** `src/backend/cli.py`
-**Tool Requirement:** Serena `insert_after_symbol`
-
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan shared query processing function
-2. [ ] **Serena `insert_after_symbol`:** Add after `initialize_persistent_agent()`
-3. [ ] Create function: `async def process_query(agent, session, user_input)`
-4. [ ] Function runs `Runner.run()` and returns result
-5. [ ] Function is pure business logic (no CLI-specific formatting)
-6. [ ] Add docstring explaining this is core processing logic
-7. [ ] **Sequential-Thinking:** Verify function signature and return value
-
-**Expected New Function:**
-```python
-async def process_query(agent, session, user_input):
-    """Process a user query using the persistent agent.
-
-    This is the CORE BUSINESS LOGIC for query processing.
-    Both CLI and GUI modes call this function (no duplication).
+    Use this tool when the user requests options expiration dates for a specific ticker.
+    This provides all available expiration dates for options contracts on the underlying stock.
 
     Args:
-        agent: The persistent agent instance
-        session: The SQLite session for conversation memory
-        user_input: The user's query string
+        ticker: Stock ticker symbol (e.g., "AAPL", "SPY", "NVDA").
+                Must be a valid ticker symbol.
 
     Returns:
-        RunResult: The result from Runner.run()
+        JSON string containing expiration dates array with format:
+        {
+            "ticker": "NVDA",
+            "expiration_dates": [
+                "2025-10-17",
+                "2025-10-24",
+                "2025-10-31",
+                ...
+            ],
+            "count": 21,
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "ticker": "SYMBOL"
+        }
+
+    Note:
+        - Returns all available expiration dates for the ticker
+        - Dates are in YYYY-MM-DD format
+        - Dates are sorted chronologically (earliest to latest)
+        - Includes weekly and monthly expiration dates
+        - Data updates daily
+
+    Examples:
+        - "Get options expiration dates for SPY"
+        - "What are the available expiration dates for NVDA options?"
+        - "Show me TSLA options expiration dates"
     """
-    result = await Runner.run(agent, user_input, session=session)
-    return result
-```
-
----
-
-#### Task 3.3: Update CLI Mode to Use Shared Functions
-**File:** `src/backend/cli.py`
-**Tool Requirement:** Serena `replace_symbol_body` for multiple functions
-
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan CLI mode modifications
-2. [ ] **Serena `find_symbol`:** Read `cli_async` function body
-3. [ ] **Serena `replace_symbol_body`:** Modify `cli_async()`:
-   - Create agent: `analysis_agent = initialize_persistent_agent()`
-   - Pass agent to: `await _run_cli_loop(cli_session, analysis_agent)`
-4. [ ] **Serena `find_symbol`:** Read `_run_cli_loop` function body
-5. [ ] **Serena `replace_symbol_body`:** Add `analysis_agent` parameter
-6. [ ] Update `_process_user_input()` call to pass agent
-7. [ ] **Serena `find_symbol`:** Read `_process_user_input` function body
-8. [ ] **Serena `replace_symbol_body`:** Modify `_process_user_input()`:
-   - Add `analysis_agent` parameter
-   - Remove `analysis_agent = create_agent()` line
-   - Call: `result = await process_query(analysis_agent, cli_session, user_input)`
-   - Keep metadata and error handling (CLI-specific wrapper)
-
-**Expected Changes:**
-```python
-# cli_async() - Create agent once
-async def cli_async():
     try:
-        cli_session = SQLiteSession(settings.cli_session_name)
-        analysis_agent = initialize_persistent_agent()  # ← SHARED FUNCTION
-        print(f"🤖 Persistent agent initialized for session")
+        # Validate ticker input
+        if not ticker or not ticker.strip():
+            return json.dumps({
+                "error": "Invalid ticker",
+                "message": "Ticker symbol cannot be empty",
+                "ticker": ticker
+            })
 
-        await _run_cli_loop(cli_session, analysis_agent)  # ← Pass agent
+        # Clean ticker (uppercase, strip whitespace)
+        ticker = ticker.strip().upper()
 
-# _run_cli_loop() - Pass agent through
-async def _run_cli_loop(cli_session, analysis_agent):  # ← Add parameter
-    while True:
-        # ... input handling ...
-        result = await _process_user_input(cli_session, analysis_agent, user_input)
+        # Get API key
+        api_key = _get_tradier_api_key()
+        if not api_key:
+            return json.dumps({
+                "error": "Configuration error",
+                "message": "TRADIER_API_KEY not found in environment",
+                "ticker": ticker
+            })
 
-# _process_user_input() - Use shared processing function
-async def _process_user_input(cli_session, analysis_agent, user_input):  # ← Add parameter
-    try:
-        start_time = time.perf_counter()
+        # Call Tradier API
+        url = f"https://api.tradier.com/v1/markets/options/expirations?symbol={ticker}"
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
 
-        # REMOVE: analysis_agent = create_agent()  ← DELETE
+        response = requests.get(url, headers=headers, timeout=10)
 
-        # Call shared processing function (core logic)
-        result = await process_query(analysis_agent, cli_session, user_input)  # ← SHARED
+        # Check HTTP status
+        if response.status_code != 200:
+            return json.dumps({
+                "error": "API request failed",
+                "message": f"Tradier API returned status {response.status_code}",
+                "ticker": ticker
+            })
 
-        # CLI-specific metadata and formatting (keep this)
-        processing_time = time.perf_counter() - start_time
-        token_count = extract_token_count_from_context_wrapper(result)
-        # ... rest of CLI-specific code ...
+        # Parse response
+        data = response.json()
+
+        # Extract expiration dates
+        expirations = data.get("expirations", {})
+        dates = expirations.get("date", [])
+
+        # Check if we got valid data
+        if not dates:
+            return json.dumps({
+                "error": "No data",
+                "message": f"No expiration dates available for ticker: {ticker}. Verify ticker symbol is valid.",
+                "ticker": ticker
+            })
+
+        # Ensure dates is a list (API returns single string if only 1 date)
+        if isinstance(dates, str):
+            dates = [dates]
+
+        # Format response
+        return json.dumps({
+            "ticker": ticker,
+            "expiration_dates": dates,
+            "count": len(dates),
+            "source": "Tradier"
+        })
+
+    except requests.exceptions.Timeout:
+        return json.dumps({
+            "error": "Timeout",
+            "message": f"Tradier API request timed out for {ticker}",
+            "ticker": ticker
+        })
+    except requests.exceptions.RequestException as e:
+        return json.dumps({
+            "error": "Network error",
+            "message": f"Failed to connect to Tradier API: {str(e)}",
+            "ticker": ticker
+        })
+    except Exception as e:
+        return json.dumps({
+            "error": "Unexpected error",
+            "message": f"Failed to retrieve expiration dates for {ticker}: {str(e)}",
+            "ticker": ticker
+        })
 ```
+
+**Validation**:
+- File created successfully
+- Imports are correct
+- Function signature matches pattern
+- Docstring is comprehensive
+- Error handling is robust
 
 ---
 
-#### Task 3.4: Update GUI to Import and Use CLI Functions
-**File:** `src/backend/routers/chat.py`
-**Tool Requirement:** Serena `replace_symbol_body` for `chat_endpoint`
+### Step 2: Update tools/__init__.py ⏳ PENDING
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan GUI router modifications
-2. [ ] **Serena `find_symbol`:** Read `chat_endpoint` function body
-3. [ ] Add imports: `from ..cli import initialize_persistent_agent, process_query`
-4. [ ] **Serena `replace_symbol_body`:** Modify `chat_endpoint()`:
-   - Remove `from ..services import create_agent` import (no longer needed)
-   - Remove `analysis_agent = create_agent()` line
-   - Get shared agent: `shared_agent = get_agent()` (from dependency)
-   - Call: `result = await process_query(shared_agent, shared_session, stripped_message)`
-   - Keep HTTP response wrapper (GUI-specific)
-5. [ ] **Serena `find_referencing_symbols`:** Verify no other `create_agent()` calls
+**Tool Enforcement**:
+- ✅ Use Serena `find_symbol` to see current __all__ list
+- ✅ Use Standard Edit to add import and export
 
-**Expected Changes:**
+**Implementation**:
 ```python
-# routers/chat.py - Import CLI functions
-from ..cli import process_query  # ← IMPORT SHARED FUNCTION
-from ..dependencies import get_session, get_agent  # ← Add get_agent
+# Add import
+from .tradier_tools import get_options_expiration_dates
 
-@router.post("/", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest) -> ChatResponse:
-    # Get shared resources
-    shared_session = get_session()
-    shared_agent = get_agent()  # ← Get agent from dependency
-
-    # ... validation code (keep as-is) ...
-
-    try:
-        # REMOVE: analysis_agent = create_agent()  ← DELETE
-
-        # Call shared processing function (core logic from CLI)
-        result = await process_query(shared_agent, shared_session, stripped_message)  # ← SHARED
-
-        response_text = str(result.final_output)
-
-        # GUI-specific HTTP response wrapper (keep this)
-        token_usage = extract_token_usage_from_context_wrapper(result)
-        # ... rest of HTTP response code ...
+# Update __all__
+__all__ = ["get_stock_quote", "get_options_expiration_dates"]
 ```
+
+**Validation**:
+- Import added correctly
+- __all__ list updated
+- No syntax errors
 
 ---
 
-#### Task 3.5: Update Dependencies for Shared Agent
-**File:** `src/backend/dependencies.py`
-**Tool Requirement:** Serena `insert_after_symbol` and `replace_symbol_body`
+### Step 3: Import Tradier tool in agent_service.py ⏳ PENDING
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan dependency injection for agent
-2. [ ] **Serena `get_symbols_overview`:** Analyze dependencies structure
-3. [ ] **Serena `find_symbol`:** Read `set_shared_resources` function
-4. [ ] Add global: `shared_agent = None`
-5. [ ] **Serena `replace_symbol_body`:** Update `set_shared_resources(session, agent)`
-6. [ ] **Serena `insert_after_symbol`:** Add `get_agent()` function after `get_session()`
+**Tool Enforcement**:
+- ✅ Use Serena `find_symbol` to locate import section
+- ✅ Use Serena `insert_after_symbol` OR Standard Edit to add import
 
-**Expected Changes:**
+**Implementation Location**: Line ~8 (after finnhub import)
 ```python
-# dependencies.py
-shared_session = None
-shared_agent = None  # ← ADD
-
-def set_shared_resources(session, agent):  # ← Add agent parameter
-    global shared_session, shared_agent
-    shared_session = session
-    shared_agent = agent  # ← ADD
-
-def get_agent():  # ← NEW FUNCTION
-    """Dependency to get shared agent instance."""
-    if shared_agent is None:
-        raise RuntimeError("Shared agent not initialized")
-    return shared_agent
+from ..tools.finnhub_tools import get_stock_quote
+from ..tools.tradier_tools import get_options_expiration_dates  # NEW
+from ..tools.polygon_tools import (
+    get_call_options_chain,
+    ...
+)
 ```
+
+**Validation**:
+- Import added in correct location
+- No circular imports
+- No syntax errors
 
 ---
 
-#### Task 3.6: Update FastAPI Lifespan for Shared Agent
-**File:** `src/backend/main.py`
-**Tool Requirement:** Serena `replace_symbol_body` for `lifespan`
+### Step 4: Add tool to agent tools list ⏳ PENDING
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan lifespan modifications
-2. [ ] Add import: `from .cli import initialize_persistent_agent`
-3. [ ] Add global: `shared_agent = None`
-4. [ ] **Serena `find_symbol`:** Read `lifespan` function body
-5. [ ] **Serena `replace_symbol_body`:** Modify `lifespan()`:
-   - Create agent: `shared_agent = initialize_persistent_agent()`
-   - Update: `set_shared_resources(shared_session, shared_agent)`
+**Tool Enforcement**:
+- ✅ Use Serena `find_symbol` with name_path="create_agent" to locate function
+- ✅ Use Sequential-Thinking to plan where to insert
+- ✅ Use Serena `replace_symbol_body` OR Standard Edit to add to tools list
 
-**Expected Changes:**
+**Implementation Location**: Line ~478-490 in create_agent() function
 ```python
-# main.py
-from .cli import initialize_persistent_agent  # ← IMPORT SHARED FUNCTION
-
-shared_session = None
-shared_agent = None  # ← ADD
-
-@asynccontextmanager
-async def lifespan(fastapi_app: FastAPI):
-    global shared_session, shared_agent  # ← ADD
-
-    try:
-        shared_session = SQLiteSession(settings.agent_session_name)
-        shared_agent = initialize_persistent_agent()  # ← SHARED FUNCTION
-
-        set_shared_resources(shared_session, shared_agent)  # ← ADD agent param
+analysis_agent = Agent(
+    name="Financial Analysis Agent",
+    instructions=get_enhanced_agent_instructions(),
+    tools=[
+        get_stock_quote,
+        get_options_expiration_dates,  # NEW - Add after get_stock_quote
+        get_market_status_and_date_time,
+        get_OHLC_bars_custom_date_range,
+        ...
+        get_call_options_chain,
+        get_put_options_chain,
+    ],
+    model=settings.default_active_model,
+    model_settings=get_optimized_model_settings(),
+)
 ```
+
+**Validation**:
+- Tool added to list
+- Proper position (after get_stock_quote)
+- Comma syntax correct
+- No syntax errors
 
 ---
 
-#### Task 3.7: Update Agent Instructions (Adaptive Formatting)
-**File:** `src/backend/services/agent_service.py`
-**Tool Requirement:** Serena `find_symbol` + `replace_symbol_body`
+### Step 5: Update agent instructions ⏳ PENDING
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan adaptive formatting instructions
-2. [ ] **Serena `find_symbol`:** Read `get_enhanced_agent_instructions` function body
-3. [ ] **Sequential-Thinking:** Determine best location in prompt
-4. [ ] **Serena `replace_symbol_body`:** Add adaptive formatting guidance
+**Tool Enforcement**:
+- ✅ Use Sequential-Thinking to plan instruction updates
+- ✅ Use Serena `find_symbol` with name_path="get_enhanced_agent_instructions"
+- ✅ Use Serena `replace_symbol_body` OR Standard Edit to update
 
-**Expected Instructions Addition:**
+**Three Updates Required**:
+
+#### Update 1: Tool count (Line 36)
+**Before**:
 ```
-**Adaptive Output Formatting:**
-- For SIMPLE responses (few data points, quick answers): Use numbered or bulleted lists for speed and clarity
-- For COMPLEX responses (extensive data, options chains, comparisons): Use markdown tables for better readability
-- Let data complexity guide your formatting choice—prioritize user experience and clear presentation
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 12 SUPPORTED TOOLS: [...]
 ```
+
+**After**:
+```
+🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 13 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_market_status_and_date_time, ...]
+```
+
+#### Update 2: TOOLS description (Line 35)
+**Before**:
+```
+TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
+```
+
+**After**:
+```
+TOOLS: Use Finnhub for all ticker quotes (supports parallel calls), Tradier for options expiration dates, Polygon.io direct API for all market data (status/datetime/TA indicators/OHLC bars/options chains).
+```
+
+#### Update 3: Add RULE #10 (After RULE #9, before emoji formatting section)
+**Insert Location**: After line 273 (after RULE #9 ends)
+
+**New Content**:
+```python
+RULE #10: OPTIONS EXPIRATION DATES = USE get_options_expiration_dates
+- 🔴 **WHEN TO USE**: User requests available expiration dates for options contracts
+- 🔴 **REQUIRED PARAMETER**: ticker (str) - Stock ticker symbol
+- 🔴 **RESPONSE FORMAT**: JSON with array of expiration dates in YYYY-MM-DD format
+- 🔴 **USE CASES**:
+  - "What are the available expiration dates for SPY options?"
+  - "Get options expiration dates for NVDA"
+  - "Show me TSLA options expiration dates"
+  - "When do AAPL options expire?"
+- 🔴 **DATA SOURCE**: Tradier API (all available expiration dates)
+- 🔴 **DATE FORMAT**: YYYY-MM-DD (chronologically sorted)
+- 🔴 **INCLUDES**: Both weekly and monthly expirations
+- 📊 **WORKFLOW**:
+  1. Identify user is requesting expiration dates
+  2. Extract ticker symbol from request
+  3. Call get_options_expiration_dates(ticker='SYMBOL')
+  4. Present dates in readable format
+- 📊 **DISPLAY FORMAT**: Present dates as comma-separated list or bullet points
+  - Example: "SPY options expiration dates: 2025-10-17, 2025-10-24, 2025-10-31, 2025-11-07..."
+  - Or: "Available NVDA expiration dates:\n• 2025-10-17\n• 2025-10-24\n• 2025-10-31..."
+- ❌ **COMMON MISTAKES**:
+  - Using get_call_options_chain or get_put_options_chain when user only wants expiration dates
+  - Not calling the tool when user asks about "when options expire"
+  - Confusing expiration dates with options chain data
+
+```
+
+**Validation**:
+- Tool count updated (12 → 13)
+- Tool list includes get_options_expiration_dates
+- TOOLS description mentions Tradier
+- RULE #10 added with comprehensive guidance
+- No formatting errors
+- Instructions remain coherent
 
 ---
 
-### 🔴 PHASE 4: TESTING (MANDATORY CHECKPOINT)
+### Step 6: Update test_cli_regression.sh ⏳ PENDING
 
-**🔴 CRITICAL: You MUST run tests BEFORE claiming completion**
+**Tool Enforcement**:
+- ✅ Use Sequential-Thinking to plan test insertion points
+- ✅ Use Standard Read to review test structure
+- ✅ Use Standard Edit to add new test cases
 
-#### Task 4.1: Execute CLI Regression Test Suite
+**Two Test Cases to Add**:
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Review what testing will validate
-2. [ ] Execute: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
-3. [ ] Verify 100% pass rate
-4. [ ] Verify test report generated
-5. [ ] Check for errors or warnings
-6. [ ] **Sequential-Thinking:** Analyze results and performance
+#### Test Case 1: SPY Options Expiration Dates
+**Insert Location**: After Test 13 "Technical Analysis: $SPY" (becomes new Test 14)
+**Shift existing tests**: Test 14→16 become Test 15→17
 
-**Success Criteria:**
-- ✅ All tests pass (X/X PASS - 100%)
-- ✅ Response times within baseline (< 15s avg)
-- ✅ No errors or exceptions
-- ✅ Agent persistence working
-- ✅ Adaptive formatting visible
+**Add to prompts array** (line ~84):
+```bash
+"Technical Analysis: \$SPY"
+"Get options expiration dates for SPY"  # NEW TEST 14
+"Get the SPY Call Options Chain Expiring this Friday"
+```
 
-**If Tests Fail:**
-1. [ ] **Sequential-Thinking:** Analyze failures
-2. [ ] Use Serena tools to fix bugs
-3. [ ] Re-run tests until 100% pass
-4. [ ] Do NOT proceed until tests pass
+**Add to test_names array** (line ~128):
+```bash
+"Test_13_SPY_Technical_Analysis"
+"Test_14_SPY_Options_Expiration_Dates"  # NEW TEST NAME
+"Test_15_SPY_Call_Options_Chain"  # RENUMBERED (was Test_14)
+```
+
+#### Test Case 2: NVDA Options Expiration Dates
+**Insert Location**: After Test 29 "Technical Analysis: $NVDA" (becomes new Test 30)
+**Shift existing tests**: Test 30→32 become Test 31→33
+
+**Add to prompts array** (line ~101):
+```bash
+"Technical Analysis: \$NVDA"
+"Get options expiration dates for NVDA"  # NEW TEST 30
+"Get the NVDA Call Options Chain Expiring this Friday"
+```
+
+**Add to test_names array** (line ~145):
+```bash
+"Test_29_NVDA_Technical_Analysis"
+"Test_30_NVDA_Options_Expiration_Dates"  # NEW TEST NAME
+"Test_31_NVDA_Call_Options_Chain"  # RENUMBERED (was Test_30)
+```
+
+**Update Test Count**:
+- Line 3: Comment "# CLI Test Regression Script - NEW 38-Test Suite" → "# CLI Test Regression Script - NEW 40-Test Suite"
+- Line 16: "# - SPY Test Sequence: Tests 1-16" → "# - SPY Test Sequence: Tests 1-17"
+- Line 17: "# - NVDA Test Sequence: Tests 17-32" → "# - NVDA Test Sequence: Tests 18-33"
+- Line 18: "# - Multi-Ticker Test Sequence: Tests 33-38" → "# - Multi-Ticker Test Sequence: Tests 34-40"
+- Line 19: "# Total: 38 tests per loop" → "# Total: 40 tests per loop"
+- Line 159: "total_tests=${#prompts[@]}" (auto-calculated, no change needed)
+
+**Validation**:
+- 2 new test cases added (SPY + NVDA)
+- Test numbers properly renumbered
+- Total test count: 40 (was 38)
+- Test sequence integrity maintained
+- Comments updated
 
 ---
 
-### 🔴 PHASE 5: SERENA PROJECT MEMORY UPDATES
+### Step 7: Verify .env has TRADIER_API_KEY ⏳ PENDING
 
-**Tool Requirement:** Serena `write_memory` and `read_memory`
+**Tool Enforcement**:
+- ✅ Use Bash to check .env file
 
-#### Task 5.1: Update Tech Stack Memory
+**Command**:
+```bash
+cat .env | grep TRADIER_API_KEY
+```
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Plan tech stack updates
-2. [ ] **Serena `read_memory`:** Read tech_stack.md
-3. [ ] **Serena `write_memory`:** Add persistent agent section
+**Expected Output**:
+```
+TRADIER_API_KEY=<your_key_here>
+```
 
-**Content to Add:**
+**If Missing**: Add to .env file (user must provide key)
+
+**Validation**:
+- TRADIER_API_KEY exists in .env
+- Key value is not empty
+
+---
+
+## Phase 4: Testing (MANDATORY - DO NOT SKIP)
+
+### 🔴 CRITICAL: Testing is REQUIRED for Task Completion
+
+### Step 8: Quick CLI Test with 3 Tickers ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Bash to run CLI
+- ✅ Test each ticker individually
+
+**Test Commands**:
+```bash
+# Test 1: SPY
+echo "Get options expiration dates for SPY" | uv run src/backend/main.py
+
+# Test 2: NVDA
+echo "Get options expiration dates for NVDA" | uv run src/backend/main.py
+
+# Test 3: SOUN
+echo "Get options expiration dates for SOUN" | uv run src/backend/main.py
+```
+
+**Expected Output for Each**:
+- Ticker symbol confirmed
+- Array of expiration dates in YYYY-MM-DD format
+- Count of dates returned
+- Source: "Tradier"
+- Response time < 10s
+
+**Validation**:
+- All 3 tickers return valid data
+- No errors or exceptions
+- Dates are properly formatted
+- Tool is working correctly
+
+---
+
+### Step 9: Run Full Test Suite ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ MANDATORY: Use Bash to execute test suite
+- ✅ MANDATORY: Show results to user
+
+**Command**:
+```bash
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+```
+
+**Expected Results**:
+- **Total Tests**: 40/40 PASSED (100% success rate)
+- **New Tests**: Test 14 (SPY expirations) and Test 30 (NVDA expirations) both PASS
+- **Average Response Time**: < 15s (EXCELLENT rating)
+- **Test Report**: `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`
+- **Session Persistence**: VERIFIED (single session for all tests)
+
+**IF ANY TEST FAILS**:
+1. Review test report log file
+2. Identify failure cause
+3. Fix implementation
+4. Re-run tests
+5. Repeat until 100% pass rate
+
+**Validation**:
+- Test suite executed successfully
+- 40/40 tests PASSED (100%)
+- Test report generated
+- Evidence provided to user
+- Performance metrics acceptable
+
+---
+
+## Phase 5: Serena Project Memories Update
+
+### Step 10: Update tech_stack.md Memory ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Serena `read_memory` to get current content
+- ✅ Use Sequential-Thinking to plan updates
+- ✅ Use Serena `write_memory` to save updates
+
+**Updates Required**:
+
+1. **Data Sources Section** (Line ~30):
+   - Add Tradier to the list
+   - Update tool counts
+
+**Before**:
 ```markdown
-### Persistent Agent Architecture (October 2025)
-
-**Architecture Principle:** CLI = Single Source of Truth, GUI = Wrapper (following b866f0a pattern)
-
-**Implementation:**
-- `initialize_persistent_agent()` in CLI - ONE function creates agent
-- `process_query()` in CLI - ONE function processes queries
-- CLI mode calls these functions directly
-- GUI mode imports and calls same functions (no duplication)
-
-**Benefits:**
-- ✅ Zero code duplication (one agent creation pattern)
-- ✅ GUI inherits CLI core logic (no duplicate processing)
-- ✅ Token efficiency via prompt caching
-- ✅ Performance optimization (no repeated initialization)
-- ✅ Follows OpenAI Agents SDK best practices
+- **Polygon.io**: Direct Python API integration (12 tools)
+- **Finnhub**: Custom Python API integration (1 tool)
+- **Total AI Agent Tools**: 12
 ```
 
----
-
-#### Task 5.2: Update Project Architecture Memory
-
-**Content to Add:**
+**After**:
 ```markdown
-### Agent Lifecycle (Following b866f0a Zero-Duplication Principle)
-
-**Pattern:** CLI owns core logic, GUI calls CLI functions
-
-**CLI Module Functions:**
-- `initialize_persistent_agent()` - Creates agent ONCE (single source of truth)
-- `process_query(agent, session, input)` - Core processing logic (no duplication)
-
-**CLI Mode:**
-- Creates agent using `initialize_persistent_agent()`
-- Calls `process_query()` for each message
-- Adds CLI-specific formatting and output
-
-**GUI Mode:**
-- Creates agent in `lifespan()` using `initialize_persistent_agent()`
-- Imports `process_query()` from CLI
-- Adds HTTP response wrapper
-
-**Zero Duplication:**
-- ✅ ONE agent initialization function (in CLI)
-- ✅ ONE query processing function (in CLI)
-- ✅ GUI imports and calls CLI functions (no duplicate logic)
+- **Polygon.io**: Direct Python API integration (11 tools)
+- **Finnhub**: Custom Python API integration (1 tool)
+- **Tradier**: Custom Python API integration (1 tool)
+- **Total AI Agent Tools**: 13 (updated Oct 10, 2025)
 ```
 
----
+2. **Direct API Tools Section** (Line ~200):
+   - Add new section for Tradier tools
 
-#### Task 5.3: Create Adaptive Formatting Memory
-
-**Content:**
+**Add after "Finnhub Custom API (1 tool):"**:
 ```markdown
-# Adaptive Response Formatting Guide
-
-## Overview
-Agent intelligently chooses formatting based on data complexity (embedded in agent instructions).
-
-## Formatting Rules
-
-### Simple Responses → Lists
-Use when:
-- Few data points (< 5 items)
-- Quick answers or summaries
-- Single-dimension data
-
-Example:
-```
-KEY TAKEAWAYS:
-• TSLA showing bullish momentum
-• Price above 50-day MA
-• RSI at 62 (neutral-bullish)
+**Tradier Custom API (1 tool - Added Oct 10, 2025):**
+- `get_options_expiration_dates` - Get all valid options expiration dates for a ticker
 ```
 
-### Complex Responses → Tables
-Use when:
-- Multiple data points (≥ 5 items)
-- Multi-dimensional data (options chains)
-- Comparisons or structured data
+3. **Recent Updates Section** (at bottom):
+   - Add entry for this change
 
-Example:
+**Add new entry**:
 ```markdown
-| Strike | Premium | IV  | Delta |
-|--------|---------|-----|-------|
-| $150   | $5.20   | 45% | 0.65  |
+### Tradier Options Expiration Tool (Oct 10, 2025)
+- **Tool Added**: `get_options_expiration_dates`
+- **Purpose**: Fetch all available options expiration dates for a ticker
+- **API**: Tradier Brokerage API (markets/options/expirations endpoint)
+- **Integration**: Custom Python tool using requests library
+- **Authentication**: Bearer token via TRADIER_API_KEY env variable
+- **Response Format**: JSON with array of dates in YYYY-MM-DD format
+- **Agent Instructions**: New RULE #10 added for usage guidance
+- **Test Coverage**: 2 new tests added (SPY Test 14, NVDA Test 30)
+- **Total Tools**: 13 (was 12)
+- **Test Results**: 40/40 PASSED (100% success rate)
 ```
 
-## Implementation
-Formatting guidance in `get_enhanced_agent_instructions()` in `agent_service.py`.
-Agent automatically selects format—no explicit code logic needed.
-```
+**Validation**:
+- tech_stack.md memory updated
+- Tool counts accurate
+- Tradier section added
+- Recent updates documented
 
 ---
 
-### 🔴 PHASE 6: GIT COMMIT (ATOMIC COMMIT WORKFLOW)
+### Step 11: Update testing_procedures.md Memory ⏳ PENDING
 
-**🔴 CRITICAL: Stage ALL files ONLY immediately before commit**
+**Tool Enforcement**:
+- ✅ Use Serena `read_memory` to get current content
+- ✅ Use Sequential-Thinking to plan updates
+- ✅ Use Serena `write_memory` to save updates
 
-#### Task 6.1: Pre-Commit Verification
+**Updates Required**:
 
-**Actions:**
-1. [ ] **Sequential-Thinking:** Review all changes
-2. [ ] Verify ALL code changes complete
-3. [ ] Verify ALL tests passed
-4. [ ] Verify ALL documentation updated
-5. [ ] Verify ALL Serena memories updated
-6. [ ] Run `git status` and `git diff`
-7. [ ] **DO NOT run `git add` yet**
+1. **Test Coverage Section** (Line ~30):
+   - Update test counts
+
+**Before**:
+```markdown
+**Test Coverage (36 tests total - NEW Oct 8, 2025):**
+
+1. **SPY Test Sequence (Tests 1-15)**:
+...
+2. **NVDA Test Sequence (Tests 16-30)**:
+...
+3. **Multi-Ticker Test Sequence (Tests 31-36)**:
+```
+
+**After**:
+```markdown
+**Test Coverage (40 tests total - UPDATED Oct 10, 2025):**
+
+1. **SPY Test Sequence (Tests 1-17)**:
+   - Market Status
+   - Current Price: $SPY
+   - Today's Closing Price: $SPY
+   - Yesterday's Closing Price: $SPY
+   - Last week's Performance: $SPY
+   - Stock Price on the previous week's Friday: $SPY (dynamic date)
+   - Daily Stock Price bars Analysis from the last 2 trading weeks: $SPY (dynamic date)
+   - RSI-14: $SPY
+   - MACD: $SPY
+   - SMA 20/50/200: $SPY
+   - EMA 20/50/200: SPY
+   - Support & Resistance Levels: $SPY
+   - Technical Analysis: $SPY
+   - **Get options expiration dates for SPY** (NEW TEST 14)
+   - Get First 3 Call Option Quotes expiring this Friday: $SPY
+   - Get First 3 Put Option Quotes expiring this Friday: $SPY
+   - Options Wall Analysis: $SPY
+
+2. **NVDA Test Sequence (Tests 18-33)**:
+   - Same pattern as SPY (16 tests)
+   - **Get options expiration dates for NVDA** (NEW TEST 30)
+
+3. **Multi-Ticker Test Sequence (Tests 34-40)**:
+   - Market Status
+   - Current Price: $WDC, $AMD, $GME
+   - MACD Analysis: $WDC, $AMD, $GME
+   - Average Trading Volume comparison: $WDC, $AMD, $GME
+   - Technical Analysis: $WDC, $AMD, $GME
+   - Relative Strength Analysis: $WDC, $AMD, $GME
+   - Daily bars Analysis from the last 2 trading weeks: $WDC, $AMD, $GME
+```
+
+2. **Expected Performance Section**:
+   - Update test counts
+
+**Update all references**:
+- "36 tests" → "40 tests"
+- "36/36" → "40/40"
+
+3. **Recent Updates Section** (at bottom):
+   - Add entry for test changes
+
+**Add new entry**:
+```markdown
+### Oct 10, 2025: Tradier Options Expiration Tests Added
+
+**New Test Cases:**
+- Test 14: SPY Options Expiration Dates
+- Test 30: NVDA Options Expiration Dates
+
+**Test Prompts:**
+- "Get options expiration dates for SPY"
+- "Get options expiration dates for NVDA"
+
+**Purpose**: Validate new Tradier API integration for fetching options expiration dates
+
+**Test Suite Updates:**
+- Total tests: 38 → 40
+- SPY sequence: 16 tests → 17 tests
+- NVDA sequence: 16 tests → 17 tests (including renumbering)
+- Multi-ticker: Unchanged (6 tests)
+
+**Expected Output:**
+- JSON with ticker, expiration_dates array, count, source
+- Dates in YYYY-MM-DD format
+- Response time < 10s
+- No errors
+
+**Test Results:**
+- Total: 40/40 PASSED (100%)
+- New tests: Both PASSED
+- Performance: EXCELLENT rating maintained
+```
+
+**Validation**:
+- testing_procedures.md memory updated
+- Test counts accurate (40 total)
+- New tests documented
+- Test sequences properly renumbered
 
 ---
 
-#### Task 6.2: Stage and Commit
+## Phase 6: Final Git Commit (Atomic Commit Workflow)
 
+### 🔴 CRITICAL: Follow Proper Atomic Commit Workflow
+
+### Step 12: Update CLAUDE.md Documentation ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Standard Edit to update CLAUDE.md
+
+**Update Location**: Replace "Last Completed Task Summary" section (lines 12-179)
+
+**New Content**: Create comprehensive summary following the template pattern
+
+**Validation**:
+- CLAUDE.md updated with complete task summary
+- Test results included
+- Performance metrics documented
+
+---
+
+### Step 13: Verify ALL Work Complete ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Bash to check git status
+- ✅ Review all changes
+
+**Commands**:
+```bash
+# Review all changed/new files
+git status
+
+# Review all changes in detail
+git diff
+```
+
+**Checklist**:
+- [ ] tradier_tools.py created
+- [ ] tools/__init__.py updated
+- [ ] agent_service.py updated (imports + tools list + instructions)
+- [ ] test_cli_regression.sh updated (2 new tests)
+- [ ] .env has TRADIER_API_KEY
+- [ ] Quick CLI tests completed successfully
+- [ ] Full test suite: 40/40 PASSED
+- [ ] Test report generated
+- [ ] tech_stack.md memory updated
+- [ ] testing_procedures.md memory updated
+- [ ] CLAUDE.md updated
+- [ ] TODO_task_plan.md exists (this file)
+
+**Validation**:
+- ALL checklist items complete
+- ALL files ready for commit
+- NO unstaged changes remaining
+
+---
+
+### Step 14: Stage All Files At Once ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ CRITICAL: This is the FIRST time running git add
+- ✅ Stage ALL files in ONE command
+
+**Command**:
 ```bash
 git add -A
-git status  # Verify all staged
+```
 
+**Validation**:
+- All files staged
+- Nothing left unstaged
+
+---
+
+### Step 15: Verify Staging Immediately ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Bash to verify staging
+
+**Command**:
+```bash
+git status
+```
+
+**Expected Output**:
+```
+Changes to be committed:
+  new file:   src/backend/tools/tradier_tools.py
+  modified:   src/backend/tools/__init__.py
+  modified:   src/backend/services/agent_service.py
+  modified:   test_cli_regression.sh
+  modified:   .serena/memories/tech_stack.md
+  modified:   .serena/memories/testing_procedures.md
+  modified:   CLAUDE.md
+  new file:   TODO_task_plan.md
+  new file:   test-reports/test_cli_regression_loop1_*.log
+```
+
+**Validation**:
+- ALL changed files staged
+- NOTHING unstaged
+- Ready for commit
+
+---
+
+### Step 16: Create Atomic Commit IMMEDIATELY ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Bash to commit within 60 seconds of staging
+- ✅ Use HEREDOC format for commit message
+
+**Command**:
+```bash
 git commit -m "$(cat <<'EOF'
-[ARCHITECTURE] Implement persistent agent pattern - eliminate code duplication
+[TRADIER] Add options expiration dates tool for AI Agent
 
-Architecture Principle (following commit b866f0a):
-- CLI = Single source of truth for core business logic
-- GUI = Wrapper that calls CLI functions (zero duplication)
+- Add new AI Agent tool: get_options_expiration_dates
+- Integration: Tradier Brokerage API (markets/options/expirations)
+- Authentication: Bearer token via TRADIER_API_KEY env variable
+- Response format: JSON with array of dates in YYYY-MM-DD format
+- Total tools: 12 → 13
 
-Problem Fixed:
-- Both CLI and GUI were duplicating agent creation logic
-- create_agent() called in two places (CLI and GUI routers)
-- Runner.run() logic duplicated in two places
-- Violated b866f0a zero-duplication principle
+Code Changes:
+- NEW: src/backend/tools/tradier_tools.py (120 lines)
+  - Async function with @function_tool decorator
+  - Comprehensive error handling (timeout, network, validation)
+  - Follows OpenAI custom tools best practices
+- MODIFIED: src/backend/tools/__init__.py
+  - Import get_options_expiration_dates
+  - Export in __all__ list
+- MODIFIED: src/backend/services/agent_service.py
+  - Import Tradier tool
+  - Add to agent tools list (position 2, after get_stock_quote)
+  - Update TOOLS description (added Tradier mention)
+  - Update tool count: 12 → 13 tools (line 36)
+  - Add RULE #10: Options expiration dates usage guidance
 
-Solution Implemented:
-- Created shared functions in CLI module:
-  • initialize_persistent_agent() - ONE function creates agent
-  • process_query() - ONE function processes queries
-- CLI mode calls these functions directly
-- GUI mode imports and calls same functions
-- Zero code duplication achieved
+Test Changes:
+- MODIFIED: test_cli_regression.sh
+  - Add Test 14: SPY options expiration dates
+  - Add Test 30: NVDA options expiration dates
+  - Update test counts: 38 → 40 tests
+  - Renumber subsequent tests (14→17 become 15→18, etc.)
+  - Update test sequence documentation
 
-Files Modified:
-- src/backend/cli.py: Added shared functions, persistent agent in CLI
-- src/backend/routers/chat.py: Import CLI functions, eliminate duplication
-- src/backend/main.py: Create shared agent in lifespan using CLI function
-- src/backend/dependencies.py: Add agent to shared resources
-- src/backend/services/agent_service.py: Adaptive formatting instructions
+Test Results:
+- Total: 40/40 PASSED (100% success rate)
+- New Tests: Both PASSED (Test 14 SPY, Test 30 NVDA)
+- Avg Response Time: [X.XX]s (EXCELLENT rating)
+- Session Duration: [X] min [XX] sec
+- Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
 
-Architecture Benefits:
-✅ Zero code duplication (one agent creation, one processing logic)
-✅ GUI inherits CLI core logic (no duplicate processing)
-✅ Single source of truth maintained (CLI owns business logic)
-✅ Token efficiency via prompt caching
-✅ Performance optimization (no repeated agent initialization)
-✅ Follows OpenAI Agents SDK best practices
-✅ Follows b866f0a architecture principle
+Quick CLI Tests:
+- SPY: ✅ Valid expiration dates returned
+- NVDA: ✅ Valid expiration dates returned
+- SOUN: ✅ Valid expiration dates returned
 
-Testing:
-- CLI regression suite: X/X PASSED (100% success rate)
-- Response times: X.XXs average (within baseline)
-- Test report: test-reports/test_cli_regression_YYYY-MM-DD_HH-MM.log
+Documentation Updates:
+- MODIFIED: .serena/memories/tech_stack.md
+  - Add Tradier to Data Sources section
+  - Update tool counts (12 → 13)
+  - Add Tradier Custom API section
+  - Document new tool in Recent Updates
+- MODIFIED: .serena/memories/testing_procedures.md
+  - Update test coverage section (38 → 40 tests)
+  - Document new test cases (Test 14, Test 30)
+  - Update test sequences and renumbering
+  - Add Recent Updates entry
+- MODIFIED: CLAUDE.md
+  - Update Last Completed Task Summary section
+  - Document complete implementation details
+  - Include test results and validation
 
-Documentation:
-- .serena/memories/tech_stack.md: Persistent agent architecture
-- .serena/memories/project_architecture.md: Agent lifecycle pattern
-- .serena/memories/adaptive_formatting_guide.md: Formatting guide
-- TODO_task_plan.md: Revised implementation plan
-- CLAUDE.md: Updated task summary
+Implementation Details:
+- Pattern: Followed finnhub_tools.py structure exactly
+- API: Tradier markets/options/expirations endpoint
+- Error Handling: Timeout, network, validation, empty data
+- Response: JSON with ticker, expiration_dates, count, source
+- Agent Instructions: RULE #10 provides comprehensive usage guidance
+- Tool Position: After get_stock_quote (logical grouping)
 
-Reference: OpenAI Agents SDK sessions.md + commit b866f0a architecture
+Architecture:
+- Direct API integration (no MCP)
+- Async/await for non-blocking I/O
+- Environment variable for API key
+- Consistent with existing tool patterns
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
+```
 
+**Validation**:
+- Commit created successfully
+- Commit message comprehensive
+- All files included in commit
+
+---
+
+### Step 17: Push to Remote IMMEDIATELY ⏳ PENDING
+
+**Tool Enforcement**:
+- ✅ Use Bash to push within 60 seconds of commit
+
+**Command**:
+```bash
 git push
 ```
 
----
+**Expected Output**:
+```
+Counting objects: X, done.
+Delta compression using up to N threads.
+Compressing objects: 100% (X/X), done.
+Writing objects: 100% (X/X), done.
+Total X (delta Y), reused 0 (delta 0)
+To github.com:user/market-parser-polygon-mcp.git
+   abc1234..def5678  master -> master
+```
 
-## 🎯 SUCCESS CRITERIA
-
-### Architecture Compliance ✅
-- [ ] CLI module has `initialize_persistent_agent()` function
-- [ ] CLI module has `process_query()` function
-- [ ] GUI router imports these functions from CLI
-- [ ] No duplicate agent creation code
-- [ ] No duplicate query processing code
-- [ ] Follows b866f0a zero-duplication principle
-
-### Code Changes ✅
-- [ ] CLI creates agent once using shared function
-- [ ] GUI creates agent once using shared function
-- [ ] GUI calls CLI `process_query()` function
-- [ ] No `create_agent()` calls in request handlers
-- [ ] Adaptive formatting instructions added
-
-### Testing ✅
-- [ ] CLI regression suite passes (100%)
-- [ ] Response times within baseline
-- [ ] No errors or exceptions
-- [ ] Agent persistence working
-- [ ] Adaptive formatting visible
-
-### Documentation ✅
-- [ ] Serena memories updated
-- [ ] CLAUDE.md updated with task summary
-- [ ] Git commit includes all changes atomically
+**Validation**:
+- Push successful
+- All changes in remote repository
+- Task COMPLETE
 
 ---
 
-## 🚨 CRITICAL REMINDERS
+## Success Criteria
 
-### Architecture Principle (from b866f0a)
-- ✅ CLI = Single source of truth (core business logic)
-- ✅ GUI = Wrapper (calls CLI functions, adds HTTP layer)
-- ✅ Zero code duplication
-- ✅ Backend generates, frontend displays
+**Task is COMPLETE when ALL of the following are TRUE**:
 
-### Tool Usage Requirements
-- ✅ START every phase with Sequential-Thinking
-- ✅ Use Serena tools for all code modifications
-- ✅ Use tools continuously throughout
-- ✅ Never use tools only once
-
-### Testing Requirements
-- ✅ MUST run `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
-- ✅ MUST achieve 100% pass rate
-- ✅ MUST show results to user
-- ✅ Task incomplete without test execution
-
-### Git Commit Requirements
-- ✅ Complete ALL work BEFORE staging
-- ✅ Stage ALL files with `git add -A` ONCE
-- ✅ Commit within 60 seconds
-- ✅ Include ALL changes atomically
+✅ tradier_tools.py created with get_options_expiration_dates function
+✅ tools/__init__.py exports new tool
+✅ agent_service.py imports and registers tool
+✅ Agent instructions updated (tool count, RULE #10)
+✅ test_cli_regression.sh has 2 new tests (40 total)
+✅ Quick CLI tests: SPY, NVDA, SOUN all return valid data
+✅ Full test suite: 40/40 PASSED (100%)
+✅ Test report generated and reviewed
+✅ tech_stack.md memory updated
+✅ testing_procedures.md memory updated
+✅ CLAUDE.md Last Completed Task updated
+✅ All files staged with git add -A
+✅ Atomic commit created with comprehensive message
+✅ Changes pushed to remote repository
 
 ---
 
-## 📊 EXPECTED OUTCOMES
+## Tool Usage Tracking
 
-### Code Quality
-- Cleaner architecture (CLI owns logic, GUI wraps it)
-- Zero duplication (one agent pattern, one processing logic)
-- Proper separation of concerns (core vs presentation)
-- Follows established b866f0a pattern
+**This plan enforces MANDATORY tool usage throughout implementation. Track usage here:**
 
-### Performance
-- Token efficiency (prompt caching)
-- Faster responses (no repeated initialization)
-- Better resource utilization
+### Phase 3: Implementation
+- [ ] Sequential-Thinking: Plan tradier_tools.py structure
+- [ ] Standard Write: Create tradier_tools.py
+- [ ] Serena find_symbol: Locate __all__ in __init__.py
+- [ ] Standard Edit: Update __init__.py
+- [ ] Serena find_symbol: Locate import section in agent_service.py
+- [ ] Serena insert_after_symbol OR Standard Edit: Add Tradier import
+- [ ] Serena find_symbol: Locate create_agent function
+- [ ] Sequential-Thinking: Plan tools list insertion
+- [ ] Serena replace_symbol_body OR Standard Edit: Add to tools list
+- [ ] Sequential-Thinking: Plan agent instructions updates
+- [ ] Serena find_symbol: Locate get_enhanced_agent_instructions
+- [ ] Serena replace_symbol_body OR Standard Edit: Update instructions
+- [ ] Sequential-Thinking: Plan test insertions
+- [ ] Standard Read: Review test structure
+- [ ] Standard Edit: Add 2 new test cases
+- [ ] Bash: Verify TRADIER_API_KEY in .env
 
-### Maintainability
-- Changes only in CLI (GUI auto-inherits)
-- Single source of truth for core logic
-- Easier to understand and modify
+### Phase 4: Testing
+- [ ] Bash: Quick test SPY
+- [ ] Bash: Quick test NVDA
+- [ ] Bash: Quick test SOUN
+- [ ] Bash: Run full test suite (MANDATORY)
+- [ ] Bash: Review test results
+
+### Phase 5: Serena Updates
+- [ ] Serena read_memory: Get tech_stack.md content
+- [ ] Sequential-Thinking: Plan tech_stack.md updates
+- [ ] Serena write_memory: Update tech_stack.md
+- [ ] Serena read_memory: Get testing_procedures.md content
+- [ ] Sequential-Thinking: Plan testing_procedures.md updates
+- [ ] Serena write_memory: Update testing_procedures.md
+
+### Phase 6: Git Commit
+- [ ] Standard Edit: Update CLAUDE.md
+- [ ] Bash: git status (review changes)
+- [ ] Bash: git diff (review details)
+- [ ] Bash: git add -A (stage all at once)
+- [ ] Bash: git status (verify staging)
+- [ ] Bash: git commit (atomic commit)
+- [ ] Bash: git push (immediate push)
+
+**FAILURE = Not using tools as specified above**
 
 ---
 
-## 🔍 VERIFICATION CHECKLIST
+## Implementation Status
 
-Before marking complete:
-- [ ] CLI has `initialize_persistent_agent()` function
-- [ ] CLI has `process_query()` function
-- [ ] GUI imports and calls these CLI functions
-- [ ] No duplicate agent creation code
-- [ ] All tests pass (100% shown)
-- [ ] All documentation updated
-- [ ] Git commit created with all changes
-- [ ] Architecture follows b866f0a principle
+**Current Phase**: Phase 2 - Planning ✅ COMPLETE
+**Next Phase**: Phase 3 - Implementation ⏳ READY TO START
+
+**Planning Complete**: All implementation steps documented with tool enforcement
+
+**Ready for Phase 3**: Begin implementation following this plan systematically
 
 ---
 
-**END OF REVISED IMPLEMENTATION PLAN**
+**Last Updated**: October 10, 2025
+**Status**: Planning Phase Complete, Implementation Phase Ready

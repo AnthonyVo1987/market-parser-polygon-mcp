@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# CLI Test Regression Script - NEW 38-Test Suite with Chat History Analysis
-# Tests all 38 standardized test prompts sequentially in a SINGLE CLI session
+# CLI Test Regression Script - NEW 40-Test Suite with Chat History Analysis
+# Tests all 40 standardized test prompts sequentially in a SINGLE CLI session
 # Designed to validate parallel tool calls (max 3) and chat history data reuse
 # Properly handles session persistence and accurate response time tracking
 #
@@ -13,10 +13,10 @@
 #     chmod +x test_cli_regression.sh && ./test_cli_regression.sh 10  # Run 10 loops (max)
 #
 # Test Coverage:
-# - SPY Test Sequence: Tests 1-16 (16 tests - includes 2 options chain tests + 1 wall analysis)
-# - NVDA Test Sequence: Tests 17-32 (16 tests - includes 2 options chain tests + 1 wall analysis)
-# - Multi-Ticker Test Sequence: Tests 33-38 (6 tests)
-# Total: 38 tests per loop
+# - SPY Test Sequence: Tests 1-17 (17 tests - includes 1 expiration dates + 2 options chain tests + 1 wall analysis)
+# - NVDA Test Sequence: Tests 18-34 (17 tests - includes 1 expiration dates + 2 options chain tests + 1 wall analysis)
+# - Multi-Ticker Test Sequence: Tests 35-40 (6 tests)
+# Total: 40 tests per loop
 #
 # Test Design Philosophy:
 # - Sequential ticker testing validates chat history analysis
@@ -56,19 +56,19 @@ RESULTS_DIR="test-reports"
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 CLI Test Regression - NEW 38 Test Suite${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - NEW 40 Test Suite${NC}"
 echo -e "${CYAN}===========================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 38 tests in same session per loop)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 40 tests in same session per loop)"
 echo -e "Test Features: ${GREEN}Parallel Tool Calls (max 3)${NC}, ${GREEN}Chat History Analysis${NC}, ${GREEN}Options Chain Tests${NC}"
 echo ""
 
-# The 38 standardized test prompts organized by ticker sequence
+# The 40 standardized test prompts organized by ticker sequence
 declare -a prompts=(
-    # SPY Test Sequence (Tests 1-16)
+    # SPY Test Sequence (Tests 1-17)
     "Market Status"
     "Current Price: \$SPY"
     "Today's Closing Price: \$SPY"
@@ -82,10 +82,11 @@ declare -a prompts=(
     "EMA 20/50/200: SPY"
     "Support & Resistance Levels: \$SPY"
     "Technical Analysis: \$SPY"
+    "Get options expiration dates for SPY"
     "Get the SPY Call Options Chain Expiring this Friday"
     "Get the SPY Put Options Chain Expiring this Friday"
     "Analyze the Options Chain Data for SPY and provide potential Call & Put Wall(s) Strike Prices"
-    # NVDA Test Sequence (Tests 17-31)
+    # NVDA Test Sequence (Tests 18-34)
     "Market Status"
     "Current Price: \$NVDA"
     "Today's Closing Price: \$NVDA"
@@ -99,10 +100,11 @@ declare -a prompts=(
     "EMA 20/50/200: NVDA"
     "Support & Resistance Levels: \$NVDA"
     "Technical Analysis: \$NVDA"
+    "Get options expiration dates for NVDA"
     "Get the NVDA Call Options Chain Expiring this Friday"
     "Get the NVDA Put Options Chain Expiring this Friday"
     "Analyze the Options Chain Data for NVDA and provide potential Call & Put Wall(s) Strike Prices"
-    # Multi-Ticker Test Sequence (Tests 32-37)
+    # Multi-Ticker Test Sequence (Tests 35-40)
     "Market Status"
     "Current Price: \$WDC, \$AMD, \$GME"
     "Today's Closing Price: \$WDC, \$AMD, \$GME"
@@ -112,7 +114,7 @@ declare -a prompts=(
 )
 
 declare -a test_names=(
-    # SPY Test Sequence (Tests 1-15)
+    # SPY Test Sequence (Tests 1-17)
     "Test_1_Market_Status"
     "Test_2_SPY_Current_Price"
     "Test_3_SPY_Today_Closing_Price"
@@ -126,33 +128,35 @@ declare -a test_names=(
     "Test_11_SPY_EMA_20_50_200"
     "Test_12_SPY_Support_Resistance"
     "Test_13_SPY_Technical_Analysis"
-    "Test_14_SPY_Call_Options_Chain"
-    "Test_15_SPY_Put_Options_Chain"
-    "Test_16_SPY_Options_Wall_Analysis"
-    # NVDA Test Sequence (Tests 17-31)
-    "Test_17_Market_Status"
-    "Test_18_NVDA_Current_Price"
-    "Test_19_NVDA_Today_Closing_Price"
-    "Test_20_NVDA_Yesterday_Closing_Price"
-    "Test_21_NVDA_Last_Week_Performance"
-    "Test_22_NVDA_Previous_Week_Friday_Price"
-    "Test_23_NVDA_Last_2_Weeks_Daily_Bars"
-    "Test_24_NVDA_RSI_14"
-    "Test_25_NVDA_MACD"
-    "Test_26_NVDA_SMA_20_50_200"
-    "Test_27_NVDA_EMA_20_50_200"
-    "Test_28_NVDA_Support_Resistance"
-    "Test_29_NVDA_Technical_Analysis"
-    "Test_30_NVDA_Call_Options_Chain"
-    "Test_31_NVDA_Put_Options_Chain"
-    "Test_32_NVDA_Options_Wall_Analysis"
-    # Multi-Ticker Test Sequence (Tests 33-38)
-    "Test_33_Multi_Market_Status"
-    "Test_34_Multi_Current_Price_WDC_AMD_GME"
-    "Test_35_Multi_Today_Closing_Price_WDC_AMD_GME"
-    "Test_36_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
-    "Test_37_Multi_Last_Week_Performance_WDC_AMD_GME"
-    "Test_38_Multi_Last_2_Weeks_Daily_Bars_WDC_AMD_GME"
+    "Test_14_SPY_Options_Expiration_Dates"
+    "Test_15_SPY_Call_Options_Chain"
+    "Test_16_SPY_Put_Options_Chain"
+    "Test_17_SPY_Options_Wall_Analysis"
+    # NVDA Test Sequence (Tests 18-34)
+    "Test_18_Market_Status"
+    "Test_19_NVDA_Current_Price"
+    "Test_20_NVDA_Today_Closing_Price"
+    "Test_21_NVDA_Yesterday_Closing_Price"
+    "Test_22_NVDA_Last_Week_Performance"
+    "Test_23_NVDA_Previous_Week_Friday_Price"
+    "Test_24_NVDA_Last_2_Weeks_Daily_Bars"
+    "Test_25_NVDA_RSI_14"
+    "Test_26_NVDA_MACD"
+    "Test_27_NVDA_SMA_20_50_200"
+    "Test_28_NVDA_EMA_20_50_200"
+    "Test_29_NVDA_Support_Resistance"
+    "Test_30_NVDA_Technical_Analysis"
+    "Test_31_NVDA_Options_Expiration_Dates"
+    "Test_32_NVDA_Call_Options_Chain"
+    "Test_33_NVDA_Put_Options_Chain"
+    "Test_34_NVDA_Options_Wall_Analysis"
+    # Multi-Ticker Test Sequence (Tests 35-40)
+    "Test_35_Multi_Market_Status"
+    "Test_36_Multi_Current_Price_WDC_AMD_GME"
+    "Test_37_Multi_Today_Closing_Price_WDC_AMD_GME"
+    "Test_38_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
+    "Test_39_Multi_Last_Week_Performance_WDC_AMD_GME"
+    "Test_40_Multi_Last_2_Weeks_Daily_Bars_WDC_AMD_GME"
 )
 
 # Initialize test tracking
@@ -194,7 +198,7 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     echo "exit" >> "$INPUT_FILE"
 
     echo -e "${CYAN}🚀 Starting CLI Regression Test (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
-    echo -e "${CYAN}Session will run all 38 tests sequentially${NC}"
+    echo -e "${CYAN}Session will run all 40 tests sequentially${NC}"
     echo -e "Output file: $OUTPUT_FILE"
     echo ""
 
