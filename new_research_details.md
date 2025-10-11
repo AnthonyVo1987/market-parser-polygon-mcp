@@ -44,78 +44,28 @@ SUCCESS CRITERIA:
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 ULTRA-THINK to Research the requested task(s):
 
-1. Research updating some AI Agent tools to use Tradier API Endpoints
-- https://docs.tradier.com/reference/brokerage-api-markets-get-quotes
-- https://docs.tradier.com/reference/brokerage-api-markets-get-clock
+1. Research updating migrating and replacing some AI Agent tools to use Tradier API Endpoints
+- https://docs.tradier.com/reference/brokerage-api-markets-get-history
 - Update AI Agent instructions for the updated tools
-- Test the new tools by calling the CLI and testing with requested for each of the following tickers one at a time, and then a multi test: SPY, NVDA, SOUN, QQQ, IWM
+- Test the new tools by issuing some manual CLI test cases to confirm the new tool API endpoints are working correctly
 - Fix any issues if needed from testing to make the tool tests work properly
 
 
-1. 'get_stock_quote' to use Tradier Endpoint:
-- 'get_stock_quote' can now be used for both SINGLE AND MULTI Tickers within a single tool call
-- So we only need the new 'get_stock_quote' to handle any number of tickers in a single tool call
+1. NEW tool 'get_stock_price_history' that uses the Tradier API "Get historical pricing" Endpoint:
+- The new Tradier 'get_stock_price_history' tool allows different time interval input parameters from a single tool: Daily(default), Weekly, Monthly
+- The new tool also takes a date range with a start date and end date
+- With this single tool, the AI Agent can then retrieve any type of historical data from any time interval, all in a single tool call
+- So since this single tool call can handle so many different history stock price time intervals, you will need to completely remove the now deperacated Polygon Tools: get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
+- This should optimize AI Agent performance even more because a single tool can handle all history data time interval scenarios, instead of using the legacy polygon tools that needed separate tools for separate date ranges.
 
 Here is a the example API endpoint Python Call & Response :
 
+
+Daily Time Inteval:
 ```
 import requests
 
-url = "https://api.tradier.com/v1/markets/quotes?symbols=SPY"
-
-headers = {
-    "Accept": "application/json",
-    "authorization": "Bearer <TRADIER_API_KEY>"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-
-```
-{
-  "quotes": {
-    "quote": {
-      "symbol": "SPY",
-      "description": "SPDR S&P 500",
-      "exch": "P",
-      "type": "etf",
-      "last": 653.02,
-      "change": -18.14,
-      "volume": 159422590,
-      "open": 672.13,
-      "high": 673.95,
-      "low": 652.84,
-      "close": 653.02,
-      "bid": 652.1,
-      "ask": 652.14,
-      "change_percentage": -2.71,
-      "average_volume": 70675102,
-      "last_volume": 0,
-      "trade_date": 1760140800001,
-      "prevclose": 671.16,
-      "week_52_high": 673.94,
-      "week_52_low": 481.8,
-      "bidsize": 3,
-      "bidexch": "P",
-      "bid_date": 1760140793000,
-      "asksize": 1,
-      "askexch": "P",
-      "ask_date": 1760140797000,
-      "root_symbols": "SPY"
-    }
-  }
-}
-```
-
-
-For multi tickers, here is the example call:
-
-```
-import requests
-
-url = "https://api.tradier.com/v1/markets/quotes?symbols=WDC%2CAMD%2CGME"
+url = "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=daily&start=2025-01-01&end=2025-01-10"
 
 headers = {
     "Accept": "application/json",
@@ -129,94 +79,55 @@ print(response.text)
 
 ```
 {
-  "quotes": {
-    "quote": [
+  "history": {
+    "day": [
       {
-        "symbol": "WDC",
-        "description": "Western Digital Corp",
-        "exch": "Q",
-        "type": "stock",
-        "last": 115.42,
-        "change": -4.28,
-        "volume": 7046192,
-        "open": 120,
-        "high": 121.945,
-        "low": 115.03,
-        "close": 115.42,
-        "bid": 114.11,
-        "ask": 115,
-        "change_percentage": -3.58,
-        "average_volume": 4793527,
-        "last_volume": 377808,
-        "trade_date": 1760126400192,
-        "prevclose": 119.7,
-        "week_52_high": 137.4,
-        "week_52_low": 28.83,
-        "bidsize": 1,
-        "bidexch": "Q",
-        "bid_date": 1760140720000,
-        "asksize": 1,
-        "askexch": "Q",
-        "ask_date": 1760140544000,
-        "root_symbols": "WDC,WDC1"
+        "date": "2025-01-02",
+        "open": 589.39,
+        "high": 591.13,
+        "low": 580.5,
+        "close": 584.64,
+        "volume": 50203975
       },
       {
-        "symbol": "AMD",
-        "description": "Advanced Micro Devices Inc",
-        "exch": "Q",
-        "type": "stock",
-        "last": 214.9,
-        "change": -17.99,
-        "volume": 118656636,
-        "open": 232.77,
-        "high": 234.22,
-        "low": 213.2001,
-        "close": 214.9,
-        "bid": 215.12,
-        "ask": 215.2,
-        "change_percentage": -7.73,
-        "average_volume": 55628230,
-        "last_volume": 0,
-        "trade_date": 1760127300013,
-        "prevclose": 232.89,
-        "week_52_high": 240.1,
-        "week_52_low": 76.48,
-        "bidsize": 2,
-        "bidexch": "Q",
-        "bid_date": 1760140799000,
-        "asksize": 1,
-        "askexch": "U",
-        "ask_date": 1760140786000,
-        "root_symbols": "AMD,AMD1"
+        "date": "2025-01-03",
+        "open": 587.53,
+        "high": 592.6,
+        "low": 586.43,
+        "close": 591.95,
+        "volume": 37888459
       },
       {
-        "symbol": "GME",
-        "description": "GameStop Corp",
-        "exch": "N",
-        "type": "stock",
-        "last": 23.3,
-        "change": -0.77,
-        "volume": 9744316,
-        "open": 24.08,
-        "high": 24.2,
-        "low": 23.28,
-        "close": 23.3,
-        "bid": 23.3,
-        "ask": 23.35,
-        "change_percentage": -3.2,
-        "average_volume": 8665599,
-        "last_volume": 0,
-        "trade_date": 1760137200001,
-        "prevclose": 24.07,
-        "week_52_high": 35.81,
-        "week_52_low": 20.35,
-        "bidsize": 83,
-        "bidexch": "P",
-        "bid_date": 1760140799000,
-        "asksize": 4,
-        "askexch": "P",
-        "ask_date": 1760140780000,
-        "root_symbols": "GME,GME1"
+        "date": "2025-01-06",
+        "open": 596.27,
+        "high": 599.7,
+        "low": 593.6,
+        "close": 595.36,
+        "volume": 47679442
+      },
+      {
+        "date": "2025-01-07",
+        "open": 597.42,
+        "high": 597.75,
+        "low": 586.78,
+        "close": 588.63,
+        "volume": 60393052
+      },
+      {
+        "date": "2025-01-08",
+        "open": 588.7,
+        "high": 590.5799,
+        "low": 585.195,
+        "close": 589.49,
+        "volume": 47304672
+      },
+      {
+        "date": "2025-01-10",
+        "open": 585.88,
+        "high": 585.95,
+        "low": 578.55,
+        "close": 580.49,
+        "volume": 73105046
       }
     ]
   }
@@ -224,19 +135,15 @@ print(response.text)
 ```
 
 
-
-2. 'get_market_status_and_date_time' to use Tradier Endpoint:
-
-Here is a the example API endpoint Python Call & Response :
-
+Weekly Time Inteval:
 ```
 import requests
 
-url = "https://api.tradier.com/v1/markets/clock"
+url = "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=weekly&start=2025-01-01&end=2025-01-15"
 
 headers = {
     "Accept": "application/json",
-    "authorization": "Bearer <TRADIER_API_KEY>"
+    "authorization": "Bearer 8XP1DYNiWBSOLfCIXtEmJ4NeRIEC"
 }
 
 response = requests.get(url, headers=headers)
@@ -246,21 +153,108 @@ print(response.text)
 
 ```
 {
-  "clock": {
-    "date": "2021-02-01",
-    "description": "open",
-    "state": "open",
-    "timestamp": 1612196262,
-    "next_state": "post",
-    "next_change": 1612213200
+  "history": {
+    "day": [
+      {
+        "date": "2025-01-06",
+        "open": 596.27,
+        "high": 599.7,
+        "low": 578.55,
+        "close": 580.49,
+        "volume": 228482210
+      },
+      {
+        "date": "2025-01-13",
+        "open": 575.77,
+        "high": 599.36,
+        "low": 575.35,
+        "close": 597.58,
+        "volume": 254621090
+      }
+    ]
   }
 }
 ```
 
 
+Monthly Time Inteval:
+```
+import requests
+
+url = "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=monthly&start=2025-01-01&end=2025-06-01"
+
+headers = {
+    "Accept": "application/json",
+    "authorization": "Bearer 8XP1DYNiWBSOLfCIXtEmJ4NeRIEC"
+}
+
+response = requests.get(url, headers=headers)
+
+print(response.text)
+```
+
+```
+{
+  "history": {
+    "day": [
+      {
+        "date": "2025-01-01",
+        "open": 589.39,
+        "high": 610.78,
+        "low": 575.35,
+        "close": 601.82,
+        "volume": 995605960
+      },
+      {
+        "date": "2025-02-01",
+        "open": 592.67,
+        "high": 613.23,
+        "low": 582.44,
+        "close": 594.18,
+        "volume": 871641460
+      },
+      {
+        "date": "2025-03-01",
+        "open": 596.18,
+        "high": 597.34,
+        "low": 546.87,
+        "close": 559.39,
+        "volume": 1496972100
+      },
+      {
+        "date": "2025-04-01",
+        "open": 557.45,
+        "high": 567.42,
+        "low": 481.8,
+        "close": 554.54,
+        "volume": 2237015100
+      },
+      {
+        "date": "2025-05-01",
+        "open": 560.37,
+        "high": 595.54,
+        "low": 556.04,
+        "close": 589.39,
+        "volume": 1402418500
+      },
+      {
+        "date": "2025-06-01",
+        "open": 587.76,
+        "high": 619.22,
+        "low": 585.06,
+        "close": 617.85,
+        "volume": 1495568000
+      }
+    ]
+  }
+}
+```
 
 
-2. If quick test of the new tool works, add new test case in 'test_cli_regression.sh' after "Technical Analysis: " for SPY and NVDA to retreive the OPtions Expiraton Dates.  Then run the full test and review the responses to ensure the new tool works as expected.
+2. If quick test of the new tool works, add new test cases in 'test_cli_regression.sh':
+- Replace "Daily Stock Price bars Analysis from the last 2 trading weeks:xxx" with "Stock Price Performance the last 5 Trading Days: xxx"
+- After "Stock Price Performance the last 5 Trading Days: xxx", add new test case: "Stock Price Performance the last 2 Weeks: xxx"
+- After "Stock Price Performance the last 2 Weeks: xxx" add new test case: "Stock Price Performance the last month: xxx"
 
 ---
 
