@@ -9,8 +9,6 @@ Market Parser is a Python CLI and React web application for natural
 language financial queries using the Polygon.io MCP server and OpenAI
 GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 
-
-
 ## Quick Start
 
 ### CLI Interface
@@ -23,82 +21,20 @@ KEY TAKEAWAYS
 • TSLA showing bullish momentum...
 ```
 
-**One-Click Application Startup (Recommended):**
 
-The startup scripts automatically START all development servers BUT **DOES
-NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
+# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
 
-```bash
-# Option 1: XTerm startup script (RECOMMENDED - WORKING)
-chmod +x start-app-xterm.sh && ./start-app-xterm.sh
+🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process
 
-# Option 2: Main startup script (NOW WORKING - FIXED)
-chmod +x start-app.sh && ./start-app.sh
+## 🔴 MANDATORY: SYSTEMATIC TOOL USAGE ENFORCEMENT
 
-  # ✅ WORKING: Script now exits cleanly with timeout
-```
+**YOU MUST use Sequential-Thinking and Serena tools throughout ENTIRE implementation:**
 
-
-## Last Completed Task Summary
-
-<!-- LAST_COMPLETED_TASK_START -->
-[FIX] Options Chain Bid/Ask Display - RULE #9 Agent Instructions Update
-
-**Problem:** Agent displaying single "Price (mid)" column instead of separate Bid and Ask columns
-**Root Cause:** Backend functions WERE correct (returning bid/ask fields), but RULE #9 agent instructions specified single "price" column format
-**Solution:** Updated RULE #9 to explicitly require both Bid and Ask columns, prohibit midpoint calculations
-
-**Files Modified:**
-- src/backend/services/agent_service.py (RULE #9, lines 256-272)
-  - Changed "price" → "bid, ask" in response format description (line 257)
-  - Added explicit warning "DO NOT calculate or show midpoint/average prices" (line 261)
-  - Updated table format from single "Price" column to separate "Bid" and "Ask" columns (lines 263-265)
-  - Added instruction "Show BOTH Bid and Ask columns" (line 268)
-
-**Test Results:**
-- ✅ 44/44 tests PASSED (100% success rate)
-- ✅ 12.95s average response time (EXCELLENT rating)
-- ✅ All options chain tests (17, 18, 36, 37) show separate Bid/Ask columns
-- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-10_22-58.log
-
-**Documentation Updates:**
-- .serena/memories/tech_stack.md - Added Bid/Ask display fix section (45 lines)
-- CLAUDE.md - Updated last completed task summary with comprehensive fix details
-
-**Verification:**
-Quick manual tests confirmed SPY call/put options show "Bid    Ask" columns (NOT "Price (mid)")
-Full CLI regression suite validated all 44 tests passing with correct Bid/Ask display
-
-**Key Fix:**
-Backend was ALREADY correct - issue was purely in AGENT INSTRUCTIONS (RULE #9)
-Updating RULE #9 fixed display without any backend code changes
-Lesson: Always verify actual output matches requirements
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-<!-- LAST_COMPLETED_TASK_END -->
-
-## 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
-
-🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process.
-
-🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
-
-TOOL USAGE REQUIREMENTS:
-
-- Use tools in ANY ORDER as needed for the specific task
-- Use the SAME tool MULTIPLE TIMES if needed
-- NEVER treat tool lists as a rigid sequence
-- ALWAYS use tools when they would be helpful, even if you've used them before
-- Use tools for investigation, analysis, verification, and implementation at every step
-
-MANDATORY TOOL USAGE PATTERNS:
-
-1. START with Sequential-Thinking for task analysis, Investigation, Planning, Scoping, Researching, Complex problem analysis (max 8 thoughts)
-2. Use Serena Tools for code analysis, symbol manipulation, pattern search with context, and memory management for complex financial algorithm development and refactoring; Use standard Read/Write/Edit for simple file content modifications
-3. REPEAT any tool as needed throughout the process
-4. 🔴 NEVER stop using tools - continue using them until task completion
+- **START every phase** with Sequential-Thinking for systematic approach
+- **Use Serena tools** for code analysis, symbol manipulation, pattern searches
+- **Use Sequential-Thinking** repeatedly for complex reasoning and planning
+- **Use Standard Read/Write/Edit** only when Serena doesn't support the specific operation
+- **NEVER stop using advanced tools** until task completion
 
 ### Serena Tool Setup
 
@@ -113,21 +49,6 @@ These instructions provide critical guidance on:
 - Proper file reading vs. full file scanning
 - Symbol overview and targeted symbol reads
 - Pattern searching for flexible searches
-
-VIOLATION PENALTIES:
-
-- If you use tools only once and stop, you're failing
-- If you follow a rigid order instead of using tools as needed, you're failing
-- If you don't use tools throughout the entire process, you're failing
-- If you use wrong tool for the operation (e.g., Standard for batch operations), you're failing
-
-SUCCESS CRITERIA:
-
-- Tools used multiple times throughout the task
-- Tools used in different orders based on need
-- Continuous tool usage from start to finish
-- Correct tool selection based on operation type
-- No rigid sequencing - only logical tool usage based on task requirements
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
@@ -148,7 +69,9 @@ SUCCESS CRITERIA:
 ✅ **MUST DO:**
 
 - Execute test suite (e.g., `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`)
-- Show test results to user (pass/fail counts, response times)
+- 🔴 MANDATORY - VERIFY THE CONTENT OF EACH TEST PROMPT RESPONSE THAT IT MATCHES THE EXPECTED RESPONSE, PROPER TOOL CALLS, AND RESPONSE FORMATTING 🔴
+ - PASS CRITERIA: CONTENT OF TEST PROMPT RESPONS MATCHES THE EXPECTED RESPONSE, PROPER TOOL CALLS, AND RESPONSE FORMATTING
+- Show test results to user (Reponse content pass/fail counts, response times)
 - Verify 100% success rate
 - Provide test report file path
 - Fix any failures and re-test
@@ -293,19 +216,9 @@ SUCCESS CRITERIA:
 
 **Enforcement:** Incomplete commits will be reverted and reworked.
 
-## Quick Start
 
-### CLI Interface
 
-```bash
-uv run src/backend/main.py
-
-> Tesla stock analysis
-KEY TAKEAWAYS
-• TSLA showing bullish momentum...
-```
-
-**One-Click Application Startup (Recommended):**
+**One-Click REACT GUI Application Backend & Frontend Server Startup Scripts:**
 
 The startup scripts automatically START all development servers BUT **DOES
 NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
@@ -316,23 +229,11 @@ chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 
 # Option 2: Main startup script (NOW WORKING - FIXED)
 chmod +x start-app.sh && ./start-app.sh
-
-  # ✅ WORKING: Script now exits cleanly with timeout
 ```
 
-**Prerequisites:** uv, Node.js 18+, API keys in .env
-
-## Script Variants
-
-### start-app.sh (NOW WORKING - FIXED)
-
-- **Status**: ✅ WORKING - Script now exits cleanly with timeout mechanism
-- **Features**: 30-second timeout fallback to prevent hanging
-- **Environment Support**: Works in both X11 and WSL2/headless environments
-- **Background Mode**: Uses background processes in WSL2, terminal windows in X11
-- **Logging**: Writes server logs to backend.log and frontend.log in WSL2 mode
-
 ## What the Scripts Do
+
+**Prerequisites:** uv, Node.js 18+, API keys in .env
 
 ### ⏰ Timeout Mechanism
 
@@ -370,14 +271,6 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 **Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
 
 ## Features
-
-### ⚡ High-Performance UI
-
-- **Lightning Fast Loading**: 85%+ improvement in Core Web Vitals
-- **Optimized Performance**: 256ms First Contentful Paint (FCP)
-- **Smooth Interactions**: All UI interactions are instant and responsive
-- **Memory Efficient**: Optimized memory usage with 13.8MB heap size
-- **Accessibility First**: Full WCAG 2.1 AA compliance
 
 ### Natural Language Financial Queries
 
@@ -469,5 +362,45 @@ netstat -tlnp | grep :8000
 - Ensure both `POLYGON_API_KEY` and `OPENAI_API_KEY` are set in `.env`
 - Verify API keys are valid and have sufficient credits
 
+## Last Completed Task Summary
 
-      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.
+<!-- LAST_COMPLETED_TASK_START -->
+[FIX] Options Chain Bid/Ask Display - RULE #9 Agent Instructions Update
+
+**Problem:** Agent displaying single "Price (mid)" column instead of separate Bid and Ask columns
+**Root Cause:** Backend functions WERE correct (returning bid/ask fields), but RULE #9 agent instructions specified single "price" column format
+**Solution:** Updated RULE #9 to explicitly require both Bid and Ask columns, prohibit midpoint calculations
+
+**Files Modified:**
+- src/backend/services/agent_service.py (RULE #9, lines 256-272)
+  - Changed "price" → "bid, ask" in response format description (line 257)
+  - Added explicit warning "DO NOT calculate or show midpoint/average prices" (line 261)
+  - Updated table format from single "Price" column to separate "Bid" and "Ask" columns (lines 263-265)
+  - Added instruction "Show BOTH Bid and Ask columns" (line 268)
+
+**Test Results:**
+- ✅ 44/44 tests PASSED (100% success rate)
+- ✅ 12.95s average response time (EXCELLENT rating)
+- ✅ All options chain tests (17, 18, 36, 37) show separate Bid/Ask columns
+- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-10_22-58.log
+
+**Documentation Updates:**
+- .serena/memories/tech_stack.md - Added Bid/Ask display fix section (45 lines)
+- CLAUDE.md - Updated last completed task summary with comprehensive fix details
+
+**Verification:**
+Quick manual tests confirmed SPY call/put options show "Bid    Ask" columns (NOT "Price (mid)")
+Full CLI regression suite validated all 44 tests passing with correct Bid/Ask display
+
+**Key Fix:**
+Backend was ALREADY correct - issue was purely in AGENT INSTRUCTIONS (RULE #9)
+Updating RULE #9 fixed display without any backend code changes
+Lesson: Always verify actual output matches requirements
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+<!-- LAST_COMPLETED_TASK_END -->
+
+
+IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.

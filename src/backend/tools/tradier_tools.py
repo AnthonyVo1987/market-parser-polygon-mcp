@@ -9,6 +9,8 @@ import os
 import requests
 from agents import function_tool
 
+from .formatting_helpers import create_options_chain_table, create_price_history_summary
+
 
 def _get_tradier_api_key():
     """Get Tradier API key from environment.
@@ -330,17 +332,13 @@ async def get_stock_price_history(
         for bar in bars_data:
             formatted_bars.append(_format_tradier_history_bar(bar))
 
-        return json.dumps(
-            {
-                "ticker": ticker,
-                "interval": interval,
-                "start_date": start_date,
-                "end_date": end_date,
-                "bars": formatted_bars,
-                "count": len(formatted_bars),
-                "source": "Tradier",
-            },
-            indent=2,
+        # Return formatted markdown summary (not JSON)
+        return create_price_history_summary(
+            ticker=ticker,
+            interval=interval,
+            bars=formatted_bars,
+            start_date=start_date,
+            end_date=end_date,
         )
 
     except requests.exceptions.Timeout:
@@ -554,7 +552,7 @@ async def get_call_options_chain(
         call_options.sort(key=lambda x: x.get("strike", 0))
         call_options = call_options[:10]
 
-        # Format options data
+        # Format options data (removed theta and vega - not needed for new format)
         formatted_options = []
         for opt in call_options:
             strike = opt.get("strike", 0)
@@ -564,8 +562,6 @@ async def get_call_options_chain(
             greeks = opt.get("greeks", {})
             delta = greeks.get("delta", 0)
             gamma = greeks.get("gamma", 0)
-            theta = greeks.get("theta", 0)
-            vega = greeks.get("vega", 0)
             implied_vol = greeks.get("smv_vol", 0) * 100  # Convert to percentage
 
             volume = opt.get("volume", 0) or 0  # Handle None
@@ -578,25 +574,19 @@ async def get_call_options_chain(
                     "ask": round(ask, 2),
                     "delta": round(delta, 2),
                     "gamma": round(gamma, 2),
-                    "theta": round(theta, 2),
-                    "vega": round(vega, 2),
                     "implied_volatility": round(implied_vol, 2),
                     "volume": volume,
                     "open_interest": open_interest,
                 }
             )
 
-        return json.dumps(
-            {
-                "ticker": ticker,
-                "option_type": "call",
-                "current_price": current_price,
-                "expiration_date": expiration_date,
-                "options": formatted_options,
-                "count": len(formatted_options),
-                "source": "Tradier",
-            },
-            indent=2,
+        # Return formatted markdown table (not JSON)
+        return create_options_chain_table(
+            ticker=ticker,
+            option_type="call",
+            expiration_date=expiration_date,
+            current_price=current_price,
+            options=formatted_options,
         )
 
     except requests.exceptions.Timeout:
@@ -789,7 +779,7 @@ async def get_put_options_chain(
         put_options.sort(key=lambda x: x.get("strike", 0), reverse=True)
         put_options = put_options[:10]
 
-        # Format options data
+        # Format options data (removed theta and vega - not needed for new format)
         formatted_options = []
         for opt in put_options:
             strike = opt.get("strike", 0)
@@ -799,8 +789,6 @@ async def get_put_options_chain(
             greeks = opt.get("greeks", {})
             delta = greeks.get("delta", 0)
             gamma = greeks.get("gamma", 0)
-            theta = greeks.get("theta", 0)
-            vega = greeks.get("vega", 0)
             implied_vol = greeks.get("smv_vol", 0) * 100  # Convert to percentage
 
             volume = opt.get("volume", 0) or 0  # Handle None
@@ -813,25 +801,19 @@ async def get_put_options_chain(
                     "ask": round(ask, 2),
                     "delta": round(delta, 2),
                     "gamma": round(gamma, 2),
-                    "theta": round(theta, 2),
-                    "vega": round(vega, 2),
                     "implied_volatility": round(implied_vol, 2),
                     "volume": volume,
                     "open_interest": open_interest,
                 }
             )
 
-        return json.dumps(
-            {
-                "ticker": ticker,
-                "option_type": "put",
-                "current_price": current_price,
-                "expiration_date": expiration_date,
-                "options": formatted_options,
-                "count": len(formatted_options),
-                "source": "Tradier",
-            },
-            indent=2,
+        # Return formatted markdown table (not JSON)
+        return create_options_chain_table(
+            ticker=ticker,
+            option_type="put",
+            expiration_date=expiration_date,
+            current_price=current_price,
+            options=formatted_options,
         )
 
     except requests.exceptions.Timeout:
