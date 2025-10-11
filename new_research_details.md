@@ -44,28 +44,102 @@ SUCCESS CRITERIA:
 <Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
 ULTRA-THINK to Research the requested task(s):
 
-1. Research updating migrating and replacing some AI Agent tools to use Tradier API Endpoints
-- https://docs.tradier.com/reference/brokerage-api-markets-get-history
+## Task 1. Research updating\migrating 'get_call_options_chain' & 'get_put_options_chain' to use Tradier API Endpoints
+- https://docs.tradier.com/reference/brokerage-api-markets-get-options-chains
 - Update AI Agent instructions for the updated tools
 - Test the new tools by issueing some manual CLI test cases to confirm the new tool API endpoints are working correctly
 - Fix any issues if needed from testing to make the tool tests work properly
 
+- This migration will be more complicated because there are MAJOR differences between current Polygon vs Tradier Options Chain endpoints
+- Tradier does NOT allow any filtering with more granular parameters like Polygon does for Options Chain
+- Tradier Options chain endpoint unfortunatly responds back with the FULL Options Chain
+- So there needs to be some extra post-processing and filtering steps after the initial API call to fix up and truncate the data and format it to match the current expected options chain table displays
+- So what I am thinking is the the updated 'get_call_options_chain' & 'get_put_options_chain' tools may need additional steps and\or helper functions to then parse the entire full raw Tradier Options Chain, and then selectively pick the correct fields to match the current Options chain display output
+- And since Tradier options chain endpoint has the Bid\Ask fields which is BETTER than Polygon, you will need to remove the current Price field and instead now have the Bid and Ask fields for the Prices
+- Since the endpoint sends a massive full options chain which can easily overload an AI Agent's context, we need to prevent the tool from accidently sending the full options chain back to the AI Agent. So end result is after all the internal post-processing in the tool, the tool will only give a final output back to AI Agent that is cleaned up and only has the strikes and fields we want
 
-1. NEW tool 'get_stock_price_history' that uses the Tradier API "Get historical pricing" Endpoint:
-- The new Tradier 'get_stock_price_history' tool allows different time interval input parameters from a single tool: Daily(default), Weekly, Monthly
-- The new tool also takes a date range with a start date and end date
-- With this single tool, the AI Agent can then retrieve any type of historical data from any time interval, all in a single tool call
-- So since this single tool call can handle so many different history stock price time intervals, you will need to completely remove the now deperacated Polygon Tools: get_OHLC_bars_custom_date_range, get_OHLC_bars_specific_date, get_OHLC_bars_previous_close
-- This should optimize AI Agent performance even more because a single tool can handle all history data time interval scenarios, instead of using the legacy polygon tools that needed separate tools for separate date ranges.
+- Here is an example output from a recent test report using the current Polygon method, and the new Tradier Tool needs to have parity with the same output and logic, taking into account we are replacing the Price field\columns with the new Trader Bid and Ask fields\columns
+- So the new helper functions to perform the post-processing and filtering needs to ensure the table is based on the current price, and a max of 10x sequential strikes for Calls\Puts.
+
+
+```
+📊 SPY Call Options Chain (Expiring 2025-10-10)
+                                                                                
+                                                                    Open        
+  Strike    Price   Delta   Gamma   Theta   Implied Vol   Volume    Interest    
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+  $672.00   1.04    0.38    0.10    -0.70   11.00%        135,391   16,023      
+  $673.00   0.62    0.27    0.09    -0.56   10.00%        78,212    7,936       
+  $674.00   0.36    0.18    0.07    -0.42   9.00%         57,198    9,385       
+  $675.00   0.19    0.11    0.05    -0.29   9.00%         64,620    17,136      
+  $676.00   0.09    0.06    0.04    -0.19   9.00%         28,762    6,529       
+  $677.00   0.06    0.04    0.02    -0.13   9.00%         28,914    9,987       
+  $678.00   0.04    0.02    0.02    -0.10   10.00%        10,971    7,990       
+  $679.00   0.02    0.02    0.01    -0.07   10.00%        6,258     4,604       
+  $680.00   0.02    0.01    0.01    -0.05   11.00%        9,240     14,340      
+  $681.00   0.02    0.01    0.01    -0.05   12.00%        2,032     6,816       
+                                                                                
+
+Notes:                                                                          
+
+ • Data as of latest available snapshot for Friday expiration (2025-10-10).     
+ • IV expressed as a percentage (rounded).                                      
+
+Tools Used:                                                                     
+
+ • get_call_options_chain(ticker='SPY', current_price=671.16,                   
+   expiration_date='2025-10-10') - Retrieved the SPY call options chain data for
+   the requested expiration.
+
+> 
+Query processed successfully!
+Agent Response:
+
+📊 SPY Put Options Chain (Expiring 2025-10-10)                                  
+
+                                                                                
+                                                                    Open        
+  Strike    Price   Delta   Gamma   Theta   Implied Vol    Volume   Interest    
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+  $671.00    1.34   -0.54    0.14   -0.51         8.00%   109,250   13,803      
+  $670.00    1.01   -0.42    0.12   -0.57         9.00%   165,845   19,680      
+  $669.00    0.80   -0.32    0.10   -0.59        10.00%    79,881   8,484       
+  $668.00    0.64   -0.25    0.08   -0.58        11.00%    67,037   11,663      
+  $667.00    0.52   -0.20    0.06   -0.56        12.00%    51,152   7,875       
+  $666.00    0.43   -0.16    0.05   -0.53        13.00%    38,455   6,716       
+  $665.00    0.36   -0.14    0.04   -0.51        14.00%    53,073   17,439      
+  $664.00    0.32   -0.11    0.03   -0.48        15.00%    31,480   6,202       
+  $663.00    0.27   -0.10    0.03   -0.46        16.00%    37,717   6,937       
+  $662.00    0.25   -0.08    0.02   -0.43        17.00%    21,611   16,388      
+                                                                                
+
+Notes:                                                                          
+
+ • Data snapshot for Friday expiration (2025-10-10).                            
+ • IV expressed as a percentage (rounded).                                      
+
+Tools Used:                                                                     
+
+ • get_put_options_chain(ticker='SPY', current_price=671.16,                    
+   expiration_date='2025-10-10') - Retrieved SPY put options chain for the      
+   requested expiration.
+
+```
+
+
 
 Here is a the example API endpoint Python Call & Response :
 
 
-Daily Time Inteval:
+The full options chain reponse is MASSIVE. Since the endpoint sends a massive full options chain which can easily overload an AI Agent's context, we need to prevent the tool from accidently sending the full options chain back to the AI Agent. So end result is after all the internal post-processing in the tool, the tool will only give a final output back to AI Agent that is cleaned up and only has the strikes and fields we want.
+
+I provided an example of a truncated options chain because if paste the entire chain, YOUR context will be overloaded.
+
 ```
 import requests
 
-url = "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=daily&start=2025-01-01&end=2025-01-10"
+
+url = "https://api.tradier.com/v1/markets/options/chains?symbol=NVDA&expiration=2025-10-17&greeks=true"
 
 headers = {
     "Accept": "application/json",
@@ -77,57 +151,601 @@ response = requests.get(url, headers=headers)
 print(response.text)
 ```
 
+
 ```
 {
-  "history": {
-    "day": [
+  "options": {
+    "option": [
       {
-        "date": "2025-01-02",
-        "open": 589.39,
-        "high": 591.13,
-        "low": 580.5,
-        "close": 584.64,
-        "volume": 50203975
+        "symbol": "NVDA251017P00005000",
+        "description": "NVDA Oct 17 2025 $5.00 Put",
+        "exch": "Z",
+        "type": "option",
+        "last": 0.01,
+        "change": 0,
+        "volume": 1,
+        "open": 0.01,
+        "high": 0.01,
+        "low": 0.01,
+        "close": 0.01,
+        "bid": 0,
+        "ask": 0.01,
+        "underlying": "NVDA",
+        "strike": 5,
+        "greeks": {
+          "delta": 0,
+          "gamma": -1.5583416797591932e-15,
+          "theta": 0,
+          "vega": 0.000020000001616878057,
+          "rho": 0.0009582751747058605,
+          "phi": -0.03521147704077521,
+          "bid_iv": 0,
+          "mid_iv": 0,
+          "ask_iv": 0,
+          "smv_vol": 1.1120640944803377,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": 0,
+        "average_volume": 0,
+        "last_volume": 1,
+        "trade_date": 1760111643731,
+        "prevclose": 0.01,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 0,
+        "bidexch": "Q",
+        "bid_date": 1760126395000,
+        "asksize": 588,
+        "askexch": "W",
+        "ask_date": 1760126399000,
+        "open_interest": 2060,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "put",
+        "root_symbol": "NVDA"
       },
       {
-        "date": "2025-01-03",
-        "open": 587.53,
-        "high": 592.6,
-        "low": 586.43,
-        "close": 591.95,
-        "volume": 37888459
+        "symbol": "NVDA251017C00005000",
+        "description": "NVDA Oct 17 2025 $5.00 Call",
+        "exch": "Z",
+        "type": "option",
+        "last": 178.68,
+        "change": -8.79,
+        "volume": 23,
+        "open": 182.22,
+        "high": 182.47,
+        "low": 178.68,
+        "close": 178.68,
+        "bid": 177.15,
+        "ask": 178.75,
+        "underlying": "NVDA",
+        "strike": 5,
+        "greeks": {
+          "delta": 1,
+          "gamma": -1.5583416797591932e-15,
+          "theta": 0,
+          "vega": 0.000020000001616878057,
+          "rho": 0.0009582751747058605,
+          "phi": -0.03521147704077521,
+          "bid_iv": 0,
+          "mid_iv": 0,
+          "ask_iv": 0,
+          "smv_vol": 1.1120640944803377,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": -4.69,
+        "average_volume": 0,
+        "last_volume": 2,
+        "trade_date": 1760126141812,
+        "prevclose": 187.47,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 188,
+        "bidexch": "C",
+        "bid_date": 1760126399000,
+        "asksize": 4,
+        "askexch": "J",
+        "ask_date": 1760126400000,
+        "open_interest": 1581,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "call",
+        "root_symbol": "NVDA"
       },
       {
-        "date": "2025-01-06",
-        "open": 596.27,
-        "high": 599.7,
-        "low": 593.6,
-        "close": 595.36,
-        "volume": 47679442
+        "symbol": "NVDA251017P00010000",
+        "description": "NVDA Oct 17 2025 $10.00 Put",
+        "exch": "Z",
+        "type": "option",
+        "last": 0.01,
+        "change": 0,
+        "volume": 0,
+        "open": null,
+        "high": null,
+        "low": null,
+        "close": null,
+        "bid": 0,
+        "ask": 0.01,
+        "underlying": "NVDA",
+        "strike": 10,
+        "greeks": {
+          "delta": 0,
+          "gamma": -8.762482884101296e-16,
+          "theta": 0,
+          "vega": 0.000020000001616878057,
+          "rho": 0.0019165503947105001,
+          "phi": -0.03521147647234102,
+          "bid_iv": 0,
+          "mid_iv": 0,
+          "ask_iv": 0,
+          "smv_vol": 1.1120640944803377,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": 0,
+        "average_volume": 0,
+        "last_volume": 1,
+        "trade_date": 1757706571461,
+        "prevclose": 0.01,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 0,
+        "bidexch": "Q",
+        "bid_date": 1760126395000,
+        "asksize": 584,
+        "askexch": "W",
+        "ask_date": 1760126399000,
+        "open_interest": 1038,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "put",
+        "root_symbol": "NVDA"
       },
       {
-        "date": "2025-01-07",
-        "open": 597.42,
-        "high": 597.75,
-        "low": 586.78,
-        "close": 588.63,
-        "volume": 60393052
+        "symbol": "NVDA251017C00010000",
+        "description": "NVDA Oct 17 2025 $10.00 Call",
+        "exch": "Z",
+        "type": "option",
+        "last": 182.5,
+        "change": -0.1,
+        "volume": 2,
+        "open": 182.45,
+        "high": 182.5,
+        "low": 182.45,
+        "close": 182.5,
+        "bid": 171.85,
+        "ask": 174.7,
+        "underlying": "NVDA",
+        "strike": 10,
+        "greeks": {
+          "delta": 1,
+          "gamma": -8.762482884101296e-16,
+          "theta": 0,
+          "vega": 0.000020000001616878057,
+          "rho": 0.0019165503947105001,
+          "phi": -0.03521147647234102,
+          "bid_iv": 0,
+          "mid_iv": 0,
+          "ask_iv": 0,
+          "smv_vol": 1.1120640944803377,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": -0.06,
+        "average_volume": 0,
+        "last_volume": 1,
+        "trade_date": 1760108593756,
+        "prevclose": 182.6,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 179,
+        "bidexch": "X",
+        "bid_date": 1760126399000,
+        "asksize": 3,
+        "askexch": "J",
+        "ask_date": 1760126400000,
+        "open_interest": 49,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "call",
+        "root_symbol": "NVDA"
       },
       {
-        "date": "2025-01-08",
-        "open": 588.7,
-        "high": 590.5799,
-        "low": 585.195,
-        "close": 589.49,
-        "volume": 47304672
+        "symbol": "NVDA251017P00015000",
+        "description": "NVDA Oct 17 2025 $15.00 Put",
+        "exch": "Z",
+        "type": "option",
+        "last": 0.02,
+        "change": 0,
+        "volume": 0,
+        "open": null,
+        "high": null,
+        "low": null,
+        "close": null,
+        "bid": 0,
+        "ask": 0.01,
+        "underlying": "NVDA",
+        "strike": 15,
+        "greeks": {
+          "delta": -6e-16,
+          "gamma": 2.015675126676531e-15,
+          "theta": 0,
+          "vega": 0.00002000000210194147,
+          "rho": 0.002874825611883966,
+          "phi": -0.035211476188123925,
+          "bid_iv": 0,
+          "mid_iv": 0,
+          "ask_iv": 0,
+          "smv_vol": 1.1120640944803337,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": 0,
+        "average_volume": 0,
+        "last_volume": 1,
+        "trade_date": 1748461264027,
+        "prevclose": 0.02,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 0,
+        "bidexch": "Q",
+        "bid_date": 1760126397000,
+        "asksize": 578,
+        "askexch": "W",
+        "ask_date": 1760126399000,
+        "open_interest": 4531,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "put",
+        "root_symbol": "NVDA"
       },
       {
-        "date": "2025-01-10",
-        "open": 585.88,
-        "high": 585.95,
-        "low": 578.55,
-        "close": 580.49,
-        "volume": 73105046
+        "symbol": "NVDA251017C00015000",
+        "description": "NVDA Oct 17 2025 $15.00 Call",
+        "exch": "Z",
+        "type": "option",
+        "last": 168.8,
+        "change": -9.08,
+        "volume": 68,
+        "open": 173.7,
+        "high": 174.5,
+        "low": 168.8,
+        "close": 168.8,
+        "bid": 166.8,
+        "ask": 169.6,
+        "underlying": "NVDA",
+        "strike": 15,
+        "greeks": {
+          "delta": 0.9999999999999994,
+          "gamma": 2.015675126676531e-15,
+          "theta": 0,
+          "vega": 0.00002000000210194147,
+          "rho": 0.002874825611883966,
+          "phi": -0.035211476188123925,
+          "bid_iv": 0,
+          "mid_iv": 0,
+          "ask_iv": 0,
+          "smv_vol": 1.1120640944803337,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": -5.11,
+        "average_volume": 0,
+        "last_volume": 1,
+        "trade_date": 1760126123453,
+        "prevclose": 177.88,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 188,
+        "bidexch": "X",
+        "bid_date": 1760126399000,
+        "asksize": 3,
+        "askexch": "J",
+        "ask_date": 1760126400000,
+        "open_interest": 224,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "call",
+        "root_symbol": "NVDA"
+      },
+
+... continued...
+
+      {
+        "symbol": "NVDA251017P00370000",
+        "description": "NVDA Oct 17 2025 $370.00 Put",
+        "exch": "Z",
+        "type": "option",
+        "last": null,
+        "change": null,
+        "volume": 0,
+        "open": null,
+        "high": null,
+        "low": null,
+        "close": null,
+        "bid": 185.7,
+        "ask": 190.95,
+        "underlying": "NVDA",
+        "strike": 370,
+        "greeks": {
+          "delta": -1,
+          "gamma": 9.981093364879909e-31,
+          "theta": -1.689972025229884e-30,
+          "vega": 0.00002,
+          "rho": 4.5569683729698344e-32,
+          "phi": -4.5893786372716606e-32,
+          "bid_iv": 0,
+          "mid_iv": 2.859627,
+          "ask_iv": 2.859627,
+          "smv_vol": 0.5397701678072027,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": null,
+        "average_volume": 0,
+        "last_volume": 0,
+        "trade_date": 0,
+        "prevclose": null,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 102,
+        "bidexch": "Q",
+        "bid_date": 1760126397000,
+        "asksize": 9,
+        "askexch": "D",
+        "ask_date": 1760126400000,
+        "open_interest": 0,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "put",
+        "root_symbol": "NVDA"
+      },
+      {
+        "symbol": "NVDA251017C00370000",
+        "description": "NVDA Oct 17 2025 $370.00 Call",
+        "exch": "Z",
+        "type": "option",
+        "last": null,
+        "change": null,
+        "volume": 0,
+        "open": null,
+        "high": null,
+        "low": null,
+        "close": null,
+        "bid": 0,
+        "ask": 0.01,
+        "underlying": "NVDA",
+        "strike": 370,
+        "greeks": {
+          "delta": 1.0039449179582374e-30,
+          "gamma": 9.981093364879909e-31,
+          "theta": -1.689972025229884e-30,
+          "vega": 0.00002,
+          "rho": 4.5569683729698344e-32,
+          "phi": -4.5893786372716606e-32,
+          "bid_iv": 0,
+          "mid_iv": 1.586459,
+          "ask_iv": 1.586459,
+          "smv_vol": 0.5397701678072027,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": null,
+        "average_volume": 0,
+        "last_volume": 0,
+        "trade_date": 0,
+        "prevclose": null,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 0,
+        "bidexch": "Q",
+        "bid_date": 1760126399000,
+        "asksize": 568,
+        "askexch": "W",
+        "ask_date": 1760126399000,
+        "open_interest": 0,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "call",
+        "root_symbol": "NVDA"
+      },
+      {
+        "symbol": "NVDA251017P00380000",
+        "description": "NVDA Oct 17 2025 $380.00 Put",
+        "exch": "Z",
+        "type": "option",
+        "last": null,
+        "change": null,
+        "volume": 0,
+        "open": null,
+        "high": null,
+        "low": null,
+        "close": null,
+        "bid": 195.7,
+        "ask": 199.25,
+        "underlying": "NVDA",
+        "strike": 380,
+        "greeks": {
+          "delta": -1,
+          "gamma": 0,
+          "theta": 0,
+          "vega": 0.00002,
+          "rho": 0,
+          "phi": 0,
+          "bid_iv": 0,
+          "mid_iv": 2.944305,
+          "ask_iv": 2.944305,
+          "smv_vol": 0.5397701678072027,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": null,
+        "average_volume": 0,
+        "last_volume": 0,
+        "trade_date": 0,
+        "prevclose": null,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 102,
+        "bidexch": "Q",
+        "bid_date": 1760126399000,
+        "asksize": 9,
+        "askexch": "P",
+        "ask_date": 1760126400000,
+        "open_interest": 0,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "put",
+        "root_symbol": "NVDA"
+      },
+      {
+        "symbol": "NVDA251017C00380000",
+        "description": "NVDA Oct 17 2025 $380.00 Call",
+        "exch": "Z",
+        "type": "option",
+        "last": 0.01,
+        "change": 0,
+        "volume": 1,
+        "open": 0.01,
+        "high": 0.01,
+        "low": 0.01,
+        "close": 0.01,
+        "bid": 0,
+        "ask": 0.01,
+        "underlying": "NVDA",
+        "strike": 380,
+        "greeks": {
+          "delta": 0,
+          "gamma": 0,
+          "theta": 0,
+          "vega": 0.00002,
+          "rho": 0,
+          "phi": 0,
+          "bid_iv": 0,
+          "mid_iv": 1.641611,
+          "ask_iv": 1.641611,
+          "smv_vol": 0.5397701678072027,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": 0,
+        "average_volume": 0,
+        "last_volume": 1,
+        "trade_date": 1760103004305,
+        "prevclose": 0.01,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 0,
+        "bidexch": "Q",
+        "bid_date": 1760126395000,
+        "asksize": 1578,
+        "askexch": "W",
+        "ask_date": 1760126399000,
+        "open_interest": 1,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "call",
+        "root_symbol": "NVDA"
+      },
+      {
+        "symbol": "NVDA251017P00390000",
+        "description": "NVDA Oct 17 2025 $390.00 Put",
+        "exch": "Z",
+        "type": "option",
+        "last": null,
+        "change": null,
+        "volume": 0,
+        "open": null,
+        "high": null,
+        "low": null,
+        "close": null,
+        "bid": 205.7,
+        "ask": 210.45,
+        "underlying": "NVDA",
+        "strike": 390,
+        "greeks": {
+          "delta": -1,
+          "gamma": 0,
+          "theta": 0,
+          "vega": 0.00002,
+          "rho": 0,
+          "phi": 0,
+          "bid_iv": 0,
+          "mid_iv": 3.316243,
+          "ask_iv": 3.316243,
+          "smv_vol": 0.5397701678072027,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": null,
+        "average_volume": 0,
+        "last_volume": 0,
+        "trade_date": 0,
+        "prevclose": null,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 105,
+        "bidexch": "X",
+        "bid_date": 1760126396000,
+        "asksize": 1,
+        "askexch": "W",
+        "ask_date": 1760126398000,
+        "open_interest": 0,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "put",
+        "root_symbol": "NVDA"
+      },
+      {
+        "symbol": "NVDA251017C00390000",
+        "description": "NVDA Oct 17 2025 $390.00 Call",
+        "exch": "Z",
+        "type": "option",
+        "last": 0.01,
+        "change": null,
+        "volume": 20,
+        "open": 0.01,
+        "high": 0.01,
+        "low": 0.01,
+        "close": 0.01,
+        "bid": 0,
+        "ask": 0.01,
+        "underlying": "NVDA",
+        "strike": 390,
+        "greeks": {
+          "delta": 0,
+          "gamma": 0,
+          "theta": 0,
+          "vega": 0.00002,
+          "rho": 0,
+          "phi": 0,
+          "bid_iv": 0,
+          "mid_iv": 1.693421,
+          "ask_iv": 1.693421,
+          "smv_vol": 0.5397701678072027,
+          "updated_at": "2025-10-10 20:00:06"
+        },
+        "change_percentage": null,
+        "average_volume": 0,
+        "last_volume": 6,
+        "trade_date": 1760110637946,
+        "prevclose": null,
+        "week_52_high": 0,
+        "week_52_low": 0,
+        "bidsize": 0,
+        "bidexch": "Q",
+        "bid_date": 1760126399000,
+        "asksize": 30,
+        "askexch": "W",
+        "ask_date": 1760126399000,
+        "open_interest": 0,
+        "contract_size": 100,
+        "expiration_date": "2025-10-17",
+        "expiration_type": "standard",
+        "option_type": "call",
+        "root_symbol": "NVDA"
       }
     ]
   }
@@ -135,121 +753,8 @@ print(response.text)
 ```
 
 
-Weekly Time Inteval:
-```
-import requests
-
-url = "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=weekly&start=2025-01-01&end=2025-01-15"
-
-headers = {
-    "Accept": "application/json",
-    "authorization": "Bearer 8XP1DYNiWBSOLfCIXtEmJ4NeRIEC"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-
-```
-{
-  "history": {
-    "day": [
-      {
-        "date": "2025-01-06",
-        "open": 596.27,
-        "high": 599.7,
-        "low": 578.55,
-        "close": 580.49,
-        "volume": 228482210
-      },
-      {
-        "date": "2025-01-13",
-        "open": 575.77,
-        "high": 599.36,
-        "low": 575.35,
-        "close": 597.58,
-        "volume": 254621090
-      }
-    ]
-  }
-}
-```
-
-
-Monthly Time Inteval:
-```
-import requests
-
-url = "https://api.tradier.com/v1/markets/history?symbol=SPY&interval=monthly&start=2025-01-01&end=2025-06-01"
-
-headers = {
-    "Accept": "application/json",
-    "authorization": "Bearer 8XP1DYNiWBSOLfCIXtEmJ4NeRIEC"
-}
-
-response = requests.get(url, headers=headers)
-
-print(response.text)
-```
-
-```
-{
-  "history": {
-    "day": [
-      {
-        "date": "2025-01-01",
-        "open": 589.39,
-        "high": 610.78,
-        "low": 575.35,
-        "close": 601.82,
-        "volume": 995605960
-      },
-      {
-        "date": "2025-02-01",
-        "open": 592.67,
-        "high": 613.23,
-        "low": 582.44,
-        "close": 594.18,
-        "volume": 871641460
-      },
-      {
-        "date": "2025-03-01",
-        "open": 596.18,
-        "high": 597.34,
-        "low": 546.87,
-        "close": 559.39,
-        "volume": 1496972100
-      },
-      {
-        "date": "2025-04-01",
-        "open": 557.45,
-        "high": 567.42,
-        "low": 481.8,
-        "close": 554.54,
-        "volume": 2237015100
-      },
-      {
-        "date": "2025-05-01",
-        "open": 560.37,
-        "high": 595.54,
-        "low": 556.04,
-        "close": 589.39,
-        "volume": 1402418500
-      },
-      {
-        "date": "2025-06-01",
-        "open": 587.76,
-        "high": 619.22,
-        "low": 585.06,
-        "close": 617.85,
-        "volume": 1495568000
-      }
-    ]
-  }
-}
-```
-
+## Task 2. Fix incorrect time interval in 'get_stock_price_history' tool use in 'test-reports/test_cli_regression_loop1_2025-10-10_21-53.log'
+- AI Agent is incorrectly using DAILY interval across the board that does NOT match the user query. DAILY interval is the default, BUT AI Agent needs to correctly use Weekly & Monthly intervals depending on the query.  AI Agent incorrectly used DAILY when the requests was for WEEKS, and incorrectly used DAILY when the request was for MONTH.  Time interval needs to match the request and NOT blindly jsut use DAILY for no reason. It makes no sense for AI Agent to use DAILY if User requests WEEKLY and\or MONTHLY
 
 ---
 
