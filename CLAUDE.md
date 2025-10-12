@@ -402,5 +402,7 @@ Lesson: Always verify actual output matches requirements
 Co-Authored-By: Claude <noreply@anthropic.com>
 <!-- LAST_COMPLETED_TASK_END -->
 
+## claude --dangerously-skip-permissions
+
 
 IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.
