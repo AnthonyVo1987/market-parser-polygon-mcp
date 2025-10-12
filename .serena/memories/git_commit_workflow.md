@@ -144,9 +144,8 @@ git push
 2. ✅ **Test files** (if modified)
 3. ✅ **Test reports** (evidence of passing tests)
 4. ✅ **Documentation updates** (CLAUDE.md, README.md, etc.)
-5. ✅ **Memory updates** (.serena/memories/)
-6. ✅ **Config changes** (.claude/settings.local.json, etc.)
-7. ✅ **Task plan updates** (TODO_task_plan.md, etc.)
+5. ✅ **Config changes** (.claude/settings.local.json, etc.)
+6. ✅ **Task plan updates** (TODO_task_plan.md, etc.)
 
 **All of these should be staged together, at the END, in ONE `git add` command.**
 
@@ -188,7 +187,6 @@ git push
 - [ ] Test reports generated and reviewed
 - [ ] All documentation updated (CLAUDE.md, tech_stack.md, etc.)
 - [ ] All config files modified (if needed)
-- [ ] All Serena memories updated (if needed)
 - [ ] `git status` shows ALL files staged
 - [ ] `git status` shows NOTHING unstaged that should be included
 - [ ] No more than 60 seconds between `git add` and `git commit`

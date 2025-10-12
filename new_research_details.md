@@ -1,64 +1,77 @@
-# 🔴 CRITICAL: MANDATORY TOOL USAGE to perform all task(s) - NEVER stop using tools - continue using them until tasks completion
-
-🔴 CRITICAL: You MUST use ALL available tools AS OFTEN AS NEEDED throughout the entire task execution. This is NOT a one-time checklist - you must continuously use tools throughout the process
-
-## 🔴 MANDATORY: SYSTEMATIC TOOL USAGE ENFORCEMENT
-
-**YOU MUST use Sequential-Thinking and Serena tools throughout ENTIRE implementation:**
-
-- **START every phase** with Sequential-Thinking for systematic approach
-- **Use Serena tools** for code analysis, symbol manipulation, pattern searches
-- **Use Sequential-Thinking** repeatedly for complex reasoning and planning
-- **Use Standard Read/Write/Edit** only when Serena doesn't support the specific operation
-- **NEVER stop using advanced tools** until task completion
-
-**VIOLATION = FAILURE**
-
-🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
-
-
-🔴 CRITICAL: FOLLOW THE ENTIRE WORKFLOW PHASES IN ORDER FOR THE REQUESTED NEW CHANGES. RESEARCH -> PLANNING -> IMPLEMENTATION -> TESTING -> SERENA -> COMMIT 🔴
+🔴 CRITICAL: FOLLOW THE ENTIRE WORKFLOW PHASES IN ORDER FOR THE REQUESTED NEW CHANGES. RESEARCH -> PLANNING -> IMPLEMENTATION -> TESTING -> COMMIT 🔴
 
 ---
 
-<Phase 1: Research> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Research PHASE 🔴
+<Phase 1: Research> ULTRA-THINK to Research the requested task(s): 
 
-## Task 1. ULTRA-THINK to use all your Primary & Fallback Research Tools to Research re-working and re-architecture the AI Agent Technical Analyis Requests & Responses
+## Task 1. Change 'test_cli_regression.sh' with new test prompt sequence:
 
-- Re-architecture and rework how the AI agent and the AI instructions and the tools for getting technical analysis indicators and then performing analysis based on the technical analysis indicators 
-- Make a clear distinction between just trying to get the technical analysis data versus performing actual technical analysis BASED on the ALL the data. 
-- This will help remove ambiguity because sometimes the AI agent gets confused and doesn’t fetch technical analysis data when it needs to, or it already has enough data but then it fetches it again,  or it just fetch TA, and doesn’t analyze, etc, so we’ll have a clear distinction between getting the data and performing analysis on the data.
-- Instead of having four individual granular 'get_ta_xxx' tools for the EMA SMA, MacD and RSI, we’re gonna consolidate and remove those individual tools and instead create a brand new tool AI Agent Tool called 'get_ta_indicators' that will bundle and perform the multiple tool calls to retrieve the data directly in the python tool
-- that way this can improve performance because now when an AI agent wants to get TA data they can call the single tool and then all the Python code will call the relevant API end points to retrieve the data and clean it up and reformat it and post-process it a clean markdown table , and table is needed because it is data havy. 
-- That way the agent doesn’t have to spend time with the tool calls itself, and the Python tool code will handle it so AI just needs to output the data
-- So now there’s a clear distinction when AI agents requested to get or retrieve technical and announce indicators data. 
-- They know that this is just a get operation and not performing an analysis and they have a tool for it and then if there’s a request to the perform analysis based on the data now we can focus on checking if it has enough information to perform analysis or not, and they could perform the analysis based on all the data in the user chat and not just the technical analysis data 
-- so that’s one other issue we found when we were asked to perform the technical analysis by AI agent sometimes it has tunnel vision and literally just focuses on the four technical indicators, but it should be taking a holistic dynamic approach because if the user previously got a bunch of request and responses regarding the current price or yesterday‘s price or even the last two weeks performance or even the last months performance, maybe they also have some support and resistance levels, etc. that all could be used as part of the technical analysis so if all the data is available, AI agent use all that data one requested to analyze it only some is available then analyze based on what you got this is makes it so it’s not strict and rigid and holistic and dynamic based on whatever data is available because sometimes maybe the user will provide some data as part of their request and that is also could be useful for the agent to perform analysis on
+'''
+declare -a prompts=(
+    "Market Status"
+    "Current Price OHLC: \$SPY"
+    "Yesterday's Price OHLC: \$SPY"
+    "Last week's Performance OHLC: \$SPY"
+    "Stock Price on the previous week's Friday OHLC: \$SPY"
+    "Stock Price Performance the last 5 Trading Days OHLC: \$SPY"
+    "Stock Price Performance the past 2 Weeks OHLC: \$SPY"
+    "Stock Price Performance the past month: \$SPY"
+    "Stock Price Performance the past 3 months: \$SPY"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$SPY"
+    "Support & Resistance Levels: \$SPY"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY
+    "Get options expiration dates: \$SPY"
+    "Get Call Options Chain Expiring this Friday: \$SPY"
+    "Get Put Options Chain Expiring this Friday: \$SPY"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
 
--  for the tests, perform manual testing of the new functions and then you have to update the test suite in 'test_cli_regression.sh' as follows:
--  now we need to break it up into two separate actions so replace the current technical analysis test prompt with a request to get technical analysis indicator data.
--  After that, now an additional test case to request the AI agent to actually perform technical analysis indicator based on the data
+    "Current Price OHLC: \$NVDA"
+    "Yesterday's Price OHLC: \$NVDA"
+    "Last week's Performance OHLC: \$NVDA"
+    "Stock Price on the previous week's Friday OHLC: \$NVDA"
+    "Stock Price Performance the last 5 Trading Days OHLC: \$NVDA"
+    "Stock Price Performance the past 2 Weeks OHLC: \$NVDA"
+    "Stock Price Performance the past month: \$NVDA"
+    "Stock Price Performance the past 3 months: \$NVDA"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$NVDA"
+    "Support & Resistance Levels: \$NVDA"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA
+    "Get options expiration dates for \$NVDA"
+    "Get Call Options Chain Expiring this Friday: \$NVDA"
+    "Get Put Options Chain Expiring this Friday: \$NVDA"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
 
-Here is the expected outcomes:
-1. NEW single tool 'get_ta_indicators' that will perform ALL of the listed Polygon API Calls in batches to prevent rate limiting issues, post-process and reformat the data in markdown table, and then provide response to AI Agent:
-- Batch 1: RSI-14, MACD
-- Batch 2: SMA 5/10/20/50/200
-- Batch 3: EMA 5/10/20/50/200
-- After all 3x batches received with data, now the tool can post-process and format the response
-- End result is that to the AI Agent, a single tool call of 'get_ta_indicators' is a black box and AI Agent has no idea all of the intermediate steps and procedures inside the tool call itself, completely offloading so the most complex and performance impacting tasks to the Python Tool code and help freeing up AI Agent Bandwidth and Context
+    "Current Price OHLC: \$WDC, \$AMD, \$SOUN"
+    "Yesterday's Price OHLC: \$WDC, \$AMD, \$SOUN"
+    "Yesterday's Closing Price: \$WDC, \$AMD, \$SOUN"
+    "Last week's Performance OHLC: \$WDC, \$AMD, \$SOUN"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$WDC, \$AMD, \$SOUN"
+    "Support & Resistance Levels: \$WDC, \$AMD, \$SOUN"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$WDC, \$AMD, \$SOUN"
+    "Get options expiration dates: \$WDC, \$AMD, \$SOUN"
+)
+'''
 
-2. COMMENT OUT ONLY the tools code get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd so that we can still keep some backward compatiblity in the future.  We will comment it out to remove compiling in unused code, but it can always serve as a reference and guide in the future.  AI Agent instructions also need to be updated
+## Task 2. Update 'test_cli_regression.sh' AND project docs and Serena Memories with new test result criteria and procedure:
+- Rework our test script and docs how it produces the results. The problem is the current test script is saying a test passes, but that’s not true. The script can onyl check if there was ANY response in general, before marking as PASS. This actually doesn’t even check if the response was even correct so there is actually no verification of the actual test responses, only a verification if a test prompt even was successful
+- This causes a lot of confusion for AI agents like you when you run the test and then the test script says PASS, so you automatically assume all the tests PASSED but that’s NOT true because that means you would completely ignore the contents of the response. The script can ONLY conclude if there was ANY response, and doesn't have the ability to actually verify the results
+- So let’s remove all ambiguity. Now the test script will no longer say if a test actually PASS, so remove ALL mention of saying if a test PASS because the script cannot validate if a test passes on its own because the script doesn’t have the capability of verifying the actual response
+- So what we need to do is have the script make it clear that after the test results have finished, now YOU \ AI Agent has to  MANUALLY review the actual results of each test prompt response to make sure that the response matches the prompt and matches the tool calls that are expected etc
+- Basically when you’re running tests and scripts, it’s a two phase approach now: Phase 1 is running just the script 'test_cli_regression.sh' until completion to get the test results. Phase 2 now you actually have to READ & REVIEW and verify the results of EACH test prompt and that’s how we’ll know if any test PASS or FAIL
+- so we have to do a mandate and make sure we also add special rules too to as a sanity, check in case you forget to review the results so after testing is complete. The mandated question is "Did you verify the results of each test prompt to ensure the response was correct and expected with the proper tool calls?"
+- Just because a test can respond quickly does NOT mean the test PASSES because it can just respond with garbage bogus data or hallucinate or make up their own data or maybe don’t don’t do any tool calls at all. That’s why you have to actually verify the individual test results so we need to reiterate across the board in the test scripts and the memories and any project docs that the results must be reviewed
+- Long story short: running 'test_cli_regression.sh' until completion is only Phase 1.  Phase 2 MUST be performed to review the actual results
 
-3. AI Agent when asked to PERFORM Technical Analysis based on the data needs to analyze and provide insights for at LEAST these 4x topics: Trends, Volatility, Momentum, Trading Patterns
+## Task 3. Validate new script changes by re-running 'test_cli_regression.sh', review the results and response to ensure compliance, fix any issues if found and re-run to validate
 
 
-🔴 CRITICAL: SAVE YOUR RESEARCH IN A NEW .md doc in 'docs/research_scope folder' 🔴
+🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
 ---
 
-<Phase 2: Planning> 🔴 CRITICAL: DO NOT START ANY IMPLEMENTATION DURING THIS Planning PHASE 🔴
+<Phase 2: Planning>
 
-Based on the latest .md Research, Analysis & Scoping from previous task(s) in 'docs/research_scope folder', delete the current file 'TODO_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
+Based on the latest Research, Analysis & Scoping 'reasearch_task_plan.md', delete the current file 'TODO_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
 
 ---
 
@@ -89,6 +102,7 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
    - Test report generated in test-reports/
    - No errors or failures in output
    - Session persistence verified
+   - Phase 2: Test Prompt Response Verification for EACH test completed
 
 3. ✅ **Show evidence to user:**
    - Display test summary output
@@ -100,14 +114,14 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 
 - Code without test execution = Code NOT implemented
 - No test results = Task INCOMPLETE
-- Must run tests BEFORE Serena memory update phase
+- Must run tests BEFORE ANY DOCUMENTATION UPDATES
 - Cannot claim "done" without showing test evidence
 - Test failures must be fixed and re-tested
 
 **✅ ONLY PROCEED to next phase after:**
 
 - Test suite executed successfully
-- 100% pass rate achieved
+- 100% pass rate achieved with Phase 2: Test Prompt Response Verification for EACH test completed
 - Test results displayed to user
 - Test report path provided
 
@@ -115,13 +129,7 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 
 ---
 
-<Phase 5: Serena Project Memories Update Phase>
-
-Use Serena Tools to update Serena project memory files
-
----
-
-<Phase 6: Final Git Commit Phase> 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW 🔴
+<Phase 5: Final Git Commit Phase> 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW 🔴
 
 **MANDATORY: Stage ONLY Immediately Before Commit**
 
@@ -132,7 +140,6 @@ Use Serena Tools to update Serena project memory files
    - ✅ Run ALL tests and generate test reports
    - ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
    - ✅ Update ALL config files (.claude/settings.local.json, etc.)
-   - ✅ Update ALL Serena memories
    - ✅ Update ALL task plans
    - ⚠️ **DO NOT RUN `git add` YET**
 
@@ -190,7 +197,6 @@ Use Serena Tools to update Serena project memory files
 - ✅ Code changes (backend + frontend)
 - ✅ Test reports (evidence of passing tests)
 - ✅ Documentation updates (CLAUDE.md, README.md, etc.)
-- ✅ Memory updates (.serena/memories/)
 - ✅ Config changes (.claude/settings.local.json, etc.)
 - ✅ Task plan updates (TODO_task_plan.md, etc.)
 
