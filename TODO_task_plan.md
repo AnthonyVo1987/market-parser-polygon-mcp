@@ -1,1232 +1,781 @@
-# Technical Analysis Tools Consolidation - Implementation Plan
+# TODO Task Plan - Test Suite Validation Framework Overhaul
 
-**Date:** October 11, 2025
-**Status:** 🔴 IN PROGRESS - Phase 2 (Planning)
-**Research Document:** `TA_CONSOLIDATION_RESEARCH.md`
+**Date:** October 12, 2025
+**Based On:** research_task_plan.md
+**Status:** READY FOR IMPLEMENTATION
+**Estimated Time:** 3-4 hours
 
 ---
 
-## 🔴 MANDATORY TOOL USAGE ENFORCEMENT
+## 🔴 CRITICAL: MANDATORY TOOL USAGE
 
 **YOU MUST use Sequential-Thinking and Serena tools throughout ENTIRE implementation:**
 
-- **START every phase** with Sequential-Thinking for systematic approach
+- **START every implementation phase** with Sequential-Thinking for systematic approach
 - **Use Serena tools** for code analysis, symbol manipulation, pattern searches
 - **Use Sequential-Thinking** repeatedly for complex reasoning and planning
-- **Use Standard Read/Write/Edit** only when Serena doesn't support the operation
+- **Use Standard Read/Write/Edit** only when Serena doesn't support the specific operation
 - **NEVER stop using advanced tools** until task completion
 
-**VIOLATION = FAILURE**
-
 ---
 
-## Phase 3: Implementation (🔴 CRITICAL: DO NOT START UNTIL PLANNING COMPLETE)
+## Phase 3: Implementation
 
-### Task 3.1: Create Formatting Helper for TA Indicators Table
+### Task 3.1: Update test_cli_regression.sh with New Prompts
 
-**Objective:** Add `create_ta_indicators_table()` function to formatting_helpers.py
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Serena find_symbol → Read → Edit
+**Estimated Time:** 15-20 minutes
 
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan table structure
-- ✅ Use Serena `find_symbol` to read existing formatter patterns
-- ✅ Use Standard Edit to add new function
+**Subtasks:**
 
-**Steps:**
+- [ ] 3.1.1: Use Sequential-Thinking to analyze new vs old prompt structure
+- [ ] 3.1.2: Use Read to review current prompts array (lines 70-114)
+- [ ] 3.1.3: Use Edit to replace prompts array with new 40 prompts:
 
-1. **Use Sequential-Thinking** to analyze table requirements:
-   - 14 rows (RSI, MACD×3, SMA×5, EMA×5)
-   - Columns: Indicator, Period, Value, Timestamp
-   - Emoji header with ticker
-   - Source attribution
+```bash
+declare -a prompts=(
+    # SPY Test Sequence (Tests 1-16)
+    "Market Status"
+    "Current Price OHLC: \$SPY"
+    "Yesterday's Price OHLC: \$SPY"
+    "Last week's Performance OHLC: \$SPY"
+    "Stock Price on the previous week's Friday OHLC: \$SPY"
+    "Stock Price Performance the last 5 Trading Days OHLC: \$SPY"
+    "Stock Price Performance the past 2 Weeks OHLC: \$SPY"
+    "Stock Price Performance the past month: \$SPY"
+    "Stock Price Performance the past 3 months: \$SPY"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$SPY"
+    "Support & Resistance Levels: \$SPY"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY"
+    "Get options expiration dates: \$SPY"
+    "Get Call Options Chain Expiring this Friday: \$SPY"
+    "Get Put Options Chain Expiring this Friday: \$SPY"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
 
-2. **Use Serena `find_symbol`** to read existing table formatter:
-   ```
-   find_symbol(
-     name_path="create_options_chain_table",
-     relative_path="src/backend/tools/formatting_helpers.py",
-     include_body=True
-   )
-   ```
-   - Study markdown table construction pattern
-   - Identify reusable formatting approaches
+    # NVDA Test Sequence (Tests 17-32)
+    "Current Price OHLC: \$NVDA"
+    "Yesterday's Price OHLC: \$NVDA"
+    "Last week's Performance OHLC: \$NVDA"
+    "Stock Price on the previous week's Friday OHLC: \$NVDA"
+    "Stock Price Performance the last 5 Trading Days OHLC: \$NVDA"
+    "Stock Price Performance the past 2 Weeks OHLC: \$NVDA"
+    "Stock Price Performance the past month: \$NVDA"
+    "Stock Price Performance the past 3 months: \$NVDA"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$NVDA"
+    "Support & Resistance Levels: \$NVDA"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA"
+    "Get options expiration dates for \$NVDA"
+    "Get Call Options Chain Expiring this Friday: \$NVDA"
+    "Get Put Options Chain Expiring this Friday: \$NVDA"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
 
-3. **Use Standard Edit** to add new function at end of file:
-   ```python
-   def create_ta_indicators_table(ticker: str, indicators: dict) -> str:
-       """Create formatted markdown table for technical analysis indicators.
-
-       Args:
-           ticker: Stock ticker symbol
-           indicators: Dict with keys: rsi, macd, sma_values, ema_values
-               - rsi: {"value": float, "timestamp": str}
-               - macd: {"macd": float, "signal": float, "histogram": float, "timestamp": str}
-               - sma_values: [{"window": int, "value": float, "timestamp": str}, ...]
-               - ema_values: [{"window": int, "value": float, "timestamp": str}, ...]
-
-       Returns:
-           Formatted markdown table string
-       """
-   ```
-
-4. **Implementation details:**
-   - Emoji header: `📊 Technical Analysis Indicators - {ticker}`
-   - Current date line
-   - Markdown table with headers
-   - Row order: RSI → MACD (3 rows) → SMA (5 rows) → EMA (5 rows)
-   - Source: "Source: Polygon.io API"
-
-**Expected Output:** New function ~50 lines in formatting_helpers.py
-
-**Validation:**
-- Function signature matches specification
-- Markdown table format matches research document example
-- Handles missing data gracefully (N/A for failed indicators)
-
----
-
-### Task 3.2: Create New Consolidated Tool `get_ta_indicators`
-
-**Objective:** Add new tool to polygon_tools.py that fetches ALL TA indicators with batched API calls
-
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan batching strategy (max 8 thoughts)
-- ✅ Use Serena `get_symbols_overview` to understand polygon_tools.py structure
-- ✅ Use Serena `find_symbol` to read existing TA tool patterns
-- ✅ Use Standard Edit to add new function
-
-**Steps:**
-
-1. **Use Sequential-Thinking** to plan implementation:
-   - Batch 1: RSI + MACD (2 parallel calls)
-   - 1-second delay
-   - Batch 2: SMA 5/10/20/50/200 (5 parallel calls)
-   - 1-second delay
-   - Batch 3: EMA 5/10/20/50/200 (5 parallel calls)
-   - Error handling for partial failures
-   - Markdown table generation
-
-2. **Use Serena `get_symbols_overview`** to understand file structure:
-   ```
-   get_symbols_overview(relative_path="src/backend/tools/polygon_tools.py")
-   ```
-
-3. **Use Serena `find_symbol`** to read one existing TA tool for pattern:
-   ```
-   find_symbol(
-     name_path="get_ta_rsi",
-     relative_path="src/backend/tools/polygon_tools.py",
-     include_body=True
-   )
-   ```
-   - Study API call pattern
-   - Study error handling
-   - Study client lazy initialization
-
-4. **Use Standard Edit** to add import at top:
-   ```python
-   import asyncio
-   from .formatting_helpers import create_ta_indicators_table
-   ```
-
-5. **Use Standard Edit** to add new function after existing TA tools:
-   ```python
-   @function_tool
-   async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
-       """Get comprehensive technical analysis indicators for a ticker.
-
-       Retrieves ALL TA indicators in a single tool call with optimized batching:
-       - RSI-14
-       - MACD (12/26/9) with signal and histogram
-       - SMA (5, 10, 20, 50, 200)
-       - EMA (5, 10, 20, 50, 200)
-
-       Returns formatted markdown table with all indicators.
-
-       Args:
-           ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA")
-           timespan: Time window - "day", "minute", "hour", "week", "month" (default: "day")
-
-       Returns:
-           Markdown table with all TA indicators or error message
-       """
-       try:
-           client = _get_polygon_client()
-
-           # Batch 1: Momentum indicators (RSI + MACD)
-           # ... implementation
-
-           await asyncio.sleep(1)  # Rate limit protection
-
-           # Batch 2: Simple Moving Averages
-           # ... implementation
-
-           await asyncio.sleep(1)  # Rate limit protection
-
-           # Batch 3: Exponential Moving Averages
-           # ... implementation
-
-           # Process results and build indicators dict
-           indicators = {
-               "rsi": {...},
-               "macd": {...},
-               "sma_values": [...],
-               "ema_values": [...]
-           }
-
-           # Return formatted markdown table
-           return create_ta_indicators_table(ticker, indicators)
-
-       except Exception as e:
-           return f"❌ Error retrieving TA indicators: {str(e)}"
-   ```
-
-**Implementation Details:**
-
-**Batch 1 (Momentum):**
-```python
-try:
-    batch1_results = await asyncio.gather(
-        client.get_rsi(ticker=ticker, timespan=timespan, window=14, limit=1),
-        client.get_macd(ticker=ticker, timespan=timespan, short_window=12, long_window=26, signal_window=9, limit=1),
-        return_exceptions=True  # Don't fail entire batch if one fails
-    )
-    rsi_result, macd_result = batch1_results
-except Exception as e:
-    # Handle batch failure
+    # Multi-Ticker Test Sequence (Tests 33-40)
+    "Current Price OHLC: \$WDC, \$AMD, \$SOUN"
+    "Yesterday's Price OHLC: \$WDC, \$AMD, \$SOUN"
+    "Yesterday's Closing Price: \$WDC, \$AMD, \$SOUN"
+    "Last week's Performance OHLC: \$WDC, \$AMD, \$SOUN"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$WDC, \$AMD, \$SOUN"
+    "Support & Resistance Levels: \$WDC, \$AMD, \$SOUN"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$WDC, \$AMD, \$SOUN"
+    "Get options expiration dates: \$WDC, \$AMD, \$SOUN"
+)
 ```
 
-**Batch 2 (SMA):**
-```python
-try:
-    batch2_results = await asyncio.gather(
-        client.get_sma(ticker=ticker, timespan=timespan, window=5, limit=1),
-        client.get_sma(ticker=ticker, timespan=timespan, window=10, limit=1),
-        client.get_sma(ticker=ticker, timespan=timespan, window=20, limit=1),
-        client.get_sma(ticker=ticker, timespan=timespan, window=50, limit=1),
-        client.get_sma(ticker=ticker, timespan=timespan, window=200, limit=1),
-        return_exceptions=True
-    )
-except Exception as e:
-    # Handle batch failure
+- [ ] 3.1.4: Use Edit to update test_names array (lines 116-160) to match new prompts
+- [ ] 3.1.5: Use Edit to update header comment (lines 15-19) with new test counts
+
+**Success Criteria:**
+- ✅ Prompts array updated to exactly 40 prompts
+- ✅ Test_names array matches new prompts
+- ✅ Header comments reflect correct test distribution
+- ✅ No syntax errors in bash arrays
+
+---
+
+### Task 3.2: Remove "PASS" Terminology from test_cli_regression.sh
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Read → Edit (multiple locations)
+**Estimated Time:** 30-40 minutes
+
+**Subtasks:**
+
+- [ ] 3.2.1: Use Sequential-Thinking to plan terminology replacement strategy
+- [ ] 3.2.2: Use Edit to replace line 246: `test_results+=("PASS")` → `test_results+=("COMPLETED")`
+- [ ] 3.2.3: Use Edit to replace line 299: `test_results+=("PASS")` → `test_results+=("COMPLETED")`
+- [ ] 3.2.4: Use Edit to update line 315: `if [ "$result" = "PASS" ]` → `if [ "$result" = "COMPLETED" ]`
+- [ ] 3.2.5: Use Edit to update line 317 display:
+  ```bash
+  # OLD:
+  echo -e "${GREEN}   Test $test_number: ${test_names[$i]} - PASS${NC}"
+
+  # NEW:
+  echo -e "${GREEN}   Test $test_number: ${test_names[$i]} - COMPLETED${NC}"
+  ```
+- [ ] 3.2.6: Use Edit to replace line 232:
+  ```bash
+  # OLD:
+  echo -e "${GREEN}✅ Test completed${NC}"
+
+  # NEW:
+  echo -e "${GREEN}✅ Response received${NC}"
+  ```
+- [ ] 3.2.7: Use Edit to update lines 396-406 (loop status logic):
+  ```bash
+  # OLD:
+  if [ $failed_tests -eq 0 ]; then
+      echo -e "${GREEN}🎉 All $total_tests tests passed in Loop ${loop_num}!${NC}"
+      echo -e "${GREEN}✅ Loop ${loop_num} CLI Regression Test: SUCCESS${NC}"
+      ((total_loops_passed++))
+      loop_status="PASS"
+  else
+      echo -e "${RED}❌ $failed_tests test(s) failed in Loop ${loop_num}${NC}"
+      echo -e "${RED}❌ Loop ${loop_num} CLI Regression Test: FAILED${NC}"
+      ((total_loops_failed++))
+      loop_status="FAIL"
+  fi
+
+  # NEW:
+  if [ $failed_tests -eq 0 ]; then
+      echo -e "${GREEN}🎉 All $total_tests responses received in Loop ${loop_num}!${NC}"
+      echo -e "${GREEN}✅ Loop ${loop_num} Phase 1: All responses generated${NC}"
+      ((total_loops_completed++))
+      loop_status="COMPLETED"
+  else
+      echo -e "${RED}❌ $failed_tests test(s) had no response in Loop ${loop_num}${NC}"
+      echo -e "${RED}❌ Loop ${loop_num} Phase 1: INCOMPLETE${NC}"
+      ((total_loops_incomplete++))
+      loop_status="INCOMPLETE"
+  fi
+  ```
+- [ ] 3.2.8: Use Edit to update variable names throughout:
+  - `passed_tests` → `completed_tests`
+  - `total_loops_passed` → `total_loops_completed`
+  - `total_loops_failed` → `total_loops_incomplete`
+- [ ] 3.2.9: Use Edit to update final exit status logic (lines 523-531):
+  ```bash
+  # OLD:
+  if [ $total_loops_failed -eq 0 ]; then
+      echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) completed successfully!${NC}"
+      echo -e "${GREEN}✅ CLI Regression Test: SUCCESS${NC}"
+      exit 0
+  else
+      echo -e "${RED}❌ ${total_loops_failed} loop(s) failed${NC}"
+      echo -e "${RED}❌ CLI Regression Test: FAILED${NC}"
+      exit 1
+  fi
+
+  # NEW:
+  if [ $total_loops_incomplete -eq 0 ]; then
+      echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) generated responses!${NC}"
+      echo -e "${GREEN}✅ Phase 1 Complete: All responses generated${NC}"
+      echo -e "${YELLOW}🔴 PHASE 2 REQUIRED: Manual verification needed${NC}"
+      exit 0
+  else
+      echo -e "${RED}❌ ${total_loops_incomplete} loop(s) incomplete${NC}"
+      echo -e "${RED}❌ Phase 1: FAILED (some tests had no response)${NC}"
+      exit 1
+  fi
+  ```
+
+**Success Criteria:**
+- ✅ All "PASS" replaced with "COMPLETED"
+- ✅ All "FAILED" replaced with "INCOMPLETE" (for no response)
+- ✅ Variable names updated consistently
+- ✅ No remaining "pass" references in output
+
+---
+
+### Task 3.3: Add Phase 2 Verification Instructions to Script
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Read → Edit
+**Estimated Time:** 20-30 minutes
+
+**Subtasks:**
+
+- [ ] 3.3.1: Use Sequential-Thinking to design Phase 2 instructions format
+- [ ] 3.3.2: Use Edit to add Phase 2 instructions after loop completion (after line 466):
+  ```bash
+  echo ""
+  echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+  echo -e "${CYAN}║  PHASE 2: MANUAL VERIFICATION REQUIRED${NC}"
+  echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+  echo ""
+  echo -e "${YELLOW}🔴 CRITICAL: Test script can ONLY verify that responses were received.${NC}"
+  echo -e "${YELLOW}   It CANNOT verify response correctness, tool calls, or formatting.${NC}"
+  echo ""
+  echo -e "${CYAN}📋 Phase 2 Verification Checklist (for AI Agent):${NC}"
+  echo ""
+  echo -e "${CYAN}For EACH of the 40 test responses, verify:${NC}"
+  echo -e "  1. ✅ Response directly addresses the prompt query"
+  echo -e "  2. ✅ Correct ticker symbols used (\$SPY, \$NVDA, \$WDC, \$AMD, \$SOUN)"
+  echo -e "  3. ✅ Appropriate tool calls made (Polygon, Finnhub, Tradier)"
+  echo -e "  4. ✅ Data formatting matches expected format (OHLC, tables, etc.)"
+  echo -e "  5. ✅ No hallucinated data or made-up values"
+  echo -e "  6. ✅ Options chains show Bid/Ask columns (NOT midpoint)"
+  echo -e "  7. ✅ Technical analysis includes proper indicators"
+  echo -e "  8. ✅ Response is complete (not truncated)"
+  echo ""
+  echo -e "${YELLOW}⚠️  MANDATORY CHECKPOINT QUESTION:${NC}"
+  echo -e "${YELLOW}   \"Did you verify the results of EACH test prompt to ensure${NC}"
+  echo -e "${YELLOW}    the response was correct with proper tool calls and formatting?\"${NC}"
+  echo ""
+  echo -e "${CYAN}📄 Review the test report: $OUTPUT_FILE${NC}"
+  echo -e "${CYAN}📄 Review the raw output: $RAW_OUTPUT${NC}"
+  echo ""
+  ```
+
+- [ ] 3.3.3: Use Edit to update header comments (lines 1-25) to explain two-phase approach:
+  ```bash
+  # CLI Test Regression Script - NEW 40-Test Suite with Two-Phase Validation
+  #
+  # PHASE 1 (Automated): Runs all 40 test prompts and generates responses
+  # PHASE 2 (Manual): AI Agent must verify each response for correctness
+  #
+  # IMPORTANT: This script can ONLY verify that responses were received.
+  # It CANNOT validate response correctness, tool calls, or data accuracy.
+  # The AI Agent MUST manually review each of the 40 test responses.
+  ```
+
+**Success Criteria:**
+- ✅ Phase 2 instructions clearly displayed after test completion
+- ✅ 8-point verification checklist included
+- ✅ Mandatory checkpoint question included
+- ✅ Header comments explain two-phase approach
+- ✅ File paths provided for manual review
+
+---
+
+### Task 3.4: Update CLAUDE.md Documentation
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Read → Edit
+**Estimated Time:** 15-20 minutes
+
+**Subtasks:**
+
+- [ ] 3.4.1: Use Sequential-Thinking to plan CLAUDE.md updates
+- [ ] 3.4.2: Use Read to review testing checkpoint section (lines 86-128)
+- [ ] 3.4.3: Use Edit to update line 100:
+  ```markdown
+  # OLD:
+  - PASS CRITERIA: CONTENT OF TEST PROMPT RESPONS MATCHES THE EXPECTED RESPONSE, PROPER TOOL CALLS, AND RESPONSE FORMATTING
+
+  # NEW:
+  - PHASE 1: Script generates responses (automated)
+  - PHASE 2: Manually verify EACH response matches expected response, proper tool calls, and correct formatting
+  ```
+- [ ] 3.4.4: Use Edit to update line 109:
+  ```markdown
+  # OLD:
+  - Show pass/fail counts (must be X/X PASS)
+
+  # NEW:
+  - Show completion counts (must be X/X responses generated)
+  - Confirm Phase 2 manual verification completed
+  ```
+- [ ] 3.4.5: Use Edit to update line 124:
+  ```markdown
+  # OLD:
+  - 100% pass rate achieved with Phase 2: Test Prompt Response Verification for EACH test completed
+
+  # NEW:
+  - Phase 1 complete: All responses generated (X/X)
+  - Phase 2 complete: Manual verification of EACH response performed
+  ```
+- [ ] 3.4.6: Use Edit to add new section after line 128:
+  ```markdown
+
+  ## 🔴 CRITICAL: Understanding Test Validation
+
+  **Phase 1 (Automated by Script):**
+  - Script runs all 40 test prompts
+  - Script verifies a response was received for each prompt
+  - Script reports "X/X COMPLETED" meaning X responses generated
+  - **Script CANNOT validate response correctness**
+
+  **Phase 2 (Manual by AI Agent):**
+  - AI Agent must review EACH of the 40 responses
+  - Verify response addresses prompt correctly
+  - Verify proper tool calls made
+  - Verify data formatting correct (OHLC, tables, Bid/Ask)
+  - Verify no hallucinated or made-up data
+  - **This step is MANDATORY before claiming tests "passed"**
+
+  **Key Insight:**
+  The script saying "40/40 COMPLETED" means "40 responses received" NOT "40 tests passed validation". Only after Phase 2 manual verification can you claim tests passed.
+  ```
+
+**Success Criteria:**
+- ✅ CLAUDE.md explains two-phase approach clearly
+- ✅ "PASS" language replaced with "COMPLETED" + "manually verified"
+- ✅ New section explains what script can/cannot validate
+- ✅ Key insight provided for AI agents
+
+---
+
+### Task 3.5: Update testing_procedures.md Memory
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Serena read_memory → Serena write_memory
+**Estimated Time:** 20-25 minutes
+
+**Subtasks:**
+
+- [ ] 3.5.1: Use Sequential-Thinking to plan memory updates
+- [ ] 3.5.2: Use Serena read_memory to load current testing_procedures.md
+- [ ] 3.5.3: Add new section after "CLI Regression Test Suite" section:
+  ```markdown
+
+  ### Two-Phase Testing Approach (CRITICAL)
+
+  **Phase 1: Automated Response Generation**
+  - Script runs all 40 test prompts sequentially
+  - Script verifies each prompt received a response
+  - Script reports "X/X COMPLETED" = X responses generated
+  - **Limitation:** Script cannot validate response correctness
+
+  **Phase 2: Manual Response Verification**
+  - AI Agent MUST review each of the 40 responses
+  - Verify against 8-point criteria (see checklist below)
+  - Document any issues found
+  - Fix issues and re-run Phase 1 if needed
+  - **THIS PHASE IS MANDATORY**
+
+  **8-Point Verification Criteria:**
+
+  For EACH test response, verify:
+
+  1. ✅ **Response Addresses Prompt**: Response directly answers the question
+  2. ✅ **Correct Tickers**: Proper ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+  3. ✅ **Proper Tool Calls**: Polygon, Finnhub, or Tradier tools called appropriately
+  4. ✅ **Data Formatting**: OHLC data, tables, options chains formatted correctly
+  5. ✅ **No Hallucinations**: All data appears legitimate, no made-up numbers
+  6. ✅ **Options Bid/Ask**: Options chains show Bid and Ask columns (NOT midpoint)
+  7. ✅ **TA Indicators**: Technical analysis includes proper metrics
+  8. ✅ **Completeness**: Response not truncated, no errors unless expected
+
+  **Mandatory Checkpoint Question:**
+  "Did you verify the results of EACH test prompt to ensure the response was correct with proper tool calls and formatting?"
+
+  **If answer is NO:** You have NOT completed testing. Return to Phase 2.
+  **If answer is YES:** Testing is complete, proceed to documentation updates.
+  ```
+
+- [ ] 3.5.4: Update all "PASS" references throughout memory to "COMPLETED + manually verified"
+- [ ] 3.5.5: Update expected performance section to clarify:
+  ```markdown
+  **Expected Performance (Oct 12, 2025 - Two-Phase Validation):**
+  - **Phase 1**: 40 responses generated, ~7-8 minutes
+  - **Phase 2**: Manual verification, ~60-90 minutes (varies by AI agent speed)
+  - **Success Criteria**: Phase 1: 40/40 completed, Phase 2: All responses verified correct
+  ```
+- [ ] 3.5.6: Use Serena write_memory to save updated testing_procedures.md
+
+**Success Criteria:**
+- ✅ Two-phase approach documented comprehensively
+- ✅ 8-point criteria clearly defined
+- ✅ Mandatory checkpoint question included
+- ✅ All "PASS" references updated
+- ✅ Expected performance reflects two phases
+
+---
+
+### Task 3.6: Update task_completion_checklist.md Memory
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Serena read_memory → Serena write_memory
+**Estimated Time:** 10-15 minutes
+
+**Subtasks:**
+
+- [ ] 3.6.1: Use Sequential-Thinking to plan checklist updates
+- [ ] 3.6.2: Use Serena read_memory to load task_completion_checklist.md
+- [ ] 3.6.3: Update testing section (around line 30):
+  ```markdown
+  #### CLI Regression Testing (Two-Phase Approach)
+
+  **Phase 1: Generate Responses (Automated)**
+  ```bash
+  # Run CLI regression test suite (40 tests)
+  chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+
+  # Expected Phase 1 results:
+  # - 40/40 responses COMPLETED (100% generation rate)
+  # - Average response time: ~6-8 seconds
+  # - Test report generated in test-reports/
+  ```
+
+  **Phase 2: Verify Responses (Manual - MANDATORY)**
+  - ✅ Review EACH of the 40 test responses in test report
+  - ✅ Verify against 8-point criteria (see testing_procedures.md)
+  - ✅ Answer checkpoint question: "Did you verify each response?"
+  - ✅ Document any issues found
+  - ✅ Fix issues and re-run Phase 1 if needed
+  ```
+
+- [ ] 3.6.4: Update line 62:
+  ```markdown
+  # OLD:
+  - ✅ Verify 100% pass rate
+
+  # NEW:
+  - ✅ Verify Phase 1: 40/40 responses generated
+  - ✅ Complete Phase 2: Manual verification of all responses
+  ```
+
+- [ ] 3.6.5: Update "WRONG" example (around line 70):
+  ```markdown
+  **WRONG:**
+  ```
+  1. Create 5 new tools ✅
+  2. Update test suite file ✅
+  3. RUN test suite: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
+  4. Show results: 40/40 COMPLETED ✅
+  5. Update documentation ✅
+  6. Mark task complete ❌ (NEVER performed Phase 2 manual verification!)
+  ```
+  ```
+
+- [ ] 3.6.6: Update "CORRECT" example:
+  ```markdown
+  **CORRECT:**
+  ```
+  1. Create 5 new tools ✅
+  2. Update test suite file ✅
+  3. RUN Phase 1: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
+  4. Show Phase 1 results: 40/40 COMPLETED ✅
+  5. PERFORM Phase 2: Manual verification of all 40 responses ✅
+  6. Answer checkpoint: "Did you verify each response?" YES ✅
+  7. Provide test report path ✅
+  8. Update documentation with test results ✅
+  9. Mark task complete ✅
+  ```
+  ```
+
+- [ ] 3.6.7: Use Serena write_memory to save updated task_completion_checklist.md
+
+**Success Criteria:**
+- ✅ Two-phase approach in checklist
+- ✅ Phase 2 marked as MANDATORY
+- ✅ Examples updated to show Phase 2
+- ✅ Checkpoint question referenced
+
+---
+
+### Task 3.7: Update Other Documentation Files
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Sequential-Thinking → Read → Edit
+**Estimated Time:** 15-20 minutes
+
+**Subtasks:**
+
+- [ ] 3.7.1: Use Sequential-Thinking to plan updates for remaining docs
+- [ ] 3.7.2: Update AGENTS.md (line 64):
+  ```markdown
+  # OLD:
+  4. **Test Verification** → Verify 100% pass rate
+
+  # NEW:
+  4. **Test Verification** → Phase 1: Generate responses, Phase 2: Manually verify each response
+  ```
+
+- [ ] 3.7.3: Update project_onboarding_summary.md memory (lines 150, 216, 431):
+  ```markdown
+  # Line 150:
+  # OLD: # - 100% pass rate expected
+  # NEW: # - Phase 1: All responses generated, Phase 2: Manual verification required
+
+  # Line 216:
+  # OLD: 3. ✅ **Testing**: Run `./test_cli_regression.sh` (38 tests, must show 100% pass rate)
+  # NEW: 3. ✅ **Testing**: Run `./test_cli_regression.sh` (40 tests, Phase 1: generate responses, Phase 2: verify manually)
+
+  # Line 431:
+  # OLD: ✅ **DO**: Run test suite, show 100% pass rate
+  # NEW: ✅ **DO**: Run test suite (Phase 1), manually verify all responses (Phase 2)
+  ```
+
+- [ ] 3.7.4: Update docs/task_templates/new_research_details_template.md (line 90):
+  ```markdown
+  # OLD:
+  - 100% pass rate achieved
+
+  # NEW:
+  - Phase 1: All responses generated successfully
+  - Phase 2: Manual verification of all responses completed
+  ```
+
+**Success Criteria:**
+- ✅ AGENTS.md updated
+- ✅ project_onboarding_summary.md updated (3 locations)
+- ✅ new_research_details_template.md updated
+- ✅ Consistent language across all docs
+
+---
+
+## Phase 4: Testing
+
+### Task 4.1: Execute test_cli_regression.sh (Phase 1)
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Bash
+**Estimated Time:** 7-8 minutes
+
+**Subtasks:**
+
+- [ ] 4.1.1: Run test script:
+  ```bash
+  chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+  ```
+- [ ] 4.1.2: Monitor output for completion
+- [ ] 4.1.3: Verify test report generated in test-reports/
+- [ ] 4.1.4: Note completion count (should be 40/40)
+- [ ] 4.1.5: Note average response time
+- [ ] 4.1.6: Save test report path for commit
+
+**Success Criteria:**
+- ✅ Script completes without errors
+- ✅ 40/40 responses generated
+- ✅ Test report created
+- ✅ Phase 2 instructions displayed
+
+---
+
+### Task 4.2: Perform Phase 2 Manual Verification
+
+**Status:** ⏳ PENDING
+**Tool Requirements:** Read → Sequential-Thinking
+**Estimated Time:** 60-90 minutes
+
+**Subtasks:**
+
+- [ ] 4.2.1: Use Read to open test report file
+- [ ] 4.2.2: Use Sequential-Thinking to create verification tracking system
+- [ ] 4.2.3: For EACH of 40 tests, verify 8-point criteria:
+
+**Verification Template (use for each test):**
+```
+Test #: _____
+Prompt: _____
+✅/❌ 1. Response addresses prompt
+✅/❌ 2. Correct ticker symbols
+✅/❌ 3. Proper tool calls
+✅/❌ 4. Data formatting correct
+✅/❌ 5. No hallucinations
+✅/❌ 6. Options Bid/Ask (if applicable)
+✅/❌ 7. TA indicators (if applicable)
+✅/❌ 8. Complete response
+Issues Found: _____
 ```
 
-**Batch 3 (EMA):**
-```python
-try:
-    batch3_results = await asyncio.gather(
-        client.get_ema(ticker=ticker, timespan=timespan, window=5, limit=1),
-        client.get_ema(ticker=ticker, timespan=timespan, window=10, limit=1),
-        client.get_ema(ticker=ticker, timespan=timespan, window=20, limit=1),
-        client.get_ema(ticker=ticker, timespan=timespan, window=50, limit=1),
-        client.get_ema(ticker=ticker, timespan=timespan, window=200, limit=1),
-        return_exceptions=True
-    )
-except Exception as e:
-    # Handle batch failure
-```
+- [ ] 4.2.4: Document ALL issues found in verification notes
+- [ ] 4.2.5: Create summary of verification results
+- [ ] 4.2.6: Answer checkpoint question: "Did you verify each response?" YES/NO
 
-**Error Handling Strategy:**
-- Use `return_exceptions=True` in asyncio.gather
-- Check if result is Exception instance
-- Set indicator value to "N/A" if API call failed
-- Continue processing remaining indicators
-- Return partial table if some indicators failed
-
-**Expected Output:** New function ~150 lines in polygon_tools.py
-
-**Validation:**
-- Function has @function_tool decorator
-- Makes 12 API calls in 3 batched groups
-- 1-second delays between batches
-- Returns markdown table via formatter
-- Handles partial failures gracefully
+**Success Criteria:**
+- ✅ All 40 tests verified against 8-point criteria
+- ✅ All issues documented
+- ✅ Verification notes created
+- ✅ Checkpoint question answered YES
 
 ---
 
-### Task 3.3: Comment Out Legacy TA Tools
+### Task 4.3: Fix Issues and Re-Test (If Needed)
 
-**Objective:** Comment out (not delete) old individual TA tools for backward compatibility
+**Status:** ⏳ PENDING (conditional)
+**Tool Requirements:** Varies based on issues
+**Estimated Time:** Varies (30-120 minutes)
 
-**Tool Requirements:**
-- ✅ Use Serena `find_symbol` to locate tools to comment out
-- ✅ Use Standard Read to get exact line ranges
-- ✅ Use Standard Edit to comment out code blocks
+**Subtasks:**
 
-**Steps:**
+- [ ] 4.3.1: If issues found in Phase 2, categorize by type:
+  - Agent instruction issues
+  - Tool implementation issues
+  - Prompt wording issues
+  - Data format issues
 
-1. **Use Serena `find_symbol`** to find all 4 tools:
-   ```
-   find_symbol(
-     name_path="get_ta_",
-     relative_path="src/backend/tools/polygon_tools.py",
-     substring_matching=True
-   )
-   ```
-   - Confirm line ranges for all 4 functions
+- [ ] 4.3.2: Fix each issue category systematically
+- [ ] 4.3.3: Re-run Phase 1: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
+- [ ] 4.3.4: Re-perform Phase 2 verification for affected tests
+- [ ] 4.3.5: Repeat until all 40 tests verify correctly
 
-2. **Use Standard Edit** to add header comment before first tool:
-   ```python
-   # ============================================================================
-   # LEGACY TECHNICAL ANALYSIS TOOLS (COMMENTED OUT - SUPERSEDED BY get_ta_indicators)
-   # ============================================================================
-   # These individual TA tools have been replaced by the consolidated get_ta_indicators
-   # tool for improved performance, rate limiting protection, and better user experience.
-   #
-   # Consolidation Benefits:
-   # - 54% code reduction (442 lines → ~200 lines active)
-   # - 87% fewer tool calls (8 calls → 1 call)
-   # - 70% faster response time (~10s → ~3s)
-   # - Rate limit safe (batched API calls with delays)
-   # - Formatted markdown table output
-   #
-   # These legacy tools are kept as reference and can be uncommented if needed.
-   # Date Deprecated: October 11, 2025
-   # Replaced By: get_ta_indicators() in this file
-   # ============================================================================
-   ```
-
-3. **Use Standard Edit** to comment out each function:
-   - Prepend `# ` to every line of function body
-   - Keep function signatures visible for reference
-   - Comment out decorator: `# @function_tool`
-
-**Expected Output:** 442 lines commented out with clear header explaining why
-
-**Validation:**
-- All 4 tools commented out: get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-- Header clearly explains consolidation
-- Code still readable as reference
-- Can be easily uncommented if needed
+**Success Criteria:**
+- ✅ All issues resolved
+- ✅ Phase 1 re-run successful
+- ✅ Phase 2 re-verification shows all tests correct
 
 ---
 
-### Task 3.4: Update Agent Instructions - Part 1 (Tool List)
+## Phase 5: Final Atomic Commit
 
-**Objective:** Update supported tools list and imports in agent_service.py
+### Task 5.1: Verify ALL Work Complete (DO NOT STAGE YET)
 
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan instruction changes
-- ✅ Use Serena `search_for_pattern` to find all references
-- ✅ Use Standard Edit to update imports and tool list
+**Status:** ⏳ PENDING
+**Tool Requirements:** Bash (git status, git diff)
+**Estimated Time:** 5 minutes
 
-**Steps:**
+**Subtasks:**
 
-1. **Use Sequential-Thinking** to plan changes:
-   - Remove 4 old tools from import
-   - Add 1 new tool to import
-   - Update supported tools list (line 37)
-   - Update tools array (lines 512-515)
+- [ ] 5.1.1: Verify all code changes complete
+- [ ] 5.1.2: Verify all tests run and verified
+- [ ] 5.1.3: Verify all documentation updated
+- [ ] 5.1.4: Verify test report exists
+- [ ] 5.1.5: Run: `git status` to review all changed files
+- [ ] 5.1.6: Run: `git diff` to review all changes
+- [ ] 5.1.7: **DO NOT RUN git add YET**
 
-2. **Use Serena `search_for_pattern`** to find all tool references:
-   ```
-   search_for_pattern(
-     substring_pattern="get_ta_sma|get_ta_ema|get_ta_rsi|get_ta_macd",
-     relative_path="src/backend/services/agent_service.py"
-   )
-   ```
-
-3. **Use Standard Edit** to update imports (lines 16-19):
-   ```python
-   # OLD:
-   from src.backend.tools.polygon_tools import (
-       get_ta_ema,
-       get_ta_macd,
-       get_ta_rsi,
-       get_ta_sma,
-   )
-
-   # NEW:
-   from src.backend.tools.polygon_tools import (
-       get_ta_indicators,
-   )
-   ```
-
-4. **Use Standard Edit** to update line 37 (supported tools list):
-   ```python
-   # OLD:
-   🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 10 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd, get_call_options_chain, get_put_options_chain] 🔴
-
-   # NEW:
-   🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 7 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_indicators, get_call_options_chain, get_put_options_chain] 🔴
-   ```
-
-5. **Use Standard Edit** to update tools array (lines 512-515):
-   ```python
-   # OLD:
-   tools=[
-       ...
-       get_ta_sma,
-       get_ta_ema,
-       get_ta_rsi,
-       get_ta_macd,
-       ...
-   ]
-
-   # NEW:
-   tools=[
-       ...
-       get_ta_indicators,
-       ...
-   ]
-   ```
-
-**Expected Output:** Imports and tool lists updated to use new consolidated tool
-
-**Validation:**
-- Import statement has only get_ta_indicators
-- Supported tools list shows 7 tools (was 10)
-- Tools array includes get_ta_indicators
-- No references to old tools remain (except in commented sections)
+**Success Criteria:**
+- ✅ All tasks 3.1-3.7 complete
+- ✅ All tasks 4.1-4.3 complete
+- ✅ Test report generated
+- ✅ All files present in git status
 
 ---
 
-### Task 3.5: Update Agent Instructions - Part 2 (Get vs Analyze Distinction)
+### Task 5.2: Stage Everything at Once
 
-**Objective:** Add new RULE for clear distinction between getting TA data vs analyzing data
+**Status:** ⏳ PENDING
+**Tool Requirements:** Bash (git add)
+**Estimated Time:** 1 minute
 
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to design rule structure
-- ✅ Use Serena `search_for_pattern` to find current TA rules
-- ✅ Use Standard Edit to replace existing rules
+**Subtasks:**
 
-**Steps:**
+- [ ] 5.2.1: Run ONCE: `git add -A`
+- [ ] 5.2.2: Immediately verify: `git status`
+- [ ] 5.2.3: Ensure ALL files staged, NOTHING unstaged
 
-1. **Use Sequential-Thinking** to design new rule:
-   - Two-action model: GET vs ANALYZE
-   - Clear triggers for each action
-   - Tool specification for GET action
-   - Data sources for ANALYZE action
-   - Holistic approach requirements
-
-2. **Use Serena `search_for_pattern`** to find current TA rules:
-   ```
-   search_for_pattern(
-     substring_pattern="RULE.*technical analysis|NEVER APPROXIMATE",
-     relative_path="src/backend/services/agent_service.py",
-     context_lines_before=3,
-     context_lines_after=10
-   )
-   ```
-
-3. **Use Standard Edit** to replace lines 130-169 with new rule:
-
-```markdown
-### 🔴 RULE #X: TECHNICAL ANALYSIS - GET DATA vs ANALYZE DATA
-
-**Two Distinct Actions with Different Behaviors:**
+**Success Criteria:**
+- ✅ All files staged in ONE command
+- ✅ No unstaged files remaining
+- ✅ Ready for immediate commit
 
 ---
 
-#### ACTION 1: GET Technical Analysis Indicators
+### Task 5.3: Commit Immediately (Within 60 seconds)
 
-**When to Use:**
-- User requests TA indicators, RSI, MACD, SMA, EMA
-- User wants to see technical analysis data
-- No analysis requested, just data retrieval
+**Status:** ⏳ PENDING
+**Tool Requirements:** Bash (git commit)
+**Estimated Time:** 2 minutes
 
-**Tool to Use:**
-```
-get_ta_indicators(ticker: str, timespan: str = "day")
-```
+**Subtasks:**
 
-**Tool Returns:**
-- Formatted markdown table with ALL indicators:
-  - RSI-14
-  - MACD (12/26/9) with signal and histogram
-  - SMA (5, 10, 20, 50, 200)
-  - EMA (5, 10, 20, 50, 200)
+- [ ] 5.3.1: Run immediately after staging:
+  ```bash
+  git commit -m "$(cat <<'EOF'
+  [TEST-FRAMEWORK] Two-Phase Test Validation Framework Implementation
 
-**Your Response:**
-- 🔴 **CRITICAL:** Display the tool response EXACTLY as returned
-- ❌ DO NOT reformat the table
-- ❌ DO NOT convert to bullet points
-- ❌ DO NOT remove any indicators
-- ✅ COPY the markdown table as-is
-- ✅ Preserve all headers and rows
-- ✅ May add brief context (e.g., "Here are the TA indicators for SPY:")
+  **Problem:** Test script reported "PASS" for any response received, regardless
+  of correctness. This created false confidence where tests showed "40/40 PASSED"
+  but responses could have hallucinated data, wrong tool calls, or incorrect formatting.
 
-**Examples:**
-- ✅ "Get technical analysis for SPY" → get_ta_indicators(ticker='SPY')
-- ✅ "Show me TA indicators for NVDA" → get_ta_indicators(ticker='NVDA')
-- ✅ "RSI and MACD for AAPL" → get_ta_indicators(ticker='AAPL')
-- ✅ "Technical analysis data SPY" → get_ta_indicators(ticker='SPY')
+  **Solution:** Implemented two-phase testing approach:
+  - Phase 1 (Automated): Script generates all 40 responses, reports "X/X COMPLETED"
+  - Phase 2 (Manual): AI Agent verifies each response against 8-point criteria
 
----
+  **Changes:**
 
-#### ACTION 2: PERFORM Technical Analysis (Analyze Data)
+  **Test Script (test_cli_regression.sh):**
+  - Updated prompts array to new 40-prompt format with explicit OHLC terminology
+  - Removed ALL "PASS/FAIL" terminology, replaced with "COMPLETED/INCOMPLETE"
+  - Added Phase 2 verification instructions with 8-point checklist
+  - Added mandatory checkpoint question for AI agents
+  - Updated variable names: passed_tests → completed_tests
+  - Updated header comments to explain two-phase approach
 
-**When to Use:**
-- User requests analysis, interpretation, insights
-- User asks "what do indicators suggest?"
-- User wants trading recommendations based on TA
+  **Documentation Updates:**
+  - CLAUDE.md: Added section explaining what script can/cannot validate
+  - AGENTS.md: Updated test verification language
+  - testing_procedures.md: Added comprehensive two-phase documentation
+  - task_completion_checklist.md: Updated examples to include Phase 2
+  - project_onboarding_summary.md: Updated 3 references to testing approach
+  - new_research_details_template.md: Updated testing language
 
-**Data Sources to Use (HOLISTIC APPROACH):**
-- ✅ Current price and recent quotes
-- ✅ Price history (daily/weekly/monthly performance)
-- ✅ Support and resistance levels
-- ✅ Volume trends
-- ✅ TA indicators (RSI, MACD, SMA, EMA) *if already available*
-- ✅ Any other relevant data in conversation
-- ✅ User-provided context or information
+  **Test Results:**
+  - Phase 1: 40/40 responses generated successfully
+  - Phase 2: Manual verification completed for all 40 responses
+  - Average response time: [INSERT TIME]s
+  - Test report: [INSERT TEST REPORT PATH]
+  - Verification notes: All responses verified correct
 
-**🔴 CRITICAL - HOLISTIC ANALYSIS REQUIREMENT:**
+  **Files Modified:**
+  - test_cli_regression.sh (prompts, logic, output)
+  - CLAUDE.md (testing sections)
+  - AGENTS.md (test verification)
+  - .serena/memories/testing_procedures.md
+  - .serena/memories/task_completion_checklist.md
+  - .serena/memories/project_onboarding_summary.md
+  - docs/task_templates/new_research_details_template.md
+  - research_task_plan.md (new)
+  - TODO_task_plan.md (new)
+  - [TEST REPORT FILE] (new)
 
-You MUST analyze based on ALL available data, not just TA indicators. Look at the ENTIRE conversation history for relevant information.
+  **Impact:**
+  - Eliminates false positive "PASS" reports
+  - Forces manual verification of response correctness
+  - Provides clear 8-point criteria for validation
+  - Improves AI agent understanding of test results
+  - Reduces confusion about what "passed" means
 
-**If TA indicators NOT available:**
-- Check conversation history first
-- If not found, call get_ta_indicators() to fetch them
-- Then proceed with analysis
+  🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-**Required Analysis Coverage (MINIMUM 4 TOPICS):**
+  Co-Authored-By: Claude <noreply@anthropic.com>
+  EOF
+  )"
+  ```
 
-1. **📈 TRENDS**
-   - Short-term trend (5/10/20-day SMA/EMA)
-   - Medium-term trend (50-day SMA/EMA)
-   - Long-term trend (200-day SMA/EMA)
-   - Price position relative to moving averages
-   - MA crossovers or divergences
-
-2. **📊 VOLATILITY**
-   - Price volatility assessment
-   - Recent price swings
-   - Risk level evaluation
-   - Stability or instability patterns
-
-3. **⚡ MOMENTUM**
-   - RSI interpretation (overbought >70, oversold <30)
-   - MACD signal (bullish/bearish crossover)
-   - MACD histogram (strengthening/weakening)
-   - Momentum direction and strength
-
-4. **💡 TRADING PATTERNS**
-   - Support and resistance levels
-   - Crossover signals (golden cross, death cross)
-   - Divergences (price vs indicator)
-   - Potential entry/exit points
-   - Risk considerations
-
-**Your Response Format:**
-```markdown
-## Technical Analysis - {TICKER}
-
-### 📈 Trends
-[Analysis of short/medium/long-term trends using SMA/EMA]
-
-### 📊 Volatility
-[Assessment of price volatility and risk levels]
-
-### ⚡ Momentum
-[Analysis of RSI, MACD, and momentum indicators]
-
-### 💡 Trading Patterns
-[Support/resistance, crossovers, divergences, signals]
-
-### 🎯 Summary
-[Overall assessment and key takeaways]
-```
-
-**Examples:**
-- ✅ "Perform technical analysis for SPY" → Analyze using ALL available data
-- ✅ "What do the indicators suggest?" → Holistic analysis with 4 topics
-- ✅ "Should I buy or sell NVDA?" → Comprehensive analysis with recommendation
-- ✅ "Analyze SPY trend" → Focus on trends but include momentum/volatility context
+**Success Criteria:**
+- ✅ Commit created within 60 seconds of staging
+- ✅ Commit message includes test results
+- ✅ Commit message lists all files changed
 
 ---
 
-#### 🔴 CRITICAL RULES
+### Task 5.4: Push Immediately
 
-**NEVER APPROXIMATE TA VALUES:**
-- ❌ DO NOT guess or estimate indicator values
-- ❌ DO NOT calculate indicators manually from OHLC data
-- ✅ MUST use get_ta_indicators() if TA data not available
+**Status:** ⏳ PENDING
+**Tool Requirements:** Bash (git push)
+**Estimated Time:** 1 minute
 
-**USE ALL AVAILABLE DATA:**
-- ❌ DO NOT focus only on TA indicators
-- ❌ DO NOT ignore price history, volume, support/resistance
-- ✅ MUST consider ALL relevant data in conversation
-- ✅ MUST provide holistic analysis (not tunnel vision)
+**Subtasks:**
 
-**DISPLAY TABLE AS-IS:**
-- ❌ DO NOT reformat TA indicators table
-- ✅ MUST preserve markdown table from get_ta_indicators
+- [ ] 5.4.1: Run immediately after commit: `git push`
+- [ ] 5.4.2: Verify push succeeded: `git log -1`
+- [ ] 5.4.3: Verify branch up to date: `git status`
 
----
-```
-
-**Expected Output:** New comprehensive rule replacing old TA instructions
-
-**Validation:**
-- Two-action model clearly defined (GET vs ANALYZE)
-- GET action specifies get_ta_indicators tool
-- ANALYZE action requires 4 topics minimum
-- Holistic approach emphasized (use ALL data)
-- Table preservation rule included
+**Success Criteria:**
+- ✅ Push completed successfully
+- ✅ Commit appears in git log
+- ✅ Branch up to date with origin
 
 ---
 
-### Task 3.6: Update Agent Instructions - Part 3 (Remove Old Tool Descriptions)
+## Summary Checklist
 
-**Objective:** Remove individual tool descriptions for old TA tools
+**Before claiming task complete, verify ALL items:**
 
-**Tool Requirements:**
-- ✅ Use Serena `search_for_pattern` to find tool descriptions
-- ✅ Use Standard Edit to remove old descriptions
+### Phase 3: Implementation
+- [ ] 3.1: Test prompts updated (40 new prompts)
+- [ ] 3.2: "PASS" terminology removed from script
+- [ ] 3.3: Phase 2 instructions added to script
+- [ ] 3.4: CLAUDE.md updated
+- [ ] 3.5: testing_procedures.md memory updated
+- [ ] 3.6: task_completion_checklist.md memory updated
+- [ ] 3.7: Other docs updated (AGENTS.md, etc.)
 
-**Steps:**
+### Phase 4: Testing
+- [ ] 4.1: Phase 1 test execution (40/40 responses)
+- [ ] 4.2: Phase 2 manual verification (all 40 tests)
+- [ ] 4.3: Issues fixed and re-tested (if needed)
 
-1. **Use Serena `search_for_pattern`** to find tool descriptions (lines 165-169):
-   ```
-   search_for_pattern(
-     substring_pattern="get_ta_sma.*Simple Moving Average|get_ta_ema.*Exponential Moving Average",
-     relative_path="src/backend/services/agent_service.py"
-   )
-   ```
-
-2. **Use Standard Edit** to remove old descriptions:
-   ```markdown
-   # OLD (DELETE):
-   * get_ta_sma(ticker, timespan='day', window=50, limit=10) - Simple Moving Average
-   * get_ta_ema(ticker, timespan='day', window=50, limit=10) - Exponential Moving Average
-   * get_ta_rsi(ticker, timespan='day', window=14, limit=10) - Relative Strength Index (0-100)
-   * get_ta_macd(ticker, timespan='day', short_window=12, long_window=26, signal_window=9, limit=10) - MACD
-   ```
-
-3. **Use Standard Edit** to add new tool description:
-   ```markdown
-   * get_ta_indicators(ticker, timespan='day') - ALL Technical Analysis Indicators (RSI, MACD, SMA 5/10/20/50/200, EMA 5/10/20/50/200) in formatted markdown table
-   ```
-
-**Expected Output:** Old tool descriptions removed, new description added
-
-**Validation:**
-- No references to get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd
-- New get_ta_indicators description present
-- Description accurately reflects tool capabilities
+### Phase 5: Commit
+- [ ] 5.1: All work verified complete (no staging yet)
+- [ ] 5.2: All files staged at once (git add -A)
+- [ ] 5.3: Committed immediately (within 60s)
+- [ ] 5.4: Pushed immediately
 
 ---
 
-### Task 3.7: Update Agent Instructions - Part 4 (Update Examples)
-
-**Objective:** Update example queries to use new tool
-
-**Tool Requirements:**
-- ✅ Use Serena `search_for_pattern` to find example sections
-- ✅ Use Standard Edit to update examples
-
-**Steps:**
-
-1. **Use Serena `search_for_pattern`** to find examples (around lines 405-408):
-   ```
-   search_for_pattern(
-     substring_pattern="✅.*SMA for SPY.*get_ta_sma|✅.*EMA.*get_ta_ema",
-     relative_path="src/backend/services/agent_service.py"
-   )
-   ```
-
-2. **Use Standard Edit** to replace old examples:
-   ```markdown
-   # OLD (DELETE):
-   ✅ "SMA for SPY" → get_ta_sma(ticker='SPY', timespan='day', window=50, limit=10)
-   ✅ "20-day EMA NVDA" → get_ta_ema(ticker='NVDA', timespan='day', window=20, limit=10)
-   ✅ "RSI analysis SPY" → get_ta_rsi(ticker='SPY', timespan='day', window=14, limit=10)
-   ✅ "MACD for AAPL" → get_ta_macd(ticker='AAPL', timespan='day', short_window=12, long_window=26, signal_window=9, limit=10)
-
-   # NEW (ADD):
-   ✅ "Get technical analysis for SPY" → get_ta_indicators(ticker='SPY', timespan='day')
-   ✅ "Show TA indicators for NVDA" → get_ta_indicators(ticker='NVDA', timespan='day')
-   ✅ "RSI and MACD for AAPL" → get_ta_indicators(ticker='AAPL', timespan='day')
-   ✅ "Perform technical analysis for SPY" → Analyze using ALL available data (4 topics: Trends, Volatility, Momentum, Trading Patterns)
-   ```
-
-**Expected Output:** Examples updated to show new tool and two-action pattern
-
-**Validation:**
-- Examples show get_ta_indicators for GET action
-- Examples show analysis approach for ANALYZE action
-- No references to old individual tools
-
----
-
-### Task 3.8: Update Test Suite - Replace SPY TA Tests
-
-**Objective:** Replace 4 SPY TA tests with 2 new tests (get + analyze)
-
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan test changes
-- ✅ Use Standard Read to understand test structure
-- ✅ Use Standard Edit to update test arrays
-
-**Steps:**
-
-1. **Use Sequential-Thinking** to plan test replacements:
-   - Old: Test 10, 11, 12, 13 (RSI, MACD, SMA, EMA)
-   - New: Test 10 (Get TA), Test 11 (Analyze TA)
-   - Expected behaviors for each test
-   - Update test names and descriptions
-
-2. **Use Standard Read** to read test suite structure:
-   ```
-   Read(file_path="test_cli_regression.sh")
-   ```
-   - Understand prompts array structure
-   - Understand test_names array structure
-
-3. **Use Standard Edit** to update SPY prompts (lines 81-84):
-   ```bash
-   # OLD:
-   "RSI-14: \$SPY"
-   "MACD: \$SPY"
-   "SMA 20/50/200: \$SPY"
-   "EMA 20/50/200: SPY"
-
-   # NEW:
-   "Get technical analysis indicators for SPY"
-   "Perform technical analysis for SPY based on the indicators"
-   ```
-
-4. **Use Standard Edit** to update SPY test names (lines 131-134):
-   ```bash
-   # OLD:
-   "Test_10_SPY_RSI_14"
-   "Test_11_SPY_MACD"
-   "Test_12_SPY_SMA_20_50_200"
-   "Test_13_SPY_EMA_20_50_200"
-
-   # NEW:
-   "Test_10_SPY_Get_TA_Indicators"
-   "Test_11_SPY_Analyze_TA"
-   ```
-
-5. **Shift remaining tests:** Update test numbers for tests after SPY section
-
-**Expected Output:** SPY TA tests reduced from 4 to 2
-
-**Validation:**
-- Test 10 prompts for getting TA indicators
-- Test 11 prompts for analyzing TA
-- Test names clearly indicate purpose
-- Remaining tests renumbered correctly
-
----
-
-### Task 3.9: Update Test Suite - Replace NVDA TA Tests
-
-**Objective:** Replace 4 NVDA TA tests with 2 new tests (get + analyze)
-
-**Tool Requirements:**
-- ✅ Use Standard Edit to update test arrays (same pattern as SPY)
-
-**Steps:**
-
-1. **Use Standard Edit** to update NVDA prompts (lines 101-104):
-   ```bash
-   # OLD:
-   "RSI-14: \$NVDA"
-   "MACD: \$NVDA"
-   "SMA 20/50/200: \$NVDA"
-   "EMA 20/50/200: NVDA"
-
-   # NEW:
-   "Get technical analysis indicators for NVDA"
-   "Perform technical analysis for NVDA based on the indicators"
-   ```
-
-2. **Use Standard Edit** to update NVDA test names (lines 151-154):
-   ```bash
-   # OLD:
-   "Test_29_NVDA_RSI_14"
-   "Test_30_NVDA_MACD"
-   "Test_31_NVDA_SMA_20_50_200"
-   "Test_32_NVDA_EMA_20_50_200"
-
-   # NEW:
-   "Test_27_NVDA_Get_TA_Indicators"
-   "Test_28_NVDA_Analyze_TA"
-   ```
-
-3. **Update total test count:**
-   - Old: 44 tests
-   - New: 40 tests (-4 tests: 2 from SPY, 2 from NVDA)
-
-4. **Use Standard Edit** to update test count in header:
-   ```bash
-   # OLD:
-   echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 44 tests in same session per loop)"
-
-   # NEW:
-   echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 40 tests in same session per loop)"
-   ```
-
-**Expected Output:** NVDA TA tests reduced from 4 to 2, total tests now 40
-
-**Validation:**
-- Test 27 prompts for getting TA indicators
-- Test 28 prompts for analyzing TA
-- Test names clearly indicate purpose
-- Total test count updated to 40
-
----
-
-## Phase 4: Testing (🔴 MANDATORY CHECKPOINT)
-
-### Task 4.1: Manual Testing of New Function
-
-**Objective:** Verify get_ta_indicators works correctly before full test suite
-
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan test approach
-- ✅ Use Bash to run CLI manually
-
-**Steps:**
-
-1. **Use Sequential-Thinking** to plan manual test:
-   - Test with SPY ticker
-   - Verify all 14 indicators returned
-   - Verify markdown table format
-   - Verify batching works (check timing ~2-3 seconds)
-   - Verify error handling for invalid ticker
-
-2. **Use Bash** to start CLI and test:
-   ```bash
-   uv run src/backend/main.py
-   ```
-
-3. **Manual test prompts:**
-   ```
-   > Get technical analysis indicators for SPY
-   ```
-   - Expected: Markdown table with 14 rows
-   - Expected: RSI, MACD×3, SMA×5, EMA×5
-   - Expected: Response time ~2-3 seconds
-
-4. **Test error handling:**
-   ```
-   > Get technical analysis indicators for INVALID
-   ```
-   - Expected: Graceful error message
-
-5. **Exit CLI and document results**
-
-**Expected Output:** Manual test confirms tool works correctly
-
-**Validation:**
-- Tool returns markdown table
-- All 14 indicators present
-- Timing appropriate (~2-3 seconds)
-- Errors handled gracefully
-
----
-
-### Task 4.2: Execute Full CLI Regression Test Suite
-
-**Objective:** Run complete test suite to verify all changes work correctly
-
-**Tool Requirements:**
-- ✅ Use Bash to execute test script
-
-**Steps:**
-
-1. **Use Bash** to run test suite:
-   ```bash
-   chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-   ```
-
-2. **Monitor test execution:**
-   - Watch for any failures
-   - Note response times
-   - Verify test count (should be 40, not 44)
-
-3. **Wait for completion** (~8-10 minutes for 40 tests)
-
-**Expected Output:** Test report file in test-reports/
-
-**Validation:**
-- Test suite completes without errors
-- 40/40 tests execute (not 44)
-- Test report generated
-
----
-
-### Task 4.3: Verify Test Content Matches Expected Responses
-
-**Objective:** 🔴 MANDATORY - Verify CONTENT of test responses, not just PASS/FAIL
-
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan verification approach
-- ✅ Use Standard Read to read test report
-- ✅ Use Serena `search_for_pattern` to find specific test results
-
-**Steps:**
-
-1. **Use Sequential-Thinking** to plan verification:
-   - Find Test 10 (Get TA Indicators - SPY)
-   - Find Test 11 (Analyze TA - SPY)
-   - Find Test 27 (Get TA Indicators - NVDA)
-   - Find Test 28 (Analyze TA - NVDA)
-   - Verify each test's CONTENT matches expectations
-
-2. **Use Standard Read** to read latest test report:
-   ```
-   Read(file_path="test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log")
-   ```
-
-3. **Use Serena `search_for_pattern`** to find Test 10 results:
-   ```
-   search_for_pattern(
-     substring_pattern="Test_10_SPY_Get_TA_Indicators",
-     relative_path="test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log",
-     context_lines_after=30
-   )
-   ```
-
-4. **Verify Test 10 Content:**
-   - ✅ Tool call: get_ta_indicators(ticker='SPY')
-   - ✅ Response contains markdown table
-   - ✅ Table has 14 rows (RSI, MACD×3, SMA×5, EMA×5)
-   - ✅ Table has proper headers: Indicator, Period, Value, Timestamp
-   - ✅ Emoji header present: 📊 Technical Analysis Indicators - SPY
-
-5. **Verify Test 11 Content:**
-   - ✅ NO tool calls (should analyze existing data)
-   - ✅ Response covers 4 topics: Trends, Volatility, Momentum, Trading Patterns
-   - ✅ Response uses holistic approach (references multiple data points)
-   - ✅ Proper markdown formatting with headers
-
-6. **Verify Test 27 and Test 28 (NVDA):**
-   - Same verification as Test 10 and 11
-   - Ticker should be NVDA instead of SPY
-
-7. **Verify Overall Results:**
-   - 40/40 PASS (100% success rate)
-   - Average response time acceptable (<15 seconds)
-   - No errors or exceptions
-
-**Expected Output:** Detailed verification report confirming content matches expectations
-
-**Validation:**
-- Test 10/27: Correct tool call, markdown table format
-- Test 11/28: No tool calls, holistic analysis with 4 topics
-- 40/40 PASS with acceptable response times
-
----
-
-## Phase 5: Serena Project Memories Update
-
-### Task 5.1: Update tech_stack.md Memory
-
-**Objective:** Document TA consolidation in Serena memories
-
-**Tool Requirements:**
-- ✅ Use Sequential-Thinking to plan memory update
-- ✅ Use Serena `read_memory` to read current tech_stack.md
-- ✅ Use Serena `write_memory` to update with consolidation details
-
-**Steps:**
-
-1. **Use Sequential-Thinking** to plan memory content:
-   - Problem solved section
-   - Solution implemented section
-   - Code reduction metrics
-   - Performance improvements
-   - Test results
-   - Architecture transformation diagram
-   - Files modified list
-
-2. **Use Serena `read_memory`** to read current content:
-   ```
-   read_memory(memory_file_name="tech_stack.md")
-   ```
-
-3. **Use Serena `write_memory`** to add new section:
-
-```markdown
-## Technical Analysis Tools Consolidation (October 11, 2025 - COMPLETE)
-
-**Problem Solved:**
-- **Code Duplication:** 442 lines across 4 separate TA tools
-- **Performance:** Agent required 8+ tool calls for comprehensive TA
-- **Rate Limiting:** 12 sequential API calls risked rate limit errors
-- **Ambiguity:** No distinction between "get TA data" vs "perform analysis"
-- **Tunnel Vision:** Agent focused only on TA indicators, ignored other context
-
-**Solution Implemented:**
-
-1. **New Consolidated Tool:** `get_ta_indicators(ticker, timespan)`
-   - Location: `src/backend/tools/polygon_tools.py`
-   - Single tool replaces 4 individual tools
-   - Batched API calls (3 batches with 1-second delays)
-   - Returns formatted markdown table with ALL indicators
-   - ~150 lines (vs 442 lines before)
-
-2. **Formatting Helper:** `create_ta_indicators_table(ticker, indicators)`
-   - Location: `src/backend/tools/formatting_helpers.py`
-   - Generates markdown table with 14 rows
-   - Columns: Indicator, Period, Value, Timestamp
-   - Handles missing data gracefully (N/A for failed indicators)
-
-3. **Agent Instructions:** Clear GET vs ANALYZE distinction
-   - GET action: Use get_ta_indicators tool, display table as-is
-   - ANALYZE action: Holistic analysis with 4 required topics
-     - Trends (short/medium/long-term using SMA/EMA)
-     - Volatility (price volatility and risk assessment)
-     - Momentum (RSI, MACD interpretation)
-     - Trading Patterns (support/resistance, crossovers, divergences)
-   - Emphasizes using ALL available data (not just TA)
-
-4. **Test Suite:** Reduced from 8 to 4 TA tests
-   - Old: 4 individual indicator tests per ticker (RSI, MACD, SMA, EMA)
-   - New: 2 tests per ticker (Get TA + Analyze TA)
-   - Total tests: 44 → 40 tests
-
-**Batching Strategy (Rate Limit Safe):**
-```
-Batch 1: RSI-14 + MACD (2 parallel API calls)
-  ↓ asyncio.sleep(1)
-Batch 2: SMA 5/10/20/50/200 (5 parallel API calls)
-  ↓ asyncio.sleep(1)
-Batch 3: EMA 5/10/20/50/200 (5 parallel API calls)
-Total: 12 API calls in ~2-3 seconds
-```
-
-**Test Results:**
-- ✅ **40/40 PASSED** (100% success rate)
-- ✅ **X.XXs** average response time (EXCELLENT - within baseline)
-- ✅ **X min X sec** session duration
-- ✅ **Test Report:** `test-reports/test_cli_regression_loopX_YYYY-MM-DD_HH-MM.log`
-- ✅ Markdown table formatting validated
-- ✅ Holistic analysis with 4 topics validated
-
-**Code Metrics:**
-
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| TA Tool Lines | 442 | ~200 | -54% |
-| Number of Tools | 4 | 1 | -75% |
-| Tool Calls (comprehensive TA) | 8+ calls | 1 call | -87% |
-| Test Cases | 8 | 4 | -50% |
-
-**Performance Improvements:**
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Comprehensive TA Response | ~8-10s | ~2-3s | -70% |
-| Token Overhead | 8 interactions | 1 interaction | -87% |
-| Rate Limit Risk | High | None | ✅ Safe |
-
-**Architecture Transformation:**
-
-**BEFORE:**
-```
-Agent receives TA request
-  ├─> Tool Call 1: get_ta_rsi → JSON response
-  ├─> Tool Call 2: get_ta_macd → JSON response
-  ├─> Tool Call 3: get_ta_sma (window=20) → JSON response
-  ├─> Tool Call 4: get_ta_sma (window=50) → JSON response
-  ├─> Tool Call 5: get_ta_sma (window=200) → JSON response
-  ├─> Tool Call 6: get_ta_ema (window=20) → JSON response
-  ├─> Tool Call 7: get_ta_ema (window=50) → JSON response
-  └─> Tool Call 8: get_ta_ema (window=200) → JSON response
-Agent formats 8 JSON responses → Final output
-```
-
-**AFTER:**
-```
-Agent receives TA request
-  └─> Tool Call: get_ta_indicators
-        └─> Python handles all complexity:
-              ├─> Batch 1: RSI + MACD (parallel)
-              ├─> asyncio.sleep(1) - rate limit protection
-              ├─> Batch 2: SMA×5 (parallel)
-              ├─> asyncio.sleep(1) - rate limit protection
-              ├─> Batch 3: EMA×5 (parallel)
-              └─> Format markdown table with all 14 indicators
-Agent receives formatted markdown table → Display as-is
-```
-
-**Key Benefits:**
-1. **Zero Code Duplication:** Single implementation, not 4 separate functions
-2. **Faster Performance:** 1 tool call vs 8+ tool calls (-87% overhead)
-3. **Rate Limit Safe:** Batched API calls with delays
-4. **Better UX:** Single comprehensive table vs 8 separate responses
-5. **Clearer Intent:** GET data vs ANALYZE data distinction
-6. **Holistic Analysis:** Agent uses ALL available data, not just TA
-
-**Files Modified:**
-- `src/backend/tools/polygon_tools.py` - Added get_ta_indicators, commented out 4 old tools
-- `src/backend/tools/formatting_helpers.py` - Added create_ta_indicators_table
-- `src/backend/services/agent_service.py` - Updated instructions with GET/ANALYZE distinction
-- `test_cli_regression.sh` - Replaced 8 TA tests with 4 tests
-- `.serena/memories/tech_stack.md` - This documentation
-
-**References:**
-- **Research Doc:** `TA_CONSOLIDATION_RESEARCH.md`
-- **Implementation Plan:** `TODO_task_plan.md`
-- **Commit:** `[commit hash]`
-- **Test Report:** `test-reports/test_cli_regression_loopX_YYYY-MM-DD_HH-MM.log`
-```
-
-**Expected Output:** tech_stack.md updated with comprehensive consolidation documentation
-
-**Validation:**
-- All metrics documented with before/after comparison
-- Test results included with pass rate and timing
-- Architecture transformation clearly illustrated
-- Files modified list complete
-
----
-
-## Phase 6: Final Git Commit
-
-### Task 6.1: Stage All Files and Create Atomic Commit
-
-**Objective:** Create single atomic commit with ALL changes
-
-**Tool Requirements:**
-- ✅ Use Bash for git commands
-
-**Steps:**
-
-1. **Verify ALL work complete:**
-   - ✅ Code changes done
-   - ✅ Tests run and passing
-   - ✅ Documentation updated
-   - ✅ Serena memories updated
-
-2. **Use Bash** to review changes:
-   ```bash
-   git status
-   git diff
-   ```
-
-3. **Use Bash** to stage ALL files at once:
-   ```bash
-   git add -A
-   ```
-
-4. **Use Bash** to verify staging:
-   ```bash
-   git status
-   ```
-
-5. **Use Bash** to commit immediately:
-   ```bash
-   git commit -m "$(cat <<'EOF'
-   [TA-CONSOLIDATION] Consolidate 4 TA tools into single get_ta_indicators tool
-
-   **Problem Solved:**
-   - 442 lines of duplicate code across 4 TA tools
-   - 8+ tool calls required for comprehensive TA
-   - Rate limiting risk from sequential API calls
-   - Ambiguity between getting data vs analyzing data
-   - Tunnel vision (agent ignored non-TA context)
-
-   **Solution Implemented:**
-
-   1. **New Consolidated Tool** (src/backend/tools/polygon_tools.py):
-      - get_ta_indicators(ticker, timespan) - ~150 lines
-      - Batched API calls: RSI+MACD → SMA×5 → EMA×5 (12 calls in 3 batches)
-      - 1-second delays between batches (rate limit safe)
-      - Returns formatted markdown table with all 14 indicators
-      - Commented out old tools: get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd (442 lines)
-
-   2. **Formatting Helper** (src/backend/tools/formatting_helpers.py):
-      - create_ta_indicators_table(ticker, indicators) - ~50 lines
-      - Generates comprehensive markdown table
-      - Handles missing data gracefully (N/A for failed indicators)
-
-   3. **Agent Instructions** (src/backend/services/agent_service.py):
-      - Clear GET vs ANALYZE distinction
-      - GET: Use get_ta_indicators tool, display table as-is
-      - ANALYZE: Holistic analysis with 4 required topics (Trends, Volatility, Momentum, Trading Patterns)
-      - Updated tool list: 10 tools → 7 tools
-      - Removed old tool descriptions, added new tool description
-
-   4. **Test Suite** (test_cli_regression.sh):
-      - Replaced 8 TA tests with 4 tests (2 per ticker: Get + Analyze)
-      - Total tests: 44 → 40 tests
-      - Test 10: Get TA Indicators for SPY
-      - Test 11: Analyze TA for SPY
-      - Test 27: Get TA Indicators for NVDA
-      - Test 28: Analyze TA for NVDA
-
-   **Test Results:**
-   - ✅ 40/40 PASSED (100% success rate)
-   - ✅ X.XXs average response time (EXCELLENT - within baseline)
-   - ✅ Test report: test-reports/test_cli_regression_loopX_YYYY-MM-DD_HH-MM.log
-   - ✅ Markdown table formatting validated
-   - ✅ Holistic analysis with 4 topics validated
-
-   **Code Metrics:**
-   - TA Tool Lines: 442 → ~200 (-54%)
-   - Number of Tools: 4 → 1 (-75%)
-   - Tool Calls: 8+ → 1 (-87%)
-   - Test Cases: 8 → 4 (-50%)
-
-   **Performance Improvements:**
-   - Response Time: ~8-10s → ~2-3s (-70%)
-   - Token Overhead: 8 interactions → 1 interaction (-87%)
-   - Rate Limit Risk: High → None (batched with delays)
-
-   **Files Modified:**
-   - src/backend/tools/polygon_tools.py (added get_ta_indicators, commented out 4 old tools)
-   - src/backend/tools/formatting_helpers.py (added create_ta_indicators_table)
-   - src/backend/services/agent_service.py (GET/ANALYZE distinction, updated tool list)
-   - test_cli_regression.sh (8 TA tests → 4 TA tests)
-   - .serena/memories/tech_stack.md (added consolidation documentation)
-   - TA_CONSOLIDATION_RESEARCH.md (research findings)
-   - TODO_task_plan.md (implementation plan)
-
-   🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-   Co-Authored-By: Claude <noreply@anthropic.com>
-   EOF
-   )"
-   ```
-
-6. **Use Bash** to push:
-   ```bash
-   git push
-   ```
-
-**Expected Output:** Atomic commit with all changes pushed to remote
-
-**Validation:**
-- Single commit contains all changes
-- Commit message comprehensive and detailed
-- All files included in commit
-- Successfully pushed to remote
-
----
-
-## Summary
-
-**Total Tasks:** 17 tasks across 4 phases
-
-**Phase Breakdown:**
-- **Phase 3 (Implementation):** 9 tasks - Code changes, test updates
-- **Phase 4 (Testing):** 3 tasks - Manual testing, CLI regression, content verification
-- **Phase 5 (Serena):** 1 task - Update memories
-- **Phase 6 (Git):** 1 task - Atomic commit
-
-**Key Deliverables:**
-1. New consolidated tool: `get_ta_indicators` (~150 lines)
-2. New formatting helper: `create_ta_indicators_table` (~50 lines)
-3. Updated agent instructions with GET/ANALYZE distinction
-4. Updated test suite (40 tests, down from 44)
-5. Comprehensive documentation in Serena memories
-6. 100% passing tests with improved performance
-
-**Expected Outcomes:**
-- 54% code reduction (442 → ~200 lines)
-- 87% fewer tool calls (8 → 1)
-- 70% faster response time (~10s → ~3s)
-- Rate limit safe (batched API calls)
-- Clearer agent behavior (GET vs ANALYZE)
-- Holistic analysis (4 required topics)
-
----
-
-**Current Status:** 📋 Planning Complete - Ready for Implementation
-
-**Next Step:** Begin Phase 3 (Implementation) - Task 3.1
+**END OF TODO TASK PLAN**

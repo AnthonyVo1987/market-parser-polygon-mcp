@@ -43,52 +43,75 @@ npm run check:all
 # Expected: All checks passing
 ```
 
-### 2. Testing (MANDATORY)
+### 2. Testing (MANDATORY) - TWO-PHASE APPROACH
 
-#### CLI Regression Testing
+#### CLI Regression Testing - Phase 1: Automated Response Generation
+
 ```bash
-# Run CLI regression test suite (27 tests)
+# Run CLI regression test suite (39 tests)
 chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
-# Expected results:
-# - 27/27 tests PASSED (100% success rate)
-# - Average response time: ~6-8 seconds
+# Expected Phase 1 results:
+# - 39/39 responses COMPLETED (100% generation rate)
+# - Average response time: ~10-12 seconds
 # - Test report generated in test-reports/
+# - Phase 2 instructions displayed
 ```
 
-**CRITICAL:** Test execution is MANDATORY. You MUST:
-- ✅ Execute the test suite
-- ✅ Show test results to user
-- ✅ Verify 100% pass rate
-- ✅ Provide test report file path
-- ✅ Fix any failures and re-test
+#### CLI Regression Testing - Phase 2: Manual Verification (MANDATORY)
+
+**CRITICAL:** Script can ONLY verify responses received. It CANNOT validate correctness.
+
+**You MUST verify each of the 39 responses against these criteria:**
+
+1. ✅ Response directly addresses the prompt query
+2. ✅ Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+3. ✅ Appropriate tool calls made (Polygon, Finnhub, Tradier)
+4. ✅ Data formatting matches expected format (OHLC, tables, etc.)
+5. ✅ No hallucinated data or made-up values
+6. ✅ Options chains show Bid/Ask columns (NOT midpoint)
+7. ✅ Technical analysis includes proper indicators
+8. ✅ Response is complete (not truncated)
+
+**Mandatory Checkpoint Question:**
+"Did you verify the results of EACH test prompt to ensure the response was correct with proper tool calls and formatting?"
+
+- **If NO**: Testing INCOMPLETE. Return to Phase 2.
+- **If YES**: Testing complete. Proceed to documentation.
 
 **NEVER:**
-- ❌ Skip test execution
-- ❌ Claim completion without test results
-- ❌ Mark task "done" without test evidence
-- ❌ Proceed to documentation without running tests
+- ❌ Skip Phase 1 test execution
+- ❌ Skip Phase 2 manual verification
+- ❌ Claim completion without Phase 2 evidence
+- ❌ Mark task "done" without verifying each response
+- ❌ Proceed to documentation without completing both phases
 
 **Pattern Recognition:**
 
-**WRONG:**
+**WRONG (What NOT to do):**
 ```
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. Update documentation ✅
-4. Mark task complete ❌ (NEVER ran tests!)
+3. RUN Phase 1: ./test_cli_regression.sh ✅
+4. Show results: 39/39 COMPLETED ✅
+5. Update documentation ✅
+6. Mark task complete ❌ (NEVER performed Phase 2!)
 ```
 
-**CORRECT:**
+**CORRECT (What TO do):**
 ```
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. RUN test suite: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
-4. Show results: 27/27 PASS, 100% success ✅
-5. Provide test report path ✅
-6. Update documentation with test results ✅
-7. Mark task complete ✅
+3. RUN Phase 1: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
+4. Show Phase 1 results: 39/39 COMPLETED ✅
+5. PERFORM Phase 2: Manual verification of ALL 39 responses ✅
+6. Answer checkpoint: "Did you verify each response?" YES ✅
+7. Provide test report path ✅
+8. Update documentation with test results ✅
+9. Mark task complete ✅
 ```
+
+**Remember: If you haven't completed Phase 1 AND Phase 2, the task is NOT complete.**
 
 ### 3. Documentation Updates
 
@@ -204,7 +227,7 @@ git commit -m "$(cat <<'EOF'
 
 - Detailed change 1
 - Detailed change 2
-- Test results: 27/27 tests passing, 6.10s avg
+- Test results: 39/39 tests passing, 9.14s avg
 - Files changed: X files
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -246,7 +269,7 @@ git push
 
 #### Pre-Push Checklist
 - [ ] All code quality checks passing
-- [ ] All tests passing (27/27 for CLI regression)
+- [ ] All tests passing (39/39 for CLI regression)
 - [ ] Test report generated and included in commit
 - [ ] Documentation updated (CLAUDE.md, README.md)
 - [ ] Serena memories updated (if applicable)
@@ -280,12 +303,13 @@ git status
 
 2. **Testing Phase (MANDATORY):**
    ```bash
-   # Execute tests
+   # Execute Phase 1: Response generation
    chmod +x test_cli_regression.sh && ./test_cli_regression.sh
    
-   # Verify results
+   # Execute Phase 2: Manual verification
    # - Check test report in test-reports/
-   # - Verify 100% pass rate
+   # - Verify each response against 8-point criteria
+   # - Verify 100% correctness
    # - Note average response time
    ```
 
@@ -320,14 +344,15 @@ git status
 1. **Fix the bug in code**
 2. **Run quality checks** (`npm run check:all`)
 3. **Run tests** (`chmod +x test_cli_regression.sh && ./test_cli_regression.sh`)
-4. **Update documentation** (if needed)
-5. **Commit with atomic workflow** (`git add -A` → `git commit` → `git push`)
+4. **Verify test responses** (Phase 2 manual verification)
+5. **Update documentation** (if needed)
+6. **Commit with atomic workflow** (`git add -A` → `git commit` → `git push`)
 
 ### Refactoring Code
 
 1. **Make refactoring changes**
 2. **Run quality checks** (`npm run lint:fix && npm run type-check`)
-3. **Run tests** (verify no regressions)
+3. **Run tests** (verify no regressions - both Phase 1 and Phase 2)
 4. **Update documentation** (if architecture changed)
 5. **Update Serena memories** (if applicable)
 6. **Commit with atomic workflow**
@@ -346,7 +371,7 @@ git status
 - **Python Pylint**: 10.00/10 (no errors)
 - **TypeScript ESLint**: Max 150 warnings, 0 errors
 - **TypeScript Compiler**: 0 errors
-- **Test Success Rate**: 100%
+- **Test Success Rate**: 100% (both Phase 1 completion and Phase 2 verification)
 - **Response Time**: < 10s average (target ~6-8s)
 
 ### Performance Targets
@@ -363,10 +388,10 @@ git status
 2. **Analyze failure**:
    ```bash
    # Check test report
-   cat test-reports/comprehensive_*.txt
+   cat test-reports/test_cli_regression_*.log
    ```
 3. **Fix the issue**
-4. **Re-run tests**
+4. **Re-run tests** (both Phase 1 and Phase 2)
 5. **Only commit when tests pass 100%**
 
 ### If Quality Checks Fail
@@ -405,7 +430,8 @@ git status
 Before pushing ANY commit:
 
 - [ ] ✅ All code quality checks passing
-- [ ] ✅ All tests executed and passing (100% success rate)
+- [ ] ✅ Phase 1: All tests executed and 100% completion rate
+- [ ] ✅ Phase 2: Manual verification completed for ALL test responses
 - [ ] ✅ Test report generated and will be included in commit
 - [ ] ✅ Documentation updated (CLAUDE.md, README.md)
 - [ ] ✅ Serena memories updated (if applicable)
@@ -416,6 +442,6 @@ Before pushing ANY commit:
 - [ ] ✅ Committed immediately after staging
 - [ ] ✅ Pushed immediately after committing
 
-**Remember: If you haven't RUN the tests and SHOWN the results, the task is NOT complete.**
+**Remember: If you haven't completed Phase 1 AND Phase 2, the task is NOT complete.**
 
 **Remember: Stage files ONLY immediately before committing. Never stage early!**

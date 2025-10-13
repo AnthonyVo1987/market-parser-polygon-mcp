@@ -1,9 +1,16 @@
 #!/bin/bash
 
-# CLI Test Regression Script - NEW 40-Test Suite with Chat History Analysis
-# Tests all 40 standardized test prompts sequentially in a SINGLE CLI session
+# CLI Test Regression Script - NEW 39-Test Suite with Two-Phase Validation
+# Tests all 39 standardized test prompts sequentially in a SINGLE CLI session
 # Designed to validate parallel tool calls (max 3) and chat history data reuse
 # Properly handles session persistence and accurate response time tracking
+#
+# PHASE 1 (Automated): Runs all 39 test prompts and generates responses
+# PHASE 2 (Manual): AI Agent must verify each response for correctness
+#
+# IMPORTANT: This script can ONLY verify that responses were received.
+# It CANNOT validate response correctness, tool calls, or data accuracy.
+# The AI Agent MUST manually review each of the 39 test responses.
 #
 # Usage: chmod +x test_cli_regression.sh && ./test_cli_regression.sh [LOOP_COUNT]
 #   LOOP_COUNT: Number of test loops to run (1-10, default: 1)
@@ -13,15 +20,16 @@
 #     chmod +x test_cli_regression.sh && ./test_cli_regression.sh 10  # Run 10 loops (max)
 #
 # Test Coverage:
-# - SPY Test Sequence: Tests 1-17 (17 tests - includes 3 historical pricing + 2 TA tests + 1 expiration dates + 2 options chain tests + 1 wall analysis)
-# - NVDA Test Sequence: Tests 18-34 (17 tests - includes 3 historical pricing + 2 TA tests + 1 expiration dates + 2 options chain tests + 1 wall analysis)
-# - Multi-Ticker Test Sequence: Tests 35-40 (6 tests)
-# Total: 40 tests per loop
+# - SPY Test Sequence: Tests 1-16 (16 tests - OHLC pricing + TA + options analysis)
+# - NVDA Test Sequence: Tests 17-31 (15 tests - OHLC pricing + TA + options analysis)
+# - Multi-Ticker Test Sequence: Tests 32-39 (8 tests - WDC, AMD, SOUN)
+# Total: 39 tests per loop
 #
 # Test Design Philosophy:
 # - Sequential ticker testing validates chat history analysis
 # - Same question types repeated for each ticker tests data reuse
 # - Multi-ticker tests validate parallel tool call batching (max 3)
+# - Two-phase validation ensures response correctness
 
 # Colors for output
 RED='\033[0;31m'
@@ -56,107 +64,106 @@ RESULTS_DIR="test-reports"
 # Ensure results directory exists
 mkdir -p "$RESULTS_DIR"
 
-echo -e "${CYAN}🧪 CLI Test Regression - NEW 40 Test Suite${NC}"
-echo -e "${CYAN}===========================================${NC}"
+echo -e "${CYAN}🧪 CLI Test Regression - NEW 39 Test Suite (Two-Phase Validation)${NC}"
+echo -e "${CYAN}=================================================================${NC}"
 echo -e "Timestamp: $(date)"
 echo -e "Loop Count: ${GREEN}${LOOP_COUNT}x${NC}"
 echo -e "Max Response Time: ${MAX_RESPONSE_TIME}s per test"
 echo -e "CLI Command: $CLI_CMD"
-echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 40 tests in same session per loop)"
+echo -e "Session Mode: ${GREEN}PERSISTENT${NC} (all 39 tests in same session per loop)"
 echo -e "Test Features: ${GREEN}Parallel Tool Calls (max 3)${NC}, ${GREEN}Chat History Analysis${NC}, ${GREEN}Options Chain Tests${NC}"
+echo -e "Validation: ${YELLOW}Phase 1 (Automated)${NC} + ${YELLOW}Phase 2 (Manual Verification)${NC}"
 echo ""
 
-# The 40 standardized test prompts organized by ticker sequence
+# The 39 standardized test prompts organized by ticker sequence
 declare -a prompts=(
-    # SPY Test Sequence (Tests 1-17)
+    # SPY Test Sequence (Tests 1-16)
     "Market Status"
-    "Current Price: \$SPY"
-    "Today's Closing Price: \$SPY"
-    "Yesterday's Closing Price: \$SPY"
-    "Last week's Performance: \$SPY"
-    "Stock Price on the previous week's Friday: \$SPY"
-    "Stock Price Performance the last 5 Trading Days: \$SPY"
-    "Stock Price Performance the last 2 Weeks: \$SPY"
-    "Stock Price Performance the last month: \$SPY"
-    "Get technical analysis indicators for SPY"
-    "Perform technical analysis for SPY based on the indicators"
+    "Current Price OHLC: \$SPY"
+    "Yesterday's Price OHLC: \$SPY"
+    "Last week's Performance OHLC: \$SPY"
+    "Stock Price on the previous week's Friday OHLC: \$SPY"
+    "Stock Price Performance the last 5 Trading Days OHLC: \$SPY"
+    "Stock Price Performance the past 2 Weeks OHLC: \$SPY"
+    "Stock Price Performance the past month: \$SPY"
+    "Stock Price Performance the past 3 months: \$SPY"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$SPY"
     "Support & Resistance Levels: \$SPY"
-    "Technical Analysis: \$SPY"
-    "Get options expiration dates for SPY"
-    "Get the SPY Call Options Chain Expiring this Friday"
-    "Get the SPY Put Options Chain Expiring this Friday"
-    "Analyze the Options Chain Data for SPY and provide potential Call & Put Wall(s) Strike Prices"
-    # NVDA Test Sequence (Tests 18-34)
-    "Market Status"
-    "Current Price: \$NVDA"
-    "Today's Closing Price: \$NVDA"
-    "Yesterday's Closing Price: \$NVDA"
-    "Last week's Performance: \$NVDA"
-    "Stock Price on the previous week's Friday: \$NVDA"
-    "Stock Price Performance the last 5 Trading Days: \$NVDA"
-    "Stock Price Performance the last 2 Weeks: \$NVDA"
-    "Stock Price Performance the last month: \$NVDA"
-    "Get technical analysis indicators for NVDA"
-    "Perform technical analysis for NVDA based on the indicators"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY"
+    "Get options expiration dates: \$SPY"
+    "Get Call Options Chain Expiring this Friday: \$SPY"
+    "Get Put Options Chain Expiring this Friday: \$SPY"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
+    # NVDA Test Sequence (Tests 17-31)
+    "Current Price OHLC: \$NVDA"
+    "Yesterday's Price OHLC: \$NVDA"
+    "Last week's Performance OHLC: \$NVDA"
+    "Stock Price on the previous week's Friday OHLC: \$NVDA"
+    "Stock Price Performance the last 5 Trading Days OHLC: \$NVDA"
+    "Stock Price Performance the past 2 Weeks OHLC: \$NVDA"
+    "Stock Price Performance the past month: \$NVDA"
+    "Stock Price Performance the past 3 months: \$NVDA"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$NVDA"
     "Support & Resistance Levels: \$NVDA"
-    "Technical Analysis: \$NVDA"
-    "Get options expiration dates for NVDA"
-    "Get the NVDA Call Options Chain Expiring this Friday"
-    "Get the NVDA Put Options Chain Expiring this Friday"
-    "Analyze the Options Chain Data for NVDA and provide potential Call & Put Wall(s) Strike Prices"
-    # Multi-Ticker Test Sequence (Tests 35-40)
-    "Market Status"
-    "Current Price: \$WDC, \$AMD, \$GME"
-    "Today's Closing Price: \$WDC, \$AMD, \$GME"
-    "Yesterday's Closing Price: \$WDC, \$AMD, \$GME"
-    "Last week's Performance: \$WDC, \$AMD, \$GME"
-    "Stock Price Performance the last 2 Weeks: \$WDC, \$AMD, \$GME"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA"
+    "Get options expiration dates for \$NVDA"
+    "Get Call Options Chain Expiring this Friday: \$NVDA"
+    "Get Put Options Chain Expiring this Friday: \$NVDA"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
+    # Multi-Ticker Test Sequence (Tests 32-39)
+    "Current Price OHLC: \$WDC, \$AMD, \$SOUN"
+    "Yesterday's Price OHLC: \$WDC, \$AMD, \$SOUN"
+    "Yesterday's Closing Price: \$WDC, \$AMD, \$SOUN"
+    "Last week's Performance OHLC: \$WDC, \$AMD, \$SOUN"
+    "Get technical analysis indicator DATA only with NO ANALYSIS: \$WDC, \$AMD, \$SOUN"
+    "Support & Resistance Levels: \$WDC, \$AMD, \$SOUN"
+    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$WDC, \$AMD, \$SOUN"
+    "Get options expiration dates: \$WDC, \$AMD, \$SOUN"
 )
 
 declare -a test_names=(
-    # SPY Test Sequence (Tests 1-17)
-    "Test_1_Market_Status"
-    "Test_2_SPY_Current_Price"
-    "Test_3_SPY_Today_Closing_Price"
-    "Test_4_SPY_Yesterday_Closing_Price"
-    "Test_5_SPY_Last_Week_Performance"
-    "Test_6_SPY_Previous_Week_Friday_Price"
-    "Test_7_SPY_Last_5_Trading_Days"
-    "Test_8_SPY_Last_2_Weeks"
-    "Test_9_SPY_Last_Month"
-    "Test_10_SPY_Get_TA_Indicators"
-    "Test_11_SPY_Analyze_TA"
-    "Test_12_SPY_Support_Resistance"
-    "Test_13_SPY_Technical_Analysis"
-    "Test_14_SPY_Options_Expiration_Dates"
-    "Test_15_SPY_Call_Options_Chain"
-    "Test_16_SPY_Put_Options_Chain"
-    "Test_17_SPY_Options_Wall_Analysis"
-    # NVDA Test Sequence (Tests 18-34)
-    "Test_18_Market_Status"
-    "Test_19_NVDA_Current_Price"
-    "Test_20_NVDA_Today_Closing_Price"
-    "Test_21_NVDA_Yesterday_Closing_Price"
-    "Test_22_NVDA_Last_Week_Performance"
-    "Test_23_NVDA_Previous_Week_Friday_Price"
-    "Test_24_NVDA_Last_5_Trading_Days"
-    "Test_25_NVDA_Last_2_Weeks"
-    "Test_26_NVDA_Last_Month"
-    "Test_27_NVDA_Get_TA_Indicators"
-    "Test_28_NVDA_Analyze_TA"
-    "Test_29_NVDA_Support_Resistance"
-    "Test_30_NVDA_Technical_Analysis"
-    "Test_31_NVDA_Options_Expiration_Dates"
-    "Test_32_NVDA_Call_Options_Chain"
-    "Test_33_NVDA_Put_Options_Chain"
-    "Test_34_NVDA_Options_Wall_Analysis"
-    # Multi-Ticker Test Sequence (Tests 35-40)
-    "Test_35_Multi_Market_Status"
-    "Test_36_Multi_Current_Price_WDC_AMD_GME"
-    "Test_37_Multi_Today_Closing_Price_WDC_AMD_GME"
-    "Test_38_Multi_Yesterday_Closing_Price_WDC_AMD_GME"
-    "Test_39_Multi_Last_Week_Performance_WDC_AMD_GME"
-    "Test_40_Multi_Last_2_Weeks_WDC_AMD_GME"
+    # SPY Test Sequence (Tests 1-16)
+    "Test_1_SPY_Market_Status"
+    "Test_2_SPY_Current_Price_OHLC"
+    "Test_3_SPY_Yesterday_Price_OHLC"
+    "Test_4_SPY_Last_Week_Performance_OHLC"
+    "Test_5_SPY_Previous_Week_Friday_OHLC"
+    "Test_6_SPY_Last_5_Trading_Days_OHLC"
+    "Test_7_SPY_Past_2_Weeks_OHLC"
+    "Test_8_SPY_Past_Month"
+    "Test_9_SPY_Past_3_Months"
+    "Test_10_SPY_TA_Indicator_DATA_Only"
+    "Test_11_SPY_Support_Resistance"
+    "Test_12_SPY_Full_TA_Analysis"
+    "Test_13_SPY_Options_Expiration_Dates"
+    "Test_14_SPY_Call_Options_Chain"
+    "Test_15_SPY_Put_Options_Chain"
+    "Test_16_SPY_Options_Wall_Analysis"
+    # NVDA Test Sequence (Tests 17-31)
+    "Test_17_NVDA_Current_Price_OHLC"
+    "Test_18_NVDA_Yesterday_Price_OHLC"
+    "Test_19_NVDA_Last_Week_Performance_OHLC"
+    "Test_20_NVDA_Previous_Week_Friday_OHLC"
+    "Test_21_NVDA_Last_5_Trading_Days_OHLC"
+    "Test_22_NVDA_Past_2_Weeks_OHLC"
+    "Test_23_NVDA_Past_Month"
+    "Test_24_NVDA_Past_3_Months"
+    "Test_25_NVDA_TA_Indicator_DATA_Only"
+    "Test_26_NVDA_Support_Resistance"
+    "Test_27_NVDA_Full_TA_Analysis"
+    "Test_28_NVDA_Options_Expiration_Dates"
+    "Test_29_NVDA_Call_Options_Chain"
+    "Test_30_NVDA_Put_Options_Chain"
+    "Test_31_NVDA_Options_Wall_Analysis"
+    # Multi-Ticker Test Sequence (Tests 32-39)
+    "Test_32_Multi_Current_Price_OHLC_WDC_AMD_SOUN"
+    "Test_33_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN"
+    "Test_34_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN"
+    "Test_35_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN"
+    "Test_36_Multi_TA_Indicator_DATA_Only_WDC_AMD_SOUN"
+    "Test_37_Multi_Support_Resistance_WDC_AMD_SOUN"
+    "Test_38_Multi_Full_TA_Analysis_WDC_AMD_SOUN"
+    "Test_39_Multi_Options_Expiration_Dates_WDC_AMD_SOUN"
 )
 
 # Initialize test tracking
@@ -166,8 +173,8 @@ total_tests=${#prompts[@]}
 declare -a all_loop_avg_times=()
 declare -a all_loop_durations=()
 declare -a all_loop_reports=()
-total_loops_passed=0
-total_loops_failed=0
+total_loops_completed=0
+total_loops_incomplete=0
 
 # Loop through test iterations
 for loop_num in $(seq 1 $LOOP_COUNT); do
@@ -197,8 +204,8 @@ for loop_num in $(seq 1 $LOOP_COUNT); do
     done
     echo "exit" >> "$INPUT_FILE"
 
-    echo -e "${CYAN}🚀 Starting CLI Regression Test (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
-    echo -e "${CYAN}Session will run all 40 tests sequentially${NC}"
+    echo -e "${CYAN}🚀 Starting CLI Regression Test - Phase 1 (Loop ${loop_num}/${LOOP_COUNT})...${NC}"
+    echo -e "${CYAN}Session will run all 39 tests sequentially${NC}"
     echo -e "Output file: $OUTPUT_FILE"
     echo ""
 
@@ -229,7 +236,7 @@ parse_test_results() {
 
                 echo -e "${BLUE}📝 Test $test_num: ${test_names[$((test_num-1))]}${NC}"
                 echo -e "${YELLOW}Prompt: '${prompts[$((test_num-1))]}'${NC}"
-                echo -e "${GREEN}✅ Test completed${NC}"
+                echo -e "${GREEN}✅ Response received${NC}"
                 echo -e "${GREEN}⏱️  Response Time: ${rt}s${NC}"
 
                 # Performance classification
@@ -243,7 +250,7 @@ parse_test_results() {
                     echo -e "${YELLOW}📈 Performance: SLOW (> 90s)${NC}"
                 fi
 
-                test_results+=("PASS")
+                test_results+=("COMPLETED")
                 echo ""
             fi
         fi
@@ -296,7 +303,7 @@ if [ "$tests_found" -ne "$total_tests" ]; then
     # Fill in test results
     for i in $(seq 1 $total_tests); do
         if [ ${#test_results[@]} -lt $i ]; then
-            test_results+=("PASS")
+            test_results+=("COMPLETED")
         fi
     done
 fi
@@ -307,20 +314,20 @@ echo -e "${CYAN}📊 Test Results Analysis${NC}"
 echo -e "${CYAN}========================${NC}"
 
 # Test results summary
-echo -e "📋 Test Results Summary:"
-passed_tests=0
+echo -e "📋 Phase 1 Results Summary (Responses Generated):"
+completed_tests=0
 for i in "${!test_names[@]}"; do
     test_number=$((i + 1))
     result="${test_results[$i]:-UNKNOWN}"
-    if [ "$result" = "PASS" ]; then
-        ((passed_tests++))
-        echo -e "${GREEN}   Test $test_number: ${test_names[$i]} - PASS${NC}"
+    if [ "$result" = "COMPLETED" ]; then
+        ((completed_tests++))
+        echo -e "${GREEN}   Test $test_number: ${test_names[$i]} - COMPLETED${NC}"
     else
         echo -e "${RED}   Test $test_number: ${test_names[$i]} - $result${NC}"
     fi
 done
 
-failed_tests=$((total_tests - passed_tests))
+incomplete_tests=$((total_tests - completed_tests))
 
 # Response time analysis
 if [ ${#response_times[@]} -gt 0 ]; then
@@ -383,26 +390,26 @@ fi
 
 # Generate comprehensive summary for this loop
 echo ""
-echo -e "${CYAN}📊 Loop ${loop_num}/${LOOP_COUNT} Test Summary${NC}"
-echo -e "${CYAN}============================${NC}"
+echo -e "${CYAN}📊 Loop ${loop_num}/${LOOP_COUNT} Phase 1 Summary${NC}"
+echo -e "${CYAN}====================================${NC}"
 echo -e "Total Tests: $total_tests"
-echo -e "${GREEN}Passed: $passed_tests${NC}"
-echo -e "${RED}Failed: $failed_tests${NC}"
-echo -e "Success Rate: $(( passed_tests * 100 / total_tests ))%"
+echo -e "${GREEN}Completed: $completed_tests${NC}"
+echo -e "${RED}Incomplete: $incomplete_tests${NC}"
+echo -e "Generation Rate: $(( completed_tests * 100 / total_tests ))%"
 echo -e "Total Session Duration: ${duration_formatted}"
 echo -e "Session Mode: ${GREEN}PERSISTENT${NC}"
 
 # Track loop results
-if [ $failed_tests -eq 0 ]; then
-    echo -e "${GREEN}🎉 All $total_tests tests passed in Loop ${loop_num}!${NC}"
-    echo -e "${GREEN}✅ Loop ${loop_num} CLI Regression Test: SUCCESS${NC}"
-    ((total_loops_passed++))
-    loop_status="PASS"
+if [ $incomplete_tests -eq 0 ]; then
+    echo -e "${GREEN}🎉 All $total_tests responses generated in Loop ${loop_num}!${NC}"
+    echo -e "${GREEN}✅ Loop ${loop_num} Phase 1: All responses generated${NC}"
+    ((total_loops_completed++))
+    loop_status="COMPLETED"
 else
-    echo -e "${RED}❌ $failed_tests test(s) failed in Loop ${loop_num}${NC}"
-    echo -e "${RED}❌ Loop ${loop_num} CLI Regression Test: FAILED${NC}"
-    ((total_loops_failed++))
-    loop_status="FAIL"
+    echo -e "${RED}❌ $incomplete_tests test(s) had no response in Loop ${loop_num}${NC}"
+    echo -e "${RED}❌ Loop ${loop_num} Phase 1: INCOMPLETE${NC}"
+    ((total_loops_incomplete++))
+    loop_status="INCOMPLETE"
 fi
 
 # Store aggregate metrics
@@ -418,9 +425,9 @@ all_loop_reports+=("$OUTPUT_FILE")
         echo "Timestamp: $(date)"
         echo "Loop Number: ${loop_num}/${LOOP_COUNT}"
         echo "Total Tests: $total_tests"
-        echo "Passed: $passed_tests"
-        echo "Failed: $failed_tests"
-        echo "Success Rate: $(( passed_tests * 100 / total_tests ))%"
+        echo "Completed: $completed_tests"
+        echo "Incomplete: $incomplete_tests"
+        echo "Generation Rate: $(( completed_tests * 100 / total_tests ))%"
         echo "Total Session Duration: ${duration_formatted}"
         echo "Session Mode: PERSISTENT (single session)"
         echo "Session Count Detected: $session_count"
@@ -461,8 +468,36 @@ all_loop_reports+=("$OUTPUT_FILE")
 
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║  LOOP ${loop_num}/${LOOP_COUNT} - Completed${NC}"
+    echo -e "${CYAN}║  LOOP ${loop_num}/${LOOP_COUNT} - Phase 1 Completed${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    # Phase 2 Verification Instructions
+    echo -e "${YELLOW}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${YELLOW}║  PHASE 2: MANUAL VERIFICATION REQUIRED${NC}"
+    echo -e "${YELLOW}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${YELLOW}🔴 CRITICAL: Test script can ONLY verify that responses were received.${NC}"
+    echo -e "${YELLOW}   It CANNOT verify response correctness, tool calls, or formatting.${NC}"
+    echo ""
+    echo -e "${CYAN}📋 Phase 2 Verification Checklist (for AI Agent):${NC}"
+    echo ""
+    echo -e "${CYAN}For EACH of the 39 test responses, verify:${NC}"
+    echo -e "  1. ✅ Response directly addresses the prompt query"
+    echo -e "  2. ✅ Correct ticker symbols used (\$SPY, \$NVDA, \$WDC, \$AMD, \$SOUN)"
+    echo -e "  3. ✅ Appropriate tool calls made (Polygon, Finnhub, Tradier)"
+    echo -e "  4. ✅ Data formatting matches expected format (OHLC, tables, etc.)"
+    echo -e "  5. ✅ No hallucinated data or made-up values"
+    echo -e "  6. ✅ Options chains show Bid/Ask columns (NOT midpoint)"
+    echo -e "  7. ✅ Technical analysis includes proper indicators"
+    echo -e "  8. ✅ Response is complete (not truncated)"
+    echo ""
+    echo -e "${YELLOW}⚠️  MANDATORY CHECKPOINT QUESTION:${NC}"
+    echo -e "${YELLOW}   \"Did you verify the results of EACH test prompt to ensure${NC}"
+    echo -e "${YELLOW}    the response was correct with proper tool calls and formatting?\"${NC}"
+    echo ""
+    echo -e "${CYAN}📄 Review the test report: $OUTPUT_FILE${NC}"
+    echo -e "${CYAN}📄 Review the raw output: $RAW_OUTPUT${NC}"
     echo ""
 
 done  # End of loop iteration
@@ -474,12 +509,12 @@ echo -e "${CYAN}║  AGGREGATE STATISTICS - ALL ${LOOP_COUNT} LOOPS${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-echo -e "${CYAN}📊 Overall Test Summary${NC}"
-echo -e "${CYAN}======================${NC}"
+echo -e "${CYAN}📊 Overall Phase 1 Summary${NC}"
+echo -e "${CYAN}===========================${NC}"
 echo -e "Total Loops Run: $LOOP_COUNT"
-echo -e "${GREEN}Loops Passed: $total_loops_passed${NC}"
-echo -e "${RED}Loops Failed: $total_loops_failed${NC}"
-echo -e "Overall Success Rate: $(( total_loops_passed * 100 / LOOP_COUNT ))%"
+echo -e "${GREEN}Loops Completed: $total_loops_completed${NC}"
+echo -e "${RED}Loops Incomplete: $total_loops_incomplete${NC}"
+echo -e "Overall Generation Rate: $(( total_loops_completed * 100 / LOOP_COUNT ))%"
 echo ""
 
 # Calculate aggregate response time statistics
@@ -520,12 +555,16 @@ done
 echo ""
 
 # Final exit status
-if [ $total_loops_failed -eq 0 ]; then
-    echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) completed successfully!${NC}"
-    echo -e "${GREEN}✅ CLI Regression Test: SUCCESS${NC}"
+if [ $total_loops_incomplete -eq 0 ]; then
+    echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) generated responses!${NC}"
+    echo -e "${GREEN}✅ Phase 1 Complete: All responses generated${NC}"
+    echo ""
+    echo -e "${YELLOW}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${YELLOW}║  🔴 PHASE 2 REQUIRED: Manual Verification Needed${NC}"
+    echo -e "${YELLOW}╚══════════════════════════════════════════════════════════════╝${NC}"
     exit 0
 else
-    echo -e "${RED}❌ ${total_loops_failed} loop(s) failed${NC}"
-    echo -e "${RED}❌ CLI Regression Test: FAILED${NC}"
+    echo -e "${RED}❌ ${total_loops_incomplete} loop(s) incomplete${NC}"
+    echo -e "${RED}❌ Phase 1: FAILED (some tests had no response)${NC}"
     exit 1
 fi

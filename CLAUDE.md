@@ -52,43 +52,67 @@ These instructions provide critical guidance on:
 
 🔴 REMEMBER: The tool list is your toolkit - use every tool as often as needed, in any order, throughout the entire task execution. Choose the right tool for the right operation
 
-## 🔴 CRITICAL: MANDATORY TESTING CHECKPOINT
+## 🔴 CRITICAL: MANDATORY TESTING CHECKPOINT - TWO-PHASE VALIDATION
 
 **Testing is NOT optional - it is REQUIRED for task completion:**
 
-### **Testing Workflow (MUST FOLLOW):**
+### **Two-Phase Testing Workflow (MUST FOLLOW):**
 
 1. **Code Implementation** → Create/update code
 2. **Test Suite Update** → Create/update test files
-3. **🔴 TEST EXECUTION (MANDATORY)** → RUN the test suite
-4. **Test Verification** → Verify 100% pass rate
+3. **🔴 PHASE 1 (MANDATORY)** → RUN the test suite to generate responses
+4. **🔴 PHASE 2 (MANDATORY)** → MANUALLY VERIFY each response for correctness
 5. **Documentation** → Update docs with test results
 
-### **Test Execution Requirements:**
+### **Phase 1: Automated Response Generation**
 
 ✅ **MUST DO:**
 
-- Execute test suite (e.g., `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`)
-- 🔴 MANDATORY - VERIFY THE CONTENT OF EACH TEST PROMPT RESPONSE THAT IT MATCHES THE EXPECTED RESPONSE, PROPER TOOL CALLS, AND RESPONSE FORMATTING 🔴
- - PASS CRITERIA: CONTENT OF TEST PROMPT RESPONS MATCHES THE EXPECTED RESPONSE, PROPER TOOL CALLS, AND RESPONSE FORMATTING
-- Show test results to user (Reponse content pass/fail counts, response times)
-- Verify 100% success rate
+- Execute test suite: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
+- Script generates all 39 test responses
+- Script reports "X/39 COMPLETED" (responses received)
+- **LIMITATION**: Script CANNOT validate response correctness
+- Show Phase 1 results to user (completion counts, response times)
 - Provide test report file path
-- Fix any failures and re-test
+
+### **Phase 2: Manual Response Verification**
+
+✅ **MUST DO (FOR EACH OF 39 RESPONSES):**
+
+- 🔴 MANDATORY - VERIFY THE CONTENT OF EACH TEST PROMPT RESPONSE:
+  1. Response directly addresses the prompt query
+  2. Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+  3. Appropriate tool calls made (Polygon, Finnhub, Tradier)
+  4. Data formatting matches expected format (OHLC, tables, etc.)
+  5. No hallucinated data or made-up values
+  6. Options chains show Bid/Ask columns (NOT midpoint)
+  7. Technical analysis includes proper indicators
+  8. Response is complete (not truncated)
+- Answer checkpoint question: "Did you verify EACH response?"
+- Document any issues found
+- Fix issues and re-run Phase 1 if needed
 
 ❌ **NEVER DO:**
 
-- Skip test execution
-- Claim completion without test results
-- Mark task "done" without test evidence
-- Proceed to documentation without running tests
+- Skip Phase 1 test execution
+- Skip Phase 2 manual verification
+- Claim completion without test results AND manual verification
+- Mark task "done" without Phase 2 evidence
+- Proceed to documentation without running both phases
 
 ### **Enforcement Rules:**
 
-🔴 **Code without test execution = Code NOT implemented**
-🔴 **No test results = Task INCOMPLETE**
-🔴 **Test results are PROOF of implementation**
-🔴 **Tests must run BEFORE documentation updates**
+🔴 **Code without Phase 1 execution = Code NOT implemented**
+🔴 **Phase 1 without Phase 2 verification = Testing INCOMPLETE**
+🔴 **No manual verification = Task INCOMPLETE**
+🔴 **Phase 2 verification is PROOF of correctness**
+🔴 **Both phases must complete BEFORE documentation updates**
+
+### **Key Insight:**
+
+The script saying "39/39 COMPLETED" means "39 responses received" NOT "39 tests passed validation".
+
+Only after Phase 2 manual verification can you claim tests passed.
 
 ### **Pattern Recognition:**
 
@@ -97,8 +121,10 @@ These instructions provide critical guidance on:
 ```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. Update documentation ✅
-4. Mark task complete ❌ (NEVER ran tests!)
+3. RUN Phase 1: ./test_cli_regression.sh ✅
+4. Show results: 39/39 COMPLETED ✅
+5. Update documentation ✅
+6. Mark task complete ❌ (NEVER performed Phase 2 verification!)
 ```
 
 **CORRECT (What TO do):**
@@ -106,11 +132,13 @@ These instructions provide critical guidance on:
 ```text
 1. Create 5 new tools ✅
 2. Update test suite file ✅
-3. RUN test suite: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
-4. Show results: 16/16 PASS, 100% success ✅
-5. Provide test report path ✅
-6. Update documentation with test results ✅
-7. Mark task complete ✅
+3. RUN Phase 1: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
+4. Show Phase 1 results: 39/39 COMPLETED ✅
+5. PERFORM Phase 2: Manual verification of all 39 responses ✅
+6. Answer checkpoint: "Did you verify EACH response?" YES ✅
+7. Provide test report path ✅
+8. Update documentation with test results ✅
+9. Mark task complete ✅
 ```
 
 ### **When to Run Tests:**
@@ -122,7 +150,7 @@ These instructions provide critical guidance on:
 - Before updating documentation
 - Before claiming task completion
 
-**Remember: If you haven't RUN the tests and SHOWN the results, the task is NOT complete.**
+**Remember: If you haven't RUN Phase 1, PERFORMED Phase 2, and SHOWN both results, the task is NOT complete.**
 
 ## 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW
 
@@ -298,7 +326,7 @@ Ask questions like:
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
 - **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 40 tests)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 39 tests)
 - **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
 
 ## Development
@@ -311,7 +339,7 @@ npm run start:app          # One-click startup
 npm run frontend:dev       # Frontend development
 npm run build             # Production build
 
-# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 40-test suite
+# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 39-test suite
 
 # Code quality
 npm run lint              # All linting
@@ -365,37 +393,40 @@ netstat -tlnp | grep :8000
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[FIX] Options Chain Bid/Ask Display - RULE #9 Agent Instructions Update
+[TESTING] Two-Phase Test Validation Framework + 39-Test Suite Update
 
-**Problem:** Agent displaying single "Price (mid)" column instead of separate Bid and Ask columns
-**Root Cause:** Backend functions WERE correct (returning bid/ask fields), but RULE #9 agent instructions specified single "price" column format
-**Solution:** Updated RULE #9 to explicitly require both Bid and Ask columns, prohibit midpoint calculations
+**Problem:** Test script reporting "PASS" for any response received, creating false confidence that tests were actually correct
+**Root Cause:** Script could only verify response receipt, not response correctness or proper tool calls/formatting
+**Solution:** Implemented two-phase testing framework separating automated response generation from manual verification
 
-**Files Modified:**
-- src/backend/services/agent_service.py (RULE #9, lines 256-272)
-  - Changed "price" → "bid, ask" in response format description (line 257)
-  - Added explicit warning "DO NOT calculate or show midpoint/average prices" (line 261)
-  - Updated table format from single "Price" column to separate "Bid" and "Ask" columns (lines 263-265)
-  - Added instruction "Show BOTH Bid and Ask columns" (line 268)
+**Implementation Changes:**
+- test_cli_regression.sh: Updated 40→39 tests with new OHLC-focused prompts ($GME→$SOUN)
+  - Replaced all "PASS/FAIL" terminology with "COMPLETED/INCOMPLETE"
+  - Added Phase 2 verification instructions in script output (lines 475-501)
+  - Updated variable names throughout (passed_tests→completed_tests)
+- CLAUDE.md: Updated testing checkpoint with comprehensive two-phase workflow (lines 55-153)
+- .serena/memories/testing_procedures.md: Added critical two-phase testing section
+- .serena/memories/task_completion_checklist.md: Fully updated with two-phase approach while preserving all original content
 
-**Test Results:**
-- ✅ 44/44 tests PASSED (100% success rate)
-- ✅ 12.95s average response time (EXCELLENT rating)
-- ✅ All options chain tests (17, 18, 36, 37) show separate Bid/Ask columns
-- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-10_22-58.log
+**Phase 1 Test Results (Automated Response Generation):**
+- ✅ 39/39 responses COMPLETED (100% generation rate)
+- ✅ 9.14s average response time (EXCELLENT rating)
+- ✅ Test duration: 5 min 58 sec
+- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-12_16-56.log
 
-**Documentation Updates:**
-- .serena/memories/tech_stack.md - Added Bid/Ask display fix section (45 lines)
-- CLAUDE.md - Updated last completed task summary with comprehensive fix details
+**Phase 2 Test Results (Manual Verification):**
+- ✅ All 39 responses directly address prompts
+- ✅ All ticker symbols correct ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+- ✅ Appropriate tool calls made (Polygon, Tradier)
+- ✅ Data formatting correct (OHLC, tables)
+- ✅ No hallucinated data detected
+- ✅ Options chains show separate Bid/Ask columns (NOT midpoint)
+- ✅ Technical analysis includes proper indicators (RSI, MACD, SMAs, EMAs)
+- ✅ All responses complete (not truncated)
 
-**Verification:**
-Quick manual tests confirmed SPY call/put options show "Bid    Ask" columns (NOT "Price (mid)")
-Full CLI regression suite validated all 44 tests passing with correct Bid/Ask display
-
-**Key Fix:**
-Backend was ALREADY correct - issue was purely in AGENT INSTRUCTIONS (RULE #9)
-Updating RULE #9 fixed display without any backend code changes
-Lesson: Always verify actual output matches requirements
+**Key Insight:**
+"39/39 COMPLETED" means "39 responses received" NOT "39 tests passed validation"
+Only Phase 2 manual verification proves correctness
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
