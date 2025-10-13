@@ -5,6 +5,7 @@ Provides options expiration dates via Tradier API.
 
 import json
 import os
+from datetime import datetime, timedelta
 
 import requests
 from agents import function_tool
@@ -270,6 +271,32 @@ async def get_stock_price_history(
                     "ticker": ticker,
                 }
             )
+
+        # Weekend detection and date adjustment
+        # Adjust dates if they fall on Saturday or Sunday to previous Friday
+        try:
+            start_dt = datetime.strptime(start_date, "%Y-%m-%d")
+            end_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+            # Adjust start_date if weekend (Saturday=5, Sunday=6)
+            if start_dt.weekday() == 5:  # Saturday
+                start_dt = start_dt - timedelta(days=1)  # Move to Friday
+            elif start_dt.weekday() == 6:  # Sunday
+                start_dt = start_dt - timedelta(days=2)  # Move to Friday
+
+            # Adjust end_date if weekend
+            if end_dt.weekday() == 5:  # Saturday
+                end_dt = end_dt - timedelta(days=1)  # Move to Friday
+            elif end_dt.weekday() == 6:  # Sunday
+                end_dt = end_dt - timedelta(days=2)  # Move to Friday
+
+            # Convert back to string format
+            start_date = start_dt.strftime("%Y-%m-%d")
+            end_date = end_dt.strftime("%Y-%m-%d")
+        except ValueError:
+            # If date parsing fails, continue with original dates
+            # API will return appropriate error
+            pass
 
         # Get API key
         api_key = _get_tradier_api_key()

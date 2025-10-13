@@ -1,0 +1,40 @@
+Market Status
+Current Price OHLC: $SPY
+Yesterday's Price OHLC: $SPY
+Last week's Performance OHLC: $SPY
+Stock Price on the previous week's Friday OHLC: $SPY
+Stock Price Performance the last 5 Trading Days OHLC: $SPY
+Stock Price Performance the past 2 Weeks OHLC: $SPY
+Stock Price Performance the past month: $SPY
+Stock Price Performance the past 3 months: $SPY
+Get technical analysis indicator DATA only with NO ANALYSIS: $SPY
+Support & Resistance Levels: $SPY
+Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: $SPY
+Get options expiration dates: $SPY
+Get Call Options Chain Expiring this Friday: $SPY
+Get Put Options Chain Expiring this Friday: $SPY
+Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: $SPY
+Current Price OHLC: $NVDA
+Yesterday's Price OHLC: $NVDA
+Last week's Performance OHLC: $NVDA
+Stock Price on the previous week's Friday OHLC: $NVDA
+Stock Price Performance the last 5 Trading Days OHLC: $NVDA
+Stock Price Performance the past 2 Weeks OHLC: $NVDA
+Stock Price Performance the past month: $NVDA
+Stock Price Performance the past 3 months: $NVDA
+Get technical analysis indicator DATA only with NO ANALYSIS: $NVDA
+Support & Resistance Levels: $NVDA
+Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: $NVDA
+Get options expiration dates for $NVDA
+Get Call Options Chain Expiring this Friday: $NVDA
+Get Put Options Chain Expiring this Friday: $NVDA
+Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: $NVDA
+Current Price OHLC: $WDC, $AMD, $SOUN
+Yesterday's Price OHLC: $WDC, $AMD, $SOUN
+Yesterday's Closing Price: $WDC, $AMD, $SOUN
+Last week's Performance OHLC: $WDC, $AMD, $SOUN
+Get technical analysis indicator DATA only with NO ANALYSIS: $WDC, $AMD, $SOUN
+Support & Resistance Levels: $WDC, $AMD, $SOUN
+Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: $WDC, $AMD, $SOUN
+Get options expiration dates: $WDC, $AMD, $SOUN
+exit
