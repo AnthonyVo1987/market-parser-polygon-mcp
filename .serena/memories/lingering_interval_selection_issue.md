@@ -1,142 +1,52 @@
-# Lingering Issue: Interval Selection for Singular "week" Queries
+# Lingering Interval Selection Issue - RESOLVED ✅
 
-## Status: PARTIAL FIX - Requires Further Investigation
+**Status**: RESOLVED (2025-10-15)
 
-**Last Updated:** 2025-10-12  
-**Test Report:** test-reports/test_cli_regression_loop1_2025-10-12_18-42.log
+## Original Problem
+Tests 4, 19, 35 were failing - agent responding with daily interval instead of weekly when user said "last week" (singular).
 
-## Problem Summary
+## Root Cause (Previous Investigation)
+Initially thought to be a model bias issue with GPT-5-nano not following RULE #11 for singular "week".
 
-GPT-5-nano agent correctly selects `interval='weekly'` for queries containing "weeks" (plural) but incorrectly uses `interval='daily'` for queries containing "week" (singular).
+## ACTUAL ROOT CAUSE (RESOLVED)
+**Was NOT a model issue - was a CODE BUG in tradier_tools.py!**
 
-## Test Results
+The true issue: Tradier API returns DIFFERENT structures for different intervals:
+- Daily: `{"history": {"day": [array of dicts]}}`
+- Weekly/Monthly: `{"history": {"day": {single dict}}}`
 
-### ✅ Working Tests (Plural "weeks")
-- **Test 7:** "Past 2 **Weeks** OHLC: SPY" → `interval='weekly'` ✅
-- **Test 22:** "Past 2 **Weeks** OHLC: NVDA" → `interval='weekly'` ✅
-
-### ❌ Failing Tests (Singular "week")
-- **Test 4:** "Last **week**'s Performance OHLC: SPY" → `interval='daily'` ❌
-- **Test 19:** "Last **Week** OHLC: NVDA" → `interval='daily'` ❌
-- **Test 35:** "Last **week**'s Performance OHLC: WDC, AMD, SOUN" → `interval='daily'` ❌
-
-## Root Cause Analysis
-
-**Hypothesis:** GPT-5-nano model limitation in pattern matching for singular vs plural forms despite ultra-explicit instructions.
-
-**Evidence:**
-1. RULE #11 explicitly states: `IF you find "week" OR "weeks" → interval="weekly"`
-2. RULE #11 includes specific examples: `"Last week's Performance" → interval="weekly"`
-3. Multiple iterations of increasingly explicit instructions had no effect
-4. Pattern is consistent: plural works, singular doesn't
-
-## What Was Tried (3 Iterations)
-
-### Iteration 1: Basic RULE #11
+Code at line 360 in tradier_tools.py assumed `bars_data` was always an array:
 ```python
-* User says "last X weeks" or "weekly" or "last week" → interval="weekly"
+bars_data = history_data.get("day", [])
+for bar in bars_data:  # ← When dict, iterates over KEYS (strings)
+    formatted_bars.append(_format_tradier_history_bar(bar))  # ← Tries string.get()
 ```
-**Result:** Agent ignored singular "week"
 
-### Iteration 2: Pattern Matching with Examples
+Result: `'str' object has no attribute 'get'` error when processing weekly/monthly.
+
+## The Fix (Committed 2025-10-15)
+Added isinstance() check at tradier_tools.py lines 343-345:
 ```python
-**CRITICAL PATTERN MATCHING:**
-- IF query contains "week" or "weeks" → interval="weekly" (NOT daily!)
-
-**CRITICAL EXAMPLES:**
-- ✅ "Last week's Performance OHLC: SPY" → interval="weekly"
+bars_data = history_data.get("day", [])
+# Handle weekly/monthly: single dict vs daily: array of dicts
+if isinstance(bars_data, dict):
+    bars_data = [bars_data]
 ```
-**Result:** Agent still ignored singular "week"
 
-### Iteration 3: Ultra-Explicit Stop-and-Read
-```python
-RULE #11: INTERVAL SELECTION FOR HISTORICAL DATA - STOP AND READ THIS RULE FIRST
-- 🔴🔴🔴 **STOP! READ THIS ENTIRE RULE BEFORE SELECTING INTERVAL**
-- 🔴🔴🔴 **IF USER SAYS "WEEK" (SINGULAR OR PLURAL) → ALWAYS USE interval="weekly"**
+## Verification
+- ✅ Tests 4, 19, 35: NOW WORKING with weekly interval
+- ✅ All 39 tests: PASS (100% pass rate)
+- ✅ Phase 2 grep verification: 0 "'str' object" errors
+- ✅ 6 manual CLI prompts: 6/6 PASS
 
-**SIMPLE PATTERN MATCHING - NO EXCEPTIONS:**
-1. **SEARCH FOR "WEEK" IN QUERY:**
-   - IF you find "week" OR "weeks" OR "weekly" → interval="weekly"
-   - Examples: "last week", "2 weeks", "weekly", "week's" → ALL use interval="weekly"
-```
-**Result:** Agent STILL ignored singular "week"
+## Key Lessons
+1. Always verify API response structure for ALL supported parameters
+2. Type safety: Add isinstance() checks when API can return multiple types
+3. Don't assume the model is wrong - verify code handles all cases correctly
+4. Generic error messages mask the real issue - debug with exact error text
 
-## Impact Assessment
+## Memory Impact
+This was misdiagnosed as a model issue in the previous task. It was actually a tool-level bug that was invisible until we got the exact error message and traced back to the Tradier API response format.
 
-### Severity: **MEDIUM**
-- Primary objective (weekend detection) fully achieved
-- Affects 3/39 tests (7.7% failure rate)
-- Workaround exists: Users can say "2 weeks" instead of "last week"
-- Data is still provided (daily bars), just not in requested format
-
-### Tests Affected
-- Test 4: SPY Last Week Performance
-- Test 19: NVDA Last Week Performance  
-- Test 35: WDC/AMD/SOUN Last Week Performance
-
-## Potential Solutions (To Be Investigated)
-
-### Option 1: Preprocessing Layer
-Add a preprocessing step that normalizes "last week" → "last 1 week" before sending to agent.
-
-**Pros:** Guaranteed to work  
-**Cons:** Adds complexity, modifies user input
-
-### Option 2: Fine-Tune Prompt Engineering
-Try different instruction formats:
-- Use ALL CAPS: "WEEK"
-- Use regex-like notation: `/(week|weeks)/`
-- Move rule higher in instructions (currently RULE #11)
-
-**Pros:** No code changes  
-**Cons:** Already tried 3 iterations with no success
-
-### Option 3: Post-Process Tool Calls
-Intercept tool calls and correct interval parameter before execution.
-
-**Pros:** Transparent to user, guaranteed fix  
-**Cons:** Adds middleware layer, may introduce latency
-
-### Option 4: Accept Limitation
-Document as known limitation and recommend plural form in user guidance.
-
-**Pros:** No additional work  
-**Cons:** Suboptimal user experience
-
-## Recommended Next Steps
-
-1. **Try Option 2:** Move RULE #11 to RULE #1 position (highest priority)
-2. **Try Option 2:** Use even more explicit format with visual separators
-3. **If still fails:** Implement Option 1 (preprocessing) or Option 3 (post-processing)
-4. **Last resort:** Accept as Option 4 (document limitation)
-
-## Current Workaround
-
-Users experiencing this issue can:
-- Use "past 2 weeks" instead of "last week" ✅ (works correctly)
-- Use "weekly data" instead of "last week" ✅ (works correctly)
-- Accept daily data response ⚠️ (provides correct data, wrong format)
-
-## Related Files
-
-- **Agent Instructions:** `src/backend/services/agent_service.py` (lines 400-432)
-- **Test Suite:** `test_cli_regression.sh` (Tests 4, 19, 35)
-- **Test Prompts:**
-  - Test 4: "Last week's Performance OHLC: $SPY"
-  - Test 19: "Last week's Performance OHLC: $NVDA"
-  - Test 35: "Last week's Performance OHLC: $WDC, $AMD, $SOUN"
-
-## Success Metrics for Resolution
-
-Issue will be considered RESOLVED when:
-- ✅ Test 4 uses `interval='weekly'` (currently uses daily)
-- ✅ Test 19 uses `interval='weekly'` (currently uses daily)
-- ✅ Test 35 uses `interval='weekly'` (currently uses daily)
-- ✅ All 39/39 tests pass Phase 2 grep verification with 0 "data unavailable" errors
-
-## Notes
-
-- Weekend detection fix (primary objective) is 100% working
-- Multi-ticker options fix (RULE #12) is 100% working
-- This is the ONLY remaining issue preventing 100% test pass rate
-- Model appears to have strong bias toward interpreting "last week" as "days in the last week" rather than "weekly bars"
+**Status**: ✅ RESOLVED with code fix (isinstance check)
+**Commit**: e6cdda2 ([INTERVAL-FIX] Weekly/Monthly Interval Bug Fix + Error Transparency Rule)
