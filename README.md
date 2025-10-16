@@ -313,6 +313,25 @@ config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
 ```
 
+## Deployment
+
+### AWS App Runner (Production)
+
+Deploy to AWS App Runner for production hosting:
+
+```bash
+# Quick deployment
+./deploy-to-apprunner.sh
+```
+
+See [DEPLOYMENT-QUICKSTART.md](DEPLOYMENT-QUICKSTART.md) for step-by-step guide or [DEPLOYMENT.md](DEPLOYMENT.md) for complete documentation.
+
+**Features:**
+- ✅ Single container deployment (backend + frontend)
+- ✅ Auto-scaling (1-10 instances)
+- ✅ HTTPS included
+- ✅ ~$50-70/month for 24/7 operation
+
 ## Troubleshooting
 
 ### Common Issues

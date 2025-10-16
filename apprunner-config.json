@@ -1,0 +1,16 @@
+{
+  "ImageRepository": {
+    "ImageIdentifier": "REPLACE_WITH_YOUR_ECR_IMAGE_URI",
+    "ImageRepositoryType": "ECR",
+    "ImageConfiguration": {
+      "Port": "8000",
+      "RuntimeEnvironmentVariables": {
+        "POLYGON_API_KEY": "REPLACE_WITH_YOUR_KEY",
+        "OPENAI_API_KEY": "REPLACE_WITH_YOUR_KEY",
+        "TRADIER_API_KEY": "REPLACE_WITH_YOUR_KEY",
+        "FINNHUB_API_KEY": "REPLACE_WITH_YOUR_KEY"
+      }
+    }
+  },
+  "AutoDeploymentsEnabled": false
+}

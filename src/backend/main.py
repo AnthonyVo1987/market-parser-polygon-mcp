@@ -7,9 +7,11 @@ removed as it's now handled by the GUI Copy/Export buttons.
 """
 
 import asyncio
+import os
 import sys
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from agents import SQLiteSession
 from dotenv import load_dotenv
@@ -17,6 +19,7 @@ from dotenv import load_dotenv
 # FastAPI imports
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # Import configuration from separate module
 try:
@@ -118,6 +121,11 @@ else:
 # Include all routers
 app.include_router(chat_router)
 app.include_router(health_router)
+
+# Serve React static files in production
+static_dir = Path(__file__).parent.parent.parent / "dist"
+if static_dir.exists():
+    app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
 
 
 if __name__ == "__main__":

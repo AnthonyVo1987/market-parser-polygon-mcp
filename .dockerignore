@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Development files
+.env
+.env.local
+.git/
+.github/
+.vscode/
+.idea/
+*.log
+
+# Test files
+test-reports/
+test-results/
+tests/
+*.test.ts
+*.test.tsx
+*.spec.ts
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Cache
+.cache/
+.mypy_cache/
+.pytest_cache/
+.eslintcache
+*.swp
+*.swo
+
+# Misc
+screenshots/
+images/
+logs/
+.serena/
+.claude/
+.cursor/

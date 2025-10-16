@@ -1,0 +1,21 @@
+version: 1.0
+runtime: python3
+build:
+  commands:
+    build:
+      - echo "Building with Dockerfile"
+run:
+  runtime-version: 3.10
+  command: ./start.sh
+  network:
+    port: 8000
+    env: APP_PORT
+  env:
+    - name: POLYGON_API_KEY
+      value: ""
+    - name: OPENAI_API_KEY
+      value: ""
+    - name: TRADIER_API_KEY
+      value: ""
+    - name: FINNHUB_API_KEY
+      value: ""

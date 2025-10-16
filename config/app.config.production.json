@@ -1,0 +1,67 @@
+{
+  "backend": {
+    "server": {
+      "host": "0.0.0.0",
+      "port": 8000
+    },
+    "ai": {
+      "default_active_model": "gpt-5-nano",
+      "maxContextLength": 400000,
+      "pricing": {
+        "gpt-5-nano": {
+          "inputPer1M": 0.05,
+          "outputPer1M": 0.40
+        }
+      }
+    },
+    "agent": {
+      "sessionName": "finance_conversation",
+      "cliSessionName": "cli_session",
+      "sessionTimeoutMinutes": 60,
+      "sessionCleanupIntervalMinutes": 30,
+      "maxSessionSize": 100,
+      "enableSessionPersistence": true,
+      "reportsDirectory": "/tmp/reports"
+    },
+    "mcp": {
+      "version": "v0.4.1",
+      "timeoutSeconds": 120
+    },
+    "security": {
+      "cors": {
+        "origins": [
+          "https://*.awsapprunner.com"
+        ]
+      }
+    },
+    "logging": {
+      "mode": "INFO"
+    },
+    "monitoring": {
+      "enablePerformanceMonitoring": true,
+      "enableErrorTracking": true,
+      "enableResourceMonitoring": true,
+      "logLevel": "INFO",
+      "metricsRetentionDays": 30
+    }
+  },
+  "frontend": {
+    "server": {
+      "host": "0.0.0.0",
+      "port": 8000
+    },
+    "api": {
+      "baseUrl": "/api"
+    },
+    "features": {
+      "appEnv": "production",
+      "pwa": true,
+      "debugMode": false
+    },
+    "development": {
+      "hmr": false,
+      "sourceMap": false,
+      "bundleAnalyzer": false
+    }
+  }
+}

@@ -1,0 +1,111 @@
+╔══════════════════════════════════════════════════════════════════╗
+║          AWS APP RUNNER DEPLOYMENT - FILES CREATED              ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📦 DOCKER & BUILD FILES
+  ✓ Dockerfile                    - Multi-stage build (React + Python)
+  ✓ .dockerignore                 - Optimized build exclusions
+  ✓ start.sh                      - Production startup script
+
+🔧 CONFIGURATION FILES
+  ✓ config/app.config.production.json  - Production settings
+  ✓ apprunner.yaml                     - App Runner config
+  ✓ apprunner-config.json              - CLI deployment template
+
+🚀 DEPLOYMENT SCRIPTS
+  ✓ deploy-to-apprunner.sh        - Automated ECR deployment
+  ✓ test-docker-local.sh          - Local Docker testing
+
+📚 DOCUMENTATION
+  ✓ DEPLOYMENT.md                 - Complete deployment guide
+  ✓ DEPLOYMENT-QUICKSTART.md      - Quick 3-step guide
+  ✓ DEPLOYMENT-SUMMARY.md         - Overview of changes
+  ✓ .github/DEPLOYMENT-CHECKLIST.md  - Step-by-step checklist
+
+🔄 MODIFIED FILES
+  ✓ src/backend/main.py           - Added static file serving
+  ✓ README.md                     - Added deployment section
+
+╔══════════════════════════════════════════════════════════════════╗
+║                    DEPLOYMENT ARCHITECTURE                       ║
+╚══════════════════════════════════════════════════════════════════╝
+
+    ┌─────────────────────────────────────────────┐
+    │      AWS App Runner Container (Port 8000)   │
+    │                                             │
+    │  ┌────────────────────────────────────┐    │
+    │  │     FastAPI Backend                │    │
+    │  │  • API endpoints (/api, /chat)     │    │
+    │  │  • Health check (/health)          │    │
+    │  │  • Static file server (/)          │    │
+    │  └────────────────────────────────────┘    │
+    │                    │                        │
+    │                    ▼                        │
+    │  ┌────────────────────────────────────┐    │
+    │  │     React Frontend (Static)        │    │
+    │  │  • Built files in /dist            │    │
+    │  │  • Served by FastAPI               │    │
+    │  └────────────────────────────────────┘    │
+    │                                             │
+    └─────────────────────────────────────────────┘
+                         │
+                         ▼
+              HTTPS (Auto-configured)
+                         │
+                         ▼
+                    👥 Users
+
+╔══════════════════════════════════════════════════════════════════╗
+║                      QUICK START GUIDE                           ║
+╚══════════════════════════════════════════════════════════════════╝
+
+1️⃣  TEST LOCALLY
+    ./test-docker-local.sh
+    → Visit http://localhost:8000
+
+2️⃣  DEPLOY TO AWS
+    ./deploy-to-apprunner.sh
+    → Builds & pushes to ECR
+
+3️⃣  CREATE SERVICE
+    → AWS Console → App Runner
+    → Use ECR image from step 2
+    → Add API keys as environment variables
+    → Deploy!
+
+📖 Full Guide: DEPLOYMENT-QUICKSTART.md
+📋 Checklist: .github/DEPLOYMENT-CHECKLIST.md
+
+╔══════════════════════════════════════════════════════════════════╗
+║                    ENVIRONMENT VARIABLES                         ║
+╚══════════════════════════════════════════════════════════════════╝
+
+Required in App Runner:
+  • POLYGON_API_KEY      - Polygon.io API key
+  • OPENAI_API_KEY       - OpenAI API key
+  • TRADIER_API_KEY      - Tradier API key
+  • FINNHUB_API_KEY      - Finnhub API key (optional)
+
+╔══════════════════════════════════════════════════════════════════╗
+║                         COST ESTIMATE                            ║
+╚══════════════════════════════════════════════════════════════════╝
+
+App Runner (1 vCPU, 2 GB, 24/7):
+  • Provisioned: ~$10/month
+  • Active:      ~$46/month
+  • Total:       ~$56/month
+  
+Plus: ECR storage (~$0.10/month), API usage costs
+
+╔══════════════════════════════════════════════════════════════════╗
+║                      NEXT STEPS                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+✅ All deployment files created
+✅ Backend modified to serve frontend
+✅ Production config ready
+✅ Scripts tested and executable
+
+👉 Ready to deploy! Start with:
+   ./test-docker-local.sh
+
