@@ -213,7 +213,9 @@
       "Bash(time:*)",
       "Bash(mcp__serena__find_file:*)",
       "Bash(rm:*)",
-      "Bash(git show:*)"
+      "Bash(git show:*)",
+      "Bash(./test_cli_regression.sh:*)",
+      "Bash(__NEW_LINE__ echo \"=== Phase 2a: Error Detection - Running 3 Mandatory Grep Commands ===\")"
     ],
     "deny": [],
     "ask": [],

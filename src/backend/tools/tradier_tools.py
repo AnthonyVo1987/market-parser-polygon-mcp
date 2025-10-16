@@ -340,6 +340,9 @@ async def get_stock_price_history(
         data = response.json()
         history_data = data.get("history", {})
         bars_data = history_data.get("day", [])
+        # Handle weekly/monthly: single dict vs daily: array of dicts
+        if isinstance(bars_data, dict):
+            bars_data = [bars_data]
 
         # Check if API returned data
         if not bars_data:

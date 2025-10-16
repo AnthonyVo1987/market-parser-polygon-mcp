@@ -1,309 +1,278 @@
-# Research Task Plan - Test Suite Validation Framework Overhaul
+# Research Task Plan: Weekly/Monthly Interval Fix + Error Transparency
 
-**Date:** October 12, 2025
-**Research Phase:** COMPLETED
-**Status:** Ready for Implementation Planning
-
----
-
-## Executive Summary
-
-Research completed on refactoring the test validation framework to address critical false positive issue where test script reports "PASS" for tests that receive ANY response, regardless of correctness. This creates confusion for AI agents who assume tests passed when responses may contain hallucinated data, incorrect tool calls, or wrong formatting.
-
-**Solution:** Implement two-phase testing approach where Phase 1 runs tests to generate responses, and Phase 2 requires manual verification of each response's correctness.
+**Date**: 2025-10-15
+**Status**: Research Complete - Ready for Planning Phase
 
 ---
 
-## Research Findings
+## 🎯 Research Objectives
 
-### 1. Current Test Script Analysis (test_cli_regression.sh)
-
-**Current State:**
-- **Total Tests:** 40 prompts (SPY 17, NVDA 17, Multi-ticker 6)
-- **Validation Logic:** Lines 224-250 - Script checks ONLY for "Response Time:" string existence
-- **False Positive Issue:** If response time found → automatically marks as "PASS" (line 246, 299)
-- **No Content Validation:** Script cannot verify response correctness, tool calls, or formatting
-
-**Critical "PASS" Terminology Locations:**
-
-| Line | Code | Issue |
-|------|------|-------|
-| 246 | `test_results+=("PASS")` | Auto-marks every response as PASS |
-| 299 | `test_results+=("PASS")` | Fallback PASS marking |
-| 315 | `if [ "$result" = "PASS" ]` | Checks for PASS status |
-| 317 | `echo -e "${GREEN}   Test $test_number... - PASS${NC}"` | Displays misleading PASS |
-| 400 | `loop_status="PASS"` | Sets loop status to PASS |
-| 427 | `echo "Loop Status: $loop_status"` | Reports loop PASS status |
-
-**Test Results Summary Section (Lines 310-321):**
-- Iterates through all 40 tests
-- Displays "PASS" for each test with response
-- Creates false impression of validation
-
-### 2. Documentation Analysis
-
-**Files with "PASS" References:**
-
-1. **CLAUDE.md** (line 382):
-   - "✅ 44/44 tests PASSED (100% success rate)"
-   - Needs update to clarify what "success" means
-
-2. **AGENTS.md** (line 64):
-   - "Test Verification → Verify 100% pass rate"
-   - Needs update to explain two-phase approach
-
-3. **new_research_details.md** (line 124):
-   - "100% pass rate achieved with Phase 2: Test Prompt Response Verification"
-   - Already references Phase 2 (good!)
-
-4. **.serena/memories/task_completion_checklist.md** (lines 62, 288):
-   - "Verify 100% pass rate"
-   - Needs clarification that this requires Phase 2 manual verification
-
-5. **.serena/memories/testing_procedures.md**:
-   - Documents current 40-test structure
-   - **MISSING:** Phase 2 manual verification requirement
-   - **MISSING:** Clear statement that script cannot validate correctness
-
-6. **.serena/memories/project_onboarding_summary.md** (lines 150, 216, 431):
-   - "100% pass rate expected"
-   - "must show 100% pass rate"
-   - Needs update to explain Phase 2 requirement
-
-### 3. Requested Changes Analysis
-
-**Task 1: Update Test Prompts (40 prompts)**
-
-Current prompts emphasize historical price queries and technical analysis. New prompts emphasize OHLC (Open, High, Low, Close) data explicitly:
-
-| Current Format | New Format |
-|----------------|------------|
-| "Current Price: $SPY" | "Current Price OHLC: $SPY" |
-| "Yesterday's Closing Price: $SPY" | "Yesterday's Price OHLC: $SPY" |
-| "Last week's Performance: $SPY" | "Last week's Performance OHLC: $SPY" |
-| "Daily Stock Price bars Analysis..." | "Stock Price Performance the last 5 Trading Days OHLC: $SPY" |
-
-**Key Differences:**
-- More explicit "OHLC" terminology
-- Simplified language (removed "bars Analysis")
-- Changed "Get technical analysis indicators for SPY" → "Get technical analysis indicator DATA only with NO ANALYSIS: $SPY"
-- Changed "Perform technical analysis for SPY based on the indicators" → "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: $SPY"
-- Removed some duplicate "Market Status" prompts in NVDA and Multi sequences
-- Multi-ticker changed from $GME to $SOUN
-
-**Task 2: Remove "PASS" Terminology & Add Phase 2 Verification**
-
-**Replace With Neutral Language:**
-- "PASS" → "Response Received" or "Completed"
-- "100% pass rate" → "All responses generated successfully"
-- "Tests passed" → "Responses received for all tests"
-
-**Add Phase 2 Verification Instructions:**
-1. After test script completes, display clear message:
-   ```
-   ⚠️  PHASE 1 COMPLETE: All responses generated
-   🔴 PHASE 2 REQUIRED: Manual verification of each response
-   ```
-
-2. Add mandatory verification checklist at end of script output
-
-3. Add sanity check question: "Did you verify the results of each test prompt to ensure the response was correct and expected with the proper tool calls?"
-
-**Task 3: Validate Changes**
-- Run updated test script
-- Perform Phase 2 manual verification of all 40 responses
-- Fix issues if found
-- Re-test until all responses correct
-
-### 4. Phase 2 Manual Verification Criteria
-
-**For each of the 40 test responses, verify:**
-
-1. **Response Addresses Prompt:**
-   - Response directly answers the question asked
-   - Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
-   - Appropriate time period covered
-
-2. **Tool Calls Made:**
-   - Polygon MCP tools called appropriately
-   - Finnhub tool used for quotes when appropriate
-   - Tradier tool used for options expiration dates
-
-3. **Data Formatting:**
-   - OHLC data presented in expected format
-   - Tables properly formatted
-   - Options chains show Bid/Ask columns (not midpoint)
-   - Technical indicators show proper metrics
-
-4. **No Hallucinations:**
-   - All data appears legitimate (no made-up numbers)
-   - Dates are reasonable and within valid ranges
-   - No fabricated tool calls or fake data sources
-
-5. **Response Completeness:**
-   - All requested information provided
-   - No truncated responses
-   - No error messages unless expected
+1. Investigate and fix the lingering interval selection issues for weekly/monthly intervals
+2. Update AI agent instructions to enforce verbatim error message reporting
+3. Validate fixes with manual CLI prompts and full test suite
 
 ---
 
-## Files Requiring Modification
+## 🔍 Phase 1: Root Cause Analysis
 
-### 1. Test Script
-- **File:** `test_cli_regression.sh`
-- **Lines:** 70-114 (prompts array), 116-160 (test_names array), 246, 299, 315, 317, 400, 427
-- **Changes:**
-  - Replace prompts array with new 40 prompts
-  - Update test_names array to match new prompts
-  - Remove all "PASS" terminology
-  - Add Phase 2 verification instructions
-  - Add completion message directing AI agent to manual verification
+### **Problem Statement**
 
-### 2. Documentation Files
-- **CLAUDE.md**
-  - Update testing checkpoint section (lines 86-128)
-  - Update Last Completed Task Summary (lines 372-403)
-  - Clarify "pass rate" means "responses received + manually verified"
+Weekly and monthly `get_stock_price_history()` calls failing with error:
+```
+"Failed to retrieve historical data for SPY: 'str' object has no attribute 'get'"
+```
 
-- **AGENTS.md**
-  - Update testing procedures section (line 64)
-  - Add Phase 2 verification requirement
+This error occurred despite the agent correctly selecting `interval="weekly"` and `interval="monthly"`.
 
-### 3. Serena Memory Files
-- **.serena/memories/testing_procedures.md**
-  - Add comprehensive Phase 2 manual verification section
-  - Update test script description to clarify limitations
-  - Add verification criteria checklist
-  - Update "100% pass rate" language throughout
+### **Initial Hypothesis (INCORRECT)**
 
-- **.serena/memories/task_completion_checklist.md**
-  - Update testing section (lines 62, 288)
-  - Add Phase 2 verification requirement
-  - Add mandatory verification checkpoint question
+Initially believed this was a model issue - GPT-5-nano not following RULE #11 for interval selection.
 
-- **.serena/memories/project_onboarding_summary.md**
-  - Update testing guidance (lines 150, 216, 431)
-  - Add Phase 2 explanation
+### **Actual Root Cause (CONFIRMED)**
 
-### 4. Template Files
-- **docs/task_templates/new_research_details_template.md**
-  - Update testing section (line 90)
-  - Add Phase 2 verification language
+**This is NOT a model issue - it's a CODE BUG in `tradier_tools.py`**
 
----
+### **Evidence from Tradier API Responses**
 
-## Implementation Complexity Assessment
+User provided actual Tradier API responses showing the structural difference:
 
-### Complexity Levels:
+**Weekly Interval Response:**
+```json
+{
+  "history": {
+    "day": {
+      "date": "2025-10-13",
+      "open": 660.65,
+      "high": 670.23,
+      "low": 653.17,
+      "close": 665.17,
+      "volume": 250042630
+    }
+  }
+}
+```
 
-1. **Test Script Prompt Update (EASY):**
-   - Direct array replacement
-   - Estimated: 15-20 minutes
+**Monthly Interval Response:**
+```json
+{
+  "history": {
+    "day": {
+      "date": "2025-10-01",
+      "open": 663.17,
+      "high": 673.95,
+      "low": 652.84,
+      "close": 665.17,
+      "volume": 863248440
+    }
+  }
+}
+```
 
-2. **Test Script "PASS" Removal (MEDIUM):**
-   - Multiple locations to update
-   - Logic changes needed
-   - New output format design
-   - Estimated: 30-40 minutes
+**Daily Interval Response (for comparison):**
+```json
+{
+  "history": {
+    "day": [
+      {"date": "2025-10-13", "open": 660.65, ...},
+      {"date": "2025-10-14", "open": 662.45, ...}
+    ]
+  }
+}
+```
 
-3. **Documentation Updates (MEDIUM):**
-   - 7 files to update
-   - Multiple references per file
-   - Consistency critical
-   - Estimated: 45-60 minutes
+### **Key Discovery**
 
-4. **Testing & Validation (HIGH - MANDATORY):**
-   - Run 40-test suite (~7-8 minutes)
-   - Manual verification of 40 responses (~60-90 minutes)
-   - Potential fixes and re-runs
-   - Estimated: 90-120 minutes
-
-**Total Estimated Time:** 3-4 hours
-
----
-
-## Risk Assessment
-
-### Low Risk:
-- ✅ Updating prompts array (straightforward replacement)
-- ✅ Adding Phase 2 instructions to script output
-- ✅ Updating documentation language
-
-### Medium Risk:
-- ⚠️ Script logic changes (test carefully)
-- ⚠️ Ensuring all "PASS" references caught
-- ⚠️ Maintaining backward compatibility of test reports
-
-### High Risk:
-- 🔴 Manual verification taking longer than estimated
-- 🔴 Discovering systemic response issues during Phase 2
-- 🔴 Breaking existing test report parsing (if any)
+Tradier API returns **DIFFERENT data structures** based on interval:
+- **Daily**: `"day"` is an **ARRAY of dicts** `[{...}, {...}]`
+- **Weekly/Monthly**: `"day"` is a **SINGLE dict** `{...}`
 
 ---
 
-## Success Criteria
+## 🐛 Bug Analysis
 
-### Phase 1 (Script Updates):
-- ✅ All 40 prompts updated to new format
-- ✅ All "PASS" terminology removed from script output
-- ✅ Phase 2 verification instructions added to script
-- ✅ Script completes successfully generating all responses
+### **Current Code (tradier_tools.py lines 358-380)**
 
-### Phase 2 (Manual Verification):
-- ✅ All 40 responses reviewed individually
-- ✅ Each response verified against 5-point criteria
-- ✅ Issues documented and fixed
-- ✅ Re-testing performed until all responses correct
+```python
+# Line 358: Parse response
+data = response.json()
+history_data = data.get("history", {})
+bars_data = history_data.get("day", [])  # ← Bug starts here
 
-### Phase 3 (Documentation):
-- ✅ All 7 documentation files updated
-- ✅ Consistent "Phase 2 verification" language throughout
-- ✅ No references to "automatic pass" remaining
-- ✅ Clear instructions for future AI agents
+# Line 362: Check if API returned data
+if not bars_data:
+    return json.dumps({"error": "No data", ...})
 
-### Phase 4 (Validation):
-- ✅ Test script executed successfully
-- ✅ Test report generated
-- ✅ All documentation updates committed
-- ✅ Atomic commit with complete changes
+# Line 377-380: Format response with bars
+formatted_bars = []
+for bar in bars_data:  # ← Bug manifests here
+    formatted_bars.append(_format_tradier_history_bar(bar))
+```
 
----
+### **Bug Execution Flow (Weekly/Monthly)**
 
-## Next Steps
+1. **Line 360**: `bars_data = history_data.get("day", [])` returns a **dict** (not a list)
+2. **Line 362**: `if not bars_data:` → dict is truthy, so continues
+3. **Line 379**: `for bar in bars_data:` → iterates over **dict KEYS** (strings: "date", "open", "high", etc.)
+4. **Line 380**: `_format_tradier_history_bar(bar)` → passes string "date" instead of dict
+5. **_format_tradier_history_bar() line 407**: `bar.get("date", "")` → tries to call `.get()` on string
+6. **Result**: `'str' object has no attribute 'get'` ❌
 
-1. **Generate TODO_task_plan.md** - Detailed implementation checklist
-2. **Begin Implementation** - Follow TODO plan systematically
-3. **Execute Testing** - Run test script to generate responses
-4. **Perform Phase 2 Verification** - Manual review of all 40 responses
-5. **Fix Issues** - Address any problems found
-6. **Update Documentation** - Reflect changes in all docs
-7. **Atomic Commit** - Commit all changes with test evidence
+### **Why This Bug Was Hidden**
+
+- Previous testing primarily used `interval="daily"` which returns array correctly
+- Weekly/monthly intervals added later but not thoroughly tested
+- Error message was generic, masking the actual cause
 
 ---
 
-## Research Completion Notes
+## ✅ Solution Design
 
-**Research Phase Duration:** ~45 minutes
-**Key Findings:**
-- Script has NO ability to validate response correctness
-- "PASS" terminology creates false confidence
-- Two-phase approach is necessary solution
-- 7 files need documentation updates
+### **Fix #1: tradier_tools.py (lines 360-362)**
 
-**Tools Used:**
-- Sequential-Thinking: Systematic research planning
-- Serena find_file: Located test script
-- Read: Analyzed test script structure
-- Serena read_memory: Reviewed testing_procedures and task_completion_checklist
-- Serena search_for_pattern: Found all "PASS" references in documentation
+**Current Code:**
+```python
+bars_data = history_data.get("day", [])
+```
 
-**Research Quality:** ✅ COMPREHENSIVE
-- All test script logic analyzed
-- All documentation references identified
-- Implementation plan scoped
-- Risk assessment completed
-- Success criteria defined
+**Fixed Code:**
+```python
+bars_data = history_data.get("day", [])
+# Handle weekly/monthly: single dict vs daily: array of dicts
+if isinstance(bars_data, dict):
+    bars_data = [bars_data]
+```
+
+**Explanation:**
+- Check if `bars_data` is a dict (weekly/monthly case)
+- Wrap single dict in a list to normalize data structure
+- Rest of code continues to work unchanged (expects list of dicts)
+
+### **Fix #2: agent_service.py (after line 461)**
+
+Add **RULE #13: ERROR TRANSPARENCY** immediately after RULE #12:
+
+```python
+RULE #13: ERROR TRANSPARENCY - VERBATIM ERROR REPORTING
+- 🔴 **CRITICAL**: When tool calls fail, you MUST report the EXACT verbatim error message received
+- 🔴 **NEVER** use vague phrases like "API Issue", "data unavailable", or "failed to retrieve" without specifics
+- 🔴 **ALWAYS** include the complete error message in your response for debugging purposes
+- ✅ **CORRECT**: "API Error: Failed to retrieve historical data for SPY: 'str' object has no attribute 'get'"
+- ❌ **WRONG**: "There was an API issue" or "Data unavailable"
+- ✅ **FORMAT**: When reporting errors, use exact error JSON or message returned by the tool
+- ✅ **TRANSPARENCY**: Users need exact error messages to diagnose and fix problems quickly
+```
+
+**Placement:** Insert after line 461 (after RULE #12 ends), before emoji formatting section.
 
 ---
 
-**End of Research Task Plan**
+## 🧪 Validation Strategy
+
+### **Phase 1: Manual CLI Testing (6 Prompts)**
+
+Test weekly/monthly intervals with single and multi-ticker scenarios:
+
+1. `"Last week's Performance OHLC: $SPY"`
+2. `"Stock Price Performance the past month: $SPY"`
+3. `"Last week's Performance OHLC: $NVDA"`
+4. `"Stock Price Performance the past month: $NVDA"`
+5. `"Last week's Performance OHLC: $WDC, $AMD, $SOUN"`
+6. `"Stock Price Performance the past month: $WDC, $AMD, $SOUN"`
+
+**Expected Results:**
+- ✅ All 6 prompts should return OHLC data successfully
+- ✅ Agent should use `interval="weekly"` for "week" queries
+- ✅ Agent should use `interval="monthly"` for "month" queries
+- ✅ Multi-ticker queries should make parallel calls (RULE #12)
+- ✅ No "'str' object has no attribute 'get'" errors
+
+### **Phase 2: Full Regression Testing (39 Tests)**
+
+Execute full test suite:
+```bash
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+```
+
+**Phase 2a: ERROR DETECTION (Grep Commands)**
+```bash
+# Command 1: Find all errors/failures
+grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
+
+# Command 2: Count 'data unavailable' errors
+grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
+
+# Command 3: Count completed tests
+grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
+```
+
+**Expected Results:**
+- ✅ **39/39 COMPLETED** (100% generation rate)
+- ✅ **0 "'str' object" errors** (bug fixed)
+- ✅ **0 weekend-related errors** (already fixed in previous task)
+- ✅ **Tests 4, 19, 35** should now use weekly interval correctly
+- ✅ **Average response time < 10s** (EXCELLENT rating)
+
+---
+
+## 📊 Impact Analysis
+
+### **Tests Affected**
+
+Based on previous test results, the following tests were failing due to this bug:
+
+| Test # | Query Pattern | Interval | Status Before Fix |
+|--------|---------------|----------|-------------------|
+| 4 | "Last week's" | weekly | ❌ "'str' object" error |
+| 19 | "Last Week" | weekly | ❌ "'str' object" error |
+| 35 | "Last week's" | weekly | ❌ "'str' object" error |
+| All monthly tests | "past month" | monthly | ❌ "'str' object" error |
+
+### **Expected Improvement**
+
+- **Before Fix**: 11 errors (weekend + str errors)
+- **After Weekend Fix**: 2 errors (str errors remain)
+- **After This Fix**: 0 errors (all issues resolved)
+- **Success Rate**: 36/39 → **39/39 PASS** (100%)
+
+---
+
+## 🔑 Key Insights
+
+1. **API Structure Differences**: Always verify API response structure for ALL supported parameters
+2. **Type Safety**: Add isinstance() checks when API can return multiple types
+3. **Error Transparency**: Vague error messages delay debugging - always report exact errors
+4. **Test Coverage**: Test all parameter combinations, not just common cases
+5. **Code vs Model**: Don't assume model is wrong - verify code handles all cases correctly
+
+---
+
+## 📝 Research Findings Summary
+
+✅ **Root cause identified**: Tradier API returns dict for weekly/monthly, array for daily
+✅ **Bug location pinpointed**: tradier_tools.py line 360 (missing type check)
+✅ **Solution designed**: 2-line fix with isinstance() check
+✅ **Secondary issue addressed**: Error reporting transparency (RULE #13)
+✅ **Validation plan created**: 6 manual tests + 39-test suite with grep verification
+✅ **Impact quantified**: Fixes 3+ failing tests, achieves 100% pass rate
+
+---
+
+## 🚀 Next Steps
+
+1. **Phase 2: Planning** - Create TODO_task_plan.md with granular implementation steps
+2. **Phase 3: Implementation** - Apply fixes to tradier_tools.py and agent_service.py
+3. **Phase 4: Testing** - Execute validation strategy (manual + regression)
+4. **Phase 5: Documentation** - Update CLAUDE.md, memories, and create atomic commit
+
+---
+
+## 📚 Research Tools Used
+
+- ✅ Sequential-Thinking (10 thoughts) - Systematic root cause analysis
+- ✅ Serena find_file - Located tradier_tools.py
+- ✅ Serena get_symbols_overview - Explored tradier_tools.py structure
+- ✅ Serena find_symbol - Read get_stock_price_history() implementation
+- ✅ Serena search_for_pattern - Located RULE #12 in agent_service.py
+- ✅ User-provided API responses - Confirmed exact Tradier API structure
+
+**Research Phase Complete** ✅

@@ -4,66 +4,90 @@
 
 <Phase 1: Research> ULTRA-THINK to Research the requested task(s): 
 
-## Task 1. Change 'test_cli_regression.sh' with new test prompt sequence:
+## Task 1. Investigate and Fix the lingering Interval Selections Issues for Weekly\Monthly
+- I got the response output logs from the lingering Interval Selections Issues for Weekly\Monthly get_stock_price_history calls
+- Looks like the issue is related to YOUR code and actually not the model at all.  So investigate and fix after reviewing the 2x calls below:
 
-'''
-declare -a prompts=(
-    "Market Status"
-    "Current Price OHLC: \$SPY"
-    "Yesterday's Price OHLC: \$SPY"
-    "Last week's Performance OHLC: \$SPY"
-    "Stock Price on the previous week's Friday OHLC: \$SPY"
-    "Stock Price Performance the last 5 Trading Days OHLC: \$SPY"
-    "Stock Price Performance the past 2 Weeks OHLC: \$SPY"
-    "Stock Price Performance the past month: \$SPY"
-    "Stock Price Performance the past 3 months: \$SPY"
-    "Get technical analysis indicator DATA only with NO ANALYSIS: \$SPY"
-    "Support & Resistance Levels: \$SPY"
-    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY
-    "Get options expiration dates: \$SPY"
-    "Get Call Options Chain Expiring this Friday: \$SPY"
-    "Get Put Options Chain Expiring this Friday: \$SPY"
-    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
+```
 
-    "Current Price OHLC: \$NVDA"
-    "Yesterday's Price OHLC: \$NVDA"
-    "Last week's Performance OHLC: \$NVDA"
-    "Stock Price on the previous week's Friday OHLC: \$NVDA"
-    "Stock Price Performance the last 5 Trading Days OHLC: \$NVDA"
-    "Stock Price Performance the past 2 Weeks OHLC: \$NVDA"
-    "Stock Price Performance the past month: \$NVDA"
-    "Stock Price Performance the past 3 months: \$NVDA"
-    "Get technical analysis indicator DATA only with NO ANALYSIS: \$NVDA"
-    "Support & Resistance Levels: \$NVDA"
-    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA
-    "Get options expiration dates for \$NVDA"
-    "Get Call Options Chain Expiring this Friday: \$NVDA"
-    "Get Put Options Chain Expiring this Friday: \$NVDA"
-    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
+get_stock_price_history({
+  "ticker": "SPY",
+  "start_date": "2025-10-08",
+  "end_date": "2025-10-15",
+  "interval": "weekly"
+})
 
-    "Current Price OHLC: \$WDC, \$AMD, \$SOUN"
-    "Yesterday's Price OHLC: \$WDC, \$AMD, \$SOUN"
-    "Yesterday's Closing Price: \$WDC, \$AMD, \$SOUN"
-    "Last week's Performance OHLC: \$WDC, \$AMD, \$SOUN"
-    "Get technical analysis indicator DATA only with NO ANALYSIS: \$WDC, \$AMD, \$SOUN"
-    "Support & Resistance Levels: \$WDC, \$AMD, \$SOUN"
-    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$WDC, \$AMD, \$SOUN"
-    "Get options expiration dates: \$WDC, \$AMD, \$SOUN"
-)
-'''
+{
+  "error": "Unexpected error",
+  "message": "Failed to retrieve historical data for SPY: 'str' object has no attribute 'get'",
+  "ticker": "SPY"
+}
 
-## Task 2. Update 'test_cli_regression.sh' AND project docs and Serena Memories with new test result criteria and procedure:
-- Rework our test script and docs how it produces the results. The problem is the current test script is saying a test passes, but that’s not true. The script can onyl check if there was ANY response in general, before marking as PASS. This actually doesn’t even check if the response was even correct so there is actually no verification of the actual test responses, only a verification if a test prompt even was successful
-- This causes a lot of confusion for AI agents like you when you run the test and then the test script says PASS, so you automatically assume all the tests PASSED but that’s NOT true because that means you would completely ignore the contents of the response. The script can ONLY conclude if there was ANY response, and doesn't have the ability to actually verify the results
-- So let’s remove all ambiguity. Now the test script will no longer say if a test actually PASS, so remove ALL mention of saying if a test PASS because the script cannot validate if a test passes on its own because the script doesn’t have the capability of verifying the actual response
-- So what we need to do is have the script make it clear that after the test results have finished, now YOU \ AI Agent has to  MANUALLY review the actual results of each test prompt response to make sure that the response matches the prompt and matches the tool calls that are expected etc
-- Basically when you’re running tests and scripts, it’s a two phase approach now: Phase 1 is running just the script 'test_cli_regression.sh' until completion to get the test results. Phase 2 now you actually have to READ & REVIEW and verify the results of EACH test prompt and that’s how we’ll know if any test PASS or FAIL
-- so we have to do a mandate and make sure we also add special rules too to as a sanity, check in case you forget to review the results so after testing is complete. The mandated question is "Did you verify the results of each test prompt to ensure the response was correct and expected with the proper tool calls?"
-- Just because a test can respond quickly does NOT mean the test PASSES because it can just respond with garbage bogus data or hallucinate or make up their own data or maybe don’t don’t do any tool calls at all. That’s why you have to actually verify the individual test results so we need to reiterate across the board in the test scripts and the memories and any project docs that the results must be reviewed
-- Long story short: running 'test_cli_regression.sh' until completion is only Phase 1.  Phase 2 MUST be performed to review the actual results
 
-## Task 3. Validate new script changes by re-running 'test_cli_regression.sh', review the results and response to ensure compliance, fix any issues if found and re-run to validate
+> use the weekly interval to fetch price history for "Last week's Performance OHLC: \$SPY".  if there was an API  issue, explicity state the EXACT ERROR MESSAGE YOU RECEIVED. I want to know WHAT the api error is.. api error means nothign without the actual mesage
 
+Query processed successfully!
+Agent Response:
+
+
+ • SPY Last week's Performance OHLC (weekly interval)                                                                                                                          
+
+API call attempted:                                                                                                                                                            
+
+ • get_stock_price_history(ticker='SPY', start_date='2025-10-06', end_date='2025-10-12', interval='weekly')                                                                    
+
+Exact API error received:                                                                                                                                                      
+
+ • {"error": "Unexpected error", "message": "Failed to retrieve historical data for SPY: 'str' object has no attribute 'get'", "ticker": "SPY"}                                
+
+Tools Used:                                                                                                                                                                    
+
+ • get_stock_price_history(ticker='SPY', start_date='2025-10-06', end_date='2025-10-12', interval='weekly') - Attempted weekly historical data; API returned an error.         
+
+Performance Metrics:
+   Response Time: 8.559s
+   Tokens Used: 26,695 (Input: 26,178, Output: 517) | Cached Input: 25,600
+   Model: gpt-5-nano
+
+──────────────────────────────────────────────────
+
+> now tell me the exact api error message for this prompt using the monthly interval: "Stock Price Performance the past month: \$SPY"
+
+Query processed successfully!
+Agent Response:
+
+
+ • SPY Stock Price Performance the past month: SPY (monthly interval)                                                                                                          
+
+Exact API error message received for this prompt:                                                                                                                              
+
+ • {"error": "Unexpected error", "message": "Failed to retrieve historical data for SPY: 'str' object has no attribute 'get'", "ticker": "SPY"}                                
+
+Note: Monthly historical data retrieval failed with the above error. I can retry with alternative data (e.g., current price from get_stock_quote or fetch daily data for the   
+month as a fallback) if you’d like.                                                                                                                                            
+
+Tools Used:                                                                                                                                                                    
+
+ • get_stock_price_history(ticker='SPY', start_date='2025-09-15', end_date='2025-10-15', interval='monthly') - Attempted monthly historical data; API returned the exact error 
+   above                                                                                                                                                                       
+
+Performance Metrics:
+   Response Time: 13.708s
+   Tokens Used: 27,625 (Input: 26,902, Output: 723) | Cached Input: 26,368
+   Model: gpt-5-nano
+```
+
+## Task 2. Update AI Agent Instructions to ENFORCE RESPONDING WITH VERBATIM ERROR MESSAGES IF THERE ARE ANY FAILURES, such as in API.
+- Previously we were chasing our tails trying to get to the bottom of the lingering interval issue, and all the AI Agent said was there was an "API Issue", which is a terrible response because API Issue is vague and doesnt meant anything.  Had the AI Agent explicity tell us the EXACT error message recevied, we could have fixed it alot sooner
+- So AI Agent needs FULL transparency with what errors they get and NOT to hide it from the user
+
+## Task 3. Validate fix by issuing manual CLI prompts first:
+- "Last week's Performance OHLC: \$SPY"
+- "Stock Price Performance the past month: \$SPY"
+- "Last week's Performance OHLC: \$NVDA"
+- "Stock Price Performance the past month: \$NVDA"
+- "Last week's Performance OHLC: \$WDC, \$AMD, \$SOUN"
+- "Stock Price Performance the past month: \$WDC, \$AMD, \$SOUN"
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
