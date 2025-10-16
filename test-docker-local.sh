@@ -3,8 +3,16 @@
 
 set -e
 
+# Check if docker command needs sudo
+if ! docker ps >/dev/null 2>&1; then
+    echo "⚠️  Docker requires sudo. Using sudo for docker commands..."
+    DOCKER_CMD="sudo docker"
+else
+    DOCKER_CMD="docker"
+fi
+
 echo "🔨 Building Docker image..."
-docker build -t market-parser-test .
+$DOCKER_CMD build -t market-parser-test .
 
 echo ""
 echo "✅ Build successful!"
@@ -19,7 +27,7 @@ if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | xargs)
 fi
 
-docker run -p 8000:8000 \
+$DOCKER_CMD run -p 8000:8000 \
     -e POLYGON_API_KEY="${POLYGON_API_KEY}" \
     -e OPENAI_API_KEY="${OPENAI_API_KEY}" \
     -e TRADIER_API_KEY="${TRADIER_API_KEY}" \

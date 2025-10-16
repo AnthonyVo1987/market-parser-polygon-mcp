@@ -17,7 +17,7 @@ COPY src/frontend/ ./src/frontend/
 COPY public/ ./public/
 
 # Install dependencies and build
-RUN npm ci --only=production
+RUN npm ci --legacy-peer-deps
 RUN npm run build
 
 # Stage 2: Python backend with frontend static files

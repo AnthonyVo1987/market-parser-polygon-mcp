@@ -15,6 +15,14 @@ echo -e "${GREEN}🚀 Market Parser - AWS App Runner Deployment${NC}\n"
 command -v aws >/dev/null 2>&1 || { echo -e "${RED}❌ AWS CLI not installed${NC}"; exit 1; }
 command -v docker >/dev/null 2>&1 || { echo -e "${RED}❌ Docker not installed${NC}"; exit 1; }
 
+# Check if docker command needs sudo
+if ! docker ps >/dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️  Docker requires sudo. Using sudo for docker commands...${NC}"
+    DOCKER_CMD="sudo docker"
+else
+    DOCKER_CMD="docker"
+fi
+
 # Get AWS account ID and region
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 AWS_REGION=${AWS_REGION:-us-east-1}
@@ -40,7 +48,7 @@ fi
 
 # Step 2: Build Docker image
 echo -e "\n${YELLOW}🔨 Step 2: Building Docker image...${NC}"
-docker build -t $REPO_NAME:$IMAGE_TAG .
+$DOCKER_CMD build -t $REPO_NAME:$IMAGE_TAG .
 echo -e "${GREEN}✅ Image built${NC}"
 
 # Step 3: Login to ECR
@@ -53,8 +61,8 @@ echo -e "${GREEN}✅ Logged in${NC}"
 # Step 4: Tag and push image
 echo -e "\n${YELLOW}📤 Step 4: Pushing image to ECR...${NC}"
 ECR_IMAGE="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:$IMAGE_TAG"
-docker tag $REPO_NAME:$IMAGE_TAG $ECR_IMAGE
-docker push $ECR_IMAGE
+$DOCKER_CMD tag $REPO_NAME:$IMAGE_TAG $ECR_IMAGE
+$DOCKER_CMD push $ECR_IMAGE
 echo -e "${GREEN}✅ Image pushed${NC}"
 
 # Step 5: Instructions for App Runner
