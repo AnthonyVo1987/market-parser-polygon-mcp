@@ -15,7 +15,7 @@ Successfully completed full retirement of React 18.2 frontend and consolidated t
 ```
 Frontend Layer:
 ├── React 18.2+ (Port 3000) - Vite build tool
-└── Gradio 5.49.1+ (Port 7860) - Python ChatInterface
+└── Gradio 5.49.1+ (Port 8000) - Python ChatInterface
 
 Backend Layer:
 ├── FastAPI (Port 8000)
@@ -29,12 +29,12 @@ Core Business Logic:
 ### After Migration
 ```
 Frontend Layer:
-└── Gradio 5.49.1+ (Port 7860) - Python ChatInterface (SOLE INTERFACE)
+└── Gradio 5.49.1+ (Port 8000) - Python ChatInterface (SOLE INTERFACE)
 
 Backend Layer:
 ├── FastAPI (Port 8000)
 ├── No static file serving (StaticFiles middleware removed)
-└── CORS configured for port 7860 ONLY
+└── CORS configured for port 8000 ONLY
 
 Core Business Logic:
 └── CLI (Python) - Owner of agent initialization
@@ -75,7 +75,7 @@ Core Business Logic:
 
 **Backend Code** (3 files):
 1. `src/backend/main.py` - Removed StaticFiles middleware
-2. `src/backend/config.py` - Fixed KeyError bug, updated CORS to port 7860
+2. `src/backend/config.py` - Fixed KeyError bug, updated CORS to port 8000
 3. `src/backend/gradio_app.py` - Verified wrapper pattern
 
 **Configuration** (2 files):
@@ -146,7 +146,7 @@ backend_config = config["backend"]  # ✅ Only backend
 ```python
 # Before: "http://localhost:3000,http://127.0.0.1:3000"
 # After:
-cors_origins: str = "http://localhost:7860,http://127.0.0.1:7860"
+cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000"
 ```
 
 **Verification:** Re-ran test suite → 39/39 PASSED ✅
@@ -219,7 +219,7 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_21-36.log
 
 ### Phase 3: Backend Code Modifications ✅
 - StaticFiles middleware removed from main.py
-- CORS configuration updated (port 3000 → 7860)
+- CORS configuration updated (port 3000 → 8000)
 - Config loading fixed (frontend section removed)
 - Import statements verified
 
@@ -227,7 +227,7 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_21-36.log
 - React server removal from start-app.sh
 - React server removal from start-app-xterm.sh
 - Health checks updated (backend + gradio only)
-- Port references changed (3000 → 7860)
+- Port references changed (3000 → 8000)
 
 ### Phase 5: Documentation Updates ✅
 - CLAUDE.md rewritten (architecture updated)
@@ -368,8 +368,8 @@ async def chat_with_agent(message: str, history: List):
     "security": {
       "cors": {
         "origins": [
-          "http://127.0.0.1:7860",  // ✅ Gradio port only
-          "http://localhost:7860"
+          "http://127.0.0.1:8000",  // ✅ Gradio port only
+          "http://localhost:8000"
         ]
       }
     },
@@ -385,12 +385,12 @@ async def chat_with_agent(message: str, history: List):
 **Before:**
 ```python
 cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
-# Also accepted port 7860 for Gradio
+# Also accepted port 8000 for Gradio
 ```
 
 **After:**
 ```python
-cors_origins: str = "http://localhost:7860,http://127.0.0.1:7860"
+cors_origins: str = "http://localhost:8000,http://127.0.0.1:8000"
 # Only Gradio port (React removed)
 ```
 
@@ -400,7 +400,7 @@ cors_origins: str = "http://localhost:7860,http://127.0.0.1:7860"
 
 ### Summary
 
-Completed full removal of FastAPI backend infrastructure and complex multi-server startup scripts. Gradio now runs as standalone server (port 7860) without requiring FastAPI middleware.
+Completed full removal of FastAPI backend infrastructure and complex multi-server startup scripts. Gradio now runs as standalone server (port 8000) without requiring FastAPI middleware.
 
 ### Rationale
 
@@ -475,8 +475,8 @@ uv run python src/backend/gradio_app.py
 - **Total: 58 files removed**
 
 **Total Architecture Simplification:**
-- From: React (3000) + FastAPI (8000) + Gradio (7860) = 3 servers
-- To: Gradio (7860) only = 1 server
+- From: React (3000) + FastAPI (8000) + Gradio (8000) = 3 servers
+- To: Gradio (8000) only = 1 server
 - **Improvement: 66% fewer servers**
 
 ---

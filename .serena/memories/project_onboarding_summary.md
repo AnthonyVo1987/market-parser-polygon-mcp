@@ -21,7 +21,7 @@ Market Parser is a Python CLI and Gradio web interface for natural language fina
 **What Changed**: Completely removed React frontend (src/frontend/ directory)
 
 **Impact**:
-- Gradio (port 7860) is now the ONLY web interface
+- Gradio (port 8000) is now the ONLY web interface
 - Removed all TypeScript/JavaScript code
 - Removed React dependencies from package.json
 - Simplified architecture: Python-only frontend
@@ -84,7 +84,7 @@ Gradio = Wrapper (imports and calls CLI functions)
   - OpenAI Agents SDK (openai-agents==0.2.9)
 
 ### Frontend
-- **Gradio**: ChatInterface (port 7860) ⭐ ONLY WEB INTERFACE
+- **Gradio**: ChatInterface (port 8000) ⭐ ONLY WEB INTERFACE
 - **No React**: React frontend completely retired (Oct 17, 2025)
 - **No TypeScript**: All TypeScript code removed
 - **No Node.js frontend**: package.json used for backend tooling only
@@ -133,7 +133,7 @@ market-parser-polygon-mcp/
 
 ### Application Startup (Recommended)
 ```bash
-# Start Gradio web interface (port 7860)
+# Start Gradio web interface (port 8000)
 uv run python src/backend/gradio_app.py
 
 # Or start CLI only (creates persistent agent)
@@ -316,7 +316,7 @@ uv install
 
 ### Development Servers
 - **Backend**: http://127.0.0.1:8000 (persistent agent created at startup)
-- **Gradio UI**: http://127.0.0.1:7860 ⭐ PRIMARY WEB INTERFACE
+- **Gradio UI**: http://127.0.0.1:8000 ⭐ PRIMARY WEB INTERFACE
 - **API Docs**: http://127.0.0.1:8000/docs
 
 ### Startup Scripts
@@ -426,7 +426,7 @@ uv install
 - **Serena Memories**: `.serena/memories/`
 - **Claude Code Docs**: `CLAUDE.md`
 - **API Docs**: http://127.0.0.1:8000/docs (when running)
-- **Gradio UI**: http://127.0.0.1:7860 (when running)
+- **Gradio UI**: http://127.0.0.1:8000 (when running)
 
 ---
 

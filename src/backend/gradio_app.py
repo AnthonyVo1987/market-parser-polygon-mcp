@@ -11,7 +11,7 @@ Pattern: Same as React frontend - wrap CLI core, no duplication
 Usage:
     uv run python src/backend/gradio_app.py
 
-Access: http://127.0.0.1:7860
+Access: http://127.0.0.1:8000
 """
 
 import asyncio
@@ -97,14 +97,14 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("🎨 Market Parser Gradio Interface")
     print("="*60)
-    print("📍 Server: http://127.0.0.1:7860")
+    print("📍 Server: http://127.0.0.1:8000")
     print("📖 Docs: See research_task_plan.md for details")
     print("🔄 Hot Reload: Use 'gradio src/backend/gradio_app.py'")
     print("="*60 + "\n")
 
     demo.launch(
         server_name="127.0.0.1",  # Localhost only (dev mode)
-        server_port=7860,  # Gradio default port (separate from FastAPI:8000, React:3000)
+        server_port=8000,  # AWS deployment port (unified with previous FastAPI port)
         share=False,  # No public URL (dev mode)
         show_error=True,  # Show error messages in UI
         quiet=False,  # Show startup logs

@@ -1,548 +1,557 @@
-# FastAPI & Startup Scripts Removal - Implementation Plan
-**Date:** October 17, 2025
-**Branch:** master (or create feature branch)
-**Objective:** Complete removal of FastAPI backend infrastructure and legacy multi-server startup scripts
+# TODO Task Plan: Gradio Port Migration (7860 → 8000)
+
+**Date:** October 18, 2025
+**Status:** Implementation Ready
+**Based on:** research_task_plan.md
 
 ---
 
-## 🎯 Implementation Overview
+## 🎯 Mission
 
-**Scope:** 11 files deleted, 5 files modified, 9 documentation files updated
-**Total Tasks:** ~51 granular subtasks across 7 phases
-**Expected Duration:** 2-3 hours (with testing)
-**Risk Level:** Low-Medium (mitigated with systematic verification)
+Migrate Gradio web interface from port 7860 to port 8000 for AWS deployment compatibility.
 
----
-
-## ✅ Task Completion Checklist
-
-### Phase 0: Pre-Implementation Verification
-- [ ] 0.1: Check git status (ensure clean working tree)
-- [ ] 0.2: Create backup tag: `git tag -a backup-before-fastapi-removal -m "Backup before FastAPI removal"`
-- [ ] 0.3: Verify current branch or create feature branch
-
-**Validation:** Clean git status, backup tag created
+**Scope:** 1 code file (2 lines) + 17 documentation files
 
 ---
 
-### Phase 1: File Deletion (Low Risk)
+## 📋 Task Checklist Overview
 
-#### 1.1: Delete FastAPI Backend Files (7 files)
-- [ ] 1.1.1: Delete `src/backend/main.py`
-- [ ] 1.1.2: Delete `src/backend/routers/chat.py`
-- [ ] 1.1.3: Delete `src/backend/routers/health.py`
-- [ ] 1.1.4: Delete `src/backend/routers/__init__.py`
-- [ ] 1.1.5: Delete `src/backend/api_models.py`
-- [ ] 1.1.6: Delete `src/backend/dependencies.py`
-- [ ] 1.1.7: Delete `tests/unit/test_api.py`
+- [ ] **Phase 0:** Pre-Implementation Verification (3 tasks)
+- [ ] **Phase 1:** Code Changes (2 tasks)
+- [ ] **Phase 2:** Documentation Updates (17 tasks)
+- [ ] **Phase 3:** Testing & Validation (6 tasks) 🔴 MANDATORY
+- [ ] **Phase 4:** Final Verification (3 tasks)
+- [ ] **Phase 5:** Atomic Commit & Push (6 tasks)
 
-**Command:**
-```bash
-rm src/backend/main.py
-rm -rf src/backend/routers/
-rm src/backend/api_models.py
-rm src/backend/dependencies.py
-rm tests/unit/test_api.py
-```
-
-**Checkpoint:** Verify 7 files deleted with `git status`
-
-#### 1.2: Delete Legacy Startup Scripts (4 files)
-- [ ] 1.2.1: Delete `start-app.sh`
-- [ ] 1.2.2: Delete `start-app-xterm.sh`
-- [ ] 1.2.3: Delete `start.sh` (if exists - check first with `test -f start.sh`)
-- [ ] 1.2.4: Delete `START_SCRIPT_README.md`
-
-**Command:**
-```bash
-rm start-app.sh
-rm start-app-xterm.sh
-test -f start.sh && rm start.sh
-rm START_SCRIPT_README.md
-```
-
-**Checkpoint:** Verify 3-4 files deleted with `git status`
-
-#### 1.3: Verify All Deletions
-- [ ] 1.3.1: Run `git status` to confirm 11 files deleted
-- [ ] 1.3.2: Verify routers/ directory completely removed: `test ! -d src/backend/routers && echo "✅ routers/ removed"`
-
-**Success Criteria:** 11 files showing as deleted in git status
+**Total Tasks:** 37
 
 ---
 
-### Phase 2: Code Modifications (Medium Risk)
+## 🚨 MANDATORY TOOL USAGE
 
-#### 2.1: Modify `src/backend/config.py` (Remove FastAPI Settings)
-- [ ] 2.1.1: Use Serena tools to read Settings class definition
-- [ ] 2.1.2: Remove `fastapi_host: str = "127.0.0.1"` (line ~16)
-- [ ] 2.1.3: Remove `fastapi_port: int = 8000` (line ~17)
-- [ ] 2.1.4: Remove `cors_origins: str = "..."` (line ~33)
-- [ ] 2.1.5: Remove config loading for fastapi_host (line ~72)
-- [ ] 2.1.6: Remove config loading for fastapi_port (line ~73)
-- [ ] 2.1.7: Remove config loading for cors_origins (line ~87-89)
+**YOU MUST use Sequential-Thinking and Serena tools throughout ALL phases:**
 
-**Validation Test:**
-```bash
-uv run python -c "from src.backend.config import settings; print('✅ Config loads successfully')"
-```
+- ✅ **Sequential-Thinking:** Use for planning, analysis, and complex reasoning at EVERY phase
+- ✅ **Serena Tools:** Use for code analysis, symbol searches, and pattern matching
+- ✅ **Task Agent:** Use for parallel documentation updates
+- ✅ **Standard Tools:** Use for file operations and git commands
 
-**Checkpoint:** Config module imports without errors
-
-#### 2.2: Modify `src/backend/cli.py` (Add Entry Point)
-- [ ] 2.2.1: Read end of cli.py file
-- [ ] 2.2.2: Add entry point at end of file:
-```python
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(cli_async())
-```
-
-**Validation Test:**
-```bash
-uv run src/backend/cli.py --version 2>&1 | head -1
-# Should not error on import (may error on --version flag, that's okay)
-```
-
-**Checkpoint:** CLI entry point added and imports successfully
-
-#### 2.3: Modify `config/app.config.json` (Remove Server/CORS Sections)
-- [ ] 2.3.1: Read config/app.config.json
-- [ ] 2.3.2: Remove `"server": { "host": "127.0.0.1", "port": 8000 }` section
-- [ ] 2.3.3: Remove `"security": { "cors": { "origins": [...] } }` section
-
-**Validation Test:**
-```bash
-uv run python -c "import json; json.load(open('config/app.config.json')); print('✅ JSON valid')"
-```
-
-**Checkpoint:** JSON file is valid and parseable
-
-#### 2.4: Modify `pyproject.toml` (Remove Dependencies)
-- [ ] 2.4.1: Read pyproject.toml dependencies section
-- [ ] 2.4.2: Remove `"fastapi",` from dependencies array (line ~17)
-- [ ] 2.4.3: Remove `"uvicorn[standard]",` from dependencies array (line ~18)
-- [ ] 2.4.4: Remove `"fastapi"` from known_third_party list (line ~62)
-- [ ] 2.4.5: Remove `"uvicorn"` from known_third_party list (line ~62)
-- [ ] 2.4.6: Remove `"fastapi.*"` from mypy.overrides (line ~74)
-- [ ] 2.4.7: Remove `"uvicorn.*"` from mypy.overrides (line ~74)
-
-**Validation Test:**
-```bash
-uv sync
-# Should complete successfully without errors
-```
-
-**Checkpoint:** Dependencies sync successfully, fastapi/uvicorn removed
-
-#### 2.5: Modify `package.json` (Remove Backend Scripts)
-- [ ] 2.5.1: Read package.json scripts section
-- [ ] 2.5.2: Remove `"backend:dev"` script (if exists)
-- [ ] 2.5.3: Remove `"start:backend"` script (if exists)
-- [ ] 2.5.4: Remove any other backend-related scripts
-
-**Checkpoint:** package.json has no backend-related scripts
+**VIOLATION = TASK FAILURE**
 
 ---
 
-### Phase 3: Documentation Updates
+## Phase 0: Pre-Implementation Verification
 
-#### 3.1: Update CLAUDE.md
-- [ ] 3.1.1: Update project overview (remove FastAPI mentions)
-- [ ] 3.1.2: Update startup instructions (remove start-app.sh references)
-- [ ] 3.1.3: Update to simple commands:
-  - CLI: `uv run src/backend/cli.py`
-  - Gradio: `uv run python src/backend/gradio_app.py`
-- [ ] 3.1.4: Update architecture section (remove FastAPI layer)
-- [ ] 3.1.5: Update deployment notes (only port 7860)
-- [ ] 3.1.6: Remove all references to START_SCRIPT_README.md
-- [ ] 3.1.7: Update "One-Click Startup Script" section to simple command section
+### 0.1: Verify Port Availability
 
-**Success Criteria:** No mentions of FastAPI, start-app.sh, START_SCRIPT_README.md
-
-#### 3.2: Update README.md
-- [ ] 3.2.1: Update architecture section
-- [ ] 3.2.2: Update quick start guide (simple commands)
-- [ ] 3.2.3: Remove backend server startup references
-- [ ] 3.2.4: Remove references to deleted startup scripts
-- [ ] 3.2.5: Update features section (remove API endpoints)
-
-**Success Criteria:** Clean, simple startup instructions
-
-#### 3.3: Update docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md
-- [ ] 3.3.1: Remove FastAPI dependency installation steps
-- [ ] 3.3.2: Remove backend server configuration
-- [ ] 3.3.3: Update startup commands to simple single command
-- [ ] 3.3.4: Remove references to deleted startup scripts
-
-**Success Criteria:** Setup guide reflects Gradio-only architecture
-
-#### 3.4: Update .serena/memories/project_architecture.md
-- [ ] 3.4.1: Rewrite backend architecture section
-- [ ] 3.4.2: Remove FastAPI layer from diagrams
-- [ ] 3.4.3: Update data flow (Gradio → CLI direct)
-- [ ] 3.4.4: Remove startup script documentation
-- [ ] 3.4.5: Update deployment architecture
-
-**Success Criteria:** Architecture reflects single-server Gradio-only design
-
-#### 3.5: Update .serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md
-- [ ] 3.5.1: Remove FastAPI setup instructions
-- [ ] 3.5.2: Remove uvicorn commands
-- [ ] 3.5.3: Remove startup script commands
-- [ ] 3.5.4: Update to simple Gradio launch command
-
-**Success Criteria:** No FastAPI or startup script references
-
-#### 3.6: Update .serena/memories/suggested_commands.md
-- [ ] 3.6.1: Remove backend server commands
-- [ ] 3.6.2: Remove uvicorn commands
-- [ ] 3.6.3: Remove startup script commands (./start-app.sh)
-- [ ] 3.6.4: Update with simple commands
-
-**Success Criteria:** Command list reflects simplified architecture
-
-#### 3.7: Update .serena/memories/react_retirement_completion_oct_2025.md
-- [ ] 3.7.1: Add new section: "Phase 2: FastAPI & Startup Script Removal"
-- [ ] 3.7.2: Document architecture simplification (2 processes → 1 process)
-- [ ] 3.7.3: Document startup simplification
-- [ ] 3.7.4: Update "Next Steps" section
-
-**Success Criteria:** Migration history is complete and comprehensive
-
-#### 3.8: Update .serena/memories/code_style_conventions.md (if applicable)
-- [ ] 3.8.1: Check if file contains FastAPI code style guidelines
-- [ ] 3.8.2: Remove FastAPI-specific sections (if any)
-
-**Success Criteria:** No FastAPI code style references
-
-#### 3.9: Create new Serena memory: fastapi_removal_completion_oct_2025.md
-- [ ] 3.9.1: Create comprehensive memory documenting FastAPI removal
-- [ ] 3.9.2: Include before/after architecture
-- [ ] 3.9.3: Document simplified startup process
-- [ ] 3.9.4: Include testing results
-- [ ] 3.9.5: Document benefits (performance, simplicity)
-
-**Success Criteria:** Complete historical reference created
-
----
-
-### Phase 4: Testing & Validation (MANDATORY - DO NOT SKIP)
-
-#### 4.1: CLI Regression Test Suite (39 Tests)
-- [ ] 4.1.1: Run full test suite:
+**Commands:**
 ```bash
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+netstat -tlnp 2>/dev/null | grep -E ":(7860|8000)" || echo "✅ Ports available"
 ```
-- [ ] 4.1.2: Wait for all 39 tests to complete
-- [ ] 4.1.3: Verify test completion count: 39/39 COMPLETED
 
 **Expected Output:**
 ```
-=== ALL TESTS COMPLETED ===
-Tests completed: 39/39
-Average response time: ~9-10 seconds
+✅ Ports available
 ```
 
-**Checkpoint:** All 39 tests generate responses (Phase 1 complete)
+**Checkpoint:** Both ports 7860 and 8000 must be free
 
-#### 4.2: Phase 2 Verification - ERROR DETECTION (MANDATORY)
-- [ ] 4.2.1: Run grep command 1 (find all errors):
+---
+
+### 0.2: Create Backup Tag
+
+**Command:**
 ```bash
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
+git tag -a backup-before-port-migration -m "Backup before Gradio port 7860→8000 migration"
 ```
-- [ ] 4.2.2: Run grep command 2 (count data unavailable):
+
+**Verification:**
+```bash
+git tag -l | grep backup-before-port-migration
+```
+
+**Expected Output:**
+```
+backup-before-port-migration
+```
+
+**Checkpoint:** Backup tag created successfully
+
+---
+
+### 0.3: Verify Git Clean State
+
+**Command:**
+```bash
+git status --short
+```
+
+**Expected Output:**
+```
+M TODO_task_plan.md
+?? research_task_plan.md
+```
+
+**Checkpoint:** Only expected files (task plans) should be modified/untracked
+
+---
+
+## Phase 1: Code Changes (gradio_app.py)
+
+### 1.1: Update Print Statement (Line 100)
+
+**Tool:** Edit
+
+**File:** `src/backend/gradio_app.py`
+
+**Change:**
+```python
+# OLD:
+print("📍 Server: http://127.0.0.1:7860")
+
+# NEW:
+print("📍 Server: http://127.0.0.1:8000")
+```
+
+**Verification:**
+```bash
+grep "Server: http://127.0.0.1:8000" src/backend/gradio_app.py
+```
+
+**Expected Output:**
+```python
+print("📍 Server: http://127.0.0.1:8000")
+```
+
+**Checkpoint:** Print statement updated to show port 8000
+
+---
+
+### 1.2: Update server_port Parameter (Line 107)
+
+**Tool:** Edit
+
+**File:** `src/backend/gradio_app.py`
+
+**Change:**
+```python
+# OLD:
+server_port=7860,  # Gradio default port (separate from FastAPI:8000, React:3000)
+
+# NEW:
+server_port=8000,  # AWS deployment port (unified with previous FastAPI port)
+```
+
+**Verification:**
+```bash
+grep "server_port=8000" src/backend/gradio_app.py
+```
+
+**Expected Output:**
+```python
+server_port=8000,  # AWS deployment port (unified with previous FastAPI port)
+```
+
+**Checkpoint:** server_port parameter updated to 8000
+
+---
+
+## Phase 2: Documentation Updates (17 files)
+
+**Strategy:** Use Task agent for parallel updates to maximize speed
+
+### 2.1: Update CLAUDE.md (9 references)
+
+**Pattern:** Replace all instances of:
+- `7860` → `8000`
+- `http://127.0.0.1:7860` → `http://127.0.0.1:8000`
+- `http://localhost:7860` → `http://localhost:8000`
+
+**Preserve:** Historical references (e.g., "was 7860, now 8000")
+
+---
+
+### 2.2: Update README.md (5 references)
+
+**Same pattern as CLAUDE.md**
+
+---
+
+### 2.3: Update AGENTS.md (8 references)
+
+**Same pattern as CLAUDE.md**
+
+---
+
+### 2.4: Update package.json (2 references - npm scripts)
+
+**Lines to update:**
+```json
+// OLD:
+"status": "echo '=== Gradio UI Status ===' && (curl -s http://localhost:7860 > /dev/null && echo 'Gradio UI running on http://localhost:7860' || echo 'Gradio UI not running')",
+
+// NEW:
+"status": "echo '=== Gradio UI Status ===' && (curl -s http://localhost:8000 > /dev/null && echo 'Gradio UI running on http://localhost:8000' || echo 'Gradio UI not running')",
+```
+
+---
+
+### 2.5: Update docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md (6 references)
+
+**Same pattern as CLAUDE.md**
+
+---
+
+### 2.6-2.16: Update Serena Memory Files (11 files)
+
+**Files:**
+1. `.serena/memories/project_architecture.md` (12 references)
+2. `.serena/memories/react_retirement_completion_oct_2025.md` (17 references)
+3. `.serena/memories/fastapi_removal_completion_oct_2025.md` (13 references)
+4. `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md` (11 references)
+5. `.serena/memories/task_completion_checklist.md` (2 references)
+6. `.serena/memories/project_onboarding_summary.md` (6 references)
+7. `.serena/memories/suggested_commands.md` (7 references)
+8. `.serena/memories/ui_refactor_oct_2025.md` (2 references)
+9. `.serena/memories/adaptive_formatting_guide.md` (1 reference)
+
+**Pattern:** Same as CLAUDE.md (replace all port references)
+
+**Note:** Create new Serena memory: `port_migration_to_8000_oct_2025.md` documenting this change
+
+---
+
+### 2.17: Verification - All Documentation Updated
+
+**Command:**
+```bash
+grep -r "7860" --include="*.md" --include="*.json" src/ docs/ *.md .serena/memories/ package.json 2>/dev/null | wc -l
+```
+
+**Expected Output:**
+```
+0
+```
+
+**Checkpoint:** All port 7860 references updated to 8000 (except in historical context)
+
+---
+
+## Phase 3: Testing & Validation 🔴 MANDATORY
+
+### 3.1: 🔴 CRITICAL - Test Gradio Launch (MUST PASS FIRST)
+
+**Command:**
+```bash
+timeout 30 uv run python src/backend/gradio_app.py &
+sleep 5
+curl -s http://127.0.0.1:8000 | head -5
+pkill -f "gradio_app.py"
+```
+
+**Expected Output:**
+```
+🚀 Initializing Market Parser Gradio Interface...
+✅ Agent initialized successfully
+
+============================================================
+🎨 Market Parser Gradio Interface
+============================================================
+📍 Server: http://127.0.0.1:8000
+📖 Docs: See research_task_plan.md for details
+🔄 Hot Reload: Use 'gradio src/backend/gradio_app.py'
+============================================================
+
+Running on local URL: http://127.0.0.1:8000
+```
+
+**Success Criteria:**
+- ✅ No OSError about port conflicts
+- ✅ Server starts on port 8000 (NOT 7860)
+- ✅ Web interface accessible at http://127.0.0.1:8000
+- ✅ Curl returns HTML content
+
+**🔴 BLOCKING CHECKPOINT:**
+- **IF GRADIO FAILS:** STOP HERE - DO NOT proceed to CLI testing
+- **IF GRADIO PASSES:** Continue to CLI testing
+
+---
+
+### 3.2: Run CLI Regression Tests (ONLY if Gradio passed)
+
+**Command:**
+```bash
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+```
+
+**Expected Output:**
+```
+✅ CLI session completed
+⏱️  Total Session Duration: 6 min 8 sec
+
+📊 Test Results Analysis
+========================
+Total Tests: 39
+✅ Completed: 39
+❌ Incomplete: 0
+Generation Rate: 100%
+Average Response Time: 9.41s
+📈 Overall Performance Rating: EXCELLENT
+```
+
+**Checkpoint:** 39/39 tests generate responses
+
+---
+
+### 3.3: Phase 2a - Error Detection (MANDATORY Grep Commands)
+
+**Command 1:**
+```bash
+grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log | tail -20
+```
+
+**Expected Output:** (empty or no critical errors)
+
+**Command 2:**
 ```bash
 grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
 ```
-- [ ] 4.2.3: Run grep command 3 (count completions):
+
+**Expected Output:**
+```
+0
+```
+
+**Command 3:**
 ```bash
 grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
 ```
-- [ ] 4.2.4: Document grep results (paste output)
 
-**Expected Results:**
-- Command 1: NO ERRORS (empty output)
-- Command 2: 0 (zero data unavailable errors)
-- Command 3: 40 (39 tests + 1 summary line)
-
-**CRITICAL:** If any errors found, STOP and debug before proceeding
-
-**Checkpoint:** Phase 2 verification complete with 0 errors
-
-#### 4.3: Gradio Launch Test
-- [ ] 4.3.1: Launch Gradio in background:
-```bash
-timeout 10 uv run python src/backend/gradio_app.py &
-GRADIO_PID=$!
-sleep 5
+**Expected Output:**
 ```
-- [ ] 4.3.2: Verify Gradio responds:
-```bash
-curl -s http://127.0.0.1:7860 > /dev/null && echo "✅ Gradio running" || echo "❌ Gradio failed"
-```
-- [ ] 4.3.3: Kill Gradio process:
-```bash
-kill $GRADIO_PID 2>/dev/null
+40
 ```
 
-**Expected:** Gradio starts successfully without errors
-
-**Checkpoint:** Gradio launches and serves HTTP successfully
-
-#### 4.4: Import Verification Tests
-- [ ] 4.4.1: Test config import:
-```bash
-uv run python -c "from src.backend.config import settings; print('✅ Config OK')"
-```
-- [ ] 4.4.2: Test CLI import:
-```bash
-uv run python -c "from src.backend.cli import cli_async; print('✅ CLI OK')"
-```
-- [ ] 4.4.3: Test Gradio import:
-```bash
-uv run python -c "from src.backend.gradio_app import demo; print('✅ Gradio OK')"
-```
-
-**Expected:** All imports succeed with no ModuleNotFoundError
-
-**Checkpoint:** All core modules import successfully
-
-#### 4.5: Dependency Verification
-- [ ] 4.5.1: Verify fastapi is removed:
-```bash
-uv pip list | grep fastapi && echo "❌ FastAPI still installed" || echo "✅ FastAPI removed"
-```
-- [ ] 4.5.2: Verify uvicorn is removed:
-```bash
-uv pip list | grep uvicorn && echo "❌ Uvicorn still installed" || echo "✅ Uvicorn removed"
-```
-
-**Expected:** Both commands show "removed" (not found in pip list)
-
-**Checkpoint:** FastAPI and uvicorn dependencies completely removed
-
-#### 4.6: Phase 2 Checkpoint Questions (Answer ALL with Evidence)
-- [ ] 4.6.1: Did you RUN the 3 mandatory grep commands in Phase 2a? **YES/NO + PASTE OUTPUT**
-- [ ] 4.6.2: Did you DOCUMENT all failures found (or confirm 0 failures)? **YES + TABLE or "0 failures"**
-- [ ] 4.6.3: Failure count from grep -c "data unavailable": **NUMBER**
-- [ ] 4.6.4: Tests that generated responses: **X/39 COMPLETED**
-- [ ] 4.6.5: Tests that PASSED verification: **X/39 PASSED**
-
-**ENFORCEMENT:** Cannot proceed to Phase 5 without answering ALL checkpoint questions
+**Checkpoint:** Show grep output as evidence
 
 ---
 
-### Phase 5: Final Verification & Cleanup
+### 3.4: Phase 2b - Document Failures (if any found)
 
-#### 5.1: Grep for Remaining FastAPI References
-- [ ] 5.1.1: Search codebase for FastAPI imports:
-```bash
-grep -r "from fastapi import\|import fastapi" src/ --include="*.py" || echo "✅ No FastAPI imports"
-```
-- [ ] 5.1.2: Search codebase for uvicorn references:
-```bash
-grep -r "uvicorn" src/ --include="*.py" || echo "✅ No uvicorn references"
-```
-- [ ] 5.1.3: Search docs for FastAPI mentions:
-```bash
-grep -r "FastAPI" CLAUDE.md README.md docs/ .serena/memories/ --include="*.md" || echo "✅ No FastAPI docs"
-```
+**IF errors found in Phase 2a:**
+- Create failure table with test number, line number, error message
+- Document root cause
+- Fix and re-test
 
-**Expected:** All searches return "No X found" or empty
+**IF no errors:**
+- Confirm: "✅ 0 failures found"
 
-**Checkpoint:** No remaining FastAPI code or documentation references
-
-#### 5.2: Grep for Startup Script References
-- [ ] 5.2.1: Search for start-app.sh references:
-```bash
-grep -r "start-app\.sh\|start-app-xterm\.sh\|START_SCRIPT_README" CLAUDE.md README.md docs/ .serena/memories/ --include="*.md" || echo "✅ No script refs"
-```
-- [ ] 5.2.2: Verify scripts are deleted:
-```bash
-test ! -f start-app.sh && test ! -f start-app-xterm.sh && test ! -f START_SCRIPT_README.md && echo "✅ Scripts deleted"
-```
-
-**Expected:** No references found, all scripts deleted
-
-**Checkpoint:** No startup script references in documentation
-
-#### 5.3: Review All Modified Files
-- [ ] 5.3.1: Run `git diff src/backend/config.py` and review changes
-- [ ] 5.3.2: Run `git diff src/backend/cli.py` and review changes
-- [ ] 5.3.3: Run `git diff config/app.config.json` and review changes
-- [ ] 5.3.4: Run `git diff pyproject.toml` and review changes
-
-**Checkpoint:** All modifications are correct and intentional
-
-#### 5.4: Final Git Status Check
-- [ ] 5.4.1: Run `git status` to see all changes
-- [ ] 5.4.2: Verify expected file counts:
-  - 11 files deleted (7 FastAPI + 4 scripts)
-  - 5 files modified (config.py, cli.py, app.config.json, pyproject.toml, package.json)
-  - 9-10 docs updated
-
-**Expected:** ~25 files changed total
-
-**Checkpoint:** Git status shows expected changes
+**Checkpoint:** Either show failure table OR confirm 0 failures
 
 ---
 
-### Phase 6: Atomic Commit & Push (Follow Strict Workflow)
+### 3.5: Phase 2c - Verify Response Correctness
 
-#### 6.1: Complete ALL Work First (DO NOT Stage Yet)
-- [ ] 6.1.1: ✅ ALL code changes complete
-- [ ] 6.1.2: ✅ ALL tests run and passed (39/39)
-- [ ] 6.1.3: ✅ ALL documentation updated
-- [ ] 6.1.4: ✅ ALL Serena memories updated
-- [ ] 6.1.5: ✅ Phase 2 verification complete (grep evidence provided)
-- [ ] 6.1.6: ✅ Test reports generated
+**For tests without errors, verify:**
+1. ✅ Response addresses the prompt query
+2. ✅ Correct ticker symbols used
+3. ✅ Appropriate tool calls made
+4. ✅ Data formatting correct
+5. ✅ No hallucinated data
+6. ✅ Response complete (not truncated)
 
-**⚠️ DO NOT RUN `git add` UNTIL ALL ITEMS ABOVE ARE CHECKED ⚠️**
+**Checkpoint:** Manual verification of sample responses
 
-#### 6.2: Verify Everything is Complete
-- [ ] 6.2.1: Review all changes:
+---
+
+### 3.6: Phase 2d - Final Test Verification
+
+**Answer ALL checkpoint questions:**
+
+1. Did you RUN the 3 mandatory grep commands? **YES/NO + show output**
+2. Did you DOCUMENT failures OR confirm 0 failures? **YES/NO + evidence**
+3. Failure count from grep -c "data unavailable": **X failures**
+4. Tests that generated responses: **X/39 COMPLETED**
+5. Tests that PASSED verification: **X/39 PASSED**
+
+**Checkpoint:** All 5 questions answered with evidence
+
+**🔴 ENFORCEMENT:**
+- Cannot proceed to Phase 4 without Phase 2d evidence
+- Cannot claim task complete without test results
+- Test failures must be fixed and re-tested
+
+---
+
+## Phase 4: Final Verification
+
+### 4.1: Grep for Remaining Port 7860 References
+
+**Command:**
 ```bash
-git status
-git diff --stat
+grep -r "7860" --include="*.py" --include="*.md" --include="*.json" src/ docs/ *.md .serena/memories/ package.json 2>/dev/null || echo "✅ No remaining references"
 ```
-- [ ] 6.2.2: Verify no uncommitted work remains
-- [ ] 6.2.3: Verify test reports exist in test-reports/
+
+**Expected Output:**
+```
+✅ No remaining references
+```
+
+**Note:** Exclude historical references in memory files (acceptable)
+
+**Checkpoint:** No active code/config references to port 7860
+
+---
+
+### 4.2: Verify Gradio Accessible on Port 8000
+
+**Command:**
+```bash
+curl -s http://127.0.0.1:8000 | grep -i "gradio\|market" | head -3
+```
+
+**Expected Output:** HTML content with Gradio/Market Parser references
+
+**Checkpoint:** Web interface responding on port 8000
+
+---
+
+### 4.3: Review All Modified Files
+
+**Command:**
+```bash
+git status --short
+```
+
+**Expected Files:**
+- M src/backend/gradio_app.py
+- M CLAUDE.md
+- M README.md
+- M AGENTS.md
+- M package.json
+- M docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md
+- M .serena/memories/*.md (11 files)
+- A .serena/memories/port_migration_to_8000_oct_2025.md
+- M TODO_task_plan.md
+- M research_task_plan.md
+- A test-reports/test_cli_regression_loop1_*.log
+
+**Checkpoint:** All expected files present, no unexpected changes
+
+---
+
+## Phase 5: Atomic Commit & Push
+
+### 5.1: Complete ALL Work FIRST (DO NOT stage yet)
+
+**Checklist:**
+- ✅ Code changes complete (gradio_app.py)
+- ✅ Documentation updates complete (17 files)
+- ✅ Tests run and passed (39/39)
+- ✅ Test reports generated
+- ✅ Task plans updated
+- ✅ New Serena memory created
+
+**⚠️ DO NOT RUN `git add` YET**
 
 **Checkpoint:** ALL work is 100% complete
 
-#### 6.3: Stage Everything at Once (First Time Running git add)
-- [ ] 6.3.1: Stage all files in ONE command:
+---
+
+### 5.2: Verify Everything Complete
+
+**Commands:**
 ```bash
-git add -A
+git status  # Review ALL changed/new files
+git diff src/backend/gradio_app.py | head -20  # Verify code changes
 ```
 
-**⚠️ This is the FIRST time running `git add` - everything staged at once ⚠️**
+**Checkpoint:** Review output, ensure everything is ready
 
-#### 6.4: Verify Staging Immediately
-- [ ] 6.4.1: Check staged files:
+---
+
+### 5.3: Stage Everything at Once
+
+**Command:**
 ```bash
-git status
+git add -A  # Stage ALL files in ONE command
 ```
-- [ ] 6.4.2: Verify ALL files are staged
-- [ ] 6.4.3: Verify NOTHING is unstaged
 
-**Checkpoint:** All changes are staged, nothing left unstaged
+**⚠️ This is the FIRST time running `git add`**
 
-#### 6.5: Commit Immediately (Within 60 Seconds of Staging)
-- [ ] 6.5.1: Create comprehensive commit message:
+**Checkpoint:** All files staged in single operation
+
+---
+
+### 5.4: Verify Staging Immediately
+
+**Command:**
+```bash
+git status --short
+```
+
+**Expected:** All files should show "M" or "A" in first column, NOTHING unstaged
+
+**Checkpoint:** All files staged, nothing left unstaged
+
+---
+
+### 5.5: Commit Immediately (within 60 seconds)
+
+**Command:**
 ```bash
 git commit -m "$(cat <<'EOF'
-[CLEANUP] Complete FastAPI & Startup Script Removal - Gradio-Only Architecture
+[PORT] Migrate Gradio from port 7860 to 8000 for AWS deployment
 
-**Summary**: Removed FastAPI backend infrastructure and legacy multi-server startup scripts
-**Scope**: 25 files affected (11 deleted, 5 modified, 9 docs updated)
-**Impact**: ~1,000+ lines removed, simplified to single-server Gradio-only architecture
+**Problem:** Gradio configured for port 7860, need port 8000 for AWS deployment
+**Requirement:** Use standard port 8000 for AWS cloud deployment compatibility
 
-## Code Changes
+**Solution:** Update Gradio port configuration from 7860 → 8000
 
-**Deleted FastAPI Backend (7 files):**
-- src/backend/main.py (FastAPI app initialization)
-- src/backend/routers/ (entire directory: chat.py, health.py, __init__.py)
-- src/backend/api_models.py (Pydantic request/response models)
-- src/backend/dependencies.py (FastAPI dependency injection)
-- tests/unit/test_api.py (FastAPI unit tests)
+**Code Changes:**
+- src/backend/gradio_app.py (lines 100, 107):
+  - Print statement: http://127.0.0.1:7860 → http://127.0.0.1:8000
+  - server_port: 7860 → 8000
+  - Updated comment: "AWS deployment port (unified with previous FastAPI port)"
 
-**Deleted Startup Scripts (4 files):**
-- start-app.sh (multi-server orchestration)
-- start-app-xterm.sh (tmux/xterm variant)
-- start.sh (original startup script)
-- START_SCRIPT_README.md (startup documentation)
+**Documentation Updates (17 files):**
+- CLAUDE.md, README.md, AGENTS.md
+- package.json (npm status script)
+- docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md
+- All 11 Serena memory files
+- Created: .serena/memories/port_migration_to_8000_oct_2025.md
 
-**Modified Configuration (5 files):**
-- src/backend/config.py: Removed fastapi_host, fastapi_port, cors_origins settings
-- src/backend/cli.py: Added if __name__ == "__main__" entry point
-- config/app.config.json: Removed server and security.cors sections
-- pyproject.toml: Removed fastapi and uvicorn dependencies
-- package.json: Removed backend-related scripts
+**Testing Results:**
+✅ Gradio Launch Test: PASSED
+- Server starts on http://127.0.0.1:8000
+- No port conflicts
+- Web interface accessible
 
-## Documentation Updates
+✅ CLI Regression Tests: 39/39 PASSED (100%)
+- Tests completed: 39/39 COMPLETED
+- Average response time: 9.41s (EXCELLENT)
+- Phase 2 verification: 0 errors found
+- Test report: test-reports/test_cli_regression_loop1_*.log
 
-**Updated Project Docs (3 files):**
-- CLAUDE.md: Updated architecture, removed startup script references
-- README.md: Simplified quick start, removed FastAPI mentions
-- docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md: Updated setup commands
+**Success Metrics:**
+- ✅ Port migration: 100% SUCCESS
+- ✅ Code changes: 1 file, 2 lines
+- ✅ Documentation updates: 17 files
+- ✅ Gradio launch: WORKING on port 8000
+- ✅ CLI tests: 39/39 PASSED (100%)
+- ✅ Zero errors: 0 data unavailable errors
 
-**Updated Serena Memories (6 files):**
-- project_architecture.md: Rewritten for Gradio-only architecture
-- SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md: Removed FastAPI setup
-- suggested_commands.md: Removed backend/startup commands
-- react_retirement_completion_oct_2025.md: Added FastAPI removal section
-- code_style_conventions.md: Removed FastAPI guidelines (if applicable)
-- fastapi_removal_completion_oct_2025.md: NEW - Complete removal documentation
+**AWS Deployment Ready:**
+- Port 8000 configured for cloud deployment
+- Unified port strategy (no longer split across 7860/8000)
+- Standard HTTP service port for AWS
 
-## Architecture Impact
-
-**Before (Multi-Server):**
-- Backend (FastAPI, Port 8000) + Gradio (Port 7860)
-- Complex startup scripts (start-app.sh, start-app-xterm.sh)
-- 2 processes, 2 ports, multi-server coordination
-
-**After (Single-Server):**
-- Gradio only (Port 7860)
-- Simple startup: uv run python src/backend/gradio_app.py
-- 1 process, 1 port, no orchestration needed
-
-**Rationale:**
-Gradio imports CLI core functions directly (process_query_with_footer), does NOT make HTTP requests to FastAPI. FastAPI layer was only needed for retired React frontend.
-
-## Testing Results
-
-**CLI Regression Test Suite:**
-- Tests completed: 39/39 (100%)
-- Pass rate: 39/39 PASSED
-- Average response time: ~X.XX seconds (EXCELLENT)
-- Data unavailable errors: 0
-- Test report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-
-**Phase 2 Verification (Grep Evidence):**
-- Command 1 (errors): NO ERRORS (empty output)
-- Command 2 (data unavailable): 0 failures
-- Command 3 (completions): 40 (39 tests + summary)
-
-**Import Verification:**
-- ✅ Config loads successfully
-- ✅ CLI imports without errors
-- ✅ Gradio launches successfully
-
-**Dependency Verification:**
-- ✅ fastapi removed from pip list
-- ✅ uvicorn removed from pip list
-
-## Benefits
-
-**Performance:**
-- Startup time: -60% (no uvicorn initialization)
-- Memory usage: -30% (single process instead of two)
-
-**Code Quality:**
-- Codebase: -1,000+ lines (-20% backend code)
-- Complexity: Single interface (Gradio only)
-- Architecture: Simplified 2-layer (Gradio → CLI)
-
-**Operations:**
-- Ports: 1 instead of 2 (only 7860)
-- Processes: 1 instead of 2
-- Deployment: Simpler (no multi-server coordination)
-
-## New Simplified Startup
-
-**CLI Mode:**
-```bash
-uv run src/backend/cli.py
-```
-
-**Gradio Mode:**
-```bash
-uv run python src/backend/gradio_app.py
-```
-
-No complex orchestration, health checks, or multi-server coordination needed.
+**Files Changed:**
+- Code: 1 file (gradio_app.py)
+- Documentation: 17 files
+- Serena Memories: 11 updated + 1 new
+- Test Reports: 1 new
+- Total: 30 files
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -551,78 +560,80 @@ EOF
 )"
 ```
 
-**⚠️ MUST COMMIT WITHIN 60 SECONDS OF STAGING ⚠️**
+**Checkpoint:** Commit created with comprehensive message
 
-#### 6.6: Push Immediately
-- [ ] 6.6.1: Push to remote:
+---
+
+### 5.6: Push Immediately
+
+**Command:**
 ```bash
 git push
 ```
 
-**Checkpoint:** Commit pushed to remote repository
+**Expected Output:**
+```
+To https://github.com/AnthonyVo1987/market-parser-polygon-mcp.git
+   xxxxxxx..yyyyyyy  react_retirement -> react_retirement
+```
+
+**Checkpoint:** Changes pushed to remote successfully
 
 ---
 
-## 🎯 Success Criteria
+## ✅ Task Completion Checklist
 
-### Code Removal ✅
-- [ ] All 11 files deleted (7 FastAPI + 4 scripts)
-- [ ] 0 remaining `import fastapi` statements
-- [ ] 0 remaining `uvicorn` references in code
-- [ ] routers/ directory completely removed
+**ALL of the following MUST be checked:**
 
-### Configuration ✅
-- [ ] config.py has no FastAPI settings
-- [ ] app.config.json has no server/cors sections
-- [ ] pyproject.toml has no fastapi/uvicorn dependencies
+- [ ] Phase 0: Pre-verification complete (ports available, backup tag, git clean)
+- [ ] Phase 1: Code changes complete (gradio_app.py updated)
+- [ ] Phase 2: Documentation updated (17 files)
+- [ ] Phase 3: Gradio launch test PASSED on port 8000
+- [ ] Phase 3: CLI regression tests PASSED (39/39)
+- [ ] Phase 3: Phase 2 grep verification complete (0 errors)
+- [ ] Phase 4: Final verification complete (no remaining 7860 references)
+- [ ] Phase 5: Atomic commit created and pushed
+- [ ] Test report generated and saved
+- [ ] All evidence shown to user
 
-### Functionality ✅
-- [ ] CLI works: `uv run src/backend/cli.py`
-- [ ] Gradio works: `uv run python src/backend/gradio_app.py`
-- [ ] All 39 CLI tests pass (100% pass rate)
-- [ ] Phase 2 verification complete (0 errors)
-
-### Documentation ✅
-- [ ] All architecture diagrams updated
-- [ ] All setup guides updated
-- [ ] All Serena memories updated
-- [ ] No outdated FastAPI or startup script references
-
-### Testing ✅
-- [ ] 39/39 tests COMPLETED
-- [ ] 39/39 tests PASSED
-- [ ] Phase 2 grep verification complete
-- [ ] All checkpoint questions answered with evidence
+**🔴 TASK IS NOT COMPLETE UNTIL ALL BOXES CHECKED**
 
 ---
 
-## ⚠️ CRITICAL REMINDERS
+## 📊 Success Criteria
 
-1. **DO NOT stage files early** - Only run `git add` after ALL work is 100% complete
-2. **Testing is MANDATORY** - Cannot proceed without running full test suite
-3. **Phase 2 verification is REQUIRED** - Must run 3 grep commands and provide evidence
-4. **Atomic commit workflow** - Stage all → Commit immediately → Push immediately
-5. **Use Serena tools** - For code analysis and symbol manipulation when possible
+**Code:**
+- ✅ gradio_app.py lines 100 & 107 updated
+- ✅ Port 8000 configured correctly
+- ✅ No syntax errors
+
+**Documentation:**
+- ✅ All 17 files updated
+- ✅ All port 7860 references changed to 8000
+- ✅ New Serena memory created
+
+**Testing:**
+- ✅ Gradio launches on port 8000 without errors
+- ✅ 39/39 CLI tests PASS
+- ✅ 0 data unavailable errors
+- ✅ Phase 2 verification complete
+
+**Commit:**
+- ✅ All changes staged together
+- ✅ Comprehensive commit message
+- ✅ Pushed to remote
 
 ---
 
-## 📊 Progress Tracking
+## 🎯 Final Summary
 
-**Completed Phases:**
-- [ ] Phase 0: Pre-Implementation Verification (3 tasks)
-- [ ] Phase 1: File Deletion (13 tasks)
-- [ ] Phase 2: Code Modifications (10 tasks)
-- [ ] Phase 3: Documentation Updates (9 tasks)
-- [ ] Phase 4: Testing & Validation (6 tasks)
-- [ ] Phase 5: Final Verification (4 tasks)
-- [ ] Phase 6: Atomic Commit & Push (6 tasks)
+**Task:** Migrate Gradio port 7860 → 8000
+**Scope:** 1 code file + 17 documentation files
+**Status:** Implementation Ready
+**Next:** Execute all phases systematically using Sequential-Thinking + Serena tools
 
-**Total Progress:** 0/51 tasks complete (0%)
-
----
-
-**Plan Created By:** Claude Code (Sonnet 4.5)
-**Date:** October 17, 2025
-**Status:** READY FOR IMPLEMENTATION
-
-**Next Action:** Begin Phase 0 - Pre-Implementation Verification
+**🔴 REMEMBER:**
+- Use Sequential-Thinking at EVERY phase
+- Test Gradio BEFORE CLI testing
+- Show Phase 2 verification evidence
+- Follow atomic commit workflow exactly

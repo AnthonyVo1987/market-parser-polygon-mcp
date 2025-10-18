@@ -65,7 +65,7 @@ Performance Metrics:
 
 **Backend Services:**
 - **CLI Interface** - Terminal-based interface with persistent session (CORE BUSINESS LOGIC)
-- **Gradio Web UI** (port 7860) - Web-based chat interface (wraps CLI core) ⭐ ONLY WEB INTERFACE
+- **Gradio Web UI** (port 8000) - Web-based chat interface (wraps CLI core) ⭐ ONLY WEB INTERFACE
 
 **AI Integration:**
 - **OpenAI Agents SDK v0.2.9** - Agent orchestration
@@ -91,7 +91,7 @@ Performance Metrics:
         ↓                               ↓
 ┌───────────────────┐         ┌───────────────────┐
 │  CLI Interface    │         │  Gradio Web UI     │
-│  (Terminal)       │         │  (Port 7860)       │
+│  (Terminal)       │         │  (Port 8000)       │
 │                   │         │                    │
 │  Calls:           │         │  Calls:            │
 │  • process_query  │         │  • process_query   │
@@ -104,19 +104,19 @@ Performance Metrics:
 ### Port Configuration
 
 **Active Ports:**
-- **7860** - Gradio web interface ⭐ ONLY WEB UI
+- **8000** - Gradio web interface ⭐ ONLY WEB UI
 
 **Removed Ports:**
 - ~~8000~~ - FastAPI backend (RETIRED Oct 17, 2025 - Phase 2)
 - ~~3000~~ - React frontend (RETIRED Oct 17, 2025 - Phase 1)
 
-## Gradio Web Interface Architecture (Port 7860) ⭐
+## Gradio Web Interface Architecture (Port 8000) ⭐
 
 ### Overview
 - **File**: `src/backend/gradio_app.py`
 - **Framework**: Gradio ChatInterface
 - **Pattern**: Wrapper around CLI core logic (NO duplication)
-- **Access**: http://127.0.0.1:7860
+- **Access**: http://127.0.0.1:8000
 
 ### Architecture Pattern
 
@@ -292,7 +292,7 @@ market-parser-polygon-mcp/
 - **AI Model**: GPT-5-Nano (EXCLUSIVE - 200K TPM)
 
 ### Frontend
-- **Gradio**: ChatInterface (port 7860) ⭐ ONLY WEB INTERFACE
+- **Gradio**: ChatInterface (port 8000) ⭐ ONLY WEB INTERFACE
 - **No React**: React frontend completely retired (Oct 17, 2025)
 - **No TypeScript**: All TypeScript code removed
 - **No Node.js frontend**: package.json used for backend tooling only
@@ -331,9 +331,9 @@ market-parser-polygon-mcp/
 
 **Gradio Web UI (Recommended):**
 ```bash
-# Start Gradio interface on port 7860
+# Start Gradio interface on port 8000
 uv run python src/backend/gradio_app.py
-# Access: http://127.0.0.1:7860
+# Access: http://127.0.0.1:8000
 ```
 
 **CLI Interface:**
@@ -438,7 +438,7 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 **Gradio UI not starting:**
 ```bash
 # Check port availability
-netstat -tlnp | grep :7860
+netstat -tlnp | grep :8000
 
 # Kill existing Gradio processes
 pkill -f gradio_app

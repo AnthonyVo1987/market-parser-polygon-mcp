@@ -4,14 +4,14 @@
 
 This guide provides step-by-step instructions for AI agents to completely re-initialize the Market Parser project environment when corruption occurs. This guide is based on successful re-initializations performed on September 29, 2025 and October 6, 2025, and incorporates best practices for Python environment management.
 
-**Update (Oct 17, 2025)**: React frontend completely retired. Gradio (port 7860) is now the ONLY web interface.
+**Update (Oct 17, 2025)**: React frontend completely retired. Gradio (port 8000) is now the ONLY web interface.
 
 ## 🎯 Success Criteria
 
 - ✅ All 39/39 CLI regression tests pass (100% success rate)
 - ✅ Python environment with 121 packages installed
 - ✅ Backend server starts without errors
-- ✅ Gradio UI starts successfully (port 7860)
+- ✅ Gradio UI starts successfully (port 8000)
 - ✅ All imports and dependencies working correctly
 - ✅ polygon-api-client SDK properly installed and functional
 
@@ -89,7 +89,7 @@ pkill -f "gradio"
 pkill -f "python.*gradio_app"
 
 # Verify no processes are running on project ports
-netstat -tlnp | grep -E ":(7860|8000|5500)"
+netstat -tlnp | grep -E ":(8000|8000|5500)"
 ```
 
 #### Step 2.2: Remove All Environment Files
@@ -215,7 +215,7 @@ uv run python src/backend/gradio_app.py &
 sleep 10
 
 # Test Gradio endpoint
-curl -s http://127.0.0.1:7860 | head -10
+curl -s http://127.0.0.1:8000 | head -10
 
 # Stop Gradio
 pkill -f "gradio_app"
@@ -226,7 +226,7 @@ pkill -f "gradio_app"
 ```
 🚀 Initializing Market Parser Gradio Interface...
 ✅ Agent initialized successfully
-Running on local URL:  http://127.0.0.1:7860
+Running on local URL:  http://127.0.0.1:8000
 ```
 
 ### Phase 5: Comprehensive Testing
@@ -334,17 +334,17 @@ uv run python -c "import gradio as gr; print('✅ Gradio working')"
 
 ### Issue 3: Port Already in Use
 
-**Symptoms:** `Error: Port 7860 is already in use` or `Error: Port 8000 is already in use`
+**Symptoms:** `Error: Port 8000 is already in use` or `Error: Port 8000 is already in use`
 
 **Solution:**
 
 ```bash
 # Find and kill processes using ports
-lsof -ti:7860 | xargs kill -9
+lsof -ti:8000 | xargs kill -9
 lsof -ti:8000 | xargs kill -9
 
 # Verify ports are free
-netstat -tlnp | grep -E ":(7860|8000)"
+netstat -tlnp | grep -E ":(8000|8000)"
 ```
 
 ### Issue 4: Virtual Environment Path Issues
@@ -392,7 +392,7 @@ git checkout master -- test_cli_regression.sh
 - [ ] **polygon-api-client** SDK installed and functional
 - [ ] **gradio** package installed and functional
 - [ ] Backend server starts and responds to health checks
-- [ ] Gradio UI starts successfully (port 7860)
+- [ ] Gradio UI starts successfully (port 8000)
 - [ ] **All 39 CLI regression tests pass (100% success rate)**
 - [ ] Test report generated successfully with correct formatting
 - [ ] Test statistics calculated correctly (no 0s, proper min/max/avg)
@@ -417,7 +417,7 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 **Outcome:**
 - ✅ 121 Python packages installed
-- ✅ Gradio UI working on port 7860
+- ✅ Gradio UI working on port 8000
 - ✅ All 39/39 CLI regression tests PASSED
 - ✅ Avg Response Time: 9.67s (EXCELLENT performance)
 - ✅ No React dependencies needed
@@ -520,4 +520,4 @@ uv run python -c "from src.backend.services.agent_service import create_agent; p
 - Oct 6, 2025: 270/270 tests PASSED (10-loop baseline), 8.73s overall avg
 - Sep 29, 2025: 7/7 tests PASSED, environment fully operational
 
-**Architecture:** Gradio-only frontend (port 7860), persistent agent, direct APIs
+**Architecture:** Gradio-only frontend (port 8000), persistent agent, direct APIs

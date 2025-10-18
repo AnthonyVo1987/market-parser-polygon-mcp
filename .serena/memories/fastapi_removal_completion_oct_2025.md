@@ -3,7 +3,7 @@
 
 ### Executive Summary
 
-Successfully removed FastAPI backend infrastructure and complex multi-server startup scripts from the Market Parser project. Gradio now runs as a standalone server (port 7860) without requiring FastAPI middleware, completing the simplification begun with React frontend retirement.
+Successfully removed FastAPI backend infrastructure and complex multi-server startup scripts from the Market Parser project. Gradio now runs as a standalone server (port 8000) without requiring FastAPI middleware, completing the simplification begun with React frontend retirement.
 
 **Status:** ✅ COMPLETE
 
@@ -19,7 +19,7 @@ After React frontend retirement (Phase 1, Oct 17, 2025), the FastAPI backend lay
 
 **Before Phase 2:**
 ```
-User → Gradio (7860) → CLI (direct import)
+User → Gradio (8000) → CLI (direct import)
       FastAPI (8000) → (unused, no clients)
 ```
 
@@ -30,7 +30,7 @@ User → Gradio (7860) → CLI (direct import)
 **startup scripts coordinated 2 servers:**
 - Kill existing uvicorn/gradio processes
 - Start FastAPI on port 8000
-- Start Gradio on port 7860
+- Start Gradio on port 8000
 - Health check both servers
 - Browser notification
 
@@ -44,7 +44,7 @@ User → Gradio (7860) → CLI (direct import)
 
 **After Phase 2:**
 ```
-User → Gradio (7860) → CLI (direct import)
+User → Gradio (8000) → CLI (direct import)
 ```
 
 **Simple Startup:**
@@ -108,7 +108,7 @@ uv run python src/backend/gradio_app.py
 **Before (2-Server):**
 ```
 Port 8000: FastAPI (uvicorn) - 0 clients
-Port 7860: Gradio
+Port 8000: Gradio
 
 Processes: 2
 Memory: ~200MB
@@ -117,7 +117,7 @@ Startup: 45-60 seconds
 
 **After (1-Server):**
 ```
-Port 7860: Gradio only
+Port 8000: Gradio only
 
 Processes: 1
 Memory: ~100MB
@@ -133,7 +133,7 @@ chmod +x start-app.sh && ./start-app.sh
 # Behind the scenes:
 # 1. Kill existing servers
 # 2. Start uvicorn (port 8000)
-# 3. Start gradio (port 7860)
+# 3. Start gradio (port 8000)
 # 4. Health check both
 # 5. Notify user
 ```
@@ -149,10 +149,10 @@ uv run python src/backend/gradio_app.py
 
 **Before:**
 - Port 8000: FastAPI backend
-- Port 7860: Gradio UI
+- Port 8000: Gradio UI
 
 **After:**
-- Port 7860: Gradio UI (only)
+- Port 8000: Gradio UI (only)
 
 ---
 
@@ -276,7 +276,7 @@ uv pip list | grep gradio
 ```
 React (port 3000) - Frontend
 FastAPI (port 8000) - Backend API
-Gradio (port 7860) - Alternative UI
+Gradio (port 8000) - Alternative UI
 
 Processes: 3
 Ports: 3
@@ -285,7 +285,7 @@ Complexity: High
 
 **After (1-Server):**
 ```
-Gradio (port 7860) - Only UI
+Gradio (port 8000) - Only UI
 
 Processes: 1
 Ports: 1
@@ -316,7 +316,7 @@ uvicorn = { extras = ["standard"], version = "*" }
     "server": { "host": "127.0.0.1", "port": 8000 },
     "security": {
       "cors": {
-        "origins": ["http://127.0.0.1:7860", "http://localhost:7860"]
+        "origins": ["http://127.0.0.1:8000", "http://localhost:8000"]
       }
     },
     ...

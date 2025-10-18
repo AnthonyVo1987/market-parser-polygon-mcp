@@ -4,10 +4,10 @@
 
 ### Gradio Web UI (Recommended)
 ```bash
-# Start Gradio interface on port 7860
+# Start Gradio interface on port 8000
 uv run python src/backend/gradio_app.py
 
-# Access: http://127.0.0.1:7860
+# Access: http://127.0.0.1:8000
 ```
 
 ### CLI Interface
@@ -96,7 +96,7 @@ npm run health
 curl http://localhost:8000/health
 
 # Manual Gradio UI check
-curl http://localhost:7860
+curl http://localhost:8000
 ```
 
 ## Development Utilities
@@ -170,9 +170,9 @@ pkill -f gradio_app
 
 # Check port usage
 netstat -tlnp | grep :8000
-netstat -tlnp | grep :7860
+netstat -tlnp | grep :8000
 lsof -i :8000
-lsof -i :7860
+lsof -i :8000
 ```
 
 ## Quick Reference
@@ -217,6 +217,6 @@ git push
 ## Notes
 
 - **React frontend removed**: React has been completely retired (Oct 17, 2025)
-- **Gradio only**: Gradio (port 7860) is the ONLY web interface
+- **Gradio only**: Gradio (port 8000) is the ONLY web interface
 - **No frontend build commands**: No npm run build, frontend:dev, type-check, etc.
-- **Port 3000 removed**: Only ports 8000 (backend) and 7860 (Gradio) are active
+- **Port 3000 removed**: Only ports 8000 (backend) and 8000 (Gradio) are active

@@ -1,6 +1,6 @@
 # UI Refactor - Panel Consolidation (October 2025)
 
-**⚠️ HISTORICAL DOCUMENTATION**: This memory documents a React frontend refactor completed in October 2025. The React frontend was subsequently retired on October 17, 2025. Gradio (port 7860) is now the ONLY web interface. This file is preserved for historical reference only.
+**⚠️ HISTORICAL DOCUMENTATION**: This memory documents a React frontend refactor completed in October 2025. The React frontend was subsequently retired on October 17, 2025. Gradio (port 8000) is now the ONLY web interface. This file is preserved for historical reference only.
 
 ## Overview
 Completed comprehensive UI refactor to remove unnecessary panels and consolidate related functionality into a cleaner, more streamlined interface.
@@ -238,4 +238,4 @@ Successfully completed UI refactor with:
 
 ---
 
-**Update (Oct 17, 2025)**: The React frontend documented in this memory has been completely retired. Gradio (port 7860) is now the ONLY web interface. This documentation is preserved for historical reference only.
+**Update (Oct 17, 2025)**: The React frontend documented in this memory has been completely retired. Gradio (port 8000) is now the ONLY web interface. This documentation is preserved for historical reference only.

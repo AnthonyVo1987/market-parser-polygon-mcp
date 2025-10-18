@@ -90,7 +90,7 @@ uv run src/backend/cli.py
 
 # Gradio Web UI (recommended for interactive analysis)
 uv run python src/backend/gradio_app.py
-# Access at http://127.0.0.1:7860
+# Access at http://127.0.0.1:8000
 ```
 
 **Prerequisites:** uv, API keys in .env
@@ -129,14 +129,14 @@ DETAILED ANALYSIS
 
 ### Multiple Interfaces
 
-- **Gradio Web Interface** - Modern chat UI with streaming responses (port 7860)
+- **Gradio Web Interface** - Modern chat UI with streaming responses (port 8000)
 - **Enhanced CLI** - Terminal interface with rich formatting
 
 ## Example Usage
 
 ### Gradio Web Interface
 
-1. Open <http://127.0.0.1:7860>
+1. Open <http://127.0.0.1:8000>
 2. Select an example or type your financial query
 3. Get streaming responses with financial data and analysis
 4. Examples included: Stock price queries, technical analysis, options chains, stock comparisons
@@ -221,7 +221,7 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ## Architecture
 
 - **Core**: CLI with OpenAI Agents SDK v0.2.9 and Direct Polygon/Tradier API integration
-- **Web UI**: Gradio 5.49.1+ ChatInterface (port 7860) - wraps CLI core
+- **Web UI**: Gradio 5.49.1+ ChatInterface (port 8000) - wraps CLI core
 - **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
 - **Performance Monitoring**: Response timing and token usage tracking
 - **Testing**: CLI regression test suite (test_cli_regression.sh - 39 comprehensive tests)
@@ -293,7 +293,7 @@ uv install
 
 ```bash
 # Check port availability
-netstat -tlnp | grep :7860
+netstat -tlnp | grep :8000
 
 # Kill existing Gradio processes
 pkill -f gradio_app

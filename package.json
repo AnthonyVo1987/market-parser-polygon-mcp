@@ -16,7 +16,7 @@
     "clean:install": "npm run clean && npm run install:all",
     "clean:full": "npm run clean && npm run clean:cache && npm run install:all",
     "// === UTILITY COMMANDS ===": "",
-    "status": "echo '=== Gradio UI Status ===' && (curl -s http://localhost:7860 > /dev/null && echo 'Gradio UI running on http://localhost:7860' || echo 'Gradio UI not running')",
+    "status": "echo '=== Gradio UI Status ===' && (curl -s http://localhost:8000 > /dev/null && echo 'Gradio UI running on http://localhost:8000' || echo 'Gradio UI not running')",
     "health": "npm run status"
   },
   "dependencies": {

@@ -27,7 +27,7 @@ KEY TAKEAWAYS
 # Start Gradio server
 uv run python src/backend/gradio_app.py
 
-# Access at http://127.0.0.1:7860
+# Access at http://127.0.0.1:8000
 ```
 
 
@@ -310,7 +310,7 @@ uv run src/backend/cli.py
 
 # Gradio Web UI (recommended for interactive analysis)
 uv run python src/backend/gradio_app.py
-# Access at http://127.0.0.1:7860
+# Access at http://127.0.0.1:8000
 ```
 
 ## Features
@@ -325,14 +325,14 @@ Ask questions like:
 
 ### Multiple Interfaces
 
-- **Gradio Web Interface** - Python ChatInterface for financial analysis (port 7860)
+- **Gradio Web Interface** - Python ChatInterface for financial analysis (port 8000)
 - **Enhanced CLI** - Terminal interface with rich formatting
 
 ## Example Usage
 
 ### Gradio Web Interface
 
-1. Open <http://127.0.0.1:7860>
+1. Open <http://127.0.0.1:8000>
 2. Select an example or type your financial query
 3. Get streaming responses with financial data and analysis
 4. Examples included: Stock price queries, technical analysis, options chains, stock comparisons
@@ -356,7 +356,7 @@ Performance Metrics:
 ## Architecture
 
 - **Core**: CLI with OpenAI Agents SDK v0.2.9 and Direct Polygon/Tradier API integration
-- **Web UI**: Gradio 5.49.1+ ChatInterface (port 7860) - wraps CLI core
+- **Web UI**: Gradio 5.49.1+ ChatInterface (port 8000) - wraps CLI core
 - **Testing**: CLI regression test suite (test_cli_regression.sh - 39 tests)
 - **Pattern**: CLI = core business logic, Gradio = thin wrapper (zero duplication)
 
@@ -410,7 +410,7 @@ uv sync
 
 ```bash
 # Check port availability
-netstat -tlnp | grep :7860
+netstat -tlnp | grep :8000
 
 # Kill existing Gradio processes
 pkill -f gradio_app
@@ -436,12 +436,12 @@ uv run python src/backend/gradio_app.py
 ## Architecture Impact
 
 **Before (Multi-Server):**
-- Backend (FastAPI, Port 8000) + Gradio (Port 7860)
+- Backend (FastAPI, Port 8000) + Gradio (Port 7860 - migrated to 8000)
 - Complex startup scripts (start-app.sh, start-app-xterm.sh)
 - 2 processes, 2 ports, multi-server coordination
 
 **After (Single-Server):**
-- Gradio only (Port 7860)
+- Gradio only (Port 8000)
 - Simple startup: uv run python src/backend/gradio_app.py
 - 1 process, 1 port, no orchestration needed
 
@@ -469,7 +469,7 @@ Gradio imports CLI core functions directly (process_query_with_footer), does NOT
 - Architecture: Simplified 2-layer (Gradio → CLI)
 
 **Operations:**
-- Ports: 1 instead of 2 (only 7860)
+- Ports: 1 instead of 2 (only 8000)
 - Processes: 1 instead of 2
 - Deployment: Simpler (no multi-server coordination)
 

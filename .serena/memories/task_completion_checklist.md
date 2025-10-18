@@ -131,7 +131,7 @@ curl http://127.0.0.1:8000/health
 # Expected: {"status": "healthy"}
 
 # Verify Gradio UI
-curl http://127.0.0.1:7860
+curl http://127.0.0.1:8000
 # Expected: HTML response
 
 # Or use npm script
@@ -195,5 +195,5 @@ git push
 ## Notes
 
 - **React/TypeScript removed**: No TypeScript/JavaScript linting needed (Oct 17, 2025)
-- **Gradio only**: All web UI testing done via Gradio (port 7860)
+- **Gradio only**: All web UI testing done via Gradio (port 8000)
 - **Python-first**: Only Python linting and testing required

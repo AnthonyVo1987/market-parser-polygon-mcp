@@ -352,6 +352,6 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 ## Notes
 
-**Update (Oct 17, 2025)**: React frontend completely retired. Gradio (port 7860) is now the ONLY web interface. Tables render via:
+**Update (Oct 17, 2025)**: React frontend completely retired. Gradio (port 8000) is now the ONLY web interface. Tables render via:
 - **CLI**: Rich library (terminal formatting)
 - **Gradio**: Native markdown rendering (Python-based UI)

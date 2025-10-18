@@ -9,7 +9,7 @@ This guide provides step-by-step instructions for AI agents to completely re-ini
 - ✅ All 39/39 CLI regression tests pass (100% success rate)
 - ✅ Python environment with 121 packages installed
 - ✅ CLI starts without errors
-- ✅ Gradio UI starts successfully (port 7860)
+- ✅ Gradio UI starts successfully (port 8000)
 - ✅ All imports and dependencies working correctly
 - ✅ polygon-api-client SDK properly installed and functional
 
@@ -79,7 +79,7 @@ pkill -f "gradio"
 pkill -f "python.*gradio_app"
 
 # Verify no processes are running on project ports
-netstat -tlnp | grep -E ":(7860|8000|5500)"
+netstat -tlnp | grep -E ":(8000|8000|5500)"
 ```
 
 #### Step 2.2: Remove All Environment Files
@@ -189,7 +189,7 @@ uv run python src/backend/gradio_app.py &
 sleep 10
 
 # Test Gradio endpoint
-curl -s http://127.0.0.1:7860 | head -10
+curl -s http://127.0.0.1:8000 | head -10
 
 # Stop Gradio
 pkill -f "gradio_app"
@@ -199,7 +199,7 @@ pkill -f "gradio_app"
 ```
 🚀 Initializing Market Parser Gradio Interface...
 ✅ Agent initialized successfully
-Running on local URL:  http://127.0.0.1:7860
+Running on local URL:  http://127.0.0.1:8000
 ```
 
 ### Phase 5: Comprehensive Testing
@@ -314,7 +314,7 @@ uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
 - [ ] **polygon-api-client** SDK installed and functional
 - [ ] **gradio** package installed and functional
 - [ ] CLI starts without errors
-- [ ] Gradio UI starts successfully (port 7860)
+- [ ] Gradio UI starts successfully (port 8000)
 - [ ] **All 39 CLI regression tests pass (100% success rate)**
 - [ ] Test report generated successfully with correct formatting
 - [ ] Test statistics calculated correctly (no 0s, proper min/max/avg)
@@ -365,4 +365,4 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 - Oct 6, 2025: 270/270 tests PASSED (10-loop baseline), 8.73s overall avg
 - Sep 29, 2025: 7/7 tests PASSED, environment fully operational
 
-**Architecture:** Gradio-only (port 7860), persistent agent, direct APIs
+**Architecture:** Gradio-only (port 8000), persistent agent, direct APIs
