@@ -4,14 +4,14 @@
 
 <Phase 1: Research> ULTRA-THINK to Research the requested task(s): 
 
-## Task 1. Research completely retiring & removing REACT Frontend from the codebase for a full migration to Python Gradio UI frontend
+## Task 1. Research and Investigate Removing FastAPI, CORS, and any other dead\legacy code paths\modules related to the retired React Frontend
 
 Context:
-- I have fully tested and validated the new Gradio based UI and it is working well. So now it is time to fully migrate the project to the new Gradio UI.
-- That means fully retiring & removing the react front end since we'll go with a more simplified full python code base for our prototyping using Gradio UI.
-- So this is going to be an extremely complex task to fully retire REACT from our code base.
-- We want to remove\delete ALL REACT Code, components, references and anything. 
-- We also want to go through all the documentation & Serena memories too & update, Edit, remove, and\or delete any references to using react, because we will no longer have a react front end. This will streamline and reduce complexity of our app And prepare it for future AWS deployment
+- FastAPI & CORS no longer needed after retiring React Frontend and migrating fully to Python and Gradio UI
+- There may be other lingering remnants of dead\legacy code that may also need to be cleaned up
+
+## Task 2. Update\Fix\Correct all project docs with latest cleanup and removal of legacy features & use Serena tools to update Project Memories and 'react_retirement_completion_oct_2025.md' memory with latest legacy code cleanup
+
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
