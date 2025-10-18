@@ -42,8 +42,8 @@ aws apprunner create-service \
 
 ## 📋 What Gets Deployed
 
-- ✅ FastAPI backend (serves API + frontend)
-- ✅ React frontend (built static files)
+- ✅ Gradio web interface (Python-based, port 8000)
+- ✅ CLI core functionality
 - ✅ All dependencies bundled
 - ✅ Production optimized
 
@@ -96,10 +96,10 @@ aws apprunner start-deployment --service-arn <your-service-arn>
 - Verify environment variables are set
 - Ensure API keys are valid
 
-**Frontend not loading?**
-- Check browser console for errors
-- Verify `/health` endpoint works
-- Check CORS settings in production config
+**UI not loading?**
+- Verify Gradio service started successfully
+- Check CloudWatch logs for errors
+- Ensure port 8000 is accessible
 
 ## 📚 Full Documentation
 

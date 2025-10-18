@@ -28,10 +28,9 @@ I'll read the task details from new_task_details.md and use @agent-tech-lead-orc
 
 | **Task Category** | **Agent** | **Specific Responsibilities** |
 |-------------------|-----------|------------------------------|
-| **Agent System Development** | `backend-developer` | FastAPI + Pydantic AI + OpenAI Agents SDK, guardrail system, prompt templates |
-| **Financial Query Processing** | `backend-developer` | MCP integration, Polygon.io data handling, agent orchestration |
-| **React Components & UI** | `react-component-architect` | Modern React 18.2+ patterns, hooks, PWA features, financial dashboards |
-| **API Design & Integration** | `api-architect` | REST endpoints, Polygon.io MCP server design, data contracts |
+| **Agent System Development** | `backend-developer` | Gradio UI + Pydantic AI + OpenAI Agents SDK, guardrail system, prompt templates |
+| **Financial Query Processing** | `backend-developer` | Direct API integration, Polygon.io/Tradier data handling, agent orchestration |
+| **API Design & Integration** | `api-architect` | Polygon.io/Tradier API design, data contracts, direct integration |
 | **Performance & Optimization** | `performance-optimizer` | Real-time financial data processing, agent efficiency, response times |
 | **Code Quality & Security** | `code-reviewer` | Security-aware reviews, financial data handling, maintainability |
 

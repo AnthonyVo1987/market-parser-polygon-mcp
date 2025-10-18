@@ -1,557 +1,1032 @@
-# TODO Task Plan: Gradio Port Migration (7860 → 8000)
+# Dead Code Cleanup Implementation Plan - TODO Task Checklist
 
-**Date:** October 18, 2025
-**Status:** Implementation Ready
-**Based on:** research_task_plan.md
-
----
-
-## 🎯 Mission
-
-Migrate Gradio web interface from port 7860 to port 8000 for AWS deployment compatibility.
-
-**Scope:** 1 code file (2 lines) + 17 documentation files
+**Generated:** 2025-10-18
+**Based On:** research_task_plan.md (comprehensive codebase audit)
+**Status:** Ready for Implementation (Phase 3)
+**Task:** Remove all dead code and legacy implementations after React/FastAPI retirement
 
 ---
 
-## 📋 Task Checklist Overview
+## 🔴 CRITICAL: MANDATORY TOOL USAGE THROUGHOUT IMPLEMENTATION
 
-- [ ] **Phase 0:** Pre-Implementation Verification (3 tasks)
-- [ ] **Phase 1:** Code Changes (2 tasks)
-- [ ] **Phase 2:** Documentation Updates (17 tasks)
-- [ ] **Phase 3:** Testing & Validation (6 tasks) 🔴 MANDATORY
-- [ ] **Phase 4:** Final Verification (3 tasks)
-- [ ] **Phase 5:** Atomic Commit & Push (6 tasks)
+**YOU MUST systematically use Sequential-Thinking & Serena tools throughout the ENTIRE implementation:**
 
-**Total Tasks:** 37
+- **Sequential-Thinking**: Use at START of each phase for systematic approach and complex reasoning
+- **Serena Tools**: Use for code analysis, pattern searches, and verification
+- **Standard Tools**: Use for file operations (Read, Edit, Write) and bash commands
+- **NEVER STOP** using advanced tools unless specific action only supported by Standard Tools
 
 ---
 
-## 🚨 MANDATORY TOOL USAGE
+## Implementation Phases Overview
 
-**YOU MUST use Sequential-Thinking and Serena tools throughout ALL phases:**
+| Phase | Description | Tasks | Priority | Tools |
+|-------|-------------|-------|----------|-------|
+| **0** | Pre-Implementation Setup | 3 tasks | ⭐⭐⭐ CRITICAL | Bash, Sequential-Thinking |
+| **1** | Dead Python Code Cleanup | 2 tasks | ⭐ HIGH | Serena, Bash |
+| **2** | Orphaned Bytecode Cleanup | 2 tasks | ⭐ HIGH | Bash |
+| **3** | Obsolete Config Files Cleanup | 2 tasks | ⭐⭐ MEDIUM | Bash |
+| **4** | Obsolete CI Workflow Cleanup | 2 tasks | ⭐⭐ MEDIUM | Bash |
+| **5** | Pre-Commit Hook Update | 4 tasks | ⭐⭐ MEDIUM | Read, Edit, Serena |
+| **6** | Documentation Updates | 4 tasks | ⭐⭐⭐ LOW | Serena, Read, Edit |
+| **7** | **MANDATORY Testing & Validation** | 6 tasks | ⭐⭐⭐ CRITICAL | Bash, Grep |
+| **8** | Atomic Git Commit | 6 tasks | ⭐⭐⭐ CRITICAL | Bash |
 
-- ✅ **Sequential-Thinking:** Use for planning, analysis, and complex reasoning at EVERY phase
-- ✅ **Serena Tools:** Use for code analysis, symbol searches, and pattern matching
-- ✅ **Task Agent:** Use for parallel documentation updates
-- ✅ **Standard Tools:** Use for file operations and git commands
-
-**VIOLATION = TASK FAILURE**
+**Total Tasks:** 31 tasks across 9 phases
 
 ---
 
-## Phase 0: Pre-Implementation Verification
+## ⚠️ CRITICAL PRE-REQUISITES
 
-### 0.1: Verify Port Availability
+### Before Starting ANY Implementation:
+
+1. ✅ Ensure you are on the correct git branch (`react_retirement` or create new branch)
+2. ✅ Verify working directory is clean (`git status`)
+3. ✅ Read research_task_plan.md to understand all findings
+4. ✅ Use Sequential-Thinking to plan approach for each phase
+5. ✅ **NEVER stage files early** - only stage AFTER all work complete
+
+---
+
+## PHASE 0: Pre-Implementation Setup
+
+### 🎯 **START with Sequential-Thinking for Pre-Implementation Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Analyze the overall task scope and dependencies
+- Plan the execution order and risk mitigation
+- Understand the testing strategy
+- Confirm understanding of atomic commit workflow
+
+### ✅ **Task 0.1: Run Baseline Test Suite**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Establish baseline that all tests pass BEFORE making any changes
 
 **Commands:**
-```bash
-netstat -tlnp 2>/dev/null | grep -E ":(7860|8000)" || echo "✅ Ports available"
-```
-
-**Expected Output:**
-```
-✅ Ports available
-```
-
-**Checkpoint:** Both ports 7860 and 8000 must be free
-
----
-
-### 0.2: Create Backup Tag
-
-**Command:**
-```bash
-git tag -a backup-before-port-migration -m "Backup before Gradio port 7860→8000 migration"
-```
-
-**Verification:**
-```bash
-git tag -l | grep backup-before-port-migration
-```
-
-**Expected Output:**
-```
-backup-before-port-migration
-```
-
-**Checkpoint:** Backup tag created successfully
-
----
-
-### 0.3: Verify Git Clean State
-
-**Command:**
-```bash
-git status --short
-```
-
-**Expected Output:**
-```
-M TODO_task_plan.md
-?? research_task_plan.md
-```
-
-**Checkpoint:** Only expected files (task plans) should be modified/untracked
-
----
-
-## Phase 1: Code Changes (gradio_app.py)
-
-### 1.1: Update Print Statement (Line 100)
-
-**Tool:** Edit
-
-**File:** `src/backend/gradio_app.py`
-
-**Change:**
-```python
-# OLD:
-print("📍 Server: http://127.0.0.1:7860")
-
-# NEW:
-print("📍 Server: http://127.0.0.1:8000")
-```
-
-**Verification:**
-```bash
-grep "Server: http://127.0.0.1:8000" src/backend/gradio_app.py
-```
-
-**Expected Output:**
-```python
-print("📍 Server: http://127.0.0.1:8000")
-```
-
-**Checkpoint:** Print statement updated to show port 8000
-
----
-
-### 1.2: Update server_port Parameter (Line 107)
-
-**Tool:** Edit
-
-**File:** `src/backend/gradio_app.py`
-
-**Change:**
-```python
-# OLD:
-server_port=7860,  # Gradio default port (separate from FastAPI:8000, React:3000)
-
-# NEW:
-server_port=8000,  # AWS deployment port (unified with previous FastAPI port)
-```
-
-**Verification:**
-```bash
-grep "server_port=8000" src/backend/gradio_app.py
-```
-
-**Expected Output:**
-```python
-server_port=8000,  # AWS deployment port (unified with previous FastAPI port)
-```
-
-**Checkpoint:** server_port parameter updated to 8000
-
----
-
-## Phase 2: Documentation Updates (17 files)
-
-**Strategy:** Use Task agent for parallel updates to maximize speed
-
-### 2.1: Update CLAUDE.md (9 references)
-
-**Pattern:** Replace all instances of:
-- `7860` → `8000`
-- `http://127.0.0.1:7860` → `http://127.0.0.1:8000`
-- `http://localhost:7860` → `http://localhost:8000`
-
-**Preserve:** Historical references (e.g., "was 7860, now 8000")
-
----
-
-### 2.2: Update README.md (5 references)
-
-**Same pattern as CLAUDE.md**
-
----
-
-### 2.3: Update AGENTS.md (8 references)
-
-**Same pattern as CLAUDE.md**
-
----
-
-### 2.4: Update package.json (2 references - npm scripts)
-
-**Lines to update:**
-```json
-// OLD:
-"status": "echo '=== Gradio UI Status ===' && (curl -s http://localhost:7860 > /dev/null && echo 'Gradio UI running on http://localhost:7860' || echo 'Gradio UI not running')",
-
-// NEW:
-"status": "echo '=== Gradio UI Status ===' && (curl -s http://localhost:8000 > /dev/null && echo 'Gradio UI running on http://localhost:8000' || echo 'Gradio UI not running')",
-```
-
----
-
-### 2.5: Update docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md (6 references)
-
-**Same pattern as CLAUDE.md**
-
----
-
-### 2.6-2.16: Update Serena Memory Files (11 files)
-
-**Files:**
-1. `.serena/memories/project_architecture.md` (12 references)
-2. `.serena/memories/react_retirement_completion_oct_2025.md` (17 references)
-3. `.serena/memories/fastapi_removal_completion_oct_2025.md` (13 references)
-4. `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md` (11 references)
-5. `.serena/memories/task_completion_checklist.md` (2 references)
-6. `.serena/memories/project_onboarding_summary.md` (6 references)
-7. `.serena/memories/suggested_commands.md` (7 references)
-8. `.serena/memories/ui_refactor_oct_2025.md` (2 references)
-9. `.serena/memories/adaptive_formatting_guide.md` (1 reference)
-
-**Pattern:** Same as CLAUDE.md (replace all port references)
-
-**Note:** Create new Serena memory: `port_migration_to_8000_oct_2025.md` documenting this change
-
----
-
-### 2.17: Verification - All Documentation Updated
-
-**Command:**
-```bash
-grep -r "7860" --include="*.md" --include="*.json" src/ docs/ *.md .serena/memories/ package.json 2>/dev/null | wc -l
-```
-
-**Expected Output:**
-```
-0
-```
-
-**Checkpoint:** All port 7860 references updated to 8000 (except in historical context)
-
----
-
-## Phase 3: Testing & Validation 🔴 MANDATORY
-
-### 3.1: 🔴 CRITICAL - Test Gradio Launch (MUST PASS FIRST)
-
-**Command:**
-```bash
-timeout 30 uv run python src/backend/gradio_app.py &
-sleep 5
-curl -s http://127.0.0.1:8000 | head -5
-pkill -f "gradio_app.py"
-```
-
-**Expected Output:**
-```
-🚀 Initializing Market Parser Gradio Interface...
-✅ Agent initialized successfully
-
-============================================================
-🎨 Market Parser Gradio Interface
-============================================================
-📍 Server: http://127.0.0.1:8000
-📖 Docs: See research_task_plan.md for details
-🔄 Hot Reload: Use 'gradio src/backend/gradio_app.py'
-============================================================
-
-Running on local URL: http://127.0.0.1:8000
-```
-
-**Success Criteria:**
-- ✅ No OSError about port conflicts
-- ✅ Server starts on port 8000 (NOT 7860)
-- ✅ Web interface accessible at http://127.0.0.1:8000
-- ✅ Curl returns HTML content
-
-**🔴 BLOCKING CHECKPOINT:**
-- **IF GRADIO FAILS:** STOP HERE - DO NOT proceed to CLI testing
-- **IF GRADIO PASSES:** Continue to CLI testing
-
----
-
-### 3.2: Run CLI Regression Tests (ONLY if Gradio passed)
-
-**Command:**
 ```bash
 chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
-**Expected Output:**
-```
-✅ CLI session completed
-⏱️  Total Session Duration: 6 min 8 sec
+**Expected Result:**
+- 39/39 tests COMPLETED
+- Test report generated: `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`
+- Save report path for later comparison
 
-📊 Test Results Analysis
-========================
-Total Tests: 39
-✅ Completed: 39
-❌ Incomplete: 0
-Generation Rate: 100%
-Average Response Time: 9.41s
-📈 Overall Performance Rating: EXCELLENT
+**Verification:**
+```bash
+# Check test completion
+grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
+# Should output: 39
 ```
 
-**Checkpoint:** 39/39 tests generate responses
+**❌ STOP IF:** Any tests fail - investigate and fix before proceeding
 
 ---
 
-### 3.3: Phase 2a - Error Detection (MANDATORY Grep Commands)
+### ✅ **Task 0.2: Git Status Snapshot**
 
-**Command 1:**
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Verify clean working directory before making changes
+
+**Commands:**
 ```bash
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log | tail -20
+git status
 ```
 
-**Expected Output:** (empty or no critical errors)
+**Expected Result:**
+- Working tree clean OR only expected uncommitted changes
+- Correct branch (`react_retirement` or new cleanup branch)
 
-**Command 2:**
+**Verification:**
+- No unexpected modified files
+- No unexpected untracked files
+
+**❌ STOP IF:** Unexpected changes detected - commit or stash before proceeding
+
+---
+
+### ✅ **Task 0.3: Review Research Findings**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Read, Sequential-Thinking
+
+**Purpose:** Understand all dead code identified in research phase
+
+**Commands:**
+```bash
+# Read the research plan
+cat research_task_plan.md | less
+```
+
+**Expected Result:**
+- Understand 7 categories of dead code
+- Understand 8 files to delete (372 lines)
+- Understand 2+ files to update
+- Understand all __pycache__/ directories to clean
+
+**Verification:**
+- Can explain what each file deletion accomplishes
+- Can explain why each file is safe to delete
+
+---
+
+## PHASE 1: Dead Python Code Cleanup
+
+### 🎯 **START with Sequential-Thinking for Python Code Cleanup Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Analyze the __init__.py file structure and imports
+- Plan the verification strategy to ensure no active imports
+- Understand the risk mitigation for deleting this file
+
+### ✅ **Task 1.1: Verify __init__.py Has No Active Imports**
+
+**Priority:** ⭐ HIGH
+**Status:** [ ] Not Started
+**Tool:** Serena `search_for_pattern`, Grep
+
+**Purpose:** Confirm no code imports from src/backend/__init__.py
+
+**Commands:**
+```bash
+# Search for imports using Serena
+# Use pattern: "from backend import|from src.backend import|import backend"
+
+# Fallback with grep if needed
+grep -r "from backend import" src/
+grep -r "from src.backend import" src/
+grep -r "import backend" src/
+```
+
+**Expected Result:**
+- **ZERO** imports found (file is not imported anywhere)
+- Search returns empty results
+
+**Verification:**
+- No matches found in any .py files
+- Safe to delete __init__.py
+
+**❌ STOP IF:** Active imports found - investigate and refactor before deletion
+
+---
+
+### ✅ **Task 1.2: Delete src/backend/__init__.py**
+
+**Priority:** ⭐ HIGH
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Remove dead Python file with obsolete imports
+
+**Commands:**
+```bash
+rm src/backend/__init__.py
+```
+
+**Expected Result:**
+- File deleted successfully
+- 89 lines of dead code removed
+
+**Verification:**
+```bash
+ls src/backend/__init__.py
+# Should error: No such file or directory
+```
+
+**Impact:** Zero functional impact (file not imported)
+
+---
+
+## PHASE 2: Orphaned Bytecode Cleanup
+
+### 🎯 **START with Sequential-Thinking for Bytecode Cleanup Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Understand why __pycache__ directories exist
+- Plan the cleanup strategy for all orphaned bytecode
+- Verify the cleanup is comprehensive
+
+### ✅ **Task 2.1: List All __pycache__ Directories**
+
+**Priority:** ⭐ HIGH
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Document all __pycache__ locations before cleanup
+
+**Commands:**
+```bash
+find . -type d -name "__pycache__" | grep -v node_modules | grep -v .venv
+```
+
+**Expected Result:**
+- List of all __pycache__/ directories in src/backend/
+- Count for commit message documentation
+
+**Verification:**
+- Minimum 4 directories found (backend, tools, utils, services)
+
+---
+
+### ✅ **Task 2.2: Delete All __pycache__ Directories**
+
+**Priority:** ⭐ HIGH
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Remove all orphaned bytecode files
+
+**Commands:**
+```bash
+find . -type d -name "__pycache__" -not -path "./node_modules/*" -not -path "./.venv/*" -exec rm -rf {} +
+```
+
+**Expected Result:**
+- All __pycache__/ directories deleted
+- All orphaned .pyc files removed (api_models, dependencies, main, finnhub_tools)
+
+**Verification:**
+```bash
+find . -type d -name "__pycache__"
+# Should return empty or only node_modules/.venv
+```
+
+**Impact:** Negligible disk space recovered, cleaner repository
+
+---
+
+## PHASE 3: Obsolete Config Files Cleanup
+
+### 🎯 **START with Sequential-Thinking for Config Files Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Understand purpose of each config file being deleted
+- Verify no tooling dependencies on these files
+- Plan verification strategy post-deletion
+
+### ✅ **Task 3.1: Verify Config Files Exist**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Confirm all 6 obsolete config files are present
+
+**Commands:**
+```bash
+ls -la tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs
+```
+
+**Expected Result:**
+- All 6 files found
+- Total size ~5KB
+
+**Verification:**
+- Each file exists
+- Files are in root directory
+
+---
+
+### ✅ **Task 3.2: Delete 6 Obsolete Config Files**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Remove React/TypeScript tooling configuration files
+
+**Commands:**
+```bash
+rm tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs
+```
+
+**Expected Result:**
+- 6 files deleted successfully
+- ~253 lines of config removed
+
+**Verification:**
+```bash
+ls -la tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs 2>&1 | grep "No such file"
+# Should show "No such file or directory" for all 6
+```
+
+**Impact:** Zero tooling impact (React removed, Python uses Black)
+
+---
+
+## PHASE 4: Obsolete CI Workflow Cleanup
+
+### 🎯 **START with Sequential-Thinking for CI Workflow Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Understand the lighthouse-ci.yml workflow purpose
+- Verify workflow is disabled and safe to delete
+- Plan verification that no other workflows depend on it
+
+### ✅ **Task 4.1: Verify Workflow File Exists**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Confirm obsolete CI workflow is present
+
+**Commands:**
+```bash
+ls -la .github/workflows/lighthouse-ci.yml
+```
+
+**Expected Result:**
+- File found (119 lines)
+- References deleted frontend/ directory
+
+**Verification:**
+```bash
+cat .github/workflows/lighthouse-ci.yml | grep -c "if: false"
+# Should output: 2 (workflow is disabled)
+```
+
+---
+
+### ✅ **Task 4.2: Delete Lighthouse CI Workflow**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Remove React frontend CI workflow
+
+**Commands:**
+```bash
+rm .github/workflows/lighthouse-ci.yml
+```
+
+**Expected Result:**
+- File deleted successfully
+- 119 lines of CI config removed
+
+**Verification:**
+```bash
+ls -la .github/workflows/
+# Should NOT show lighthouse-ci.yml
+```
+
+**Impact:** Zero CI impact (workflow was disabled, React removed)
+
+---
+
+## PHASE 5: Pre-Commit Hook Update
+
+### 🎯 **START with Sequential-Thinking for Pre-Commit Hook Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Understand current pre-commit hook structure
+- Plan precise edit to remove ESLint section only
+- Verify Python hooks remain intact
+
+### ✅ **Task 5.1: Read Current .pre-commit-config.yaml**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Read
+
+**Purpose:** Understand current pre-commit configuration
+
+**Commands:**
+```bash
+# Use Read tool to view file
+```
+
+**Expected Result:**
+- File has 3 sections:
+  - Python formatting/linting (lines 1-22) ✅ KEEP
+  - JavaScript/TypeScript linting (lines 23-36) ❌ REMOVE
+  - General file formatting (lines 38-47) ✅ KEEP
+
+**Verification:**
+- Identify exact line numbers of ESLint section
+- Confirm section matches research findings
+
+---
+
+### ✅ **Task 5.2: Identify ESLint Section**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Serena `search_for_pattern`
+
+**Purpose:** Locate ESLint/TypeScript hook section
+
+**Commands:**
+```bash
+# Use Serena search_for_pattern with "mirrors-eslint"
+```
+
+**Expected Result:**
+- Pattern found at lines 23-36
+- Section includes ESLint, TypeScript, React dependencies
+
+**Verification:**
+- Line numbers match research findings (23-36)
+- Section starts with "mirrors-eslint"
+
+---
+
+### ✅ **Task 5.3: Remove ESLint/TypeScript Section**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Edit
+
+**Purpose:** Remove obsolete JavaScript/TypeScript linting hook
+
+**Commands:**
+```bash
+# Use Edit tool to remove lines 23-36
+# old_string: entire ESLint section (14 lines)
+# new_string: empty (delete section)
+```
+
+**Expected Result:**
+- Lines 23-36 removed
+- File reduced from 47 lines to 33 lines
+- Python and general hooks remain intact
+
+**Verification:**
+```bash
+# Verify ESLint section removed
+grep -q "mirrors-eslint" .pre-commit-config.yaml
+# Should return 1 (not found)
+
+# Verify Python hooks still present
+grep -q "psf/black" .pre-commit-config.yaml
+# Should return 0 (found)
+```
+
+---
+
+### ✅ **Task 5.4: Verify Updated YAML Is Valid**
+
+**Priority:** ⭐⭐ MEDIUM
+**Status:** [ ] Not Started
+**Tool:** Read, Bash
+
+**Purpose:** Ensure .pre-commit-config.yaml is still valid YAML
+
+**Commands:**
+```bash
+# Read updated file
+# Use Read tool
+
+# Validate YAML syntax
+python3 -c "import yaml; yaml.safe_load(open('.pre-commit-config.yaml'))"
+```
+
+**Expected Result:**
+- File reads correctly
+- YAML syntax is valid
+- Only Python and general hooks present
+
+**Verification:**
+- No YAML syntax errors
+- File structure intact
+
+---
+
+## PHASE 6: Documentation Updates
+
+### 🎯 **START with Sequential-Thinking for Documentation Analysis**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Analyze scope of documentation updates needed
+- Plan which files to update vs. mark as historical
+- Prioritize most impactful documentation changes
+
+### ✅ **Task 6.1: Update DEPLOYMENT-QUICKSTART.md**
+
+**Priority:** ⭐⭐⭐ LOW
+**Status:** [ ] Not Started
+**Tool:** Serena `search_for_pattern`, Read, Edit
+
+**Purpose:** Remove React frontend deployment references
+
+**Commands:**
+```bash
+# Use Serena search_for_pattern to find "React" or "frontend"
+# Use Read to view file
+# Use Edit to update/remove React sections
+```
+
+**Expected Result:**
+- React deployment steps removed
+- Focus on Gradio-only deployment
+- Updated to reflect current architecture
+
+**Verification:**
+```bash
+grep -i "react\|frontend" DEPLOYMENT-QUICKSTART.md
+# Should return zero or minimal historical references
+```
+
+---
+
+### ✅ **Task 6.2: Update .claude/commands/new_task.md**
+
+**Priority:** ⭐⭐⭐ LOW
+**Status:** [ ] Not Started
+**Tool:** Serena `search_for_pattern`, Read, Edit
+
+**Purpose:** Remove @react-component-architect agent references
+
+**Commands:**
+```bash
+# Use Serena search_for_pattern to find "react-component-architect"
+# Use Read to view file
+# Use Edit to remove React agent rows from tables
+```
+
+**Expected Result:**
+- @react-component-architect references removed
+- Agent table updated
+- Focus on backend and Python agents
+
+**Verification:**
+```bash
+grep -i "react-component-architect" .claude/commands/new_task.md
+# Should return zero results
+```
+
+---
+
+### ✅ **Task 6.3: Update .claude/commands/code_review_commit.md**
+
+**Priority:** ⭐⭐⭐ LOW
+**Status:** [ ] Not Started
+**Tool:** Serena `search_for_pattern`, Read, Edit
+
+**Purpose:** Remove TypeScript interface validation references
+
+**Commands:**
+```bash
+# Use Serena search_for_pattern to find "TypeScript"
+# Use Read to view file
+# Use Edit to remove TypeScript validation steps
+```
+
+**Expected Result:**
+- TypeScript validation step removed
+- Focus on Python code review only
+
+**Verification:**
+```bash
+grep -i "typescript" .claude/commands/code_review_commit.md
+# Should return zero results
+```
+
+---
+
+### ✅ **Task 6.4: Quick Audit of Other Documentation**
+
+**Priority:** ⭐⭐⭐ LOW
+**Status:** [ ] Not Started
+**Tool:** Serena `search_for_pattern`, Bash
+
+**Purpose:** Identify other docs that may need updates
+
+**Commands:**
+```bash
+# Search all .md files for React/TypeScript references
+grep -r -i "react\|typescript" *.md docs/ .serena/memories/ | grep -v "historical\|HISTORICAL\|retired" | head -20
+```
+
+**Expected Result:**
+- List of files with potential outdated references
+- Most should be marked as historical already
+
+**Action:**
+- Update critical references
+- Mark appropriate files as historical
+- Low priority - can be addressed in future commits
+
+---
+
+## PHASE 7: 🔴 MANDATORY Testing & Validation
+
+### ⚠️ CRITICAL CHECKPOINT - DO NOT SKIP ⚠️
+
+**CRITICAL:** You MUST run tests and perform Phase 2 verification BEFORE claiming completion
+
+### 🎯 **START with Sequential-Thinking for Testing Strategy**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Plan comprehensive testing approach
+- Understand Phase 2 mandatory verification requirements
+- Plan evidence collection for all checkpoint questions
+
+---
+
+### ✅ **Task 7.1: Python Import Verification**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Verify critical modules import successfully after __init__.py deletion
+
+**Commands:**
+```bash
+uv run python -c "import src.backend.cli; print('✅ CLI imports OK')"
+uv run python -c "import src.backend.gradio_app; print('✅ Gradio imports OK')"
+uv run python -c "from src.backend.tools import polygon_tools; print('✅ Tools import OK')"
+```
+
+**Expected Result:**
+- All 3 imports succeed
+- Each prints "✅ ... imports OK"
+- No ImportError exceptions
+
+**❌ STOP IF:** Any import fails - restore __init__.py and investigate
+
+---
+
+### ✅ **Task 7.2: Pylint Import Error Check**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Verify no import errors detected by pylint
+
+**Commands:**
+```bash
+uv run pylint src/backend/ --disable=all --enable=import-error
+```
+
+**Expected Result:**
+- **Score: 10.00/10**
+- **No import errors detected**
+
+**Verification:**
+```bash
+# Should show:
+# Your code has been rated at 10.00/10
+```
+
+**❌ STOP IF:** Import errors detected - fix before proceeding
+
+---
+
+### ✅ **Task 7.3: Post-Cleanup Full Test Suite (Phase 1)**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Run full CLI regression suite - generate all 39 responses
+
+**Commands:**
+```bash
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+```
+
+**Expected Result:**
+- **39/39 tests COMPLETED** (responses generated)
+- Test report generated: `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`
+- **NOTE:** "39/39 COMPLETED" means responses received, NOT verified correct
+
+**Verification:**
+```bash
+# Check completion count
+grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
+# Should output: 39
+```
+
+**⚠️ IMPORTANT:** Phase 1 does NOT verify correctness - only completion
+
+---
+
+### ✅ **Task 7.4: 🔴 MANDATORY Phase 2 Verification (Error Detection)**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash (Grep)
+
+**Purpose:** MANDATORY grep-based verification of test responses for errors
+
+**🔴 REQUIRED: You MUST run these 3 grep commands and SHOW output:**
+
+**Command 1: Find All Errors/Failures**
+```bash
+grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
+```
+
+**Command 2: Count 'Data Unavailable' Errors**
 ```bash
 grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
 ```
 
-**Expected Output:**
-```
-0
-```
-
-**Command 3:**
+**Command 3: Count Completed Tests**
 ```bash
 grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
 ```
 
-**Expected Output:**
-```
-40
-```
+**Expected Result:**
+- **Command 1:** Either no output (0 errors) OR list of errors with line numbers
+- **Command 2:** Count of "data unavailable" errors (ideally 0)
+- **Command 3:** Should output 39 (all tests completed)
 
-**Checkpoint:** Show grep output as evidence
+**🔴 MANDATORY: Document Results:**
 
----
+If errors found, create evidence table:
 
-### 3.4: Phase 2b - Document Failures (if any found)
+| Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
+|--------|-----------|--------|---------------|------------------------|
+| X | Test_Name | 123 | error message | tool_call(...) |
 
-**IF errors found in Phase 2a:**
-- Create failure table with test number, line number, error message
-- Document root cause
-- Fix and re-test
+**If NO errors:** Explicitly state "✅ 0 failures found - all grep commands returned zero errors"
 
-**IF no errors:**
-- Confirm: "✅ 0 failures found"
-
-**Checkpoint:** Either show failure table OR confirm 0 failures
+**❌ CANNOT PROCEED** without running all 3 grep commands and showing output
 
 ---
 
-### 3.5: Phase 2c - Verify Response Correctness
+### ✅ **Task 7.5: Phase 2 Checkpoint Questions (MANDATORY)**
 
-**For tests without errors, verify:**
-1. ✅ Response addresses the prompt query
-2. ✅ Correct ticker symbols used
-3. ✅ Appropriate tool calls made
-4. ✅ Data formatting correct
-5. ✅ No hallucinated data
-6. ✅ Response complete (not truncated)
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Evidence from Task 7.4
 
-**Checkpoint:** Manual verification of sample responses
+**Purpose:** Answer ALL checkpoint questions with evidence
 
----
+**🔴 REQUIRED: Answer ALL 5 questions with evidence:**
 
-### 3.6: Phase 2d - Final Test Verification
+1. ✅ **Did you RUN the 3 mandatory grep commands in Task 7.4?**
+   - **Answer:** [YES/NO]
+   - **Evidence:** [Paste grep outputs]
 
-**Answer ALL checkpoint questions:**
+2. ✅ **Did you DOCUMENT all failures found (or confirm 0 failures)?**
+   - **Answer:** [YES/NO]
+   - **Evidence:** [Provide failure table OR "0 failures found"]
 
-1. Did you RUN the 3 mandatory grep commands? **YES/NO + show output**
-2. Did you DOCUMENT failures OR confirm 0 failures? **YES/NO + evidence**
-3. Failure count from grep -c "data unavailable": **X failures**
-4. Tests that generated responses: **X/39 COMPLETED**
-5. Tests that PASSED verification: **X/39 PASSED**
+3. ✅ **Failure count from `grep -c "data unavailable"`:**
+   - **Answer:** [X failures]
+   - **Evidence:** [Show grep -c output]
 
-**Checkpoint:** All 5 questions answered with evidence
+4. ✅ **Tests that generated responses (COMPLETED):**
+   - **Answer:** [X/39 COMPLETED]
+   - **Evidence:** [Show grep -c "COMPLETED" output]
 
-**🔴 ENFORCEMENT:**
-- Cannot proceed to Phase 4 without Phase 2d evidence
-- Cannot claim task complete without test results
-- Test failures must be fixed and re-tested
+5. ✅ **Tests that PASSED verification (no errors):**
+   - **Answer:** [X/39 PASSED]
+   - **Evidence:** [39 minus failure count from Q3]
 
----
-
-## Phase 4: Final Verification
-
-### 4.1: Grep for Remaining Port 7860 References
-
-**Command:**
-```bash
-grep -r "7860" --include="*.py" --include="*.md" --include="*.json" src/ docs/ *.md .serena/memories/ package.json 2>/dev/null || echo "✅ No remaining references"
-```
-
-**Expected Output:**
-```
-✅ No remaining references
-```
-
-**Note:** Exclude historical references in memory files (acceptable)
-
-**Checkpoint:** No active code/config references to port 7860
+**🔴 CANNOT MARK TASK COMPLETE WITHOUT:**
+- Running and showing grep outputs
+- Documenting failures with evidence (or confirming 0 failures)
+- Answering all 5 checkpoint questions with evidence
 
 ---
 
-### 4.2: Verify Gradio Accessible on Port 8000
+### ✅ **Task 7.6: Gradio Startup Verification**
 
-**Command:**
-```bash
-curl -s http://127.0.0.1:8000 | grep -i "gradio\|market" | head -3
-```
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
 
-**Expected Output:** HTML content with Gradio/Market Parser references
-
-**Checkpoint:** Web interface responding on port 8000
-
----
-
-### 4.3: Review All Modified Files
-
-**Command:**
-```bash
-git status --short
-```
-
-**Expected Files:**
-- M src/backend/gradio_app.py
-- M CLAUDE.md
-- M README.md
-- M AGENTS.md
-- M package.json
-- M docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md
-- M .serena/memories/*.md (11 files)
-- A .serena/memories/port_migration_to_8000_oct_2025.md
-- M TODO_task_plan.md
-- M research_task_plan.md
-- A test-reports/test_cli_regression_loop1_*.log
-
-**Checkpoint:** All expected files present, no unexpected changes
-
----
-
-## Phase 5: Atomic Commit & Push
-
-### 5.1: Complete ALL Work FIRST (DO NOT stage yet)
-
-**Checklist:**
-- ✅ Code changes complete (gradio_app.py)
-- ✅ Documentation updates complete (17 files)
-- ✅ Tests run and passed (39/39)
-- ✅ Test reports generated
-- ✅ Task plans updated
-- ✅ New Serena memory created
-
-**⚠️ DO NOT RUN `git add` YET**
-
-**Checkpoint:** ALL work is 100% complete
-
----
-
-### 5.2: Verify Everything Complete
+**Purpose:** Verify Gradio server starts successfully on port 8000
 
 **Commands:**
 ```bash
-git status  # Review ALL changed/new files
-git diff src/backend/gradio_app.py | head -20  # Verify code changes
+# Start Gradio in background with timeout
+timeout 10s uv run python src/backend/gradio_app.py 2>&1 | tee /tmp/gradio_startup.log &
+GRADIO_PID=$!
+
+# Wait for startup
+sleep 5
+
+# Check if running on port 8000
+curl -s http://127.0.0.1:8000 > /dev/null && echo "✅ Gradio running on port 8000" || echo "❌ Gradio not accessible"
+
+# Kill background process
+kill $GRADIO_PID 2>/dev/null
 ```
 
-**Checkpoint:** Review output, ensure everything is ready
+**Expected Result:**
+- "✅ Gradio running on port 8000"
+- No startup errors in logs
 
----
-
-### 5.3: Stage Everything at Once
-
-**Command:**
+**Verification:**
 ```bash
-git add -A  # Stage ALL files in ONE command
+cat /tmp/gradio_startup.log | grep -i error
+# Should return zero errors
 ```
 
-**⚠️ This is the FIRST time running `git add`**
-
-**Checkpoint:** All files staged in single operation
+**❌ STOP IF:** Gradio fails to start - investigate errors
 
 ---
 
-### 5.4: Verify Staging Immediately
+## PHASE 8: 🔴 Atomic Git Commit Workflow
 
-**Command:**
+### ⚠️ CRITICAL: PROPER ATOMIC COMMIT WORKFLOW ⚠️
+
+**DO NOT STAGE FILES EARLY - Stage ONLY immediately before commit**
+
+### 🎯 **START with Sequential-Thinking for Commit Strategy**
+
+**MANDATORY:** Use Sequential-Thinking to:
+- Review all changes made during implementation
+- Verify ALL work is complete (code, tests, docs)
+- Plan atomic commit message structure
+- Confirm understanding of proper staging workflow
+
+---
+
+### ✅ **Task 8.1: 🔴 CRITICAL - WAIT - Do NOT Stage Yet**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** None (Checkpoint)
+
+**Purpose:** Ensure ALL work complete before staging
+
+**🔴 VERIFY ALL OF THE FOLLOWING BEFORE PROCEEDING:**
+
+- ✅ All code deletions complete (8 files)
+- ✅ All bytecode cleanup complete (__pycache__)
+- ✅ All config deletions complete (6 files)
+- ✅ All CI workflow deletions complete (1 file)
+- ✅ Pre-commit hook updated (ESLint removed)
+- ✅ Documentation updated (React/TypeScript references)
+- ✅ All tests PASS (Phase 1 + Phase 2 verification complete)
+- ✅ Test report generated and saved
+- ✅ All 5 checkpoint questions answered with evidence
+
+**⚠️ DO NOT RUN `git add` YET**
+
+**❌ STOP IF:** Any item above is NOT complete
+
+---
+
+### ✅ **Task 8.2: Final Review**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Review ALL changes before staging
+
+**Commands:**
 ```bash
-git status --short
+# Review all changed/deleted files
+git status
+
+# Review all changes
+git diff
 ```
 
-**Expected:** All files should show "M" or "A" in first column, NOTHING unstaged
+**Expected Result:**
+- **Deleted files (8):**
+  - src/backend/__init__.py
+  - tsconfig.node.json
+  - vite-env.d.ts
+  - postcss.config.js
+  - .prettierrc.cjs
+  - lighthouserc.js
+  - lighthouserc.cjs
+  - .github/workflows/lighthouse-ci.yml
 
-**Checkpoint:** All files staged, nothing left unstaged
+- **Modified files (2+):**
+  - .pre-commit-config.yaml (ESLint section removed)
+  - DEPLOYMENT-*.md (React references updated)
+  - .claude/commands/*.md (React agents removed)
+
+- **Untracked files:**
+  - test-reports/test_cli_regression_loop1_*.log (NEW test report)
+
+**Verification:**
+- All changes look correct
+- No unexpected modifications
+- Ready to stage
 
 ---
 
-### 5.5: Commit Immediately (within 60 seconds)
+### ✅ **Task 8.3: Stage Everything AT ONCE**
 
-**Command:**
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Stage ALL changes in ONE command
+
+**Commands:**
+```bash
+git add -A
+```
+
+**⚠️ THIS IS THE FIRST TIME RUNNING `git add`**
+**⚠️ ALL changes must be staged together**
+
+**Expected Result:**
+- All deletions staged
+- All modifications staged
+- All new files staged (test reports)
+
+**Verification:**
+```bash
+git status
+# Should show all changes as "Changes to be committed"
+```
+
+---
+
+### ✅ **Task 8.4: Verify Staging Immediately**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Confirm ALL files staged, NOTHING unstaged
+
+**Commands:**
+```bash
+git status
+```
+
+**Expected Result:**
+- **"Changes to be committed:"** section lists ALL changes
+- **"Changes not staged for commit:"** section is EMPTY
+- **"Untracked files:"** section is EMPTY (or only temp files)
+
+**Verification:**
+- Count of staged files matches expectations (~10-15 files)
+- No unstaged changes
+
+**❌ STOP IF:** Any files unstaged - run `git add [missing-file]`
+
+---
+
+### ✅ **Task 8.5: Commit Immediately (Within 60 Seconds)**
+
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash (Heredoc)
+
+**Purpose:** Create atomic commit with comprehensive message
+
+**Commands:**
 ```bash
 git commit -m "$(cat <<'EOF'
-[PORT] Migrate Gradio from port 7860 to 8000 for AWS deployment
+[CLEANUP] Remove dead code after React/FastAPI retirement
 
-**Problem:** Gradio configured for port 7860, need port 8000 for AWS deployment
-**Requirement:** Use standard port 8000 for AWS cloud deployment compatibility
+**Summary:** Comprehensive cleanup of legacy code after migrating to Gradio-only Python full-stack architecture
 
-**Solution:** Update Gradio port configuration from 7860 → 8000
+**Code Deletions:**
+- Deleted src/backend/__init__.py (89 lines - imports deleted modules)
+- Cleaned all __pycache__/ directories (orphaned bytecode: api_models, dependencies, main, finnhub_tools)
 
-**Code Changes:**
-- src/backend/gradio_app.py (lines 100, 107):
-  - Print statement: http://127.0.0.1:7860 → http://127.0.0.1:8000
-  - server_port: 7860 → 8000
-  - Updated comment: "AWS deployment port (unified with previous FastAPI port)"
+**Config Deletions:**
+- Deleted 6 obsolete React/TypeScript config files (253 lines):
+  - tsconfig.node.json (TypeScript config)
+  - vite-env.d.ts (Vite TypeScript definitions)
+  - postcss.config.js (PostCSS for React CSS)
+  - .prettierrc.cjs (Prettier for React)
+  - lighthouserc.js (Lighthouse CI)
+  - lighthouserc.cjs (Lighthouse CI duplicate)
 
-**Documentation Updates (17 files):**
-- CLAUDE.md, README.md, AGENTS.md
-- package.json (npm status script)
-- docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md
-- All 11 Serena memory files
-- Created: .serena/memories/port_migration_to_8000_oct_2025.md
+**CI/CD Deletions:**
+- Deleted .github/workflows/lighthouse-ci.yml (119 lines - React frontend CI workflow)
 
-**Testing Results:**
-✅ Gradio Launch Test: PASSED
-- Server starts on http://127.0.0.1:8000
-- No port conflicts
-- Web interface accessible
+**Configuration Updates:**
+- Updated .pre-commit-config.yaml (removed ESLint/TypeScript hook - 14 lines)
 
-✅ CLI Regression Tests: 39/39 PASSED (100%)
-- Tests completed: 39/39 COMPLETED
-- Average response time: 9.41s (EXCELLENT)
-- Phase 2 verification: 0 errors found
-- Test report: test-reports/test_cli_regression_loop1_*.log
+**Documentation Updates:**
+- Updated DEPLOYMENT-QUICKSTART.md (removed React deployment references)
+- Updated .claude/commands/new_task.md (removed @react-component-architect)
+- Updated .claude/commands/code_review_commit.md (removed TypeScript validation)
+- Other documentation cleanups
 
-**Success Metrics:**
-- ✅ Port migration: 100% SUCCESS
-- ✅ Code changes: 1 file, 2 lines
-- ✅ Documentation updates: 17 files
-- ✅ Gradio launch: WORKING on port 8000
-- ✅ CLI tests: 39/39 PASSED (100%)
-- ✅ Zero errors: 0 data unavailable errors
+**Testing & Verification:**
+- ✅ Test Suite: 39/39 PASS (100%)
+- ✅ Phase 2 Verification: X/39 PASS (grep-based error detection)
+- ✅ Python Imports: All modules import successfully
+- ✅ Pylint: No import errors (10.00/10)
+- ✅ Gradio: Starts successfully on port 8000
+- Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
 
-**AWS Deployment Ready:**
-- Port 8000 configured for cloud deployment
-- Unified port strategy (no longer split across 7860/8000)
-- Standard HTTP service port for AWS
+**Impact:**
+- Files Deleted: 8 files (372 lines of dead code)
+- Directories Cleaned: All __pycache__/ (4+ directories)
+- Functional Impact: Zero (all dead code, no active dependencies)
+- Code Quality: Improved (cleaner codebase, reduced confusion)
 
-**Files Changed:**
-- Code: 1 file (gradio_app.py)
-- Documentation: 17 files
-- Serena Memories: 11 updated + 1 new
-- Test Reports: 1 new
-- Total: 30 files
+**Risk Assessment:** LOW (comprehensive testing, all changes are deletions)
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -560,80 +1035,126 @@ EOF
 )"
 ```
 
-**Checkpoint:** Commit created with comprehensive message
+**⚠️ CRITICAL:** Update placeholders in commit message:
+- Replace `X/39 PASS` with actual pass count from Phase 2 verification
+- Replace `YYYY-MM-DD_HH-MM` with actual test report timestamp
+
+**Expected Result:**
+- Commit created successfully
+- Comprehensive commit message with all details
+
+**Verification:**
+```bash
+git log -1 --stat
+# Should show commit with all changes
+```
 
 ---
 
-### 5.6: Push Immediately
+### ✅ **Task 8.6: Push Immediately**
 
-**Command:**
+**Priority:** ⭐⭐⭐ CRITICAL
+**Status:** [ ] Not Started
+**Tool:** Bash
+
+**Purpose:** Push commit to remote repository
+
+**Commands:**
 ```bash
 git push
 ```
 
-**Expected Output:**
+**Expected Result:**
+- Commit pushed successfully to `origin/react_retirement` (or current branch)
+- Remote updated
+
+**Verification:**
+```bash
+git status
+# Should show: Your branch is up to date with 'origin/...'
 ```
-To https://github.com/AnthonyVo1987/market-parser-polygon-mcp.git
-   xxxxxxx..yyyyyyy  react_retirement -> react_retirement
+
+**✅ IMPLEMENTATION COMPLETE** when push succeeds
+
+---
+
+## Success Criteria
+
+### ✅ All Tasks Complete When:
+
+1. ✅ All 8 files deleted (372 lines)
+2. ✅ All __pycache__/ directories cleaned
+3. ✅ Pre-commit config updated (ESLint removed)
+4. ✅ Documentation updated (React/TypeScript references)
+5. ✅ **Phase 1 Tests:** 39/39 COMPLETED (responses generated)
+6. ✅ **Phase 2 Verification:** All 3 grep commands run and documented
+7. ✅ **Checkpoint Questions:** All 5 questions answered with evidence
+8. ✅ **Test Pass Count:** X/39 PASS (documented with evidence)
+9. ✅ Python imports verified (no errors)
+10. ✅ Pylint clean (10.00/10)
+11. ✅ Gradio starts successfully
+12. ✅ Atomic commit created and pushed
+
+---
+
+## Risk Mitigation
+
+### Rollback Strategy (If Needed)
+
+If any critical issues arise:
+
+```bash
+# Restore deleted files from git
+git checkout HEAD -- src/backend/__init__.py
+git checkout HEAD -- tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs
+git checkout HEAD -- .github/workflows/lighthouse-ci.yml
+
+# Restore pre-commit config
+git checkout HEAD -- .pre-commit-config.yaml
+
+# Clean staged changes
+git reset HEAD
 ```
 
-**Checkpoint:** Changes pushed to remote successfully
+---
+
+## Notes for Implementation
+
+### Tool Usage Patterns:
+
+- **Sequential-Thinking:** Start of each phase for systematic approach
+- **Serena Tools:** Code analysis, pattern searches, verification
+- **Standard Read:** Inspect files before editing
+- **Standard Edit:** Precise file modifications
+- **Bash:** File operations, testing, git commands
+
+### Common Pitfalls to Avoid:
+
+1. ❌ Staging files early during development
+2. ❌ Skipping Phase 2 verification
+3. ❌ Not answering all 5 checkpoint questions
+4. ❌ Claiming tests "PASS" without grep verification
+5. ❌ Committing without test reports
+6. ❌ Delay between staging and committing
+
+### Remember:
+
+- **"39/39 COMPLETED" ≠ "39/39 PASSED"**
+- Only Phase 2 verification proves correctness
+- Must run all 3 grep commands and show output
+- Must answer all 5 checkpoint questions with evidence
+- Must document failures OR confirm 0 failures
 
 ---
 
-## ✅ Task Completion Checklist
-
-**ALL of the following MUST be checked:**
-
-- [ ] Phase 0: Pre-verification complete (ports available, backup tag, git clean)
-- [ ] Phase 1: Code changes complete (gradio_app.py updated)
-- [ ] Phase 2: Documentation updated (17 files)
-- [ ] Phase 3: Gradio launch test PASSED on port 8000
-- [ ] Phase 3: CLI regression tests PASSED (39/39)
-- [ ] Phase 3: Phase 2 grep verification complete (0 errors)
-- [ ] Phase 4: Final verification complete (no remaining 7860 references)
-- [ ] Phase 5: Atomic commit created and pushed
-- [ ] Test report generated and saved
-- [ ] All evidence shown to user
-
-**🔴 TASK IS NOT COMPLETE UNTIL ALL BOXES CHECKED**
+**Implementation Plan Complete**
+**Status:** Ready for Phase 3 (Implementation)
+**Next Step:** Begin with Task 0.1 (Pre-Implementation Setup)
 
 ---
 
-## 📊 Success Criteria
-
-**Code:**
-- ✅ gradio_app.py lines 100 & 107 updated
-- ✅ Port 8000 configured correctly
-- ✅ No syntax errors
-
-**Documentation:**
-- ✅ All 17 files updated
-- ✅ All port 7860 references changed to 8000
-- ✅ New Serena memory created
-
-**Testing:**
-- ✅ Gradio launches on port 8000 without errors
-- ✅ 39/39 CLI tests PASS
-- ✅ 0 data unavailable errors
-- ✅ Phase 2 verification complete
-
-**Commit:**
-- ✅ All changes staged together
-- ✅ Comprehensive commit message
-- ✅ Pushed to remote
-
----
-
-## 🎯 Final Summary
-
-**Task:** Migrate Gradio port 7860 → 8000
-**Scope:** 1 code file + 17 documentation files
-**Status:** Implementation Ready
-**Next:** Execute all phases systematically using Sequential-Thinking + Serena tools
-
-**🔴 REMEMBER:**
-- Use Sequential-Thinking at EVERY phase
-- Test Gradio BEFORE CLI testing
-- Show Phase 2 verification evidence
-- Follow atomic commit workflow exactly
+*Generated by: Claude Code (Sonnet 4.5) using Sequential-Thinking*
+*Based on: research_task_plan.md (comprehensive audit findings)*
+*Date: 2025-10-18*
+*Total Tasks: 31 tasks across 9 phases*
+*Estimated Time: 2-3 hours*
