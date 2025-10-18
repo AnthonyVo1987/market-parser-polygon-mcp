@@ -198,6 +198,21 @@ DETAILED ANALYSIS
 3. Get streaming responses with financial data and analysis
 4. Examples included: Stock price queries, technical analysis, options chains, stock comparisons
 
+**Example Response:**
+
+```text
+Market Status: CLOSED
+After-hours: NO
+Early-hours: NO
+Exchanges: NASDAQ closed, NYSE closed, OTC closed
+Server Time (UTC): 2025-10-18 01:50:12
+
+Performance Metrics:
+   Response Time: 5.135s
+   Tokens Used: 21,701 (Input: 21,402, Output: 299)
+   Model: gpt-5-nano
+```
+
 ### CLI Interface
 
 ```bash

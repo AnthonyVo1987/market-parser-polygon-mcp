@@ -15,6 +15,7 @@ Access: http://127.0.0.1:7860
 """
 
 import asyncio
+import time
 from typing import List
 
 import gradio as gr
@@ -25,10 +26,12 @@ try:
     # Try relative imports first (when run as module)
     from .cli import initialize_persistent_agent, process_query
     from .config import settings
+    from .utils.token_utils import extract_token_usage_from_context_wrapper
 except ImportError:
     # Fallback to absolute imports (when run directly)
     from backend.cli import initialize_persistent_agent, process_query
     from backend.config import settings
+    from backend.utils.token_utils import extract_token_usage_from_context_wrapper
 
 # Initialize agent (same pattern as FastAPI)
 print("🚀 Initializing Market Parser Gradio Interface...")
@@ -48,21 +51,68 @@ async def chat_with_agent(message: str, history: List):
         history: Chat history (auto-managed by Gradio, unused here)
 
     Yields:
-        Streaming response text chunks
+        Streaming response text chunks with performance metrics footer
 
     Architecture Pattern:
         User Input → Gradio UI → chat_with_agent() → process_query() (CLI core)
     """
     try:
+        # Measure processing time for performance metrics
+        start_time = time.perf_counter()
+
         # Call shared CLI processing function (core business logic - no duplication)
         result = await process_query(agent, session, message)
 
-        # Extract response
+        # Calculate processing time
+        processing_time = time.perf_counter() - start_time
+
+        # Extract response text
         response_text = str(result.final_output)
+
+        # Extract token usage using shared CLI utility (zero duplication)
+        token_usage = extract_token_usage_from_context_wrapper(result)
+
+        # Get model name from settings
+        model_name = settings.available_models[0]  # "gpt-5-nano"
+
+        # Format performance metrics footer (matching CLI format)
+        footer = "\n\nPerformance Metrics:\n"
+        footer += f"   Response Time: {processing_time:.3f}s\n"
+
+        # Add token information if available
+        if token_usage:
+            token_count = token_usage.get("total_tokens")
+            input_tokens = token_usage.get("input_tokens")
+            output_tokens = token_usage.get("output_tokens")
+            cached_input = token_usage.get("cached_input_tokens", 0)
+            cached_output = token_usage.get("cached_output_tokens", 0)
+
+            if token_count:
+                footer += f"   Tokens Used: {token_count:,}"
+
+                if input_tokens and output_tokens:
+                    footer += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
+
+                    # Show cache hit information if tokens were cached
+                    if cached_input > 0 or cached_output > 0:
+                        cache_parts = []
+                        if cached_input > 0:
+                            cache_parts.append(f"Cached Input: {cached_input:,}")
+                        if cached_output > 0:
+                            cache_parts.append(f"Cached Output: {cached_output:,}")
+                        footer += f" | {', '.join(cache_parts)}"
+
+                footer += "\n"
+
+        # Add model information
+        footer += f"   Model: {model_name}\n"
+
+        # Append footer to response
+        response_with_footer = response_text + footer
 
         # Gradio streaming: yield progressive chunks for better UX
         # Split by sentences for natural streaming
-        sentences = response_text.replace(". ", ".|").split("|")
+        sentences = response_with_footer.replace(". ", ".|").split("|")
         accumulated = ""
 
         for sentence in sentences:

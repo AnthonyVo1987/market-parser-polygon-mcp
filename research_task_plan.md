@@ -1,666 +1,415 @@
-# Research Task Plan: Gradio ChatInterface Integration
+# Research Task Plan: Fix Gradio Performance Metrics Footer Bug
 
-**Date:** 2025-10-17
-**Status:** Research Phase Complete
-**Objective:** Add Gradio-based Python frontend as third interface option (CLI, React GUI, Gradio GUI)
+**Date:** October 17, 2025
+**Status:** Research Complete
+**Task:** [BUG] Investigate & Fix Gradio UI missing response footer data
 
 ---
 
 ## Executive Summary
 
-**Key Finding:** Gradio's `ChatInterface` class provides a perfect Python-native alternative to the React frontend with significantly simpler architecture, easier deployment, and minimal performance overhead.
-
-**Current State:**
-- **CLI Backend**: Core business logic in `cli.py` with `process_query()` and `initialize_persistent_agent()`
-- **React Frontend**: Custom TypeScript UI that calls FastAPI backend at `http://127.0.0.1:8000/api/v1/chat`
-- **FastAPI Backend**: Wraps CLI core, provides REST API, runs on port 8000
-- **Architecture Pattern**: GUIs import and call CLI core - no logic duplication
-
-**Proposed Addition:**
-- **Gradio Frontend**: Python-based chatbot UI using `gr.ChatInterface`, runs on port 7860
-- **Integration Pattern**: Same as React - wraps CLI core with `process_query()`, no duplication
-- **Deployment**: Standalone Python script, no Node.js/TypeScript required
+Gradio ChatInterface displays agent responses but is missing the performance metrics footer that both CLI and React frontends provide. This footer includes Response Time, Token Usage (Input/Output/Cached), and Model name. Root cause identified: `chat_with_agent()` function only extracts `result.final_output` text and completely ignores available performance metadata in the result object.
 
 ---
 
-## Research Findings
+## Research Question
 
-### 1. GRADIO CHATINTERFACE ANALYSIS
+**Primary:** Why is Gradio ChatInterface missing performance metrics footer data that CLI and React both display?
 
-#### A. Core Class: `gr.ChatInterface`
+**Secondary:** How should Gradio extract and format this metadata to maintain consistency with other interfaces?
 
-**Official Documentation:**
-- High-level class specifically designed for chatbot UIs
-- Automatic chat history management
-- Built-in streaming support
-- Message format: `type="messages"` for OpenAI-compatible structure
+---
 
-**Function Signature:**
+## Methodology
+
+**Tools Used:**
+- Sequential-Thinking for systematic analysis
+- Serena tools for code pattern searches and symbol analysis
+- Direct code examination of CLI, React, and Gradio implementations
+
+**Approach:**
+1. Examined CLI implementation (src/backend/cli.py, src/backend/utils/response_utils.py)
+2. Examined React/FastAPI implementation (src/backend/routers/chat.py)
+3. Examined Gradio implementation (src/backend/gradio_app.py)
+4. Analyzed token extraction utilities (src/backend/utils/token_utils.py)
+5. Compared all three implementations to identify the missing pieces
+
+---
+
+## Key Findings
+
+### 1. CLI Implementation (WORKING ✅)
+
+**File:** `src/backend/cli.py` (lines 129-156)
+
+**Process:**
 ```python
-async def chat_function(message: str, history: list) -> str:
-    # Process message
-    # Yield for streaming
-    return response
-```
+# 1. Measure start time
+start_time = time.perf_counter()
 
-**Key Features:**
-1. **Automatic History**: No manual history management needed
-2. **Streaming Support**: Native `yield` support for real-time responses
-3. **Message Types**: `type="messages"` ensures proper format
-4. **Customization**: Supports examples, avatars, custom layouts
-5. **Performance**: Minimal overhead, no animations by default
+# 2. Call process_query
+result = await process_query(analysis_agent, cli_session, user_input)
 
-#### B. Integration Examples Found
+# 3. Calculate processing time
+processing_time = time.perf_counter() - start_time
 
-**Example 1: Simple OpenAI Chatbot (`demo/llm_openai/run.py`)**
-```python
-from openai import OpenAI
-import gradio as gr
+# 4. Extract token data
+token_count = extract_token_count_from_context_wrapper(result)
 
-client = OpenAI()
-
-def predict(message, history):
-    history.append({"role": "user", "content": message})
-    stream = client.chat.completions.create(
-        messages=history,
-        model="gpt-4o-mini",
-        stream=True
-    )
-    chunks = []
-    for chunk in stream:
-        chunks.append(chunk.choices[0].delta.content or "")
-        yield "".join(chunks)
-
-demo = gr.ChatInterface(predict, type="messages")
-demo.launch()
-```
-
-**Key Insights:**
-- Simple 20-line implementation
-- Streaming via `yield`
-- History automatically managed
-- OpenAI-compatible message format
-
-**Example 2: Agent Chatbot (`demo/agent_chatbot/run.py`)**
-```python
-from transformers import Tool, ReactCodeAgent
-from transformers.agents import stream_to_gradio
-import gradio as gr
-
-agent = ReactCodeAgent(tools=[...], llm_engine=...)
-
-def interact_with_agent(prompt, history):
-    messages = []
-    yield messages
-    for msg in stream_to_gradio(agent, prompt):
-        messages.append(asdict(msg))
-        yield messages
-
-demo = gr.ChatInterface(
-    interact_with_agent,
-    chatbot=gr.Chatbot(
-        label="Agent",
-        type="messages",
-        avatar_images=(None, "robot.png")
-    ),
-    examples=[
-        ["Generate an image of an astronaut"],
-        ["Help me with illustrations"]
-    ],
-    type="messages"
+# 5. Create metadata
+cli_metadata = ResponseMetadata(
+    model=settings.available_models[0],
+    timestamp=datetime.now().isoformat(),
+    processing_time=processing_time,
+    request_id=None,
+    token_count=token_count,
 )
-demo.launch()
+
+# 6. Attach metadata to result
+result.metadata = cli_metadata
+
+# 7. Display with print_response()
+print_response(result)
 ```
 
-**Key Insights:**
-- Async agent integration
-- Custom chatbot component with avatars
-- Examples support built-in
-- Agent streaming patterns
+**File:** `src/backend/utils/response_utils.py` (lines 8-72)
 
----
-
-### 2. CURRENT ARCHITECTURE ANALYSIS
-
-#### A. Backend Architecture (FastAPI)
-
-**File: `src/backend/main.py`**
-- FastAPI app with lifespan management
-- Initializes persistent agent: `shared_agent = initialize_persistent_agent()`
-- Shared session and agent via dependency injection
-- CORS middleware for React frontend
-- Port: 8000
-
-**File: `src/backend/routers/chat.py`**
-- Endpoint: `POST /api/v1/chat`
-- Request model: `ChatRequest(message: str, model: Optional[str])`
-- Response model: `ChatResponse(response: str, metadata: ResponseMetadata)`
-- Core logic: Calls `await process_query(shared_agent, shared_session, message)`
-- Pattern: GUI imports CLI core - no duplication
-
-**File: `src/backend/cli.py`**
-- Core function: `async def process_query(agent, session, prompt) -> RunResult`
-- Initialization: `def initialize_persistent_agent() -> Agent`
-- Pattern: All GUIs call these functions
-
-#### B. Frontend Architecture (React)
-
-**File: `src/frontend/App.tsx`**
-- Simple wrapper: `<ChatInterface_OpenAI />`
-- Error boundary integration
-- Minimal code (27 lines)
-
-**API Communication:**
-- Endpoint: `POST http://127.0.0.1:8000/api/v1/chat`
-- Request: `{ message: string, model?: string }`
-- Response: `{ response: string, metadata: {...} }`
-- Port: 3000 (Vite dev server)
-
-#### C. CLI Architecture
-
-**Direct Execution:**
-- Command: `uv run src/backend/main.py`
-- Calls: `cli_async()` → `initialize_persistent_agent()` → interactive loop
-- No GUI, pure terminal interface
-
----
-
-### 3. GRADIO INTEGRATION STRATEGY
-
-#### A. Architecture Pattern (Same as React)
-
-**Principle:** GUIs wrap CLI core - no logic duplication
-
-```
-┌─────────────┐
-│   CLI Core  │  ← Core business logic
-│   (cli.py)  │
-└──────┬──────┘
-       │
-       ├──────────────┬──────────────┬──────────────┐
-       │              │              │              │
-       ▼              ▼              ▼              ▼
-┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│   CLI    │   │  FastAPI │   │  React   │   │  Gradio  │
-│  Direct  │   │ (port    │   │ (port    │   │ (port    │
-│          │   │  8000)   │   │  3000)   │   │  7860)   │
-└──────────┘   └──────────┘   └──────────┘   └──────────┘
-```
-
-**Key Principle:** All UIs call `process_query()` - zero duplication
-
-#### B. Proposed File Structure
-
-**New File: `src/backend/gradio_app.py`**
-
+**Footer Display Logic:**
 ```python
-"""Gradio ChatInterface for Market Parser.
+def print_response(result):
+    # ... display response text ...
 
-This module provides a Gradio-based UI alternative to the React frontend.
-Following the same architecture pattern: import and call CLI core logic.
-"""
+    # Display performance metrics if available
+    if hasattr(result, "metadata") and result.metadata:
+        console.print("\n[bold cyan]Performance Metrics:[/bold cyan]")
 
-import gradio as gr
-from agents import SQLiteSession
+        # 1. Display processing time
+        if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
+            console.print(f"   Response Time: {result.metadata.processing_time:.3f}s")
 
-# Import CLI core functions (no duplication!)
-from backend.cli import process_query, initialize_persistent_agent
-from backend.config import settings
+        # 2. Extract and display token information
+        from .token_utils import extract_token_usage_from_context_wrapper
+        token_usage = extract_token_usage_from_context_wrapper(result)
 
-# Initialize agent (same as FastAPI pattern)
-session = SQLiteSession(settings.agent_session_name)
-agent = initialize_persistent_agent()
+        if token_usage:
+            token_count = token_usage.get("total_tokens")
+            input_tokens = token_usage.get("input_tokens")
+            output_tokens = token_usage.get("output_tokens")
+            cached_input = token_usage.get("cached_input_tokens", 0)
+            cached_output = token_usage.get("cached_output_tokens", 0)
 
-async def chat_with_agent(message: str, history: list):
-    """Process financial query using existing CLI core logic.
+            # Format token display with caching info
+            token_display = f"   Tokens Used: {token_count:,}"
+            if input_tokens and output_tokens:
+                token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
+                if cached_input > 0 or cached_output > 0:
+                    cache_parts = []
+                    if cached_input > 0:
+                        cache_parts.append(f"Cached Input: {cached_input:,}")
+                    if cached_output > 0:
+                        cache_parts.append(f"Cached Output: {cached_output:,}")
+                    token_display += f" | {', '.join(cache_parts)}"
+            console.print(token_display)
 
-    Args:
-        message: User's financial query
-        history: Chat history (auto-managed by Gradio)
+        # 3. Display model
+        if hasattr(result.metadata, "model"):
+            console.print(f"   Model: {result.metadata.model}")
+```
 
-    Yields:
-        Streaming response text
-    """
+**Output Format:**
+```
+Performance Metrics:
+   Response Time: 5.135s
+   Tokens Used: 21,701 (Input: 21,402, Output: 299)
+   Model: gpt-5-nano
+```
+
+### 2. React/FastAPI Implementation (WORKING ✅)
+
+**File:** `src/backend/routers/chat.py` (lines 72-134)
+
+**Process:**
+```python
+# 1. Measure start time
+start_time = time.perf_counter()
+
+# 2. Call process_query (shared CLI function)
+result = await process_query(shared_agent, shared_session, stripped_message)
+
+# 3. Extract token usage
+from backend.utils.token_utils import extract_token_usage_from_context_wrapper
+token_usage = extract_token_usage_from_context_wrapper(result)
+
+# 4. Calculate processing time
+processing_time = time.perf_counter() - start_time
+
+# 5. Create response metadata
+response_metadata = ResponseMetadata(
+    model=settings.available_models[0],
+    timestamp=datetime.now().isoformat(),
+    processingTime=processing_time,
+    requestId=request_id,
+    tokenCount=token_count,
+    inputTokens=input_tokens,
+    outputTokens=output_tokens,
+    cachedInputTokens=cached_input_tokens,
+    cachedOutputTokens=cached_output_tokens,
+)
+
+# 6. Return to frontend (frontend displays it)
+return ChatResponse(response=response_text, metadata=response_metadata)
+```
+
+**Frontend Display:**
+React frontend receives metadata via API response and displays it in the message footer.
+
+### 3. Gradio Implementation (BROKEN ❌)
+
+**File:** `src/backend/gradio_app.py` (lines 39-76)
+
+**Current Process:**
+```python
+async def chat_with_agent(message: str, history: List):
     try:
-        # Call shared CLI processing function (core business logic)
+        # 1. Call shared CLI processing function
         result = await process_query(agent, session, message)
 
-        # Stream response
+        # 2. Extract response (ONLY TEXT - NO METADATA)
         response_text = str(result.final_output)
 
-        # Gradio streaming: yield chunks
-        words = response_text.split()
-        for i in range(len(words)):
-            yield " ".join(words[:i+1])
+        # 3. Stream text chunks
+        sentences = response_text.replace(". ", ".|").split("|")
+        accumulated = ""
+        for sentence in sentences:
+            accumulated += sentence
+            yield accumulated
+            await asyncio.sleep(0.05)
 
     except Exception as e:
-        yield f"Error: Unable to process request. {str(e)}"
-
-# Create Gradio ChatInterface
-demo = gr.ChatInterface(
-    chat_with_agent,
-    type="messages",
-    title="Market Parser - Financial Analysis",
-    description="Ask questions about stocks, options, and market data",
-    examples=[
-        ["What is Tesla's current stock price?"],
-        ["Show me NVDA technical analysis"],
-        ["Get AAPL options chain for next month"]
-    ],
-    cache_examples=False,
-    retry_btn=None,
-    undo_btn=None,
-    clear_btn="Clear"
-)
-
-if __name__ == "__main__":
-    # Launch on port 7860 (Gradio default)
-    demo.launch(
-        server_name="127.0.0.1",
-        server_port=7860,
-        share=False,
-        show_error=True
-    )
+        error_msg = f"❌ Error: Unable to process request.\n\nDetails: {str(e)}"
+        yield error_msg
 ```
 
-**Key Features:**
-- Imports `process_query()` from `cli.py` (no duplication)
-- Same agent initialization pattern as FastAPI
-- Streaming response support
-- Example queries built-in
-- Simple error handling
-- Runs on port 7860 (separate from FastAPI/React)
+**PROBLEMS IDENTIFIED:**
+1. ❌ **No time measurement** - Does not measure processing_time
+2. ❌ **No token extraction** - Does not call extract_token_usage_from_context_wrapper()
+3. ❌ **No model extraction** - Does not get model name
+4. ❌ **No footer formatting** - Does not create performance metrics footer
+5. ❌ **Only streams response text** - Completely ignores available metadata
 
-#### C. Startup Integration
+### 4. Token Extraction Utility (AVAILABLE ✅)
 
-**Update: `start-app.sh` and `start-app-xterm.sh`**
+**File:** `src/backend/utils/token_utils.py` (lines 21-81)
 
-Add Gradio frontend as third startup option:
+**Function:** `extract_token_usage_from_context_wrapper(result)`
 
-```bash
-# Start Gradio frontend (NEW)
-xterm -title "Gradio Frontend (Port 7860)" -hold -e "
-    cd $BASE_DIR &&
-    echo '🎨 Starting Gradio Frontend...' &&
-    uv run python src/backend/gradio_app.py
-" &
-GRADIO_PID=$!
+**Returns:**
+```python
+{
+    "total_tokens": int,
+    "input_tokens": int,
+    "output_tokens": int,
+    "cached_input_tokens": int,
+    "cached_output_tokens": int,
+}
 ```
 
-**Result:** Three concurrent frontends
-- FastAPI Backend: Port 8000
-- React Frontend: Port 3000
-- Gradio Frontend: Port 7860
+**Usage:** Already available and used by both CLI and React implementations.
 
 ---
 
-### 4. BENEFITS ANALYSIS
+## Root Cause Analysis
 
-#### A. Development Benefits
+**Problem Statement:**
+Gradio `chat_with_agent()` function was implemented to maintain "zero code duplication" by calling the shared `process_query()` function. However, it only extracts the text response (`result.final_output`) and completely ignores the performance metadata that's available in the result object.
 
-**Simpler Stack:**
-- ✅ Pure Python (no TypeScript/Node.js)
-- ✅ No npm/build process
-- ✅ No CSS/styling required
-- ✅ Built-in components
-- ✅ Hot reload via `gradio app.py`
+**Why This Happened:**
+1. Initial Gradio implementation focused on getting the basic chat functionality working
+2. Performance metrics footer was not part of the initial requirements
+3. The implementation correctly followed "CLI = core, GUI = wrapper" pattern for query processing
+4. But it did NOT follow the same pattern for metadata extraction and display
 
-**Faster Development:**
-- ✅ 30-50 lines vs 500+ lines (React)
-- ✅ No frontend build step
-- ✅ Automatic UI generation
-- ✅ Native streaming support
-- ✅ Built-in examples feature
-
-**Easier Maintenance:**
-- ✅ Single language (Python)
-- ✅ Less code to maintain
-- ✅ Fewer dependencies
-- ✅ Standard patterns
-
-#### B. Deployment Benefits
-
-**Simpler Deployment:**
-- ✅ One Python process (vs Python + Node)
-- ✅ No separate frontend build
-- ✅ No static file serving
-- ✅ Fewer moving parts
-
-**AWS Deployment:**
-- ✅ Single Docker container
-- ✅ Smaller image size
-- ✅ Fewer environment variables
-- ✅ Simpler configuration
-- ✅ Lower memory footprint
-
-**Packaging:**
-- ✅ Single `pyproject.toml`
-- ✅ No `package.json` needed
-- ✅ Unified dependency management
-
-#### C. Performance Benefits
-
-**Minimal Overhead:**
-- ✅ No frills design (per requirements)
-- ✅ Minimal animations
-- ✅ Direct Python execution
-- ✅ No API overhead (vs React → FastAPI)
-- ✅ Native async support
-
-**Resource Usage:**
-- ✅ Lower memory (no Node.js runtime)
-- ✅ Faster startup (no bundling)
-- ✅ Smaller disk footprint
-
-#### D. User Experience Benefits
-
-**Built-in Features:**
-- ✅ Chat history
-- ✅ Message formatting
-- ✅ Code syntax highlighting
-- ✅ Markdown rendering
-- ✅ File upload support (future)
-- ✅ Examples panel
-- ✅ Retry/undo buttons
-- ✅ Responsive design
+**Impact:**
+- Gradio users see agent responses but have no visibility into:
+  - How long the query took to process
+  - How many tokens were consumed (cost tracking)
+  - Whether prompt caching occurred (optimization visibility)
+  - Which model was used
 
 ---
 
-### 5. GRADIO TECHNICAL SPECIFICATIONS
+## Solution Design
 
-#### A. Installation
+### Proposed Fix
 
-**Dependency:** Add to `pyproject.toml`
-```toml
-dependencies = [
-    # ... existing dependencies ...
-    "gradio>=5.0.0",
-]
-```
+**Modify `chat_with_agent()` in src/backend/gradio_app.py to:**
 
-**Version:** Gradio 5.0+ (latest stable)
-**Python:** Requires Python 3.10+ (already satisfied)
-**Size:** ~50MB additional dependencies
+1. **Measure processing time:**
+   ```python
+   import time
+   start_time = time.perf_counter()
+   result = await process_query(agent, session, message)
+   processing_time = time.perf_counter() - start_time
+   ```
 
-#### B. Configuration Options
+2. **Extract token usage:**
+   ```python
+   from backend.utils.token_utils import extract_token_usage_from_context_wrapper
+   token_usage = extract_token_usage_from_context_wrapper(result)
+   ```
 
-**Server Configuration:**
-```python
-demo.launch(
-    server_name="127.0.0.1",  # Localhost only (dev)
-    server_port=7860,          # Default Gradio port
-    share=False,               # No public URL (dev)
-    show_error=True,           # Show error messages
-    quiet=False,               # Show startup logs
-    favicon_path=None,         # Optional custom favicon
-    ssl_keyfile=None,          # For HTTPS (production)
-    ssl_certfile=None,         # For HTTPS (production)
-)
-```
+3. **Extract model name:**
+   ```python
+   from backend.config import settings
+   model_name = settings.available_models[0]  # "gpt-5-nano"
+   ```
 
-**ChatInterface Options:**
-```python
-gr.ChatInterface(
-    fn=chat_function,               # Chat function
-    type="messages",                # Message format
-    title="Market Parser",          # Window title
-    description="Description",       # Subtitle
-    examples=[...],                 # Example queries
-    cache_examples=False,           # Don't cache examples
-    retry_btn=None,                 # Disable retry
-    undo_btn=None,                  # Disable undo
-    clear_btn="Clear",              # Clear button label
-    submit_btn="Submit",            # Submit button label
-    stop_btn="Stop",                # Stop generation button
-    multimodal=False,               # Text only
-    concurrency_limit=None,         # No limit
-    show_copy_button=True,          # Show copy button
-)
-```
+4. **Format performance metrics footer:**
+   ```python
+   footer = "\n\nPerformance Metrics:\n"
+   footer += f"   Response Time: {processing_time:.3f}s\n"
 
-#### C. FastAPI Integration (Future)
+   if token_usage:
+       token_count = token_usage.get("total_tokens")
+       input_tokens = token_usage.get("input_tokens")
+       output_tokens = token_usage.get("output_tokens")
+       cached_input = token_usage.get("cached_input_tokens", 0)
 
-**Option:** Mount Gradio within FastAPI app
+       footer += f"   Tokens Used: {token_count:,}"
+       if input_tokens and output_tokens:
+           footer += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
+           if cached_input > 0:
+               footer += f" | Cached Input: {cached_input:,}"
+       footer += "\n"
+
+   footer += f"   Model: {model_name}\n"
+   ```
+
+5. **Append footer to response before streaming:**
+   ```python
+   response_text = str(result.final_output)
+   response_with_footer = response_text + footer
+
+   # Then stream response_with_footer
+   ```
+
+### Architecture Consistency
+
+**This fix maintains project principles:**
+- ✅ Follows "CLI = core, GUI = wrapper" pattern (uses shared utilities)
+- ✅ Zero code duplication (reuses extract_token_usage_from_context_wrapper)
+- ✅ Consistent footer format across all three interfaces
+- ✅ Same metadata visibility for all users (CLI, React, Gradio)
+
+---
+
+## Implementation Requirements
+
+### Files to Modify
+
+**1. src/backend/gradio_app.py**
+- Function: `chat_with_agent()` (lines 39-76)
+- Add: time measurement, token extraction, footer formatting
+- Estimated changes: +25 lines
+
+### Imports to Add
 
 ```python
-# Alternative: Single app with multiple frontends
-from fastapi import FastAPI
-import gradio as gr
-
-app = FastAPI()
-gradio_app = gr.ChatInterface(...)
-
-# Mount Gradio at /gradio
-app = gr.mount_gradio_app(app, gradio_app, path="/gradio")
-
-# Result:
-# - FastAPI API: http://127.0.0.1:8000/api/*
-# - Gradio UI: http://127.0.0.1:8000/gradio
+import time  # For processing time measurement
+from backend.utils.token_utils import extract_token_usage_from_context_wrapper
+from backend.config import settings  # For model name
 ```
 
-**Status:** Future enhancement (Phase 2)
-**Current:** Keep separate for prototyping
+### Testing Requirements
+
+**Test Cases:**
+1. ✅ Verify footer appears in Gradio chat responses
+2. ✅ Verify response time is accurate (matches approximate duration)
+3. ✅ Verify token counts match expected ranges
+4. ✅ Verify cached token counts appear when caching occurs
+5. ✅ Verify model name displays correctly ("gpt-5-nano")
+6. ✅ Verify footer format matches CLI and React outputs
+7. ✅ Run full 39-test CLI regression suite to ensure no breakage
+
+### Documentation Updates
+
+**Files to update:**
+1. `CLAUDE.md` - Update Gradio section to mention performance metrics footer
+2. `README.md` - Update Gradio example to show footer in output
+3. `.serena/memories/project_architecture.md` - Note Gradio now matches CLI/React for metadata display
 
 ---
 
-### 6. TESTING STRATEGY
+## Validation Criteria
 
-#### A. Test Scenarios
-
-**Functional Testing:**
-1. ✅ Basic query: "TSLA stock price"
-2. ✅ Multi-ticker query: "Compare NVDA and AMD"
-3. ✅ Options query: "SPY call options chain"
-4. ✅ Technical analysis: "WDC technical indicators"
-5. ✅ Error handling: Invalid ticker, API timeout
-
-**Integration Testing:**
-1. ✅ Verify `process_query()` called correctly
-2. ✅ Verify agent response streaming
-3. ✅ Verify history management
-4. ✅ Verify error propagation
-5. ✅ Verify concurrent requests
-
-**Performance Testing:**
-1. ✅ Response time < 10 seconds
-2. ✅ Memory usage < 500MB
-3. ✅ Concurrent users (5+)
-4. ✅ Long-running sessions
-5. ✅ Streaming latency
-
-#### B. Validation Criteria
-
-**Phase 1: Response Generation**
-- Execute Gradio interface test queries
-- Verify all queries generate responses
-- Measure average response time
-- Check for crashes/errors
-
-**Phase 2: Response Verification**
-- Verify correct tool calls (Tradier/Polygon)
-- Verify response formatting (markdown, tables)
-- Verify data accuracy (ticker symbols, values)
-- Verify streaming behavior (progressive updates)
-
-**Pass Criteria:**
-- ✅ 100% query completion rate
-- ✅ Average response time < 10s
-- ✅ Correct tool calls for each query
-- ✅ Proper data formatting
-- ✅ No import errors
-- ✅ Streaming works correctly
+**Fix is successful when:**
+- ✅ Gradio displays performance metrics footer after every response
+- ✅ Footer format matches CLI output (same fields, same formatting)
+- ✅ Response time is within 0.1s of actual processing duration
+- ✅ Token counts are accurate (match OpenAI API response)
+- ✅ Cached tokens display when prompt caching occurs
+- ✅ All 39 CLI regression tests still pass (100% success rate)
+- ✅ No performance regression (response times remain <12s average)
 
 ---
 
-### 7. MIGRATION PATH
+## Gaps Identified
 
-#### Phase 1: Prototyping (Current)
-
-**Goal:** Add Gradio as third frontend option
-
-**Implementation:**
-1. Create `src/backend/gradio_app.py`
-2. Add `gradio>=5.0.0` to `pyproject.toml`
-3. Update startup scripts
-4. Test basic functionality
-5. Keep all three frontends
-
-**Timeline:** 1-2 days
-
-**Risk:** LOW (additive change, no removals)
-
-#### Phase 2: Validation (2-4 weeks)
-
-**Goal:** Validate Gradio matches React features
-
-**Activities:**
-1. User acceptance testing
-2. Performance comparison
-3. Feature parity verification
-4. Bug fixes and refinements
-
-**Timeline:** 2-4 weeks
-
-**Risk:** LOW (no breaking changes)
-
-#### Phase 3: React Retirement (Future TBD)
-
-**Goal:** Remove React frontend after Gradio validated
-
-**Criteria for React Removal:**
-- ✅ Gradio feature parity achieved
-- ✅ No major bugs in Gradio version
-- ✅ User feedback positive
-- ✅ Performance meets requirements
-- ✅ Deployment validated
-
-**Timeline:** TBD (after Phase 2 complete)
-
-**Risk:** LOW (can revert if needed)
-
----
-
-### 8. OPEN QUESTIONS
-
-**Q1: Should Gradio replace or complement FastAPI?**
-- **Answer:** Complement initially (prototyping)
-- **Future:** Could consolidate into single FastAPI app
-
-**Q2: Should we support multiple concurrent frontends?**
-- **Answer:** YES for prototyping (CLI + React + Gradio)
-- **Future:** Choose one GUI after validation
-
-**Q3: What about React-specific features (copy, export)?**
-- **Answer:** Gradio has built-in copy button
-- **Export:** Can add custom button if needed
-
-**Q4: How to handle state management?**
-- **Answer:** Gradio manages chat history automatically
-- **Session:** Use same SQLite session as CLI/FastAPI
-
-**Q5: What about customization and branding?**
-- **Answer:** Gradio supports custom CSS and themes
-- **Priority:** Minimal styling (no frills per requirements)
-
----
-
-## Summary Statistics
-
-**Research Findings:**
-- ✅ Gradio ChatInterface: Perfect fit for requirements
-- ✅ Integration pattern: Same as React (wrap CLI core)
-- ✅ Examples found: 2 working chatbot implementations
-- ✅ Documentation: Complete and detailed
-- ✅ Community support: Active and mature
-
-**Estimated Effort:**
-- Research Phase: ✅ COMPLETE
-- Planning Phase: 1 hour
-- Implementation Phase: 2-4 hours
-- Testing Phase: 1-2 hours
-- Documentation Phase: 1 hour
-- **Total: ~5-8 hours**
-
-**Complexity:** LOW
-- File creation: Simple (new file)
-- Code: Minimal (30-50 lines)
-- Dependencies: One new package
-- Testing: Standard manual testing
-
-**Risk Assessment:** LOW RISK
-- Additive change (no removals)
-- No breaking changes to existing code
-- Easy to revert if needed
-- Small code footprint
-- Proven technology (Gradio)
+**None.** All necessary utilities and patterns already exist in the codebase:
+- ✅ Token extraction utility available (`extract_token_usage_from_context_wrapper`)
+- ✅ Configuration access available (`settings.available_models`)
+- ✅ Time measurement pattern established (CLI and React use `time.perf_counter()`)
+- ✅ Footer formatting pattern established (CLI `print_response` function)
 
 ---
 
 ## Recommendations
 
-**Primary Recommendation:** Implement Gradio frontend immediately
-
-**Rationale:**
-1. **Simple:** 30-50 lines vs 500+ for React
-2. **Fast:** Pure Python, no build process
-3. **Maintainable:** Single language, fewer dependencies
-4. **Deployable:** Easier AWS deployment
-5. **Low Risk:** Additive change, easy to remove
-6. **Proven:** Used by Hugging Face, widely adopted
-
-**Implementation Order:**
-1. Phase 1: Add Gradio frontend (keep all three)
-2. Phase 2: Validate and refine (2-4 weeks)
-3. Phase 3: Retire React if validated (TBD)
-
-**Success Criteria:**
-- ✅ Gradio frontend runs without errors
-- ✅ All test queries work correctly
-- ✅ Performance meets requirements (< 10s)
-- ✅ User experience is acceptable
-- ✅ Deployment is simpler than React
+1. **Implement the fix** as designed above
+2. **Test thoroughly** with diverse queries (short, long, multi-ticker, options chains)
+3. **Verify caching** - Run same query twice to see cached tokens display
+4. **Update documentation** to reflect new Gradio capability
+5. **Consider future enhancement:** Add copy/export button for metrics (like React has)
 
 ---
 
 ## Next Steps
 
-**Phase 2: Planning**
-1. Generate detailed `TODO_task_plan.md` with granular implementation checklist
-2. Define exact file changes and new code
-3. Create comprehensive testing plan
-4. Plan documentation updates
-
-**Phase 3: Implementation**
-1. Create `src/backend/gradio_app.py`
-2. Add `gradio` to `pyproject.toml`
-3. Update startup scripts
-4. Add examples and configuration
-5. Update documentation
-
-**Phase 4: Testing**
-1. Run manual test queries
-2. Verify response accuracy
-3. Test streaming behavior
-4. Validate error handling
-5. Performance testing
-
-**Phase 5: Documentation**
-1. Update `CLAUDE.md`
-2. Update `README.md`
-3. Update startup script documentation
-4. Create Gradio usage guide
-5. Update deployment docs
-
-**Phase 6: Commit**
-1. Stage ALL changes in single atomic commit
-2. Include test results as evidence
-3. Update CLAUDE.md Last Completed Task section
-4. Push to repository
+1. **Phase 2:** Generate `TODO_task_plan.md` with granular implementation steps
+2. **Phase 3:** Implement code changes in `gradio_app.py`
+3. **Phase 4:** Run full test suite validation (39 tests)
+4. **Phase 5:** Update documentation and create atomic commit
 
 ---
 
-**Research Phase Status:** ✅ COMPLETE
-**Ready for Planning Phase:** ✅ YES
-**Date Generated:** 2025-10-17
-**Estimated Total Time:** 5-8 hours
-**Risk Level:** LOW
+## Research Completion Summary
+
+**Research Status:** ✅ COMPLETE
+
+**Key Deliverables:**
+- ✅ Root cause identified (missing metadata extraction and footer formatting)
+- ✅ Solution designed (detailed code changes specified)
+- ✅ Implementation plan clear (modify chat_with_agent function)
+- ✅ Testing strategy defined (39-test suite + manual verification)
+- ✅ No blockers or missing dependencies
+
+**Confidence Level:** HIGH - Solution is straightforward, follows existing patterns, uses available utilities.
+
+**Estimated Implementation Time:** 15-20 minutes
+
+---
+
+## Source Analysis
+
+**Primary Sources:**
+1. ✅ src/backend/cli.py - CLI implementation reference (HIGHLY RELIABLE)
+2. ✅ src/backend/utils/response_utils.py - Footer formatting reference (HIGHLY RELIABLE)
+3. ✅ src/backend/routers/chat.py - React/FastAPI implementation reference (HIGHLY RELIABLE)
+4. ✅ src/backend/gradio_app.py - Current Gradio implementation (NEEDS FIX)
+5. ✅ src/backend/utils/token_utils.py - Token extraction utility (AVAILABLE)
+
+**All sources are official project code - maximum reliability.**
+
+---
+
+**Research completed successfully. Ready to proceed to Phase 2: Planning.**

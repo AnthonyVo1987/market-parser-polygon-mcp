@@ -389,6 +389,22 @@ Ask questions like:
 3. Get streaming responses with financial data and analysis
 4. Examples included: Stock price queries, technical analysis, options chains, stock comparisons
 
+**Example Response with Performance Metrics:**
+
+```text
+Market Status: CLOSED
+After-hours: NO
+Early-hours: NO
+Exchanges: NASDAQ closed, NYSE closed, OTC closed
+Server Time (UTC): 2025-10-18 01:50:12
+Date: 2025-10-18
+
+Performance Metrics:
+   Response Time: 5.135s
+   Tokens Used: 21,701 (Input: 21,402, Output: 299)
+   Model: gpt-5-nano
+```
+
 ## Architecture
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
