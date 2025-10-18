@@ -45,11 +45,11 @@ from .models import User
 **Variables and Functions:**
 - `snake_case` for variables and functions
 - Descriptive names (e.g., `get_stock_quote`, `market_status`)
-- Private functions prefixed with `_` (e.g., `_get_polygon_client`)
+- Private functions prefixed with `_` (e.g., `_get_tradier_api_key`)
 
 **Classes:**
 - `PascalCase` for class names
-- Descriptive names (e.g., `AgentService`, `PolygonClient`)
+- Descriptive names (e.g., `AgentService`, `TradierClient`)
 
 **Constants:**
 - `UPPER_SNAKE_CASE` for constants
@@ -102,7 +102,7 @@ src/backend/
 │   └── agent_service.py
 ├── tools/              # AI agent tools
 │   ├── polygon_tools.py
-│   └── finnhub_tools.py
+│   └── tradier_tools.py
 ├── utils/              # Helper functions
 └── routers/            # API route handlers
 ```

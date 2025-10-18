@@ -4,12 +4,12 @@ from agents import Agent, ModelSettings
 from openai.types.shared import Reasoning
 
 from ..config import settings
-from ..tools.finnhub_tools import get_stock_quote
 from ..tools.tradier_tools import (
     get_call_options_chain,
     get_options_expiration_dates,
     get_put_options_chain,
     get_stock_price_history,
+    get_stock_quote,
 )
 from ..tools.polygon_tools import (
     get_market_status_and_date_time,
@@ -703,7 +703,7 @@ def create_agent():
             get_ta_indicators,
             get_call_options_chain,
             get_put_options_chain,
-        ],  # 1 Finnhub + 4 Tradier + 2 Polygon = 7 tools total
+        ],  # 5 Tradier + 2 Polygon = 7 tools total
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

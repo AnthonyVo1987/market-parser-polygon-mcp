@@ -2,7 +2,7 @@
 
 ## Overview
 
-Market Parser is a Python CLI and React web application for natural language financial queries using Direct Polygon/Finnhub API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
+Market Parser is a Python CLI and React web application for natural language financial queries using Direct Polygon/Tradier API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
 
 **Key Architectural Changes (Oct 2025):**
 - **Persistent Agent Architecture** (ONE agent per lifecycle, CLI = core, GUI = wrapper)
@@ -11,7 +11,7 @@ Market Parser is a Python CLI and React web application for natural language fin
 - **Fixed OHLC display requirements** (show actual data, not just "retrieved")
 - **Enhanced chat history analysis** (prevent redundant Support/Resistance calls)
 - **Eliminated frontend code duplication** (157 lines deleted, simplified markdown rendering)
-- **All 11 tools now use Direct Python APIs** (no MCP overhead)
+- **All 7 tools now use Direct Python APIs** (no MCP overhead)
 
 ## System Architecture
 
@@ -41,15 +41,15 @@ Market Parser is a Python CLI and React web application for natural language fin
                     └─────────────┬─────────────┘
                                   │
                     ┌─────────────▼─────────────┐
-                    │   AI Agent Tools (11)     │
+                    │   AI Agent Tools (7)      │
                     │   Direct API Integration  │
                     │   OHLC Display Fix        │
                     └─────────┬────────┬────────┘
                               │        │
                     ┌─────────▼──┐  ┌─▼────────┐
-                    │ Polygon.io │  │ Finnhub  │
+                    │ Polygon.io │  │ Tradier  │
                     │ Direct API │  │ Direct   │
-                    │ (10 tools) │  │ (1 tool) │
+                    │ (2 tools)  │  │ (5 tools)│
                     └────────────┘  └──────────┘
 ```
 
@@ -411,7 +411,7 @@ Total: 2000 tokens (4000 saved via caching)
 **Functions:**
 - `get_enhanced_agent_instructions()` - Returns optimized system prompt with 9 RULES
 - `get_optimized_model_settings()` - Returns GPT-5-Nano config
-- `create_agent()` - Creates OpenAI agent with all 11 tools
+- `create_agent()` - Creates OpenAI agent with all 7 tools
 
 **Agent Configuration:**
 - **Model**: GPT-5-Nano (EXCLUSIVE - no model selection)
@@ -442,51 +442,39 @@ Total: 2000 tokens (4000 saved via caching)
    - Prevents redundant TA tool calls when all data already retrieved
    - 29% performance improvement (5.491s → 3.900s)
 
-### Direct API Tools (11 Total)
+### Direct API Tools (7 Total)
 
-#### Finnhub Custom API (1 tool)
-**File:** `src/backend/tools/finnhub_tools.py`
+#### Tradier Custom API (5 tools)
+**File:** `src/backend/tools/tradier_tools.py`
 
 **Tools:**
 1. `get_stock_quote(symbol: str)` - Real-time stock quotes
-   - Uses `finnhub-python>=2.4.25`
-   - Returns: current price, change, percent change, high, low, open, previous close
-   - **Supports parallel calls** for multi-ticker queries (max 3 per batch)
+2. `get_stock_price_history(...)` - Historical pricing data
+3. `get_options_expiration_dates(...)` - Valid expiration dates
+4. `get_call_options_chain(...)` - Call options chain
+5. `get_put_options_chain(...)` - Put options chain
 
 **Implementation:**
-- `_get_finnhub_client()` - Singleton client initialization
-- Environment: `FINNHUB_API_KEY`
+- Uses `requests` library for direct API calls
+- Environment: `TRADIER_API_KEY`
+- Supports multi-ticker queries natively
+- **Supports parallel calls** for multi-ticker queries (max 3 per batch)
 
-#### Polygon Direct API (10 tools)
+#### Polygon Direct API (2 tools)
 **File:** `src/backend/tools/polygon_tools.py`
 
 **Market Data Tools:**
 1. `get_market_status_and_date_time()` - Market status + current datetime
-2. `get_options_quote_single(ticker: str)` - Single option quote
-
-**OHLC Data Tools:**
-3. `get_OHLC_bars_custom_date_range(...)` - OHLC bars for date range (**Display fix applied**)
-4. `get_OHLC_bars_specific_date(...)` - OHLC bars for specific date (**Display fix applied**)
-5. `get_OHLC_bars_previous_close(...)` - Previous close OHLC
-
-**Technical Analysis Tools:**
-6. `get_ta_sma(...)` - Simple Moving Average
-7. `get_ta_ema(...)` - Exponential Moving Average
-8. `get_ta_rsi(...)` - Relative Strength Index
-9. `get_ta_macd(...)` - MACD
-
-**Removed (Oct 7, 2025):**
-- ~~`get_stock_quote_multi(...)`~~ - Replaced by parallel get_stock_quote() calls
+2. `get_ta_indicators(...)` - Technical analysis indicators
 
 **Implementation:**
-- `_get_polygon_client()` - Singleton client initialization
 - Direct Polygon Python SDK integration
 - Environment: `POLYGON_API_KEY`
 
 ### Configuration Management
 
 **Files:**
-- `.env` - API keys (POLYGON_API_KEY, OPENAI_API_KEY, FINNHUB_API_KEY)
+- `.env` - API keys (POLYGON_API_KEY, OPENAI_API_KEY, TRADIER_API_KEY)
 - `config/app.config.json` - Non-sensitive settings
 - `src/backend/config.py` - Config loader
 
@@ -494,7 +482,7 @@ Total: 2000 tokens (4000 saved via caching)
 ```
 POLYGON_API_KEY=your_key_here
 OPENAI_API_KEY=your_key_here
-FINNHUB_API_KEY=your_key_here
+TRADIER_API_KEY=your_key_here
 ```
 
 ## Frontend Architecture
@@ -646,8 +634,8 @@ Backend → Generates Markdown (Single Source of Truth)
    - Generates structured markdown response
 
 4. **Tool Execution** (Direct API)
-   - Polygon Direct API: 10 tools
-   - Finnhub Direct API: 1 tool (parallel calls for multi-ticker)
+   - Polygon Direct API: 2 tools
+   - Tradier Direct API: 5 tools (parallel calls for multi-ticker)
    - No MCP server overhead
    - Direct Python SDK calls
 
@@ -1010,7 +998,7 @@ Backend → Generates Markdown (Single Source of Truth)
 **Changes:**
 - ✅ Removed get_stock_quote_multi (139 lines)
 - ✅ Updated RULE #2 to emphasize parallel calls
-- ✅ Tool count reduced from 12 to 11
+- ✅ Tool count reduced from 12 to 7
 - ✅ All tests pass 27/27 (100% success rate)
 
 **New Architecture:**
@@ -1021,15 +1009,15 @@ Backend → Generates Markdown (Single Source of Truth)
 ### Oct 2025: MCP Removal ✅ COMPLETE
 
 **Migration completed:**
-- ✅ All 12 tools migrated to Direct API (now 11 after tool removal)
+- ✅ All 7 tools migrated to Direct API
 - ✅ MCP server completely removed
 - ✅ Performance improved 70% (6.10s avg vs 20s legacy)
 - ✅ Token tracking enhanced (dual naming support)
 - ✅ Model selector removed (GPT-5-Nano only)
 
 **Architecture Changes:**
-- **Before**: FastAPI → OpenAI Agent → MCP Server → Polygon/Finnhub APIs
-- **After**: FastAPI → OpenAI Agent → Direct Polygon/Finnhub Python SDKs
+- **Before**: FastAPI → OpenAI Agent → MCP Server → Polygon/Tradier APIs
+- **After**: FastAPI → OpenAI Agent → Direct Polygon/Tradier Python SDKs
 
 **Performance Gains:**
 - **Response Time**: 20s → 6.10s (70% faster)
@@ -1040,7 +1028,7 @@ Backend → Generates Markdown (Single Source of Truth)
 
 **Architecture:**
 - **Persistent Agent** (ONE agent per lifecycle, CLI = core, GUI = wrapper)
-- 11 Direct API tools (1 Finnhub + 10 Polygon)
+- 7 Direct API tools (5 Tradier + 2 Polygon)
 - No MCP overhead
 - Parallel execution (max 3 per batch)
 - Chat history analysis

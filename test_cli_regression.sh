@@ -515,7 +515,7 @@ all_loop_reports+=("$OUTPUT_FILE")
     echo ""
     echo -e "  1. ✅ Response directly addresses the prompt query"
     echo -e "  2. ✅ Correct ticker symbols used (\$SPY, \$NVDA, \$WDC, \$AMD, \$SOUN)"
-    echo -e "  3. ✅ Appropriate tool calls made (Polygon, Finnhub, Tradier)"
+    echo -e "  3. ✅ Appropriate tool calls made (Polygon, Tradier)"
     echo -e "  4. ✅ Data formatting matches expected format (OHLC, tables, etc.)"
     echo -e "  5. ✅ No hallucinated data or made-up values"
     echo -e "  6. ✅ Options chains show Bid/Ask columns (NOT midpoint)"

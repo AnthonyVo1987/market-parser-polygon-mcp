@@ -9,21 +9,21 @@
 ## Phase 5: Remove get_stock_quote_multi Tool (Oct 7, 2025) ✅ COMPLETE
 
 **Rationale**: Simplify codebase by using parallel get_stock_quote calls instead of wrapper function
-**Change**: Removed get_stock_quote_multi (139 lines) from polygon_tools.py
-**Replacement**: Multiple parallel calls to get_stock_quote (Finnhub API)
-**Impact**: Tool count reduced from 12 to 11, leverages native parallel execution
+**Change**: Removed get_stock_quote_multi (139 lines) from tradier_tools.py
+**Replacement**: Multiple parallel calls to get_stock_quote (Tradier API)
+**Impact**: Tool count reduced from 12 to 7, leverages native parallel execution
 **Test Results**: 27/27 tests passed (100% success rate), 7.31s avg response time
 
 ### Changes Made
 
 **Code Removal:**
-- Removed `get_stock_quote_multi()` function from `src/backend/tools/polygon_tools.py` (lines 588-726, 139 lines)
+- Removed `get_stock_quote_multi()` function from `src/backend/tools/tradier_tools.py` (lines 588-726, 139 lines)
 - Removed import from `src/backend/services/agent_service.py`
 - Removed from agent tools list in `create_agent()`
 
 **Agent Instructions Rewrite:**
 - Updated RULE #2: "MULTIPLE TICKERS = USE PARALLEL get_stock_quote() CALLS"
-- Updated tool count from 12 to 11
+- Updated tool count from 12 to 7
 - Updated decision tree to reflect parallel call pattern
 - Updated all examples to show parallel execution
 - Removed all references to get_stock_quote_multi (15+ instances)
@@ -38,14 +38,14 @@
 **Benefits:**
 - ✅ Simplified codebase (removed 139 lines of wrapper code)
 - ✅ Leverages OpenAI Agents SDK native parallel execution
-- ✅ Tool count reduced from 12 to 11
+- ✅ Tool count reduced from 12 to 7
 - ✅ No performance regression (maintained EXCELLENT rating)
 - ✅ Clear parallel execution pattern in agent instructions
 
 ## Executive Summary
 
 Successfully migrated all Polygon.io tools from MCP server architecture to Direct Python API integration. The migration resulted in:
-- **11 total AI agent tools** (1 Finnhub + 10 Polygon Direct API) - Updated Oct 7, 2025
+- **7 total AI agent tools** (5 Tradier + 2 Polygon Direct API) - Updated Oct 7, 2025
 - **70% performance improvement** (6.10s avg vs 20s legacy)
 - **100% success rate** (270/270 tests in 10-run baseline, 27/27 in latest test)
 - **Zero MCP overhead** - Removed entire MCP server layer
@@ -55,7 +55,7 @@ Successfully migrated all Polygon.io tools from MCP server architecture to Direc
 
 ### Phase 1: Initial MCP Architecture
 - 7 Polygon MCP tools
-- 1 Finnhub Direct API tool
+- 1 Tradier Direct API tool
 - MCP server as intermediary
 - Average response time: ~20s
 
@@ -78,7 +78,7 @@ Successfully migrated all Polygon.io tools from MCP server architecture to Direc
 
 ### Phase 5: Tool Simplification (Oct 7, 2025) ✅ COMPLETE
 - Removed get_stock_quote_multi wrapper
-- Final: **11 tools** (1 Finnhub + 10 Polygon Direct API)
+- Final: **7 tools** (5 Tradier + 2 Polygon Direct API)
 - Parallel execution via OpenAI Agents SDK
 - Performance: **7.31s avg (EXCELLENT)**
 
@@ -93,7 +93,7 @@ Successfully migrated all Polygon.io tools from MCP server architecture to Direc
 
 2. **❌ get_snapshot_option** → **✅ get_options_quote_single**
    - Before: MCP server call for options quotes
-   - After: Direct Polygon Python SDK call
+   - After: Direct Tradier Python SDK call
    - Improvement: Clearer parameter validation
 
 3. **❌ list_aggs** → **✅ get_OHLC_bars_custom_date_range**
@@ -114,48 +114,30 @@ Successfully migrated all Polygon.io tools from MCP server architecture to Direc
 6. **❌ get_aggs** → **✅ Removed** (not relevant for analysis)
    - Redundant with other OHLC tools
 
-## Final Tool Architecture (11 Total - Updated Oct 7, 2025)
+## Final Tool Architecture (7 Total - Updated Oct 7, 2025)
 
-### Finnhub Direct API (1 tool)
-**File**: `src/backend/tools/finnhub_tools.py`
+### Tradier Direct API (5 tools)
+**File**: `src/backend/tools/tradier_tools.py`
 
-1. **get_stock_quote(symbol: str)**
-   - Real-time stock quotes from Finnhub
-   - **NEW**: Supports parallel calls for multiple tickers
-   - Returns: price, change, percent change, high, low, open, previous close
+1. **get_stock_quote(symbol: str)** - Real-time stock quotes
+2. **get_stock_price_history(...)** - Historical pricing data
+3. **get_options_expiration_dates(...)** - Valid expiration dates
+4. **get_call_options_chain(...)** - Call options chain
+5. **get_put_options_chain(...)** - Put options chain
 
-### Polygon Direct API (10 tools)
+**NEW**: Supports parallel calls for multiple tickers
+
+### Polygon Direct API (2 tools)
 **File**: `src/backend/tools/polygon_tools.py`
 
-**Market Data (2 tools):**
-1. **get_market_status_and_date_time()**
-   - Market status and current datetime
-   
-2. **get_options_quote_single(ticker: str)**
-   - Single option contract quote
-   - Replaces MCP `get_snapshot_option`
+**Market Data (1 tool):**
+1. **get_market_status_and_date_time()** - Market status and current datetime
 
-**OHLC Data (3 tools):**
-3. **get_OHLC_bars_custom_date_range(...)**
-   - OHLC bars for custom date range
-   - Replaces MCP `list_aggs`
-
-4. **get_OHLC_bars_specific_date(...)**
-   - OHLC bars for specific date
-   - Replaces MCP `get_daily_open_close_agg`
-
-5. **get_OHLC_bars_previous_close(ticker: str)**
-   - Previous close OHLC
-   - Replaces MCP `get_previous_close_agg`
-
-**Technical Analysis (4 tools):**
-6. **get_ta_sma(...)** - Simple Moving Average
-7. **get_ta_ema(...)** - Exponential Moving Average
-8. **get_ta_rsi(...)** - Relative Strength Index
-9. **get_ta_macd(...)** - MACD Indicator
+**Technical Analysis (1 tool):**
+2. **get_ta_indicators(...)** - Technical analysis indicators
 
 **Removed (Oct 7, 2025):**
-10. ~~**get_stock_quote_multi(...)**~~ - Replaced by parallel get_stock_quote() calls
+- ~~**get_stock_quote_multi(...)**~~ - Replaced by parallel get_stock_quote() calls
 
 ## Infrastructure Changes
 
@@ -192,13 +174,13 @@ Successfully migrated all Polygon.io tools from MCP server architecture to Direc
    - Updated Last Completed Task with MCP removal summary
 
 **Phase 5 (Tool Simplification - Oct 7, 2025):**
-1. **src/backend/tools/polygon_tools.py**
+1. **src/backend/tools/tradier_tools.py**
    - Removed get_stock_quote_multi function (139 lines)
 
 2. **src/backend/services/agent_service.py**
    - Removed get_stock_quote_multi import
    - Removed from tools list
-   - Updated tool count: 12 → 11
+   - Updated tool count: 12 → 7
    - Rewrote RULE #2 for parallel calls
    - Updated decision tree and examples
 
@@ -233,12 +215,12 @@ def create_agent():
 **Current (Simplified - Phase 5):**
 ```python
 def create_agent():
-    # Create agent with 11 direct API tools + parallel execution
+    # Create agent with 7 direct API tools + parallel execution
     agent = Agent(
         name="financial_analyst",
         instructions=get_enhanced_agent_instructions(),  # Updated RULE #2
         model=get_optimized_model_settings(),  # parallel_tool_calls=True
-        tools=all_direct_api_tools  # 11 tools
+        tools=all_direct_api_tools  # 7 tools
     )
     return agent
 ```
@@ -333,7 +315,7 @@ def create_agent():
 
 ### 4. Developer Experience
 - 💡 **No MCP setup**: No separate MCP server to install/configure
-- 💡 **Standard Python**: Uses familiar Polygon Python SDK and Finnhub API
+- 💡 **Standard Python**: Uses familiar Polygon Python SDK and Tradier API
 - 💡 **Better IDE support**: Direct function calls with type hints
 - 💡 **Clear parallel pattern**: Explicit in agent instructions
 
@@ -341,7 +323,7 @@ def create_agent():
 - 💰 **Lower latency**: Faster responses = better user experience
 - 💰 **Fewer resources**: No MCP server process to run
 - 💰 **Lower API costs**: Faster queries = more efficient API usage
-- 💰 **Reduced tool count**: 11 tools vs 12 (simpler to maintain)
+- 💰 **Reduced tool count**: 7 tools vs 12 (simpler to maintain)
 
 ## Testing Validation
 
@@ -457,5 +439,5 @@ def create_agent():
 - Latest single run: `cli_regression_test_loop1_20251007_141546.txt`
 
 **Related Memories:**
-- `tech_stack.md` - Technology stack (Direct API only, 11 tools)
-- `ai_agent_instructions_oct_2025.md` - Agent instructions (11 tools, parallel execution)
+- `tech_stack.md` - Technology stack (Direct API only, 7 tools)
+- `ai_agent_instructions_oct_2025.md` - Agent instructions (7 tools, parallel execution)

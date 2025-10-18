@@ -57,7 +57,7 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
 If Phase 2a grep commands found errors, create **evidence-based failure table**:
 
 | Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
-|--------|-----------|--------|---------------|------------------------|
+|--------|-----------|--------|---------------|---------------------------|
 | 3 | SPY_Yesterday_Price_OHLC | 157 | data unavailable due to retrieval error | get_stock_price_history(...) |
 
 **Required**: Show grep output + failure table with line numbers, OR confirm "0 failures found".
@@ -74,7 +74,7 @@ For tests that didn't show errors in Phase 2a, verify:
 
 1. ✅ **Response Addresses Prompt**: Response directly answers the question asked
 2. ✅ **Correct Ticker Symbols**: Proper tickers used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
-3. ✅ **Proper Tool Calls**: Polygon, Finnhub, or Tradier tools called appropriately
+3. ✅ **Proper Tool Calls**: Polygon or Tradier tools called appropriately
 4. ✅ **Data Formatting**: OHLC data, tables, options chains formatted correctly
 5. ✅ **No Hallucinations**: All data appears legitimate, no made-up numbers or dates
 6. ✅ **Options Bid/Ask**: Options chains show Bid and Ask columns (NOT midpoint/average)
@@ -327,9 +327,8 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ## API Usage Considerations
 
 **Note:** Each test run makes 39+ real API calls to:
-- **Polygon.io**: Financial data (11 tools)
-- **Finnhub**: Stock quotes (1 tool)
-- **Tradier**: Options expiration dates (1 tool)
+- **Polygon.io**: Financial data (2 tools)
+- **Tradier**: Stock quotes + options (5 tools)
 - **OpenAI**: GPT-5-Nano (AI agent with service_tier: "default")
 
 **Cost Implications:**
