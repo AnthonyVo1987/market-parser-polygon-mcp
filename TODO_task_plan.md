@@ -1,1160 +1,482 @@
-# Dead Code Cleanup Implementation Plan - TODO Task Checklist
+# TODO Task Plan: Markdown-Only Output Formatting Implementation
 
-**Generated:** 2025-10-18
-**Based On:** research_task_plan.md (comprehensive codebase audit)
-**Status:** Ready for Implementation (Phase 3)
-**Task:** Remove all dead code and legacy implementations after React/FastAPI retirement
-
----
-
-## 🔴 CRITICAL: MANDATORY TOOL USAGE THROUGHOUT IMPLEMENTATION
-
-**YOU MUST systematically use Sequential-Thinking & Serena tools throughout the ENTIRE implementation:**
-
-- **Sequential-Thinking**: Use at START of each phase for systematic approach and complex reasoning
-- **Serena Tools**: Use for code analysis, pattern searches, and verification
-- **Standard Tools**: Use for file operations (Read, Edit, Write) and bash commands
-- **NEVER STOP** using advanced tools unless specific action only supported by Standard Tools
+**Date**: October 18, 2025
+**Status**: Ready for Implementation (Phase 3)
+**Based on**: research_task_plan.md (Research Phase Complete)
+**Complexity**: LOW (5-10 lines of code)
+**Risk**: LOW (Gradio native Markdown support)
 
 ---
 
-## Implementation Phases Overview
+## Executive Summary
 
-| Phase | Description | Tasks | Priority | Tools |
-|-------|-------------|-------|----------|-------|
-| **0** | Pre-Implementation Setup | 3 tasks | ⭐⭐⭐ CRITICAL | Bash, Sequential-Thinking |
-| **1** | Dead Python Code Cleanup | 2 tasks | ⭐ HIGH | Serena, Bash |
-| **2** | Orphaned Bytecode Cleanup | 2 tasks | ⭐ HIGH | Bash |
-| **3** | Obsolete Config Files Cleanup | 2 tasks | ⭐⭐ MEDIUM | Bash |
-| **4** | Obsolete CI Workflow Cleanup | 2 tasks | ⭐⭐ MEDIUM | Bash |
-| **5** | Pre-Commit Hook Update | 4 tasks | ⭐⭐ MEDIUM | Read, Edit, Serena |
-| **6** | Documentation Updates | 4 tasks | ⭐⭐⭐ LOW | Serena, Read, Edit |
-| **7** | **MANDATORY Testing & Validation** | 6 tasks | ⭐⭐⭐ CRITICAL | Bash, Grep |
-| **8** | Atomic Git Commit | 6 tasks | ⭐⭐⭐ CRITICAL | Bash |
+Research confirms that implementing consolidated Markdown-only output formatting is **SIMPLE and STRAIGHTFORWARD**. The implementation requires:
 
-**Total Tasks:** 31 tasks across 9 phases
+1. **Gradio Configuration Update**: Add explicit `render_markdown=True` to Chatbot component (~5 lines)
+2. **CLI Rendering Decision**: Keep Rich Console for optimal UX (recommended) OR switch to pure Markdown
+3. **Testing Validation**: MANDATORY two-phase testing (automated + manual verification)
+4. **Documentation Updates**: Update CLAUDE.md, memories, and configs with test evidence
+
+**Key Research Finding**: Gradio ALREADY supports Markdown natively (render_markdown=True is DEFAULT). The gap is explicit configuration, not capability.
 
 ---
 
-## ⚠️ CRITICAL PRE-REQUISITES
+## Implementation Scope
 
-### Before Starting ANY Implementation:
+### Files to Modify
 
-1. ✅ Ensure you are on the correct git branch (`react_retirement` or create new branch)
-2. ✅ Verify working directory is clean (`git status`)
-3. ✅ Read research_task_plan.md to understand all findings
-4. ✅ Use Sequential-Thinking to plan approach for each phase
-5. ✅ **NEVER stage files early** - only stage AFTER all work complete
+| File | Changes | Lines | Tool to Use |
+|------|---------|-------|-------------|
+| `src/backend/gradio_app.py` | Add explicit Chatbot configuration | ~5-10 | Serena (find_symbol + replace_symbol_body) |
+| `src/backend/utils/response_utils.py` | Optional: CLI rendering decision | 0 or ~5 | Serena OR Standard Edit |
+| `CLAUDE.md` | Add Markdown formatting documentation | ~20-30 | Standard Edit |
+| `.serena/memories/output_formatting_investigation_oct_2025.md` | Update with implementation results | ~10-20 | Standard Edit |
 
----
+### What's NOT Changing
 
-## PHASE 0: Pre-Implementation Setup
-
-### 🎯 **START with Sequential-Thinking for Pre-Implementation Analysis**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Analyze the overall task scope and dependencies
-- Plan the execution order and risk mitigation
-- Understand the testing strategy
-- Confirm understanding of atomic commit workflow
-
-### ✅ **Task 0.1: Run Baseline Test Suite**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Establish baseline that all tests pass BEFORE making any changes
-
-**Commands:**
-```bash
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-```
-
-**Expected Result:**
-- 39/39 tests COMPLETED
-- Test report generated: `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`
-- Save report path for later comparison
-
-**Verification:**
-```bash
-# Check test completion
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
-# Should output: 39
-```
-
-**❌ STOP IF:** Any tests fail - investigate and fix before proceeding
+- ✅ AI agent instructions (ALREADY output Markdown tables per research)
+- ✅ CLI core logic in `cli.py` (ALREADY returns plain text + footer)
+- ✅ Performance footer format (ALREADY plain text for universal compatibility)
 
 ---
 
-### ✅ **Task 0.2: Git Status Snapshot**
+## Pre-Implementation Checklist
 
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
+**Tool Requirements**: Serena tools for ALL code analysis, Sequential-Thinking for decision-making
 
-**Purpose:** Verify clean working directory before making changes
+### Phase 0: Code Analysis with Serena
 
-**Commands:**
-```bash
-git status
-```
+- [ ] **Read current gradio_app.py structure**
+  - Tool: `mcp__serena__find_symbol` with name_path="demo", relative_path="src/backend/gradio_app.py"
+  - Purpose: Locate ChatInterface initialization to understand exact code structure
+  - Expected: Find `demo = gr.ChatInterface(fn=chat_with_agent, type="messages", ...)`
 
-**Expected Result:**
-- Working tree clean OR only expected uncommitted changes
-- Correct branch (`react_retirement` or new cleanup branch)
+- [ ] **Read current response_utils.py structure**
+  - Tool: `mcp__serena__find_symbol` with name_path="print_response", relative_path="src/backend/utils/response_utils.py"
+  - Purpose: Understand current CLI rendering approach (Rich.Markdown vs plain text)
+  - Expected: Confirm Rich Console usage with Markdown detection logic
 
-**Verification:**
-- No unexpected modified files
-- No unexpected untracked files
-
-**❌ STOP IF:** Unexpected changes detected - commit or stash before proceeding
+- [ ] **Verify AI agent instructions are correct**
+  - Tool: `mcp__serena__search_for_pattern` with pattern="PRESERVE ALL TOOL-GENERATED TABLES", relative_path="src/backend/services/agent_service.py"
+  - Purpose: Confirm agent is already instructed to output Markdown tables
+  - Expected: Find instructions at lines 500-543 per research findings
 
 ---
 
-### ✅ **Task 0.3: Review Research Findings**
+## Implementation Checklist
 
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Read, Sequential-Thinking
+### Phase 1: Gradio Configuration Update (CRITICAL - MAIN CHANGE)
 
-**Purpose:** Understand all dead code identified in research phase
+- [ ] **Update Gradio ChatInterface with explicit Markdown configuration**
+  - Tool: `mcp__serena__find_symbol` to locate, then `mcp__serena__replace_symbol_body` to update
+  - File: `src/backend/gradio_app.py`
+  - Symbol: Find the `demo = gr.ChatInterface(...)` initialization
+  - Change: Add explicit Chatbot component configuration
+  - New code:
+    ```python
+    demo = gr.ChatInterface(
+        fn=chat_with_agent,
+        type="messages",
+        chatbot=gr.Chatbot(
+            render_markdown=True,      # Explicit Markdown rendering
+            line_breaks=True,           # GitHub-flavored Markdown
+            sanitize_html=True,         # Security
+            height=600                  # Better table visibility
+        ),
+        title="🏦 Market Parser - Financial Analysis",
+        description="...",
+        examples=[...],
+        ...
+    )
+    ```
+  - Verification: Code compiles without errors, Gradio starts successfully
 
-**Commands:**
-```bash
-# Read the research plan
-cat research_task_plan.md | less
-```
+### Phase 2: CLI Rendering Decision (REQUIRES DECISION)
 
-**Expected Result:**
-- Understand 7 categories of dead code
-- Understand 8 files to delete (372 lines)
-- Understand 2+ files to update
-- Understand all __pycache__/ directories to clean
+**DECISION POINT**: Choose Option A (Recommended) OR Option B
 
-**Verification:**
-- Can explain what each file deletion accomplishes
-- Can explain why each file is safe to delete
+#### Option A: Keep Rich Console for CLI (RECOMMENDED)
 
----
+**Rationale**:
+- Better terminal UX (colors, formatted tables)
+- No breaking changes for CLI users
+- Each interface uses native capabilities
+- Aligns with research recommendation
 
-## PHASE 1: Dead Python Code Cleanup
+**Implementation**:
+- [ ] **NO CHANGES NEEDED** - Keep current `response_utils.py` as-is
+  - Tool: N/A (no action required)
+  - File: `src/backend/utils/response_utils.py`
+  - Status: Current Rich.Markdown() rendering stays
+  - Outcome: CLI uses Rich rendering, Gradio uses native Markdown rendering
 
-### 🎯 **START with Sequential-Thinking for Python Code Cleanup Analysis**
+#### Option B: Pure Markdown Everywhere (ALTERNATIVE)
 
-**MANDATORY:** Use Sequential-Thinking to:
-- Analyze the __init__.py file structure and imports
-- Plan the verification strategy to ensure no active imports
-- Understand the risk mitigation for deleting this file
+**Rationale**:
+- Single rendering approach
+- Consistent output format
+- User requested "Markdown only for ALL responses"
 
-### ✅ **Task 1.1: Verify __init__.py Has No Active Imports**
+**Implementation**:
+- [ ] **Remove Rich.Markdown() rendering, output pure Markdown**
+  - Tool: `mcp__serena__replace_symbol_body` for print_response function
+  - File: `src/backend/utils/response_utils.py`
+  - Symbol: `print_response`
+  - Change: Replace `console.print(Markdown(response_text))` with `console.print(response_text)`
+  - New code:
+    ```python
+    def print_response(response_text: str):
+        console.print("\n[bold green]✅ Query processed successfully![/bold green]")
+        console.print("[bold]Agent Response:[/bold]\n")
 
-**Priority:** ⭐ HIGH
-**Status:** [ ] Not Started
-**Tool:** Serena `search_for_pattern`, Grep
+        # Output pure Markdown (no Rich rendering)
+        console.print(response_text)
 
-**Purpose:** Confirm no code imports from src/backend/__init__.py
+        console.print("\n[dim]" + "─" * 50 + "[/dim]\n")
+    ```
+  - Verification: CLI outputs raw Markdown text (tables show as `| Header |`)
 
-**Commands:**
-```bash
-# Search for imports using Serena
-# Use pattern: "from backend import|from src.backend import|import backend"
-
-# Fallback with grep if needed
-grep -r "from backend import" src/
-grep -r "from src.backend import" src/
-grep -r "import backend" src/
-```
-
-**Expected Result:**
-- **ZERO** imports found (file is not imported anywhere)
-- Search returns empty results
-
-**Verification:**
-- No matches found in any .py files
-- Safe to delete __init__.py
-
-**❌ STOP IF:** Active imports found - investigate and refactor before deletion
-
----
-
-### ✅ **Task 1.2: Delete src/backend/__init__.py**
-
-**Priority:** ⭐ HIGH
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Remove dead Python file with obsolete imports
-
-**Commands:**
-```bash
-rm src/backend/__init__.py
-```
-
-**Expected Result:**
-- File deleted successfully
-- 89 lines of dead code removed
-
-**Verification:**
-```bash
-ls src/backend/__init__.py
-# Should error: No such file or directory
-```
-
-**Impact:** Zero functional impact (file not imported)
+**RECOMMENDATION**: Option A (Keep Rich Console) - Better UX, no breaking changes
 
 ---
 
-## PHASE 2: Orphaned Bytecode Cleanup
-
-### 🎯 **START with Sequential-Thinking for Bytecode Cleanup Analysis**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Understand why __pycache__ directories exist
-- Plan the cleanup strategy for all orphaned bytecode
-- Verify the cleanup is comprehensive
-
-### ✅ **Task 2.1: List All __pycache__ Directories**
-
-**Priority:** ⭐ HIGH
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Document all __pycache__ locations before cleanup
-
-**Commands:**
-```bash
-find . -type d -name "__pycache__" | grep -v node_modules | grep -v .venv
-```
-
-**Expected Result:**
-- List of all __pycache__/ directories in src/backend/
-- Count for commit message documentation
-
-**Verification:**
-- Minimum 4 directories found (backend, tools, utils, services)
-
----
-
-### ✅ **Task 2.2: Delete All __pycache__ Directories**
-
-**Priority:** ⭐ HIGH
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Remove all orphaned bytecode files
-
-**Commands:**
-```bash
-find . -type d -name "__pycache__" -not -path "./node_modules/*" -not -path "./.venv/*" -exec rm -rf {} +
-```
-
-**Expected Result:**
-- All __pycache__/ directories deleted
-- All orphaned .pyc files removed (api_models, dependencies, main, finnhub_tools)
-
-**Verification:**
-```bash
-find . -type d -name "__pycache__"
-# Should return empty or only node_modules/.venv
-```
-
-**Impact:** Negligible disk space recovered, cleaner repository
-
----
-
-## PHASE 3: Obsolete Config Files Cleanup
-
-### 🎯 **START with Sequential-Thinking for Config Files Analysis**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Understand purpose of each config file being deleted
-- Verify no tooling dependencies on these files
-- Plan verification strategy post-deletion
-
-### ✅ **Task 3.1: Verify Config Files Exist**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Confirm all 6 obsolete config files are present
-
-**Commands:**
-```bash
-ls -la tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs
-```
-
-**Expected Result:**
-- All 6 files found
-- Total size ~5KB
-
-**Verification:**
-- Each file exists
-- Files are in root directory
-
----
-
-### ✅ **Task 3.2: Delete 6 Obsolete Config Files**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Remove React/TypeScript tooling configuration files
-
-**Commands:**
-```bash
-rm tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs
-```
-
-**Expected Result:**
-- 6 files deleted successfully
-- ~253 lines of config removed
-
-**Verification:**
-```bash
-ls -la tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs 2>&1 | grep "No such file"
-# Should show "No such file or directory" for all 6
-```
-
-**Impact:** Zero tooling impact (React removed, Python uses Black)
-
----
-
-## PHASE 4: Obsolete CI Workflow Cleanup
-
-### 🎯 **START with Sequential-Thinking for CI Workflow Analysis**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Understand the lighthouse-ci.yml workflow purpose
-- Verify workflow is disabled and safe to delete
-- Plan verification that no other workflows depend on it
-
-### ✅ **Task 4.1: Verify Workflow File Exists**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Confirm obsolete CI workflow is present
-
-**Commands:**
-```bash
-ls -la .github/workflows/lighthouse-ci.yml
-```
-
-**Expected Result:**
-- File found (119 lines)
-- References deleted frontend/ directory
-
-**Verification:**
-```bash
-cat .github/workflows/lighthouse-ci.yml | grep -c "if: false"
-# Should output: 2 (workflow is disabled)
-```
-
----
-
-### ✅ **Task 4.2: Delete Lighthouse CI Workflow**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Remove React frontend CI workflow
-
-**Commands:**
-```bash
-rm .github/workflows/lighthouse-ci.yml
-```
-
-**Expected Result:**
-- File deleted successfully
-- 119 lines of CI config removed
-
-**Verification:**
-```bash
-ls -la .github/workflows/
-# Should NOT show lighthouse-ci.yml
-```
-
-**Impact:** Zero CI impact (workflow was disabled, React removed)
-
----
-
-## PHASE 5: Pre-Commit Hook Update
-
-### 🎯 **START with Sequential-Thinking for Pre-Commit Hook Analysis**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Understand current pre-commit hook structure
-- Plan precise edit to remove ESLint section only
-- Verify Python hooks remain intact
-
-### ✅ **Task 5.1: Read Current .pre-commit-config.yaml**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Read
-
-**Purpose:** Understand current pre-commit configuration
-
-**Commands:**
-```bash
-# Use Read tool to view file
-```
-
-**Expected Result:**
-- File has 3 sections:
-  - Python formatting/linting (lines 1-22) ✅ KEEP
-  - JavaScript/TypeScript linting (lines 23-36) ❌ REMOVE
-  - General file formatting (lines 38-47) ✅ KEEP
-
-**Verification:**
-- Identify exact line numbers of ESLint section
-- Confirm section matches research findings
-
----
-
-### ✅ **Task 5.2: Identify ESLint Section**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Serena `search_for_pattern`
-
-**Purpose:** Locate ESLint/TypeScript hook section
-
-**Commands:**
-```bash
-# Use Serena search_for_pattern with "mirrors-eslint"
-```
-
-**Expected Result:**
-- Pattern found at lines 23-36
-- Section includes ESLint, TypeScript, React dependencies
-
-**Verification:**
-- Line numbers match research findings (23-36)
-- Section starts with "mirrors-eslint"
-
----
-
-### ✅ **Task 5.3: Remove ESLint/TypeScript Section**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Edit
-
-**Purpose:** Remove obsolete JavaScript/TypeScript linting hook
-
-**Commands:**
-```bash
-# Use Edit tool to remove lines 23-36
-# old_string: entire ESLint section (14 lines)
-# new_string: empty (delete section)
-```
-
-**Expected Result:**
-- Lines 23-36 removed
-- File reduced from 47 lines to 33 lines
-- Python and general hooks remain intact
-
-**Verification:**
-```bash
-# Verify ESLint section removed
-grep -q "mirrors-eslint" .pre-commit-config.yaml
-# Should return 1 (not found)
-
-# Verify Python hooks still present
-grep -q "psf/black" .pre-commit-config.yaml
-# Should return 0 (found)
-```
-
----
-
-### ✅ **Task 5.4: Verify Updated YAML Is Valid**
-
-**Priority:** ⭐⭐ MEDIUM
-**Status:** [ ] Not Started
-**Tool:** Read, Bash
-
-**Purpose:** Ensure .pre-commit-config.yaml is still valid YAML
-
-**Commands:**
-```bash
-# Read updated file
-# Use Read tool
-
-# Validate YAML syntax
-python3 -c "import yaml; yaml.safe_load(open('.pre-commit-config.yaml'))"
-```
-
-**Expected Result:**
-- File reads correctly
-- YAML syntax is valid
-- Only Python and general hooks present
-
-**Verification:**
-- No YAML syntax errors
-- File structure intact
-
----
-
-## PHASE 6: Documentation Updates
-
-### 🎯 **START with Sequential-Thinking for Documentation Analysis**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Analyze scope of documentation updates needed
-- Plan which files to update vs. mark as historical
-- Prioritize most impactful documentation changes
-
-### ✅ **Task 6.1: Update DEPLOYMENT-QUICKSTART.md**
-
-**Priority:** ⭐⭐⭐ LOW
-**Status:** [ ] Not Started
-**Tool:** Serena `search_for_pattern`, Read, Edit
-
-**Purpose:** Remove React frontend deployment references
-
-**Commands:**
-```bash
-# Use Serena search_for_pattern to find "React" or "frontend"
-# Use Read to view file
-# Use Edit to update/remove React sections
-```
-
-**Expected Result:**
-- React deployment steps removed
-- Focus on Gradio-only deployment
-- Updated to reflect current architecture
-
-**Verification:**
-```bash
-grep -i "react\|frontend" DEPLOYMENT-QUICKSTART.md
-# Should return zero or minimal historical references
-```
-
----
-
-### ✅ **Task 6.2: Update .claude/commands/new_task.md**
-
-**Priority:** ⭐⭐⭐ LOW
-**Status:** [ ] Not Started
-**Tool:** Serena `search_for_pattern`, Read, Edit
-
-**Purpose:** Remove @react-component-architect agent references
-
-**Commands:**
-```bash
-# Use Serena search_for_pattern to find "react-component-architect"
-# Use Read to view file
-# Use Edit to remove React agent rows from tables
-```
-
-**Expected Result:**
-- @react-component-architect references removed
-- Agent table updated
-- Focus on backend and Python agents
-
-**Verification:**
-```bash
-grep -i "react-component-architect" .claude/commands/new_task.md
-# Should return zero results
-```
-
----
-
-### ✅ **Task 6.3: Update .claude/commands/code_review_commit.md**
-
-**Priority:** ⭐⭐⭐ LOW
-**Status:** [ ] Not Started
-**Tool:** Serena `search_for_pattern`, Read, Edit
-
-**Purpose:** Remove TypeScript interface validation references
-
-**Commands:**
-```bash
-# Use Serena search_for_pattern to find "TypeScript"
-# Use Read to view file
-# Use Edit to remove TypeScript validation steps
-```
-
-**Expected Result:**
-- TypeScript validation step removed
-- Focus on Python code review only
-
-**Verification:**
-```bash
-grep -i "typescript" .claude/commands/code_review_commit.md
-# Should return zero results
-```
-
----
-
-### ✅ **Task 6.4: Quick Audit of Other Documentation**
-
-**Priority:** ⭐⭐⭐ LOW
-**Status:** [ ] Not Started
-**Tool:** Serena `search_for_pattern`, Bash
-
-**Purpose:** Identify other docs that may need updates
-
-**Commands:**
-```bash
-# Search all .md files for React/TypeScript references
-grep -r -i "react\|typescript" *.md docs/ .serena/memories/ | grep -v "historical\|HISTORICAL\|retired" | head -20
-```
-
-**Expected Result:**
-- List of files with potential outdated references
-- Most should be marked as historical already
-
-**Action:**
-- Update critical references
-- Mark appropriate files as historical
-- Low priority - can be addressed in future commits
-
----
-
-## PHASE 7: 🔴 MANDATORY Testing & Validation
-
-### ⚠️ CRITICAL CHECKPOINT - DO NOT SKIP ⚠️
-
-**CRITICAL:** You MUST run tests and perform Phase 2 verification BEFORE claiming completion
-
-### 🎯 **START with Sequential-Thinking for Testing Strategy**
-
-**MANDATORY:** Use Sequential-Thinking to:
-- Plan comprehensive testing approach
-- Understand Phase 2 mandatory verification requirements
-- Plan evidence collection for all checkpoint questions
-
----
-
-### ✅ **Task 7.1: Python Import Verification**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Verify critical modules import successfully after __init__.py deletion
-
-**Commands:**
-```bash
-uv run python -c "import src.backend.cli; print('✅ CLI imports OK')"
-uv run python -c "import src.backend.gradio_app; print('✅ Gradio imports OK')"
-uv run python -c "from src.backend.tools import polygon_tools; print('✅ Tools import OK')"
-```
-
-**Expected Result:**
-- All 3 imports succeed
-- Each prints "✅ ... imports OK"
-- No ImportError exceptions
-
-**❌ STOP IF:** Any import fails - restore __init__.py and investigate
-
----
-
-### ✅ **Task 7.2: Pylint Import Error Check**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Verify no import errors detected by pylint
-
-**Commands:**
-```bash
-uv run pylint src/backend/ --disable=all --enable=import-error
-```
-
-**Expected Result:**
-- **Score: 10.00/10**
-- **No import errors detected**
-
-**Verification:**
-```bash
-# Should show:
-# Your code has been rated at 10.00/10
-```
-
-**❌ STOP IF:** Import errors detected - fix before proceeding
-
----
-
-### ✅ **Task 7.3: Post-Cleanup Full Test Suite (Phase 1)**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Run full CLI regression suite - generate all 39 responses
-
-**Commands:**
-```bash
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-```
-
-**Expected Result:**
-- **39/39 tests COMPLETED** (responses generated)
-- Test report generated: `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`
-- **NOTE:** "39/39 COMPLETED" means responses received, NOT verified correct
-
-**Verification:**
-```bash
-# Check completion count
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
-# Should output: 39
-```
-
-**⚠️ IMPORTANT:** Phase 1 does NOT verify correctness - only completion
-
----
-
-### ✅ **Task 7.4: 🔴 MANDATORY Phase 2 Verification (Error Detection)**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash (Grep)
-
-**Purpose:** MANDATORY grep-based verification of test responses for errors
-
-**🔴 REQUIRED: You MUST run these 3 grep commands and SHOW output:**
-
-**Command 1: Find All Errors/Failures**
-```bash
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
-```
-
-**Command 2: Count 'Data Unavailable' Errors**
-```bash
-grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
-```
-
-**Command 3: Count Completed Tests**
-```bash
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
-```
-
-**Expected Result:**
-- **Command 1:** Either no output (0 errors) OR list of errors with line numbers
-- **Command 2:** Count of "data unavailable" errors (ideally 0)
-- **Command 3:** Should output 39 (all tests completed)
-
-**🔴 MANDATORY: Document Results:**
-
-If errors found, create evidence table:
-
-| Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
-|--------|-----------|--------|---------------|------------------------|
-| X | Test_Name | 123 | error message | tool_call(...) |
-
-**If NO errors:** Explicitly state "✅ 0 failures found - all grep commands returned zero errors"
-
-**❌ CANNOT PROCEED** without running all 3 grep commands and showing output
-
----
-
-### ✅ **Task 7.5: Phase 2 Checkpoint Questions (MANDATORY)**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Evidence from Task 7.4
-
-**Purpose:** Answer ALL checkpoint questions with evidence
-
-**🔴 REQUIRED: Answer ALL 5 questions with evidence:**
-
-1. ✅ **Did you RUN the 3 mandatory grep commands in Task 7.4?**
-   - **Answer:** [YES/NO]
-   - **Evidence:** [Paste grep outputs]
-
-2. ✅ **Did you DOCUMENT all failures found (or confirm 0 failures)?**
-   - **Answer:** [YES/NO]
-   - **Evidence:** [Provide failure table OR "0 failures found"]
-
-3. ✅ **Failure count from `grep -c "data unavailable"`:**
-   - **Answer:** [X failures]
-   - **Evidence:** [Show grep -c output]
-
-4. ✅ **Tests that generated responses (COMPLETED):**
-   - **Answer:** [X/39 COMPLETED]
-   - **Evidence:** [Show grep -c "COMPLETED" output]
-
-5. ✅ **Tests that PASSED verification (no errors):**
-   - **Answer:** [X/39 PASSED]
-   - **Evidence:** [39 minus failure count from Q3]
+## Testing Checklist (MANDATORY - NON-NEGOTIABLE)
+
+**🔴 CRITICAL**: Testing is REQUIRED for task completion. Two-phase validation MUST be performed.
+
+### Phase 1: Automated Response Generation
+
+- [ ] **Execute CLI regression test suite**
+  - Command: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
+  - Expected: Script runs all 39 tests and generates responses
+  - Output: "39/39 COMPLETED" (responses received, NOT validation)
+  - Test report: `test-reports/test_cli_regression_loop1_YYYYMMDD_HHMMSS.log`
+
+- [ ] **Show Phase 1 results to user**
+  - Display completion counts (X/39 COMPLETED)
+  - Show average response times
+  - Provide test report file path
+  - **LIMITATION**: Phase 1 cannot validate response correctness
+
+### Phase 2: MANDATORY Grep-Based Verification (EVIDENCE REQUIRED)
+
+#### Phase 2a: ERROR DETECTION (MANDATORY - MUST RUN COMMANDS)
+
+🔴 **YOU MUST RUN these grep commands and SHOW output. Cannot proceed without evidence.**
+
+- [ ] **Command 1: Find all errors/failures**
+  - Command: `grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log`
+  - Purpose: Detect any error messages in test responses
+  - Required: SHOW FULL OUTPUT (even if empty)
+
+- [ ] **Command 2: Count 'data unavailable' errors**
+  - Command: `grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log`
+  - Purpose: Count specific API errors
+  - Required: SHOW COUNT OUTPUT
+
+- [ ] **Command 3: Count completed tests**
+  - Command: `grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log`
+  - Purpose: Verify test completion count
+  - Required: SHOW COUNT (should be 39)
+
+**Required Output**: Paste ALL grep command outputs. If you don't show grep output, Phase 2 is INCOMPLETE.
+
+#### Phase 2b: DOCUMENT FAILURES (MANDATORY - IF ERRORS FOUND)
+
+- [ ] **Create evidence-based failure table**
+  - If Phase 2a grep commands found errors, create table:
+
+    | Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
+    |--------|-----------|--------|---------------|------------------------|
+    | X | Test_Name | XXX | error message | tool_call(...) |
+
+  - OR confirm "0 failures found" if no errors
+  - Required: Show grep output + failure table OR "0 failures"
+
+#### Phase 2c: VERIFY RESPONSE CORRECTNESS (For tests without errors)
+
+- [ ] **Verify Markdown table rendering in Gradio**
+  - Start Gradio: `uv run python src/backend/gradio_app.py`
+  - Access: http://127.0.0.1:8000
+  - Test: Submit query "SPY options chain expiring this Friday"
+  - Expected: See formatted Markdown table (NOT raw `| Header |` text)
+  - Verify: Strike prices, Bid/Ask columns, proper alignment
+
+- [ ] **Verify CLI output format matches decision**
+  - If Option A: Rich formatted tables in terminal
+  - If Option B: Raw Markdown text in terminal
+  - Test: `uv run src/backend/cli.py` → "SPY price history"
+  - Expected: Output matches chosen rendering approach
+
+- [ ] **For tests without errors, verify:**
+  1. Response directly addresses the prompt query
+  2. Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+  3. Appropriate tool calls made (Polygon, Tradier)
+  4. Data formatting matches expected format (OHLC, tables, etc.)
+  5. No hallucinated data or made-up values
+  6. Options chains show Bid/Ask columns (NOT midpoint)
+  7. Technical analysis includes proper indicators
+  8. Response is complete (not truncated)
+  9. **NEW**: Markdown tables render properly in Gradio UI
+  10. **NEW**: Tables show formatted (not raw `| Header |` syntax)
+
+#### Phase 2d: FINAL VERIFICATION (CHECKPOINT QUESTIONS)
+
+- [ ] **Answer ALL checkpoint questions with evidence:**
+  1. ✅ Did you RUN the 3 mandatory grep commands in Phase 2a? **SHOW OUTPUT**
+  2. ✅ Did you DOCUMENT all failures found (or confirm 0 failures)? **PROVIDE TABLE OR "0 failures"**
+  3. ✅ Failure count from grep -c: **X failures**
+  4. ✅ Tests that generated responses: **X/39 COMPLETED**
+  5. ✅ Tests that PASSED verification (no errors): **X/39 PASSED**
 
 **🔴 CANNOT MARK TASK COMPLETE WITHOUT:**
 - Running and showing grep outputs
 - Documenting failures with evidence (or confirming 0 failures)
+- Providing failure count: `grep -c "data unavailable"`
 - Answering all 5 checkpoint questions with evidence
+- Verifying Markdown table rendering in Gradio UI
 
 ---
 
-### ✅ **Task 7.6: Gradio Startup Verification**
+## Documentation Checklist
 
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
+### Update CLAUDE.md
 
-**Purpose:** Verify Gradio server starts successfully on port 8000
+- [ ] **Add Markdown output formatting section**
+  - Tool: Standard Edit
+  - File: `CLAUDE.md`
+  - Section: Add after "Features" section
+  - Content:
+    ```markdown
+    ## Output Formatting
 
-**Commands:**
-```bash
-# Start Gradio in background with timeout
-timeout 10s uv run python src/backend/gradio_app.py 2>&1 | tee /tmp/gradio_startup.log &
-GRADIO_PID=$!
+    ### Markdown-Only Output (All Interfaces)
 
-# Wait for startup
-sleep 5
+    **CLI Interface:**
+    - Outputs: Pure Markdown with tables, headers, lists, code blocks
+    - Rendering: [Option A: Rich Console formatting | Option B: Raw Markdown text]
+    - Tables: GitHub-Flavored Markdown with proper alignment
 
-# Check if running on port 8000
-curl -s http://127.0.0.1:8000 > /dev/null && echo "✅ Gradio running on port 8000" || echo "❌ Gradio not accessible"
+    **Gradio Web Interface:**
+    - Outputs: Pure Markdown (same source as CLI)
+    - Rendering: Native Gradio Markdown rendering (render_markdown=True)
+    - Tables: Formatted with proper columns, alignment, borders
 
-# Kill background process
-kill $GRADIO_PID 2>/dev/null
-```
+    **Markdown Table Standards:**
+    - Left-align: Text columns (Symbol, Date, Type)
+    - Right-align: Numeric columns (Price, Volume, Change %)
+    - Supported: Headers, dividers, bold, italics, code, links
 
-**Expected Result:**
-- "✅ Gradio running on port 8000"
-- No startup errors in logs
+    **Example Markdown Table:**
+    | Strike ($) | Bid ($) | Ask ($) | Volume | Open Interest | Delta |
+    | ---------: | ------: | ------: | -----: | ------------: | ----: |
+    | 450.00     | 2.35    | 2.40    | 1,250  | 5,830         | 0.45  |
+    | 455.00     | 1.85    | 1.90    | 890    | 3,210         | 0.38  |
+    ```
+  - Include: Test results summary (X/39 tests passed)
 
-**Verification:**
-```bash
-cat /tmp/gradio_startup.log | grep -i error
-# Should return zero errors
-```
+### Update Serena Memory
 
-**❌ STOP IF:** Gradio fails to start - investigate errors
+- [ ] **Update output_formatting_investigation_oct_2025.md**
+  - Tool: Standard Edit
+  - File: `.serena/memories/output_formatting_investigation_oct_2025.md`
+  - Section: Add new "Implementation Results" section at end
+  - Content:
+    ```markdown
+    ## Implementation Results - October 18, 2025
 
----
+    **Status**: ✅ IMPLEMENTED - Markdown-Only Output Formatting
 
-## PHASE 8: 🔴 Atomic Git Commit Workflow
+    **Changes Made:**
+    1. Gradio ChatInterface: Added explicit render_markdown=True configuration
+    2. CLI Rendering: [Kept Rich Console | Switched to Pure Markdown]
+    3. Testing: 39/39 CLI tests validated (X passed, Y failures documented)
 
-### ⚠️ CRITICAL: PROPER ATOMIC COMMIT WORKFLOW ⚠️
+    **Gradio Configuration:**
+    - render_markdown=True (explicit)
+    - line_breaks=True (GitHub-flavored)
+    - sanitize_html=True (security)
+    - height=600 (better table visibility)
 
-**DO NOT STAGE FILES EARLY - Stage ONLY immediately before commit**
+    **Verified Behaviors:**
+    - Gradio renders Markdown tables with proper formatting
+    - CLI outputs [Rich formatted | Raw Markdown] per decision
+    - AI agent continues outputting Markdown tables per instructions
+    - Footer remains plain text for universal compatibility
 
-### 🎯 **START with Sequential-Thinking for Commit Strategy**
+    **Test Results:**
+    - Phase 1: 39/39 responses generated
+    - Phase 2: X/39 tests passed verification
+    - Failures: [None | See test report]
+    - Test report: test-reports/test_cli_regression_loop1_YYYYMMDD_HHMMSS.log
+    ```
 
-**MANDATORY:** Use Sequential-Thinking to:
-- Review all changes made during implementation
-- Verify ALL work is complete (code, tests, docs)
-- Plan atomic commit message structure
-- Confirm understanding of proper staging workflow
+### Update Task Summary in CLAUDE.md
 
----
-
-### ✅ **Task 8.1: 🔴 CRITICAL - WAIT - Do NOT Stage Yet**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** None (Checkpoint)
-
-**Purpose:** Ensure ALL work complete before staging
-
-**🔴 VERIFY ALL OF THE FOLLOWING BEFORE PROCEEDING:**
-
-- ✅ All code deletions complete (8 files)
-- ✅ All bytecode cleanup complete (__pycache__)
-- ✅ All config deletions complete (6 files)
-- ✅ All CI workflow deletions complete (1 file)
-- ✅ Pre-commit hook updated (ESLint removed)
-- ✅ Documentation updated (React/TypeScript references)
-- ✅ All tests PASS (Phase 1 + Phase 2 verification complete)
-- ✅ Test report generated and saved
-- ✅ All 5 checkpoint questions answered with evidence
-
-**⚠️ DO NOT RUN `git add` YET**
-
-**❌ STOP IF:** Any item above is NOT complete
-
----
-
-### ✅ **Task 8.2: Final Review**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Review ALL changes before staging
-
-**Commands:**
-```bash
-# Review all changed/deleted files
-git status
-
-# Review all changes
-git diff
-```
-
-**Expected Result:**
-- **Deleted files (8):**
-  - src/backend/__init__.py
-  - tsconfig.node.json
-  - vite-env.d.ts
-  - postcss.config.js
-  - .prettierrc.cjs
-  - lighthouserc.js
-  - lighthouserc.cjs
-  - .github/workflows/lighthouse-ci.yml
-
-- **Modified files (2+):**
-  - .pre-commit-config.yaml (ESLint section removed)
-  - DEPLOYMENT-*.md (React references updated)
-  - .claude/commands/*.md (React agents removed)
-
-- **Untracked files:**
-  - test-reports/test_cli_regression_loop1_*.log (NEW test report)
-
-**Verification:**
-- All changes look correct
-- No unexpected modifications
-- Ready to stage
+- [ ] **Update Last Completed Task Summary section**
+  - Tool: Standard Edit
+  - File: `CLAUDE.md`
+  - Section: `<!-- LAST_COMPLETED_TASK_START -->` to `<!-- LAST_COMPLETED_TASK_END -->`
+  - Content: Replace with new task summary (max 20 lines)
+  - Include: Implementation details, test results, files changed
 
 ---
 
-### ✅ **Task 8.3: Stage Everything AT ONCE**
+## Git Commit Checklist (ATOMIC COMMIT WORKFLOW)
 
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
+**🔴 CRITICAL**: Follow this workflow EXACTLY. Stage ALL files at once, commit immediately.
 
-**Purpose:** Stage ALL changes in ONE command
+### Step 1: Complete ALL Work First (DO NOT stage yet)
 
-**Commands:**
-```bash
-git add -A
-```
+- [ ] **Verify all implementation tasks complete**
+  - Code changes in gradio_app.py (and optionally response_utils.py)
+  - Test suite executed (Phase 1 + Phase 2)
+  - Test reports generated
+  - Documentation updated (CLAUDE.md, memories)
+  - Config files updated if needed
 
-**⚠️ THIS IS THE FIRST TIME RUNNING `git add`**
-**⚠️ ALL changes must be staged together**
+### Step 2: Verify Everything is Complete
 
-**Expected Result:**
-- All deletions staged
-- All modifications staged
-- All new files staged (test reports)
+- [ ] **Review ALL changed/new files**
+  - Command: `git status`
+  - Expected: See all modified files listed
+  - Verify: Nothing missing
 
-**Verification:**
-```bash
-git status
-# Should show all changes as "Changes to be committed"
-```
+- [ ] **Review ALL changes**
+  - Command: `git diff`
+  - Expected: See code changes, doc updates
+  - Verify: Changes match task scope
 
----
+### Step 3: Stage EVERYTHING At Once
 
-### ✅ **Task 8.4: Verify Staging Immediately**
+- [ ] **Stage ALL files in ONE command**
+  - Command: `git add -A`
+  - ⚠️ This is the FIRST time running `git add`
+  - ⚠️ Stage ALL related files together
 
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
+### Step 4: Verify Staging Immediately
 
-**Purpose:** Confirm ALL files staged, NOTHING unstaged
+- [ ] **Verify ALL files staged, NOTHING unstaged**
+  - Command: `git status`
+  - Expected: All files shown as "Changes to be committed"
+  - If missing files: `git add [missing-file]`
 
-**Commands:**
-```bash
-git status
-```
+### Step 5: Commit Immediately (within 60 seconds)
 
-**Expected Result:**
-- **"Changes to be committed:"** section lists ALL changes
-- **"Changes not staged for commit:"** section is EMPTY
-- **"Untracked files:"** section is EMPTY (or only temp files)
+- [ ] **Create atomic commit with comprehensive message**
+  - Command:
+    ```bash
+    git commit -m "$(cat <<'EOF'
+    [MARKDOWN] Implement consolidated Markdown-only output formatting
 
-**Verification:**
-- Count of staged files matches expectations (~10-15 files)
-- No unstaged changes
+    - Add explicit Markdown rendering to Gradio ChatInterface
+    - Configure render_markdown=True, line_breaks=True, sanitize_html=True
+    - [Keep Rich Console for CLI | Switch CLI to pure Markdown output]
+    - Verify Markdown table rendering in Gradio UI
+    - Run 39-test CLI regression suite (X/39 passed, Y failures)
+    - Update CLAUDE.md with Markdown formatting documentation
+    - Update Serena memory with implementation results
 
-**❌ STOP IF:** Any files unstaged - run `git add [missing-file]`
+    Files Changed:
+    - src/backend/gradio_app.py: Add Chatbot configuration (~5 lines)
+    - [src/backend/utils/response_utils.py: Update CLI rendering]
+    - CLAUDE.md: Add Markdown formatting section
+    - .serena/memories/output_formatting_investigation_oct_2025.md: Add results
 
----
+    Test Results:
+    - Phase 1: 39/39 responses generated
+    - Phase 2: X/39 tests passed verification
+    - Test report: test-reports/test_cli_regression_loop1_YYYYMMDD_HHMMSS.log
 
-### ✅ **Task 8.5: Commit Immediately (Within 60 Seconds)**
+    Complexity: LOW (5-10 lines of code)
+    Risk: LOW (Gradio native Markdown support)
 
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash (Heredoc)
+    🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
-**Purpose:** Create atomic commit with comprehensive message
+    Co-Authored-By: Claude <noreply@anthropic.com>
+    EOF
+    )"
+    ```
 
-**Commands:**
-```bash
-git commit -m "$(cat <<'EOF'
-[CLEANUP] Remove dead code after React/FastAPI retirement
+### Step 6: Push Immediately
 
-**Summary:** Comprehensive cleanup of legacy code after migrating to Gradio-only Python full-stack architecture
-
-**Code Deletions:**
-- Deleted src/backend/__init__.py (89 lines - imports deleted modules)
-- Cleaned all __pycache__/ directories (orphaned bytecode: api_models, dependencies, main, finnhub_tools)
-
-**Config Deletions:**
-- Deleted 6 obsolete React/TypeScript config files (253 lines):
-  - tsconfig.node.json (TypeScript config)
-  - vite-env.d.ts (Vite TypeScript definitions)
-  - postcss.config.js (PostCSS for React CSS)
-  - .prettierrc.cjs (Prettier for React)
-  - lighthouserc.js (Lighthouse CI)
-  - lighthouserc.cjs (Lighthouse CI duplicate)
-
-**CI/CD Deletions:**
-- Deleted .github/workflows/lighthouse-ci.yml (119 lines - React frontend CI workflow)
-
-**Configuration Updates:**
-- Updated .pre-commit-config.yaml (removed ESLint/TypeScript hook - 14 lines)
-
-**Documentation Updates:**
-- Updated DEPLOYMENT-QUICKSTART.md (removed React deployment references)
-- Updated .claude/commands/new_task.md (removed @react-component-architect)
-- Updated .claude/commands/code_review_commit.md (removed TypeScript validation)
-- Other documentation cleanups
-
-**Testing & Verification:**
-- ✅ Test Suite: 39/39 PASS (100%)
-- ✅ Phase 2 Verification: X/39 PASS (grep-based error detection)
-- ✅ Python Imports: All modules import successfully
-- ✅ Pylint: No import errors (10.00/10)
-- ✅ Gradio: Starts successfully on port 8000
-- Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-
-**Impact:**
-- Files Deleted: 8 files (372 lines of dead code)
-- Directories Cleaned: All __pycache__/ (4+ directories)
-- Functional Impact: Zero (all dead code, no active dependencies)
-- Code Quality: Improved (cleaner codebase, reduced confusion)
-
-**Risk Assessment:** LOW (comprehensive testing, all changes are deletions)
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
-```
-
-**⚠️ CRITICAL:** Update placeholders in commit message:
-- Replace `X/39 PASS` with actual pass count from Phase 2 verification
-- Replace `YYYY-MM-DD_HH-MM` with actual test report timestamp
-
-**Expected Result:**
-- Commit created successfully
-- Comprehensive commit message with all details
-
-**Verification:**
-```bash
-git log -1 --stat
-# Should show commit with all changes
-```
-
----
-
-### ✅ **Task 8.6: Push Immediately**
-
-**Priority:** ⭐⭐⭐ CRITICAL
-**Status:** [ ] Not Started
-**Tool:** Bash
-
-**Purpose:** Push commit to remote repository
-
-**Commands:**
-```bash
-git push
-```
-
-**Expected Result:**
-- Commit pushed successfully to `origin/react_retirement` (or current branch)
-- Remote updated
-
-**Verification:**
-```bash
-git status
-# Should show: Your branch is up to date with 'origin/...'
-```
-
-**✅ IMPLEMENTATION COMPLETE** when push succeeds
+- [ ] **Push to remote**
+  - Command: `git push`
+  - Expected: Changes pushed to GitHub
+  - Verification: `git status` shows "Your branch is up to date"
 
 ---
 
 ## Success Criteria
 
-### ✅ All Tasks Complete When:
+**Task is COMPLETE when ALL of the following are true:**
 
-1. ✅ All 8 files deleted (372 lines)
-2. ✅ All __pycache__/ directories cleaned
-3. ✅ Pre-commit config updated (ESLint removed)
-4. ✅ Documentation updated (React/TypeScript references)
-5. ✅ **Phase 1 Tests:** 39/39 COMPLETED (responses generated)
-6. ✅ **Phase 2 Verification:** All 3 grep commands run and documented
-7. ✅ **Checkpoint Questions:** All 5 questions answered with evidence
-8. ✅ **Test Pass Count:** X/39 PASS (documented with evidence)
-9. ✅ Python imports verified (no errors)
-10. ✅ Pylint clean (10.00/10)
-11. ✅ Gradio starts successfully
-12. ✅ Atomic commit created and pushed
+### Code Changes
+- ✅ Gradio ChatInterface has explicit `render_markdown=True` configuration
+- ✅ CLI rendering decision implemented (Option A or B)
+- ✅ Code compiles without errors
+- ✅ Gradio starts successfully on port 8000
+
+### Testing Validation
+- ✅ Phase 1: 39/39 CLI tests executed and generated responses
+- ✅ Phase 2a: 3 MANDATORY grep commands run and output shown
+- ✅ Phase 2b: Failures documented with evidence OR "0 failures" confirmed
+- ✅ Phase 2c: Response correctness verified for non-error tests
+- ✅ Phase 2d: All 5 checkpoint questions answered with evidence
+- ✅ Markdown tables render properly in Gradio UI (not raw `| Header |`)
+
+### Documentation
+- ✅ CLAUDE.md updated with Markdown formatting section
+- ✅ Serena memory updated with implementation results
+- ✅ Last Completed Task Summary updated (max 20 lines)
+- ✅ Test results included in documentation
+
+### Git Commit
+- ✅ ALL files staged together in single `git add -A` command
+- ✅ Atomic commit includes code + tests + docs
+- ✅ Commit message follows template with test results
+- ✅ Changes pushed to GitHub
+- ✅ `git status` shows clean working tree
+
+### Functional Verification
+- ✅ Gradio UI renders Markdown tables (visit http://127.0.0.1:8000)
+- ✅ CLI outputs match chosen rendering option (Rich or pure Markdown)
+- ✅ No breaking changes to existing functionality
+- ✅ Performance footer still displays correctly
 
 ---
 
 ## Risk Mitigation
 
-### Rollback Strategy (If Needed)
+### Potential Issues
 
-If any critical issues arise:
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| Gradio Markdown rendering fails | LOW | MEDIUM | Research confirmed native support exists |
+| Breaking CLI output format | LOW | LOW | Option A keeps Rich Console (no change) |
+| Test failures increase | LOW | MEDIUM | AI agent already outputs Markdown per instructions |
+| Documentation inconsistencies | LOW | LOW | Update all docs in same commit |
 
-```bash
-# Restore deleted files from git
-git checkout HEAD -- src/backend/__init__.py
-git checkout HEAD -- tsconfig.node.json vite-env.d.ts postcss.config.js .prettierrc.cjs lighthouserc.js lighthouserc.cjs
-git checkout HEAD -- .github/workflows/lighthouse-ci.yml
+### Rollback Plan
 
-# Restore pre-commit config
-git checkout HEAD -- .pre-commit-config.yaml
-
-# Clean staged changes
-git reset HEAD
-```
-
----
-
-## Notes for Implementation
-
-### Tool Usage Patterns:
-
-- **Sequential-Thinking:** Start of each phase for systematic approach
-- **Serena Tools:** Code analysis, pattern searches, verification
-- **Standard Read:** Inspect files before editing
-- **Standard Edit:** Precise file modifications
-- **Bash:** File operations, testing, git commands
-
-### Common Pitfalls to Avoid:
-
-1. ❌ Staging files early during development
-2. ❌ Skipping Phase 2 verification
-3. ❌ Not answering all 5 checkpoint questions
-4. ❌ Claiming tests "PASS" without grep verification
-5. ❌ Committing without test reports
-6. ❌ Delay between staging and committing
-
-### Remember:
-
-- **"39/39 COMPLETED" ≠ "39/39 PASSED"**
-- Only Phase 2 verification proves correctness
-- Must run all 3 grep commands and show output
-- Must answer all 5 checkpoint questions with evidence
-- Must document failures OR confirm 0 failures
+If implementation fails:
+1. Revert Gradio configuration changes in `gradio_app.py`
+2. Keep current Rich Console rendering
+3. Document issue in Serena memory
+4. Re-research Gradio Markdown limitations
 
 ---
 
-**Implementation Plan Complete**
-**Status:** Ready for Phase 3 (Implementation)
-**Next Step:** Begin with Task 0.1 (Pre-Implementation Setup)
+## Notes
+
+- **Research Source**: research_task_plan.md (Research Phase Complete)
+- **Key Insight**: Gradio ALREADY supports Markdown (render_markdown=True is DEFAULT)
+- **Main Gap**: Explicit configuration, not capability
+- **Estimated Effort**: 5-10 lines of code + testing + documentation
+- **Recommended Approach**: Option A (Keep Rich Console for CLI)
 
 ---
 
-*Generated by: Claude Code (Sonnet 4.5) using Sequential-Thinking*
-*Based on: research_task_plan.md (comprehensive audit findings)*
-*Date: 2025-10-18*
-*Total Tasks: 31 tasks across 9 phases*
-*Estimated Time: 2-3 hours*
+**Plan Generated By**: Claude (Sequential-Thinking analysis)
+**Date**: October 18, 2025
+**Ready for**: Phase 3 (Implementation)

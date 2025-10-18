@@ -4,16 +4,20 @@
 
 <Phase 1: Research> ULTRA-THINK to Research the requested task(s): 
 
-## Task 1. Research, Investigate, & Audit the entire code base and project docs and serena memories to clean up and remove and retire any lingering dead code and\or legacy code implementation
-- We retired React, FastAPI, CORS etc and fully migrated to a 100% Python Full Stack for both the back and front end
+## Task 1. Use docs-gradio tools, Context7 tools, and any other Research tools needed to Research and implement a single consolidated output formatting to Markdown only for ALL AI Chat Responses for CLI, which then the Gradio UI will inherit
+- Read '.serena/memories/output_formatting_investigation_oct_2025.md' for more context
+- CLI needs to be updated to now only output Markdown formatting with proper markdown Tables\Charts.
+- So AI responses that output in tables\charts, such as options chain charts and TA charts etc, need to also now output a true table in markdown format
+- Gradio UI code needs to be updated to support Markdown formatting, but the main formatting comes from the CLI code since the Gradio UI is mainly just a "UI Wrapper" for the CLI backend
+- Expected Outcome: CLI outputs markdown by default for all responses, any tables\charts would also be rendered\output in true markdown table, Gradio UI supports Markdown formatting, and Gradio UI just inherits the main CLI changes with to match the project architecture of Gradio UI being being just a Wrapper for the main CLI code
 
-🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
+🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
 ---
 
 <Phase 2: Planning>
 
-Based on the latest Research, Analysis & Scoping 'reasearch_task_plan.md', delete the current file 'TODO_task_plan.md' and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
+Based on the latest Research, Analysis & Scoping 'reasearch_task_plan.md', delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s)
 
 ---
 

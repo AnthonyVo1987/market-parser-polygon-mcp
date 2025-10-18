@@ -57,16 +57,10 @@ async def chat_with_agent(message: str, history: List):
         # Call CLI core function - returns complete response with footer
         complete_response = await process_query_with_footer(agent, session, message)
 
-        # Gradio streaming: yield progressive chunks for better UX
-        # Split by sentences for natural streaming
-        sentences = complete_response.replace(". ", ".|").split("|")
-        accumulated = ""
-
-        for sentence in sentences:
-            accumulated += sentence
-            yield accumulated
-            # Small delay for smooth streaming effect
-            await asyncio.sleep(0.05)
+        # Gradio streaming: yield complete response to preserve Markdown table structure
+        # Note: Sentence-based streaming was splitting on "|" which destroyed Markdown tables
+        # since tables use "|" as column separators. Yielding complete response preserves formatting.
+        yield complete_response
 
     except Exception as e:
         # Error handling with informative message
@@ -78,6 +72,12 @@ async def chat_with_agent(message: str, history: List):
 demo = gr.ChatInterface(
     fn=chat_with_agent,
     type="messages",  # OpenAI-compatible message format
+    chatbot=gr.Chatbot(
+        render_markdown=True,      # Explicit Markdown rendering
+        line_breaks=True,           # GitHub-flavored Markdown
+        sanitize_html=True,         # Security
+        height=600                  # Better table visibility
+    ),
     title="🏦 Market Parser - Financial Analysis",
     description=(
         "Ask natural language questions about stocks, options, and market data. "
@@ -98,7 +98,6 @@ if __name__ == "__main__":
     print("🎨 Market Parser Gradio Interface")
     print("="*60)
     print("📍 Server: http://127.0.0.1:8000")
-    print("📖 Docs: See research_task_plan.md for details")
     print("🔄 Hot Reload: Use 'gradio src/backend/gradio_app.py'")
     print("="*60 + "\n")
 

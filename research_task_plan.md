@@ -1,438 +1,361 @@
-# Dead Code Cleanup & Legacy Code Removal - Research Task Plan
+# Research Task Plan: Markdown-Only Output Formatting
 
-**Generated:** 2025-10-18
-**Status:** Research Complete - Ready for Implementation Planning
-**Scope:** Complete audit of codebase after React, FastAPI, and CORS retirement
+**Date**: October 18, 2025
+**Status**: Research Complete - Ready for Planning Phase
+**Objective**: Implement consolidated Markdown-only output formatting for CLI and Gradio UI
 
 ---
 
 ## Executive Summary
 
-Comprehensive codebase audit identified **8 files to DELETE**, **2+ files to UPDATE**, and **all `__pycache__/` directories to CLEAN** following the React, FastAPI, and CORS retirement. Total impact: ~200+ lines of dead code/config to remove, ~100+ documentation references to update, with **ZERO functional impact** on the Gradio-only Python full-stack architecture.
+Research confirms that implementing consolidated Markdown-only output formatting is **SIMPLE and STRAIGHTFORWARD**. Both CLI and Gradio already have built-in Markdown support. The task reduces to:
+
+1. **Remove Rich Console Markdown rendering** from CLI (keep for status messages only)
+2. **Ensure AI agent outputs pure Markdown** (already mostly happening)
+3. **Let Gradio render Markdown natively** (already supported, just needs activation)
+
+**Estimated Complexity**: LOW (2-3 file changes, minimal code modifications)
+**Risk Level**: LOW (Gradio natively supports Markdown, minimal breaking changes)
 
 ---
 
-## Research Methodology
+## Key Research Findings
 
-### Tools Used
-- ✅ Sequential-Thinking for systematic analysis (8 thought cycles)
-- ✅ Serena tools for code analysis (list_dir, find_file, search_for_pattern, get_symbols_overview)
-- ✅ Standard tools for file inspection (Read, Grep, Bash)
-- ✅ Multi-phase research workflow (5 phases completed)
+### 1. Gradio ChatInterface Markdown Support
 
-### Research Phases Completed
-1. **Phase 1:** Research Planning & Analysis (Sequential-Thinking)
-2. **Phase A:** Project Structure Analysis (directories, unused folders)
-3. **Phase B:** Dependency Analysis (pyproject.toml, package.json)
-4. **Phase C:** Code Import Analysis (FastAPI, CORS, React imports)
-5. **Phase D:** Documentation Analysis (outdated references)
-6. **Phase E:** Configuration Analysis (env vars, configs, scripts)
+**CONFIRMED**: Gradio Chatbot component NATIVELY supports Markdown rendering.
 
----
+**Source**: `/gradio/components/chatbot.py` (lines 372-374, 408)
 
-## Dead Code Inventory
-
-### **CATEGORY 1: DEAD PYTHON CODE** (1 file)
-
-#### File: `src/backend/__init__.py` (89 lines)
-- **Status:** ENTIRE FILE OBSOLETE
-- **Issues Found:**
-  - Lines 15-23: Imports from deleted `main.py` (FastAPI app, cli_async, print functions)
-  - Lines 36-46: Imports from deleted `api_models.py` (Pydantic models for FastAPI)
-  - Lines 62-88: Exports for non-existent modules (app, ChatRequest, ChatResponse, etc.)
-  - Line 8: Outdated docstring mentioning "CLI and FastAPI web interface"
-
-- **Evidence:**
 ```python
-# DEAD IMPORT (main.py deleted)
-from .main import (
-    ChatRequest,
-    ChatResponse,
-    FinanceOutput,
-    app,  # FastAPI app - DELETED
-    cli_async,
-    print_error,
-    print_guardrail_error,
-    print_response,
+sanitize_html: bool = True,
+render_markdown: bool = True,  # ← DEFAULT is TRUE
+line_breaks: bool = True,  # ← GitHub-flavored Markdown line breaks
+```
+
+**Documentation Quote**:
+> "Creates a chatbot that displays user-submitted messages and responses. **Supports a subset of Markdown including bold, italics, code, tables.**"
+
+**Critical Parameters:**
+- `render_markdown=True` (DEFAULT) - Enables Markdown rendering
+- `line_breaks=True` (DEFAULT) - GitHub-flavored Markdown
+- Supports: **bold**, *italics*, `code`, **tables**, lists, headers
+
+**Current Project Status:**
+- ✅ `gradio_app.py` uses `type="messages"` (correct)
+- ❓ `render_markdown` not explicitly set (defaults to True)
+- ❓ Current streaming returns plain text (no Markdown awareness)
+
+---
+
+### 2. Markdown Table Formatting Standards
+
+**Source**: Context7 - `python-markdown2` library + Markdown Guide
+
+**Standard Table Syntax:**
+```markdown
+| Header 1 | Header 2 | Header 3 |
+| -------- | -------- | -------- |
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+```
+
+**Alignment Options:**
+| Alignment | Syntax | Use Case |
+|-----------|--------|----------|
+| Default (left) | `\| -------- \|` | Text (Symbol, Type) |
+| Left | `\| :--- \|` | Explicit left align |
+| Center | `\| :----: \|` | Headers, labels |
+| Right | `\| ----: \|` | Numbers (Price, Volume, %) |
+
+**Financial Data Best Practices:**
+
+**Options Chain Table:**
+```markdown
+| Strike ($) | Bid ($) | Ask ($) | Volume | Open Interest | Delta |
+| ---------: | ------: | ------: | -----: | ------------: | ----: |
+| 450.00     | 2.35    | 2.40    | 1,250  | 5,830         | 0.45  |
+| 455.00     | 1.85    | 1.90    | 890    | 3,210         | 0.38  |
+```
+
+**OHLC Price History:**
+```markdown
+| Date | Open ($) | High ($) | Low ($) | Close ($) | Volume |
+| :--- | -------: | -------: | ------: | --------: | -----: |
+| 2025-10-17 | 585.20 | 587.45 | 583.10 | 585.30 | 25M |
+| 2025-10-16 | 583.50 | 585.80 | 582.00 | 584.10 | 22M |
+```
+
+**Technical Analysis Indicators:**
+```markdown
+| Indicator | Value | Signal |
+| :-------- | ----: | :----- |
+| RSI-14 | 67.5 | Approaching Overbought |
+| MACD | 1.23 | Bullish |
+| SMA-20 | 580.25 | Support Level |
+| SMA-50 | 572.10 | Bullish Above |
+```
+
+**Multi-Ticker Comparison:**
+```markdown
+| Symbol | Price ($) | Change ($) | Change (%) | Volume |
+| :----- | --------: | ---------: | ---------: | -----: |
+| SPY    | 585.30    | +2.15      | +0.37%     | 25M    |
+| QQQ    | 485.70    | +3.20      | +0.66%     | 18M    |
+| IWM    | 225.40    | -0.50      | -0.22%     | 12M    |
+```
+
+**Key Principles:**
+1. Left-align text columns (Symbol, Date, Type)
+2. Right-align numeric columns (Price, Volume, Change %)
+3. Use pipes on both ends for clarity
+4. Keep headers descriptive and concise
+5. Support empty cells with blank space between pipes
+
+---
+
+### 3. Current CLI/Gradio Formatting Implementation
+
+**File 1: `src/backend/utils/response_utils.py`**
+
+**Current Implementation:**
+```python
+from rich.console import Console
+from rich.markdown import Markdown
+
+console = Console()
+
+def print_response(response_text: str):
+    console.print("\n[bold green]✅ Query processed successfully![/bold green]")
+    console.print("[bold]Agent Response:[/bold]\n")
+
+    # Markdown detection
+    has_markdown = any(tag in response_text for tag in ["#", "*", "`", "-", ">"])
+
+    if has_markdown:
+        console.print(Markdown(response_text))  # ← Rich renders Markdown
+    else:
+        console.print(response_text)
+
+    console.print("\n[dim]" + "─" * 50 + "[/dim]\n")
+```
+
+**Issue:**
+- Uses `Rich.Markdown()` to render Markdown in terminal
+- This is TERMINAL-SPECIFIC rendering (colored output, formatted tables)
+- Gradio receives this same response but doesn't understand Rich markup
+- Solution: Output pure Markdown strings, let each interface render natively
+
+**File 2: `src/backend/cli.py`**
+
+**Current Implementation:**
+```python
+async def process_query_with_footer(agent, session, user_input):
+    # Process query
+    result = await process_query(agent, session, user_input)
+    response_text = str(result.final_output)
+
+    # Format footer (plain text)
+    footer = _format_performance_footer(processing_time, token_usage, model_name)
+
+    # Return complete response with footer
+    return response_text + "\n\n" + footer
+```
+
+**Status:** ✅ Correct - Returns plain text response + plain text footer
+
+**File 3: `src/backend/gradio_app.py`**
+
+**Current Implementation:**
+```python
+async def chat_with_agent(message: str, history: List):
+    # Call CLI core function - returns complete response with footer
+    complete_response = await process_query_with_footer(agent, session, message)
+
+    # Gradio streaming: yield progressive chunks
+    sentences = complete_response.replace(". ", ".|").split("|")
+    accumulated = ""
+
+    for sentence in sentences:
+        accumulated += sentence
+        yield accumulated
+        await asyncio.sleep(0.05)
+```
+
+**Issues:**
+- Streams plain text chunks
+- No explicit `render_markdown=True` set on Chatbot component
+- Streaming is sentence-based, doesn't consider Markdown table boundaries
+
+---
+
+### 4. AI Agent Instructions Analysis
+
+**File: `src/backend/services/agent_service.py`**
+
+**Current Agent Instructions (Critical Sections):**
+
+**Line 500-511**: "PRESERVE ALL TOOL-GENERATED TABLES AND CHARTS"
+```
+🔴 BLANKET RULE FOR ALL TABLES/CHARTS:
+  * ❌ DO NOT reformat tables into bullet points
+  * ❌ DO NOT reformat tables into plain text
+  * ❌ DO NOT remove column headers
+  * ✅ COPY the tool response EXACTLY as returned
+  * ✅ Preserve markdown table syntax with pipe separators (|)
+  * ✅ Keep all headers and data intact
+```
+
+**Line 526-543**: "WHEN TO USE MARKDOWN TABLES"
+- Options chain data
+- OHLC bars with multiple dates
+- Multiple TA indicators (SMA 20/50/200, EMA 20/50/200)
+- Multi-ticker comparisons (2+ tickers)
+- Multi-dimensional data (ticker + date + metrics)
+
+**Status:** ✅ Agent is ALREADY instructed to output Markdown tables
+
+**Observation:**
+- Agent instructions are comprehensive and correct
+- The issue is NOT with agent output format
+- The issue is with CLI rendering (Rich) vs Gradio rendering (plain text)
+
+---
+
+## Problem Statement
+
+### Current Architecture
+
+```
+User Input
+    ↓
+AI Agent (outputs Markdown tables per instructions)
+    ↓
+process_query_with_footer() → Returns: Markdown string + plain text footer
+    ↓
+┌─────────────────────────────┬──────────────────────────────┐
+│         CLI Path            │        Gradio Path           │
+├─────────────────────────────┼──────────────────────────────┤
+│ print_response()            │ chat_with_agent()            │
+│   ↓                         │   ↓                          │
+│ Rich.Markdown() renders     │ Plain text streaming         │
+│ (terminal colors/tables)    │ (no Markdown rendering)      │
+│   ↓                         │   ↓                          │
+│ Terminal Output             │ Gradio ChatInterface         │
+│ ✅ Beautiful formatted      │ ❌ Raw Markdown text         │
+└─────────────────────────────┴──────────────────────────────┘
+```
+
+### The Issues
+
+1. **CLI**: Uses Rich Console to render Markdown → Works beautifully in terminal
+2. **Gradio**: Receives Markdown strings but displays as plain text → Tables show as raw `| Header |` syntax
+3. **Inconsistency**: Two different rendering approaches for same Markdown content
+
+---
+
+## Solution Design
+
+### Proposed Architecture
+
+```
+User Input
+    ↓
+AI Agent (outputs pure Markdown tables)
+    ↓
+process_query_with_footer() → Returns: Pure Markdown string + plain text footer
+    ↓
+┌─────────────────────────────┬──────────────────────────────┐
+│         CLI Path            │        Gradio Path           │
+├─────────────────────────────┼──────────────────────────────┤
+│ print_response()            │ chat_with_agent()            │
+│   ↓                         │   ↓                          │
+│ Print pure Markdown         │ Yield Markdown chunks        │
+│ (OR keep Rich for terminal) │ Gradio renders natively      │
+│   ↓                         │   ↓                          │
+│ Terminal Output             │ Gradio ChatInterface         │
+│ ✅ Markdown or Rich         │ ✅ Rendered Markdown tables  │
+└─────────────────────────────┴──────────────────────────────┘
+```
+
+### Key Changes Required
+
+#### Change 1: Update Gradio ChatInterface Configuration
+
+**File**: `src/backend/gradio_app.py`
+
+**Current:**
+```python
+demo = gr.ChatInterface(
+    fn=chat_with_agent,
+    type="messages",
+    # render_markdown not explicitly set (defaults to True)
 )
+```
 
-# DEAD IMPORT (api_models.py deleted)
-from .api_models import (
-    APIErrorResponse,
-    ChatMessage,
-    ErrorDetail,
-    # ... all FastAPI models - DELETED
+**New:**
+```python
+demo = gr.ChatInterface(
+    fn=chat_with_agent,
+    type="messages",
+    chatbot=gr.Chatbot(
+        render_markdown=True,      # ← Explicit Markdown rendering
+        line_breaks=True,           # ← GitHub-flavored Markdown
+        sanitize_html=True,         # ← Security
+        height=600                  # ← Better table visibility
+    )
 )
 ```
 
-- **Impact:** Zero (file not imported by any active code)
-- **Action:** **DELETE** entire file or rewrite minimal package metadata only
-- **Priority:** ⭐ **HIGH**
+#### Change 2: CLI Markdown Handling Decision
+
+**Option A: Keep Rich Console for Terminal** (Recommended)
+- Pro: Beautiful terminal output with colors and formatting
+- Pro: No breaking changes for CLI users
+- Pro: Each interface uses native capabilities
+- Con: Two different rendering paths
+
+**Option B: Pure Markdown Everywhere**
+- Pro: Single rendering approach
+- Pro: Consistent output format
+- Con: Terminal output loses colors and Rich formatting
+- Con: Worse UX for CLI users
+
+**Recommendation**: Option A - Keep Rich Console for CLI, enable Gradio Markdown rendering
 
 ---
 
-### **CATEGORY 2: ORPHANED BYTECODE** (All `__pycache__/` directories)
+## Implementation Summary
 
-#### Locations: `src/backend/**/__pycache__/`
-- **Dead .pyc files:**
-  1. `api_models.cpython-312.pyc` - Source file deleted (FastAPI models)
-  2. `dependencies.cpython-312.pyc` - Source file deleted (FastAPI dependency injection)
-  3. `main.cpython-312.pyc` - Source file deleted (FastAPI app)
-  4. `finnhub_tools.cpython-312.pyc` - Source file deleted (unused API tool)
+### Minimal Changes (Recommended)
 
-- **Evidence:**
-```bash
-$ find src/backend -name "*.pyc"
-src/backend/__pycache__/api_models.cpython-312.pyc    # ❌ NO SOURCE
-src/backend/__pycache__/dependencies.cpython-312.pyc  # ❌ NO SOURCE
-src/backend/__pycache__/main.cpython-312.pyc          # ❌ NO SOURCE
-src/backend/tools/__pycache__/finnhub_tools.cpython-312.pyc  # ❌ NO SOURCE
-```
+1. **Update `gradio_app.py`**: Explicitly set `render_markdown=True`
+2. **Test with existing code**: Verify Gradio renders Markdown tables
+3. **Keep CLI unchanged**: Rich Console continues working
 
-- **Impact:** Minimal (orphaned bytecode, Python ignores)
-- **Action:** **DELETE** all `__pycache__/` directories recursively
-- **Priority:** ⭐ **HIGH**
+**Estimated Effort**: 5-10 lines of code
+**Risk**: VERY LOW
+**Impact**: Gradio immediately renders Markdown tables
 
 ---
 
-### **CATEGORY 3: OBSOLETE REACT/TYPESCRIPT CONFIG** (6 files)
+## Conclusion
 
-#### Root Directory Config Files
+**Research Status**: ✅ COMPLETE
 
-1. **`tsconfig.node.json`** - TypeScript configuration for Node.js
-2. **`vite-env.d.ts`** - Vite environment TypeScript definitions
-3. **`postcss.config.js`** - PostCSS configuration (React CSS processing)
-4. **`.prettierrc.cjs`** - Prettier code formatter configuration (React)
-5. **`lighthouserc.js`** - Lighthouse CI configuration (React performance testing)
-6. **`lighthouserc.cjs`** - Lighthouse CI CommonJS version (duplicate)
+**Key Insight**: The implementation is MUCH SIMPLER than expected because:
+1. Gradio NATIVELY supports Markdown rendering (just needs activation)
+2. AI agent is ALREADY outputting Markdown tables (per instructions)
+3. Only gap is Gradio configuration
 
-- **Evidence:**
-```bash
-$ ls -la | grep -E "tsconfig|vite-env|postcss|prettier|lighthouse"
--rw-r--r-- 1 anthony anthony  768 Oct  4 16:27 .prettierrc.cjs
--rw-r--r-- 1 anthony anthony  905 Oct  4 16:27 lighthouserc.cjs
--rw-r--r-- 1 anthony anthony  859 Oct  4 16:27 lighthouserc.js
--rw-r--r-- 1 anthony anthony 2818 Oct  4 16:27 postcss.config.js
--rw-r--r-- 1 anthony anthony  232 Oct  4 16:27 tsconfig.node.json
--rw-r--r-- 1 anthony anthony  429 Oct  4 16:27 vite-env.d.ts
-```
+**Recommended Approach**:
+- Enable Gradio Markdown rendering (5-10 lines of code)
+- Test thoroughly with existing AI output
+- Keep CLI Rich Console for best terminal UX
 
-- **Rationale:** All files are React/TypeScript tooling configurations
-  - **tsconfig.node.json** - TypeScript no longer used (React removed)
-  - **vite-env.d.ts** - Vite bundler no longer used (React removed)
-  - **postcss.config.js** - PostCSS for React CSS (no longer needed)
-  - **.prettierrc.cjs** - Prettier for React code formatting (Python uses Black)
-  - **lighthouserc.js/cjs** - Lighthouse CI for React performance (frontend removed)
-
-- **Impact:** Zero (files not referenced by any active tooling)
-- **Action:** **DELETE** all 6 files
-- **Priority:** ⭐⭐ **MEDIUM**
+**Next Phase**: Planning - Generate detailed `TODO_task_plan.md`
 
 ---
 
-### **CATEGORY 4: OBSOLETE GITHUB WORKFLOWS** (1 file)
-
-#### File: `.github/workflows/lighthouse-ci.yml` (119 lines)
-
-- **Status:** React frontend CI workflow (completely disabled)
-- **Issues Found:**
-  - Lines 24, 31: Path trigger for deleted `frontend/**` directory
-  - Line 41: Working directory `frontend` (deleted)
-  - Line 52: Cache dependency path `frontend/package-lock.json` (deleted)
-  - Line 58: Build command `npm run build` (React build - no longer exists)
-  - Line 75: Artifact path `frontend/lighthouserc.js` (deleted)
-  - Lines 103, 109, 112: Matrix builds for deleted `frontend` directory
-  - Entire workflow is disabled (`if: false`) but still present
-
-- **Evidence:**
-```yaml
-# DEAD WORKFLOW - References deleted frontend/
-on:
-  push:
-    paths:
-      - 'frontend/**'  # ❌ DIRECTORY DELETED
-
-defaults:
-  run:
-    working-directory: frontend  # ❌ DIRECTORY DELETED
-
-- name: Build application
-  run: npm run build  # ❌ REACT BUILD - NO LONGER EXISTS
-```
-
-- **Impact:** Zero (workflow disabled and references deleted directories)
-- **Action:** **DELETE** entire file
-- **Priority:** ⭐⭐ **MEDIUM**
-
----
-
-### **CATEGORY 5: OBSOLETE PRE-COMMIT HOOKS** (Partial file)
-
-#### File: `.pre-commit-config.yaml`
-
-- **Section to REMOVE:** Lines 23-36 (ESLint/TypeScript hook)
-- **Issues Found:**
-  - Hook targets `.js`, `.ts`, `.tsx` files (React/TypeScript - all deleted)
-  - ESLint dependencies for React, TypeScript, Import plugins (no longer used)
-
-- **Evidence:**
-```yaml
-# OBSOLETE SECTION - JavaScript/TypeScript linting
-- repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.57.0
-  hooks:
-    - id: eslint
-      files: \.(js|ts|tsx)$  # ❌ NO MORE .js/.ts/.tsx FILES
-      args: ['--fix']
-      additional_dependencies:
-        - eslint@8.57.0
-        - '@typescript-eslint/eslint-plugin'  # ❌ TYPESCRIPT REMOVED
-        - '@typescript-eslint/parser'
-        - 'eslint-plugin-react'  # ❌ REACT REMOVED
-        - 'eslint-plugin-import'
-```
-
-- **Keep:** Python linting sections (lines 1-22, 38-47) - still needed
-- **Impact:** Minimal (ESLint not triggered since no .js/.ts/.tsx files exist)
-- **Action:** **REMOVE** lines 23-36 (ESLint/TypeScript section)
-- **Priority:** ⭐⭐ **MEDIUM**
-
----
-
-### **CATEGORY 6: OUTDATED DOCUMENTATION** (100+ references)
-
-#### Documentation Files with React/TypeScript/FastAPI References
-
-**High Priority - Core Documentation:**
-1. `DEPLOYMENT-QUICKSTART.md` - React frontend deployment references
-2. `DEPLOYMENT-SUMMARY.md` - 8+ React architecture diagrams and explanations
-3. `DEPLOYMENT.md` - React build and deployment instructions
-4. `AWS-MCP-SERVERS-GUIDE.md` - FastAPI + React deployment guide
-
-**Medium Priority - Task Planning:**
-5. `TODO_task_plan.md` - React retirement task references (historical)
-6. `research_task_plan.md` - React port migration references (THIS FILE - being replaced)
-
-**Low Priority - Slash Commands:**
-7. `.claude/commands/new_task.md` - References `@react-component-architect` agent
-8. `.claude/commands/code_review_commit.md` - TypeScript interface validation
-9. `.claude/commands/serena_check.md` - TypeScript project examples
-10. `.cursor/commands/serena_check.md` - TypeScript project examples
-11. `.cursor/commands/code_review_commit.md` - TypeScript validation
-
-**Historical Context (Keep or Mark):**
-12. `.serena/memories/react_retirement_completion_oct_2025.md` - **KEEP** (historical documentation)
-13. `.serena/memories/ui_refactor_oct_2025.md` - **MARK** as historical
-14. `.serena/memories/code_style_conventions.md` - **UPDATE** (remove TypeScript section)
-15. `.serena/memories/task_completion_checklist.md` - **UPDATE** (remove TypeScript linting)
-16. `.serena/memories/port_migration_to_8000_oct_2025.md` - **KEEP** (historical)
-17. `.serena/memories/project_onboarding_summary.md` - **KEEP** (historical context OK)
-18. `.serena/memories/fastapi_removal_completion_oct_2025.md` - **KEEP** (historical documentation)
-19. `.serena/memories/prompt_caching_guide.md` - **UPDATE** (remove React frontend display section)
-20. `.serena/memories/SERNENA_PROJECT_ENVIRONMENT_SETUP_GUIDE.md` - **KEEP** (already marked historical)
-21. `.serena/memories/adaptive_formatting_guide.md` - **KEEP** (already marked historical)
-22. `.serena/memories/suggested_commands.md` - **KEEP** (already noted React removed)
-
-**Documentation Guidelines:**
-23. `docs/CLAUDE_CODE_SLASH_COMMANDS_GUIDE.md` - **UPDATE** (remove @react-component-architect references)
-24. `docs/PROJECT_ENVIRONMENT_SETUP_GUIDE.md` - **KEEP** (already updated)
-25. `docs/configuration-guide.md` - **CHECK** for TypeScript examples
-26. `docs/css-structure-guide.md` - **CHECK** for React component references
-
-- **Impact:** Documentation accuracy (does not affect functionality)
-- **Action:** **AUDIT** and **UPDATE** or **MARK AS HISTORICAL**
-- **Priority:** ⭐⭐⭐ **LOW** (most are historical context, some need updates)
-
----
-
-### **CATEGORY 7: ENVIRONMENT & CONFIG** (Clean ✅)
-
-#### Verified Clean - No Action Needed
-
-1. **`.env.example`** - ✅ Clean (no legacy PORT or FRONTEND variables)
-2. **`config/app.config.json`** - ✅ Clean (no FastAPI/React configuration)
-3. **`pyproject.toml`** - ✅ Clean (no fastapi, uvicorn, starlette, cors dependencies)
-4. **`package.json`** - ✅ Clean (only dev dependencies: playwright, markdownlint)
-
-- **Evidence:**
-```bash
-# NO FastAPI/CORS/React imports found in any Python code
-$ grep -r "from fastapi|import fastapi|CORSMiddleware" src/backend/
-(no results)
-
-# NO legacy dependencies in pyproject.toml
-$ grep -E "fastapi|uvicorn|starlette|cors" pyproject.toml
-(no results)
-
-# NO React/Vite/TypeScript dependencies in package.json
-$ grep -E "react|vite|typescript" package.json
-(no results)
-```
-
-- **Action:** None needed
-- **Priority:** N/A
-
----
-
-## Summary Statistics
-
-### Files to DELETE: 8 total
-| File | Category | Lines | Reason |
-|------|----------|-------|--------|
-| `src/backend/__init__.py` | Python Code | 89 | Imports deleted modules (main.py, api_models.py) |
-| `tsconfig.node.json` | Config | 10 | TypeScript config (React removed) |
-| `vite-env.d.ts` | Config | 7 | Vite TypeScript definitions (React removed) |
-| `postcss.config.js` | Config | 69 | PostCSS config (React CSS removed) |
-| `.prettierrc.cjs` | Config | 16 | Prettier config (React formatting removed) |
-| `lighthouserc.js` | Config | 31 | Lighthouse CI (React performance removed) |
-| `lighthouserc.cjs` | Config | 31 | Lighthouse CI duplicate (React removed) |
-| `.github/workflows/lighthouse-ci.yml` | CI/CD | 119 | React frontend CI workflow (disabled) |
-| **TOTAL** | | **372 lines** | |
-
-### Files to UPDATE: 2+ total
-| File | Action | Lines Affected | Reason |
-|------|--------|----------------|--------|
-| `.pre-commit-config.yaml` | Remove section | 14 lines (23-36) | ESLint/TypeScript hook (no .js/.ts/.tsx files) |
-| `DEPLOYMENT-*.md` (3 files) | Update | ~100+ references | Remove React deployment instructions |
-| `docs/**/*.md` | Check/Update | TBD | Remove React/TypeScript examples |
-| `.claude/commands/*.md` | Update | ~10 references | Remove @react-component-architect |
-| `.serena/memories/*.md` | Mark historical | ~50 references | Mark React-specific memories as historical |
-
-### Directories to CLEAN: All `__pycache__/`
-```bash
-find . -type d -name "__pycache__" -exec rm -rf {} +
-```
-- **Impact:** ~20+ orphaned .pyc files removed
-- **Locations:** `src/backend/**/__pycache__/`
-
----
-
-## Impact Analysis
-
-### Functional Impact: **ZERO** ✅
-- All identified dead code has **zero active dependencies**
-- No imports, no references, no runtime usage
-- Safe to delete without affecting Gradio-only architecture
-
-### Code Quality Impact: **HIGH** ✅
-- **~200+ lines of dead code/config removed**
-- **~100+ documentation references updated**
-- Cleaner codebase, reduced confusion for future development
-
-### Performance Impact: **MINIMAL** ✅
-- Orphaned bytecode has negligible disk space impact
-- Removing dead code improves code navigation and IDE performance
-
----
-
-## Verification Strategy
-
-### Pre-Deletion Verification
-1. ✅ Confirm no active imports of `src/backend/__init__.py`
-2. ✅ Confirm no active usage of deleted config files
-3. ✅ Confirm GitHub workflow is disabled (`if: false`)
-4. ✅ Confirm no .js/.ts/.tsx files exist (ESLint hook safe to remove)
-
-### Post-Deletion Verification
-1. **Run Python imports test:**
-   ```bash
-   uv run python -c "import src.backend.cli; print('CLI imports OK')"
-   uv run python -c "import src.backend.gradio_app; print('Gradio imports OK')"
-   ```
-
-2. **Run CLI regression test suite:**
-   ```bash
-   chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-   ```
-   - Expected: 39/39 PASS (100%)
-
-3. **Check for broken imports:**
-   ```bash
-   uv run python -m pylint src/backend/ --disable=all --enable=import-error
-   ```
-
-4. **Verify Gradio starts successfully:**
-   ```bash
-   uv run python src/backend/gradio_app.py
-   ```
-   - Expected: Server starts on port 8000 without errors
-
----
-
-## Risk Assessment
-
-### Risk Level: **LOW** ✅
-
-**Why Low Risk:**
-- All code identified is **dead code** (no active usage)
-- Comprehensive verification strategy in place
-- All changes are **deletions** (no logic modifications)
-- Test suite validates functionality (39 tests)
-
-**Mitigation:**
-- Run full test suite before and after cleanup
-- Create git commit before deletions (easy rollback)
-- Follow atomic commit workflow (all changes in single commit)
-
----
-
-## Next Steps
-
-### Phase 2: Generate TODO_task_plan.md
-Based on this research, create a granular implementation plan with:
-1. Sequential-Thinking analysis for systematic approach
-2. Detailed cleanup tasks using Serena tools
-3. Mandatory testing checkpoint (CLI regression suite)
-4. Documentation update tasks
-5. Atomic commit workflow
-
-### Cleanup Execution Order (Recommended)
-1. **Phase 1:** Delete dead Python code (`__init__.py`)
-2. **Phase 2:** Clean orphaned bytecode (`__pycache__/`)
-3. **Phase 3:** Delete obsolete config files (6 files)
-4. **Phase 4:** Delete obsolete CI workflow (1 file)
-5. **Phase 5:** Update pre-commit hooks (1 file)
-6. **Phase 6:** Update documentation (multiple files)
-7. **Phase 7:** Run full test suite (validation)
-8. **Phase 8:** Atomic git commit (all changes)
-
----
-
-## Research Completion Summary
-
-### Research Objectives: ✅ COMPLETE
-
-✅ **Identified all dead code** after React, FastAPI, and CORS retirement
-✅ **Categorized findings** into 7 distinct categories
-✅ **Analyzed impact** of each dead code item
-✅ **Verified zero functional dependencies** on dead code
-✅ **Developed verification strategy** for safe cleanup
-✅ **Assessed risk** as LOW with comprehensive mitigation
-✅ **Documented detailed evidence** for all findings
-
-### Tools Used Successfully:
-- ✅ Sequential-Thinking (8 thought cycles)
-- ✅ Serena list_dir, find_file, search_for_pattern, get_symbols_overview
-- ✅ Standard Read, Grep, Bash tools
-- ✅ Multi-phase systematic research workflow
-
-### Deliverables:
-- ✅ Comprehensive dead code inventory (7 categories)
-- ✅ Detailed evidence for each finding
-- ✅ Impact analysis and risk assessment
-- ✅ Verification strategy
-- ✅ Recommended execution order
-
----
-
-**Research Status:** ✅ **COMPLETE**
-**Next Phase:** Generate `TODO_task_plan.md` for implementation
-**Approval Required:** User approval before proceeding to implementation
-
----
-
-*Generated by: Claude Code (Sonnet 4.5) using Sequential-Thinking and Serena tools*
-*Date: 2025-10-18*
-*Research Duration: ~15 minutes*
-*Files Analyzed: 100+ files*
-*Dead Code Found: 8 files to delete, 2+ files to update, all __pycache__/ to clean*
+**Research Completed By**: Claude (Sequential-Thinking + Serena + Context7 + Gradio Docs)
+**Date**: October 18, 2025

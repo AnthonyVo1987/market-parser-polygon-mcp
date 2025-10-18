@@ -1,7 +1,6 @@
 """Response formatting utilities for the Market Parser application."""
 
 from rich.console import Console
-from rich.markdown import Markdown
 
 console = Console()
 
@@ -18,14 +17,10 @@ def print_response(response_text: str):
     console.print("\n[bold green]✅ Query processed successfully![/bold green]")
     console.print("[bold]Agent Response:[/bold]\n")
 
-    # Display complete response (includes footer at end)
-    # Use Markdown for structured content, Rich handles plain text footer naturally
-    has_markdown = any(tag in response_text for tag in ["#", "*", "`", "-", ">"])
-
-    if has_markdown:
-        console.print(Markdown(response_text))
-    else:
-        console.print(response_text)
+    # Display complete response as plain text (preserves Markdown pipes and table structure)
+    # Output: Pure Markdown with pipes (|) and dividers (---) for tables
+    # This allows Gradio to render properly AND CLI displays readable text
+    console.print(response_text)
 
     # Separator
     console.print("\n[dim]" + "─" * 50 + "[/dim]\n")

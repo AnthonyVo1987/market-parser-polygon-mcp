@@ -427,42 +427,44 @@ uv run python src/backend/gradio_app.py
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[CLEANUP] Remove dead code after React/FastAPI retirement
+[MARKDOWN] Consolidated Markdown-Only Output Formatting for CLI & Gradio
 
-**Summary:** Comprehensive cleanup of legacy code after migrating to Gradio-only Python full-stack architecture
+**Summary:** Fixed critical Markdown table rendering in both CLI and Gradio UI by addressing three distinct issues in the output pipeline. Now outputs pure Markdown with pipe separators preserved.
 
-**Code Deletions:**
-- Deleted src/backend/__init__.py (89 lines - imports deleted modules)
-- Cleaned all __pycache__/ directories (orphaned bytecode: api_models, dependencies, main, finnhub_tools)
+**Root Causes Identified:**
+1. CLI was using `Rich.Markdown()` which converted pipes (|) to Unicode box characters (━━)
+2. Gradio streaming logic was splitting on "|" character, destroying table structure
+3. Gradio needed explicit `render_markdown=True` configuration
 
-**Config Deletions:**
-- Deleted 6 obsolete React/TypeScript config files (253 lines):
-  - tsconfig.node.json (TypeScript config)
-  - vite-env.d.ts (Vite TypeScript definitions)
-  - postcss.config.js (PostCSS for React CSS)
-  - .prettierrc.cjs (Prettier for React)
-  - lighthouserc.js (Lighthouse CI)
-  - lighthouserc.cjs (Lighthouse CI duplicate)
+**Code Changes:**
+- `src/backend/utils/response_utils.py`: Removed `Rich.Markdown()` rendering (line 26)
+  - Now outputs pure Markdown text (preserves | pipes)
+  - Changed: `console.print(Markdown(response_text))` → `console.print(response_text)`
+  - Removed import: `from rich.markdown import Markdown`
 
-**CI/CD Deletions:**
-- Deleted .github/workflows/lighthouse-ci.yml (119 lines - React frontend CI workflow)
+- `src/backend/gradio_app.py`: Fixed streaming and added Markdown config (lines 60-63, 81-86)
+  - Removed sentence-based streaming that split on "|"
+  - Changed: `sentences = complete_response.split("|")` → `yield complete_response`
+  - Added explicit Chatbot configuration with `render_markdown=True, line_breaks=True`
 
-**Configuration Updates:**
-- Updated .pre-commit-config.yaml (removed ESLint/TypeScript hook - 14 lines)
+**Unchanged (Already Correct):**
+- ✅ AI agent instructions (mandate Markdown table preservation)
+- ✅ All tool formatting helpers (use pipe separators)
+- ✅ Markdown table standards (proper alignment syntax)
 
-**Documentation Updates:**
-- Updated DEPLOYMENT-QUICKSTART.md (removed React deployment references)
-- Updated .claude/commands/new_task.md (removed @react-component-architect)
-- Updated .claude/commands/code_review_commit.md (removed TypeScript validation)
-- Other documentation cleanups
+**Test Results:**
+- ✅ Phase 1: 39/39 CLI tests completed (5 min 47 sec avg 8.86s/test)
+- ✅ Phase 2: 0 errors, 0 data unavailable failures, 39/39 PASSED
+- ✅ CLI: Markdown tables rendering with pipes
+- ✅ Gradio: Markdown tables rendering with proper formatting
 
 **Impact:**
-- Files Deleted: 8 files (372 lines of dead code)
-- Directories Cleaned: All __pycache__/ (4+ directories)
-- Functional Impact: Zero (all dead code, no active dependencies)
-- Code Quality: Improved (cleaner codebase, reduced confusion)
+- Files Modified: 2 (response_utils.py, gradio_app.py)
+- Lines Changed: ~15 lines total (removed Rich rendering, fixed streaming)
+- Functional Impact: CRITICAL (fixes table rendering in both interfaces)
+- Code Quality: Improved (simplified logic, better separation of concerns)
 
-**Risk Assessment:** LOW (comprehensive testing, all changes are deletions)
+**Risk Assessment:** LOW (both fixes are simplifications, comprehensive testing validates)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## claude --dangerously-skip-permissions
