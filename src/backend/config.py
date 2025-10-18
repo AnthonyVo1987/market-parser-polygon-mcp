@@ -1,6 +1,7 @@
 """Configuration management for the Market Parser application."""
 
 import json
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
@@ -12,10 +13,7 @@ class Settings(BaseSettings):
     # API Keys (from environment)
     polygon_api_key: str
     openai_api_key: str
-
-    # Server configuration
-    fastapi_host: str = "127.0.0.1"
-    fastapi_port: int = 8000
+    tradier_api_key: str
 
     # MCP configuration
     mcp_timeout_seconds: float = 30.0
@@ -29,9 +27,6 @@ class Settings(BaseSettings):
     session_cleanup_interval_minutes: int = 5
     max_session_size: int = 1000
     enable_session_persistence: bool = True
-
-    # CORS configuration
-    cors_origins: str = "http://localhost:7860,http://127.0.0.1:7860"
 
     # AI configuration
     default_active_model: str = "gpt-5-nano"
@@ -60,6 +55,12 @@ class Settings(BaseSettings):
     def __init__(self):
         super().__init__()
 
+        # Set environment variables for OpenAI SDK (required for openai-agents SDK)
+        # Pydantic loads .env into settings, but OpenAI SDK reads from os.environ
+        os.environ["OPENAI_API_KEY"] = self.openai_api_key
+        os.environ["POLYGON_API_KEY"] = self.polygon_api_key
+        os.environ["TRADIER_API_KEY"] = self.tradier_api_key
+
         # Load configuration from JSON file and override defaults
         config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
         with open(config_path, encoding="utf-8") as f:
@@ -69,8 +70,6 @@ class Settings(BaseSettings):
         backend_config = config["backend"]
 
         # Override defaults with config file values
-        self.fastapi_host = backend_config["server"]["host"]
-        self.fastapi_port = backend_config["server"]["port"]
         self.mcp_timeout_seconds = backend_config["mcp"]["timeoutSeconds"]
         self.polygon_mcp_version = backend_config["mcp"]["version"]
 
@@ -84,19 +83,12 @@ class Settings(BaseSettings):
         self.max_session_size = agent_config["maxSessionSize"]
         self.enable_session_persistence = agent_config["enableSessionPersistence"]
 
-        # CORS configuration
-        cors_origins_list = backend_config["security"]["cors"]["origins"]
-        self.cors_origins = ",".join(cors_origins_list)
-
         # AI configuration
         ai_config = backend_config["ai"]
         self.default_active_model = ai_config["default_active_model"]
         self.available_models = ["gpt-5-nano"]  # Only GPT-5-Nano supported
         self.max_context_length = ai_config["maxContextLength"]
         self.ai_pricing = ai_config["pricing"]
-
-        # Security configuration (rate limiting removed for maximum performance)
-        # Only CORS configuration remains
 
         # Logging configuration
         self.log_mode = backend_config["logging"]["mode"]

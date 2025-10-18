@@ -1,9 +1,5 @@
 {
   "backend": {
-    "server": {
-      "host": "127.0.0.1",
-      "port": 8000
-    },
     "ai": {
       "default_active_model": "gpt-5-nano",
       "maxContextLength": 400000,
@@ -26,14 +22,6 @@
     "mcp": {
       "version": "v0.4.1",
       "timeoutSeconds": 120
-    },
-    "security": {
-      "cors": {
-        "origins": [
-          "http://127.0.0.1:7860",
-          "http://localhost:7860"
-        ]
-      }
     },
     "logging": {
       "mode": "DEBUG"

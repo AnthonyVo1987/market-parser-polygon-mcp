@@ -58,7 +58,7 @@ fi
 
 # Test configuration
 MAX_RESPONSE_TIME=60  # 1 minute max per response
-CLI_CMD="uv run src/backend/main.py"
+CLI_CMD="uv run python -m src.backend.cli"
 RESULTS_DIR="test-reports"
 
 # Ensure results directory exists

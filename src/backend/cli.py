@@ -5,7 +5,6 @@ from datetime import datetime
 
 from agents import Runner, SQLiteSession
 
-from .api_models import ResponseMetadata
 from .config import settings
 from .services import create_agent
 from .utils import print_error, print_response
@@ -249,3 +248,7 @@ async def _process_user_input(cli_session, analysis_agent, user_input):
     except Exception as e:
         print_error(e, "AI Model Error")
         return f"Error: Unable to process request. {str(e)}"
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(cli_async())

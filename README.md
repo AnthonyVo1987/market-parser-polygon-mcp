@@ -82,46 +82,18 @@ faster financial insights.
    **Note:** All non-sensitive configuration is now centralized in
    `config/app.config.json`. Only API keys are stored in `.env`.
 
-**One-Click Application Startup (Recommended):**
-
-The startup script automatically starts both backend and Gradio servers.
+**Quick Start Commands:**
 
 ```bash
-# Start backend + Gradio UI
-chmod +x start-gradio.sh && ./start-gradio.sh
+# CLI Interface (recommended for automation/scripting)
+uv run src/backend/cli.py
+
+# Gradio Web UI (recommended for interactive analysis)
+uv run python src/backend/gradio_app.py
+# Access at http://127.0.0.1:7860
 ```
 
 **Prerequisites:** uv, API keys in .env
-
-## What the Startup Script Does
-
-### 🔄 Server Cleanup
-
-- Kills existing development servers (uvicorn, gradio)
-- **Preserves MCP servers** - does not interfere with MCP processes
-- Waits for processes to terminate gracefully
-
-### 🚀 Server Startup
-
-- **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend (Gradio)**: Starts Gradio ChatInterface on `http://127.0.0.1:7860`
-- Opens servers in separate terminal windows for easy monitoring
-- Uses consistent ports from centralized configuration (no dynamic allocation)
-
-### ✅ Health Verification
-
-- Performs health checks on both servers
-- Retries up to 10 times with 2-second intervals
-- Verifies backend `/health` endpoint responds
-- Verifies Gradio interface responds
-
-### 🌐 Browser Access
-
-- **NOTIFIES USER TO OPEN BROWSER WHEN SERVERS ARE READY**
-
-**Access:**
-- Gradio UI: <http://127.0.0.1:7860>
-- Backend API: <http://127.0.0.1:8000> (API docs)
 
 ## Application Features
 
@@ -159,7 +131,6 @@ DETAILED ANALYSIS
 
 - **Gradio Web Interface** - Modern chat UI with streaming responses (port 7860)
 - **Enhanced CLI** - Terminal interface with rich formatting
-- **API Endpoints** - RESTful API for integration (port 8000)
 
 ## Example Usage
 
@@ -249,12 +220,12 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 ## Architecture
 
-- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Direct Polygon Python API integration
-- **Frontend**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860)
+- **Core**: CLI with OpenAI Agents SDK v0.2.9 and Direct Polygon/Tradier API integration
+- **Web UI**: Gradio 5.49.1+ ChatInterface (port 7860) - wraps CLI core
 - **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
-- **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
+- **Performance Monitoring**: Response timing and token usage tracking
 - **Testing**: CLI regression test suite (test_cli_regression.sh - 39 comprehensive tests)
-- **Deployment**: Fixed ports (8000/7860) with one-click startup script
+- **Pattern**: CLI = core business logic, Gradio = thin wrapper (zero duplication)
 - **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
 
 ## Development
@@ -262,24 +233,25 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ### Available Commands
 
 ```bash
-# Application startup
-chmod +x start-gradio.sh && ./start-gradio.sh  # Start backend + Gradio UI
+# CLI Interface
+uv run src/backend/cli.py
+
+# Gradio Web UI
+uv run python src/backend/gradio_app.py
 
 # Testing
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # Run 36-test CLI suite
-
-# Backend only
-uv run src/backend/main.py  # CLI interface
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # Run 39-test CLI suite
 ```
 
 ### Project Structure
 
 ```text
 src/
-├── backend/              # FastAPI backend
-│   ├── main.py          # CLI and API application
-│   ├── gradio_ui.py     # Gradio web interface
-│   └── api_models.py    # API schemas
+├── backend/              # All application code
+│   ├── cli.py           # CLI interface (CORE BUSINESS LOGIC)
+│   ├── gradio_app.py    # Gradio web UI (wraps CLI core)
+│   ├── tools/           # AI agent tools (Polygon, Tradier)
+│   └── services/        # Agent service layer
 config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
 ```
@@ -317,18 +289,17 @@ cat .env | grep API_KEY
 uv install
 ```
 
-**Gradio UI connection errors:**
+**Gradio UI not loading:**
 
 ```bash
-# Verify backend is running
-curl http://127.0.0.1:8000/health
-
-# Verify Gradio is running
-curl http://127.0.0.1:7860
-
-# Check ports are available
-netstat -tlnp | grep :8000
+# Check port availability
 netstat -tlnp | grep :7860
+
+# Kill existing Gradio processes
+pkill -f gradio_app
+
+# Restart
+uv run python src/backend/gradio_app.py
 ```
 
 **API key issues:**

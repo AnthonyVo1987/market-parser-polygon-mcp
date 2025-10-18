@@ -6,38 +6,41 @@ This guide provides step-by-step instructions for AI agents to completely re-ini
 
 ## 🎯 Success Criteria
 
-- ✅ All 7/7 comprehensive CLI tests pass
-- ✅ Python environment with 119 packages installed
-- ✅ Node.js environment with 1131 packages installed
-- ✅ Frontend builds successfully
-- ✅ Backend server starts without errors
+- ✅ All 39/39 CLI regression tests pass (100% success rate)
+- ✅ Python environment with 121 packages installed
+- ✅ CLI starts without errors
+- ✅ Gradio UI starts successfully (port 7860)
 - ✅ All imports and dependencies working correctly
+- ✅ polygon-api-client SDK properly installed and functional
 
 ## 🔧 Prerequisites
 
 - **Operating System**: Linux (WSL2/Ubuntu recommended)
-- **Python**: 3.11.13 (managed by uv)
-- **Node.js**: 18+ (for frontend development)
-- **Package Managers**: uv (Python), npm (Node.js)
+- **Python**: 3.12.3 (managed by uv)
+- **Package Manager**: uv 0.8.11+ (Python)
 - **Git**: For version control and branch management
+- **No Node.js required**: Gradio is Python-based (package.json used for backend tooling only)
 
 ## 📁 Project Structure
 
 ```
 market-parser-polygon-mcp/
 ├── .venv/                    # Python virtual environment
-├── node_modules/             # Node.js dependencies
 ├── src/                      # Source code
-│   ├── backend/             # FastAPI backend
-│   └── frontend/            # React frontend
+│   └── backend/             # All application code
+│       ├── cli.py           # CLI interface (CORE BUSINESS LOGIC)
+│       ├── gradio_app.py    # Gradio web UI (wraps CLI core)
+│       ├── tools/           # AI agent tools
+│       └── services/        # Service layer
 ├── docs/                    # Documentation
 ├── test-reports/            # Test output files
 ├── pyproject.toml           # Python dependencies
-├── package.json             # Node.js dependencies
+├── package.json             # npm scripts (backend tooling only)
 ├── uv.lock                  # Python lock file
-├── package-lock.json        # Node.js lock file
-└── test_7_prompts_comprehensive.sh  # Validation script
+└── test_cli_regression.sh   # 39-test validation suite
 ```
+
+**Note**: src/frontend/ directory has been completely removed. Gradio is the only web interface.
 
 ## 🚨 Emergency Environment Reset Procedure
 
@@ -72,11 +75,11 @@ Look for these common corruption indicators:
 ```bash
 # Kill any running development servers
 pkill -f "uvicorn"
-pkill -f "vite"
-pkill -f "npm run"
+pkill -f "gradio"
+pkill -f "python.*gradio_app"
 
 # Verify no processes are running on project ports
-netstat -tlnp | grep -E ":(3000|8000|5500)"
+netstat -tlnp | grep -E ":(7860|8000|5500)"
 ```
 
 #### Step 2.2: Remove All Environment Files
@@ -84,11 +87,7 @@ netstat -tlnp | grep -E ":(3000|8000|5500)"
 # Remove Python virtual environment
 rm -rf .venv
 
-# Remove Node.js dependencies
-rm -rf node_modules
-
 # Remove lock files
-rm -f package-lock.json
 rm -f uv.lock
 
 # Remove any build artifacts
@@ -96,7 +95,7 @@ rm -rf dist/
 rm -rf dev-dist/
 
 # Verify cleanup
-ls -la | grep -E "(\.venv|node_modules|package-lock\.json|uv\.lock)" || echo "✅ Cleanup complete"
+ls -la | grep -E "(\\.venv|uv\\.lock)" || echo "✅ Cleanup complete"
 ```
 
 ### Phase 3: Python Environment Setup
@@ -113,22 +112,30 @@ source $HOME/.cargo/env
 
 #### Step 3.2: Install Python Dependencies
 ```bash
-# Install all Python dependencies
+# Install all Python dependencies from pyproject.toml
 uv sync
 
-# Verify installation
-uv run python -c "import openai; from agents import Agent, Runner, SQLiteSession; print('✅ Python imports working')"
+# Verify critical package installations
+uv run python -c "
+import openai
+from agents import Agent, Runner, SQLiteSession
+from polygon import RESTClient
+import gradio as gr
+print('✅ Python imports working')
+"
 ```
 
-**Expected Output:**
+**Expected Output (Oct 6, 2025):**
 ```
-Using CPython 3.11.13
+Using CPython 3.12.3
 Creating virtual environment at: .venv
-Resolved 125 packages in 552ms
-Installed 119 packages in 195ms
+Resolved 125 packages in 234ms
+Installed 121 packages in 8.05s
 + aiofiles==24.1.0
++ gradio==5.0.0+
 + openai==1.99.9
 + openai-agents==0.2.9
++ polygon-api-client==1.15.4
 ... (additional packages)
 ✅ Python imports working
 ```
@@ -138,163 +145,114 @@ Installed 119 packages in 195ms
 # Check virtual environment
 ls -la .venv/
 
-# Test critical imports
+# Test critical project imports
 uv run python -c "
 import sys
 print(f'Python version: {sys.version}')
 print(f'Python path: {sys.executable}')
 
 # Test core project imports
-from src.backend.main import app
+from src.backend.cli import initialize_persistent_agent, process_query_with_footer
+from src.backend.gradio_app import chat_with_agent
 from src.backend.services.agent_service import create_agent
+from src.backend.tools.polygon_tools import get_market_status_and_date_time
+from src.backend.tools.tradier_tools import get_stock_quote
 print('✅ Core project imports successful')
+print('✅ All AI agent tools import correctly')
 "
 ```
 
-### Phase 4: Node.js Environment Setup
+### Phase 4: Environment Validation
 
-#### Step 4.1: Verify Node.js Installation
+#### Step 4.1: Test CLI
 ```bash
-# Check Node.js version
-node --version
+# Test CLI can start
+uv run src/backend/cli.py --help
 
-# Check npm version
-npm --version
-
-# If Node.js not installed, install it
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
-```
-
-#### Step 4.2: Install Node.js Dependencies
-```bash
-# Install all Node.js dependencies with legacy peer deps
-npm install --legacy-peer-deps
-
-# Verify installation
-npm list --depth=0
+# Quick test query (optional)
+echo "market status" | uv run src/backend/cli.py
 ```
 
 **Expected Output:**
 ```
-added 1130 packages, and audited 1131 packages in 49s
-263 packages are looking for funding
-6 vulnerabilities (4 low, 2 moderate)
+✅ Agent initialized successfully
+> market status
+[Response with market status...]
 ```
 
-#### Step 4.3: Test Frontend Build
+#### Step 4.2: Test Gradio UI
 ```bash
-# Test frontend build
-npm run build
+# Start Gradio UI in background
+uv run python src/backend/gradio_app.py &
 
-# Verify build output
-ls -la dist/
-```
-
-**Expected Output:**
-```
-vite v5.4.20 building for production...
-transforming...
-✓ 224 modules transformed.
-rendering chunks...
-✓ built in 5.31s
-```
-
-### Phase 5: Environment Validation
-
-#### Step 5.1: Test Backend Server
-```bash
-# Start backend server in background
-npm run backend:dev &
-
-# Wait for server to start
+# Wait for Gradio to start
 sleep 10
 
-# Test health endpoint
-curl -s http://127.0.0.1:8000/health
+# Test Gradio endpoint
+curl -s http://127.0.0.1:7860 | head -10
 
-# Stop server
-pkill -f "uvicorn"
+# Stop Gradio
+pkill -f "gradio_app"
 ```
 
 **Expected Output:**
 ```
-INFO:     Uvicorn running on http://127.0.0.1:8000
-{"status": "healthy", "timestamp": "2025-09-29T10:19:23.123456"}
+🚀 Initializing Market Parser Gradio Interface...
+✅ Agent initialized successfully
+Running on local URL:  http://127.0.0.1:7860
 ```
 
-#### Step 5.2: Test Frontend Server
+### Phase 5: Comprehensive Testing
+
+#### Step 5.1: Run CLI Regression Test Suite (39 Tests)
 ```bash
-# Start frontend server in background
-npm run frontend:dev &
-
-# Wait for server to start
-sleep 10
-
-# Test frontend endpoint
-curl -s http://127.0.0.1:3000 | head -10
-
-# Stop server
-pkill -f "vite"
+# Run the comprehensive 39-test regression suite
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
-**Expected Output:**
+**Expected Output (Oct 17, 2025 Format):**
 ```
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Market Parser</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-```
+🧪 CLI REGRESSION TEST SUITE
+====================================
+📊 Test Configuration:
+   Total Prompts: 39
+   Loop Count: 1/1
+   Session Mode: PERSISTENT (single session)
 
-### Phase 6: Comprehensive Testing
+⏱️  Total Session Duration: 6 min 18 sec
 
-#### Step 6.1: Run 7-Prompt Comprehensive Test
-```bash
-# Run the comprehensive test suite
-./test_7_prompts_comprehensive.sh
-```
-
-**Expected Output:**
-```
-🧪 Comprehensive 7 Test Prompts Validation
-=========================================
 📊 Test Results Summary:
-   Test 1: Test_1_Market_Status_Query - PASS
-   Test 2: Test_2_Single_Stock_Snapshot_NVDA - PASS
-   Test 3: Test_3_Full_Market_Snapshot_SPY_QQQ_IWM - PASS
-   Test 4: Test_4_Closing_Price_Query_GME - PASS
-   Test 5: Test_5_Performance_Analysis_SOUN - PASS
-   Test 6: Test_6_Support_Resistance_NVDA - PASS
-   Test 7: Test_7_Technical_Analysis_SPY - PASS
+   Total Tests: 39
+   Passed: 39
+   Failed: 0
+   Success Rate: 100%
 
-📊 Response Time Analysis:
-   Min Response Time: 23.944s
-   Max Response Time: 23.944s
-   Avg Response Time: 0s
-   Successful Tests: 7/7
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 3.62s
+Max Response Time: 17.91s
+Avg Response Time: 9.67s
+Performance Rating: EXCELLENT
 
-📈 Overall Performance Rating: GOOD
-🎉 All 7 tests passed!
-✅ Comprehensive Validation: SUCCESS
+✅ All 39 tests PASSED!
+✅ Session Persistence: VERIFIED (1 session)
+✅ Overall Performance Rating: EXCELLENT
 ```
 
-#### Step 6.2: Verify Test Report
+#### Step 5.2: Verify Test Report
 ```bash
 # Check test report was created
-ls -la test-reports/comprehensive_7_prompts_test_*.txt
+ls -la test-reports/test_cli_regression_loop1_*.log
 
 # Verify test report content
-head -20 test-reports/comprehensive_7_prompts_test_*.txt
+head -30 test-reports/test_cli_regression_loop1_*.log
 ```
+
+**Expected:** Test report should show:
+- ✅ All 39 tests PASSED
+- ✅ Duration in "MM min SS sec" format
+- ✅ Response times with 2 decimal precision (e.g., 9.67s)
+- ✅ Min/Max/Avg all different values
+- ✅ No "0s" or "0.00s" for Duration or Avg Response Time
 
 ## 🔍 Troubleshooting Common Issues
 
@@ -351,14 +309,16 @@ uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload
 ## 📊 Success Validation Checklist
 
 - [ ] Python virtual environment created (`.venv/` directory exists)
-- [ ] 119 Python packages installed successfully
-- [ ] Python imports working (`openai`, `agents`, project modules)
-- [ ] Node.js dependencies installed (1131 packages)
-- [ ] Frontend builds without errors
-- [ ] Backend server starts and responds to health checks
-- [ ] Frontend server starts and serves content
-- [ ] All 7 comprehensive tests pass
-- [ ] Test report generated successfully
+- [ ] 121 Python packages installed successfully
+- [ ] Python imports working (`openai`, `agents`, `polygon`, `gradio`, project modules)
+- [ ] **polygon-api-client** SDK installed and functional
+- [ ] **gradio** package installed and functional
+- [ ] CLI starts without errors
+- [ ] Gradio UI starts successfully (port 7860)
+- [ ] **All 39 CLI regression tests pass (100% success rate)**
+- [ ] Test report generated successfully with correct formatting
+- [ ] Test statistics calculated correctly (no 0s, proper min/max/avg)
+- [ ] Duration shows in "MM min SS sec" format
 - [ ] No critical errors in logs
 
 ## 🚀 Quick Recovery Commands
@@ -367,30 +327,42 @@ For rapid recovery when you know the issue:
 
 ```bash
 # Complete reset and reinstall
-rm -rf .venv node_modules package-lock.json uv.lock dist/ dev-dist/
+rm -rf .venv uv.lock dist/ dev-dist/
 uv sync
-npm install --legacy-peer-deps
-./test_7_prompts_comprehensive.sh
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
 ## 📝 Notes for AI Agents
 
 1. **Always verify each step** before proceeding to the next
 2. **Check error messages carefully** - they often indicate the root cause
-3. **Use the comprehensive test** as the final validation step
+3. **Use the CLI regression test suite** as the final validation step (39 tests)
 4. **Document any deviations** from this guide for future reference
 5. **If tests fail**, check the test report for specific error details
 6. **Environment corruption** often requires complete cleanup, not partial fixes
+7. **After major architectural changes**, always verify dependency completeness
+8. **Check pyproject.toml** for missing dependencies if imports fail
+9. **Test statistics should be non-zero** - if you see 0s, calculation engine has issues
+10. **Polygon Direct API requires polygon-api-client** - verify it's installed
+11. **Gradio requires gradio package** - verify it's installed
+12. **No React/Node.js needed** - Gradio is Python-based
 
 ## 🔗 Related Documentation
 
 - [CLAUDE.md](../CLAUDE.md) - Project development rules and procedures
 - [README.md](../README.md) - Project overview and quick start
-- [package.json](../package.json) - Node.js scripts and dependencies
+- [package.json](../package.json) - npm scripts (backend tooling only)
 - [pyproject.toml](../pyproject.toml) - Python dependencies and configuration
+- [.serena/memories/testing_procedures.md](testing_procedures.md) - Comprehensive testing guide
 
 ---
 
-**Last Updated:** September 29, 2025  
-**Tested On:** Linux WSL2/Ubuntu with Python 3.11.13 and Node.js 18+  
-**Success Rate:** 100% (7/7 tests passing)
+**Last Updated:** October 17, 2025 (FastAPI & Startup Script Removal)
+**Tested On:** Linux WSL2/Ubuntu with Python 3.12.3, uv 0.8.11
+**Success Rate:** 100% (all tests passing consistently)
+**Recent Validations:**
+- Oct 17, 2025: 39/39 tests PASSED (Gradio-only architecture), 9.67s avg
+- Oct 6, 2025: 270/270 tests PASSED (10-loop baseline), 8.73s overall avg
+- Sep 29, 2025: 7/7 tests PASSED, environment fully operational
+
+**Architecture:** Gradio-only (port 7860), persistent agent, direct APIs

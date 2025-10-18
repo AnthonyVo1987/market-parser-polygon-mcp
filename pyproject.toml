@@ -14,8 +14,6 @@ dependencies = [
   "rich",
   "python-dotenv",
   "openai>=1.99.0,<1.100.0",
-  "fastapi",
-  "uvicorn[standard]",
   "aiofiles>=24.1.0",
   "python-lsp-server[all]>=1.13.1",
   "openai-agents-mcp>=0.0.8",
@@ -59,7 +57,7 @@ profile = "black"
 multi_line_output = 3
 line_length = 100
 known_first_party = ["src"]
-known_third_party = ["openai", "pydantic", "rich", "fastapi", "uvicorn", "agents"]
+known_third_party = ["openai", "pydantic", "rich", "agents"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.mypy]
@@ -71,7 +69,7 @@ ignore_missing_imports = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = ["openai.*", "rich.*", "fastapi.*", "uvicorn.*", "agents.*"]
+module = ["openai.*", "rich.*", "agents.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
