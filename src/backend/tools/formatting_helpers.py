@@ -79,8 +79,7 @@ def create_options_chain_table(
 ) -> str:
     """Create formatted markdown table for options chain.
 
-    New Column Order: Strike ($), Bid ($), Ask ($), Delta, Vol, OI, IV, Gamma
-    REMOVED: Theta, Vega columns (not included in output)
+    Column Order: Strike ($), Bid ($), Ask ($), Delta, Vol, OI, IV, Gamma
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "NVDA")

@@ -352,6 +352,41 @@ with open("large_file.txt") as f:
 
 ## Comments & Documentation
 
+### Comment Policy (Oct 18, 2025)
+
+**Policy 1: No historical comments about retired components**
+- **Rationale**: Comments should ONLY describe CURRENT code and architecture. Git history provides historical context.
+- **Example**:
+  ```python
+  # ❌ Bad: Historical commentary
+  # Note: This used to call the MCP server but was migrated to Direct API on Oct 2025
+  def get_stock_data(ticker: str) -> dict:
+      return tradier_api.get_quote(ticker)
+
+  # ✅ Good: Describes current implementation
+  def get_stock_data(ticker: str) -> dict:
+      """Fetch stock data using Tradier Direct API."""
+      return tradier_api.get_quote(ticker)
+  ```
+
+**Policy 2: No deprecation notices in code comments**
+- **Rationale**: Git commit messages document deprecations. Code comments focus on current functionality.
+- **Example**:
+  ```python
+  # ❌ Bad: Deprecation notice in comments
+  # DEPRECATED: Use get_ta_indicators() instead (deprecated Oct 11, 2025)
+  # This function will be removed in the next release
+  def get_ta_sma(ticker: str) -> float:
+      ...
+
+  # ✅ Good: Remove deprecated code entirely, document in git commit
+  # (No deprecated function exists in code)
+  # Git commit message explains: "Removed deprecated TA tools, use get_ta_indicators()"
+  ```
+
+**Policy 3: Comments explain WHY, not WHAT**
+- **Rationale**: Code should be self-documenting. Comments add context that code cannot express.
+
 ### When to Comment
 ```python
 # Good: Explains WHY, not WHAT

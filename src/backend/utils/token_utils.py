@@ -6,9 +6,6 @@ from typing import Any, Dict, Optional
 def extract_token_count_from_context_wrapper(result: Any) -> Optional[int]:
     """Extract token count from official OpenAI Agents SDK context_wrapper.
 
-    DEPRECATED: Use extract_token_usage_from_context_wrapper() instead.
-    This function is kept for backward compatibility.
-
     Args:
         result: The result object from Runner.run()
 

@@ -73,7 +73,11 @@ Performance Metrics:
 - **Persistent Agent** - ONE agent per lifecycle (not per message)
 
 **Data Sources:**
-- **Polygon.io Direct API** - Market data (10 tools, DEPRECATED)
+- **Polygon.io Direct API** - Market data (2 tools, FALLBACK)
+  - **File**: `src/backend/tools/polygon_tools.py` (375 lines, 55% reduction Oct 18, 2025)
+  - **Cleanup**: Removed 466 lines of dead code and legacy comments
+  - **Deprecated**: Legacy TA tools (get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd) removed Oct 18, 2025
+    - Originally deprecated Oct 11, 2025, replaced by consolidated `get_ta_indicators()` function
 - **Tradier Direct API** - Market data (5 tools, PRIMARY)
 
 ### Interface Architecture

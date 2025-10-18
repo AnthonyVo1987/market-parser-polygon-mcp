@@ -1,12 +1,12 @@
 """Gradio ChatInterface for Market Parser.
 
-This module provides a Gradio-based UI alternative to the React frontend.
+This module provides a Gradio-based UI for Market Parser.
 Following the same architecture pattern: import and call CLI core logic.
 
 Architecture:
     CLI Core (cli.py) → process_query() → Gradio UI wrapper
 
-Pattern: Same as React frontend - wrap CLI core, no duplication
+Pattern: Wrap CLI core, no duplication
 
 Usage:
     uv run python src/backend/gradio_app.py
@@ -30,7 +30,7 @@ except ImportError:
     from backend.cli import initialize_persistent_agent, process_query_with_footer
     from backend.config import settings
 
-# Initialize agent (same pattern as FastAPI)
+# Initialize agent
 print("🚀 Initializing Market Parser Gradio Interface...")
 session = SQLiteSession(settings.agent_session_name)
 agent = initialize_persistent_agent()
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     demo.launch(
         server_name="127.0.0.1",  # Localhost only (dev mode)
-        server_port=8000,  # AWS deployment port (unified with previous FastAPI port)
+        server_port=8000,  # AWS deployment port
         share=False,  # No public URL (dev mode)
         show_error=True,  # Show error messages in UI
         quiet=False,  # Show startup logs

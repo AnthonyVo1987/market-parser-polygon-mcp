@@ -107,7 +107,7 @@ async def process_query_with_footer(agent, session, user_input):
     """Process query and return complete response with performance metrics footer.
 
     This is the SINGLE SOURCE OF TRUTH for performance metrics footer generation.
-    All interfaces (CLI, React, Gradio, and any future GUIs) call this function.
+    All interfaces (CLI, Gradio) call this function.
 
     Following the architecture principle "CLI = core, GUI = wrapper":
     - CLI owns core business logic (this function)
