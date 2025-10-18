@@ -74,11 +74,29 @@ Performance Metrics:
 
 **Data Sources:**
 - **Polygon.io Direct API** - Market data (2 tools, FALLBACK)
-  - **File**: `src/backend/tools/polygon_tools.py` (375 lines, 55% reduction Oct 18, 2025)
-  - **Cleanup**: Removed 466 lines of dead code and legacy comments
+  - **File**: `src/backend/tools/polygon_tools.py` (366 lines, 56.5% reduction Oct 18, 2025)
+  - **Cleanup**: Removed 466 lines of dead code and legacy comments (Phase 1)
   - **Deprecated**: Legacy TA tools (get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd) removed Oct 18, 2025
     - Originally deprecated Oct 11, 2025, replaced by consolidated `get_ta_indicators()` function
+  - **Refactored** (Oct 18, 2025, Phase 3): 5 functions now use centralized helper modules
+    - get_ticker_details, get_aggregates_bars, get_previous_close, get_daily_open_close, get_grouped_daily_bars
+    - Uses: error_utils, validation_utils, api_utils for DRY compliance
+  - **Function Rename** (Oct 18, 2025, Phase 4): `_map_tradier_state()` → `_map_market_state()`
+    - Improved naming clarity (generic market state, not Tradier-specific)
+    - Updated docstring to reflect standardized market state mapping
 - **Tradier Direct API** - Market data (5 tools, PRIMARY)
+  - **File**: `src/backend/tools/tradier_tools.py` (909 lines)
+  - **Refactored** (Oct 18, 2025, Phase 3): 5 functions now use centralized helper modules
+    - get_market_status, get_stock_quote, get_stock_price_history, get_call_options_chain, get_put_options_chain
+    - Uses: error_utils, validation_utils, api_utils for DRY compliance
+
+**Helper Modules** (Oct 18, 2025, Phase 2):
+- **error_utils.py** (~58 lines) - Standardized error response formatting
+  - Single source of truth for error handling (eliminates 20+ duplicate error patterns)
+- **validation_utils.py** (~57 lines) - Ticker validation and sanitization
+  - Single source of truth for input validation (eliminates 15+ duplicate validation blocks)
+- **api_utils.py** (~42 lines) - API header generation helpers
+  - Single source of truth for API utilities (eliminates 8+ duplicate header builders)
 
 ### Interface Architecture
 

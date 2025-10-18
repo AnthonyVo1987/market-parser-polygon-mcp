@@ -450,6 +450,66 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
+## DRY Principle & Helper Modules (Oct 18, 2025)
+
+### Policy: Eliminate Code Duplication
+
+**When to Create Helper Modules:**
+- Pattern duplicated 3+ times across the codebase
+- Pattern serves a clear, single purpose
+- Pattern can be abstracted without over-engineering
+
+**Helper Module Guidelines:**
+1. **Single Responsibility** - Each helper does ONE thing well
+2. **Type Hints Required** - All functions must have full type annotations
+3. **Comprehensive Docstrings** - Explain purpose, parameters, returns, raises, examples
+4. **Unit Testable** - Design for easy testing in isolation
+
+**Example: Error Handling Helper (error_utils.py)**
+```python
+def create_error_response(
+    error_type: str,
+    message: str,
+    status: str = "error",
+    details: str | None = None
+) -> dict[str, str]:
+    """
+    Create standardized error response format.
+
+    Single source of truth for error handling across all tool functions.
+    Eliminates 20+ duplicate error formatting blocks.
+
+    Args:
+        error_type: Category of error (e.g., "API error", "Validation error")
+        message: Human-readable error message
+        status: Response status (default: "error")
+        details: Optional additional error context
+
+    Returns:
+        Standardized error dictionary
+
+    Example:
+        >>> create_error_response("Validation error", "Invalid ticker format")
+        {"status": "error", "error_type": "Validation error", "message": "Invalid ticker format"}
+    """
+    ...
+```
+
+**Refactoring Workflow:**
+1. **Identify Duplication** - Find patterns repeated 3+ times
+2. **Extract to Helper** - Create centralized helper module
+3. **Refactor Call Sites** - Update all tool functions to use helper
+4. **Test Thoroughly** - Run full regression suite (39 tests)
+5. **Document Impact** - Update memories with code reduction statistics
+
+**Benefits:**
+- **Maintainability**: Update logic in ONE place, not 20+ places
+- **Consistency**: All functions behave identically
+- **Testability**: Helper functions are unit testable
+- **Readability**: Tool functions focus on business logic, not boilerplate
+
+---
+
 ## Linting & Type Checking
 
 ### Run Before Commit

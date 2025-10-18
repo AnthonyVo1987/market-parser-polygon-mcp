@@ -10,7 +10,10 @@ from datetime import datetime, timedelta
 import requests
 from agents import function_tool
 
+from .api_utils import TRADIER_TIMEOUT, create_tradier_headers
+from .error_utils import create_error_response
 from .formatting_helpers import create_options_chain_table, create_price_history_summary
+from .validation_utils import validate_and_sanitize_ticker
 
 
 def _get_tradier_api_key():
@@ -96,40 +99,27 @@ async def get_stock_quote(ticker: str) -> str:
         - "Get quotes for AAPL, TSLA, NVDA"
     """
     try:
-        # Validate ticker input
-        if not ticker or not ticker.strip():
-            return json.dumps(
-                {
-                    "error": "Invalid ticker",
-                    "message": "Ticker symbol cannot be empty",
-                    "ticker": ticker,
-                }
-            )
-
-        # Clean ticker (uppercase, strip whitespace)
-        ticker = ticker.strip().upper()
+        # Validate and sanitize ticker input
+        ticker, error = validate_and_sanitize_ticker(ticker)
+        if error:
+            return error
 
         # Get API key from environment
         api_key = os.getenv("TRADIER_API_KEY")
         if not api_key:
-            return json.dumps(
-                {
-                    "error": "Configuration error",
-                    "message": "TRADIER_API_KEY not configured in environment",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not configured in environment",
+                ticker=ticker,
             )
 
         # Build request to Tradier API
         url = "https://api.tradier.com/v1/markets/quotes"
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}"
-        }
+        headers = create_tradier_headers(api_key)
         params = {"symbols": ticker}  # requests handles URL encoding
 
         # Make API request with timeout
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
         response.raise_for_status()
 
         data = response.json()
@@ -137,12 +127,10 @@ async def get_stock_quote(ticker: str) -> str:
 
         # Check if API returned valid data
         if not quotes_data:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": f"No quote data available for ticker: {ticker}. Verify ticker symbol is valid.",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "No data",
+                f"No quote data available for ticker: {ticker}. Verify ticker symbol is valid.",
+                ticker=ticker,
             )
 
         # Handle single vs multi-ticker response structure
@@ -157,28 +145,22 @@ async def get_stock_quote(ticker: str) -> str:
             return json.dumps(_format_tradier_quote(quotes_data), indent=2)
 
     except requests.exceptions.Timeout:
-        return json.dumps(
-            {
-                "error": "Timeout",
-                "message": f"Request timed out while fetching quote for {ticker}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Timeout",
+            f"Request timed out while fetching quote for {ticker}",
+            ticker=ticker,
         )
     except requests.exceptions.RequestException as e:
-        return json.dumps(
-            {
-                "error": "API request failed",
-                "message": f"Tradier API request failed: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "API request failed",
+            f"Tradier API request failed: {str(e)}",
+            ticker=ticker,
         )
     except Exception as e:
-        return json.dumps(
-            {
-                "error": "Unexpected error",
-                "message": f"Failed to retrieve quote for {ticker}: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Unexpected error",
+            f"Failed to retrieve quote for {ticker}: {str(e)}",
+            ticker=ticker,
         )
 
 
@@ -227,47 +209,32 @@ async def get_options_expiration_dates(ticker: str) -> str:
         - "Show me TSLA options expiration dates"
     """
     try:
-        # Validate ticker input
-        if not ticker or not ticker.strip():
-            return json.dumps(
-                {
-                    "error": "Invalid ticker",
-                    "message": "Ticker symbol cannot be empty",
-                    "ticker": ticker,
-                }
-            )
-
-        # Clean ticker (uppercase, strip whitespace)
-        ticker = ticker.strip().upper()
+        # Validate and sanitize ticker input
+        ticker, error = validate_and_sanitize_ticker(ticker)
+        if error:
+            return error
 
         # Get API key
         api_key = _get_tradier_api_key()
         if not api_key:
-            return json.dumps(
-                {
-                    "error": "Configuration error",
-                    "message": "TRADIER_API_KEY not found in environment",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not found in environment",
+                ticker=ticker,
             )
 
         # Call Tradier API
         url = f"https://api.tradier.com/v1/markets/options/expirations?symbol={ticker}"
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
+        headers = create_tradier_headers(api_key)
 
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=headers, timeout=TRADIER_TIMEOUT)
 
         # Check HTTP status
         if response.status_code != 200:
-            return json.dumps(
-                {
-                    "error": "API request failed",
-                    "message": f"Tradier API returned status {response.status_code}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "API request failed",
+                f"Tradier API returned status {response.status_code}",
+                ticker=ticker,
             )
 
         # Parse response
@@ -279,12 +246,10 @@ async def get_options_expiration_dates(ticker: str) -> str:
 
         # Check if we got valid data
         if not dates:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": f"No expiration dates available for ticker: {ticker}. Verify ticker symbol is valid.",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "No data",
+                f"No expiration dates available for ticker: {ticker}. Verify ticker symbol is valid.",
+                ticker=ticker,
             )
 
         # Ensure dates is a list (API returns single string if only 1 date)
@@ -302,28 +267,22 @@ async def get_options_expiration_dates(ticker: str) -> str:
         )
 
     except requests.exceptions.Timeout:
-        return json.dumps(
-            {
-                "error": "Timeout",
-                "message": f"Tradier API request timed out for {ticker}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Timeout",
+            f"Tradier API request timed out for {ticker}",
+            ticker=ticker,
         )
     except requests.exceptions.RequestException as e:
-        return json.dumps(
-            {
-                "error": "Network error",
-                "message": f"Failed to connect to Tradier API: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Network error",
+            f"Failed to connect to Tradier API: {str(e)}",
+            ticker=ticker,
         )
     except Exception as e:
-        return json.dumps(
-            {
-                "error": "Unexpected error",
-                "message": f"Failed to retrieve expiration dates for {ticker}: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Unexpected error",
+            f"Failed to retrieve expiration dates for {ticker}: {str(e)}",
+            ticker=ticker,
         )
 
 
@@ -396,41 +355,29 @@ async def get_stock_price_history(
           → Agent calculates dates, uses interval="monthly"
     """
     try:
-        # Validate ticker input
-        if not ticker or not ticker.strip():
-            return json.dumps(
-                {
-                    "error": "Invalid ticker",
-                    "message": "Ticker symbol cannot be empty",
-                    "ticker": ticker,
-                }
-            )
-
-        # Clean ticker (uppercase, strip whitespace)
-        ticker = ticker.strip().upper()
+        # Validate and sanitize ticker input
+        ticker, error = validate_and_sanitize_ticker(ticker)
+        if error:
+            return error
 
         # Validate interval
         valid_intervals = ["daily", "weekly", "monthly"]
         if interval not in valid_intervals:
-            return json.dumps(
-                {
-                    "error": "Invalid interval",
-                    "message": f"Interval must be one of: {', '.join(valid_intervals)}. Got: {interval}",
-                    "interval": interval,
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Invalid interval",
+                f"Interval must be one of: {', '.join(valid_intervals)}. Got: {interval}",
+                interval=interval,
+                ticker=ticker,
             )
 
         # Validate dates (basic presence check)
         if not start_date or not end_date:
-            return json.dumps(
-                {
-                    "error": "Invalid dates",
-                    "message": "Both start_date and end_date are required (YYYY-MM-DD format)",
-                    "start_date": start_date,
-                    "end_date": end_date,
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Invalid dates",
+                "Both start_date and end_date are required (YYYY-MM-DD format)",
+                start_date=start_date,
+                end_date=end_date,
+                ticker=ticker,
             )
 
         # Weekend detection and date adjustment
@@ -462,20 +409,15 @@ async def get_stock_price_history(
         # Get API key
         api_key = _get_tradier_api_key()
         if not api_key:
-            return json.dumps(
-                {
-                    "error": "Configuration error",
-                    "message": "TRADIER_API_KEY not found in environment",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not found in environment",
+                ticker=ticker,
             )
 
         # Build request to Tradier API
         url = "https://api.tradier.com/v1/markets/history"
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
+        headers = create_tradier_headers(api_key)
         params = {
             "symbol": ticker,
             "interval": interval,
@@ -484,17 +426,15 @@ async def get_stock_price_history(
         }
 
         # Make API request with timeout
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
 
         # Check HTTP status
         if response.status_code != 200:
-            return json.dumps(
-                {
-                    "error": "API request failed",
-                    "message": f"Tradier API returned status {response.status_code}",
-                    "ticker": ticker,
-                    "interval": interval,
-                }
+            return create_error_response(
+                "API request failed",
+                f"Tradier API returned status {response.status_code}",
+                ticker=ticker,
+                interval=interval,
             )
 
         # Parse response
@@ -507,15 +447,13 @@ async def get_stock_price_history(
 
         # Check if API returned data
         if not bars_data:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": f"No historical data available for {ticker} from {start_date} to {end_date}. Verify ticker symbol and date range.",
-                    "ticker": ticker,
-                    "interval": interval,
-                    "start_date": start_date,
-                    "end_date": end_date,
-                }
+            return create_error_response(
+                "No data",
+                f"No historical data available for {ticker} from {start_date} to {end_date}. Verify ticker symbol and date range.",
+                ticker=ticker,
+                interval=interval,
+                start_date=start_date,
+                end_date=end_date,
             )
 
         # Format response with bars
@@ -533,28 +471,22 @@ async def get_stock_price_history(
         )
 
     except requests.exceptions.Timeout:
-        return json.dumps(
-            {
-                "error": "Timeout",
-                "message": f"Tradier API request timed out for {ticker}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Timeout",
+            f"Tradier API request timed out for {ticker}",
+            ticker=ticker,
         )
     except requests.exceptions.RequestException as e:
-        return json.dumps(
-            {
-                "error": "Network error",
-                "message": f"Failed to connect to Tradier API: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Network error",
+            f"Failed to connect to Tradier API: {str(e)}",
+            ticker=ticker,
         )
     except Exception as e:
-        return json.dumps(
-            {
-                "error": "Unexpected error",
-                "message": f"Failed to retrieve historical data for {ticker}: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Unexpected error",
+            f"Failed to retrieve historical data for {ticker}: {str(e)}",
+            ticker=ticker,
         )
 
 
@@ -643,53 +575,37 @@ async def get_call_options_chain(
                expiration_date="2025-10-17")
     """
     try:
-        # Validate inputs
-        if not ticker or not ticker.strip():
-            return json.dumps(
-                {
-                    "error": "Invalid ticker",
-                    "message": "Ticker symbol cannot be empty",
-                    "ticker": ticker,
-                }
-            )
-
-        ticker = ticker.strip().upper()
+        # Validate and sanitize ticker input
+        ticker, error = validate_and_sanitize_ticker(ticker)
+        if error:
+            return error
 
         if current_price <= 0:
-            return json.dumps(
-                {
-                    "error": "Invalid current price",
-                    "message": f"Current price {current_price} must be positive",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Invalid current price",
+                f"Current price {current_price} must be positive",
+                ticker=ticker,
             )
 
         if not expiration_date:
-            return json.dumps(
-                {
-                    "error": "Invalid expiration date",
-                    "message": "Expiration date is required (YYYY-MM-DD format)",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Invalid expiration date",
+                "Expiration date is required (YYYY-MM-DD format)",
+                ticker=ticker,
             )
 
         # Get API key
         api_key = _get_tradier_api_key()
         if not api_key:
-            return json.dumps(
-                {
-                    "error": "Configuration error",
-                    "message": "TRADIER_API_KEY not found in environment",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not found in environment",
+                ticker=ticker,
             )
 
         # Build Tradier API request
         url = "https://api.tradier.com/v1/markets/options/chains"
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
+        headers = create_tradier_headers(api_key)
         params = {
             "symbol": ticker,
             "expiration": expiration_date,
@@ -697,15 +613,13 @@ async def get_call_options_chain(
         }
 
         # Make API request
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
 
         if response.status_code != 200:
-            return json.dumps(
-                {
-                    "error": "API request failed",
-                    "message": f"Tradier API returned status {response.status_code}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "API request failed",
+                f"Tradier API returned status {response.status_code}",
+                ticker=ticker,
             )
 
         # Parse response
@@ -714,12 +628,10 @@ async def get_call_options_chain(
         option_list = options_data.get("option", [])
 
         if not option_list:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": f"No options data found for {ticker} expiring {expiration_date}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "No data",
+                f"No options data found for {ticker} expiring {expiration_date}",
+                ticker=ticker,
             )
 
         # Filter for CALL options with strike >= current_price
@@ -731,12 +643,10 @@ async def get_call_options_chain(
         ]
 
         if not call_options:
-            return json.dumps(
-                {
-                    "error": "No call options found",
-                    "message": f"No call options found with strike >= {current_price}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "No call options found",
+                f"No call options found with strike >= {current_price}",
+                ticker=ticker,
             )
 
         # Sort by strike ascending and take first 10
@@ -781,28 +691,22 @@ async def get_call_options_chain(
         )
 
     except requests.exceptions.Timeout:
-        return json.dumps(
-            {
-                "error": "Timeout",
-                "message": f"Tradier API request timed out for {ticker}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Timeout",
+            f"Tradier API request timed out for {ticker}",
+            ticker=ticker,
         )
     except requests.exceptions.RequestException as e:
-        return json.dumps(
-            {
-                "error": "Network error",
-                "message": f"Failed to connect to Tradier API: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Network error",
+            f"Failed to connect to Tradier API: {str(e)}",
+            ticker=ticker,
         )
     except Exception as e:
-        return json.dumps(
-            {
-                "error": "Unexpected error",
-                "message": f"Failed to retrieve call options chain for {ticker}: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Unexpected error",
+            f"Failed to retrieve call options chain for {ticker}: {str(e)}",
+            ticker=ticker,
         )
 
 
@@ -871,53 +775,37 @@ async def get_put_options_chain(
                expiration_date="2025-10-17")
     """
     try:
-        # Validate inputs
-        if not ticker or not ticker.strip():
-            return json.dumps(
-                {
-                    "error": "Invalid ticker",
-                    "message": "Ticker symbol cannot be empty",
-                    "ticker": ticker,
-                }
-            )
-
-        ticker = ticker.strip().upper()
+        # Validate and sanitize ticker input
+        ticker, error = validate_and_sanitize_ticker(ticker)
+        if error:
+            return error
 
         if current_price <= 0:
-            return json.dumps(
-                {
-                    "error": "Invalid current price",
-                    "message": f"Current price {current_price} must be positive",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Invalid current price",
+                f"Current price {current_price} must be positive",
+                ticker=ticker,
             )
 
         if not expiration_date:
-            return json.dumps(
-                {
-                    "error": "Invalid expiration date",
-                    "message": "Expiration date is required (YYYY-MM-DD format)",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Invalid expiration date",
+                "Expiration date is required (YYYY-MM-DD format)",
+                ticker=ticker,
             )
 
         # Get API key
         api_key = _get_tradier_api_key()
         if not api_key:
-            return json.dumps(
-                {
-                    "error": "Configuration error",
-                    "message": "TRADIER_API_KEY not found in environment",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not found in environment",
+                ticker=ticker,
             )
 
         # Build Tradier API request
         url = "https://api.tradier.com/v1/markets/options/chains"
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
+        headers = create_tradier_headers(api_key)
         params = {
             "symbol": ticker,
             "expiration": expiration_date,
@@ -925,15 +813,13 @@ async def get_put_options_chain(
         }
 
         # Make API request
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
 
         if response.status_code != 200:
-            return json.dumps(
-                {
-                    "error": "API request failed",
-                    "message": f"Tradier API returned status {response.status_code}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "API request failed",
+                f"Tradier API returned status {response.status_code}",
+                ticker=ticker,
             )
 
         # Parse response
@@ -942,12 +828,10 @@ async def get_put_options_chain(
         option_list = options_data.get("option", [])
 
         if not option_list:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": f"No options data found for {ticker} expiring {expiration_date}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "No data",
+                f"No options data found for {ticker} expiring {expiration_date}",
+                ticker=ticker,
             )
 
         # Filter for PUT options with strike <= current_price
@@ -958,12 +842,10 @@ async def get_put_options_chain(
         ]
 
         if not put_options:
-            return json.dumps(
-                {
-                    "error": "No put options found",
-                    "message": f"No put options found with strike <= {current_price}",
-                    "ticker": ticker,
-                }
+            return create_error_response(
+                "No put options found",
+                f"No put options found with strike <= {current_price}",
+                ticker=ticker,
             )
 
         # Sort by strike DESCENDING (highest to lowest for puts) and take first 10
@@ -1008,26 +890,20 @@ async def get_put_options_chain(
         )
 
     except requests.exceptions.Timeout:
-        return json.dumps(
-            {
-                "error": "Timeout",
-                "message": f"Tradier API request timed out for {ticker}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Timeout",
+            f"Tradier API request timed out for {ticker}",
+            ticker=ticker,
         )
     except requests.exceptions.RequestException as e:
-        return json.dumps(
-            {
-                "error": "Network error",
-                "message": f"Failed to connect to Tradier API: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Network error",
+            f"Failed to connect to Tradier API: {str(e)}",
+            ticker=ticker,
         )
     except Exception as e:
-        return json.dumps(
-            {
-                "error": "Unexpected error",
-                "message": f"Failed to retrieve put options chain for {ticker}: {str(e)}",
-                "ticker": ticker,
-            }
+        return create_error_response(
+            "Unexpected error",
+            f"Failed to retrieve put options chain for {ticker}: {str(e)}",
+            ticker=ticker,
         )

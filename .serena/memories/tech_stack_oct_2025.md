@@ -45,6 +45,17 @@
   - get_put_options_chain (puts data)
 - **Status:** PRIMARY
 
+#### Helper Modules (Oct 18, 2025)
+- **error_utils.py** - Standardized error response formatting
+  - create_error_response() - Single source of truth for error handling
+  - Eliminates 20+ duplicate error patterns across tool functions
+- **validation_utils.py** - Ticker validation and sanitization
+  - validate_ticker() - Input validation with comprehensive error messages
+  - Eliminates 15+ duplicate validation blocks across tool functions
+- **api_utils.py** - API header generation helpers
+  - create_tradier_headers(), create_polygon_headers()
+  - Eliminates 8+ duplicate header builders across tool functions
+
 ### Data & Validation
 - **Pydantic:** v2 (data validation, serialization)
 - **Environment Config:** python-dotenv (load .env)

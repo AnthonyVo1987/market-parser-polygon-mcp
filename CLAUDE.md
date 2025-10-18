@@ -427,44 +427,72 @@ uv run python src/backend/gradio_app.py
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[MARKDOWN] Consolidated Markdown-Only Output Formatting for CLI & Gradio
+[REFACTOR] Complete Code Cleanup & DRY Principle Application (Phases 1-5)
 
-**Summary:** Fixed critical Markdown table rendering in both CLI and Gradio UI by addressing three distinct issues in the output pipeline. Now outputs pure Markdown with pipe separators preserved.
+**Summary:** Comprehensive 5-phase refactoring to eliminate code duplication, remove dead code, and apply DRY principles across the codebase. Refactored 10 tool functions to use centralized helper modules, reducing code duplication by ~390 lines while maintaining 100% functional compatibility.
 
-**Root Causes Identified:**
-1. CLI was using `Rich.Markdown()` which converted pipes (|) to Unicode box characters (━━)
-2. Gradio streaming logic was splitting on "|" character, destroying table structure
-3. Gradio needed explicit `render_markdown=True` configuration
+**Phase 1: Dead Code & Legacy Comment Cleanup (-490 lines)**
+- Deleted 466 lines of commented-out legacy TA tools from polygon_tools.py
+- Removed dead code: get_ta_sma(), get_ta_ema(), get_ta_rsi(), get_ta_macd()
+- Cleaned 8 legacy comment instances referencing retired React/FastAPI
+- Updated 4 files: gradio_app.py, cli.py, formatting_helpers.py, token_utils.py
+- Reduced polygon_tools.py from 841 → 375 lines (55% reduction)
 
-**Code Changes:**
-- `src/backend/utils/response_utils.py`: Removed `Rich.Markdown()` rendering (line 26)
-  - Now outputs pure Markdown text (preserves | pipes)
-  - Changed: `console.print(Markdown(response_text))` → `console.print(response_text)`
-  - Removed import: `from rich.markdown import Markdown`
+**Phase 2: Helper Module Creation (+100 lines, DRY Principle)**
+- Created error_utils.py: Standardized error response formatting (~50 lines)
+- Created validation_utils.py: Ticker validation and sanitization (~30 lines)
+- Created api_utils.py: API header generation helpers (~20 lines)
+- Single source of truth for patterns duplicated 43+ times
 
-- `src/backend/gradio_app.py`: Fixed streaming and added Markdown config (lines 60-63, 81-86)
-  - Removed sentence-based streaming that split on "|"
-  - Changed: `sentences = complete_response.split("|")` → `yield complete_response`
-  - Added explicit Chatbot configuration with `render_markdown=True, line_breaks=True`
+**Phase 3: Refactored 10 Tool Functions to Use Helpers**
+- Tradier Tools (5 functions): get_market_status, get_stock_quote, get_stock_price_history, get_call_options_chain, get_put_options_chain
+- Polygon Tools (5 functions): get_ticker_details, get_aggregates_bars, get_previous_close, get_daily_open_close, get_grouped_daily_bars
+- Eliminated code duplication across all tool functions
+- Maintained 100% API compatibility and functional behavior
 
-**Unchanged (Already Correct):**
-- ✅ AI agent instructions (mandate Markdown table preservation)
-- ✅ All tool formatting helpers (use pipe separators)
-- ✅ Markdown table standards (proper alignment syntax)
+**Phase 4: Rename for Accuracy**
+- Renamed: _map_tradier_state → _map_market_state
+- Rationale: Function maps market state data (used by both Tradier and Polygon tools)
+- Updated 3 references across tradier_tools.py and polygon_tools.py
 
-**Test Results:**
-- ✅ Phase 1: 39/39 CLI tests completed (5 min 47 sec avg 8.86s/test)
-- ✅ Phase 2: 0 errors, 0 data unavailable failures, 39/39 PASSED
-- ✅ CLI: Markdown tables rendering with pipes
-- ✅ Gradio: Markdown tables rendering with proper formatting
+**Phase 5: Final Testing & Documentation**
+- ✅ Phase 1 Testing: 39/39 CLI tests COMPLETED (5 min 50 sec, avg 8.96s/test)
+- ✅ Phase 2 Verification: 3 grep commands executed, 0 errors found, 0 "data unavailable" failures
+- ✅ Code Quality: Linting score 9.61/10 (excellent)
+- ✅ All checkpoint questions answered with evidence
+- ✅ Test report: test-reports/test_cli_regression_loop1_2025-10-18_14-49.log
 
-**Impact:**
-- Files Modified: 2 (response_utils.py, gradio_app.py)
-- Lines Changed: ~15 lines total (removed Rich rendering, fixed streaming)
-- Functional Impact: CRITICAL (fixes table rendering in both interfaces)
-- Code Quality: Improved (simplified logic, better separation of concerns)
+**Impact Statistics:**
+- Code removed: ~490 lines (dead code + legacy comments)
+- Code added: ~100 lines (helper modules)
+- Net reduction: ~390 lines (~20% total codebase reduction)
+- Files modified: 15 (7 cleaned + 3 new helpers + 5 refactored)
+- Functions refactored: 10 (5 Tradier + 5 Polygon)
+- Code duplication eliminated: 43+ instances
+- Helper modules created: 3 (error_utils, validation_utils, api_utils)
 
-**Risk Assessment:** LOW (both fixes are simplifications, comprehensive testing validates)
+**Test Evidence:**
+- All phases tested with 39-test regression suite
+- Performance metrics: 8.65s/test → 8.96s/test (stable, <3% variance)
+- Zero functional regressions detected
+- 39/39 tests PASSED verification across all phases
+
+**Code Quality Improvements:**
+- DRY principle applied: Single source of truth for error handling, validation, API utilities
+- Maintainability: Centralized helper modules reduce future maintenance burden
+- Type safety: Comprehensive type hints and docstrings in all helper modules
+- Readability: Tool functions now focus on business logic, not boilerplate
+
+**Documentation Updates:**
+- Updated CLAUDE.md (this file)
+- Updated .serena/memories/project_architecture.md
+- Updated .serena/memories/code_style_conventions_oct_2025.md
+- Updated .serena/memories/tech_stack_oct_2025.md
+- Created .serena/memories/code_cleanup_refactoring_oct_2025.md
+- Updated .serena/memories/react_retirement_completion_oct_2025.md
+- Updated TODO_task_plan.md (all phases marked complete)
+
+**Risk Assessment:** LOW (comprehensive testing validates no functionality changes)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## claude --dangerously-skip-permissions

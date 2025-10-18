@@ -12,6 +12,7 @@ import requests
 from agents import function_tool
 from polygon import RESTClient
 
+from .error_utils import create_error_response
 from .formatting_helpers import create_ta_indicators_table
 
 
@@ -79,12 +80,10 @@ async def get_market_status_and_date_time() -> str:
         # Get API key from environment
         api_key = os.getenv("TRADIER_API_KEY")
         if not api_key:
-            return json.dumps(
-                {
-                    "error": "Configuration error",
-                    "message": "TRADIER_API_KEY not configured in environment",
-                    "source": "Tradier",
-                }
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not configured in environment",
+                source="Tradier"
             )
 
         # Build request to Tradier API
@@ -103,17 +102,15 @@ async def get_market_status_and_date_time() -> str:
 
         # Check if API returned valid data
         if not clock_data:
-            return json.dumps(
-                {
-                    "error": "No data",
-                    "message": "No clock data returned from Tradier API.",
-                    "source": "Tradier",
-                }
+            return create_error_response(
+                "No data",
+                "No clock data returned from Tradier API.",
+                source="Tradier"
             )
 
         # Extract state and map to current response format
         state = clock_data.get("state", "closed")
-        market_status = _map_tradier_state(state)
+        market_status = _map_market_state(state)
         early_hours = (state == "pre")
         after_hours = (state == "post")
 
@@ -146,37 +143,31 @@ async def get_market_status_and_date_time() -> str:
         )
 
     except requests.exceptions.Timeout:
-        return json.dumps(
-            {
-                "error": "Timeout",
-                "message": "Request timed out while fetching market status",
-                "source": "Tradier",
-            }
+        return create_error_response(
+            "Timeout",
+            "Request timed out while fetching market status",
+            source="Tradier"
         )
     except requests.exceptions.RequestException as e:
-        return json.dumps(
-            {
-                "error": "API request failed",
-                "message": f"Tradier API request failed: {str(e)}",
-                "source": "Tradier",
-            }
+        return create_error_response(
+            "API request failed",
+            f"Tradier API request failed: {str(e)}",
+            source="Tradier"
         )
     except Exception as e:
-        return json.dumps(
-            {
-                "error": "Unexpected error",
-                "message": f"Failed to retrieve market status from Tradier: {str(e)}",
-                "source": "Tradier",
-            }
+        return create_error_response(
+            "Unexpected error",
+            f"Failed to retrieve market status from Tradier: {str(e)}",
+            source="Tradier"
         )
 
 
-def _map_tradier_state(state: str) -> str:
-    """Map Tradier market state to expected response format.
-    
+def _map_market_state(state: str) -> str:
+    """Map market state to standardized response format.
+
     Args:
-        state: Tradier market state ("open", "closed", "pre", "post")
-        
+        state: Market state ("open", "closed", "pre", "post")
+
     Returns:
         Mapped market status ("open", "closed", "extended-hours")
     """
