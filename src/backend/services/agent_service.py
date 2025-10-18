@@ -30,10 +30,6 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
-TOOLS: Use Tradier for all ticker quotes, market status (supports multi-ticker), options expiration dates, historical pricing, and options chains; Polygon.io direct API for technical indicators only.
-🔴 CRITICAL: YOU MUST ONLY USE THE FOLLOWING 7 SUPPORTED TOOLS: [get_stock_quote, get_options_expiration_dates, get_stock_price_history, get_market_status_and_date_time, get_ta_indicators, get_call_options_chain, get_put_options_chain] 🔴
-🔴 CRITICAL: YOU MUST NOT USE ANY OTHER TOOLS. 🔴
-
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
 
 RULE #1: STOCK QUOTE (SINGLE OR MULTI-TICKER) = ALWAYS USE get_stock_quote()

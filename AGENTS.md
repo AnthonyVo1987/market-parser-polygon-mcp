@@ -427,65 +427,42 @@ uv run python src/backend/gradio_app.py
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[CLEANUP] Complete FastAPI & Startup Script Removal - Gradio-Only Architecture
+[CLEANUP] Remove dead code after React/FastAPI retirement
 
-**Summary**: Removed FastAPI backend infrastructure and legacy multi-server startup scripts
-**Scope**: 25 files affected (11 deleted, 5 modified, 9 docs updated)
-**Impact**: ~1,000+ lines removed, simplified to single-server Gradio-only architecture
+**Summary:** Comprehensive cleanup of legacy code after migrating to Gradio-only Python full-stack architecture
 
-## Architecture Impact
+**Code Deletions:**
+- Deleted src/backend/__init__.py (89 lines - imports deleted modules)
+- Cleaned all __pycache__/ directories (orphaned bytecode: api_models, dependencies, main, finnhub_tools)
 
-**Before (Multi-Server):**
-- Backend (FastAPI, Port 8000) + Gradio (Port 7860 - migrated to 8000)
-- Complex startup scripts (start-app.sh, start-app-xterm.sh)
-- 2 processes, 2 ports, multi-server coordination
+**Config Deletions:**
+- Deleted 6 obsolete React/TypeScript config files (253 lines):
+  - tsconfig.node.json (TypeScript config)
+  - vite-env.d.ts (Vite TypeScript definitions)
+  - postcss.config.js (PostCSS for React CSS)
+  - .prettierrc.cjs (Prettier for React)
+  - lighthouserc.js (Lighthouse CI)
+  - lighthouserc.cjs (Lighthouse CI duplicate)
 
-**After (Single-Server):**
-- Gradio only (Port 8000)
-- Simple startup: uv run python src/backend/gradio_app.py
-- 1 process, 1 port, no orchestration needed
+**CI/CD Deletions:**
+- Deleted .github/workflows/lighthouse-ci.yml (119 lines - React frontend CI workflow)
 
-**Rationale:**
-Gradio imports CLI core functions directly (process_query_with_footer), does NOT make HTTP requests to FastAPI. FastAPI layer was only needed for retired React frontend
+**Configuration Updates:**
+- Updated .pre-commit-config.yaml (removed ESLint/TypeScript hook - 14 lines)
 
-**Import Verification:**
-- ✅ Config loads successfully
-- ✅ CLI imports without errors
-- ✅ Gradio launches successfully
+**Documentation Updates:**
+- Updated DEPLOYMENT-QUICKSTART.md (removed React deployment references)
+- Updated .claude/commands/new_task.md (removed @react-component-architect)
+- Updated .claude/commands/code_review_commit.md (removed TypeScript validation)
+- Other documentation cleanups
 
-**Dependency Verification:**
-- ✅ fastapi removed from pip list
-- ✅ uvicorn removed from pip list
+**Impact:**
+- Files Deleted: 8 files (372 lines of dead code)
+- Directories Cleaned: All __pycache__/ (4+ directories)
+- Functional Impact: Zero (all dead code, no active dependencies)
+- Code Quality: Improved (cleaner codebase, reduced confusion)
 
-## Benefits
-
-**Performance:**
-- Startup time: -60% (no uvicorn initialization)
-- Memory usage: -30% (single process instead of two)
-
-**Code Quality:**
-- Codebase: -1,000+ lines (-20% backend code)
-- Complexity: Single interface (Gradio only)
-- Architecture: Simplified 2-layer (Gradio → CLI)
-
-**Operations:**
-- Ports: 1 instead of 2 (only 8000)
-- Processes: 1 instead of 2
-- Deployment: Simpler (no multi-server coordination)
-
-## New Simplified Startup
-
-**CLI Mode:**
-```bash
-uv run src/backend/cli.py
-```
-
-**Gradio Mode:**
-```bash
-uv run python src/backend/gradio_app.py
-```
-
-No complex orchestration, health checks, or multi-server coordination needed.
+**Risk Assessment:** LOW (comprehensive testing, all changes are deletions)
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## claude --dangerously-skip-permissions
