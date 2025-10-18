@@ -4,22 +4,14 @@
 
 <Phase 1: Research> ULTRA-THINK to Research the requested task(s): 
 
-## Task 1. [BUG] Investigate & Fix Gradio UI missing response footer data
-
-Gradio Response:
-```
-Market Status: CLOSED
-After-hours: NO
-Early-hours: NO
-Exchanges: NASDAQ closed, NYSE closed, OTC closed
-Server Time (UTC): 2025-10-18 01:50:12
-Date: 2025-10-18
-Tools Used:
-
-get_market_status_and_date_time() - Determine current market status and server time from Tradier
-```
-
-Missing this type of footer data that both CLI & React Frontend already provides:
+## Task 1. Research consolidating the Performance Metrics Footer data code and logic to ONLY reside in the CLI backend "core business logic"
+- Curerntly, there are 3 code duplications to provide the Performance Metrics footer data for every response
+- CLI, React, & Gradio ALL have dupe code to provide the footer data
+- This violates the architecture that the CLI should be the single source of truth
+- Expected Outcome: CLI handles the footer data ONLY, and all the other UI like React, Gradio is just UI wrapper and just provides the verbatim response from CLI which has the footer data
+- There should NOT be unique\dupe code to output footer data.  For example, CLI responds with footer data, and user can decide to add something like 20+ different GUI\UI Chatbots using different frameworks, and NONE of the 20+ different GUI\UI code will have it's own special handling of footer data because it all comes from the CLI
+- Currently our app is incorrectly architectured for the footer data.  If user wanted to add new 20+ GUI\UI, then currently user needs to add 20+ footer code to extract which is MADNESS
+- So CLI handles everything, and any GUI\UI code just directly passes the CLI responses with full footer data to the GUI\UI output
 
 ```
 Performance Metrics:

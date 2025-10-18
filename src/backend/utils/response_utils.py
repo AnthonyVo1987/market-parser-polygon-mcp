@@ -6,68 +6,26 @@ from rich.markdown import Markdown
 console = Console()
 
 
-def print_response(result):
-    """Simplified response renderer for CLI output with performance metrics."""
-    console.print("\n[bold green]Query processed successfully![/bold green]")
+def print_response(response_text: str):
+    """Display complete agent response with built-in performance metrics footer.
+
+    The response text already includes the performance metrics footer
+    from process_query_with_footer(). No metadata extraction needed.
+
+    Args:
+        response_text: Complete response string with footer already included
+    """
+    console.print("\n[bold green]✅ Query processed successfully![/bold green]")
     console.print("[bold]Agent Response:[/bold]\n")
 
-    # Extract content
-    final_output = getattr(result, "final_output", result)
-    final_text = str(final_output)
-
-    # Check if content has markdown-like formatting
-    has_markdown = any(tag in final_text for tag in ["#", "*", "`", "-", ">"])
+    # Display complete response (includes footer at end)
+    # Use Markdown for structured content, Rich handles plain text footer naturally
+    has_markdown = any(tag in response_text for tag in ["#", "*", "`", "-", ">"])
 
     if has_markdown:
-        # Use Markdown rendering for structured content
-        console.print(Markdown(final_text))
+        console.print(Markdown(response_text))
     else:
-        # Use direct printing with Rich markup
-        console.print(final_text)
-
-    # Display performance metrics if available
-    if hasattr(result, "metadata") and result.metadata:
-        console.print("\n[bold cyan]Performance Metrics:[/bold cyan]")
-
-        # Display processing time if available
-        if hasattr(result.metadata, "processing_time") and result.metadata.processing_time:
-            console.print(f"   Response Time: {result.metadata.processing_time:.3f}s")
-
-        # Extract token information using official OpenAI Agents SDK
-        from .token_utils import extract_token_usage_from_context_wrapper
-
-        token_usage = extract_token_usage_from_context_wrapper(result)
-
-        if token_usage:
-            token_count = token_usage.get("total_tokens")
-            input_tokens = token_usage.get("input_tokens")
-            output_tokens = token_usage.get("output_tokens")
-            cached_input = token_usage.get("cached_input_tokens", 0)
-            cached_output = token_usage.get("cached_output_tokens", 0)
-
-            # Display token information with caching metrics
-            if token_count:
-                token_display = f"   Tokens Used: {token_count:,}"
-
-                if input_tokens and output_tokens:
-                    token_display += f" (Input: {input_tokens:,}, Output: {output_tokens:,})"
-
-                    # Show cache hit information if any tokens were cached
-                    if cached_input > 0 or cached_output > 0:
-                        cache_parts = []
-                        if cached_input > 0:
-                            cache_parts.append(f"Cached Input: {cached_input:,}")
-                        if cached_output > 0:
-                            cache_parts.append(f"Cached Output: {cached_output:,}")
-                        token_display += f" | {', '.join(cache_parts)}"
-
-                console.print(token_display)
-
-        # Display model information
-        if hasattr(result.metadata, "model"):
-            console.print(f"   Model: {result.metadata.model}")
-        elif hasattr(result, "model"):
-            console.print(f"   Model: {result.model}")
+        console.print(response_text)
 
     # Separator
     console.print("\n[dim]" + "─" * 50 + "[/dim]\n")

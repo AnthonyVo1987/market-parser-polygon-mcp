@@ -102,46 +102,8 @@ const ChatMessage_OpenAI = memo(
               : formattedMessage.relativeTime}
           </div>
 
-          {/* Footer Data for AI Messages */}
-          {!isUser && message.metadata && (
-            <div className='message-footer' data-testid='message-footer'>
-              <div className='footer-metrics'>
-                {message.metadata.processingTime && (
-                  <span className='footer-metric'>
-                    Response Time: {message.metadata.processingTime.toFixed(3)}s
-                  </span>
-                )}
-                {message.metadata.model && (
-                  <span className='footer-metric'>
-                    Model: {message.metadata.model}
-                  </span>
-                )}
-                {(message.metadata.inputTokens !== undefined && message.metadata.outputTokens !== undefined) ? (
-                  <span className='footer-metric'>
-                    Input: {message.metadata.inputTokens.toLocaleString()} |
-                    Output: {message.metadata.outputTokens.toLocaleString()} |
-                    Total: {(message.metadata.inputTokens + message.metadata.outputTokens).toLocaleString()}
-                    {(message.metadata.cachedInputTokens || message.metadata.cachedOutputTokens) && (
-                      <>
-                        {' | '}
-                        {message.metadata.cachedInputTokens ? (
-                          <>Cached Input: {message.metadata.cachedInputTokens.toLocaleString()}</>
-                        ) : null}
-                        {message.metadata.cachedInputTokens && message.metadata.cachedOutputTokens ? ' | ' : null}
-                        {message.metadata.cachedOutputTokens ? (
-                          <>Cached Output: {message.metadata.cachedOutputTokens.toLocaleString()}</>
-                        ) : null}
-                      </>
-                    )}
-                  </span>
-                ) : message.metadata.tokenCount ? (
-                  <span className='footer-metric'>
-                    Tokens: {message.metadata.tokenCount.toLocaleString()}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-          )}
+          {/* Footer is now part of message.content (rendered by markdown automatically) */}
+          {/* No separate metadata footer component needed */}
         </div>
       </div>
     );

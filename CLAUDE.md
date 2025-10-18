@@ -478,42 +478,50 @@ netstat -tlnp | grep :8000
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[CLEANUP] Complete Finnhub Removal - Migration to Tradier API Finalized
+[CONSOLIDATION] Performance Metrics Footer Unified to CLI Core Only
 
-**Problem:** Codebase contained 30+ legacy Finnhub references despite migration to Tradier being complete
-**Root Cause:** File `src/backend/tools/finnhub_tools.py` was misnamed - actually contained Tradier API code
+**Problem:** Performance Metrics footer duplicated 3x across CLI, React, and Gradio interfaces (~200 lines of duplicate code)
+**Root Cause:** Each interface independently extracted metadata and formatted footer after calling `process_query()`
 
-**Solution:** Merged finnhub_tools.py into tradier_tools.py + removed all legacy references (30+ files)
+**Solution:** Created `process_query_with_footer()` wrapper in CLI core - single source of truth for footer generation
+
+**Architecture Change:**
+- **Before**: Each interface → `process_query()` → extract metadata → format footer → display
+- **After**: Each interface → `process_query_with_footer()` → display complete response (footer included)
 
 **Code Changes:**
-1. **src/backend/tools/tradier_tools.py**: Merged get_stock_quote() and _format_tradier_quote()
-2. **src/backend/tools/__init__.py**: Updated import to reference tradier_tools
-3. **src/backend/services/agent_service.py**: Updated import and tool count (5 Tradier + 2 Polygon = 7 tools)
-4. **src/backend/tools/finnhub_tools.py**: DELETED (was misnamed)
-5. **pyproject.toml**: Removed finnhub-python dependency
+1. **src/backend/cli.py**: Added 2 functions (FIXED import bug)
+   - `_format_performance_footer()`: Canonical formatter (plain text, no Rich markup)
+   - `process_query_with_footer()`: Wrapper that measures time, extracts tokens, appends footer
+   - Fixed import: `extract_token_count_from_context_wrapper` → `extract_token_usage_from_context_wrapper`
+2. **src/backend/cli.py**: Updated `_process_user_input()` to use new wrapper
+3. **src/backend/utils/response_utils.py**: Simplified `print_response()` (deleted ~50 lines)
+4. **src/backend/routers/chat.py**: Simplified FastAPI endpoint (deleted ~50 lines, returns metadata=None)
+5. **src/frontend/components/ChatMessage_OpenAI.tsx**: Removed footer component (deleted ~40 lines)
+6. **src/backend/gradio_app.py**: Simplified `chat_with_agent()` (deleted ~60 lines)
 
-**Documentation Updates:**
-- Updated 5 critical Serena memories (project_architecture, polygon_mcp_removal_history, testing_procedures, code_style_conventions, task_completion_checklist)
-- Updated CLAUDE.md and test_cli_regression.sh (removed Finnhub references)
-- Deleted finnhub_tool_swap_oct_2025 memory
+**Bug Fix (Critical):**
+- Initial test run showed 39/39 failures with `NameError: extract_token_usage_from_context_wrapper is not defined`
+- Root cause: Line 12 imported wrong function name (`extract_token_count_from_context_wrapper`)
+- Fixed import in cli.py:12, re-ran tests → 39/39 PASSED
 
 **Phase 2a: Error Detection (Grep Evidence):**
 
 Command 1: Find all errors/failures
 ```bash
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_2025-10-17_17-58.log
+grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_2025-10-17_20-02.log
 # Result: NO ERRORS (empty output)
 ```
 
 Command 2: Count 'data unavailable' errors
 ```bash
-grep -c "data unavailable" test-reports/test_cli_regression_loop1_2025-10-17_17-58.log
+grep -c "data unavailable" test-reports/test_cli_regression_loop1_2025-10-17_20-02.log
 # Result: 0 (ZERO errors)
 ```
 
 Command 3: Count completed tests
 ```bash
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_17-58.log
+grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_20-02.log
 # Result: 40 (39 tests + 1 summary line)
 ```
 
@@ -521,21 +529,19 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_17-58.log
 
 **Phase 1: Response Generation**
 - ✅ Tests completed: 39/39 COMPLETED (100% generation rate)
-- ✅ Average response time: 9.03s (EXCELLENT rating)
-- ✅ Performance: Within baseline (no regression)
+- ✅ Average response time: 9.67s (EXCELLENT rating)
+- ✅ Performance range: 4.942s - 29.358s (all under 30s threshold)
 
 **Phase 2: Error Verification**
 - ✅ Data unavailable errors: 0 (confirmed via grep)
-- ✅ Finnhub references: 0 (all removed/updated)
-- ✅ Import errors: 0 (all imports verified)
+- ✅ Footer verification: Performance Metrics footer appears in ALL responses
+- ✅ Footer format: `Performance Metrics: Response Time: X.XXXs Tokens Used: X,XXX (Input: X,XXX, Output: XXX) | Cached Input: X,XXX Model: gpt-5-nano`
 - ✅ All 39 tests verified with NO errors
 
 **Success Metrics:**
-- ✅ File consolidation: 100% SUCCESS (finnhub_tools.py merged into tradier_tools.py)
-- ✅ Import updates: 100% SUCCESS (__init__.py and agent_service.py updated)
-- ✅ Dependency cleanup: 100% SUCCESS (finnhub-python removed)
-- ✅ Documentation updates: 100% SUCCESS (30+ files updated)
-- ✅ Serena memories: 100% SUCCESS (5 updated, 1 deleted)
+- ✅ Code consolidation: 100% SUCCESS (~170 lines deleted, ~70 added, net -100 lines)
+- ✅ Zero duplication: 100% SUCCESS (single footer formatter in CLI core)
+- ✅ All interfaces updated: 100% SUCCESS (CLI, React, Gradio)
 - ✅ Pass rate: 39/39 PASSED (100%)
 
 **Phase 2d: Checkpoint Questions (Evidence-Based):**
@@ -546,19 +552,17 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_17-58.log
 5. ✅ Tests that PASSED verification: 39/39 PASSED
 
 **Files Changed:**
-- Code: 4 files (3 updated, 1 deleted)
-- Dependencies: 1 file (pyproject.toml)
-- Serena Memories: 6 files (5 updated, 1 deleted)
-- Documentation: 2 files (CLAUDE.md, test_cli_regression.sh)
-- **Total: 13 files**
+- Backend: 4 files (cli.py, response_utils.py, chat.py, gradio_app.py)
+- Frontend: 1 file (ChatMessage_OpenAI.tsx)
+- **Total: 5 files**
 
 **Key Insights:**
-- Finnhub was already replaced by Tradier, this was a cleanup operation
-- Misnamed file (finnhub_tools.py) caused confusion about actual API used
-- Consolidating tools by API provider improves maintainability
-- Tool count now accurate: 5 Tradier + 2 Polygon = 7 total
+- Footer consolidation enforces "CLI = core, GUI = wrapper" architecture principle
+- Single source of truth enables adding unlimited UI frameworks without footer duplication
+- 17% code reduction (net -100 lines) improves maintainability
+- Fixed critical import bug caught by test suite before commit
 
-**Test Report:** test-reports/test_cli_regression_loop1_2025-10-17_17-58.log
+**Test Report:** test-reports/test_cli_regression_loop1_2025-10-17_20-02.log
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
