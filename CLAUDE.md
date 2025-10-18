@@ -5,9 +5,9 @@ with code in this repository.
 
 ## Project Overview
 
-Market Parser is a Python CLI and React web application for natural
+Market Parser is a Python CLI, React web application, and Gradio ChatInterface for natural
 language financial queries using the Polygon.io MCP server and OpenAI
-GPT-5-nano via the OpenAI Agents SDK v0.2.9.
+GPT-5-nano via the OpenAI Agents SDK v0.2.9. Multiple frontend options for different use cases.
 
 ## Quick Start
 
@@ -19,6 +19,17 @@ uv run src/backend/main.py
 > Tesla stock analysis
 KEY TAKEAWAYS
 • TSLA showing bullish momentum...
+```
+
+### Gradio ChatInterface (NEW)
+
+```bash
+# Start single Gradio server
+uv run python src/backend/gradio_app.py
+
+# Access at http://127.0.0.1:7860
+# Or use one-click startup to run all servers
+chmod +x start-app-xterm.sh && ./start-app-xterm.sh
 ```
 
 
@@ -325,21 +336,26 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
 - **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
+- **Gradio**: Starts Gradio ChatInterface on `http://127.0.0.1:7860` ⭐ NEW
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent hard-coded ports (no dynamic allocation)
 
 ### ✅ Health Verification
 
-- Performs health checks on both servers
+- Performs health checks on all servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
-- Verifies frontend serves content properly
+- Verifies React frontend serves content properly
+- Verifies Gradio interface responds
 
 ### 🌐 Browser Launch
 
 - **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
 
-**Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+**Access Options:**
+- React GUI: <http://127.0.0.1:3000>
+- Gradio GUI: <http://127.0.0.1:7860> ⭐ NEW
+- Backend API: <http://127.0.0.1:8000> (API docs)
 
 ## Features
 
@@ -353,24 +369,34 @@ Ask questions like:
 
 ### Multiple Interfaces
 
-- **React Web App** - Modern responsive interface with real-time chat
+- **React Web App** - Modern responsive interface with real-time chat (port 3000)
+- **Gradio ChatInterface** - Simplified Python UI for financial analysis (port 7860) ⭐ NEW
 - **Enhanced CLI** - Terminal interface with rich formatting
-- **API Endpoints** - RESTful API for integration
+- **API Endpoints** - RESTful API for integration (port 8000)
 
 ## Example Usage
 
-### Web Interface
+### React Web Interface
 
 1. Open <http://127.0.0.1:3000>
 2. Type your financial query
 3. Get instant structured responses with sentiment analysis
 
+### Gradio ChatInterface (NEW)
+
+1. Open <http://127.0.0.1:7860>
+2. Select an example or type your financial query
+3. Get streaming responses with financial data and analysis
+4. Examples included: Stock price queries, technical analysis, options chains, stock comparisons
+
 ## Architecture
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
-- **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
+- **Frontend (React)**: React 18.2+ with Vite 5.2+ and TypeScript (port 3000)
+- **Frontend (Gradio)**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860) ⭐ NEW
+- **CLI**: Command-line interface for direct agent interaction
 - **Testing**: CLI regression test suite (test_cli_regression.sh - 39 tests)
-- **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
+- **Deployment**: Fixed ports (8000/3000/7860) with one-click startup scripts
 
 ## Development
 

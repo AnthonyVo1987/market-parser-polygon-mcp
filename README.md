@@ -1,12 +1,12 @@
 # Market Parser with Polygon MCP Server
 
-A Python CLI and React web application for natural language financial
+A Python CLI, React web application, and Gradio ChatInterface for natural language financial
 queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI
 GPT-5 models via the OpenAI Agents SDK. Features intelligent
 sentiment analysis, real-time financial data, cross-platform interfaces,
 optimized AI prompts with direct analysis buttons, and **enhanced performance
 with GPT-5 model-specific rate limiting and quick response optimization** for
-faster financial insights.
+faster financial insights. **NEW: Simplified Gradio ChatInterface for Python-native users.**
 
 ## Features
 
@@ -122,22 +122,27 @@ npm run start:app          # Main script (NOW WORKING)
 ### 🚀 Server Startup
 
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
+- **Frontend (React)**: Starts Vite dev server on `http://127.0.0.1:3000`
+- **Frontend (Gradio)**: Starts Gradio ChatInterface on `http://127.0.0.1:7860` ⭐ NEW
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent ports from centralized configuration (no dynamic allocation)
 
 ### ✅ Health Verification
 
-- Performs health checks on both servers
+- Performs health checks on all servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
-- Verifies frontend serves content properly
+- Verifies React frontend serves content properly
+- Verifies Gradio interface responds
 
 ### 🌐 Browser Launch
 
 - **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
 
-**Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+**Access Options:**
+- React GUI: <http://127.0.0.1:3000>
+- Gradio GUI: <http://127.0.0.1:7860> ⭐ NEW
+- Backend API: <http://127.0.0.1:8000> (API docs)
 
 ## Application Features
 
@@ -173,17 +178,25 @@ DETAILED ANALYSIS
 
 ### Multiple Interfaces
 
-- **React Web App** - Modern responsive interface with real-time chat
+- **React Web App** - Modern responsive interface with real-time chat (port 3000)
+- **Gradio ChatInterface** - Simplified Python UI for financial analysis (port 7860) ⭐ NEW
 - **Enhanced CLI** - Terminal interface with rich formatting
-- **API Endpoints** - RESTful API for integration
+- **API Endpoints** - RESTful API for integration (port 8000)
 
 ## Example Usage
 
-### Web Interface
+### React Web Interface
 
 1. Open <http://127.0.0.1:3000>
 2. Type your financial query
 3. Get instant structured responses with sentiment analysis
+
+### Gradio ChatInterface (NEW)
+
+1. Open <http://127.0.0.1:7860>
+2. Select an example or type your financial query
+3. Get streaming responses with financial data and analysis
+4. Examples included: Stock price queries, technical analysis, options chains, stock comparisons
 
 ### CLI Interface
 
@@ -273,11 +286,12 @@ maintaining visual quality:
 ## Architecture
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Direct Polygon Python API integration
-- **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
+- **Frontend (React)**: React 18.2+ with Vite 5.2+ and TypeScript (port 3000)
+- **Frontend (Gradio)**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860) ⭐ NEW
 - **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
 - **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 36 comprehensive tests)
-- **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 39 comprehensive tests)
+- **Deployment**: Fixed ports (8000/3000/7860) with one-click startup scripts
 - **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
 - **Report Management**: GUI Copy/Export buttons replace CLI report saving functionality
 

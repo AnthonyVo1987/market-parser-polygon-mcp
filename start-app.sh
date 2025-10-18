@@ -37,12 +37,16 @@ BACKEND_HOST="127.0.0.1"
 BACKEND_PORT="8000"
 FRONTEND_HOST="127.0.0.1"
 FRONTEND_PORT="3000"
+GRADIO_HOST="127.0.0.1"
+GRADIO_PORT="7860"
 FRONTEND_URL="http://${FRONTEND_HOST}:${FRONTEND_PORT}"
+GRADIO_URL="http://${GRADIO_HOST}:${GRADIO_PORT}"
 BACKEND_URL="http://${BACKEND_HOST}:${BACKEND_PORT}"
 
 echo "🎯 Market Parser One-Click Startup"
 echo "Backend:  ${BACKEND_URL}"
 echo "Frontend: ${FRONTEND_URL}"
+echo "Gradio:   ${GRADIO_URL} ⭐ NEW"
 echo ""
 
 # Step A: Kill existing dev servers (excluding MCP servers)
@@ -52,6 +56,8 @@ pkill -f "uvicorn src.backend.main:app" 2>/dev/null
 # Kill frontend (vite) - be careful not to kill other vite processes
 pkill -f "vite.*--mode development" 2>/dev/null
 pkill -f "npm run frontend:dev" 2>/dev/null
+# Kill Gradio server
+pkill -f "gradio_app.py" 2>/dev/null
 # Wait for processes to terminate
 sleep 2
 echo "✅ Cleanup complete"
@@ -130,12 +136,48 @@ fi
 
 sleep 5  # Wait for frontend to initialize
 
+echo "🚀 Starting Gradio server..."
+if [ -n "$DISPLAY" ] && command -v gnome-terminal >/dev/null 2>&1; then
+    gnome-terminal --title="Gradio Server - Market Parser" -e bash -c "
+        echo '🎨 Starting Gradio frontend server...'
+        echo 'Host: $GRADIO_HOST'
+        echo 'Port: $GRADIO_PORT'
+        echo ''
+        uv run python src/backend/gradio_app.py
+        echo ''
+        echo '⚠️ Gradio server stopped. Press Enter to close terminal.'
+        read
+    " &
+    GRADIO_PID=$!
+elif [ -n "$DISPLAY" ] && command -v xterm >/dev/null 2>&1; then
+    xterm -T "Gradio Server - Market Parser" -e bash -c "
+        echo '🎨 Starting Gradio frontend server...'
+        echo 'Host: $GRADIO_HOST'
+        echo 'Port: $GRADIO_PORT'
+        echo ''
+        uv run python src/backend/gradio_app.py
+        echo ''
+        echo '⚠️ Gradio server stopped. Press Enter to close terminal.'
+        read
+    " &
+    GRADIO_PID=$!
+else
+    # No X display available (WSL2 without X11 forwarding) - start in background
+    echo "   Gradio logs will be written to gradio.log"
+    nohup uv run python src/backend/gradio_app.py > gradio.log 2>&1 &
+    GRADIO_PID=$!
+    echo "   Gradio PID: $GRADIO_PID"
+fi
+
+sleep 5  # Wait for Gradio to initialize
+
 # Step C: Health check - verify servers are running
 echo "✅ Verifying servers..."
 MAX_RETRIES=10
 RETRY_COUNT=0
 BACKEND_READY=false
 FRONTEND_READY=false
+GRADIO_READY=false
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     # Check backend
@@ -160,7 +202,18 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         FRONTEND_READY=false
     fi
 
-    if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
+    # Check Gradio
+    if curl -s "${GRADIO_URL}" > /dev/null 2>&1; then
+        if [ "$GRADIO_READY" = false ]; then
+            echo "✓ Gradio server is running at ${GRADIO_URL}"
+        fi
+        GRADIO_READY=true
+    else
+        echo "⏳ Waiting for Gradio server... (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)"
+        GRADIO_READY=false
+    fi
+
+    if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ] && [ "$GRADIO_READY" = true ]; then
         break
     fi
 
@@ -169,37 +222,42 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
 done
 
 # Step D: Confirm servers are ready and provide manual launch instructions
-if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ]; then
+if [ "$BACKEND_READY" = true ] && [ "$FRONTEND_READY" = true ] && [ "$GRADIO_READY" = true ]; then
     echo ""
     echo "🎉 All servers are running successfully!"
     echo ""
     if [ -n "$DISPLAY" ]; then
-        echo "⚠️  IMPORTANT: Both servers are now running in separate terminal windows"
+        echo "⚠️  IMPORTANT: All servers are now running in separate terminal windows"
         echo "   • Backend Server: Running in one terminal window"
-        echo "   • Frontend Server: Running in another terminal window"
+        echo "   • Frontend Server (React): Running in another terminal window"
+        echo "   • Gradio Server: Running in a third terminal window ⭐ NEW"
         echo ""
-        echo "🔴 CRITICAL: BOTH servers MUST remain running for the app to work!"
-        echo "   • Keep both terminal windows open at all times"
+        echo "🔴 CRITICAL: ALL servers MUST remain running for the app to work!"
+        echo "   • Keep all terminal windows open at all times"
         echo "   • Do NOT close the terminal windows while using the app"
-        echo "   • To stop servers: Close both terminal windows or use Ctrl+C in each"
+        echo "   • To stop servers: Close all terminal windows or use Ctrl+C in each"
     else
-        echo "⚠️  IMPORTANT: Both servers are now running in the background"
+        echo "⚠️  IMPORTANT: All servers are now running in the background"
         echo "   • Backend Server: PID $BACKEND_PID (logs in backend.log)"
         echo "   • Frontend Server: PID $FRONTEND_PID (logs in frontend.log)"
+        echo "   • Gradio Server: PID $GRADIO_PID (logs in gradio.log) ⭐ NEW"
         echo ""
-        echo "🔴 CRITICAL: BOTH servers MUST remain running for the app to work!"
-        echo "   • To stop servers: kill $BACKEND_PID $FRONTEND_PID"
-        echo "   • To view logs: tail -f backend.log frontend.log"
+        echo "🔴 CRITICAL: ALL servers MUST remain running for the app to work!"
+        echo "   • To stop servers: kill $BACKEND_PID $FRONTEND_PID $GRADIO_PID"
+        echo "   • To view logs: tail -f backend.log frontend.log gradio.log"
     fi
     echo ""
     echo "🌐 MANUAL BROWSER LAUNCH REQUIRED:"
     echo "   This script does NOT launch the actual application"
-    echo "   You must manually open your browser and navigate to:"
-    echo "   ${FRONTEND_URL}"
+    echo "   You must manually open your browser and navigate to ONE of:"
     echo ""
-    echo "📊 Server URLs:"
+    echo "   • React GUI: ${FRONTEND_URL}"
+    echo "   • Gradio GUI: ${GRADIO_URL} ⭐ NEW"
+    echo ""
+    echo "📊 All Server URLs:"
     echo "   • Backend API: ${BACKEND_URL}"
-    echo "   • Frontend UI: ${FRONTEND_URL}"
+    echo "   • React Frontend: ${FRONTEND_URL}"
+    echo "   • Gradio Frontend: ${GRADIO_URL} ⭐ NEW"
     echo ""
     echo "✅ Setup complete! Script exiting - servers will continue running in their terminals."
     echo ""
@@ -219,6 +277,11 @@ else
         echo "  • Frontend: Check if port $FRONTEND_PORT is available"
         echo "  • Frontend: Verify Node.js dependencies are installed (npm install)"
         echo "  • Frontend: Check if Node.js >= 18.0.0 is installed"
+    fi
+    if [ "$GRADIO_READY" = false ]; then
+        echo "  • Gradio: Check if port $GRADIO_PORT is available"
+        echo "  • Gradio: Verify Python dependencies are installed (uv sync)"
+        echo "  • Gradio: Check .env file has required API keys"
     fi
     echo ""
     cleanup_and_exit 1

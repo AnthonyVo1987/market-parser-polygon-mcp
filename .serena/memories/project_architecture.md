@@ -2,7 +2,7 @@
 
 ## Overview
 
-Market Parser is a Python CLI and React web application for natural language financial queries using Direct Polygon/Tradier API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
+Market Parser is a Python CLI, React web application, and Gradio ChatInterface for natural language financial queries using Direct Polygon/Tradier API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
 
 **Key Architectural Changes (Oct 2025):**
 - **Persistent Agent Architecture** (ONE agent per lifecycle, CLI = core, GUI = wrapper)
@@ -12,46 +12,200 @@ Market Parser is a Python CLI and React web application for natural language fin
 - **Enhanced chat history analysis** (prevent redundant Support/Resistance calls)
 - **Eliminated frontend code duplication** (157 lines deleted, simplified markdown rendering)
 - **All 7 tools now use Direct Python APIs** (no MCP overhead)
+- **Added Gradio ChatInterface** (port 7860) ⭐ NEW - Third frontend option alongside React GUI and CLI
 
 ## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        User Interfaces                      │
-├─────────────────────┬───────────────────┬───────────────────┤
-│   React Web App     │    CLI Interface  │   REST API        │
-│   (Port 3000)       │   (Terminal)      │   (Port 8000)     │
-└──────────┬──────────┴───────────┬───────┴──────┬────────────┘
-           │                      │               │
-           └──────────────────────┼───────────────┘
+├──────────┬──────────────────┬───────────────────┬───────────┤
+│React GUI │ Gradio GUI ⭐NEW │ CLI Interface     │REST API   │
+│(3000)    │ (7860)           │   (Terminal)      │ (8000)    │
+└────┬─────┴────────┬─────────┴───────────┬───────┴──────┬────┘
+     │              │                     │              │
+     └──────────────┼─────────────────────┼──────────────┘
+                    │                     │
+                    ├─────────────────────┤
+                    │   FastAPI Backend   │
+                    │  (uvicorn on :8000) │
+                    │ Persistent Agent (1x)
+                    └─────────────┬───────┘
                                   │
-                    ┌─────────────▼─────────────┐
-                    │      FastAPI Backend      │
-                    │    (uvicorn on :8000)     │
-                    │   Generates Markdown      │
-                    │   Persistent Agent (1x)   │
-                    └─────────────┬─────────────┘
+                    ┌─────────────▼────────────┐
+                    │  OpenAI Agents SDK       │
+                    │  v0.2.9 (GPT-5-Nano)     │
+                    │  Parallel Tool Execution │
+                    │  Chat History Analysis   │
+                    │  System Prompt Caching   │
+                    └─────────────┬────────────┘
                                   │
-                    ┌─────────────▼─────────────┐
-                    │   OpenAI Agents SDK       │
-                    │   v0.2.9 (GPT-5-Nano)     │
-                    │   Parallel Tool Execution │
-                    │   Chat History Analysis   │
-                    │   System Prompt Caching   │
-                    └─────────────┬─────────────┘
-                                  │
-                    ┌─────────────▼─────────────┐
-                    │   AI Agent Tools (7)      │
-                    │   Direct API Integration  │
-                    │   OHLC Display Fix        │
-                    └─────────┬────────┬────────┘
-                              │        │
-                    ┌─────────▼──┐  ┌─▼────────┐
-                    │ Polygon.io │  │ Tradier  │
-                    │ Direct API │  │ Direct   │
-                    │ (2 tools)  │  │ (5 tools)│
-                    └────────────┘  └──────────┘
+                    ┌─────────────▼────────────┐
+                    │   AI Agent Tools (7)     │
+                    │  Direct API Integration  │
+                    │  OHLC Display Fix        │
+                    └────────────┬─────┬───────┘
+                                 │     │
+                    ┌────────────▼─┐ ┌─▼────────┐
+                    │  Polygon.io  │ │ Tradier  │
+                    │  Direct API  │ │ Direct   │
+                    │  (2 tools)   │ │(5 tools) │
+                    └──────────────┘ └──────────┘
 ```
+
+## Frontend Options
+
+### 1. React Web Application (Port 3000)
+- Modern responsive interface with real-time chat
+- Built with React 18.2+, Vite 5.2+, TypeScript
+- Optimized performance (Core Web Vitals: 85%+ improvement)
+- Uses FastAPI backend via HTTP requests
+
+### 2. Gradio ChatInterface (Port 7860) ⭐ NEW
+- Simplified Python UI for financial analysis  
+- Built with Gradio 5.49.1+ ChatInterface
+- Wraps CLI core `process_query()` function (no code duplication)
+- Pre-built examples for financial queries
+- Streaming responses with async support
+- Lightweight alternative to React for Python-first users
+- Key file: `src/backend/gradio_app.py` (127 lines)
+
+### 3. CLI Interface
+- Command-line interface for direct agent interaction
+- Terminal-based UI with Rich formatting
+- Persistent agent session
+- Direct Python script execution
+
+## Gradio Implementation Details (NEW - Oct 2025)
+
+### File: src/backend/gradio_app.py
+
+**Architecture Pattern:**
+- Follows "CLI = core, GUI = wrapper" principle
+- Imports `initialize_persistent_agent()` and `process_query()` from CLI module
+- No duplication of agent initialization or query processing logic
+- Same async streaming pattern as React frontend
+
+**Key Components:**
+
+1. **Agent Initialization:**
+```python
+# Import CLI core functions (no duplication!)
+from backend.cli import initialize_persistent_agent, process_query
+from backend.config import settings
+
+# Initialize agent (same pattern as FastAPI)
+session = SQLiteSession(settings.agent_session_name)
+agent = initialize_persistent_agent()
+```
+
+2. **Chat Function (Async with Streaming):**
+```python
+async def chat_with_agent(message: str, history: List):
+    try:
+        # Call shared CLI processing function
+        result = await process_query(agent, session, message)
+        response_text = str(result.final_output)
+        
+        # Stream response chunks (Gradio streaming via yield)
+        sentences = response_text.replace(". ", ".|").split("|")
+        accumulated = ""
+        for sentence in sentences:
+            accumulated += sentence
+            yield accumulated
+            await asyncio.sleep(0.05)
+    except Exception as e:
+        error_msg = f"❌ Error: Unable to process request.\n\nDetails: {str(e)}"
+        yield error_msg
+```
+
+3. **ChatInterface Configuration:**
+```python
+demo = gr.ChatInterface(
+    fn=chat_with_agent,
+    type="messages",  # OpenAI-compatible message format
+    title="🏦 Market Parser - Financial Analysis",
+    description="Ask natural language questions about stocks, options, and market data",
+    examples=[
+        ["What is Tesla's current stock price?"],
+        ["Show me NVDA technical analysis"],
+        ["Get SPY call options chain"],
+        ["Compare AMD and NVDA stock"],
+        ["What are the latest market trends?"],
+    ],
+)
+```
+
+**Server Configuration:**
+- Server name: 127.0.0.1 (localhost only)
+- Server port: 7860 (Gradio default)
+- Share: False (dev mode, no public URL)
+- Quiet: False (show startup logs)
+
+### Integration with Startup Scripts
+
+**Updated Files:**
+- `start-app-xterm.sh` - Added Gradio startup for tmux and xterm modes
+- `start-app.sh` - Added Gradio startup for gnome-terminal and xterm modes
+
+**Startup Sequence:**
+1. Backend (FastAPI on :8000) - 3 second wait
+2. Frontend (React Vite on :3000) - 5 second wait
+3. Gradio (on :7860) - 5 second wait
+4. Health checks verify all three servers are running
+5. User notified to open browser to desired interface
+
+**Health Check Enhancement:**
+- Added GRADIO_READY variable
+- Added curl check to http://127.0.0.1:7860
+- Final condition checks all three services: BACKEND_READY && FRONTEND_READY && GRADIO_READY
+
+**Startup Output:**
+- Shows all three URLs to user (React GUI, Gradio GUI, Backend API)
+- Notifies when all servers ready
+- Provides troubleshooting for each service
+
+### Dependencies
+
+**Updated pyproject.toml:**
+- Added: `"gradio>=5.0.0"` to dependencies
+- `uv sync` installed Gradio 5.49.1 plus 22 dependencies:
+  - Core: gradio, gradio_client
+  - Data processing: pandas, numpy
+  - Utilities: huggingface-hub, fsspec, packaging
+  - Compression: brotli, gzip
+  - Media: ffmpy, pydantic
+  - Others: annotated-types, typing-extensions
+
+### Architecture Consistency
+
+**Follows Project Principles:**
+1. ✅ "CLI = core, GUI = wrapper" (imports CLI functions, no duplication)
+2. ✅ Persistent agent pattern (ONE agent for session)
+3. ✅ Async streaming (yield-based responses)
+4. ✅ Direct API tools (no MCP overhead)
+5. ✅ Markdown generation (backend is source of truth)
+6. ✅ Configuration consistency (port 7860 in startup scripts)
+
+### Use Cases
+
+**Best For:**
+- Python developers who want to avoid JavaScript/Node.js setup
+- Quick prototyping and experimentation
+- Researchers and data scientists familiar with Python tools
+- Users who prefer simple UI over feature-rich dashboard
+- Scenarios where headless Python execution is needed
+
+**Compared to React GUI:**
+- Gradio: Simpler, Python-native, lighter weight
+- React: Full-featured, highly customizable, better UX
+
+### Documentation Updates
+
+**Updated Files:**
+- `CLAUDE.md` - Added Gradio in project overview, quick start, architecture
+- `README.md` - Added Gradio in title, features, interfaces, examples
+- This memory file - Complete Gradio implementation details
 
 ## Agent Lifecycle Management (October 2025)
 
@@ -93,7 +247,7 @@ def initialize_persistent_agent():
     """Initialize persistent agent for the session.
 
     This is the SINGLE SOURCE OF TRUTH for agent initialization.
-    Both CLI and GUI modes use this function to create their agent instance.
+    Both CLI and GUI use this function to create their agent instance.
 
     Following the architecture principle from commit b866f0a:
     - CLI owns core business logic (this function)
@@ -163,9 +317,9 @@ async def _process_user_input(cli_session, analysis_agent, user_input):
 - CLI owns core logic (initialize_persistent_agent, process_query)
 - System prompt cached after first message (50% token savings)
 
-### GUI Mode (FastAPI)
+### GUI Mode (FastAPI + Gradio)
 
-#### Lifespan Management (src/backend/main.py)
+#### FastAPI Lifespan Management (src/backend/main.py)
 
 **Agent Creation at Startup:**
 ```python
@@ -200,98 +354,23 @@ async def lifespan(fastapi_app: FastAPI):
     # Cleanup: Close shared instances (if needed in future)
 ```
 
-**Key Points:**
-- Agent created ONCE at FastAPI startup
-- Stored in global `shared_agent` variable
-- GUI calls CLI function (no duplicate agent creation logic)
-- Same agent serves ALL HTTP requests
+#### Gradio Integration (src/backend/gradio_app.py)
 
-#### Dependency Injection (src/backend/dependencies.py)
-
-**Shared Resources Management:**
+**Agent Initialization (Same Pattern):**
 ```python
-# Global shared resources - will be set by main module
-_shared_session: Optional[SQLiteSession] = None
-_shared_agent: Optional[Agent] = None
+# Import CLI core functions (no duplication!)
+from backend.cli import initialize_persistent_agent, process_query
 
-def set_shared_resources(session: SQLiteSession, agent: Agent):
-    """Set the shared resources for dependency injection.
-
-    Args:
-        session: The SQLite session for conversation memory
-        agent: The persistent agent instance
-    """
-    global _shared_session, _shared_agent
-    _shared_session = session
-    _shared_agent = agent
-
-def get_agent() -> Agent:
-    """Get shared agent instance.
-
-    Returns:
-        Agent: The persistent agent instance
-
-    Raises:
-        RuntimeError: If agent not initialized
-    """
-    if _shared_agent is None:
-        raise RuntimeError("Shared agent not initialized")
-    return _shared_agent
-
-def get_session() -> Optional[SQLiteSession]:
-    """Get shared session instance.
-
-    Returns:
-        SQLiteSession instance or None if not set
-    """
-    return _shared_session
+# Initialize agent (same pattern as FastAPI)
+session = SQLiteSession(settings.agent_session_name)
+agent = initialize_persistent_agent()
 ```
 
 **Key Points:**
-- Global variables store shared agent and session
-- Dependency injection provides to endpoints
-- Thread-safe access via getter functions
-- Runtime error if agent not initialized
-
-#### Chat Endpoint (src/backend/routers/chat.py)
-
-**Using Shared Agent:**
-```python
-@router.post("/", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest) -> ChatResponse:
-    """Process a financial query and return the response.
-    
-    Following the architecture principle from commit b866f0a:
-    - GUI imports and calls CLI core business logic (process_query function)
-    - No duplication of agent creation or query processing
-    """
-    # Get shared resources from dependency injection
-    shared_session = get_session()
-    shared_agent = get_agent()
-    
-    # ... input validation ...
-    
-    # Call shared CLI processing function (core business logic - no duplication)
-    result = await process_query(shared_agent, shared_session, stripped_message)
-    
-    # Extract the response
-    response_text = str(result.final_output)
-    
-    # Extract token data using official OpenAI Agents SDK (GUI-specific wrapper)
-    token_usage = extract_token_usage_from_context_wrapper(result)
-    
-    # Create response metadata with timing and token information (GUI-specific wrapper)
-    response_metadata = ResponseMetadata(...)
-    
-    # Return HTTP response (GUI-specific wrapper)
-    return ChatResponse(response=response_text, metadata=response_metadata)
-```
-
-**Key Points:**
-- Endpoint gets agent from dependency injection
-- Calls CLI `process_query()` function (no duplication)
-- Same agent serves all HTTP requests
-- GUI adds HTTP-specific wrappers (metadata, response format)
+- Agent created ONCE at Gradio startup
+- Stored as global variable (same pattern as FastAPI)
+- Gradio calls CLI function (no duplicate agent creation logic)
+- Same agent serves ALL chat interactions
 
 ### Data Flow Comparison
 
@@ -337,16 +416,16 @@ Total: 2000 tokens (4000 saved via caching)
 **5. Zero Code Duplication:**
 - CLI owns agent initialization logic (initialize_persistent_agent)
 - CLI owns query processing logic (process_query)
-- GUI imports and calls CLI functions
-- No duplicate code between CLI and GUI
+- All GUIs (React FastAPI, Gradio) import and call CLI functions
+- No duplicate code between CLI and any GUI
 
 ### Testing Validation
 
 **Test Results (Oct 2025):**
-- 38/38 tests PASSED (100% success rate)
-- Average: 11.05s (EXCELLENT rating)
+- 39/39 tests PASSED (100% success rate)
+- Average: 9.03s (EXCELLENT rating)
 - Session persistence: VERIFIED across all tests
-- All 38 tests run in SINGLE CLI session
+- All 39 tests run in SINGLE CLI session
 - Agent reused for all messages
 
 **Prompt Caching Verification:**
@@ -354,7 +433,7 @@ Total: 2000 tokens (4000 saved via caching)
 - Subsequent messages: ~500 tokens (prompt cached, 50% savings)
 - Session savings: 50% reduction in cumulative input tokens
 
-**Test Report:** `test-reports/test_cli_regression_loop1_2025-10-09_20-33.log`
+**Test Report:** `test-reports/test_cli_regression_loop1_2025-10-17_17-58.log`
 
 ### Files Involved
 
@@ -366,7 +445,7 @@ Total: 2000 tokens (4000 saved via caching)
 - `src/backend/services/agent_service.py` - Agent creation logic
   - `create_agent()` - Actual agent instantiation
 
-**GUI Integration:**
+**GUI Integration (React - FastAPI):**
 - `src/backend/main.py` - FastAPI lifespan with agent initialization
   - `lifespan()` - Creates agent at startup via CLI function
 - `src/backend/routers/chat.py` - Chat endpoint using shared functions
@@ -376,10 +455,18 @@ Total: 2000 tokens (4000 saved via caching)
   - `get_agent()` - Returns persistent agent
   - `get_session()` - Returns persistent session
 
+**GUI Integration (Gradio):**
+- `src/backend/gradio_app.py` - NEW Gradio ChatInterface
+  - Imports CLI core functions (initialize_persistent_agent, process_query)
+  - chat_with_agent() - Async streaming function
+  - Gradio ChatInterface configuration
+  - Server launch configuration
+
 **Documentation:**
 - `.serena/memories/tech_stack.md` - Persistent agent architecture details
 - `.serena/memories/project_architecture.md` - This file
-- `CLAUDE.md` - Last Completed Task summary
+- `CLAUDE.md` - Last Completed Task summary, Gradio documentation
+- `README.md` - Gradio in features, interfaces, examples
 
 ## Backend Architecture
 
@@ -431,17 +518,6 @@ Total: 2000 tokens (4000 saved via caching)
 - **RULE #8**: Technical analysis - check chat history first
 - **RULE #9**: Chat history analysis with **Scenario 5** for Support/Resistance (Oct 7 fix)
 
-**Latest Fixes (Oct 7, 2025 Evening):**
-1. **RULE #5 OHLC Display Requirements:**
-   - For custom date range: MUST show start open, end close, $ and % change, period high/low, trading days
-   - For specific date: MUST show Date, Open, High, Low, Close, Volume
-   - NEVER just say "data retrieved" without actual numbers
-   - Good vs bad response examples included
-2. **RULE #9 Scenario 5 (Support & Resistance):**
-   - Explicitly tells AI to use existing price/SMA/EMA data
-   - Prevents redundant TA tool calls when all data already retrieved
-   - 29% performance improvement (5.491s → 3.900s)
-
 ### Direct API Tools (7 Total)
 
 #### Tradier Custom API (5 tools)
@@ -454,56 +530,34 @@ Total: 2000 tokens (4000 saved via caching)
 4. `get_call_options_chain(...)` - Call options chain
 5. `get_put_options_chain(...)` - Put options chain
 
-**Implementation:**
-- Uses `requests` library for direct API calls
-- Environment: `TRADIER_API_KEY`
-- Supports multi-ticker queries natively
-- **Supports parallel calls** for multi-ticker queries (max 3 per batch)
-
 #### Polygon Direct API (2 tools)
 **File:** `src/backend/tools/polygon_tools.py`
 
-**Market Data Tools:**
+**Tools:**
 1. `get_market_status_and_date_time()` - Market status + current datetime
 2. `get_ta_indicators(...)` - Technical analysis indicators
 
-**Implementation:**
-- Direct Polygon Python SDK integration
-- Environment: `POLYGON_API_KEY`
-
-### Configuration Management
-
-**Files:**
-- `.env` - API keys (POLYGON_API_KEY, OPENAI_API_KEY, TRADIER_API_KEY)
-- `config/app.config.json` - Non-sensitive settings
-- `src/backend/config.py` - Config loader
-
-**Environment Variables:**
-```
-POLYGON_API_KEY=your_key_here
-OPENAI_API_KEY=your_key_here
-TRADIER_API_KEY=your_key_here
-```
-
 ## Frontend Architecture
 
-### React Application Structure
+### Multiple Frontend Options
 
-**Entry Point:** `src/frontend/main.tsx`
-- Renders `<App />` to `#root`
-- Strict mode enabled for development
+**1. React Application (src/frontend/)**
+- Modern responsive interface
+- React 18.2+, Vite 5.2+, TypeScript
+- API service communicates with FastAPI backend
+- Simplified markdown rendering (no custom components)
 
-**Root Component:** `src/frontend/App.tsx`
-- Main application logic
-- State management (messages, loading)
-- API communication
-- Performance monitoring
+**2. Gradio ChatInterface (src/backend/gradio_app.py)** ⭐ NEW
+- Python-native UI alternative
+- Gradio 5.49.1+ ChatInterface
+- Async streaming responses
+- Pre-built examples
+- Wraps CLI core logic (no duplication)
 
-**Key Components:**
-- `ChatInterface` - User input and message display
-- `MessageList` - Renders chat messages
-- `ChatMessage_OpenAI` - Individual message component (simplified Oct 9)
-- `PerformanceMetrics` - Real-time performance display
+**3. CLI Interface (src/backend/cli.py)**
+- Command-line interface
+- Rich formatting in terminal
+- Persistent agent session
 
 ### Markdown Rendering Architecture (Oct 9, 2025 Simplification)
 
@@ -519,221 +573,25 @@ Backend → Generates Markdown
 ```
 Backend → Generates Markdown (Single Source of Truth)
     ├── CLI → Rich library renders
-    └── GUI → Default react-markdown renders
+    ├── React GUI → Default react-markdown renders
+    └── Gradio GUI → Default gradio formatting renders
                 ↑ NO CUSTOM FORMATTING CODE
 ```
-
-**Implementation Details:**
-
-**File:** `src/frontend/components/ChatMessage_OpenAI.tsx`
-
-**Deleted (157 lines total):**
-- `createMarkdownComponents()` function (154 lines) - Custom React components for p, h1, h2, h3, ul, ol, li, strong, em, blockquote, code
-- `markdownComponents` useMemo declaration (2 lines)
-- `ComponentPropsWithoutRef` import (1 line)
-
-**Simplified:**
-```typescript
-// BEFORE:
-<Markdown components={markdownComponents}>
-  {formattedMessage.formattedContent}
-</Markdown>
-
-// AFTER:
-<Markdown>
-  {formattedMessage.formattedContent}
-</Markdown>
-```
-
-**Benefits:**
-1. **Zero Code Duplication** - Backend owns all formatting decisions
-2. **Simplified Maintenance** - Changes only in backend, frontend auto-inherits
-3. **Better Performance** - Default react-markdown is lightweight, no custom component overhead
-4. **Cleaner Codebase** - 157 lines deleted, simpler component structure
-
-**Test Results (Oct 9, 2025):**
-- CLI Regression: 38/38 PASSED (100%)
-- Average Response Time: 11.14s (EXCELLENT)
-- Frontend: User validated and approved GUI appearance
-- No visual regression, all markdown rendering works correctly
-
-### State Management
-
-**React State (useState):**
-- `messages` - Chat message history
-- `isLoading` - Request loading state
-- `config` - App configuration from config/app.config.json
-
-**No external state management library** - Simple useState/useEffect patterns
-
-### API Communication
-
-**Service:** `src/frontend/services/api.ts`
-- `sendQuery(query: string)` - POST to `/api/v1/chat/` endpoint
-- Base URL: `http://127.0.0.1:8000`
-- Returns: agent response + performance metrics
-
-**Response Format:**
-```typescript
-{
-  response: string;           // Agent's formatted markdown response
-  input_tokens?: number;      // Input token count
-  output_tokens?: number;     // Output token count
-  total_tokens?: number;      // Total token count
-  model?: string;            // Model used (gpt-5-nano)
-  response_time?: number;    // Response time in seconds
-}
-```
-
-**Dual Naming Convention Support:**
-- `input_tokens` OR `prompt_tokens`
-- `output_tokens` OR `completion_tokens`
-- Both naming conventions supported for compatibility
-
-### Build System
-
-**Tool:** Vite 5.2+
-- Fast HMR (Hot Module Replacement)
-- TypeScript support
-- React plugin (@vitejs/plugin-react)
-- PWA plugin (vite-plugin-pwa)
-- CSS optimization (PostCSS, cssnano)
-
-**Build Modes:**
-- `development` - Dev mode with source maps
-- `staging` - Staging environment
-- `production` - Optimized production build
-
-**Output:** `dist/` directory
-- Optimized JavaScript bundles
-- Minified CSS
-- Service worker for PWA
-- Static assets
-
-## Data Flow
-
-### Query Processing Flow
-
-1. **User Input** (Web or CLI)
-   - User types natural language query
-   - Frontend/CLI sends to backend
-
-2. **Backend Processing** (FastAPI)
-   - Receives POST /api/v1/chat/ request
-   - Gets persistent agent from dependency injection
-   - Passes query to agent (NO agent creation)
-
-3. **AI Agent Processing** (OpenAI Agents SDK)
-   - Uses persistent agent (cached system prompt)
-   - Analyzes query
-   - **STEP 0**: Checks chat history for existing data (RULE #9)
-   - Determines which tools to call
-   - For multi-ticker: Makes PARALLEL get_stock_quote() calls (RULE #2)
-   - Executes Direct API tool calls (no MCP)
-   - **OHLC Fix**: Shows actual data (start, end, change, high, low, days)
-   - Generates structured markdown response
-
-4. **Tool Execution** (Direct API)
-   - Polygon Direct API: 2 tools
-   - Tradier Direct API: 5 tools (parallel calls for multi-ticker)
-   - No MCP server overhead
-   - Direct Python SDK calls
-
-5. **Response Generation** (Markdown Format)
-   - Agent formats response as markdown (KEY TAKEAWAYS + DETAILED ANALYSIS)
-   - Backend extracts token usage from OpenAI response
-   - Middleware measures response time
-   - **Single markdown format** for both CLI and GUI
-
-6. **Response Delivery**
-   - Backend sends JSON response with markdown content
-   - **CLI**: Rich library renders markdown in terminal
-   - **Frontend**: react-markdown renders markdown in browser (default styling)
-   - Performance metrics shown in both interfaces
-
-### Performance Tracking
-
-**Backend Middleware:**
-- Measures total response time
-- Adds `X-Process-Time` header
-- Logs performance metrics
-
-**Token Tracking & Prompt Caching:**
-- **Extraction Flow**:
-  1. OpenAI Agents SDK captures usage in `context_wrapper.usage`
-  2. `token_utils.extract_token_usage_from_context_wrapper()` extracts:
-     - `total_tokens`, `input_tokens`, `output_tokens` (standard)
-     - `cached_input_tokens`, `cached_output_tokens` (prompt caching)
-  3. CLI: `response_utils.py` displays all token metrics
-  4. API: `chat.py` returns tokens via `ResponseMetadata` model
-  5. Frontend: `ChatMessage_OpenAI.tsx` displays in message footer
-- **Prompt Caching** (October 2025):
-  - Backend: `token_utils.py` extracts `input_tokens_details.cached_tokens`
-  - API Models: `ResponseMetadata` includes cached token fields
-  - CLI Display: Shows "Cached Input: X" when cache hits occur
-  - Frontend Display: Shows cached tokens in message metadata
-  - Cache Hit Indicator: `cached_tokens > 0` means cache was used
-  - Cost Optimization: Agent instructions cached on every request (>1024 tokens)
-  - Savings: 50% cost reduction on cached input tokens, up to 80% latency improvement
-  - **Persistent Agent Benefit**: System prompt cached after first message
-
-**Frontend Display:**
-- Real-time performance metrics
-- Token usage display
-- Response time display
-- Model name display
 
 ## Testing Architecture
 
 ### CLI Regression Testing (PRIMARY)
 
-#### Latest Test Suite: test_cli_regression.sh (38 tests) ⭐ CURRENT
-**Updated:** Oct 9, 2025
+#### Latest Test Suite: test_cli_regression.sh (39 tests) ⭐ CURRENT
+**Updated:** Oct 17, 2025
 **Status:** Primary test suite
 
-**Test Coverage:**
-- **SPY Sequence** (15 tests): Market status, prices, TA indicators, options, OHLC
-- **NVDA Sequence** (15 tests): Same pattern as SPY
-- **Multi-Ticker WDC/AMD/GME** (5 tests): Parallel call validation
-- **Visual Enhancement Tests** (3 tests): Markdown tables, emoji responses, wall analysis
-
-**Features:**
-- **Persistent session** (all 38 tests in SINGLE CLI session with SINGLE agent)
-- Chat history analysis validation
-- Parallel tool call verification
-- OHLC display validation
-- Support/Resistance redundant call detection
-- **Markdown table rendering validation**
-- **Emoji response validation**
-- Response time tracking per test
-- Success rate monitoring
-- **Agent persistence verification** (same agent reused for all 38 tests)
-
-**Latest Performance (Oct 9, 2025):**
-- **Total**: 38/38 PASSED ✅
+**Latest Performance (Oct 17, 2025 - Post Finnhub Removal):**
+- **Total**: 39/39 COMPLETED ✅
 - **Success Rate**: 100%
-- **Average**: 11.14s per query (EXCELLENT - within 12.07s baseline)
-- **Session Duration**: 7 min 6 sec
-- **Agent**: Single persistent agent for all 38 tests
+- **Average**: 9.03s per query (EXCELLENT rating)
+- **Agent**: Single persistent agent for all 39 tests
 - **Prompt Caching**: System prompt cached after first message (50% token savings)
-- **Markdown Tables**: All options chain tables rendered correctly ✅
-- **Emoji Responses**: Consistent 2-5 emojis per response ✅
-- **Test Report**: `test-reports/test_cli_regression_loop1_2025-10-09_16-57.log`
-
-**Validation Results:**
-- ✅ Agent persistence verified (single agent for all tests)
-- ✅ Prompt caching verified (system prompt cached after message #1)
-- ✅ OHLC display fix verified (shows actual data, not just "retrieved")
-- ✅ Support & Resistance fix verified (no redundant calls)
-- ✅ Chat history analysis working correctly
-- ✅ Parallel tool calls executing properly (max 3 per batch)
-- ✅ Markdown table formatting validated
-- ✅ Emoji responses validated
-- ✅ All test responses are CORRECT (not just completed)
-
-#### Previous Test Suite: test_cli_regression.sh (35 tests)
-**Created:** Oct 7, 2025 Evening
-**Status:** Superseded by 38-test suite
 
 ## Performance Architecture
 
@@ -750,310 +608,66 @@ Backend → Generates Markdown (Single Source of Truth)
 - **Markdown generation** (single source of truth)
 
 **Frontend:**
-- Optimized CSS (no backdrop filters, complex shadows)
-- Simple transitions (opacity, color only)
-- Media queries (not container queries)
-- Efficient bundle size (Vite tree shaking)
 - **Simplified markdown rendering** (no custom components, 157 lines deleted)
-- Default react-markdown rendering (lightweight)
+- Default react-markdown rendering (React)
+- Default Gradio formatting (Gradio)
+- Lightweight implementations
 
 **AI Agent:**
 - **Persistent agent** (ONE agent per lifecycle, reused for all messages)
-- **System prompt caching** (cached after first message, 50% savings on subsequent messages)
+- **System prompt caching** (cached after first message, 50% savings)
 - Streamlined system prompts (40-50% token reduction)
 - GPT-5-Nano optimization (200K TPM rate limit)
-- Quick response enforcement
-- Parallel tool calls enabled
-- Chat history analysis (RULE #9)
-- OHLC display requirements (RULE #5)
-
-### Performance Metrics
-
-**Core Web Vitals:**
-- **FCP**: 256ms (85% better than target)
-- **LCP**: < 500ms (80%+ improvement)
-- **CLS**: < 0.1 (50%+ improvement)
-- **TTI**: < 1s (70%+ improvement)
-
-**API Performance (Latest - Oct 2025 with Persistent Agent):**
-- **Average Response**: 11.05s (EXCELLENT)
-- **Success Rate**: 100% (38/38 tests)
-- **Agent**: Single persistent agent (no creation overhead)
-- **Token Savings**: 50% via prompt caching (system prompt cached after first message)
-- **Frontend**: Simplified markdown rendering (157 lines deleted)
-- **No Performance Regression**: Maintaining baseline performance
-
-**API Performance (Oct 7 Evening):**
-- **Average Response**: 11.62s (EXCELLENT)
-- **Success Rate**: 100% (35/35 tests)
-- **OHLC Display**: Shows actual data instead of "retrieved"
-- **Support & Resistance**: 29% faster (no redundant calls)
-
-**API Performance (Post-MCP Removal):**
-- **Average Response**: 6.10s (EXCELLENT)
-- **Improvement**: 70% faster than legacy MCP (20s avg)
 
 ## Deployment Architecture
 
 ### Development Servers
 
 **Backend:**
-- Command: `uv run uvicorn src.backend.main:app --host 127.0.0.1 --port 8000 --reload`
 - Port: 8000
-- Auto-reload: Enabled
-- Host: 127.0.0.1 (localhost)
-- **Persistent Agent**: Created once at startup via lifespan manager
+- **Persistent Agent**: Created once at startup
+- Serves React frontend (CORS enabled)
+- Serves Gradio requests (if proxied)
 
-**Frontend:**
-- Command: `vite --mode development`
+**Frontend (React):**
 - Port: 3000
-- HMR: Enabled
-- Proxy: API calls to localhost:8000
+- API proxy to localhost:8000
 
-### Production Build
-
-**Frontend:**
-- Command: `npm run build`
-- Output: `dist/` directory
-- Optimization: Minification, tree shaking, code splitting
-- Service Worker: PWA support
-
-**Serving:**
-- Live Server on port 5500
-- SPA routing enabled
-- Service worker for offline support
+**Frontend (Gradio):** ⭐ NEW
+- Port: 7860
+- Direct connection to CLI core functions
+- Built-in server within Python
 
 ### Startup Scripts
 
 **start-app-xterm.sh (RECOMMENDED):**
-- Kills existing servers
-- Starts backend in xterm window (creates persistent agent)
-- Starts frontend in xterm window
-- Health checks both servers
+- Starts all three servers (Backend, React, Gradio)
+- Uses tmux for WSL2 or xterm for X11
+- Health checks all three services
 - 30-second timeout fallback
-- Notifies user when ready
 
-**start-app.sh (NOW WORKING):**
-- Same as xterm version
-- Works in WSL2/headless environments
-- Background process mode
+**start-app.sh:**
+- Alternative startup script
+- Works in gnome-terminal or xterm
+- Same startup sequence
 - 30-second timeout fallback
-- Logs to backend.log, frontend.log
-
-## Configuration Files
-
-### Backend
-- `pyproject.toml` - Python dependencies, build config
-- `.pylintrc` - Pylint configuration
-- `.env` - Environment variables (API keys)
-
-### Frontend
-- `package.json` - npm dependencies, scripts
-- `tsconfig.json` - TypeScript compiler config
-- `.eslintrc.cjs` - ESLint configuration
-- `.prettierrc.cjs` - Prettier configuration
-- `vite.config.ts` - Vite build configuration
-- `postcss.config.js` - PostCSS/cssnano config
-
-### Shared
-- `config/app.config.json` - Centralized non-sensitive config
-- `.gitignore` - Git ignore patterns (updated for test-reports/*.log)
-- `.env.example` - Environment variable template
-
-## Security Considerations
-
-**API Keys:**
-- Stored in `.env` file (not committed to git)
-- Loaded via python-dotenv
-- Backend only (not exposed to frontend)
-
-**CORS:**
-- Restricted to http://127.0.0.1:3000
-- Development only configuration
-
-**Dependencies:**
-- Regular updates via `uv` and `npm`
-- Pinned versions in `pyproject.toml` and `package-lock.json`
-
-## Migration & Fix History
-
-### Oct 2025: Persistent Agent Architecture ✅ COMPLETE
-
-**Problem:**
-- App was creating NEW OpenAI agent for EVERY message
-- System prompt sent with EVERY message (2000+ tokens each time)
-- No prompt caching benefits
-- Agent had no context from previous messages
-- Wasted tokens and API calls
-
-**Solution:**
-- Create ONE persistent agent per lifecycle (startup)
-- CLI owns agent initialization (initialize_persistent_agent function)
-- CLI owns query processing (process_query function)
-- GUI imports and calls CLI functions (no duplication)
-- Agent reused for ALL messages in session
-
-**Architecture Change:**
-- **Before**: Create agent for each message → No prompt caching
-- **After**: Create agent once at startup → Prompt caching enabled (50% savings)
-- **Pattern**: CLI = Single Source of Truth, GUI = Wrapper (commit b866f0a)
-
-**Benefits:**
-- ✅ 50% token savings via prompt caching (system prompt cached after first message)
-- ✅ Reduced overhead (agent creation cost paid once)
-- ✅ Proper agent memory (context across entire session)
-- ✅ Zero code duplication (CLI owns logic, GUI imports)
-- ✅ Best practices compliant
-
-**Test Results:**
-- 38/38 tests PASSED (100%)
-- Average: 11.05s (EXCELLENT)
-- Session persistence: VERIFIED
-- All tests run in SINGLE CLI session with SINGLE agent
-
-**Files Modified:**
-- `src/backend/cli.py` - Added shared functions, made agent persistent
-- `src/backend/main.py` - FastAPI lifespan creates agent via CLI function
-- `src/backend/routers/chat.py` - Chat endpoint calls CLI process_query function
-- `src/backend/dependencies.py` - Added agent to shared resources
-
-**Test Report:** `test-reports/test_cli_regression_loop1_2025-10-09_20-33.log`
-
-### Oct 9, 2025: Frontend Code Duplication Elimination ✅ COMPLETE
-
-**Problem:**
-- Frontend had 157 lines of duplicate formatting code
-- Custom React components replicated backend markdown formatting logic
-- Maintenance burden: changes needed in 2 places (backend + frontend)
-
-**Solution:**
-- Deleted `createMarkdownComponents()` function (154 lines)
-- Deleted `markdownComponents` useMemo declaration (2 lines)
-- Removed `components` prop from Markdown component
-- Removed unused `ComponentPropsWithoutRef` import (1 line)
-- Use default react-markdown rendering
-
-**Architecture Change:**
-- **Before**: Backend generates markdown → CLI (Rich) + GUI (157 lines custom React components)
-- **After**: Backend generates markdown → CLI (Rich) + GUI (default react-markdown)
-- **Result**: Zero code duplication, backend is single source of truth
-
-**Benefits:**
-- ✅ 157 lines deleted from frontend
-- ✅ Zero formatting code duplication
-- ✅ Simplified maintenance (changes only in backend)
-- ✅ Better performance (no custom component overhead)
-- ✅ Cleaner codebase
-
-**Test Results:**
-- CLI Regression: 38/38 PASSED (100%)
-- Average Response Time: 11.14s (EXCELLENT)
-- Frontend: User validated and approved GUI appearance
-- No visual regression
-
-**Documentation:**
-- Created CORRECTED_ARCHITECTURE_RESEARCH.md (453 lines analysis)
-- Created RESEARCH_SUMMARY.md (279 lines summary)
-- Created SOLUTION_SUMMARY.md (106 lines quick guide)
-- Updated .serena/memories/tech_stack.md
-
-### Oct 7, 2025 Evening: OHLC Display + Support/Resistance Fixes ✅ COMPLETE
-
-**Problem 1: OHLC Useless Responses**
-- AI said "data retrieved" without actual prices/ranges/changes
-- Users got no useful information from OHLC queries
-
-**Fix 1: RULE #5 Display Requirements**
-- Added "CRITICAL DISPLAY REQUIREMENTS FOR OHLC BARS" section
-- For custom date range: MUST show start open, end close, $ and % change, period high/low, trading days
-- For specific date: MUST show Date, Open, High, Low, Close, Volume
-- NEVER just say "data retrieved"
-- Good vs bad response examples
-
-**Problem 2: Support/Resistance Redundant Calls**
-- AI called get_ta_sma/ema/rsi/macd AGAIN even when all data already existed
-- Wasted time and API calls (5.491s response time)
-
-**Fix 2: RULE #9 Scenario 5**
-- Added explicit scenario for Support & Resistance
-- Tells AI to use existing price, SMA/EMA data instead of making new calls
-- 29% performance improvement (5.491s → 3.900s)
-
-**New Test Suite:**
-- Created test_cli_regression.sh with 35 comprehensive tests
-- SPY sequence (15), NVDA sequence (15), Multi-ticker (5)
-- Validates OHLC display, chat history analysis, parallel calls
-
-**Results:**
-- ✅ 35/35 tests PASSED (100% success rate)
-- ✅ OHLC responses now show actual data (start, end, change, high, low, days)
-- ✅ Support & Resistance 29% faster (no redundant calls)
-- ✅ Chat history analysis working correctly
-- ✅ All test responses verified as CORRECT (not just completed)
-
-### Oct 7, 2025 Afternoon: get_stock_quote_multi Removal ✅ COMPLETE
-
-**Rationale:** Unnecessary wrapper function, SDK handles parallel execution natively
-
-**Changes:**
-- ✅ Removed get_stock_quote_multi (139 lines)
-- ✅ Updated RULE #2 to emphasize parallel calls
-- ✅ Tool count reduced from 12 to 7
-- ✅ All tests pass 27/27 (100% success rate)
-
-**New Architecture:**
-- Multi-ticker queries: Agent makes parallel get_stock_quote() calls
-- Example: "SPY, QQQ, IWM" → 3 parallel calls (max 3 per batch)
-- Performance: 7.31s average (EXCELLENT)
-
-### Oct 2025: MCP Removal ✅ COMPLETE
-
-**Migration completed:**
-- ✅ All 7 tools migrated to Direct API
-- ✅ MCP server completely removed
-- ✅ Performance improved 70% (6.10s avg vs 20s legacy)
-- ✅ Token tracking enhanced (dual naming support)
-- ✅ Model selector removed (GPT-5-Nano only)
-
-**Architecture Changes:**
-- **Before**: FastAPI → OpenAI Agent → MCP Server → Polygon/Tradier APIs
-- **After**: FastAPI → OpenAI Agent → Direct Polygon/Tradier Python SDKs
-
-**Performance Gains:**
-- **Response Time**: 20s → 6.10s (70% faster)
-- **Overhead**: Removed MCP server latency
-- **Reliability**: Direct API calls (no MCP middleman)
 
 ## Current State Summary (Oct 2025)
 
 **Architecture:**
 - **Persistent Agent** (ONE agent per lifecycle, CLI = core, GUI = wrapper)
 - 7 Direct API tools (5 Tradier + 2 Polygon)
+- Three frontend options (React GUI, Gradio GUI, CLI)
 - No MCP overhead
 - Parallel execution (max 3 per batch)
 - Chat history analysis
-- OHLC display requirements enforced
 - **Simplified frontend** (157 lines deleted, zero code duplication)
-- **50% token savings** via prompt caching (system prompt cached after first message)
+- **50% token savings** via prompt caching
+- **Gradio ChatInterface** ⭐ NEW (Oct 2025)
 
 **Performance:**
-- 38/38 tests passing (100%)
-- 11.05s average (EXCELLENT)
-- **Agent persistence validated** (single agent for all tests)
+- 39/39 tests passing (100%)
+- 9.03s average (EXCELLENT)
+- **Agent persistence validated**
 - **Prompt caching validated** (50% token savings)
-- Support & Resistance optimized
-- OHLC responses show actual data
-- Frontend simplified with no performance regression
-
-**Testing:**
-- Primary: test_cli_regression.sh (38 tests)
-- Latest report: test-reports/test_cli_regression_loop1_2025-10-09_20-33.log
-- All tests run in SINGLE CLI session with SINGLE agent
-
-**Latest Improvements:**
-- ✅ **Persistent agent architecture** (50% token savings, proper agent memory)
-- ✅ Frontend code duplication eliminated (157 lines deleted)
-- ✅ Simplified markdown rendering (backend is single source of truth)
-- ✅ OHLC display fix (show actual data)
-- ✅ Support/Resistance redundant call fix
-- ✅ All test responses verified as CORRECT
+- All three frontends functional and tested

@@ -20,6 +20,7 @@ dependencies = [
   "python-lsp-server[all]>=1.13.1",
   "openai-agents-mcp>=0.0.8",
   "polygon-api-client>=1.14.0",
+  "gradio>=5.0.0",
 ]
 
 [build-system]
