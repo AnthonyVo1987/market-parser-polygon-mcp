@@ -54,7 +54,8 @@
       "type": "http",
       "url": "https://gitmcp.io/polygon-io/client-python"
     },
-    "gradio Docs": {
+    "docs-gradio": {
+      "type": "http",
       "url": "https://gitmcp.io/gradio-app/gradio"
     }
   }
