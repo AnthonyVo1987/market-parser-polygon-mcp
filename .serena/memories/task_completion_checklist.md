@@ -13,34 +13,8 @@ npm run lint:python
 # Expected: 10.00/10 score, 0 errors
 
 # Fix Python formatting
-npm run lint:fix:python
+npm run lint:fix
 # Expected: All files reformatted by black + isort
-```
-
-#### TypeScript/JavaScript Code Quality
-```bash
-# Lint TypeScript/React code
-npm run lint:js
-# Expected: Max 150 warnings, 0 errors
-
-# Fix TypeScript/JavaScript issues
-npm run lint:fix:js
-# Expected: Auto-fixable issues resolved
-
-# Format code
-npm run format
-# Expected: All files formatted by Prettier
-
-# Type check
-npm run type-check
-# Expected: 0 TypeScript errors
-```
-
-#### All Quality Checks
-```bash
-# Run all checks at once
-npm run check:all
-# Expected: All checks passing
 ```
 
 ### 2. Testing (MANDATORY) - TWO-PHASE APPROACH
@@ -70,7 +44,7 @@ Phase 2 is broken into 4 sub-phases with **MANDATORY bash commands** that MUST b
 
 ```bash
 # Command 1: Find all errors/failures
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
+grep -i "error\\|unavailable\\|failed\\|invalid" test-reports/test_cli_regression_loop1_*.log
 
 # Command 2: Count 'data unavailable' errors
 grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
@@ -86,7 +60,7 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
 If Phase 2a grep commands found errors, create **evidence-based failure table**:
 
 | Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
-|--------|-----------|--------|---------------|--------------------------|
+|--------|-----------|--------|---------------|------------------------|
 | 3 | SPY_Yesterday_Price_OHLC | 157 | data unavailable due to retrieval error | get_stock_price_history(...) |
 
 **Required**: Show grep output + failure table with line numbers, OR confirm "0 failures found".
@@ -120,12 +94,12 @@ Answer ALL checkpoint questions with evidence:
 - Providing failure count: `grep -c "data unavailable"`
 - Answering all 5 checkpoint questions with evidence
 
-**NEVER:**
-- ❌ Skip Phase 1 test execution
-- ❌ Skip Phase 2a-2d grep-based verification
-- ❌ Claim completion without showing grep outputs
-- ❌ Mark task "done" without evidence
-- ❌ Proceed to documentation without all 4 sub-phases complete
+❌ **NEVER DO:**
+- Skip Phase 1 test execution
+- Skip Phase 2a-2d grep-based verification
+- Claim completion without showing grep outputs
+- Mark task "done" without evidence
+- Proceed to documentation without all 4 sub-phases complete
 
 ### 3. Documentation Updates
 
@@ -149,15 +123,15 @@ Answer ALL checkpoint questions with evidence:
 
 #### Server Health Check
 ```bash
-# Start servers
-chmod +x start-app-xterm.sh && ./start-app-xterm.sh
+# Start Gradio UI
+uv run python src/backend/gradio_app.py
 
 # Verify backend health
 curl http://127.0.0.1:8000/health
 # Expected: {"status": "healthy"}
 
-# Verify frontend
-curl http://127.0.0.1:3000
+# Verify Gradio UI
+curl http://127.0.0.1:7860
 # Expected: HTML response
 
 # Or use npm script
@@ -217,3 +191,9 @@ git push
 - [ ] Commit message is descriptive and includes test results
 
 **Remember: Stage files ONLY immediately before committing. Never stage early!**
+
+## Notes
+
+- **React/TypeScript removed**: No TypeScript/JavaScript linting needed (Oct 17, 2025)
+- **Gradio only**: All web UI testing done via Gradio (port 7860)
+- **Python-first**: Only Python linting and testing required

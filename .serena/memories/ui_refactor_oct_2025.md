@@ -1,5 +1,7 @@
 # UI Refactor - Panel Consolidation (October 2025)
 
+**⚠️ HISTORICAL DOCUMENTATION**: This memory documents a React frontend refactor completed in October 2025. The React frontend was subsequently retired on October 17, 2025. Gradio (port 7860) is now the ONLY web interface. This file is preserved for historical reference only.
+
 ## Overview
 Completed comprehensive UI refactor to remove unnecessary panels and consolidate related functionality into a cleaner, more streamlined interface.
 
@@ -213,7 +215,7 @@ src/frontend/components/MessageCopyButton.tsx
 ### If Debug Panel Needed Again
 - Integrate into developer tools (browser console)
 - Make it an optional development-only feature
-- Use React DevTools for component inspection
+- Use browser developer tools for component inspection
 
 ### Panel Design Guidelines
 - Keep panels focused and single-purpose
@@ -232,4 +234,8 @@ Successfully completed UI refactor with:
 - EXCELLENT performance maintained
 - Cleaner, more focused user interface
 
-**Status:** ✅ **COMPLETE** - Ready for production deployment
+**Status:** ✅ **COMPLETE** - React frontend was subsequently retired on October 17, 2025
+
+---
+
+**Update (Oct 17, 2025)**: The React frontend documented in this memory has been completely retired. Gradio (port 7860) is now the ONLY web interface. This documentation is preserved for historical reference only.

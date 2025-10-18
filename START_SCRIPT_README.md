@@ -1,48 +1,29 @@
-# One-Click Startup Scripts
+# One-Click Startup Script
 
-The Market Parser project provides one-click startup scripts that
-automatically manage development servers.
+The Market Parser project provides a one-click startup script that
+automatically manages both backend and Gradio servers.
 
 ## Quick Start
 
 __One-Click Application Startup (Recommended):__
 
-The startup scripts automatically START all development servers BUT
-__DOES NOT OPEN THE APP IN BROWSER AUTOMATICALLY__.
+The startup script automatically starts all development servers.
 
-```textbash
-# Option 1: XTerm startup script (RECOMMENDED - WORKING)
-chmod +x start-app-xterm.sh && ./start-app-xterm.sh
+```bash
+# Start backend + Gradio UI
+chmod +x start-gradio.sh && ./start-gradio.sh
+```
 
-# Option 2: Main startup script (NOW WORKING - FIXED)
-chmod +x start-app.sh && ./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
+__Prerequisites:__ uv, API keys in .env
 
-# Option 3: Use npm scripts
-npm run start:app:xterm    # XTerm version (RECOMMENDED)
-npm run start:app          # Main script (NOW WORKING)
-```text
+## Script Features
 
-__Prerequisites:__ uv, Node.js 18+, API keys in .env
+### start-gradio.sh
 
-## Script Variants
-
-### start-app.sh (NOW WORKING - FIXED)
-
-- __Status__: ✅ WORKING - Script now exits cleanly with timeout mechanism
-- __Features__: 30-second timeout fallback to prevent hanging
+- __Status__: ✅ WORKING - Starts backend and Gradio servers
 - __Environment Support__: Works in both X11 and WSL2/headless environments
-- __Background Mode__: Uses background processes in WSL2, terminal windows in X11
-- __Logging__: Writes server logs to backend.log and frontend.log in WSL2 mode
-
-### start-app-xterm.sh (RECOMMENDED - WORKING)
-
-- __WSL2/XTerm Compatible__: Automatically detects environment and uses appropriate terminal
-- __WSL2 Support__: Uses tmux sessions when X11 display is not available
-- __XTerm Support__: Uses xterm windows when X11 display is available
-- __Window Positioning__: Places backend and frontend terminals side-by-side (xterm) or separate sessions (tmux)
-- __Font Configuration__: Uses readable DejaVu Sans Mono font (xterm mode)
-- __Enhanced Display__: Better window titles and layout
-- __Status__: ✅ FULLY TESTED - Both startup scripts working correctly
+- __Logging__: Server logs displayed in separate terminal windows
+- __Health Checks__: Verifies both servers are running before completion
 
 ## What the Scripts Do
 
@@ -57,14 +38,14 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 
 ### 🔄 Server Cleanup
 
-- Kills existing development servers (uvicorn, vite)
+- Kills existing development servers (uvicorn, gradio)
 - __Preserves MCP servers__ - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
 
 - __Backend__: Starts FastAPI server on `http://127.0.0.1:8000`
-- __Frontend__: Starts Vite dev server on `http://127.0.0.1:3000`
+- __Gradio UI__: Starts Gradio ChatInterface on `http://127.0.0.1:7860`
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent hard-coded ports (no dynamic allocation)
 
@@ -73,13 +54,13 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 - Performs health checks on both servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
-- Verifies frontend serves content properly
+- Verifies Gradio interface responds
 
-### 🌐 Browser Launch
+### 🌐 Browser Access
 
-- __NOTIFIES USER TO LAUNCH BROWSER TO START THE APP__
+- __NOTIFIES USER TO OPEN BROWSER WHEN SERVERS ARE READY__
 
-__Access:__ <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+__Access:__ <http://127.0.0.1:7860> (Gradio UI) or <http://127.0.0.1:8000> (API docs)
 
 ## Configuration
 
@@ -111,7 +92,6 @@ This ensures:
 ### Development Dependencies
 
 - __Python__: uv package manager with dependencies installed
-- __Node.js__: Version 18.0.0+ with npm dependencies installed
 - __Environment__: `.env` file with required API keys
 
 ## Error Handling
@@ -124,8 +104,8 @@ The scripts provide comprehensive error handling:
 ❌ Failed to start all servers within timeout period.
 🔍 Troubleshooting:
   • Backend: Check if port 8000 is available
-  • Frontend: Check if port 3000 is available
-```text
+  • Gradio UI: Check if port 7860 is available
+```
 
 ### Missing Dependencies
 
@@ -141,103 +121,78 @@ X11 Environment: Please install xterm (sudo apt-get install xterm)
 🔍 Troubleshooting:
   • Backend: Verify Python dependencies are installed (uv install)
   • Backend: Check .env file has required API keys
-  • Frontend: Verify Node.js dependencies are installed (npm install)
-  • Frontend: Check if Node.js >= 18.0.0 is installed
-```text
+  • Gradio UI: Verify Gradio dependencies are installed (uv install)
+```
 
 ## Manual Cleanup
 
 If you need to manually stop servers:
 
-```textbash
+```bash
 # Kill backend server
 pkill -f "uvicorn src.backend.main:app"
 
-# Kill frontend server
-pkill -f "npm run frontend:dev"
-pkill -f "vite.*--mode development"
+# Kill Gradio server
+pkill -f "gradio"
+pkill -f "python.*gradio_ui.py"
 
-# For tmux sessions (WSL2)
-tmux kill-session -t market-parser-backend
-tmux kill-session -t market-parser-frontend
-
-# For xterm windows (X11)
 # Or close the terminal windows directly
-```text
+```
 
-## WSL2/Tmux Usage
+## Server Logs
 
-When running in WSL2 or headless environments, the script uses tmux sessions:
+When running the startup script, both servers display logs in separate terminal windows:
 
-### Accessing Tmux Sessions
-
-```textbash
-# View backend server logs
-tmux attach-session -t market-parser-backend
-
-# View frontend server logs  
-tmux attach-session -t market-parser-frontend
-
-# List all sessions
-tmux list-sessions
-
-# Detach from current session (while inside tmux)
-Ctrl+B, then D
-```text
-
-### Tmux Session Management
-
-- Sessions run in the background and persist even if you close your terminal
-- Use `tmux attach-session -t session-name` to reconnect to a session
-- Use `tmux kill-session -t session-name` to stop a specific session
+- Backend server logs show API requests and responses
+- Gradio UI logs show chat interactions and performance metrics
 - Both servers must remain running for the application to work
 
 ## Troubleshooting
 
 ### Script Won't Run
 
-```textbash
-# Make sure scripts are executable
-chmod +x start-app.sh start-app-xterm.sh
+```bash
+# Make sure script is executable
+chmod +x start-gradio.sh
 
 # Check script syntax
-bash -n start-app.sh
-```text
+bash -n start-gradio.sh
+```
 
 ### Servers Start But Health Checks Fail
 
-1. Check if ports 8000/3000 are accessible
+1. Check if ports 8000/7860 are accessible
 2. Verify `.env` file has required API keys
 3. Check terminal windows for specific error messages
 4. Test manual server startup to identify issues
 
-### Browser Won't Open Automatically
+### Accessing the Application
 
-- The application will still be accessible at `http://127.0.0.1:3000`
-- Script will show manual navigation for browser launch
+- Gradio UI: `http://127.0.0.1:7860`
+- Backend API: `http://127.0.0.1:8000`
 
 ## Success Output
 
 When everything works correctly, you'll see:
 
 ```text
-🎯 Market Parser One-Click Startup
+🎯 Market Parser Gradio Startup
 Backend:  http://127.0.0.1:8000
-Frontend: http://127.0.0.1:3000
+Gradio UI: http://127.0.0.1:7860
 
 🔄 Cleaning up existing dev servers...
 ✅ Cleanup complete
 🚀 Starting backend server...
-🚀 Starting frontend server...
+🚀 Starting Gradio UI...
 ✅ Verifying servers...
 ✓ Backend server is running at http://127.0.0.1:8000
-✓ Frontend server is running at http://127.0.0.1:3000
+✓ Gradio UI is running at http://127.0.0.1:7860
 
 🎉 All servers are running successfully!
 
 📊 Backend API: http://127.0.0.1:8000
-🌐 Frontend UI: http://127.0.0.1:3000
+🌐 Gradio UI: http://127.0.0.1:7860
 
 💡 Tip: Keep both terminal windows open to see server logs
 🛑 To stop servers: Close both terminal windows or use Ctrl+C in each
-```text
+```

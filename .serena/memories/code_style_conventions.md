@@ -37,7 +37,7 @@ from .models import User
 5. LOCALFOLDER
 
 **Known packages:**
-- Third-party: `openai`, `pydantic`, `rich`, `fastapi`, `uvicorn`, `agents`
+- Third-party: `openai`, `pydantic`, `rich`, `fastapi`, `uvicorn`, `agents`, `gradio`
 - First-party: `src`
 
 ### Naming Conventions
@@ -94,17 +94,17 @@ def get_stock_quote(symbol: str) -> dict:
 ```
 src/backend/
 ├── main.py              # FastAPI app, endpoints, startup
+├── cli.py              # CLI interface (CORE BUSINESS LOGIC)
+├── gradio_app.py       # Gradio web UI (wraps CLI core)
 ├── config.py            # Configuration management
 ├── api_models.py        # Pydantic models for API
 ├── dependencies.py      # Dependency injection
-├── cli.py              # CLI interface
 ├── services/           # Business logic
 │   └── agent_service.py
 ├── tools/              # AI agent tools
 │   ├── polygon_tools.py
 │   └── tradier_tools.py
-├── utils/              # Helper functions
-└── routers/            # API route handlers
+└── utils/              # Helper functions
 ```
 
 **Module Organization:**
@@ -114,186 +114,6 @@ src/backend/
 4. Public functions
 5. Classes (if any)
 6. Main execution (if `__main__`)
-
-## TypeScript/React Code Style
-
-### General Conventions
-- **Line Length**: No strict limit (Prettier handles formatting)
-- **Formatter**: Prettier
-- **Linter**: ESLint with TypeScript plugin
-- **Type Checker**: TypeScript compiler (tsc)
-
-### Naming Conventions
-
-**Components:**
-- `PascalCase` for component names (e.g., `ChatInterface`, `MessageList`)
-- File names match component names (e.g., `ChatInterface.tsx`)
-
-**Functions and Variables:**
-- `camelCase` for functions and variables (e.g., `handleSubmit`, `apiUrl`)
-- Descriptive names
-
-**Hooks:**
-- Prefix with `use` (e.g., `useDebounce`, `useConfig`)
-
-**Types and Interfaces:**
-- `PascalCase` for types and interfaces (e.g., `MessageType`, `ApiResponse`)
-- Interface names without `I` prefix
-
-**Constants:**
-- `UPPER_SNAKE_CASE` for constants (e.g., `API_BASE_URL`)
-
-### TypeScript
-
-**Type Safety:**
-- Use explicit types where helpful
-- Prefer interfaces over types for objects
-- Use `unknown` instead of `any` when possible
-- ESLint configured to warn on `any` usage
-
-**Type Annotations:**
-```typescript
-// Function parameters and return types
-const fetchData = async (url: string): Promise<ApiResponse> => {
-  // Implementation
-};
-
-// Interface for props
-interface ChatProps {
-  onSubmit: (message: string) => void;
-  isLoading: boolean;
-}
-
-// Component with typed props
-const Chat: React.FC<ChatProps> = ({ onSubmit, isLoading }) => {
-  // Implementation
-};
-```
-
-### React Conventions
-
-**Component Structure:**
-```typescript
-// 1. Imports
-import { useState, useEffect } from 'react';
-import { ComponentProps } from './types';
-
-// 2. Interface/Type definitions
-interface ChatInterfaceProps {
-  // ...
-}
-
-// 3. Component definition
-const ChatInterface: React.FC<ChatInterfaceProps> = (props) => {
-  // 4. Hooks
-  const [state, setState] = useState();
-  
-  // 5. Event handlers
-  const handleSubmit = () => {
-    // ...
-  };
-  
-  // 6. Effects
-  useEffect(() => {
-    // ...
-  }, []);
-  
-  // 7. Render
-  return (
-    // JSX
-  );
-};
-
-// 8. Export
-export default ChatInterface;
-```
-
-**Hooks Rules:**
-- Follow React Hooks rules (ESLint enforces)
-- `exhaustive-deps` set to warn (prototyping-friendly)
-- Use custom hooks for reusable logic
-
-**Event Handlers:**
-- Prefix with `handle` (e.g., `handleClick`, `handleSubmit`)
-- Use arrow functions for inline handlers
-
-### ESLint Configuration
-
-**TypeScript Rules (prototyping-friendly):**
-- `@typescript-eslint/no-unused-vars`: warn
-- `@typescript-eslint/no-explicit-any`: warn
-- `@typescript-eslint/no-unsafe-*`: warn (not error)
-- `@typescript-eslint/explicit-function-return-type`: off
-- `@typescript-eslint/explicit-module-boundary-types`: off
-
-**React Rules:**
-- `react/react-in-jsx-scope`: off (React 17+)
-- `react/prop-types`: off (using TypeScript)
-- `react-hooks/rules-of-hooks`: error
-- `react-hooks/exhaustive-deps`: warn
-
-**Import Rules:**
-- Most import rules disabled (TypeScript handles resolution)
-- `unused-imports/no-unused-imports`: error
-
-### File Organization
-
-**Frontend Structure:**
-```
-src/frontend/
-├── main.tsx            # App entry point
-├── App.tsx            # Root component
-├── components/        # React components
-│   ├── ChatInterface.tsx
-│   ├── MessageList.tsx
-│   └── PerformanceMetrics.tsx
-├── hooks/            # Custom hooks
-│   └── useDebounce.ts
-├── services/         # API services
-│   └── api.ts
-├── types/           # TypeScript types
-│   └── index.ts
-├── utils/           # Helper functions
-├── config/          # Configuration
-└── styles/          # CSS/styling
-```
-
-## CSS/Styling Conventions
-
-### General Rules
-- **Tool**: PostCSS with cssnano for optimization
-- **Approach**: Utility-first with custom CSS
-- **Performance**: Optimized for Core Web Vitals
-
-### Performance Optimizations
-- **Avoid**: Backdrop filters, complex shadows, heavy gradients
-- **Prefer**: Simple transitions (opacity, color)
-- **Use**: Media queries instead of container queries
-- **Minimize**: Reflows and repaints
-
-### CSS Organization
-```css
-/* 1. CSS Reset/Normalize */
-/* 2. CSS Variables */
-:root {
-  --primary-color: #0088cc;
-}
-
-/* 3. Base styles */
-body {
-  /* ... */
-}
-
-/* 4. Component styles */
-.chat-interface {
-  /* ... */
-}
-
-/* 5. Utility classes */
-.text-center {
-  text-align: center;
-}
-```
 
 ## Git Conventions
 
@@ -345,13 +165,79 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - **isort**: All imports organized
 - **Type Hints**: Used where helpful
 
-### TypeScript Quality
-- **ESLint**: Max 150 warnings
-- **TypeScript**: No compilation errors
-- **Prettier**: All files formatted
-
 ### Performance Targets
-- **First Contentful Paint**: < 300ms
-- **Largest Contentful Paint**: < 500ms
-- **Response Time**: < 10s (average ~6s)
+- **Response Time**: < 10s (average ~9.67s)
 - **Success Rate**: 100%
+- **Gradio UI Load Time**: < 2s
+
+## Gradio UI Conventions
+
+### Component Naming
+- Use descriptive names for Gradio components
+- Follow Gradio best practices for ChatInterface
+- Keep UI configuration in gradio_app.py
+
+### UI Code Organization
+```python
+# 1. Imports
+from gradio import ChatInterface
+from .cli import initialize_persistent_agent, process_query_with_footer
+
+# 2. Agent initialization
+session = SQLiteSession("gradio_session")
+agent = initialize_persistent_agent()
+
+# 3. Handler functions
+async def chat_with_agent(message, history):
+    # Implementation
+    pass
+
+# 4. UI configuration
+demo = ChatInterface(
+    fn=chat_with_agent,
+    title="Market Parser",
+    # ... other config
+)
+
+# 5. Launch
+if __name__ == "__main__":
+    demo.launch()
+```
+
+### Gradio Best Practices
+- **Wrap CLI core logic**: Never duplicate business logic
+- **Stream responses**: Use `yield` for real-time updates
+- **Keep it simple**: Gradio UI should be mostly configuration
+- **Follow async patterns**: Use async/await for API calls
+
+## Architecture Patterns
+
+### CLI = Core, Gradio = Wrapper
+```python
+# CLI core (cli.py) - Single source of truth
+def initialize_persistent_agent():
+    """Create and configure agent."""
+    pass
+
+async def process_query_with_footer(agent, session, query):
+    """Process query and return complete response with footer."""
+    pass
+
+# Gradio wrapper (gradio_app.py) - Import and call
+from .cli import initialize_persistent_agent, process_query_with_footer
+
+agent = initialize_persistent_agent()
+
+async def chat_with_agent(message, history):
+    response = await process_query_with_footer(agent, session, message)
+    yield response
+```
+
+**Key Principle**: Zero code duplication between CLI and Gradio
+
+## Notes
+
+- **React/TypeScript removed**: React frontend completely retired (Oct 17, 2025)
+- **Gradio only**: Gradio is the only web interface
+- **No Node.js frontend**: package.json used for backend tooling only (markdown linting)
+- **Python-first**: All UI code is Python (Gradio framework)

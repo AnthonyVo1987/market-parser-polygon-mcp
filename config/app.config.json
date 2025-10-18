@@ -30,8 +30,8 @@
     "security": {
       "cors": {
         "origins": [
-          "http://127.0.0.1:3000",
-          "http://localhost:3000"
+          "http://127.0.0.1:7860",
+          "http://localhost:7860"
         ]
       }
     },
@@ -44,25 +44,6 @@
       "enableResourceMonitoring": true,
       "logLevel": "INFO",
       "metricsRetentionDays": 30
-    }
-  },
-  "frontend": {
-    "server": {
-      "host": "127.0.0.1",
-      "port": 3000
-    },
-    "api": {
-      "baseUrl": "/api"
-    },
-    "features": {
-      "appEnv": "development",
-      "pwa": true,
-      "debugMode": true
-    },
-    "development": {
-      "hmr": true,
-      "sourceMap": true,
-      "bundleAnalyzer": true
     }
   }
 }

@@ -318,8 +318,8 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
 **Verify:**
-- Tables render correctly in CLI (Rich library)
-- Tables render correctly in GUI (react-markdown)
+- Tables render correctly in CLI (Rich library for terminal display)
+- Tables render correctly in Gradio UI (native markdown rendering)
 - Emojis display properly in both interfaces
 - Response times remain within baseline (<15s avg)
 
@@ -348,4 +348,10 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 3. **Sparklines** - Inline mini-charts for price trends
 4. **Adaptive Precision** - Dynamic decimal places based on value magnitude
 5. **Responsive Tables** - Auto-collapse columns on mobile
-6. **Interactive Tables** - Sortable columns in GUI
+6. **Interactive Tables** - Sortable columns in Gradio UI
+
+## Notes
+
+**Update (Oct 17, 2025)**: React frontend completely retired. Gradio (port 7860) is now the ONLY web interface. Tables render via:
+- **CLI**: Rich library (terminal formatting)
+- **Gradio**: Native markdown rendering (Python-based UI)

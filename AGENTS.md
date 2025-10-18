@@ -5,7 +5,7 @@ with code in this repository.
 
 ## Project Overview
 
-Market Parser is a Python CLI and React web application for natural
+Market Parser is a Python CLI and Gradio web interface for natural
 language financial queries using the Polygon.io MCP server and OpenAI
 GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 
@@ -218,42 +218,29 @@ These instructions provide critical guidance on:
 
 
 
-**One-Click REACT GUI Application Backend & Frontend Server Startup Scripts:**
+**One-Click Gradio Application Startup Script:**
 
-The startup scripts automatically START all development servers BUT **DOES
-NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
+The startup script automatically starts both backend and Gradio servers.
 
 ```bash
-# Option 1: XTerm startup script (RECOMMENDED - WORKING)
-chmod +x start-app-xterm.sh && ./start-app-xterm.sh
-
-# Option 2: Main startup script (NOW WORKING - FIXED)
-chmod +x start-app.sh && ./start-app.sh
+# Start backend + Gradio UI
+chmod +x start-gradio.sh && ./start-gradio.sh
 ```
 
-## What the Scripts Do
+## What the Script Does
 
-**Prerequisites:** uv, Node.js 18+, API keys in .env
-
-### ⏰ Timeout Mechanism
-
-Both scripts now include a **30-second timeout fallback** to prevent hanging:
-
-- **Normal Operation**: Scripts typically complete in 10-15 seconds
-- **Safety Net**: 30-second timeout ensures scripts never hang indefinitely
-- **AI Agent Friendly**: Prevents AI agents from getting stuck waiting for script completion
-- **Graceful Exit**: Scripts exit cleanly after server verification or timeout
+**Prerequisites:** uv, API keys in .env
 
 ### 🔄 Server Cleanup
 
-- Kills existing development servers (uvicorn, vite)
+- Kills existing development servers (uvicorn, gradio)
 - **Preserves MCP servers** - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
 
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
+- **Gradio UI**: Starts Gradio ChatInterface on `http://127.0.0.1:7860`
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent hard-coded ports (no dynamic allocation)
 
@@ -262,13 +249,13 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 - Performs health checks on both servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
-- Verifies frontend serves content properly
+- Verifies Gradio interface responds
 
-### 🌐 Browser Launch
+### 🌐 Browser Access
 
-- **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
+- **NOTIFIES USER TO OPEN BROWSER WHEN SERVERS ARE READY**
 
-**Access:** <http://127.0.0.1:3000> (React app) or <http://127.0.0.1:8000> (API docs)
+**Access:** <http://127.0.0.1:7860> (Gradio UI) or <http://127.0.0.1:8000> (API docs)
 
 ## Features
 
@@ -282,24 +269,24 @@ Ask questions like:
 
 ### Multiple Interfaces
 
-- **React Web App** - Modern responsive interface with real-time chat
+- **Gradio Web Interface** - Modern chat UI with streaming responses (port 7860)
 - **Enhanced CLI** - Terminal interface with rich formatting
 - **API Endpoints** - RESTful API for integration
 
 ## Example Usage
 
-### Web Interface
+### Gradio Web Interface
 
-1. Open <http://127.0.0.1:3000>
-2. Type your financial query
-3. Get instant structured responses with sentiment analysis
+1. Open <http://127.0.0.1:7860>
+2. Select an example or type your financial query
+3. Get streaming responses with financial data and analysis
 
 ## Architecture
 
-- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
-- **Frontend**: React 18.2+ with Vite 5.2+ and TypeScript
-- **Testing**: CLI regression test suite (test_cli_regression.sh - 40 tests)
-- **Deployment**: Fixed ports (8000/3000/5500) with one-click startup
+- **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Direct Polygon Python API integration
+- **Frontend**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860)
+- **Testing**: CLI regression test suite (test_cli_regression.sh - 39 tests)
+- **Deployment**: Fixed ports (8000/7860) with one-click startup script
 
 ## Development
 
@@ -307,15 +294,13 @@ Ask questions like:
 
 ```bash
 # Application startup
-npm run start:app          # One-click startup
-npm run frontend:dev       # Frontend development
-npm run build             # Production build
+chmod +x start-gradio.sh && ./start-gradio.sh  # Start backend + Gradio UI
 
-# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 40-test suite
+# Testing
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # Run 39-test CLI suite
 
-# Code quality
-npm run lint              # All linting
-npm run type-check        # TypeScript validation
+# Backend only
+uv run src/backend/main.py  # CLI interface
 ```
 
 ### Project Structure
@@ -323,12 +308,9 @@ npm run type-check        # TypeScript validation
 ```text
 src/
 ├── backend/              # FastAPI backend
-│   ├── main.py          # Main application
+│   ├── main.py          # CLI and API application
+│   ├── gradio_ui.py     # Gradio web interface
 │   └── api_models.py    # API schemas
-├── frontend/            # React frontend
-│   ├── components/      # React components
-│   ├── hooks/          # Custom hooks
-│   └── config/         # Configuration loader
 config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
 ```
@@ -347,14 +329,18 @@ cat .env | grep API_KEY
 uv install
 ```
 
-**Frontend connection errors:**
+**Gradio UI connection errors:**
 
 ```bash
 # Verify backend is running
 curl http://127.0.0.1:8000/health
 
+# Verify Gradio is running
+curl http://127.0.0.1:7860
+
 # Check ports are available
 netstat -tlnp | grep :8000
+netstat -tlnp | grep :7860
 ```
 
 **API key issues:**

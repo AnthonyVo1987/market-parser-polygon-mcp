@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     enable_session_persistence: bool = True
 
     # CORS configuration
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    cors_origins: str = "http://localhost:7860,http://127.0.0.1:7860"
 
     # AI configuration
     default_active_model: str = "gpt-5-nano"
@@ -65,9 +65,8 @@ class Settings(BaseSettings):
         with open(config_path, encoding="utf-8") as f:
             config = json.load(f)
 
-        # Extract backend and frontend configs
+        # Extract backend config
         backend_config = config["backend"]
-        frontend_config = config["frontend"]
 
         # Override defaults with config file values
         self.fastapi_host = backend_config["server"]["host"]
@@ -109,9 +108,6 @@ class Settings(BaseSettings):
         self.enable_resource_monitoring = monitoring_config["enableResourceMonitoring"]
         self.monitoring_log_level = monitoring_config["logLevel"]
         self.metrics_retention_days = monitoring_config["metricsRetentionDays"]
-
-        # Frontend configuration
-        self.frontend_config = frontend_config
 
 
 # Initialize settings instance

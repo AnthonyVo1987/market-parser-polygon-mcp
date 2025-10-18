@@ -1,12 +1,12 @@
 # Market Parser with Polygon MCP Server
 
-A Python CLI, React web application, and Gradio ChatInterface for natural language financial
+A Python CLI and Gradio web interface for natural language financial
 queries using the [Polygon.io](https://polygon.io/) MCP server and OpenAI
 GPT-5 models via the OpenAI Agents SDK. Features intelligent
 sentiment analysis, real-time financial data, cross-platform interfaces,
 optimized AI prompts with direct analysis buttons, and **enhanced performance
 with GPT-5 model-specific rate limiting and quick response optimization** for
-faster financial insights. **NEW: Simplified Gradio ChatInterface for Python-native users.**
+faster financial insights.
 
 ## Features
 
@@ -53,7 +53,6 @@ faster financial insights. **NEW: Simplified Gradio ChatInterface for Python-nat
 ### Prerequisites
 
 - **[uv](https://github.com/astral-sh/uv)** - Python package manager
-- **[Node.js 18+](https://nodejs.org/)** - For React frontend
 - **API Keys**: [Polygon.io](https://polygon.io/) and [OpenAI](https://platform.openai.com/)
 
 ### Installation
@@ -85,74 +84,54 @@ faster financial insights. **NEW: Simplified Gradio ChatInterface for Python-nat
 
 **One-Click Application Startup (Recommended):**
 
-The startup scripts automatically manage all development servers and
-**open the application in your browser**.
+The startup script automatically starts both backend and Gradio servers.
 
 ```bash
-# Option 1: XTerm startup script (RECOMMENDED - WORKING)
-chmod +x start-app-xterm.sh && ./start-app-xterm.sh
-
-# Option 2: Main startup script (NOW WORKING - FIXED)
-chmod +x start-app.sh && ./start-app.sh  # ✅ WORKING: Script now exits cleanly with timeout
-
-# Option 3: Use npm scripts
-npm run start:app:xterm    # XTerm version (RECOMMENDED)
-npm run start:app          # Main script (NOW WORKING)
+# Start backend + Gradio UI
+chmod +x start-gradio.sh && ./start-gradio.sh
 ```
 
-**Prerequisites:** uv, Node.js 18+, API keys in .env
+**Prerequisites:** uv, API keys in .env
 
-## Script Variants
-
-### start-app-xterm.sh (XTerm Version)
-
-- **XTerm Focused**: Specifically designed for xterm users
-- **Window Positioning**: Places backend and frontend terminals side-by-side
-- **Font Configuration**: Uses readable DejaVu Sans Mono font
-- **Enhanced Display**: Better window titles and layout
-
-## What the Scripts Do
+## What the Startup Script Does
 
 ### 🔄 Server Cleanup
 
-- Kills existing development servers (uvicorn, vite)
+- Kills existing development servers (uvicorn, gradio)
 - **Preserves MCP servers** - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
 
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend (React)**: Starts Vite dev server on `http://127.0.0.1:3000`
-- **Frontend (Gradio)**: Starts Gradio ChatInterface on `http://127.0.0.1:7860` ⭐ NEW
-- Opens each server in a separate terminal window for easy monitoring
+- **Frontend (Gradio)**: Starts Gradio ChatInterface on `http://127.0.0.1:7860`
+- Opens servers in separate terminal windows for easy monitoring
 - Uses consistent ports from centralized configuration (no dynamic allocation)
 
 ### ✅ Health Verification
 
-- Performs health checks on all servers
+- Performs health checks on both servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
-- Verifies React frontend serves content properly
 - Verifies Gradio interface responds
 
-### 🌐 Browser Launch
+### 🌐 Browser Access
 
-- **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
+- **NOTIFIES USER TO OPEN BROWSER WHEN SERVERS ARE READY**
 
-**Access Options:**
-- React GUI: <http://127.0.0.1:3000>
-- Gradio GUI: <http://127.0.0.1:7860> ⭐ NEW
+**Access:**
+- Gradio UI: <http://127.0.0.1:7860>
 - Backend API: <http://127.0.0.1:8000> (API docs)
 
 ## Application Features
 
-### ⚡ High-Performance UI
+### ⚡ Gradio UI Features
 
-- **Lightning Fast Loading**: 85%+ improvement in Core Web Vitals
-- **Optimized Performance**: 256ms First Contentful Paint (FCP)
-- **Smooth Interactions**: All UI interactions are instant and responsive
-- **Memory Efficient**: Optimized memory usage with 13.8MB heap size
-- **Accessibility First**: Full WCAG 2.1 AA compliance
+- **Streaming Responses**: Real-time AI response streaming
+- **Chat History**: Built-in conversation history
+- **Example Prompts**: Pre-loaded financial query examples
+- **Performance Metrics**: Response time and token usage display
+- **Python Native**: No JavaScript build tools required
 
 ### Natural Language Financial Queries
 
@@ -178,20 +157,13 @@ DETAILED ANALYSIS
 
 ### Multiple Interfaces
 
-- **React Web App** - Modern responsive interface with real-time chat (port 3000)
-- **Gradio ChatInterface** - Simplified Python UI for financial analysis (port 7860) ⭐ NEW
+- **Gradio Web Interface** - Modern chat UI with streaming responses (port 7860)
 - **Enhanced CLI** - Terminal interface with rich formatting
 - **API Endpoints** - RESTful API for integration (port 8000)
 
 ## Example Usage
 
-### React Web Interface
-
-1. Open <http://127.0.0.1:3000>
-2. Type your financial query
-3. Get instant structured responses with sentiment analysis
-
-### Gradio ChatInterface (NEW)
+### Gradio Web Interface
 
 1. Open <http://127.0.0.1:7860>
 2. Select an example or type your financial query
@@ -262,53 +234,28 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 
 ## Performance Optimizations
 
-### UI Performance Improvements
+### Backend Performance
 
-This application has been optimized for maximum performance while
-maintaining visual quality:
+- **Direct Polygon API**: 70% faster than legacy MCP architecture
+- **Optimized AI Prompts**: 40-50% token reduction
+- **GPT-5 Rate Limiting**: Proper model-specific rate limits (200K TPM)
+- **Quick Response System**: Minimal tool calls for faster responses
 
-#### Core Web Vitals
+### Performance Monitoring
 
-- **First Contentful Paint (FCP)**: 256ms (85% better than target)
-- **Largest Contentful Paint (LCP)**: < 500ms (80%+ improvement)
-- **Cumulative Layout Shift (CLS)**: < 0.1 (50%+ improvement)
-- **Time to Interactive (TTI)**: < 1s (70%+ improvement)
-
-#### Optimization Techniques
-
-- **CSS Minification**: Automated CSS optimization with cssnano
-- **Removed High-Impact Effects**: Eliminated backdrop filters, complex
-  shadows, gradients
-- **Simplified Transitions**: Optimized to simple opacity and color transitions
-- **Container Query Replacement**: Replaced with efficient media queries
-- **Bundle Optimization**: Vite build optimizations with tree shaking
-- **Memory Management**: Efficient JavaScript heap usage
-
-#### Performance Monitoring
-
-- **Real-time Metrics**: Live performance monitoring in the UI
-- **Core Web Vitals Tracking**: Continuous monitoring of key metrics
-- **Memory Usage**: Real-time memory usage display
-- **Response Time**: API response time monitoring
-
-### Performance Testing
-
-- **Lighthouse CI**: Automated performance testing
-- **Visual Regression Testing**: Ensures visual consistency
-- **User Acceptance Testing**: Validates user experience
-- **Cross-browser Testing**: Ensures compatibility
+- **Response Time Tracking**: FastAPI middleware for precise measurement
+- **Token Counting**: OpenAI metadata extraction for cost tracking
+- **CLI Metrics Display**: Rich console formatting with performance data
 
 ## Architecture
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Direct Polygon Python API integration
-- **Frontend (React)**: React 18.2+ with Vite 5.2+ and TypeScript (port 3000)
-- **Frontend (Gradio)**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860) ⭐ NEW
+- **Frontend**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860)
 - **AI Models**: GPT-5 Nano (200K TPM) with proper rate limiting
 - **Performance Monitoring**: FastAPI middleware for response timing and OpenAI metadata for token counting
 - **Testing**: CLI regression test suite (test_cli_regression.sh - 39 comprehensive tests)
-- **Deployment**: Fixed ports (8000/3000/7860) with one-click startup scripts
+- **Deployment**: Fixed ports (8000/7860) with one-click startup script
 - **Performance**: Quick response optimization with minimal tool calls for 20-40% faster responses
-- **Report Management**: GUI Copy/Export buttons replace CLI report saving functionality
 
 ## Development
 
@@ -316,15 +263,13 @@ maintaining visual quality:
 
 ```bash
 # Application startup
-npm run start:app          # One-click startup
-npm run frontend:dev       # Frontend development
-npm run build             # Production build
+chmod +x start-gradio.sh && ./start-gradio.sh  # Start backend + Gradio UI
 
-# Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh (36 tests, persistent session)
+# Testing
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # Run 36-test CLI suite
 
-# Code quality
-npm run lint              # All linting
-npm run type-check        # TypeScript validation
+# Backend only
+uv run src/backend/main.py  # CLI interface
 ```
 
 ### Project Structure
@@ -332,12 +277,9 @@ npm run type-check        # TypeScript validation
 ```text
 src/
 ├── backend/              # FastAPI backend
-│   ├── main.py          # Main application
+│   ├── main.py          # CLI and API application
+│   ├── gradio_ui.py     # Gradio web interface
 │   └── api_models.py    # API schemas
-├── frontend/            # React frontend
-│   ├── components/      # React components
-│   ├── hooks/          # Custom hooks
-│   └── config/         # Configuration loader
 config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
 ```
@@ -375,14 +317,18 @@ cat .env | grep API_KEY
 uv install
 ```
 
-**Frontend connection errors:**
+**Gradio UI connection errors:**
 
 ```bash
 # Verify backend is running
 curl http://127.0.0.1:8000/health
 
+# Verify Gradio is running
+curl http://127.0.0.1:7860
+
 # Check ports are available
 netstat -tlnp | grep :8000
+netstat -tlnp | grep :7860
 ```
 
 **API key issues:**

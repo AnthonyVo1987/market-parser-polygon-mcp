@@ -5,9 +5,9 @@ with code in this repository.
 
 ## Project Overview
 
-Market Parser is a Python CLI, React web application, and Gradio ChatInterface for natural
+Market Parser is a Python CLI and Gradio web interface for natural
 language financial queries using the Polygon.io MCP server and OpenAI
-GPT-5-nano via the OpenAI Agents SDK v0.2.9. Multiple frontend options for different use cases.
+GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 
 ## Quick Start
 
@@ -21,15 +21,15 @@ KEY TAKEAWAYS
 • TSLA showing bullish momentum...
 ```
 
-### Gradio ChatInterface (NEW)
+### Gradio Web Interface
 
 ```bash
-# Start single Gradio server
+# Start Gradio server
 uv run python src/backend/gradio_app.py
 
 # Access at http://127.0.0.1:7860
-# Or use one-click startup to run all servers
-chmod +x start-app-xterm.sh && ./start-app-xterm.sh
+# Or use one-click startup script
+chmod +x start-app.sh && ./start-app.sh
 ```
 
 
@@ -278,7 +278,7 @@ Only after Phase 2 manual verification can you claim tests passed.
 
 **ALL of these must be included together:**
 
-- ✅ Code changes (backend + frontend)
+- ✅ Code changes (backend + Gradio UI)
 - ✅ Test reports (evidence of passing tests)
 - ✅ Documentation updates (CLAUDE.md, README.md, etc.)
 - ✅ Memory updates (.serena/memories/)
@@ -300,9 +300,9 @@ Only after Phase 2 manual verification can you claim tests passed.
 
 
 
-**One-Click REACT GUI Application Backend & Frontend Server Startup Scripts:**
+**One-Click Startup Script:**
 
-The startup scripts automatically START all development servers BUT **DOES
+The startup scripts automatically START development servers BUT **DO
 NOT OPEN THE APP IN BROWSER AUTOMATICALLY**.
 
 ```bash
@@ -315,11 +315,11 @@ chmod +x start-app.sh && ./start-app.sh
 
 ## What the Scripts Do
 
-**Prerequisites:** uv, Node.js 18+, API keys in .env
+**Prerequisites:** uv, API keys in .env
 
 ### ⏰ Timeout Mechanism
 
-Both scripts now include a **30-second timeout fallback** to prevent hanging:
+Both scripts include a **30-second timeout fallback** to prevent hanging:
 
 - **Normal Operation**: Scripts typically complete in 10-15 seconds
 - **Safety Net**: 30-second timeout ensures scripts never hang indefinitely
@@ -328,15 +328,14 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 
 ### 🔄 Server Cleanup
 
-- Kills existing development servers (uvicorn, vite)
+- Kills existing development servers (uvicorn, gradio)
 - **Preserves MCP servers** - does not interfere with MCP processes
 - Waits for processes to terminate gracefully
 
 ### 🚀 Server Startup
 
 - **Backend**: Starts FastAPI server on `http://127.0.0.1:8000`
-- **Frontend**: Starts Vite dev server on `http://127.0.0.1:3000`
-- **Gradio**: Starts Gradio ChatInterface on `http://127.0.0.1:7860` ⭐ NEW
+- **Gradio**: Starts Gradio ChatInterface on `http://127.0.0.1:7860`
 - Opens each server in a separate terminal window for easy monitoring
 - Uses consistent hard-coded ports (no dynamic allocation)
 
@@ -345,16 +344,14 @@ Both scripts now include a **30-second timeout fallback** to prevent hanging:
 - Performs health checks on all servers
 - Retries up to 10 times with 2-second intervals
 - Verifies backend `/health` endpoint responds
-- Verifies React frontend serves content properly
 - Verifies Gradio interface responds
 
 ### 🌐 Browser Launch
 
 - **NOTIFIES USER TO LAUNCH BROWSER TO START THE APP WHEN SERVERS ARE READY**
 
-**Access Options:**
-- React GUI: <http://127.0.0.1:3000>
-- Gradio GUI: <http://127.0.0.1:7860> ⭐ NEW
+**Access:**
+- Gradio UI: <http://127.0.0.1:7860>
 - Backend API: <http://127.0.0.1:8000> (API docs)
 
 ## Features
@@ -369,20 +366,13 @@ Ask questions like:
 
 ### Multiple Interfaces
 
-- **React Web App** - Modern responsive interface with real-time chat (port 3000)
-- **Gradio ChatInterface** - Simplified Python UI for financial analysis (port 7860) ⭐ NEW
+- **Gradio Web Interface** - Python ChatInterface for financial analysis (port 7860)
 - **Enhanced CLI** - Terminal interface with rich formatting
 - **API Endpoints** - RESTful API for integration (port 8000)
 
 ## Example Usage
 
-### React Web Interface
-
-1. Open <http://127.0.0.1:3000>
-2. Type your financial query
-3. Get instant structured responses with sentiment analysis
-
-### Gradio ChatInterface (NEW)
+### Gradio Web Interface
 
 1. Open <http://127.0.0.1:7860>
 2. Select an example or type your financial query
@@ -408,11 +398,10 @@ Performance Metrics:
 ## Architecture
 
 - **Backend**: FastAPI with OpenAI Agents SDK v0.2.9 and Polygon.io MCP integration v0.4.1
-- **Frontend (React)**: React 18.2+ with Vite 5.2+ and TypeScript (port 3000)
-- **Frontend (Gradio)**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860) ⭐ NEW
+- **Frontend**: Gradio 5.49.1+ ChatInterface with async streaming (port 7860)
 - **CLI**: Command-line interface for direct agent interaction
 - **Testing**: CLI regression test suite (test_cli_regression.sh - 39 tests)
-- **Deployment**: Fixed ports (8000/3000/7860) with one-click startup scripts
+- **Deployment**: Fixed ports (8000/7860) with one-click startup scripts
 
 ## Development
 
@@ -420,15 +409,12 @@ Performance Metrics:
 
 ```bash
 # Application startup
-npm run start:app          # One-click startup
-npm run frontend:dev       # Frontend development
-npm run build             # Production build
+chmod +x start-app.sh && ./start-app.sh  # One-click startup
 
 # Testing: Run chmod +x test_cli_regression.sh && ./test_cli_regression.sh to execute 39-test suite
 
 # Code quality
-npm run lint              # All linting
-npm run type-check        # TypeScript validation
+npm run lint              # Python linting
 ```
 
 ### Project Structure
@@ -437,11 +423,8 @@ npm run type-check        # TypeScript validation
 src/
 ├── backend/              # FastAPI backend
 │   ├── main.py          # Main application
+│   ├── gradio_app.py    # Gradio UI
 │   └── api_models.py    # API schemas
-├── frontend/            # React frontend
-│   ├── components/      # React components
-│   ├── hooks/          # Custom hooks
-│   └── config/         # Configuration loader
 config/                  # Centralized configuration
 │   └── app.config.json # Non-sensitive settings
 ```
@@ -460,14 +443,18 @@ cat .env | grep API_KEY
 uv install
 ```
 
-**Frontend connection errors:**
+**Gradio UI connection errors:**
 
 ```bash
 # Verify backend is running
 curl http://127.0.0.1:8000/health
 
+# Verify Gradio is running
+curl http://127.0.0.1:7860
+
 # Check ports are available
 netstat -tlnp | grep :8000
+netstat -tlnp | grep :7860
 ```
 
 **API key issues:**
@@ -480,7 +467,7 @@ netstat -tlnp | grep :8000
 <!-- LAST_COMPLETED_TASK_START -->
 [CONSOLIDATION] Performance Metrics Footer Unified to CLI Core Only
 
-**Problem:** Performance Metrics footer duplicated 3x across CLI, React, and Gradio interfaces (~200 lines of duplicate code)
+**Problem:** Performance Metrics footer duplicated 3x across CLI, React (now removed), and Gradio interfaces (~200 lines of duplicate code)
 **Root Cause:** Each interface independently extracted metadata and formatted footer after calling `process_query()`
 
 **Solution:** Created `process_query_with_footer()` wrapper in CLI core - single source of truth for footer generation
@@ -541,7 +528,7 @@ grep -c "COMPLETED" test-reports/test_cli_regression_loop1_2025-10-17_20-02.log
 **Success Metrics:**
 - ✅ Code consolidation: 100% SUCCESS (~170 lines deleted, ~70 added, net -100 lines)
 - ✅ Zero duplication: 100% SUCCESS (single footer formatter in CLI core)
-- ✅ All interfaces updated: 100% SUCCESS (CLI, React, Gradio)
+- ✅ All interfaces updated: 100% SUCCESS (CLI, React (removed), Gradio)
 - ✅ Pass rate: 39/39 PASSED (100%)
 
 **Phase 2d: Checkpoint Questions (Evidence-Based):**
