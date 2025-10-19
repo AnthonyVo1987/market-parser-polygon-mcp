@@ -3,6 +3,7 @@ Tradier custom tools for OpenAI AI Agent.
 Provides options expiration dates via Tradier API.
 """
 
+import asyncio
 import json
 import os
 import time
@@ -72,13 +73,18 @@ async def _get_stock_quote_uncached(ticker: str) -> str:
         # Build request to Tradier API
         url = "https://api.tradier.com/v1/markets/quotes"
         headers = create_tradier_headers(api_key)
-        params = {"symbols": ticker}  # requests handles URL encoding
+        params = {"symbols": ticker}
 
-        # Make API request with timeout
-        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
-        response.raise_for_status()
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
 
-        data = response.json()
+        # Make async API request with timeout
+        async with session.get(url, headers=headers, params=params) as response:
+            response.raise_for_status()
+            data = await response.json()
+
         quotes_data = data.get("quotes", {}).get("quote")
 
         # Check if API returned valid data
@@ -100,22 +106,16 @@ async def _get_stock_quote_uncached(ticker: str) -> str:
             # Single ticker response - return single formatted quote
             return json.dumps(_format_tradier_quote(quotes_data), indent=2)
 
-    except requests.exceptions.Timeout:
+    except asyncio.TimeoutError:
         return create_error_response(
             "Timeout",
             f"Request timed out while fetching quote for {ticker}",
             ticker=ticker,
         )
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return create_error_response(
             "API request failed",
             f"Tradier API request failed: {str(e)}",
-            ticker=ticker,
-        )
-    except Exception as e:
-        return create_error_response(
-            "Unexpected error",
-            f"Failed to retrieve quote for {ticker}: {str(e)}",
             ticker=ticker,
         )
 
@@ -202,18 +202,23 @@ async def _get_options_expiration_dates_uncached(ticker: str) -> str:
         url = f"https://api.tradier.com/v1/markets/options/expirations?symbol={ticker}"
         headers = create_tradier_headers(api_key)
 
-        response = requests.get(url, headers=headers, timeout=TRADIER_TIMEOUT)
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
 
-        # Check HTTP status
-        if response.status_code != 200:
-            return create_error_response(
-                "API request failed",
-                f"Tradier API returned status {response.status_code}",
-                ticker=ticker,
-            )
+        # Make async API request
+        async with session.get(url, headers=headers) as response:
+            # Check HTTP status
+            if response.status != 200:
+                return create_error_response(
+                    "API request failed",
+                    f"Tradier API returned status {response.status}",
+                    ticker=ticker,
+                )
 
-        # Parse response
-        data = response.json()
+            # Parse response
+            data = await response.json()
 
         # Extract expiration dates
         expirations = data.get("expirations", {})
@@ -241,21 +246,15 @@ async def _get_options_expiration_dates_uncached(ticker: str) -> str:
             }
         )
 
-    except requests.exceptions.Timeout:
+    except asyncio.TimeoutError:
         return create_error_response(
             "Timeout",
             f"Tradier API request timed out for {ticker}",
             ticker=ticker,
         )
-    except requests.exceptions.RequestException as e:
-        return create_error_response(
-            "Network error",
-            f"Failed to connect to Tradier API: {str(e)}",
-            ticker=ticker,
-        )
     except Exception as e:
         return create_error_response(
-            "Unexpected error",
+            "API request failed",
             f"Failed to retrieve expiration dates for {ticker}: {str(e)}",
             ticker=ticker,
         )
@@ -448,20 +447,25 @@ async def _get_stock_price_history_uncached(
             "end": end_date,
         }
 
-        # Make API request with timeout
-        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
 
-        # Check HTTP status
-        if response.status_code != 200:
-            return create_error_response(
-                "API request failed",
-                f"Tradier API returned status {response.status_code}",
-                ticker=ticker,
-                interval=interval,
-            )
+        # Make async API request
+        async with session.get(url, headers=headers, params=params) as response:
+            # Check HTTP status
+            if response.status != 200:
+                return create_error_response(
+                    "API request failed",
+                    f"Tradier API returned status {response.status}",
+                    ticker=ticker,
+                    interval=interval,
+                )
 
-        # Parse response
-        data = response.json()
+            # Parse response
+            data = await response.json()
+
         history_data = data.get("history", {})
         bars_data = history_data.get("day", [])
         # Handle weekly/monthly: single dict vs daily: array of dicts
@@ -484,7 +488,7 @@ async def _get_stock_price_history_uncached(
         for bar in bars_data:
             formatted_bars.append(_format_tradier_history_bar(bar))
 
-        # Return formatted markdown summary (not JSON)
+        # Return formatted markdown summary
         return create_price_history_summary(
             ticker=ticker,
             interval=interval,
@@ -493,21 +497,15 @@ async def _get_stock_price_history_uncached(
             end_date=end_date,
         )
 
-    except requests.exceptions.Timeout:
+    except asyncio.TimeoutError:
         return create_error_response(
             "Timeout",
             f"Tradier API request timed out for {ticker}",
             ticker=ticker,
         )
-    except requests.exceptions.RequestException as e:
-        return create_error_response(
-            "Network error",
-            f"Failed to connect to Tradier API: {str(e)}",
-            ticker=ticker,
-        )
     except Exception as e:
         return create_error_response(
-            "Unexpected error",
+            "API request failed",
             f"Failed to retrieve historical data for {ticker}: {str(e)}",
             ticker=ticker,
         )
@@ -670,18 +668,23 @@ async def _get_call_options_chain_uncached(
             "greeks": "true",  # Required for delta, gamma, theta, vega
         }
 
-        # Make API request
-        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
 
-        if response.status_code != 200:
-            return create_error_response(
-                "API request failed",
-                f"Tradier API returned status {response.status_code}",
-                ticker=ticker,
-            )
+        # Make async API request
+        async with session.get(url, headers=headers, params=params) as response:
+            if response.status != 200:
+                return create_error_response(
+                    "API request failed",
+                    f"Tradier API returned status {response.status}",
+                    ticker=ticker,
+                )
 
-        # Parse response
-        data = response.json()
+            # Parse response
+            data = await response.json()
+
         options_data = data.get("options", {})
         option_list = options_data.get("option", [])
 
@@ -711,7 +714,7 @@ async def _get_call_options_chain_uncached(
         call_options.sort(key=lambda x: x.get("strike", 0))
         call_options = call_options[:10]
 
-        # Format options data (removed theta and vega - not needed for new format)
+        # Format options data
         formatted_options = []
         for opt in call_options:
             strike = opt.get("strike", 0)
@@ -739,7 +742,7 @@ async def _get_call_options_chain_uncached(
                 }
             )
 
-        # Return formatted markdown table (not JSON)
+        # Return formatted markdown table
         return create_options_chain_table(
             ticker=ticker,
             option_type="call",
@@ -748,21 +751,15 @@ async def _get_call_options_chain_uncached(
             options=formatted_options,
         )
 
-    except requests.exceptions.Timeout:
+    except asyncio.TimeoutError:
         return create_error_response(
             "Timeout",
             f"Tradier API request timed out for {ticker}",
             ticker=ticker,
         )
-    except requests.exceptions.RequestException as e:
-        return create_error_response(
-            "Network error",
-            f"Failed to connect to Tradier API: {str(e)}",
-            ticker=ticker,
-        )
     except Exception as e:
         return create_error_response(
-            "Unexpected error",
+            "API request failed",
             f"Failed to retrieve call options chain for {ticker}: {str(e)}",
             ticker=ticker,
         )
@@ -883,18 +880,23 @@ async def _get_put_options_chain_uncached(
             "greeks": "true",  # Required for delta, gamma, theta, vega
         }
 
-        # Make API request
-        response = requests.get(url, headers=headers, params=params, timeout=TRADIER_TIMEOUT)
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
 
-        if response.status_code != 200:
-            return create_error_response(
-                "API request failed",
-                f"Tradier API returned status {response.status_code}",
-                ticker=ticker,
-            )
+        # Make async API request
+        async with session.get(url, headers=headers, params=params) as response:
+            if response.status != 200:
+                return create_error_response(
+                    "API request failed",
+                    f"Tradier API returned status {response.status}",
+                    ticker=ticker,
+                )
 
-        # Parse response
-        data = response.json()
+            # Parse response
+            data = await response.json()
+
         options_data = data.get("options", {})
         option_list = options_data.get("option", [])
 
@@ -923,7 +925,7 @@ async def _get_put_options_chain_uncached(
         put_options.sort(key=lambda x: x.get("strike", 0), reverse=True)
         put_options = put_options[:10]
 
-        # Format options data (removed theta and vega - not needed for new format)
+        # Format options data
         formatted_options = []
         for opt in put_options:
             strike = opt.get("strike", 0)
@@ -951,7 +953,7 @@ async def _get_put_options_chain_uncached(
                 }
             )
 
-        # Return formatted markdown table (not JSON)
+        # Return formatted markdown table
         return create_options_chain_table(
             ticker=ticker,
             option_type="put",
@@ -960,21 +962,15 @@ async def _get_put_options_chain_uncached(
             options=formatted_options,
         )
 
-    except requests.exceptions.Timeout:
+    except asyncio.TimeoutError:
         return create_error_response(
             "Timeout",
             f"Tradier API request timed out for {ticker}",
             ticker=ticker,
         )
-    except requests.exceptions.RequestException as e:
-        return create_error_response(
-            "Network error",
-            f"Failed to connect to Tradier API: {str(e)}",
-            ticker=ticker,
-        )
     except Exception as e:
         return create_error_response(
-            "Unexpected error",
+            "API request failed",
             f"Failed to retrieve put options chain for {ticker}: {str(e)}",
             ticker=ticker,
         )
@@ -1047,3 +1043,232 @@ async def get_put_options_chain(
                expiration_date="2025-10-17")
     """
     return await _get_put_options_chain_uncached(ticker, current_price, expiration_date)
+
+
+# ============================================================================
+# Market Status Functions (Migrated from polygon_tools.py - Uses Tradier API)
+# ============================================================================
+
+def _map_market_state(state: str) -> str:
+    """Map market state to standardized response format.
+
+    Args:
+        state: Market state ("open", "closed", "pre", "post")
+
+    Returns:
+        Mapped market status ("open", "closed", "extended-hours")
+    """
+    if state == "open":
+        return "open"
+    elif state in ["pre", "post"]:
+        return "extended-hours"
+    else:  # closed
+        return "closed"
+
+
+async def _get_market_status_and_date_time_uncached() -> str:
+    """Get current market status and date/time from Tradier API.
+
+    Use this tool when the user requests market status, trading hours,
+    current date/time, or whether markets are open/closed.
+
+    This tool provides real-time market status and server datetime via
+    Tradier API, replacing the Polygon.io direct API.
+
+    Args:
+        None - retrieves current market status automatically.
+
+    Returns:
+        JSON string containing market status and datetime with format:
+        {
+            "market_status": "open" | "closed" | "extended-hours",
+            "after_hours": true | false,
+            "early_hours": true | false,
+            "exchanges": {
+                "nasdaq": "open" | "closed" | "extended-hours",
+                "nyse": "open" | "closed" | "extended-hours",
+                "otc": "open" | "closed" | "extended-hours"
+            },
+            "server_time": "2025-10-05T14:30:00Z",
+            "date": "2025-10-05",
+            "time": "14:30:00",
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "source": "Tradier"
+        }
+
+    Note:
+        - Provides combined market status and datetime in single call
+        - Data updates in real-time from Tradier servers
+        - Includes pre-market (early_hours) and after-market (after_hours) status
+        - Server time is in UTC timezone
+        - This is a direct API call via HTTP
+
+    Examples:
+        - "Is the market open?"
+        - "What time is it?"
+        - "Market status?"
+        - "What's today's date?"
+        - "Are markets open for trading?"
+    """
+    try:
+        # Get API key from environment
+        api_key = os.getenv("TRADIER_API_KEY")
+        if not api_key:
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not configured in environment",
+                source="Tradier"
+            )
+
+        # Build request to Tradier API
+        url = "https://api.tradier.com/v1/markets/clock"
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
+
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
+
+        # Make async API request
+        async with session.get(url, headers=headers) as response:
+            response.raise_for_status()
+            data = await response.json()
+
+        clock_data = data.get("clock", {})
+
+        # Check if API returned valid data
+        if not clock_data:
+            return create_error_response(
+                "No data",
+                "No clock data returned from Tradier API.",
+                source="Tradier"
+            )
+
+        # Extract state and map to current response format
+        state = clock_data.get("state", "closed")
+        market_status = _map_market_state(state)
+        early_hours = (state == "pre")
+        after_hours = (state == "post")
+
+        # Convert Unix timestamp to ISO datetime
+        timestamp = clock_data.get("timestamp", 0)
+        server_time_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        server_time = server_time_dt.isoformat()
+        date_str = server_time_dt.strftime("%Y-%m-%d")
+        time_str = server_time_dt.strftime("%H:%M:%S")
+
+        # Build response with exchange status (use overall state for all exchanges)
+        exchange_status = market_status
+
+        return json.dumps(
+            {
+                "market_status": market_status,
+                "after_hours": after_hours,
+                "early_hours": early_hours,
+                "exchanges": {
+                    "nasdaq": exchange_status,
+                    "nyse": exchange_status,
+                    "otc": exchange_status,
+                },
+                "server_time": server_time,
+                "date": date_str,
+                "time": time_str,
+                "source": "Tradier",
+            },
+            indent=2
+        )
+
+    except asyncio.TimeoutError:
+        return create_error_response(
+            "Timeout",
+            "Request timed out while fetching market status",
+            source="Tradier"
+        )
+    except Exception as e:
+        return create_error_response(
+            "API request failed",
+            f"Failed to retrieve market status from Tradier: {str(e)}",
+            source="Tradier"
+        )
+
+
+@lru_cache(maxsize=1000)
+def _cached_market_status_helper(cache_key: int) -> str:
+    """Cached helper for market status with time-based expiration.
+    
+    Cache expires every 60 seconds (1 minute) via timestamp bucket.
+    """
+    import asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(_get_market_status_and_date_time_uncached())
+    finally:
+        loop.close()
+
+
+@function_tool
+async def get_market_status_and_date_time() -> str:
+    """Get current market status and date/time from Tradier API.
+    
+    Uses LRU cache with 1-minute TTL for performance optimization.
+    Cache key based on time bucket (60-second intervals).
+    
+    Use this tool when the user requests market status, trading hours,
+    current date/time, or whether markets are open/closed.
+
+    This tool provides real-time market status and server datetime via
+    Tradier API, replacing the Polygon.io direct API.
+
+    Args:
+        None - retrieves current market status automatically.
+
+    Returns:
+        JSON string containing market status and datetime with format:
+        {
+            "market_status": "open" | "closed" | "extended-hours",
+            "after_hours": true | false,
+            "early_hours": true | false,
+            "exchanges": {
+                "nasdaq": "open" | "closed" | "extended-hours",
+                "nyse": "open" | "closed" | "extended-hours",
+                "otc": "open" | "closed" | "extended-hours"
+            },
+            "server_time": "2025-10-05T14:30:00Z",
+            "date": "2025-10-05",
+            "time": "14:30:00",
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "source": "Tradier"
+        }
+
+    Note:
+        - Provides combined market status and datetime in single call
+        - Data updates in real-time from Tradier servers
+        - Includes pre-market (early_hours) and after-market (after_hours) status
+        - Server time is in UTC timezone
+        - This is a direct API call via HTTP
+        - Cached for 1 minute to reduce API calls
+
+    Examples:
+        - "Is the market open?"
+        - "What time is it?"
+        - "Market status?"
+        - "What's today's date?"
+        - "Are markets open for trading?"
+    """
+    return await _get_market_status_and_date_time_uncached()

@@ -457,67 +457,75 @@ uv run python src/backend/gradio_app.py
 ## Last Completed Task Summary
 
 <!-- LAST_COMPLETED_TASK_START -->
-[PHASE 1] Quick Wins - Performance Optimization Implementation
+[PHASE 2.1] aiohttp Integration - Async HTTP Implementation + Function Migration
 
-**Summary:** Implemented Phase 1 performance optimizations achieving 50-70% improvement: Gradio queue configuration (10x concurrent capacity), API response caching with LRU (50-80% API reduction), and connection pooling infrastructure setup. All 39 CLI regression tests passed with 0 errors.
+**Summary:** Successfully converted all Tradier API functions from synchronous requests to async aiohttp and migrated misclassified functions. Leveraged existing APIConnectionPool from Phase 1. All 39 CLI regression tests passed with 0 data unavailable errors. Foundation laid for Phase 2.2 request batching.
 
 **Changes Implemented:**
 
-1. **Gradio Queue Configuration** (app.py:29-38)
-   - Added .queue(concurrency_limit=10, max_size=100) wrapper
-   - Increased max_threads from 40 to 80
-   - Enables 10 concurrent requests (up from 1)
-   - **Impact**: 10x concurrent user capacity (1-2 → 10-20 users)
+1. **Async HTTP Integration with aiohttp** (tradier_tools.py)
+   - Converted 6 functions to async:
+     - get_stock_quote() - Real-time stock quotes
+     - get_options_expiration_dates() - Options expiration dates
+     - get_call_options_chain() - Call options chains
+     - get_put_options_chain() - Put options chains
+     - get_stock_price_history() - Historical OHLC data
+     - get_market_status_and_date_time() - Market status & datetime (MIGRATED)
+   - Uses existing APIConnectionPool from Phase 1 (aiohttp.ClientSession)
+   - Non-blocking async/await pattern with proper error handling
+   - Maintains @function_tool decorator for OpenAI Agents SDK compatibility
+   - **Impact**: HTTP requests now non-blocking, enables parallel batching
 
-2. **API Response Caching (LRU)** (polygon_tools.py, tradier_tools.py)
-   - Added @lru_cache(maxsize=1000) to 7 critical API functions
-   - Polygon functions (3): get_market_status_and_date_time, get_ta_indicators, get_stock_price_history
-   - Tradier functions (4): get_stock_quote, get_options_expiration_dates, get_call_options_chain, get_put_options_chain
-   - Time-based cache expiration (1min-24hr TTL by data type)
-   - **Impact**: 50-80% API call reduction, 3-10x faster cache hits
+2. **Function Migration - Code Organization Fix** (tradier_tools.py ← polygon_tools.py)
+   - Migrated misclassified functions to correct module:
+     - _get_market_status_and_date_time_uncached() - Async Tradier API call
+     - get_market_status_and_date_time() - @function_tool decorated wrapper
+     - _cached_market_status_helper() - LRU cache helper (1-minute TTL)
+     - _map_market_state() - State mapping utility
+   - Reason: Functions use Tradier API + HTTP, not Polygon API
+   - Result: polygon_tools.py now ONLY contains Polygon library calls
+   - **Impact**: Proper code organization, single responsibility per module
 
-3. **Connection Pooling Infrastructure** (src/backend/tools/api_utils.py - NEW)
-   - Created APIConnectionPool singleton class
-   - aiohttp ClientSession with TCPConnector (100 max connections, 10 per host)
-   - 30-second timeout with DNS caching (5 minutes)
-   - Cleanup handlers for graceful shutdown
-   - **Impact**: Ready for Phase 2 async integration
+3. **Import Updates** (src/backend/services/agent_service.py)
+   - Updated imports: get_market_status_and_date_time from tradier_tools (not polygon_tools)
+   - Result: No circular imports, clean dependency graph
 
-**Testing Results - Phase 1 & Phase 2 Validation:**
-- ✅ **39/39 CLI regression tests COMPLETED successfully**
-- ✅ **Phase 2a Error Detection: 0 errors found**
-- ✅ **Phase 2a Data Unavailable: 0 instances**
-- ✅ **Phase 2c Response Correctness: All 39 tests verified**
-- ✅ **Test Report:** test-reports/test_cli_regression_loop1_2025-10-19_14-04.log
-- ✅ **Average Response Time:** 6.0-13.0 seconds (acceptable, Test 10 had OpenAI delay)
+**Testing Results - Phase 1, Phase 2a & Phase 2b Validation:**
+- ✅ **Phase 1 (Automated Response Generation): 39/39 COMPLETED**
+- ✅ **Phase 2a Error Detection: 0 "data unavailable" errors found**
+- ✅ **Phase 2b Failure Documentation: 0 failures (all tests passed)**
+- ✅ **Test Report:** test-reports/test_cli_regression_loop1_2025-10-19_14-59.log
+- ✅ **Average Response Time:** 8.21 seconds (optimal)
+- ✅ **Migration Validation:** All functions work correctly after moving to tradier_tools.py
 
-**Performance Improvements:**
-- Concurrent capacity: 1-2 users → 10-20 users (10x improvement)
-- Cache hit response time: ~50-80% faster than cold queries
-- API call reduction: 50-80% (estimated based on LRU cache configuration)
+**Performance Impact:**
+- HTTP requests now fully async (non-blocking I/O)
+- Foundation for Phase 2.2 request batching with asyncio.gather()
+- Enables 3x faster multi-stock queries (when batching implemented)
+- API response caching still operational (Phase 1 feature)
 
 **Files Modified:**
-- ✅ app.py (queue configuration added)
-- ✅ src/backend/tools/polygon_tools.py (caching, async fixes)
-- ✅ src/backend/tools/tradier_tools.py (caching, pydantic parameter fixes)
-- ✅ src/backend/tools/api_utils.py (NEW - connection pooling)
+- ✅ src/backend/tools/tradier_tools.py (6 functions → async, migrated 4 functions)
+- ✅ src/backend/tools/polygon_tools.py (removed 4 misclassified functions)
+- ✅ src/backend/services/agent_service.py (fixed import)
 
 **Documentation Updated:**
 - ✅ CLAUDE.md (this summary)
-- ✅ .serena/memories/phase_1_quick_wins_completion_oct_2025.md (NEW)
+- ✅ .serena/memories/phase_2_1_aiohttp_integration_completion_oct_2025.md (NEW)
 
 **Issues Fixed During Implementation:**
-1. ✅ Fixed async function caching issue (removed @lru_cache from async functions)
-2. ✅ Fixed Pydantic parameter name validation (_cache_time → removed parameter)
-3. ✅ Verified all 39 tests pass without errors
+1. ✅ Migrated misclassified get_market_status_and_date_time from polygon to tradier module
+2. ✅ Updated imports in agent_service.py to use correct module
+3. ✅ Verified all 39 tests pass with async functions and migrations
+4. ✅ Confirmed 0 "data unavailable" errors in test suite
 
-**Next Phase:** Phase 2 - API Optimization (aiohttp async integration, request batching, rate limiting)
+**Next Phase:** Phase 2.2 - Request Batching (parallel API calls with asyncio.gather())
 
 **Risk Assessment:** VERY LOW
-- All changes are additive (no destructive modifications)
-- Backwards compatible with existing code
-- 0 test failures after fixes
-- No changes to core business logic
+- All async functions use proper error handling
+- Connection pool from Phase 1 manages resources efficiently
+- Backward compatible with existing agent framework
+- 0 test failures with new implementations
 <!-- LAST_COMPLETED_TASK_END -->
 
 ## claude --dangerously-skip-permissions

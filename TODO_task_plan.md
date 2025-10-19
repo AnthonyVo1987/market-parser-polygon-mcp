@@ -1,882 +1,522 @@
-# Performance Optimization Implementation TODO Plan
+# Phase 2.1: aiohttp Integration - Implementation TODO Plan
 
-**Branch**: `v1.0.0.0_performance-optimizations`
-**Status**: Phase 1 Ready for Implementation
+**Task**: Implement aiohttp async HTTP integration (Task 1 from Phase 2)
+**Branch**: v1.0.0.0_performance-optimizations
+**Status**: Ready for Implementation
 **Created**: 2025-10-19
-**Last Updated**: 2025-10-19
+**Estimated Time**: 2-4 hours
+**Expected Impact**: 3x faster HTTP requests
 
 ---
 
-## 📋 Quick Reference
+## 📋 Prerequisites Check
 
-**Detailed Implementation Plans**:
-- 📄 Phase 1: `docs/implementation_plans/phase_1_quick_wins.md` (28 KB)
-- 📄 Phase 2: `docs/implementation_plans/phase_2_api_optimization.md` (52 KB)
-- 📄 Phase 3: `docs/implementation_plans/phase_3_pwa_features.md` (57 KB)
-- 📄 Phase 4: `docs/implementation_plans/phase_4_advanced_optimization.md` (82 KB)
+**Phase 1 Status**:
+- ✅ Phase 1 completed and committed (commit: 9578cb9)
+- ✅ Gradio queue configuration working
+- ✅ LRU caching operational
+- ✅ Connection pooling infrastructure ready (api_utils.py exists)
+- ✅ All 39 CLI tests passed (0 errors)
 
-**Research Documentation**:
-- 📄 Research Memory: `.serena/memories/performance_optimizations_research_oct_2025.md`
+**Environment**:
+- ✅ Python environment active (uv)
+- ✅ Git branch: v1.0.0.0_performance-optimizations
+- ✅ Clean working directory
 
----
-
-## 🎯 Implementation Status
-
-### Phase 1: Quick Wins (1-2 hours, 50-70% improvement)
-- [ ] **READY TO START** - All prerequisites met
-
-### Phase 2: API Optimization (8-12 hours, 3-5x faster)
-- [ ] **PENDING** - Start after Phase 1 complete
-
-### Phase 3: PWA Features (8-16 hours, instant UI + offline)
-- [ ] **PENDING** - Start after Phase 2 complete
-
-### Phase 4: Advanced Optimization (20-26 hours, enterprise-grade)
-- [ ] **PENDING** - Start after Phase 3 complete
+**Dependencies**:
+- [ ] aiohttp installed (need to verify/install)
 
 ---
 
-## 🚀 PHASE 1: QUICK WINS (IMMEDIATE PRIORITY)
+## 🎯 Task Overview: aiohttp Integration
 
-**Time Estimate**: 1-2 hours
-**Expected Impact**: 50-70% performance improvement, 10x concurrent capacity
-**Risk Level**: LOW (backwards compatible, additive changes)
+**Goal**: Replace synchronous HTTP calls with async aiohttp while maintaining backward compatibility.
 
-### Task 1.1: Gradio Queue Configuration ⏱️ 10 minutes
+**Scope**: INCREMENTAL implementation - aiohttp only (no request batching, rate limiting, or caching upgrades)
 
-**Goal**: Enable concurrent request handling (10x capacity increase)
+**Strategy**:
+1. Verify aiohttp dependency
+2. Leverage existing APIConnectionPool from Phase 1 (already has aiohttp ClientSession!)
+3. Identify which functions use HTTP requests
+4. Convert functions to async (create _async versions)
+5. Keep sync wrappers for backward compatibility
+6. Update calling code to use async functions
+7. Test thoroughly
 
-**File to Modify**: `app.py` (line ~17)
+---
 
-**Implementation Steps**:
+## 🔍 PHASE 1: DEPENDENCY & CODE ANALYSIS
 
-1. **Use Sequential-Thinking** to plan the modification approach
+### Task 1.1: Verify aiohttp Installation ⏱️ 2 minutes
 
-2. **Use Serena Tools** to locate the exact launch configuration:
-   ```
-   mcp__serena__get_symbols_overview("app.py")
-   mcp__serena__find_symbol("launch", "app.py")
-   ```
+**Use Serena & Sequential-Thinking**:
+```bash
+# Check if aiohttp is installed
+uv run python -c "import aiohttp; print(f'aiohttp {aiohttp.__version__} installed')"
 
-3. **Modify app.py**:
-
-   **Current Code** (app.py line ~17):
-   ```python
-   demo.launch(
-       server_name="0.0.0.0",
-       server_port=7860,
-       share=False,
-       show_error=True,
-   )
-   ```
-
-   **New Code** (add queue configuration):
-   ```python
-   demo.queue(
-       default_concurrency_limit=10,  # Allow 10 concurrent requests (default=1)
-       max_size=100,                  # Queue max 100 requests
-   ).launch(
-       server_name="0.0.0.0",
-       server_port=7860,
-       max_threads=80,                # Increase from 40 to 80 (monitor memory)
-       share=False,
-       show_error=True,
-   )
-   ```
-
-4. **Testing**:
-   - [ ] Start Gradio: `uv run python app.py`
-   - [ ] Verify app loads without errors
-   - [ ] Check console for queue initialization messages
-   - [ ] Test with single query (should work normally)
+# If not installed:
+uv add aiohttp
+```
 
 **Success Criteria**:
-- ✅ Queue configuration added
-- ✅ App starts without errors
-- ✅ Gradio UI loads correctly
-- ✅ Single query works as before
-
-**Rollback**: Comment out `.queue()` if issues arise
+- ✅ aiohttp import works
+- ✅ Version displayed (should be 3.9+)
 
 ---
 
-### Task 1.2: API Response Caching (LRU) ⏱️ 30 minutes
+### Task 1.2: Analyze Existing APIConnectionPool ⏱️ 5 minutes
 
-**Goal**: Implement in-memory LRU caching for API responses (50-80% API call reduction)
+**File**: `src/backend/tools/api_utils.py` (created in Phase 1)
 
-**Files to Modify**:
-- `src/backend/tools/polygon_tools.py` (3 functions)
-- `src/backend/tools/tradier_tools.py` (4 functions)
+**Use Sequential-Thinking + Serena**:
+```
+mcp__serena__get_symbols_overview("src/backend/tools/api_utils.py")
+mcp__serena__find_symbol("APIConnectionPool", "src/backend/tools/api_utils.py", include_body=True)
+```
 
-**Implementation Steps**:
-
-1. **Use Sequential-Thinking** to plan caching strategy for each function
-
-2. **Use Serena Tools** to find all tool functions:
-   ```
-   mcp__serena__get_symbols_overview("src/backend/tools/polygon_tools.py")
-   mcp__serena__get_symbols_overview("src/backend/tools/tradier_tools.py")
-   ```
-
-3. **PARALLEL WORK OPPORTUNITY**: Use sub-agents to modify both files simultaneously:
-   - Sub-agent 1: Add caching to polygon_tools.py
-   - Sub-agent 2: Add caching to tradier_tools.py
-
-4. **Modify polygon_tools.py** - Add imports and caching:
-
-   **Add to imports** (top of file):
-   ```python
-   from functools import lru_cache
-   import time
-   ```
-
-   **Wrap each function** with caching logic:
-
-   **Example for get_stock_price_history**:
-   ```python
-   def _get_stock_price_history_uncached(symbol: str, from_date: str, to_date: str, timespan: str = "day"):
-       """Internal uncached version"""
-       # Move existing function body here
-       ...
-
-   @function_tool
-   @lru_cache(maxsize=1000)
-   def get_stock_price_history(symbol: str, from_date: str, to_date: str, timespan: str = "day"):
-       """Get historical stock price data (OHLCV) - CACHED VERSION
-
-       Cache expires based on timestamp minute buckets.
-       Historical data cached for 24 hours.
-       """
-       # Create cache key with time bucket
-       timestamp_bucket = int(time.time() / 3600)  # 1-hour buckets for historical
-       return _get_stock_price_history_uncached(symbol, from_date, to_date, timespan)
-   ```
-
-   **Functions to cache in polygon_tools.py**:
-   - [ ] `get_stock_price_history` (TTL: 1 hour - historical is immutable)
-   - [ ] `get_market_status_and_date_time` (TTL: 1 minute - changes frequently)
-   - [ ] `get_ta_indicators` (TTL: 5 minutes - technical analysis)
-
-5. **Modify tradier_tools.py** - Same pattern:
-
-   **Functions to cache in tradier_tools.py**:
-   - [ ] `get_stock_quote` (TTL: 1 minute - real-time price)
-   - [ ] `get_options_expiration_dates` (TTL: 24 hours - dates don't change daily)
-   - [ ] `get_call_options_chain` (TTL: 1 minute - high volatility)
-   - [ ] `get_put_options_chain` (TTL: 1 minute - high volatility)
-
-6. **Caching Strategy by Data Type**:
-   ```python
-   # Adjust time buckets based on data volatility:
-
-   # Real-time prices (1-minute cache)
-   timestamp_bucket = int(time.time() / 60)
-
-   # Historical data (1-hour cache)
-   timestamp_bucket = int(time.time() / 3600)
-
-   # Options expiration dates (24-hour cache)
-   timestamp_bucket = int(time.time() / 86400)
-   ```
-
-7. **Testing**:
-   - [ ] Run same query twice - second should be faster (cache hit)
-   - [ ] Check logs for cache behavior (if logging implemented)
-   - [ ] Verify response correctness (cached data matches fresh data)
+**Key Observations**:
+- Phase 1 already created APIConnectionPool with aiohttp.ClientSession
+- Has `get_session()` method returning configured ClientSession
+- Ready for use - NO CHANGES NEEDED to api_utils.py!
 
 **Success Criteria**:
-- ✅ @lru_cache decorators added to all 7 functions
-- ✅ Time-based cache expiration implemented
-- ✅ Cache hits measurably faster than cache misses
-- ✅ All functions still return correct data
-
-**Rollback**: Remove @lru_cache decorators and time bucket logic
+- ✅ Understand existing connection pool structure
+- ✅ Confirm aiohttp ClientSession already configured
+- ✅ Note: 100 max connections, 10 per host, 30s timeout
 
 ---
 
-### Task 1.3: Connection Pooling Setup ⏱️ 20 minutes
+### Task 1.3: Identify HTTP-Using Functions ⏱️ 10 minutes
 
-**Goal**: Prepare infrastructure for connection pooling (30-50% faster repeated calls)
+**Use Sequential-Thinking + Serena**:
 
-**Files to Create/Modify**:
-- `src/backend/tools/api_utils.py` (create if doesn't exist)
-- Update imports in polygon_tools.py and tradier_tools.py
+**Step 1**: Search for requests library usage
+```
+mcp__serena__search_for_pattern("import requests", "src/backend/tools")
+mcp__serena__search_for_pattern("requests.get", "src/backend/tools")
+mcp__serena__search_for_pattern("requests.post", "src/backend/tools")
+```
 
-**Implementation Steps**:
+**Step 2**: Identify functions making HTTP calls
+- polygon_tools.py: Check which functions call external APIs
+- tradier_tools.py: Check which functions call external APIs
 
-1. **Use Sequential-Thinking** to plan connection pooling architecture
+**Expected Functions** (from research doc):
+- tradier_tools.py:
+  - `get_stock_quote()` - Tradier API
+  - `get_options_expiration_dates()` - Tradier API
+  - `get_call_options_chain()` - Tradier API
+  - `get_put_options_chain()` - Tradier API
+- polygon_tools.py:
+  - `get_stock_price_history()` - Polygon API (uses polygon library, not requests)
+  - `get_market_status_and_date_time()` - Tradier API
+  - `get_ta_indicators()` - Polygon API (uses polygon library)
 
-2. **Check if api_utils.py exists**:
-   ```
-   mcp__serena__find_file("api_utils.py", "src/backend/tools")
-   ```
+**Key Insight**:
+- Tradier functions use `requests` library directly
+- Polygon functions use `polygon` Python library (which uses requests internally)
 
-3. **Create/Update api_utils.py**:
-
-   ```python
-   """
-   API utilities for connection pooling and HTTP client management.
-   """
-   import aiohttp
-   from typing import Optional
-
-
-   class APIConnectionPool:
-       """
-       Singleton connection pool for API requests.
-
-       Provides persistent HTTP sessions with connection pooling for:
-       - Polygon.io API
-       - Tradier API
-       - Other external APIs
-       """
-
-       _instance: Optional['APIConnectionPool'] = None
-
-       def __new__(cls):
-           if cls._instance is None:
-               cls._instance = super().__new__(cls)
-               cls._instance._initialized = False
-           return cls._instance
-
-       def __init__(self):
-           if self._initialized:
-               return
-
-           # Create aiohttp session with connection pooling
-           self.session: Optional[aiohttp.ClientSession] = None
-           self._initialized = True
-
-       async def get_session(self) -> aiohttp.ClientSession:
-           """Get or create HTTP session with connection pooling."""
-           if self.session is None or self.session.closed:
-               self.session = aiohttp.ClientSession(
-                   connector=aiohttp.TCPConnector(
-                       limit=100,          # Max 100 concurrent connections
-                       limit_per_host=10,  # Max 10 per host
-                       ttl_dns_cache=300,  # Cache DNS for 5 minutes
-                   ),
-                   timeout=aiohttp.ClientTimeout(total=30),  # 30s timeout
-               )
-           return self.session
-
-       async def close(self):
-           """Close HTTP session."""
-           if self.session and not self.session.closed:
-               await self.session.close()
-
-
-   # Singleton instance
-   _connection_pool: Optional[APIConnectionPool] = None
-
-
-   def get_connection_pool() -> APIConnectionPool:
-       """Get singleton connection pool instance."""
-       global _connection_pool
-       if _connection_pool is None:
-           _connection_pool = APIConnectionPool()
-       return _connection_pool
-   ```
-
-4. **Add cleanup handler to app.py**:
-
-   ```python
-   # At top of app.py
-   from src.backend.tools.api_utils import get_connection_pool
-   import atexit
-
-   # Before if __name__ == "__main__":
-   async def cleanup():
-       """Cleanup resources on shutdown."""
-       pool = get_connection_pool()
-       await pool.close()
-
-   atexit.register(lambda: asyncio.run(cleanup()))
-   ```
-
-5. **Testing**:
-   - [ ] Import api_utils in Python console - should not error
-   - [ ] Run app - should start without errors
-   - [ ] Connection pool will be used in Phase 2 (aiohttp integration)
+**Decision**:
+- Convert Tradier functions to async (4 functions)
+- Keep Polygon functions as-is for now (polygon library handles requests)
 
 **Success Criteria**:
-- ✅ api_utils.py created with connection pool infrastructure
-- ✅ No import errors
-- ✅ App starts successfully
-- ✅ Infrastructure ready for Phase 2 async integration
-
-**Note**: Connection pooling will be fully utilized in Phase 2 when we integrate aiohttp for async HTTP requests.
-
-**Rollback**: Remove api_utils.py and cleanup handler
+- ✅ List all functions using `requests` library
+- ✅ Categorize by API (Tradier vs Polygon)
+- ✅ Determine conversion priority (Tradier first)
 
 ---
 
-## 🧪 PHASE 1 TESTING (MANDATORY - DO NOT SKIP)
+## 🛠️ PHASE 2: ASYNC CONVERSION - TRADIER TOOLS
 
-### Testing Checkpoint 1: Initial Validation
+### Task 2.1: Convert get_stock_quote() to Async ⏱️ 20 minutes
 
-**Before running CLI regression tests**:
+**Use Sequential-Thinking + Serena**:
 
-1. **Manual Smoke Test**:
-   ```bash
-   # Start Gradio
-   uv run python app.py
+**Step 1**: Read current function
+```
+mcp__serena__find_symbol("get_stock_quote", "src/backend/tools/tradier_tools.py", include_body=True)
+```
 
-   # Test single query in UI:
-   # Query: "What is Tesla stock price?"
-   # Expected: Normal response with price data
-   ```
+**Step 2**: Create async version
 
-2. **Verify Changes Applied**:
-   - [ ] Queue configuration visible in app.py
-   - [ ] @lru_cache decorators present in both tool files
-   - [ ] api_utils.py exists with connection pool code
-   - [ ] No import errors or syntax errors
+**Pattern**:
+```python
+# NEW: Async version
+async def _get_stock_quote_async(ticker: str) -> str:
+    """Async version using aiohttp."""
+    from .api_utils import get_connection_pool
+
+    try:
+        # Get connection pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
+
+        # Build request
+        url = f"https://api.tradier.com/v1/markets/quotes?symbols={ticker}"
+        headers = create_tradier_headers(api_key)
+
+        # Async HTTP call
+        async with session.get(url, headers=headers) as response:
+            data = await response.json()
+            # ... process response
+            return json.dumps(result)
+
+    except Exception as e:
+        return create_error_response("api_error", str(e), ticker)
+
+# KEEP: Sync wrapper for backward compatibility
+@function_tool
+async def get_stock_quote(ticker: str) -> str:
+    """Get real-time stock quote (async)."""
+    return await _get_stock_quote_async(ticker)
+```
+
+**Step 3**: Use Serena to replace function
+```
+mcp__serena__replace_symbol_body("get_stock_quote", "src/backend/tools/tradier_tools.py", <new_body>)
+```
+
+**Success Criteria**:
+- ✅ Async version created with aiohttp
+- ✅ Uses APIConnectionPool from api_utils.py
+- ✅ Error handling preserved
+- ✅ JSON response format maintained
+- ✅ Function signature compatible with @function_tool
 
 ---
 
-### Testing Checkpoint 2: CLI Regression Suite
+### Task 2.2: Convert get_options_expiration_dates() to Async ⏱️ 15 minutes
 
-**Run Full Test Suite**:
+**Same pattern as Task 2.1**:
+1. Read current function with Serena
+2. Create async version with aiohttp
+3. Use APIConnectionPool
+4. Replace with Serena
 
+---
+
+### Task 2.3: Convert get_call_options_chain() to Async ⏱️ 20 minutes
+
+**Same pattern as Task 2.1**:
+1. Read current function with Serena
+2. Create async version with aiohttp
+3. Use APIConnectionPool
+4. Replace with Serena
+
+---
+
+### Task 2.4: Convert get_put_options_chain() to Async ⏱️ 20 minutes
+
+**Same pattern as Task 2.1**:
+1. Read current function with Serena
+2. Create async version with aiohttp
+3. Use APIConnectionPool
+4. Replace with Serena
+
+---
+
+## 🧪 PHASE 3: TESTING
+
+### Task 3.1: Smoke Test - Individual Functions ⏱️ 10 minutes
+
+**Test each async function manually**:
+```bash
+# Test get_stock_quote
+timeout 30 uv run python -c "
+import asyncio
+from src.backend.cli import agent
+
+async def test():
+    response = await agent.run('Get SPY stock quote')
+    print(response[:500])
+
+asyncio.run(test())
+"
+```
+
+**Repeat for**:
+- get_stock_quote (SPY)
+- get_options_expiration_dates (SPY)
+- get_call_options_chain (SPY, $580, 2025-10-25)
+- get_put_options_chain (SPY, $580, 2025-10-25)
+
+**Success Criteria**:
+- ✅ Each function returns valid JSON
+- ✅ Response time < 15 seconds
+- ✅ No runtime errors
+- ✅ Data format matches expected structure
+
+---
+
+### Task 3.2: CLI Regression Test Suite ⏱️ 15-20 minutes
+
+**MANDATORY CHECKPOINT - DO NOT SKIP**
+
+**Step 1**: Run full test suite
 ```bash
 chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
-**Expected Output**:
-- All 39 tests complete (39/39 COMPLETED)
-- Test report generated in `test-reports/`
-- No Python exceptions or errors
+**Step 2**: Phase 1 - Verify Test Completion
+- Expected: 39/39 tests COMPLETED
+- Check: No Python exceptions or import errors
 
-**Phase 1 Requirements**:
-- ✅ Test suite executes without errors
-- ✅ 39/39 tests complete successfully
-- ✅ Test report file created
+**Step 3**: Phase 2a - MANDATORY Error Detection
+```bash
+# Command 1: Find errors
+grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log | head -30
 
----
+# Command 2: Count data unavailable
+grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
 
-### Testing Checkpoint 3: Manual Response Verification (CRITICAL)
+# Command 3: Count completed
+grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
+```
 
-🔴 **MANDATORY**: You MUST verify EACH test response manually 🔴
+**Expected Results**:
+- Errors: 0
+- Data unavailable: 0
+- Completed: 39
 
-**Verification Process**:
+**Step 4**: Phase 2c - Response Correctness (Spot Check)
+- Verify Test 2 (SPY Current Price) uses aiohttp correctly
+- Verify Test 14 (Call Options Chain) returns Bid/Ask columns
+- Verify Test 15 (Put Options Chain) returns Bid/Ask columns
+- Verify all responses are complete (not truncated)
 
-1. **Open test report**: `test-reports/test_cli_regression_loop1_*.log`
-
-2. **For EACH of 39 tests, verify**:
-   - [ ] Response directly addresses the prompt
-   - [ ] Correct tool calls made (Polygon, Tradier APIs)
-   - [ ] Proper response formatting (tables, OHLC data, etc.)
-   - [ ] No "data unavailable" errors
-   - [ ] No hallucinated data
-   - [ ] Response is complete (not truncated)
-
-3. **Use grep to find issues**:
-   ```bash
-   # Find any errors
-   grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
-
-   # Count data unavailable errors
-   grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
-
-   # Should be 0 or very low
-   ```
-
-4. **Document failures** (if any):
-   - Test number and name
-   - Line number in log file
-   - Error message
-   - Expected vs actual behavior
-
-**Phase 1 Requirements**:
-- ✅ All 39 test responses manually verified
-- ✅ Tool calls are correct for each query type
-- ✅ Response formatting matches expected format
-- ✅ No critical errors or data issues
-- ✅ Failure rate < 5% (if any failures, document and fix)
+**Success Criteria**:
+- ✅ 39/39 tests COMPLETED
+- ✅ 0 errors found in Phase 2a
+- ✅ Response correctness verified in Phase 2c
+- ✅ Average response time similar or faster than Phase 1 (5-13s)
+- ✅ Test report generated: test-reports/test_cli_regression_loop1_<timestamp>.log
 
 ---
 
-### Testing Checkpoint 4: Performance Validation
+### Task 3.3: Performance Comparison ⏱️ 5 minutes
 
-**Measure Performance Improvement**:
+**Compare with Phase 1 baseline**:
+```bash
+# Phase 1 baseline: test-reports/test_cli_regression_loop1_2025-10-19_14-04.log
+# Phase 2.1 current: test-reports/test_cli_regression_loop1_<new_timestamp>.log
 
-1. **Cache Hit Testing**:
-   ```bash
-   # Run same query twice:
-   # First run: Cold cache (slower)
-   # Second run: Cache hit (faster)
+# Calculate average response time improvement
+grep "Response Time:" test-reports/test_cli_regression_loop1_<new_timestamp>.log | awk '{sum+=$3; count++} END {print "Avg:", sum/count "s"}'
+```
 
-   # Monitor response times in output
-   # Second query should be noticeably faster
-   ```
+**Expected**:
+- Phase 1 avg: ~6-13 seconds
+- Phase 2.1 avg: ~5-10 seconds (should be similar or slightly faster)
+- Note: Major speed improvements come from request batching (Phase 2.2)
 
-2. **Expected Improvements**:
-   - Cache hits: 50-80% faster than cold queries
-   - Concurrent capacity: 10x (queue allows 10 simultaneous requests)
-   - No degradation in response quality
-
-**Phase 1 Requirements**:
-- ✅ Cache hits measurably faster (show timing comparison)
-- ✅ Queue configuration allows multiple concurrent requests
-- ✅ Performance improvement documented
+**Success Criteria**:
+- ✅ Response times comparable or better than Phase 1
+- ✅ No performance regression
 
 ---
 
-## 📝 PHASE 1 DOCUMENTATION UPDATES
+## 📝 PHASE 4: DOCUMENTATION UPDATES
 
-### Update CLAUDE.md
+### Task 4.1: Update CLAUDE.md ⏱️ 10 minutes
 
 **Section**: Last Completed Task Summary
 
+**Content**:
 ```markdown
 <!-- LAST_COMPLETED_TASK_START -->
-[PHASE 1] Quick Wins - Performance Optimization Implementation
+[PHASE 2.1] aiohttp Integration - Async HTTP Implementation
 
-**Summary:** Implemented Phase 1 performance optimizations: Gradio queue configuration, API response caching (LRU), and connection pooling infrastructure.
+**Summary:** Converted Tradier API functions from synchronous requests to async aiohttp, achieving foundation for 3x faster HTTP requests. Leveraged existing APIConnectionPool from Phase 1.
 
 **Changes Implemented:**
 
-1. **Gradio Queue Configuration** (app.py)
-   - Added .queue() with concurrency_limit=10, max_size=100
-   - Increased max_threads to 80
-   - **Impact**: 10x concurrent user capacity
-
-2. **API Response Caching** (polygon_tools.py, tradier_tools.py)
-   - Added @lru_cache decorators to 7 API tool functions
-   - Implemented time-based cache expiration (1min-24hr TTL by data type)
-   - **Impact**: 50-80% API call reduction, 3-10x faster cache hits
-
-3. **Connection Pooling Infrastructure** (api_utils.py - NEW)
-   - Created APIConnectionPool singleton class
-   - aiohttp session with connection pooling (100 max connections)
-   - Cleanup handlers for graceful shutdown
-   - **Impact**: Ready for Phase 2 async integration
+1. **Async HTTP with aiohttp** (tradier_tools.py)
+   - Converted 4 functions to async: get_stock_quote(), get_options_expiration_dates(), get_call_options_chain(), get_put_options_chain()
+   - Used existing APIConnectionPool from Phase 1 (no changes to api_utils.py)
+   - Maintained @function_tool compatibility
+   - Preserved error handling and JSON response format
 
 **Testing Results:**
-- ✅ All 39/39 CLI regression tests passed
-- ✅ Manual verification of test responses completed
-- ✅ Cache hit performance improvement: [X]% faster
-- ✅ Test report: `test-reports/test_cli_regression_loop1_[timestamp].log`
-
-**Performance Improvements:**
-- Concurrent capacity: 1-2 users → 10-20 users (10x improvement)
-- Cache hit response time: [before]s → [after]s ([X]% faster)
-- API call reduction: [X]% (estimated based on cache hits)
+- ✅ 39/39 CLI regression tests COMPLETED
+- ✅ Phase 2a: 0 errors, 0 data unavailable
+- ✅ Phase 2c: All responses verified correct
+- ✅ Average response time: X.Xs (similar/faster than Phase 1)
+- ✅ Test report: test-reports/test_cli_regression_loop1_<timestamp>.log
 
 **Files Modified:**
-- app.py (queue configuration)
-- src/backend/tools/polygon_tools.py (caching added)
-- src/backend/tools/tradier_tools.py (caching added)
-- src/backend/tools/api_utils.py (NEW - connection pooling)
+- src/backend/tools/tradier_tools.py (4 async functions)
 
-**Documentation Updated:**
-- CLAUDE.md (this summary)
-- .serena/memories/phase_1_quick_wins_completion_oct_2025.md (NEW)
+**Performance Impact:**
+- HTTP requests now non-blocking (async foundation)
+- Enables request batching in Phase 2.2
+- Sets foundation for 3x faster multi-stock queries
 
-**Next Phase**: Phase 2 - API Optimization (aiohttp async integration, request batching, rate limiting)
+**Next Step:** Phase 2.2 - Request Batching (parallel API calls)
 <!-- LAST_COMPLETED_TASK_END -->
 ```
 
 ---
 
-### Create Serena Memory File
+### Task 4.2: Create Serena Memory ⏱️ 5 minutes
 
-**File**: `.serena/memories/phase_1_quick_wins_completion_oct_2025.md`
+**File**: `.serena/memories/phase_2_1_aiohttp_integration_completion_oct_2025.md`
 
-**Content** (template - fill in actual values after testing):
-
+**Content**:
 ```markdown
-# Phase 1: Quick Wins Implementation Completion - October 2025
+# Phase 2.1: aiohttp Integration Completion - October 2025
 
 ## Overview
-Phase 1 performance optimizations successfully implemented and tested.
+Converted Tradier API functions from synchronous requests to async aiohttp.
 
-## Changes Implemented
+## Changes
 
-### 1. Gradio Queue Configuration
-**File**: app.py
-**Changes**:
-- Added .queue() with concurrency_limit=10, max_size=100
-- Increased max_threads from 40 to 80
-**Impact**: 10x concurrent user capacity (1-2 → 10-20 users)
+### Async Conversion (4 functions):
+- get_stock_quote()
+- get_options_expiration_dates()
+- get_call_options_chain()
+- get_put_options_chain()
 
-### 2. API Response Caching (LRU)
-**Files**: polygon_tools.py, tradier_tools.py
-**Changes**:
-- Added @lru_cache(maxsize=1000) to 7 functions
-- Time-based cache expiration (timestamp buckets)
-- Cache TTL by data type:
-  - Real-time prices: 1 minute
-  - Historical data: 1 hour
-  - Options expiration dates: 24 hours
-**Impact**: 50-80% API call reduction, 3-10x faster cache hits
+### Pattern Used:
+```python
+async def _function_async(...):
+    pool = get_connection_pool()
+    session = await pool.get_session()
+    async with session.get(url, headers=headers) as response:
+        data = await response.json()
+        return process_data(data)
 
-### 3. Connection Pooling Infrastructure
-**File**: api_utils.py (NEW)
-**Changes**:
-- Created APIConnectionPool singleton
-- aiohttp ClientSession with connection pooling
-- 100 max concurrent connections, 10 per host
-- Cleanup handlers for graceful shutdown
-**Impact**: Infrastructure ready for Phase 2 async integration
+@function_tool
+async def function(...):
+    return await _function_async(...)
+```
 
-## Testing Results
-
-### CLI Regression Tests
-- Total tests: 39/39
-- Passed: 39
-- Failed: 0
-- Test report: `test-reports/test_cli_regression_loop1_[timestamp].log`
-
-### Manual Verification
-- All 39 test responses verified for correctness
-- Tool calls appropriate for each query type
-- Response formatting correct
-- No data quality issues
-
-### Performance Measurements
-- Cache hit improvement: [X]% faster
-- Concurrent capacity: 10x increase
-- API call reduction: [X]% (estimated)
-
-## Lessons Learned
-- LRU caching with time buckets works well for time-sensitive data
-- Gradio queue configuration is simple but high-impact
-- Connection pooling infrastructure sets foundation for Phase 2
+## Testing
+- All 39 CLI tests passed
+- 0 errors, 0 data unavailable
+- Performance comparable to Phase 1
 
 ## Next Steps
-- Phase 2: aiohttp async integration (use connection pool)
-- Phase 2: Request batching with asyncio.gather()
-- Phase 2: Rate limit protection
-- Phase 2: Persistent caching (upgrade from LRU to SQLite/Redis)
-
-## References
-- Implementation plan: `docs/implementation_plans/phase_1_quick_wins.md`
-- Research: `.serena/memories/performance_optimizations_research_oct_2025.md`
+- Phase 2.2: Request batching
+- Phase 2.3: Rate limiting
+- Phase 2.4: Intelligent caching
 ```
 
 ---
 
-### Update README.md (if needed)
+## 🎯 PHASE 5: ATOMIC COMMIT
 
-**Only if architecture significantly changed** - Phase 1 changes are mostly internal, so README likely doesn't need updates yet.
+### Task 5.1: Pre-Commit Verification ⏱️ 5 minutes
 
----
+**Verify ALL work complete**:
+```bash
+git status
+git diff
+```
 
-## 🎯 PHASE 1 COMMIT
-
-### Pre-Commit Checklist
-
-**Before running `git add`**:
-
-- [ ] All code changes complete
+**Checklist**:
+- [ ] All 4 Tradier functions converted to async
 - [ ] CLI regression tests passed (39/39)
-- [ ] Manual verification complete
+- [ ] Test report generated
 - [ ] CLAUDE.md updated
 - [ ] Serena memory created
-- [ ] Test report generated
+- [ ] TODO_task_plan.md updated
 
 ---
 
-### Atomic Commit Workflow
+### Task 5.2: Atomic Commit ⏱️ 2 minutes
 
-🔴 **CRITICAL: STAGE ONLY IMMEDIATELY BEFORE COMMIT** 🔴
-
-1. **DO ALL WORK FIRST** (DO NOT stage anything yet):
-   ```bash
-   # Verify all work complete
-   git status
-   git diff
-   ```
-
-2. **STAGE EVERYTHING AT ONCE**:
-   ```bash
-   git add -A
-   ```
-
-3. **VERIFY STAGING**:
-   ```bash
-   git status  # ALL files should be staged
-   ```
-
-4. **COMMIT IMMEDIATELY**:
-   ```bash
-   git commit -m "$(cat <<'EOF'
-   [PHASE 1] Quick Wins - Performance Optimization Implementation
-
-   Implemented Phase 1 performance optimizations with 50-70% improvement:
-
-   Code Changes:
-   - Gradio queue configuration (10x concurrent capacity)
-   - API response caching with LRU (50-80% API reduction)
-   - Connection pooling infrastructure (ready for Phase 2)
-
-   Files Modified:
-   - app.py: Queue configuration (.queue() with concurrency_limit=10)
-   - src/backend/tools/polygon_tools.py: Added @lru_cache to 3 functions
-   - src/backend/tools/tradier_tools.py: Added @lru_cache to 4 functions
-   - src/backend/tools/api_utils.py: NEW - Connection pooling infrastructure
-
-   Testing:
-   - All 39/39 CLI regression tests passed
-   - Manual verification of test responses completed
-   - Performance improvement validated (cache hits X% faster)
-   - Test report: test-reports/test_cli_regression_loop1_[timestamp].log
-
-   Documentation:
-   - CLAUDE.md updated with completion summary
-   - .serena/memories/phase_1_quick_wins_completion_oct_2025.md created
-
-   Performance Impact:
-   - Concurrent capacity: 1-2 users → 10-20 users (10x)
-   - Cache hit response time: X% faster
-   - API call reduction: 50-80% (estimated)
-
-   Next Phase: Phase 2 - API Optimization (aiohttp, batching, rate limiting)
-
-   🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-   Co-Authored-By: Claude <noreply@anthropic.com>
-   EOF
-   )"
-   ```
-
-5. **PUSH IMMEDIATELY**:
-   ```bash
-   git push
-   ```
-
----
-
-## 📊 PHASE 2-4 OVERVIEW (Implementation After Phase 1)
-
-### Phase 2: API Optimization (8-12 hours)
-
-**Reference**: `docs/implementation_plans/phase_2_api_optimization.md`
-
-**Tasks**:
-- [ ] Task 2.1: aiohttp Integration (2-4 hours)
-  - Convert requests to async aiohttp
-  - Use connection pool from Phase 1
-  - Update all 7 tool functions
-
-- [ ] Task 2.2: Request Batching (1-2 hours)
-  - Add asyncio.gather() for parallel requests
-  - Create batch query helpers
-
-- [ ] Task 2.3: Rate Limit Protection (1 hour)
-  - Install ratelimit library
-  - Add decorators to API calls
-
-- [ ] Task 2.4: Intelligent Caching (2-3 hours)
-  - Upgrade from LRU to SQLite/Redis
-  - Persistent cache across restarts
-
-- [ ] Testing: CLI regression suite + manual verification
-- [ ] Documentation: CLAUDE.md + Serena memory
-- [ ] Commit: Atomic commit
-
----
-
-### Phase 3: PWA Features (8-16 hours)
-
-**Reference**: `docs/implementation_plans/phase_3_pwa_features.md`
-
-**Tasks**:
-- [ ] Task 3.1: Service Worker Foundation (2-3 hours)
-- [ ] Task 3.2: Workbox Caching Strategies (3-4 hours)
-- [ ] Task 3.3: Offline Fallback Page (1-2 hours)
-- [ ] Task 3.4: Background Sync - OPTIONAL (2-3 hours)
-- [ ] Task 3.5: Testing & Lighthouse Audit (2-4 hours)
-
-- [ ] Testing: Lighthouse PWA audit (target 90+)
-- [ ] Documentation: CLAUDE.md + Serena memory
-- [ ] Commit: Atomic commit
-
----
-
-### Phase 4: Advanced Optimization (20-26 hours)
-
-**Reference**: `docs/implementation_plans/phase_4_advanced_optimization.md`
-
-**Tasks**:
-- [ ] Task 4.1: Production Logging & Metrics (4-5 hours)
-- [ ] Task 4.2: Performance Dashboard (5-6 hours)
-- [ ] Task 4.3: Cold Start Optimization (2-3 hours)
-- [ ] Task 4.4: Advanced Async Patterns (4-5 hours)
-- [ ] Task 4.5: Load Testing (2-3 hours)
-- [ ] Task 4.6: Production Hardening & Docs (3-4 hours)
-
-- [ ] Testing: Load testing with Locust
-- [ ] Documentation: Complete operational playbooks
-- [ ] Commit: Atomic commit
-
----
-
-## 🛠️ TOOL USAGE GUIDELINES
-
-### When to Use Sequential-Thinking
-
-**MANDATORY Uses**:
-- [ ] Before starting each phase (plan approach)
-- [ ] Before modifying complex functions (understand structure)
-- [ ] When encountering errors (diagnose systematically)
-- [ ] Before testing (plan test strategy)
-- [ ] Before committing (verify completeness)
-
-**Example Pattern**:
+**Stage ALL files at once**:
+```bash
+git add -A
+git status  # Verify all staged
 ```
-1. Use Sequential-Thinking to plan modification
-2. Use Serena tools to locate code
-3. Implement changes
-4. Use Sequential-Thinking to plan testing
-5. Execute tests
-6. Use Sequential-Thinking to verify completeness
+
+**Commit immediately**:
+```bash
+git commit -m "$(cat <<'EOF'
+[PHASE 2.1] aiohttp Integration - Async HTTP Implementation
+
+Converted Tradier API functions from synchronous requests to async aiohttp:
+
+Code Changes:
+- Converted 4 Tradier functions to async (get_stock_quote, get_options_expiration_dates, get_call_options_chain, get_put_options_chain)
+- Used existing APIConnectionPool from Phase 1 (no changes to api_utils.py)
+- Maintained @function_tool compatibility with async functions
+- Preserved error handling and JSON response format
+
+Testing Results:
+- 39/39 CLI regression tests COMPLETED
+- Phase 2a: 0 errors, 0 data unavailable
+- Phase 2c: All responses verified correct
+- Average response time: X.Xs (similar/faster than Phase 1)
+- Test report: test-reports/test_cli_regression_loop1_<timestamp>.log
+
+Files Modified:
+- src/backend/tools/tradier_tools.py: 4 async functions
+
+Documentation:
+- CLAUDE.md: Phase 2.1 completion summary
+- .serena/memories/phase_2_1_aiohttp_integration_completion_oct_2025.md: NEW
+
+Performance Impact:
+- HTTP requests now non-blocking (async foundation)
+- Enables request batching in Phase 2.2
+- Foundation for 3x faster multi-stock queries
+
+Next Step: Phase 2.2 - Request Batching
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+**Push immediately**:
+```bash
+git push
 ```
 
 ---
 
-### When to Use Serena Tools
+## 🛠️ MANDATORY TOOL USAGE
 
-**Code Analysis**:
-- `mcp__serena__get_symbols_overview` - Understand file structure
-- `mcp__serena__find_symbol` - Locate specific functions
-- `mcp__serena__find_referencing_symbols` - Find where function is used
+**Throughout ALL phases, continuously use**:
+- **Sequential-Thinking**: MANDATORY START for every phase, continue throughout
+- **Serena Tools**: Code analysis, symbol searches, symbol replacement
+- **Standard Tools**: File operations, bash commands, git operations
 
-**Code Modification**:
-- `mcp__serena__replace_symbol_body` - Clean function replacement
-- `mcp__serena__insert_after_symbol` - Add new code after function
-- `mcp__serena__insert_before_symbol` - Add imports or new functions
-
-**Code Search**:
-- `mcp__serena__search_for_pattern` - Find patterns in code
-- `mcp__serena__find_file` - Locate files by name
+**Tool Usage Pattern**:
+1. START phase with Sequential-Thinking
+2. Use Serena for code analysis
+3. Use Serena for code modifications
+4. Continue using Sequential-Thinking for complex reasoning
+5. Use Standard Tools for file/git operations
 
 ---
 
-### When to Use Sub-Agents
+## ✅ SUCCESS CRITERIA
 
-**Parallel Work Opportunities**:
-- Phase 1, Task 1.2: Modify polygon_tools.py and tradier_tools.py simultaneously
-- Phase 2, Task 2.1: Convert multiple tool files to async in parallel
-- Documentation: Update multiple docs while testing runs
-- Testing: Run different test categories in parallel (if applicable)
-
----
-
-## 📈 SUCCESS CRITERIA
-
-### Phase 1 Success Metrics
-
-**Performance**:
-- [ ] Concurrent capacity: 10x increase (measured by Gradio config)
-- [ ] Cache hit rate: > 60% for repeated queries
-- [ ] Cache hit speed: 3-10x faster than cold queries
-- [ ] API call reduction: 50-80% (measured over time)
-
-**Reliability**:
-- [ ] All 39 CLI regression tests pass
-- [ ] No introduction of new bugs or errors
-- [ ] Backwards compatible (existing queries work unchanged)
-
-**Code Quality**:
-- [ ] Clean, readable code changes
-- [ ] Proper error handling maintained
-- [ ] No code duplication
-- [ ] Comments explain caching strategy
-
-**Documentation**:
-- [ ] CLAUDE.md updated with comprehensive summary
-- [ ] Serena memory created with lessons learned
-- [ ] Test reports saved and referenced
+**Phase 2.1 Complete When**:
+- ✅ All 4 Tradier functions converted to async
+- ✅ All functions use APIConnectionPool correctly
+- ✅ 39/39 CLI tests pass (0 errors)
+- ✅ Phase 2 manual verification complete
+- ✅ Documentation updated
+- ✅ Atomic commit created and pushed
 
 ---
 
-### Overall Project Success Criteria
+## 🚀 READY TO START PHASE 3: IMPLEMENTATION
 
-**Phase 1**: 50-70% improvement, 10x capacity ✅
-**Phase 2**: 3-5x faster responses, 80% cost reduction
-**Phase 3**: Instant UI loading, offline support
-**Phase 4**: Enterprise-grade monitoring, 99.9% uptime
+**Status**: TODO plan complete - Ready for autonomous implementation
 
-**Combined Target**:
-- 10-20x concurrent user capacity
-- 5-10x faster response times (with caching)
-- 50-80% API cost reduction
-- 99.9% uptime (with resilience patterns)
-- Lighthouse PWA score 90+
-- Production-ready monitoring and documentation
-
----
-
-## 🔧 TROUBLESHOOTING
-
-### Common Issues
-
-**Issue: Import errors after adding caching**
-- Solution: Verify `from functools import lru_cache` at top of file
-- Check: `import time` also present
-
-**Issue: Cache not expiring**
-- Solution: Verify timestamp bucket logic is correct
-- Check: Time division matches intended TTL (60s, 3600s, 86400s)
-
-**Issue: Queue configuration causes memory issues**
-- Solution: Reduce max_threads from 80 to 60 or 40
-- Monitor: Check memory usage with `htop` or system monitor
-
-**Issue: CLI regression tests fail**
-- Solution: Check if caching broke any function behavior
-- Debug: Add print statements to verify cache hits/misses
-- Rollback: Remove @lru_cache if necessary
-
----
-
-## 📚 REFERENCE MATERIALS
-
-### Implementation Plans (Detailed)
-- Phase 1: `docs/implementation_plans/phase_1_quick_wins.md`
-- Phase 2: `docs/implementation_plans/phase_2_api_optimization.md`
-- Phase 3: `docs/implementation_plans/phase_3_pwa_features.md`
-- Phase 4: `docs/implementation_plans/phase_4_advanced_optimization.md`
-
-### Research Documentation
-- Research Memory: `.serena/memories/performance_optimizations_research_oct_2025.md`
-- Serena Memories: `.serena/memories/` (all project memories)
-
-### External References
-- Gradio Performance: https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
-- Python asyncio: https://docs.python.org/3/library/asyncio.html
-- aiohttp: https://docs.aiohttp.org/
-- Workbox (PWA): https://developer.chrome.com/docs/workbox/
-- Polygon.io API: https://polygon.io/knowledge-base/categories/rest
-
----
-
-## 🎯 NEXT STEPS
-
-### Immediate Action (Start Phase 1)
-
-1. **Read implementation plan**: `docs/implementation_plans/phase_1_quick_wins.md`
-2. **Use Sequential-Thinking**: Plan Phase 1 implementation approach
-3. **Start with Task 1.1**: Gradio queue configuration (10 min)
-4. **Continue with Task 1.2**: API caching (30 min)
-5. **Complete Task 1.3**: Connection pooling (20 min)
-6. **RUN TESTING**: CLI regression suite + manual verification
-7. **UPDATE DOCS**: CLAUDE.md + Serena memory
-8. **COMMIT**: Atomic commit with all changes + test reports
-
-### After Phase 1 Complete
-
-- Review Phase 1 results and lessons learned
-- Plan Phase 2 implementation
-- Consider architecture changes needed for async integration
-- Begin Phase 2 implementation
+**Next Action**: Begin Phase 3 (Implementation) starting with Task 1.1
 
 ---
 
 **Last Updated**: 2025-10-19
-**Status**: Ready to begin Phase 1 implementation
 **Branch**: v1.0.0.0_performance-optimizations
-**Next Action**: Read `docs/implementation_plans/phase_1_quick_wins.md` and start Task 1.1
+**Prerequisites**: Phase 1 complete ✅
+**Estimated Total Time**: 2-4 hours
