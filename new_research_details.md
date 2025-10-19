@@ -5,17 +5,9 @@
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s) using sub-agents task(s) for parallel optimized performance and speed when applicable:
 
 
-## Task 1: Research to generate a step by step deployment guide using Gradio Share App\Link Feature and Hugging Face Spaces
+## Task 1: Research & Investigate and potential performance improvments & optimizations in our code base after user has sucessfully deployed the app to be hosted as a PWA on Hugging Face Spaces
 
-Context:
-- There is an alternative way to deploy our app as a web app instead of AWS. 
-- We can take advantage and leverage the Gradio share app\link feature And take advantage of the hugging face spaces ecosystem to deploy our web app.
-- This is a non coding task and purely research and documentation. 
-- So use all your research tools to research and investigate, and then generate a step-by-step tutorial deployment guide for beginners to fully deploy our Python Gradio based app to hugging face spaces deployment ecosystem. 
-- Something to watch out for is that we do have an environment variables stored in our .env file, So that may require some extra steps that the user has to do to add the environment variables to hugging face
-- So make sure you walk through step by step to take into account everything.
-
-Expected outcome is any user, or any AI agent, brand new to this ecosystem, can follow the new step by step deployment guide, the very first time, and have it be deployed with success. The target audience is for pure beginners. So you need to really be very granular and hold the hand and provide very detailed granular steps. Make no assumptions, just assume they have zero knowledge of any of this. That way, the guide can be used by every target audience, expert, beginner, AI agents, or anyone with no clue doesn't matter
+- Python, Gradio, PWA etc
 
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
