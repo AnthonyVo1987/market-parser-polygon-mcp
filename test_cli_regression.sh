@@ -89,7 +89,7 @@ declare -a prompts=(
     "Stock Price Performance the past 3 months: \$SPY"
     "Get technical analysis indicator DATA only with NO ANALYSIS: \$SPY"
     "Support & Resistance Levels: \$SPY"
-    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY"
+    "Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY"
     "Get options expiration dates: \$SPY"
     "Get Call Options Chain Expiring this Friday: \$SPY"
     "Get Put Options Chain Expiring this Friday: \$SPY"
@@ -105,7 +105,7 @@ declare -a prompts=(
     "Stock Price Performance the past 3 months: \$NVDA"
     "Get technical analysis indicator DATA only with NO ANALYSIS: \$NVDA"
     "Support & Resistance Levels: \$NVDA"
-    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA"
+    "Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA"
     "Get options expiration dates for \$NVDA"
     "Get Call Options Chain Expiring this Friday: \$NVDA"
     "Get Put Options Chain Expiring this Friday: \$NVDA"
@@ -117,7 +117,7 @@ declare -a prompts=(
     "Last week's Performance OHLC: \$WDC, \$AMD, \$SOUN"
     "Get technical analysis indicator DATA only with NO ANALYSIS: \$WDC, \$AMD, \$SOUN"
     "Support & Resistance Levels: \$WDC, \$AMD, \$SOUN"
-    "Perform technical analysis based on all available data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$WDC, \$AMD, \$SOUN"
+    "Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$WDC, \$AMD, \$SOUN"
     "Get options expiration dates: \$WDC, \$AMD, \$SOUN"
 )
 
@@ -250,7 +250,7 @@ parse_test_results() {
                     echo -e "${YELLOW}📈 Performance: SLOW (> 90s)${NC}"
                 fi
 
-                test_results+=("COMPLETED")
+                test_results+=("Response Received - REQUIRES MANUAL VALIDATION")
                 echo ""
             fi
         fi
@@ -303,7 +303,7 @@ if [ "$tests_found" -ne "$total_tests" ]; then
     # Fill in test results
     for i in $(seq 1 $total_tests); do
         if [ ${#test_results[@]} -lt $i ]; then
-            test_results+=("COMPLETED")
+            test_results+=("Response Received - REQUIRES MANUAL VALIDATION")
         fi
     done
 fi
@@ -319,9 +319,9 @@ completed_tests=0
 for i in "${!test_names[@]}"; do
     test_number=$((i + 1))
     result="${test_results[$i]:-UNKNOWN}"
-    if [ "$result" = "COMPLETED" ]; then
+    if [ "$result" = "Response Received - REQUIRES MANUAL VALIDATION" ]; then
         ((completed_tests++))
-        echo -e "${GREEN}   Test $test_number: ${test_names[$i]} - COMPLETED${NC}"
+        echo -e "${GREEN}   Test $test_number: ${test_names[$i]} - Response Received (REQUIRES MANUAL VALIDATION)${NC}"
     else
         echo -e "${RED}   Test $test_number: ${test_names[$i]} - $result${NC}"
     fi
@@ -401,10 +401,10 @@ echo -e "Session Mode: ${GREEN}PERSISTENT${NC}"
 
 # Track loop results
 if [ $incomplete_tests -eq 0 ]; then
-    echo -e "${GREEN}🎉 All $total_tests responses generated in Loop ${loop_num}!${NC}"
-    echo -e "${GREEN}✅ Loop ${loop_num} Phase 1: All responses generated${NC}"
+    echo -e "${GREEN}🎉 All $total_tests responses received in Loop ${loop_num}!${NC}"
+    echo -e "${GREEN}✅ Loop ${loop_num} Phase 1: All responses received (REQUIRES MANUAL VALIDATION)${NC}"
     ((total_loops_completed++))
-    loop_status="COMPLETED"
+    loop_status="Response Received"
 else
     echo -e "${RED}❌ $incomplete_tests test(s) had no response in Loop ${loop_num}${NC}"
     echo -e "${RED}❌ Loop ${loop_num} Phase 1: INCOMPLETE${NC}"
@@ -468,75 +468,98 @@ all_loop_reports+=("$OUTPUT_FILE")
 
     echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║  LOOP ${loop_num}/${LOOP_COUNT} - Phase 1 Completed${NC}"
+    echo -e "${CYAN}║  LOOP ${loop_num}/${LOOP_COUNT} - Phase 1 Response Generation Complete${NC}"
+    echo -e "${CYAN}║  ⚠️  Phase 2 Manual Validation REQUIRED${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
-    # Phase 2 Verification Instructions - MANDATORY GREP-BASED ENFORCEMENT
+    # Phase 2 Verification Instructions - MANDATORY MANUAL REVIEW
     echo -e "${YELLOW}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${YELLOW}║  PHASE 2: MANDATORY VERIFICATION REQUIRED${NC}"
+    echo -e "${YELLOW}║  PHASE 2: MANDATORY MANUAL VERIFICATION REQUIRED${NC}"
     echo -e "${YELLOW}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${YELLOW}🔴 CRITICAL: Phase 1 ONLY verified that responses were received (${completed_tests}/${total_tests}).${NC}"
     echo -e "${YELLOW}   It CANNOT verify response correctness, tool calls, or formatting.${NC}"
-    echo -e "${YELLOW}   Phase 2 is MANDATORY and requires EVIDENCE-BASED verification.${NC}"
+    echo -e "${YELLOW}   Phase 2 is MANDATORY and requires MANUAL review of ALL ${total_tests} tests.${NC}"
     echo ""
     echo -e "${RED}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${RED}║  🔴 MANDATORY GREP COMMANDS - MUST RUN AND SHOW OUTPUT${NC}"
+    echo -e "${RED}║  ❌ GREP COMMANDS ARE INSUFFICIENT - MISS LOGIC ERRORS${NC}"
     echo -e "${RED}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo -e "${CYAN}📋 Phase 2a: ERROR DETECTION (MANDATORY)${NC}"
-    echo -e "${CYAN}Run these commands and SHOW the output:${NC}"
+    echo -e "${RED}Why Grep Fails:${NC}"
+    echo -e "${RED}  ❌ Misses duplicate/unnecessary tool calls (agent calling same tool twice)${NC}"
+    echo -e "${RED}  ❌ Misses wrong tool selection (agent calling wrong API for data)${NC}"
+    echo -e "${RED}  ❌ Misses data inconsistencies (cross-ticker contamination)${NC}"
+    echo -e "${RED}  ❌ Only catches explicit error messages, not logic errors${NC}"
     echo ""
-    echo -e "${GREEN}# Command 1: Find all errors/failures${NC}"
-    echo -e "  grep -i \"error\|unavailable\|failed\|invalid\" $OUTPUT_FILE"
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║  MANDATORY PROCESS - REVIEW ALL ${total_tests} TESTS MANUALLY${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo -e "${GREEN}# Command 2: Count 'data unavailable' errors${NC}"
-    echo -e "  grep -c \"data unavailable\" $OUTPUT_FILE"
+    echo -e "${CYAN}📋 Step 1: Read Test Response Using Read Tool${NC}"
+    echo -e "  • Use Read tool to read test log file section for EACH test"
+    echo -e "  • Read lines for Agent Response, Tools Used, Performance Metrics"
+    echo -e "  • NO scripts, NO grep shortcuts - READ each test manually"
     echo ""
-    echo -e "${GREEN}# Command 3: Count completed tests${NC}"
-    echo -e "  grep -c \"COMPLETED\" $OUTPUT_FILE"
+    echo -e "${CYAN}📋 Step 2: Apply 4-Point Verification Criteria to EACH Test${NC}"
     echo ""
-    echo -e "${RED}⚠️  YOU MUST RUN THESE COMMANDS. You cannot proceed without showing grep output.${NC}"
+    echo -e "  ${GREEN}1. ✅ Does the response address the query?${NC}"
+    echo -e "     • Does agent's response directly answer the test prompt?"
+    echo -e "     • Is response relevant to ticker(s) mentioned?"
+    echo -e "     • Is response complete (not truncated)?"
     echo ""
-    echo -e "${CYAN}📋 Phase 2b: DOCUMENT FAILURES (MANDATORY)${NC}"
-    echo -e "${CYAN}If errors found in Phase 2a, document with EVIDENCE:${NC}"
+    echo -e "  ${GREEN}2. ✅ Were the RIGHT tools called (no duplicate/unnecessary calls)?${NC}"
+    echo -e "     • Check conversation context: If previous test retrieved data, agent should NOT call again"
+    echo -e "     • Example FAIL: Test 10 calls get_ta_indicators(), Test 12 should NOT call it again"
+    echo -e "     • Are tools appropriate for query (Tradier for quotes, Polygon for TA)?"
+    echo -e "     • Are there any redundant API calls?"
     echo ""
-    echo -e "  For EACH failure found, provide:"
-    echo -e "    • Test number (Test 3, Test 18, etc.)"
-    echo -e "    • Line number in test report"
-    echo -e "    • Exact error message"
-    echo -e "    • Tool call that failed (if visible)"
+    echo -e "  ${GREEN}3. ✅ Is the data correct?${NC}"
+    echo -e "     • Correct ticker symbols used (\$SPY, \$NVDA, \$WDC, \$AMD, \$SOUN)"
+    echo -e "     • Data formatting matches expected format (OHLC, tables, etc.)"
+    echo -e "     • No hallucinated data or made-up values"
+    echo -e "     • No cross-ticker contamination (NVDA query shouldn't return SPY data)"
+    echo -e "     • Options chains show Bid/Ask columns (NOT midpoint)"
     echo ""
-    echo -e "${RED}⚠️  EVIDENCE REQUIRED: Paste grep output and create failure table.${NC}"
+    echo -e "  ${GREEN}4. ✅ Are there any errors?${NC}"
+    echo -e "     • No error messages in response"
+    echo -e "     • No \"data unavailable\" messages"
+    echo -e "     • No RuntimeWarnings"
+    echo -e "     • No API errors"
     echo ""
-    echo -e "${CYAN}📋 Phase 2c: VERIFY RESPONSE CORRECTNESS (For tests without errors)${NC}"
-    echo -e "${CYAN}For tests that didn't show errors in Phase 2a, verify:${NC}"
+    echo -e "${CYAN}📋 Step 3: Document Each Test Result${NC}"
     echo ""
-    echo -e "  1. ✅ Response directly addresses the prompt query"
-    echo -e "  2. ✅ Correct ticker symbols used (\$SPY, \$NVDA, \$WDC, \$AMD, \$SOUN)"
-    echo -e "  3. ✅ Appropriate tool calls made (Polygon, Tradier)"
-    echo -e "  4. ✅ Data formatting matches expected format (OHLC, tables, etc.)"
-    echo -e "  5. ✅ No hallucinated data or made-up values"
-    echo -e "  6. ✅ Options chains show Bid/Ask columns (NOT midpoint)"
-    echo -e "  7. ✅ Technical analysis includes proper indicators"
-    echo -e "  8. ✅ Response is complete (not truncated)"
+    echo -e "  Create table documenting ALL ${total_tests} tests:"
+    echo -e "  | Test # | Test Name | Status | Issue (if failed) | Failure Type |"
+    echo -e "  |--------|-----------|--------|-------------------|--------------|"
+    echo -e "  | 1      | Market_Status | ❌ FAIL | timezone error | Code Error |"
+    echo -e "  | 2      | SPY_Price | ✅ PASS | - | - |"
+    echo -e "  | 12     | SPY_Full_TA | ❌ FAIL | Duplicate get_ta_indicators() | Logic Error |"
     echo ""
-    echo -e "${CYAN}📋 Phase 2d: FINAL VERIFICATION${NC}"
+    echo -e "  Failure Types:"
+    echo -e "  • Code Error: Syntax/runtime errors, import errors"
+    echo -e "  • Logic Error (Duplicate Tool Call): Unnecessary redundant API calls"
+    echo -e "  • Logic Error (Wrong Tool): Wrong tool for the query"
+    echo -e "  • Data Error: Wrong data, cross-ticker contamination"
+    echo -e "  • Response Error: Incomplete response, doesn't address query"
+    echo ""
+    echo -e "${CYAN}📋 Step 4: Final Checkpoint Questions${NC}"
     echo ""
     echo -e "${YELLOW}⚠️  MANDATORY CHECKPOINT QUESTIONS:${NC}"
-    echo -e "${YELLOW}   1. Did you RUN the 3 mandatory grep commands in Phase 2a?${NC}"
-    echo -e "${YELLOW}   2. Did you SHOW the grep output as evidence?${NC}"
-    echo -e "${YELLOW}   3. Did you DOCUMENT all failures found (if any)?${NC}"
-    echo -e "${YELLOW}   4. Can you confirm: ${completed_tests}/${total_tests} tests generated responses?${NC}"
-    echo -e "${YELLOW}   5. Can you confirm: X/39 tests PASSED verification (no errors)?${NC}"
+    echo -e "${YELLOW}   1. Did you READ all ${total_tests} test responses manually using Read tool?${NC}"
+    echo -e "${YELLOW}   2. Did you apply all 4 verification criteria to EACH test?${NC}"
+    echo -e "${YELLOW}   3. How many tests PASSED all 4 criteria? (X/${total_tests} PASSED)${NC}"
+    echo -e "${YELLOW}   4. How many tests FAILED (any criterion)? (X/${total_tests} FAILED)${NC}"
+    echo -e "${YELLOW}   5. Did you document ALL failures with test #, issue, and failure type?${NC}"
     echo ""
     echo -e "${RED}🔴 CANNOT MARK TASK COMPLETE WITHOUT:${NC}"
-    echo -e "${RED}   • Running and showing grep command outputs${NC}"
-    echo -e "${RED}   • Documenting failures with evidence (or confirming 0 failures)${NC}"
-    echo -e "${RED}   • Providing failure count: grep -c \"data unavailable\"${NC}"
+    echo -e "${RED}   • Reading all ${total_tests} test responses manually (using Read tool, NOT grep)${NC}"
+    echo -e "${RED}   • Applying all 4 verification criteria to each test${NC}"
+    echo -e "${RED}   • Documenting ALL ${total_tests} tests in a results table${NC}"
+    echo -e "${RED}   • Providing failure count and failure details table${NC}"
+    echo -e "${RED}   • Answering all 5 checkpoint questions with evidence${NC}"
     echo ""
-    echo -e "${CYAN}📄 Test Report (run grep commands on this file): $OUTPUT_FILE${NC}"
+    echo -e "${CYAN}📄 Test Report (read manually with Read tool): $OUTPUT_FILE${NC}"
     echo -e "${CYAN}📄 Raw Output: $RAW_OUTPUT${NC}"
     echo ""
 
@@ -596,11 +619,12 @@ echo ""
 
 # Final exit status
 if [ $total_loops_incomplete -eq 0 ]; then
-    echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) generated responses!${NC}"
-    echo -e "${GREEN}✅ Phase 1 Complete: All responses generated${NC}"
+    echo -e "${GREEN}🎉 All ${LOOP_COUNT} loop(s) - responses received!${NC}"
+    echo -e "${GREEN}✅ Phase 1 Complete: All responses received (REQUIRES MANUAL VALIDATION)${NC}"
     echo ""
     echo -e "${YELLOW}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${YELLOW}║  🔴 PHASE 2 REQUIRED: Manual Verification Needed${NC}"
+    echo -e "${YELLOW}║  🔴 PHASE 2 REQUIRED: Manual Verification for Each Test${NC}"
+    echo -e "${YELLOW}║  Read each test response and verify using 4-point criteria${NC}"
     echo -e "${YELLOW}╚══════════════════════════════════════════════════════════════╝${NC}"
     exit 0
 else

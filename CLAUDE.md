@@ -91,64 +91,85 @@ These instructions provide critical guidance on:
 - Show Phase 1 results to user (completion counts, response times)
 - Provide test report file path
 
-### **Phase 2: MANDATORY Grep-Based Verification (EVIDENCE REQUIRED)**
+### **Phase 2: MANDATORY Manual Verification of ALL 39 Tests (NO SHORTCUTS)**
 
-Phase 2 is broken into 4 sub-phases with **MANDATORY bash commands** that MUST be executed:
+🔴 **CRITICAL: Grep commands are INSUFFICIENT and will miss failures. You MUST manually review EACH test response.**
 
-#### **Phase 2a: ERROR DETECTION (MANDATORY - MUST RUN COMMANDS)**
+**Why Grep Fails:**
+- ❌ Misses duplicate/unnecessary tool calls (agent calling same tool twice)
+- ❌ Misses wrong tool selection (agent calling wrong API for data)
+- ❌ Misses data inconsistencies (cross-ticker contamination, wrong data returned)
+- ❌ Only catches explicit error messages, not logic errors
 
-🔴 **YOU MUST RUN these grep commands and SHOW output. Cannot proceed without evidence.**
+**MANDATORY Process for EACH of the 39 Tests:**
 
-```bash
-# Command 1: Find all errors/failures
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
+#### **Step 1: Read Test Response Using Read Tool**
+- Use `Read` tool to read the test log file section for each test
+- Read lines corresponding to that test's Agent Response, Tools Used, and Performance Metrics
+- **NO scripts, NO grep shortcuts - READ each test manually**
 
-# Command 2: Count 'data unavailable' errors
-grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
+#### **Step 2: Apply 4-Point Verification Criteria**
 
-# Command 3: Count completed tests
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
-```
+For EACH test, you MUST verify ALL 4 criteria:
 
-**Required Output**: Paste ALL grep command outputs. If you don't show grep output, Phase 2 is INCOMPLETE.
+1. ✅ **Does the response address the query?**
+   - Does the agent's response directly answer the test prompt?
+   - Is the response relevant to the ticker(s) mentioned?
+   - Is the response complete (not truncated)?
 
-#### **Phase 2b: DOCUMENT FAILURES (MANDATORY - IF ERRORS FOUND)**
+2. ✅ **Were the RIGHT tools called (not duplicate/unnecessary calls)?**
+   - **Check conversation context**: If a previous test already retrieved data, agent should NOT call the same tool again
+   - Example FAIL: Test 10 calls `get_ta_indicators()`, Test 12 should NOT call it again
+   - Are the tools appropriate for the query (Tradier for quotes, Polygon for TA)?
+   - Are there any redundant API calls?
 
-If Phase 2a grep commands found errors, create **evidence-based failure table**:
+3. ✅ **Is the data correct?**
+   - Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+   - Data formatting matches expected format (OHLC, tables, etc.)
+   - No hallucinated data or made-up values
+   - No cross-ticker contamination (NVDA query shouldn't return SPY data)
+   - Options chains show Bid/Ask columns (NOT midpoint)
 
-| Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
-|--------|-----------|--------|---------------|------------------------|
-| 3 | SPY_Yesterday_Price_OHLC | 157 | data unavailable due to retrieval error | get_stock_price_history(...) |
+4. ✅ **Are there any errors?**
+   - No error messages in response
+   - No "data unavailable" messages
+   - No RuntimeWarnings
+   - No API errors
 
-**Required**: Show grep output + failure table with line numbers, OR confirm "0 failures found".
+#### **Step 3: Document Each Test Result**
 
-#### **Phase 2c: VERIFY RESPONSE CORRECTNESS (For tests without errors)**
+Create a table documenting ALL 39 tests:
 
-For tests that didn't show errors in Phase 2a, verify:
+| Test # | Test Name | Status | Issue (if failed) | Failure Type |
+|--------|-----------|--------|-------------------|--------------|
+| 1 | Market_Status | ❌ FAIL | timezone import error | Code Error |
+| 2 | SPY_Price | ✅ PASS | - | - |
+| 10 | SPY_TA_Indicators | ✅ PASS | - | - |
+| 12 | SPY_Full_TA | ❌ FAIL | Duplicate call to get_ta_indicators() | Logic Error (Duplicate Tool Call) |
+| ... | ... | ... | ... | ... |
 
-1. Response directly addresses the prompt query
-2. Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
-3. Appropriate tool calls made (Polygon, Tradier)
-4. Data formatting matches expected format (OHLC, tables, etc.)
-5. No hallucinated data or made-up values
-6. Options chains show Bid/Ask columns (NOT midpoint)
-7. Technical analysis includes proper indicators
-8. Response is complete (not truncated)
+**Failure Types:**
+- Code Error: Syntax/runtime errors, import errors
+- Logic Error (Duplicate Tool Call): Agent made unnecessary redundant API calls
+- Logic Error (Wrong Tool): Agent called wrong tool for the query
+- Data Error: Wrong data returned, cross-ticker contamination
+- Response Error: Incomplete response, doesn't address query
 
-#### **Phase 2d: FINAL VERIFICATION (CHECKPOINT QUESTIONS)**
+#### **Step 4: Final Checkpoint Questions**
 
 Answer ALL checkpoint questions with evidence:
 
-1. ✅ Did you RUN the 3 mandatory grep commands in Phase 2a? **SHOW OUTPUT**
-2. ✅ Did you DOCUMENT all failures found (or confirm 0 failures)? **PROVIDE TABLE OR "0 failures"**
-3. ✅ Failure count from grep -c: **X failures**
-4. ✅ Tests that generated responses: **X/39 COMPLETED**
-5. ✅ Tests that PASSED verification (no errors): **X/39 PASSED**
+1. ✅ Did you READ all 39 test responses manually using the Read tool? **YES/NO**
+2. ✅ Did you apply all 4 verification criteria to EACH test? **YES/NO**
+3. ✅ How many tests PASSED all 4 criteria? **X/39 PASSED**
+4. ✅ How many tests FAILED (any criterion)? **X/39 FAILED**
+5. ✅ Did you document ALL failures with test #, issue, and failure type? **YES/NO + TABLE**
 
 **🔴 CANNOT MARK TASK COMPLETE WITHOUT:**
-- Running and showing grep outputs
-- Documenting failures with evidence (or confirming 0 failures)
-- Providing failure count: `grep -c "data unavailable"`
+- Reading all 39 test responses manually (using Read tool, NOT grep)
+- Applying all 4 verification criteria to each test
+- Documenting ALL 39 tests in a results table
+- Providing failure count and failure details table
 - Answering all 5 checkpoint questions with evidence
 
 ❌ **NEVER DO:**
@@ -182,8 +203,9 @@ Only after Phase 2 manual verification can you claim tests passed.
 2. Update test suite file ✅
 3. RUN Phase 1: ./test_cli_regression.sh ✅
 4. Show results: 39/39 COMPLETED ✅
-5. Update documentation ✅
-6. Mark task complete ❌ (NEVER performed Phase 2 verification!)
+5. ❌ Run grep commands to "verify" results (INSUFFICIENT - misses duplicate tool calls!)
+6. Update documentation ✅
+7. Mark task complete ❌ (NEVER manually reviewed all 39 test responses!)
 ```
 
 **CORRECT (What TO do):**
@@ -193,11 +215,17 @@ Only after Phase 2 manual verification can you claim tests passed.
 2. Update test suite file ✅
 3. RUN Phase 1: chmod +x test_cli_regression.sh && ./test_cli_regression.sh ✅
 4. Show Phase 1 results: 39/39 COMPLETED ✅
-5. PERFORM Phase 2: Manual verification of all 39 responses ✅
-6. Answer checkpoint: "Did you verify EACH response?" YES ✅
-7. Provide test report path ✅
-8. Update documentation with test results ✅
-9. Mark task complete ✅
+5. PERFORM Phase 2: Use Read tool to manually read EACH of the 39 test responses ✅
+6. Apply 4-point criteria to EACH test:
+   - Does response address query? ✅
+   - Were RIGHT tools called (no duplicates)? ✅
+   - Is data correct? ✅
+   - Are there any errors? ✅
+7. Document ALL 39 tests in results table (PASS/FAIL with reasons) ✅
+8. Answer checkpoint questions with evidence ✅
+9. Provide test report path ✅
+10. Update documentation with test results ✅
+11. Mark task complete ✅
 ```
 
 ### **When to Run Tests:**
@@ -480,7 +508,7 @@ uv run python src/backend/gradio_app.py
    - Migrated misclassified functions to correct module:
      - _get_market_status_and_date_time_uncached() - Async Tradier API call
      - get_market_status_and_date_time() - @function_tool decorated wrapper
-     - _cached_market_status_helper() - LRU cache helper (1-minute TTL)
+     - ~~_cached_market_status_helper()~~ - REMOVED (2025-10-19 - incompatible with async)
      - _map_market_state() - State mapping utility
    - Reason: Functions use Tradier API + HTTP, not Polygon API
    - Result: polygon_tools.py now ONLY contains Polygon library calls

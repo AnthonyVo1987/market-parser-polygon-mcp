@@ -8,7 +8,6 @@ import json
 import os
 import time
 from datetime import datetime, timezone
-from functools import lru_cache
 
 import requests
 from agents import function_tool
@@ -27,7 +26,7 @@ def _get_polygon_client():
     return RESTClient(api_key=api_key)
 
 
-async def _get_ta_indicators_uncached(ticker: str, timespan: str = "day") -> str:
+async def _get_ta_indicators(ticker: str, timespan: str = "day") -> str:
     """Get comprehensive technical analysis indicators in a single call.
 
     This consolidated tool retrieves ALL TA indicators with optimized batched API calls
@@ -209,27 +208,9 @@ async def _get_ta_indicators_uncached(ticker: str, timespan: str = "day") -> str
         return f"❌ Error retrieving technical analysis indicators for {ticker}: {str(e)}\n\nSource: Polygon.io API"
 
 
-@lru_cache(maxsize=1000)
-def _cached_ta_indicators_helper(ticker: str, timespan: str, cache_key: int) -> str:
-    """Cached helper for TA indicators with time-based expiration.
-    
-    Cache expires every 300 seconds (5 minutes) via timestamp bucket.
-    """
-    import asyncio
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        return loop.run_until_complete(_get_ta_indicators_uncached(ticker, timespan))
-    finally:
-        loop.close()
-
-
 @function_tool
 async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
     """Get comprehensive technical analysis indicators in a single call.
-    
-    Uses LRU cache with 5-minute TTL for performance optimization.
-    Cache key based on ticker, timespan, and time bucket (5-minute intervals).
 
     This consolidated tool retrieves ALL TA indicators with optimized batched API calls
     and returns a formatted markdown table. Replaces individual get_ta_sma, get_ta_ema,
@@ -249,7 +230,6 @@ async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
     - 1-second delays between batches prevent rate limiting
     - Total: 12 API calls in ~2-3 seconds
     - Requests limit=10 per indicator to ensure LAST AVAILABLE data (even on weekends/holidays)
-    - Cached for 5 minutes to reduce API calls
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA")
@@ -286,6 +266,6 @@ async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
         - "Show me TA indicators for NVDA"
         - "Technical analysis data for AAPL"
     """
-    return await _get_ta_indicators_uncached(ticker, timespan)
+    return await _get_ta_indicators(ticker, timespan)
 
 

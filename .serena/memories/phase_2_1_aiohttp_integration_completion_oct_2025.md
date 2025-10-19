@@ -34,7 +34,8 @@ async with session.get(url, headers=headers) as response:
 - Proper error handling with asyncio.TimeoutError
 - Uses existing APIConnectionPool singleton
 - Maintains backward compatibility with @function_tool decorator
-- LRU caching still operational from Phase 1
+
+**NOTE:** Phase 1 LRU caching was removed (2025-10-19) due to fundamental incompatibility with async-first architecture. See: `.serena/memories/lru_cache_removal_rationale_oct_2025.md`
 
 ### 2. Function Migration (Code Organization)
 
@@ -47,7 +48,7 @@ async with session.get(url, headers=headers) as response:
 - Moved 4 functions from polygon_tools.py to tradier_tools.py:
   1. `_get_market_status_and_date_time_uncached()` - Main async function
   2. `get_market_status_and_date_time()` - @function_tool wrapper
-  3. `_cached_market_status_helper()` - LRU cache helper
+  3. ~~`_cached_market_status_helper()` - LRU cache helper~~ (REMOVED 2025-10-19)
   4. `_map_market_state()` - State mapping utility
 
 **Result:**
@@ -157,10 +158,11 @@ from ..tools.polygon_tools import (
 - Protect against API rate limits
 - Smooth out request distribution
 
-### Phase 2.4: Intelligent Caching Upgrade
-- Implement cache invalidation strategies
-- Add cache warming for popular queries
-- Optimize TTL values based on data type
+### Phase 2.4: ~~Intelligent Caching Upgrade~~ - ABANDONED
+**Status:** NOT IMPLEMENTED - External caching removed (2025-10-19)
+- Reason: Incompatible with async-first architecture
+- Alternative: OpenAI native prompt caching provides sufficient efficiency
+- See: `.serena/memories/lru_cache_removal_rationale_oct_2025.md`
 
 ## Key Learnings
 

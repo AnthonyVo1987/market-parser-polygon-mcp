@@ -7,8 +7,7 @@ import asyncio
 import json
 import os
 import time
-from datetime import datetime, timedelta
-from functools import lru_cache
+from datetime import datetime, timedelta, timezone
 
 import requests
 from agents import function_tool
@@ -49,7 +48,7 @@ def _format_tradier_quote(quote: dict) -> dict:
     }
 
 
-async def _get_stock_quote_uncached(ticker: str) -> str:
+async def _get_stock_quote(ticker: str) -> str:
     """Get real-time stock quote from Tradier API (uncached implementation).
 
     Internal function that performs the actual API call without caching.
@@ -121,7 +120,6 @@ async def _get_stock_quote_uncached(ticker: str) -> str:
 
 
 @function_tool
-@lru_cache(maxsize=1000)
 async def get_stock_quote(ticker: str) -> str:
     """Get real-time stock quote from Tradier API.
 
@@ -167,17 +165,16 @@ async def get_stock_quote(ticker: str) -> str:
         - Data updates in real-time during market hours
         - Returns last available price when market is closed
         - Handles up to 10 tickers per request for optimal performance
-        - Caching: Uses LRU cache with maxsize=1000 for performance
 
     Examples:
         - "Get AAPL stock quote"
         - "What's the current price of TSLA?"
         - "Get quotes for AAPL, TSLA, NVDA"
     """
-    return await _get_stock_quote_uncached(ticker)
+    return await _get_stock_quote(ticker)
 
 
-async def _get_options_expiration_dates_uncached(ticker: str) -> str:
+async def _get_options_expiration_dates(ticker: str) -> str:
     """Get valid options expiration dates for a ticker from Tradier API (uncached implementation).
 
     Internal function that performs the actual API call without caching.
@@ -261,7 +258,6 @@ async def _get_options_expiration_dates_uncached(ticker: str) -> str:
 
 
 @function_tool
-@lru_cache(maxsize=1000)
 async def get_options_expiration_dates(ticker: str) -> str:
     """Get valid options expiration dates for a ticker from Tradier API.
 
@@ -299,17 +295,16 @@ async def get_options_expiration_dates(ticker: str) -> str:
         - Dates are sorted chronologically (earliest to latest)
         - Includes weekly and monthly expiration dates
         - Data updates daily
-        - Caching: Uses LRU cache with maxsize=1000
 
     Examples:
         - "Get options expiration dates for SPY"
         - "What are the available expiration dates for NVDA options?"
         - "Show me TSLA options expiration dates"
     """
-    return await _get_options_expiration_dates_uncached(ticker)
+    return await _get_options_expiration_dates(ticker)
 
 
-async def _get_stock_price_history_uncached(
+async def _get_stock_price_history(
     ticker: str,
     start_date: str,
     end_date: str,
@@ -511,22 +506,6 @@ async def _get_stock_price_history_uncached(
         )
 
 
-@lru_cache(maxsize=1000)
-def _cached_price_history_helper(ticker: str, start_date: str, end_date: str, interval: str, cache_key: int) -> str:
-    """Cached helper for price history with time-based expiration.
-    
-    Cache expires every 3600 seconds (1 hour) via timestamp bucket.
-    Historical data is immutable, so 1-hour TTL is safe.
-    """
-    import asyncio
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        return loop.run_until_complete(_get_stock_price_history_uncached(ticker, start_date, end_date, interval))
-    finally:
-        loop.close()
-
-
 @function_tool
 async def get_stock_price_history(
     ticker: str,
@@ -535,9 +514,6 @@ async def get_stock_price_history(
     interval: str = "daily"
 ) -> str:
     """Get historical stock price data from Tradier API.
-    
-    Uses LRU cache with 1-hour TTL for performance optimization.
-    Cache key based on ticker, start_date, end_date, interval, and time bucket (1-hour intervals).
 
     Use this tool when the user requests historical stock prices, OHLC bars,
     price performance over time, or daily/weekly/monthly data.
@@ -589,7 +565,6 @@ async def get_stock_price_history(
         - Data updates in real-time during market hours
         - Weekly bars show data for week ending on date
         - Monthly bars show data for month ending on date
-        - Cached for 1 hour to reduce API calls (historical data is immutable)
 
     Examples:
         - "Stock price performance the last 5 trading days: SPY"
@@ -599,7 +574,7 @@ async def get_stock_price_history(
         - "Stock price performance the last month: AAPL"
           → Agent calculates dates, uses interval="monthly"
     """
-    return await _get_stock_price_history_uncached(ticker, start_date, end_date, interval)
+    return await _get_stock_price_history(ticker, start_date, end_date, interval)
 
 
 def _format_tradier_history_bar(bar: dict) -> dict:
@@ -622,7 +597,7 @@ def _format_tradier_history_bar(bar: dict) -> dict:
     }
 
 
-async def _get_call_options_chain_uncached(
+async def _get_call_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
     """Get Call Options Chain with 10 strike prices above current underlying price (uncached implementation).
@@ -766,7 +741,6 @@ async def _get_call_options_chain_uncached(
 
 
 @function_tool
-@lru_cache(maxsize=1000)
 async def get_call_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
@@ -823,7 +797,6 @@ async def get_call_options_chain(
         - Bid/Ask prices instead of single "Price" field
         - Implied volatility expressed as percentage
         - Requires greeks=true parameter for Tradier API
-        - Caching: Uses LRU cache with maxsize=1000
 
     Example:
         User: "Show me SPY call options chain for October 17"
@@ -831,10 +804,10 @@ async def get_call_options_chain(
         Agent: Then calls get_call_options_chain(ticker="SPY", current_price=671.16,
                expiration_date="2025-10-17")
     """
-    return await _get_call_options_chain_uncached(ticker, current_price, expiration_date)
+    return await _get_call_options_chain(ticker, current_price, expiration_date)
 
 
-async def _get_put_options_chain_uncached(
+async def _get_put_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
     """Get Put Options Chain with 10 strike prices below current underlying price (uncached implementation).
@@ -977,7 +950,6 @@ async def _get_put_options_chain_uncached(
 
 
 @function_tool
-@lru_cache(maxsize=1000)
 async def get_put_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
@@ -1034,7 +1006,6 @@ async def get_put_options_chain(
         - Bid/Ask prices instead of single "Price" field
         - Implied volatility expressed as percentage
         - Requires greeks=true parameter for Tradier API
-        - Caching: Uses LRU cache with maxsize=1000
 
     Example:
         User: "Show me SPY put options chain for October 17"
@@ -1042,7 +1013,7 @@ async def get_put_options_chain(
         Agent: Then calls get_put_options_chain(ticker="SPY", current_price=671.16,
                expiration_date="2025-10-17")
     """
-    return await _get_put_options_chain_uncached(ticker, current_price, expiration_date)
+    return await _get_put_options_chain(ticker, current_price, expiration_date)
 
 
 # ============================================================================
@@ -1066,7 +1037,7 @@ def _map_market_state(state: str) -> str:
         return "closed"
 
 
-async def _get_market_status_and_date_time_uncached() -> str:
+async def _get_market_status_and_date_time() -> str:
     """Get current market status and date/time from Tradier API.
 
     Use this tool when the user requests market status, trading hours,
@@ -1201,28 +1172,10 @@ async def _get_market_status_and_date_time_uncached() -> str:
         )
 
 
-@lru_cache(maxsize=1000)
-def _cached_market_status_helper(cache_key: int) -> str:
-    """Cached helper for market status with time-based expiration.
-    
-    Cache expires every 60 seconds (1 minute) via timestamp bucket.
-    """
-    import asyncio
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        return loop.run_until_complete(_get_market_status_and_date_time_uncached())
-    finally:
-        loop.close()
-
-
 @function_tool
 async def get_market_status_and_date_time() -> str:
     """Get current market status and date/time from Tradier API.
-    
-    Uses LRU cache with 1-minute TTL for performance optimization.
-    Cache key based on time bucket (60-second intervals).
-    
+
     Use this tool when the user requests market status, trading hours,
     current date/time, or whether markets are open/closed.
 
@@ -1262,7 +1215,6 @@ async def get_market_status_and_date_time() -> str:
         - Includes pre-market (early_hours) and after-market (after_hours) status
         - Server time is in UTC timezone
         - This is a direct API call via HTTP
-        - Cached for 1 minute to reduce API calls
 
     Examples:
         - "Is the market open?"
@@ -1271,4 +1223,4 @@ async def get_market_status_and_date_time() -> str:
         - "What's today's date?"
         - "Are markets open for trading?"
     """
-    return await _get_market_status_and_date_time_uncached()
+    return await _get_market_status_and_date_time()

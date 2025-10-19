@@ -4,7 +4,8 @@
 
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed: 
 
-Implement JUST 'aiohttp Integration' from Phase 2 for incremental changes.  No research needed because already previously researched in '.serena/memories/performance_optimizations_research_oct_2025.md' & 'docs/implementation_plans/phase_2_api_optimization.md'
+- Completely remove and delete ALL CODE AND doc REFERENCES TO THE BAD LRU CACHE FEATURE that in fundamentally incompatible with out apps stack.
+- WE WILL NEVER IMPLEMENT ANY CACHING IN OUR APP BECAUSE OUR APP IS ASYNC FIRST AND WE ALREADY USE OPENAI NATIVE PROMPT CACHING, SO NO REDUNDANT EXTERNAL CACHING FEATURES ARE NEEDED
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 

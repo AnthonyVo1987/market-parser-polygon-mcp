@@ -32,74 +32,94 @@ chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 # - Phase 2 instructions displayed
 ```
 
-#### CLI Regression Testing - Phase 2: MANDATORY Grep-Based Verification (EVIDENCE REQUIRED)
+#### CLI Regression Testing - Phase 2: MANDATORY Manual Verification (NO SHORTCUTS)
 
-**CRITICAL:** Script can ONLY verify responses received. It CANNOT validate correctness.
+🔴 **CRITICAL: Grep commands are INSUFFICIENT and will miss failures. You MUST manually review EACH test response.**
 
-Phase 2 is broken into 4 sub-phases with **MANDATORY bash commands** that MUST be executed:
+**Why Grep Fails:**
+- ❌ Misses duplicate/unnecessary tool calls (agent calling same tool twice)
+- ❌ Misses wrong tool selection (agent calling wrong API for data)
+- ❌ Misses data inconsistencies (cross-ticker contamination, wrong data returned)
+- ❌ Only catches explicit error messages, not logic errors
 
-##### **Phase 2a: ERROR DETECTION (MANDATORY - MUST RUN COMMANDS)**
+**MANDATORY Process for EACH of the 39 Tests:**
 
-🔴 **YOU MUST RUN these grep commands and SHOW output. Cannot proceed without evidence.**
+##### **Step 1: Read Test Response Using Read Tool**
+- Use `Read` tool to read the test log file section for each test
+- Read lines corresponding to that test's Agent Response, Tools Used, and Performance Metrics
+- **NO scripts, NO grep shortcuts - READ each test manually**
 
-```bash
-# Command 1: Find all errors/failures
-grep -i "error\\|unavailable\\|failed\\|invalid" test-reports/test_cli_regression_loop1_*.log
+##### **Step 2: Apply 4-Point Verification Criteria**
 
-# Command 2: Count 'data unavailable' errors
-grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
+For EACH test, you MUST verify ALL 4 criteria:
 
-# Command 3: Count completed tests
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
-```
+1. ✅ **Does the response address the query?**
+   - Does the agent's response directly answer the test prompt?
+   - Is the response relevant to the ticker(s) mentioned?
+   - Is the response complete (not truncated)?
 
-**Required Output**: Paste ALL grep command outputs. If you don't show grep output, Phase 2 is INCOMPLETE.
+2. ✅ **Were the RIGHT tools called (not duplicate/unnecessary calls)?**
+   - **Check conversation context**: If a previous test already retrieved data, agent should NOT call the same tool again
+   - Example FAIL: Test 10 calls `get_ta_indicators()`, Test 12 should NOT call it again
+   - Are the tools appropriate for the query (Tradier for quotes, Polygon for TA)?
+   - Are there any redundant API calls?
 
-##### **Phase 2b: DOCUMENT FAILURES (MANDATORY - IF ERRORS FOUND)**
+3. ✅ **Is the data correct?**
+   - Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+   - Data formatting matches expected format (OHLC, tables, etc.)
+   - No hallucinated data or made-up values
+   - No cross-ticker contamination (NVDA query shouldn't return SPY data)
+   - Options chains show Bid/Ask columns (NOT midpoint)
 
-If Phase 2a grep commands found errors, create **evidence-based failure table**:
+4. ✅ **Are there any errors?**
+   - No error messages in response
+   - No "data unavailable" messages
+   - No RuntimeWarnings
+   - No API errors
 
-| Test # | Test Name | Line # | Error Message | Tool Call (if visible) |
-|--------|-----------|--------|---------------|------------------------|
-| 3 | SPY_Yesterday_Price_OHLC | 157 | data unavailable due to retrieval error | get_stock_price_history(...) |
+##### **Step 3: Document Each Test Result**
 
-**Required**: Show grep output + failure table with line numbers, OR confirm "0 failures found".
+Create a table documenting ALL 39 tests:
 
-##### **Phase 2c: VERIFY RESPONSE CORRECTNESS (For tests without errors)**
+| Test # | Test Name | Status | Issue (if failed) | Failure Type |
+|--------|-----------|--------|-------------------|--------------|
+| 1 | Market_Status | ❌ FAIL | timezone import error | Code Error |
+| 2 | SPY_Price | ✅ PASS | - | - |
+| 10 | SPY_TA_Indicators | ✅ PASS | - | - |
+| 12 | SPY_Full_TA | ❌ FAIL | Duplicate call to get_ta_indicators() | Logic Error (Duplicate Tool Call) |
+| ... | ... | ... | ... | ... |
 
-For tests that didn't show errors in Phase 2a, verify:
+**Failure Types:**
+- Code Error: Syntax/runtime errors, import errors
+- Logic Error (Duplicate Tool Call): Agent made unnecessary redundant API calls
+- Logic Error (Wrong Tool): Agent called wrong tool for the query
+- Data Error: Wrong data returned, cross-ticker contamination
+- Response Error: Incomplete response, doesn't address query
 
-1. ✅ Response directly addresses the prompt query
-2. ✅ Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
-3. ✅ Appropriate tool calls made (Polygon, Tradier)
-4. ✅ Data formatting matches expected format (OHLC, tables, etc.)
-5. ✅ No hallucinated data or made-up values
-6. ✅ Options chains show Bid/Ask columns (NOT midpoint)
-7. ✅ Technical analysis includes proper indicators
-8. ✅ Response is complete (not truncated)
-
-##### **Phase 2d: FINAL VERIFICATION (CHECKPOINT QUESTIONS)**
+##### **Step 4: Final Checkpoint Questions**
 
 Answer ALL checkpoint questions with evidence:
 
-1. ✅ Did you RUN the 3 mandatory grep commands in Phase 2a? **SHOW OUTPUT**
-2. ✅ Did you DOCUMENT all failures found (or confirm 0 failures)? **PROVIDE TABLE OR "0 failures"**
-3. ✅ Failure count from grep -c: **X failures**
-4. ✅ Tests that generated responses: **X/39 COMPLETED**
-5. ✅ Tests that PASSED verification (no errors): **X/39 PASSED**
+1. ✅ Did you READ all 39 test responses manually using the Read tool? **YES/NO**
+2. ✅ Did you apply all 4 verification criteria to EACH test? **YES/NO**
+3. ✅ How many tests PASSED all 4 criteria? **X/39 PASSED**
+4. ✅ How many tests FAILED (any criterion)? **X/39 FAILED**
+5. ✅ Did you document ALL failures with test #, issue, and failure type? **YES/NO + TABLE**
 
 **🔴 CANNOT MARK TASK COMPLETE WITHOUT:**
-- Running and showing grep outputs
-- Documenting failures with evidence (or confirming 0 failures)
-- Providing failure count: `grep -c "data unavailable"`
+- Reading all 39 test responses manually (using Read tool, NOT grep)
+- Applying all 4 verification criteria to each test
+- Documenting ALL 39 tests in a results table
+- Providing failure count and failure details table
 - Answering all 5 checkpoint questions with evidence
 
 ❌ **NEVER DO:**
 - Skip Phase 1 test execution
-- Skip Phase 2a-2d grep-based verification
-- Claim completion without showing grep outputs
+- Skip Phase 2 manual verification
+- Use grep shortcuts (they miss logic errors!)
+- Claim completion without reviewing all 39 tests
 - Mark task "done" without evidence
-- Proceed to documentation without all 4 sub-phases complete
+- Proceed to documentation without complete manual review
 
 ### 3. Documentation Updates
 
@@ -197,3 +217,4 @@ git push
 - **React/TypeScript removed**: No TypeScript/JavaScript linting needed (Oct 17, 2025)
 - **Gradio only**: All web UI testing done via Gradio (port 8000)
 - **Python-first**: Only Python linting and testing required
+- **Manual Testing**: ALWAYS review all 39 test responses individually (Oct 19, 2025)

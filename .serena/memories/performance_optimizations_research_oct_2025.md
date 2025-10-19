@@ -47,7 +47,21 @@ demo.queue(
 
 ---
 
-### 2. API Response Caching (LRU) (30 min)
+### 2. ❌ ABANDONED: API Response Caching (LRU) (30 min)
+
+**STATUS:** NOT IMPLEMENTED - External caching removed (2025-10-19)
+
+**Reason for Abandonment:**
+- @lru_cache decorator is incompatible with async-first architecture
+- App already uses OpenAI native prompt caching for efficiency
+- External caching adds complexity without measurable benefit
+
+**See:** `.serena/memories/lru_cache_removal_rationale_oct_2025.md`
+
+---
+
+#### Original Research (Historical Reference):
+
 **File**: `src/backend/tools/*.py` (polygon_tools.py, tradier_tools.py)
 
 **Option A - Simple In-Memory LRU Cache**:
