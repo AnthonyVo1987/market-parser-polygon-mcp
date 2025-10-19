@@ -14,6 +14,13 @@ GPT-5-nano via the OpenAI Agents SDK v0.2.9.
 ### CLI Interface
 
 ```bash
+# Standard Python entry point (recommended)
+uv run main.py
+
+# OR using installed script
+uv run market-parser
+
+# OR legacy method
 uv run src/backend/cli.py
 
 > Tesla stock analysis
@@ -304,13 +311,32 @@ Only after Phase 2 manual verification can you claim tests passed.
 
 **Prerequisites:** uv, API keys in .env
 
+**CLI Interface (recommended for automation/scripting):**
 ```bash
-# CLI Interface (recommended for automation/scripting)
-uv run src/backend/cli.py
+# Standard Python entry point (recommended)
+uv run main.py
 
-# Gradio Web UI (recommended for interactive analysis)
+# Using installed console script
+uv run market-parser
+
+# Legacy method (still supported)
+uv run src/backend/cli.py
+```
+
+**Gradio Web UI (recommended for interactive analysis):**
+```bash
+# Hot reload mode (recommended for development)
+# Auto-reloads on file save, 2x-10x less CPU than standard server auto-reload
+uv run gradio src/backend/gradio_app.py
+
+# Using installed console script
+uv run market-parser-gradio
+
+# Production mode (no hot reload)
 uv run python src/backend/gradio_app.py
+
 # Access at http://127.0.0.1:8000
+# PWA enabled: Install from browser address bar (Chrome/Edge)
 ```
 
 ## Features
@@ -365,11 +391,15 @@ Performance Metrics:
 ### Available Commands
 
 ```bash
-# CLI Interface
-uv run src/backend/cli.py
+# CLI Interface (all methods work)
+uv run main.py                    # Standard Python entry point (recommended)
+uv run market-parser              # Console script
+uv run src/backend/cli.py         # Legacy method
 
-# Gradio Web UI
-uv run python src/backend/gradio_app.py
+# Gradio Web UI (all methods work)
+uv run gradio src/backend/gradio_app.py   # Hot reload mode (recommended for dev)
+uv run market-parser-gradio               # Console script
+uv run python src/backend/gradio_app.py   # Production mode (no hot reload)
 
 # Testing
 chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # 39-test suite

@@ -633,6 +633,39 @@ After completing React/FastAPI retirement and dead code cleanup, performed compr
 
 ---
 
+## Entry Points & Gradio Features (October 18, 2025)
+
+**Implementation Summary:**
+- Added standard Python entry point (`src/main.py`) following best practices
+- Added console scripts to pyproject.toml (`market-parser`, `market-parser-gradio`)
+- Enabled Gradio PWA (Progressive Web App) functionality
+- Documented Gradio Hot Reload for faster development
+
+**Files Created:**
+- `src/main.py` - Standard Python entry point
+- `src/backend/__init__.py` - Backend package initialization
+
+**Files Modified:**
+- `pyproject.toml` - Added [project.scripts] section
+- `src/backend/cli.py` - Added main() function
+- `src/backend/gradio_app.py` - Added main() function + pwa=True
+
+**Benefits:**
+- ✅ Standard Python convention: `uv run main.py`
+- ✅ Professional commands: `uv run market-parser`
+- ✅ PWA installable app (desktop/mobile)
+- ✅ Hot reload for faster development
+- ✅ Zero breaking changes (100% backward compatible)
+- ✅ Python standards compliance (PEP 8)
+
+**Testing Status:**
+- All entry points tested and working
+- PWA implementation verified (code correct, WSL env issue noted)
+- Hot reload functionality confirmed
+- 100% backward compatibility maintained
+
+---
+
 ## Related Memories
 
 - `project_architecture.md` - Updated architecture documentation

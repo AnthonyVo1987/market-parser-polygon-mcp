@@ -270,23 +270,41 @@ Data Formatting
 Return to Agent
 ```
 
+## Entry Points Architecture
+
+**Standard Python Entry Point:**
+- `src/main.py` - Main entry point following Python best practices
+- Enables: `uv run main.py` (standard convention)
+
+**Console Scripts (pyproject.toml):**
+- `market-parser` → `backend.cli:main` (CLI interface)
+- `market-parser-gradio` → `backend.gradio_app:main` (Gradio web interface)
+
+**Package Initialization:**
+- `src/backend/__init__.py` - Backend package initialization (empty file for proper Python package structure)
+
+**Legacy Entry Points (still supported):**
+- `uv run src/backend/cli.py` - Direct CLI execution
+- `uv run python src/backend/gradio_app.py` - Direct Gradio execution
+
 ## Project Structure
 
 ```
 market-parser-polygon-mcp/
 ├── src/
+│   ├── main.py                  # Standard Python entry point ⭐ NEW
 │   └── backend/
-│       ├── main.py              # FastAPI app + lifespan (creates persistent agent)
+│       ├── __init__.py          # Backend package initialization ⭐ NEW
 │       ├── cli.py               # CLI + core business logic ⭐ SINGLE SOURCE OF TRUTH
 │       ├── gradio_app.py        # Gradio web UI (wraps CLI core) ⭐ PRIMARY WEB UI
-│       ├── dependencies.py      # Dependency injection
-│       ├── routers/
-│       │   └── chat.py          # Chat endpoint (calls CLI functions)
 │       ├── services/
 │       │   └── agent_service.py # Agent creation logic
 │       └── tools/
 │           ├── tradier_tools.py # 5 Tradier Direct API tools
-│           └── polygon_tools.py # 2 Polygon Direct API tools
+│           ├── polygon_tools.py # 2 Polygon Direct API tools
+│           ├── error_utils.py   # Error response formatting helper
+│           ├── validation_utils.py # Ticker validation helper
+│           └── api_utils.py     # API header generation helper
 ├── config/
 │   └── app.config.json          # Non-sensitive settings
 ├── test-reports/                # Test execution reports
@@ -296,13 +314,13 @@ market-parser-polygon-mcp/
 ├── .claude/                     # Claude Code settings
 ├── tests/                       # Python tests
 ├── docs/                        # Documentation
-├── pyproject.toml               # Python dependencies
+├── pyproject.toml               # Python dependencies + console scripts ⭐ UPDATED
 ├── package.json                 # npm scripts (backend tooling only)
 ├── test_cli_regression.sh       # CLI test suite (39 tests)
 └── start-gradio.sh              # Gradio UI startup script
 ```
 
-**Note**: React frontend (src/frontend/) has been completely removed. Gradio is the only web interface.
+**Note**: React frontend (src/frontend/) and FastAPI backend (src/backend/main.py, routers/, etc.) have been completely removed. Gradio is the only web interface.
 
 ## Technology Stack
 

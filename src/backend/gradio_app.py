@@ -92,22 +92,35 @@ demo = gr.ChatInterface(
     ],
 )
 
-if __name__ == "__main__":
-    # Launch Gradio interface
+def main():
+    """Main entry point for Market Parser Gradio interface.
+
+    This function serves as the entry point for the console script defined
+    in pyproject.toml: market-parser-gradio
+
+    Features:
+        - PWA (Progressive Web App) support - installable on desktop/mobile
+        - Hot Reload - use 'uv run gradio src/backend/gradio_app.py' for dev mode
+    """
     print("\n" + "="*60)
     print("🎨 Market Parser Gradio Interface")
     print("="*60)
     print("📍 Server: http://127.0.0.1:8000")
-    print("🔄 Hot Reload: Use 'gradio src/backend/gradio_app.py'")
+    print("🔄 Hot Reload: Use 'uv run gradio src/backend/gradio_app.py'")
+    print("📱 PWA: Install from browser (Chrome/Edge install icon)")
+    print("💡 Tip: Changes auto-reload on file save in hot reload mode")
     print("="*60 + "\n")
 
     demo.launch(
-        server_name="127.0.0.1",  # Localhost only (dev mode)
-        server_port=8000,  # AWS deployment port
-        share=False,  # No public URL (dev mode)
-        show_error=True,  # Show error messages in UI
-        quiet=False,  # Show startup logs
-        favicon_path=None,  # Use default Gradio favicon
-        show_api=False,  # Don't show API documentation
-        allowed_paths=[],  # No file serving (security)
+        server_name="127.0.0.1",
+        server_port=8000,
+        pwa=True,  # ⭐ Enable Progressive Web App functionality
+        share=False,
+        show_error=True,
+        quiet=False,
+        show_api=False,
+        allowed_paths=[],
     )
+
+if __name__ == "__main__":
+    main()

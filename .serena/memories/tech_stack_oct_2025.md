@@ -273,6 +273,37 @@ All pinned to specific versions (see pyproject.toml):
 
 ---
 
+## Entry Points & Scripts
+
+**Main Entry Point:**
+- `src/main.py` - Standard Python entry point for CLI
+- Enables: `uv run main.py` (following Python conventions)
+
+**Console Scripts (pyproject.toml):**
+- `market-parser` → `backend.cli:main` - CLI interface
+- `market-parser-gradio` → `backend.gradio_app:main` - Gradio web interface
+
+**Legacy Entry Points (still supported):**
+- `uv run src/backend/cli.py` - Direct CLI execution
+- `uv run python -m src.backend.cli` - Module execution
+
+## Gradio Features
+
+**Progressive Web App (PWA):**
+- Enabled via `pwa=True` in `demo.launch()`
+- Allows users to install app on desktop/mobile devices
+- Provides native-like experience with standalone window
+- Install from browser address bar (Chrome/Edge)
+
+**Hot Reload:**
+- Enabled via `uv run gradio src/backend/gradio_app.py` command
+- Auto-reloads app on file save for faster development
+- 2x-10x less CPU than standard server auto-reload
+- Compatible with ChatInterface and all Gradio components
+- Production mode: `uv run python src/backend/gradio_app.py` (no hot reload)
+
+---
+
 ## Development Workflow Stack
 
 ### IDE Integration

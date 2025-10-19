@@ -21,6 +21,10 @@ dependencies = [
   "gradio>=5.0.0",
 ]
 
+[project.scripts]
+market-parser = "backend.cli:main"
+market-parser-gradio = "backend.gradio_app:main"
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"

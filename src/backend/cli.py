@@ -249,6 +249,17 @@ async def _process_user_input(cli_session, analysis_agent, user_input):
         print_error(e, "AI Model Error")
         return f"Error: Unable to process request. {str(e)}"
 
-if __name__ == "__main__":
+def main():
+    """Main entry point for CLI interface.
+
+    This function enables the standard Python convention:
+        uv run main.py
+
+    It wraps the async CLI loop in asyncio.run().
+    """
     import asyncio
     asyncio.run(cli_async())
+
+
+if __name__ == "__main__":
+    main()
