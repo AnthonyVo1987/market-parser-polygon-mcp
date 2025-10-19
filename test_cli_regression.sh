@@ -93,7 +93,7 @@ declare -a prompts=(
     "Get options expiration dates: \$SPY"
     "Get Call Options Chain Expiring this Friday: \$SPY"
     "Get Put Options Chain Expiring this Friday: \$SPY"
-    "Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
     # NVDA Test Sequence (Tests 17-31)
     "Current Price OHLC: \$NVDA"
     "Yesterday's Price OHLC: \$NVDA"
@@ -109,7 +109,7 @@ declare -a prompts=(
     "Get options expiration dates for \$NVDA"
     "Get Call Options Chain Expiring this Friday: \$NVDA"
     "Get Put Options Chain Expiring this Friday: \$NVDA"
-    "Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
+    "Analyze the Options Chain Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
     # Multi-Ticker Test Sequence (Tests 32-39)
     "Current Price OHLC: \$WDC, \$AMD, \$SOUN"
     "Yesterday's Price OHLC: \$WDC, \$AMD, \$SOUN"
