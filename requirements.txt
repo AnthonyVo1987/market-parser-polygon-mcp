@@ -1,0 +1,28 @@
+# Hugging Face Spaces Requirements
+# Python dependencies for Market Parser deployment
+
+# Core UI Framework
+gradio>=5.49.1
+
+# AI/ML Framework
+openai-agents==0.2.9
+openai>=1.99.0,<1.100.0
+
+# Data Validation and Processing
+pydantic>=2.0.0
+
+# Terminal/Output Formatting
+rich>=13.0.0
+
+# Environment Management
+python-dotenv>=1.0.0
+
+# API Clients
+polygon-api-client>=1.14.0
+openai-agents-mcp>=0.0.8
+
+# Async File Operations
+aiofiles>=24.1.0
+
+# Language Server Protocol (for development tools)
+python-lsp-server[all]>=1.13.1

@@ -1,3 +1,14 @@
+---
+title: Market Parser Financial Assistant
+emoji: 📈
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 5.49.1
+app_file: app.py
+pinned: false
+---
+
 # Market Parser with Polygon MCP Server
 
 A Python CLI and Gradio web interface for natural language financial
