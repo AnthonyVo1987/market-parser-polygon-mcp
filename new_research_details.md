@@ -2,9 +2,32 @@
 
 ---
 
-<Phase 1: Research> ULTRA-THINK to Research the requested task(s): 
+<Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s) using sub-agents task(s) for parallel optimized performance and speed when applicable:
 
-<NONE> proceed to Phase 2 because you were interruppted previously performing phase 2.  You already performed phase 1 and generatefd research in 'research_task_plan.md', so this is just a continuation of the entire workflow since you got interrupted.
+
+## Task 1: Refactor\Re-architecture folder and file hierarchy after all the code cleanup and app re-architecture
+
+Context
+- Now that we have refactored, cleaned up, and re-architectured our app, now let's refactor\re-architecture the folder and file hierarchy & file naming schemes. 
+- Previously we had separate folders for frontend vs back end due to the REACT frontend, FastAPI etc.
+- But now that everything has been consolidated, retired, & migrated to a full Python stack, We need to also optimize our file and folder hierarchy
+
+Expected Outcomes & Requirements:
+- The CLI app should be made to run by issuing the Python standard 'uv run main.py' to match standard Python apps
+- However, this would then call the CLI back end. Because right now we are trying to directly call the CLI back end, but we can't run it from the UV because it's being run as a module, IE. currently uses 'uv run src/backend/cli.py' and\or 'uv run python -m src.backend.cli', which is non standardized python uv convention. 
+- Completely remove references to a backend folder, So instead of having separate backend and frontend folders, we could just have a single folder for all the source code in 'src'. 
+- Instead of having separate folders to organize, we'll just add file naming prefixes to help designate and identify files that belong to backend or front end. 
+- So any backend related files should have the 'backend_xxx' prefix, any front-end related files for radio should have the 'frontend_xxx' prefix, anything tool related should have a 'tool_xxx' prefix, config files 'config_xxx' prefix xxx 
+- So reorganize\rename also any other files that can also be consolidated to a more optimized file structure with standardize file naming convention prefixes
+- This will reduce the amount of code so all the code is in a single folder, with a single '__init__.py'.  That way, any AI agents or new users can quickly grep or search for files and quickly look at the file name prefix to know whether it belongs to the backend\frontend\config\tool etc
+-  That way, they don't have to navigate to a backend folder versus a frontend folder etc So everything's in a single folder. 
+- It may look messy initially, but with the file name prefixes, it becomes organized. 
+- For example, now anytime an AI agent wants to grep or search for frontend, they can just search for the 'frontend_xxx' wildcard, and they can see all the file & hits. 
+-  That way, they don't have to navigate to a folder here or a folder there and then we don't need to have multiple folders, and then multiple different '__init__.py' per folder 
+- Because our project is still prototyping and not too complex, We don't quite need the enterprise level convention, folder\file hierarchy, where different components and domains are stored in different folders. We're not at that stage yet. So we'll simplify the file and folder naming hierarchy.
+
+## Task 2: Implement\Enable Gradio PWA (Progressive Web App) & Gradio Hot Reload feature
+
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
@@ -12,13 +35,13 @@
 
 <Phase 2: Planning>
 
-Based on the latest Research, Analysis & Scoping 'reasearch_task_plan.md', delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s) & using sub-agents task(s) for optimized performance and speed when applicable
+Based on the latest Research, Analysis & Scoping 'reasearch_task_plan.md', delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s) & using sub-agents task(s) for parallel optimized performance and speed when applicable:
 
 ---
 
 <Phase 3: Implementation> 🔴 CRITICAL: NOW YOU MAY START IMPLEMENTING DURING THIS PHASE 🔴
 
-You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to Implement all code changes, test suite updates, and agent instruction modifications according to the TODO_task_plan.md using sub-agents task(s) for optimized performance and speed when applicable
+You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to Implement all code changes, test suite updates, and agent instruction modifications according to the TODO_task_plan.md using sub-agents task(s) for parallel optimized performance and speed when applicable:
 
 ---
 
