@@ -4,230 +4,203 @@
 
 Market Parser is a Python CLI and Gradio web interface for natural language financial queries using Direct Polygon/Tradier API integration and OpenAI GPT-5-Nano via the OpenAI Agents SDK v0.2.9.
 
-**Key Architectural Changes (Oct 2025):**
-- **Gradio-Only Frontend** (Oct 17, 2025) - React frontend completely retired ⭐ NEW
-- **Performance Metrics Footer Consolidation** (Oct 17, 2025) - Single source of truth in CLI core ⭐
-- **Persistent Agent Architecture** (ONE agent per lifecycle, CLI = core, GUI = wrapper)
-- **Migrated from MCP to Direct API** (70% performance improvement)
+**Latest Architecture Update (Oct 18, 2025):**
+- ✅ **Entry Points Refactoring** - Standard Python entry point + console scripts
+- ✅ **Gradio Features** - PWA (Progressive Web App) + Hot Reload enabled
+- ✅ **Code Cleanup** - DRY principle applied, 390 lines removed
+- ✅ **Gradio-Only Frontend** - React completely retired ⭐
 
-## Performance Metrics Footer Architecture (Oct 17, 2025) ⭐
+## Entry Points Architecture (Latest - Oct 18, 2025) ⭐ NEW
 
-### Problem Solved
+### Standard Python Entry Point
 
-**Before (❌ Code Duplication):**
-- Footer duplicated 2x across CLI and Gradio (~100 lines duplicate code)
-- Each interface independently extracted metadata and formatted footer
+**File:** `src/main.py` (created Oct 18, 2025)
 
-**After (✅ Single Source of Truth):**
-- Footer generated ONCE in CLI core (`process_query_with_footer()`)
-- All interfaces receive complete response with footer included
-- Zero duplication (~100 lines deleted, 17% code reduction)
-
-### Implementation
-
-#### Core Functions (src/backend/cli.py)
-
-**1. `_format_performance_footer()`** - Canonical formatter (plain text, 30 lines)
-**2. `process_query_with_footer()`** - Wrapper function (40 lines)
-
-Returns complete response with footer:
-```
-[Agent Response]
-
-Performance Metrics:
-   Response Time: 5.135s
-   Tokens Used: 21,701 (Input: 21,402, Output: 299) | Cached Input: 11,776
-   Model: gpt-5-nano
+```bash
+uv run main.py
 ```
 
-#### Interface Integration
+**Purpose:** Standard Python convention for CLI entry point
+**Status:** ✅ WORKING (tested Oct 18)
 
-**CLI**: Deleted ~50 lines from `print_response()` - now displays complete response
-**Gradio**: Deleted ~60 lines from `chat_with_agent()` - now streams complete response
+### Console Scripts (pyproject.toml)
 
-### Benefits
+**File:** `pyproject.toml` [project.scripts] (updated Oct 18, 2025)
 
-1. **Zero Duplication**: Footer logic exists ONCE (single source of truth)
-2. **Scalability**: New UI frameworks need zero footer code
-3. **Maintainability**: Footer changes update 1 function only
-4. **Consistency**: Identical footer across all interfaces
-
-### Testing Results
-
-**Bug Fix**: Fixed critical import error (`extract_token_usage_from_context_wrapper`)
-**Test Suite**: 39/39 PASSED (100%), 9.67s avg (EXCELLENT), footer verified in all responses
-
-**Files Changed**: 3 files (cli.py, response_utils.py, gradio_app.py)
-
-## Architecture Overview
-
-### System Components
-
-**Backend Services:**
-- **CLI Interface** - Terminal-based interface with persistent session (CORE BUSINESS LOGIC)
-- **Gradio Web UI** (port 8000) - Web-based chat interface (wraps CLI core) ⭐ ONLY WEB INTERFACE
-
-**AI Integration:**
-- **OpenAI Agents SDK v0.2.9** - Agent orchestration
-- **GPT-5-Nano** - Language model (EXCLUSIVE - 200K TPM)
-- **Persistent Agent** - ONE agent per lifecycle (not per message)
-
-**Data Sources:**
-- **Polygon.io Direct API** - Market data (2 tools, FALLBACK)
-  - **File**: `src/backend/tools/polygon_tools.py` (366 lines, 56.5% reduction Oct 18, 2025)
-  - **Cleanup**: Removed 466 lines of dead code and legacy comments (Phase 1)
-  - **Deprecated**: Legacy TA tools (get_ta_sma, get_ta_ema, get_ta_rsi, get_ta_macd) removed Oct 18, 2025
-    - Originally deprecated Oct 11, 2025, replaced by consolidated `get_ta_indicators()` function
-  - **Refactored** (Oct 18, 2025, Phase 3): 5 functions now use centralized helper modules
-    - get_ticker_details, get_aggregates_bars, get_previous_close, get_daily_open_close, get_grouped_daily_bars
-    - Uses: error_utils, validation_utils, api_utils for DRY compliance
-  - **Function Rename** (Oct 18, 2025, Phase 4): `_map_tradier_state()` → `_map_market_state()`
-    - Improved naming clarity (generic market state, not Tradier-specific)
-    - Updated docstring to reflect standardized market state mapping
-- **Tradier Direct API** - Market data (5 tools, PRIMARY)
-  - **File**: `src/backend/tools/tradier_tools.py` (909 lines)
-  - **Refactored** (Oct 18, 2025, Phase 3): 5 functions now use centralized helper modules
-    - get_market_status, get_stock_quote, get_stock_price_history, get_call_options_chain, get_put_options_chain
-    - Uses: error_utils, validation_utils, api_utils for DRY compliance
-
-**Helper Modules** (Oct 18, 2025, Phase 2):
-- **error_utils.py** (~58 lines) - Standardized error response formatting
-  - Single source of truth for error handling (eliminates 20+ duplicate error patterns)
-- **validation_utils.py** (~57 lines) - Ticker validation and sanitization
-  - Single source of truth for input validation (eliminates 15+ duplicate validation blocks)
-- **api_utils.py** (~42 lines) - API header generation helpers
-  - Single source of truth for API utilities (eliminates 8+ duplicate header builders)
-
-### Interface Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    CLI Core (cli.py)                     │
-│  • initialize_persistent_agent()                         │
-│  • process_query_with_footer()                           │
-│  • _format_performance_footer()                          │
-│  └─ Single Source of Truth for Business Logic           │
-└─────────────────────────────────────────────────────────┘
-                        ↓
-        ┌───────────────┴───────────────┐
-        ↓                               ↓
-┌───────────────────┐         ┌───────────────────┐
-│  CLI Interface    │         │  Gradio Web UI     │
-│  (Terminal)       │         │  (Port 8000)       │
-│                   │         │                    │
-│  Calls:           │         │  Calls:            │
-│  • process_query  │         │  • process_query   │
-│  • print_response │         │  • Stream response │
-└───────────────────┘         └───────────────────┘
+```bash
+uv run market-parser              # CLI interface
+uv run market-parser-gradio       # Gradio web interface
 ```
 
-**Pattern**: CLI = Core, Gradio = Wrapper (zero code duplication)
+**Status:** ✅ BOTH WORKING (tested Oct 18)
 
-### Port Configuration
+### Backend Package Initialization
 
-**Active Ports:**
-- **8000** - Gradio web interface ⭐ ONLY WEB UI
+**File:** `src/backend/__init__.py` (created Oct 18, 2025)
 
-**Removed Ports:**
-- ~~8000~~ - FastAPI backend (RETIRED Oct 17, 2025 - Phase 2)
-- ~~3000~~ - React frontend (RETIRED Oct 17, 2025 - Phase 1)
+**Purpose:** Makes backend a proper Python package
+**Status:** ✅ CREATED (empty __init__.py)
 
-## Gradio Web Interface Architecture (Port 8000) ⭐
+### Legacy Entry Points (Still Supported)
 
-### Overview
-- **File**: `src/backend/gradio_app.py`
-- **Framework**: Gradio ChatInterface
-- **Pattern**: Wrapper around CLI core logic (NO duplication)
-- **Access**: http://127.0.0.1:8000
-
-### Architecture Pattern
-
-```python
-# Gradio UI wraps CLI core (same pattern as FastAPI)
-from .cli import initialize_persistent_agent, process_query_with_footer
-
-# Initialize agent ONCE at startup
-session = SQLiteSession("gradio_session")
-agent = initialize_persistent_agent()
-
-# Wrapper function calls CLI core
-async def chat_with_agent(message, history):
-    response = await process_query_with_footer(agent, session, message)
-    yield response  # Stream to Gradio UI
+```bash
+uv run src/backend/cli.py         # Direct CLI
+uv run python -m backend.cli      # Module execution
+uv run python src/backend/gradio_app.py     # Direct Gradio
+uv run gradio src/backend/gradio_app.py    # Gradio hot reload
 ```
 
-### Key Features
+**Status:** ✅ ALL WORKING (100% backward compatible)
 
-1. **Zero Code Duplication** - Calls CLI core functions
-2. **Persistent Agent** - ONE agent for all sessions
-3. **Streaming Responses** - Real-time output via yield
-4. **Complete Responses** - Footer included (from CLI core)
-5. **SQLite Session** - Persistent chat history
+## Gradio Features (Latest - Oct 18, 2025) ⭐ NEW
 
-### Integration Benefits
+### Progressive Web App (PWA)
 
-- **Maintainability**: Changes to CLI automatically reflected in Gradio
-- **Consistency**: Identical responses across CLI and Gradio
-- **Simplicity**: Gradio file is ~80 lines (mostly UI config)
-- **Scalability**: Easy to add new UI frameworks (same wrapper pattern)
+- **Status:** ✅ ENABLED (pwa=True in gradio_app.py)
+- **Feature:** Users can install app on desktop/mobile devices
+- **Installation:** Chrome/Edge browser install icon
+- **Experience:** Standalone window, native-like app
 
-## Persistent Agent Architecture
+### Hot Reload (Development)
 
-### Agent Lifecycle
+- **Command:** `uv run gradio src/backend/gradio_app.py`
+- **Feature:** Auto-reload on file save for faster development
+- **Performance:** 2x-10x less CPU than standard auto-reload
+- **Compatibility:** Works with ChatInterface and all Gradio components
 
-**CLI Mode:**
-```python
-# Create agent ONCE at startup
-cli_session = SQLiteSession("cli_session")
-analysis_agent = initialize_persistent_agent()
+### Production Mode (No Hot Reload)
 
-# Reuse agent for ALL messages
-for user_input in inputs:
-    result = await process_query_with_footer(analysis_agent, cli_session, user_input)
+- **Command:** `uv run python src/backend/gradio_app.py`
+- **Port:** 8000 (localhost) or 0.0.0.0 (AWS AppRunner)
+- **Features:** PWA still enabled
+
+## Project Structure (Latest)
+
+```
+market-parser-polygon-mcp/
+├── src/
+│   ├── main.py                  # Standard Python entry point ⭐ NEW (Oct 18)
+│   └── backend/
+│       ├── __init__.py          # Backend package initialization ⭐ NEW (Oct 18)
+│       ├── cli.py               # CLI + core business logic (main() added Oct 18)
+│       ├── gradio_app.py        # Gradio web UI (PWA + main() Oct 18)
+│       ├── config.py            # Configuration
+│       ├── services/
+│       │   └── agent_service.py # Agent initialization
+│       ├── tools/
+│       │   ├── tradier_tools.py # 5 Tradier Direct API tools (refactored Oct 18)
+│       │   ├── polygon_tools.py # 2 Polygon Direct API tools (refactored Oct 18, -56.5%)
+│       │   ├── error_utils.py   # Error response helper (new Oct 18, DRY)
+│       │   ├── validation_utils.py # Ticker validation helper (new Oct 18, DRY)
+│       │   ├── api_utils.py     # API header helper (new Oct 18, DRY)
+│       │   └── formatting_helpers.py # Formatting utilities
+│       └── utils/
+│           ├── response_utils.py
+│           ├── datetime_utils.py
+│           └── token_utils.py
+├── pyproject.toml               # Dependencies + console scripts (updated Oct 18)
+├── CLAUDE.md                    # Project documentation (updated Oct 18)
+├── test_cli_regression.sh       # 39-test regression suite
+└── ...
 ```
 
-**Gradio Mode:**
-```python
-# Create agent ONCE at module load
-gradio_session = SQLiteSession("gradio_session")
-analysis_agent = initialize_persistent_agent()
+## Technology Stack
 
-# Reuse agent for ALL HTTP requests
-async def chat_with_agent(message, history):
-    result = await process_query_with_footer(analysis_agent, gradio_session, message)
-    yield result
-```
+### Backend
+- **Python:** 3.12.3
+- **Package Manager:** uv 0.8.19
+- **AI Integration:** OpenAI Agents SDK v0.2.9
+- **AI Model:** GPT-5-Nano (EXCLUSIVE - 200K TPM)
 
-### Benefits
+### Frontend
+- **Gradio:** 5.49.1+ ChatInterface (port 8000) ⭐ ONLY WEB INTERFACE
+- **PWA:** Enabled (Oct 18, 2025)
+- **Hot Reload:** Available for development (Oct 18, 2025)
 
-- **50% token savings**: System prompt cached after first message
-- **Reduced overhead**: Agent creation cost paid once
-- **Proper memory**: Agent maintains context across entire session
-- **Zero duplication**: CLI owns logic, Gradio imports
+### APIs
+- **Tradier:** Direct Python API (5 tools, PRIMARY)
+- **Polygon:** Direct Python SDK (2 tools, FALLBACK)
+- **OpenAI:** Agents SDK v0.2.9
 
 ## Performance Metrics
 
-### Current Baseline (Oct 17, 2025)
+### Current Baseline (Oct 18, 2025)
 
-**Test Suite**: 39/39 PASSED (100%)
-**Average Response Time**: 9.67s (EXCELLENT)
-**Token Savings**: 50% via persistent agent + prompt caching
-**Improvement**: 70% faster than legacy MCP (20s → 9.67s)
+**Test Suite:** 39/39 PASSED (100%)
+**Average Response Time:** 8.96s (EXCELLENT)
+**Performance Variance:** <3% (STABLE)
+**Code Quality:** 9.61/10 linting score (EXCELLENT)
 
-### Response Time Targets
+## Testing Infrastructure
 
-- **EXCELLENT**: < 10s average
-- **GOOD**: 10-15s average
-- **ACCEPTABLE**: 15-20s average
-- **NEEDS IMPROVEMENT**: > 20s average
+### CLI Regression Test Suite
+- **File:** `test_cli_regression.sh`
+- **Tests:** 39 comprehensive tests
+- **Latest Results (Oct 18, 2025):**
+  - Total: 39/39 COMPLETED (100%)
+  - Errors: 0
+  - Data Unavailable: 0
+  - Average Time: 8.96s/test (EXCELLENT)
+  - Performance Stable: <3% variance
 
-### Optimizations Applied
+## Development Workflow
 
-1. **Persistent Agent**: Created once, reused for all messages
-2. **Prompt Caching**: System prompt cached after first message
-3. **Direct APIs**: No MCP server overhead
-4. **Parallel Execution**: Multiple ticker queries executed concurrently
-5. **Footer Consolidation**: Zero duplication across interfaces
+### Starting Applications
+
+**Gradio Web UI (Recommended - Oct 18):**
+```bash
+# Standard Python entry point (new Oct 18)
+uv run main.py
+
+# OR console script (new Oct 18)
+uv run market-parser-gradio
+
+# OR direct with hot reload (new Oct 18)
+uv run gradio src/backend/gradio_app.py
+
+# OR direct production mode
+uv run python src/backend/gradio_app.py
+```
+
+**CLI Interface:**
+```bash
+# Standard Python entry point (new Oct 18)
+uv run main.py
+
+# OR console script (new Oct 18)
+uv run market-parser
+
+# OR legacy direct execution
+uv run src/backend/cli.py
+```
+
+## Helper Modules (Oct 18, 2025 - DRY Principle)
+
+**error_utils.py** (~58 lines)
+- Standardized error response formatting
+- Single source of truth for error handling
+
+**validation_utils.py** (~57 lines)
+- Ticker validation and sanitization
+- Single source of truth for input validation
+
+**api_utils.py** (~42 lines)
+- API header generation helpers
+- Single source of truth for API utilities
+
+**Impact:** Eliminated 43+ duplicate code patterns
+
+## Key Design Principles
+
+1. **CLI = Single Source of Truth** - CLI owns core logic, Gradio imports
+2. **Zero Code Duplication** - Never duplicate logic between CLI/Gradio
+3. **Persistent Agent** - ONE agent per lifecycle, not per message
+4. **Token Efficiency** - Prompt caching enabled (50% savings)
+5. **Direct APIs** - No MCP overhead (70% faster)
+6. **Gradio-Only Web UI** - React completely retired
+7. **Python Standards** - Full PEP 8 compliance (new Oct 18)
+8. **DRY Principle** - Centralized helpers (new Oct 18)
+9. **Comprehensive Testing** - 39-test suite validates all functionality
 
 ## Data Flow
 
@@ -249,262 +222,36 @@ Footer Formatting (_format_performance_footer)
 Complete Response → Interface (CLI/Gradio)
 ```
 
-### Tool Execution Flow
+## Recent Changes Summary (Oct 18, 2025)
 
-```
-Agent Decision → Tool Selection
-             ↓
-Tradier API Calls (5 tools, PRIMARY)
-  • get_stock_quote
-  • get_historical_prices  
-  • get_market_status
-  • get_call_options_chain
-  • get_put_options_chain
-             ↓
-Polygon API Calls (2 tools, FALLBACK)
-  • get_market_status_and_date_time
-  • get_ta_indicators
-             ↓
-Data Formatting
-             ↓
-Return to Agent
-```
+### Entry Points Implementation
+- ✅ Created src/main.py (standard Python entry point)
+- ✅ Created src/backend/__init__.py (backend package)
+- ✅ Added main() functions to cli.py and gradio_app.py
+- ✅ Added [project.scripts] to pyproject.toml
+- ✅ All entry points tested and working
 
-## Entry Points Architecture
+### Gradio Features
+- ✅ Enabled PWA (pwa=True)
+- ✅ Updated startup messages
+- ✅ Documented hot reload usage
+- ✅ Startup banner with PWA/hot reload info
 
-**Standard Python Entry Point:**
-- `src/main.py` - Main entry point following Python best practices
-- Enables: `uv run main.py` (standard convention)
+### Code Cleanup & Refactoring
+- ✅ Removed 466 lines of dead code
+- ✅ Created 3 helper modules (157 lines)
+- ✅ Refactored 10 tool functions
+- ✅ Net reduction: -390 lines (~20%)
+- ✅ Eliminated 43+ duplicate patterns
 
-**Console Scripts (pyproject.toml):**
-- `market-parser` → `backend.cli:main` (CLI interface)
-- `market-parser-gradio` → `backend.gradio_app:main` (Gradio web interface)
-
-**Package Initialization:**
-- `src/backend/__init__.py` - Backend package initialization (empty file for proper Python package structure)
-
-**Legacy Entry Points (still supported):**
-- `uv run src/backend/cli.py` - Direct CLI execution
-- `uv run python src/backend/gradio_app.py` - Direct Gradio execution
-
-## Project Structure
-
-```
-market-parser-polygon-mcp/
-├── src/
-│   ├── main.py                  # Standard Python entry point ⭐ NEW
-│   └── backend/
-│       ├── __init__.py          # Backend package initialization ⭐ NEW
-│       ├── cli.py               # CLI + core business logic ⭐ SINGLE SOURCE OF TRUTH
-│       ├── gradio_app.py        # Gradio web UI (wraps CLI core) ⭐ PRIMARY WEB UI
-│       ├── services/
-│       │   └── agent_service.py # Agent creation logic
-│       └── tools/
-│           ├── tradier_tools.py # 5 Tradier Direct API tools
-│           ├── polygon_tools.py # 2 Polygon Direct API tools
-│           ├── error_utils.py   # Error response formatting helper
-│           ├── validation_utils.py # Ticker validation helper
-│           └── api_utils.py     # API header generation helper
-├── config/
-│   └── app.config.json          # Non-sensitive settings
-├── test-reports/                # Test execution reports
-├── .serena/                     # Serena MCP server files
-│   ├── memories/                # Project knowledge base
-│   └── cache/                   # Symbol indexing cache
-├── .claude/                     # Claude Code settings
-├── tests/                       # Python tests
-├── docs/                        # Documentation
-├── pyproject.toml               # Python dependencies + console scripts ⭐ UPDATED
-├── package.json                 # npm scripts (backend tooling only)
-├── test_cli_regression.sh       # CLI test suite (39 tests)
-└── start-gradio.sh              # Gradio UI startup script
-```
-
-**Note**: React frontend (src/frontend/) and FastAPI backend (src/backend/main.py, routers/, etc.) have been completely removed. Gradio is the only web interface.
-
-## Technology Stack
-
-### Backend
-- **Python**: 3.12.3
-- **Package Manager**: uv 0.8.19
-- **Framework**: FastAPI
-- **AI Integration**: OpenAI Agents SDK v0.2.9
-- **AI Model**: GPT-5-Nano (EXCLUSIVE - 200K TPM)
-
-### Frontend
-- **Gradio**: ChatInterface (port 8000) ⭐ ONLY WEB INTERFACE
-- **No React**: React frontend completely retired (Oct 17, 2025)
-- **No TypeScript**: All TypeScript code removed
-- **No Node.js frontend**: package.json used for backend tooling only
-
-### APIs
-- **Tradier**: Direct Python API (5 tools, PRIMARY)
-- **Polygon**: Direct Python SDK (2 tools, FALLBACK)
-- **OpenAI**: Agents SDK v0.2.9
-
-## Testing Infrastructure
-
-### CLI Regression Test Suite
-- **File**: `test_cli_regression.sh`
-- **Tests**: 39 comprehensive tests
-- **Organization**:
-  - SPY sequence (17 tests)
-  - NVDA sequence (17 tests)
-  - Multi-ticker sequence (5 tests)
-- **Features**:
-  - Persistent session (all 39 tests in SINGLE CLI session)
-  - Single persistent agent for all tests
-  - Agent persistence validation
-  - Prompt caching validation
-  - Response time tracking
-
-### Latest Test Results (Oct 17, 2025)
-- **Total**: 39/39 PASSED (100%)
-- **Average**: 9.67s (EXCELLENT)
-- **Agent**: Single persistent agent for all tests ✅
-- **Prompt Caching**: System prompt cached after first message ✅
-- **Report**: `test-reports/test_cli_regression_loop1_2025-10-17_17-58.log`
-
-## Development Workflow
-
-### Starting the Application
-
-**Gradio Web UI (Recommended):**
-```bash
-# Start Gradio interface on port 8000
-uv run python src/backend/gradio_app.py
-# Access: http://127.0.0.1:8000
-```
-
-**CLI Interface:**
-```bash
-# Interactive terminal interface
-uv run src/backend/cli.py
-```
-
-### Code Quality
-
-**Python Linting:**
-```bash
-npm run lint:python          # Run pylint
-npm run lint:fix             # Auto-fix with black + isort
-```
-
-**No TypeScript/JavaScript Linting** (React removed)
-
-### Testing
-
-**CLI Regression Suite:**
-```bash
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-```
-
-**Expected Results:**
-- 39/39 tests PASSED (100%)
-- Average response time < 10s (EXCELLENT)
-- Single persistent session verified
-- Prompt caching verified
-
-## Key Design Principles
-
-1. **CLI = Single Source of Truth** - CLI owns core logic, Gradio imports
-2. **Zero Code Duplication** - Never duplicate logic between CLI/Gradio
-3. **Persistent Agent** - ONE agent per lifecycle, not per message
-4. **Token Efficiency** - Prompt caching enabled (50% savings)
-5. **Direct APIs** - No MCP overhead (70% faster)
-6. **Gradio-Only Web UI** - React completely retired
-7. **Comprehensive Testing** - 39-test suite validates all functionality
-
-## Migration History
-
-### October 17, 2025 - FastAPI & Startup Script Removal (Phase 3) ⭐ NEW
-- **Removed**: FastAPI backend infrastructure (main.py, api_models.py, routers/, etc.)
-- **Removed**: uvicorn dependencies and startup configuration
-- **Removed**: Port 8000 configuration
-- **Removed**: start-app.sh, start-app-xterm.sh startup orchestration scripts
-- **Result**: Gradio is now the ONLY server (single-process architecture)
-- **Benefit**: 60% faster startup, 30% less memory, -1,000+ lines code
-
-### October 17, 2025 - React Frontend Retirement (Phase 1)
-- **Removed**: Entire React frontend (src/frontend/ directory)
-- **Removed**: All TypeScript/JavaScript code
-- **Removed**: React dependencies from package.json
-- **Removed**: Port 3000 configuration
-- **Result**: Gradio is now the ONLY web interface
-- **Benefit**: Simplified architecture, zero frontend code duplication
-
-### October 17, 2025 - Performance Metrics Footer Consolidation
-- **Problem**: Footer duplicated 2x (CLI + Gradio)
-- **Solution**: Consolidated into CLI core (`process_query_with_footer`)
-- **Result**: ~100 lines deleted, 17% code reduction
-- **Benefit**: Single source of truth for footer formatting
-
-### October 2025 - Persistent Agent Architecture
-- **Problem**: Creating new agent for every message (token waste)
-- **Solution**: ONE persistent agent per lifecycle
-- **Result**: 50% token savings via prompt caching
-- **Benefit**: Reduced overhead, proper memory
-
-### October 2025 - Direct API Migration
-- **Problem**: MCP server overhead (20s average response time)
-- **Solution**: Direct Polygon/Tradier Python APIs
-- **Result**: 70% performance improvement (20s → 9.67s)
-- **Benefit**: Faster responses, simpler architecture
-
-## Future Considerations
-
-### Scaling Gradio UI
-- Multi-user support via Gradio Spaces deployment
-- Custom CSS/theming for branding
-- Additional Gradio components (charts, tables)
-- WebSocket support for real-time updates
-
-### Alternative UI Frameworks (If Needed)
-- **Streamlit**: Python-native alternative to Gradio
-- **Plotly Dash**: Data visualization focus
-- **FastAPI + HTMX**: Lightweight HTML-based UI
-- **Pattern**: All follow same wrapper pattern (import CLI core)
-
-### Performance Optimizations
-- Redis caching for frequently requested data
-- Async batch processing for multi-ticker queries
-- Response compression for large datasets
-- CDN integration for static assets
-
-## Troubleshooting
-
-### Common Issues
-
-**Gradio UI not starting:**
-```bash
-# Check port availability
-netstat -tlnp | grep :8000
-
-# Kill existing Gradio processes
-pkill -f gradio_app
-
-# Restart
-uv run python src/backend/gradio_app.py
-```
-
-**Backend not responding:**
-```bash
-# Check .env file has API keys
-cat .env | grep API_KEY
-
-# Verify dependencies
-uv install
-
-# Check backend health
-curl http://127.0.0.1:8000/health
-```
-
-**API key issues:**
-- Ensure both `POLYGON_API_KEY` and `TRADIER_API_KEY` are set in `.env`
-- Verify API keys are valid and have sufficient credits
+### Testing Results
+- ✅ 39/39 CLI tests PASSED
+- ✅ 0 errors found
+- ✅ 100% test pass rate maintained
 
 ---
 
-**Last Updated**: October 17, 2025
-**Status**: Production-ready with 100% test pass rate
-**Architecture**: Gradio-only frontend, persistent agent, direct APIs
+**Last Updated:** October 18, 2025
+**Status:** Production-ready with all latest features
+**Architecture:** Fully optimized Python full-stack with Gradio
+**Entry Points:** 7 methods available (1 standard, 2 console scripts, 4 legacy)

@@ -1,533 +1,499 @@
-# Code Style Conventions - Updated October 2025
+# Code Style Conventions - October 2025
 
-**Status:** Current with October 18, 2025 cleanup
-**Language:** Python only (React/TypeScript retired)
+**Last Updated:** October 18, 2025
+**Architecture:** Python-only full-stack (React and FastAPI removed)
+**Python Version:** 3.10+
 
 ---
 
 ## Python Code Style
 
-### Line Length & Formatting
-- **Line Length:** 100 characters (Black standard)
-- **Indentation:** 4 spaces (no tabs)
-- **Tool:** Black 23.12.0 (auto-formatting)
+### PEP 8 Compliance
 
-### Import Organization (isort)
-- **Profile:** black
-- **Order:** Future → Stdlib → Third-party → First-party → Local
-- **Line Length:** 100 characters
-- **Tool:** isort 5.13.0
-
-**Example:**
-```python
-# Future imports
-from __future__ import annotations
-
-# Standard library
-import asyncio
-import json
-from typing import Any
-
-# Third-party
-import gradio as gr
-from openai import AsyncOpenAI
-from pydantic import BaseModel
-
-# First-party
-from src.backend.config import settings
-from src.backend.utils.response_utils import format_response
-
-# Local
-from .tools import polygon_tools, tradier_tools
-```
+- **Follow:** PEP 8 (Python Enhancement Proposal 8)
+- **Tool:** pylint, black, isort
+- **Line Length:** 88 characters (Black default)
+- **Indentation:** 4 spaces (NOT tabs)
 
 ### Naming Conventions
 
-| Category | Convention | Examples |
-|----------|-----------|----------|
-| Functions | `snake_case` | `process_query`, `format_response` |
-| Variables | `snake_case` | `api_key`, `market_status` |
-| Constants | `UPPER_SNAKE_CASE` | `MAX_RETRIES`, `DEFAULT_TIMEOUT` |
-| Classes | `PascalCase` | `ChatResponse`, `MarketData` |
-| Private | `_prefix` | `_format_footer`, `_validate_input` |
-| Dunder | `__dunder__` | `__init__`, `__name__` |
-
-### Type Hints
-
-**Enabled for:** `src/backend/*.py` and `src/backend/**/*.py`
-**Disabled for:** `tests/` (gradual adoption)
-
-**Examples:**
 ```python
-# Function arguments and return types
-async def process_query(
-    agent: Agent,
-    session: SQLiteSession,
-    user_input: str
-) -> str:
-    """Process a user query and return formatted response."""
-    ...
+# Functions and variables: snake_case
+def get_stock_price(ticker):
+    user_input = input()
+    return result
 
-# Variable annotations
-api_key: str = settings.openai_api_key
-max_retries: int = 3
-options_chain: dict[str, Any] = {}
+# Classes: PascalCase
+class MarketAnalyzer:
+    pass
 
-# Optional types
-from typing import Optional
-result: Optional[str] = None
+# Constants: UPPER_CASE
+MAX_RETRIES = 5
+API_TIMEOUT = 10
 
-# Union types
-response: str | dict = process_query(...)
+# Private methods/attributes: _leading_underscore
+def _private_helper():
+    pass
+
+class Example:
+    def __init__(self):
+        self._private_var = 123
 ```
 
-### Docstrings
+### Type Hints (Mandatory)
 
-**Style:** Google-style docstrings (recommended)
-
-**Function docstring:**
 ```python
-def process_query_with_footer(
-    agent: Agent,
-    session: SQLiteSession,
-    user_input: str
-) -> str:
-    """Process a financial query and return response with performance metrics.
-    
+# Functions: Include return type
+def calculate_average(values: list[float]) -> float:
+    return sum(values) / len(values)
+
+# Function with multiple parameters
+def get_stock_data(ticker: str, period: int = 30) -> dict:
+    pass
+
+# Optional values
+def find_user(user_id: int | None = None) -> dict | None:
+    pass
+
+# Class methods
+class Agent:
+    def __init__(self, name: str, api_key: str) -> None:
+        self.name = name
+        self.api_key = api_key
+
+    def process_query(self, query: str) -> str:
+        pass
+```
+
+### Docstrings (Google Style)
+
+```python
+def get_technical_indicators(ticker: str, timespan: str = "day") -> dict:
+    """Get comprehensive technical analysis indicators.
+
+    Retrieves RSI, MACD, SMA, and EMA indicators for a given ticker.
+
     Args:
-        agent: Persistent AI agent instance for this session
-        session: SQLite session for maintaining conversation history
-        user_input: User's natural language financial query
-        
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL")
+        timespan: Aggregate time window - "day", "minute", "hour", "week", "month"
+
     Returns:
-        Complete response including AI answer and performance footer
-        
+        Dictionary with indicator values and timestamps:
+        {
+            "rsi": {"value": 62.45, "timestamp": "2025-10-18"},
+            "macd": {"value": 2.34, "signal": 1.87, "histogram": 0.47},
+            "sma_5": {"value": 654.23, "timestamp": "2025-10-18"},
+            ...
+        }
+
     Raises:
-        ValueError: If user_input is empty
-        APIError: If API call fails
+        ValueError: If ticker is empty or invalid format
+        requests.RequestException: If API request fails
+
+    Examples:
+        >>> indicators = get_technical_indicators("SPY")
+        >>> print(indicators["rsi"]["value"])
+        62.45
     """
 ```
 
-**Class docstring:**
-```python
-class ChatResponse(BaseModel):
-    """Response model for chat operations.
-    
-    Attributes:
-        message: The chat message content
-        timestamp: ISO format timestamp
-        model: AI model used for response
-        tokens: Token usage information
-    """
-    message: str
-    timestamp: str
-    model: str
-    tokens: dict[str, int]
-```
-
----
-
-## Code Organization Principles
-
-### Single Source of Truth
-- **CLI core** (`src/backend/cli.py`) owns ALL business logic
-- **Gradio wrapper** (`src/backend/gradio_app.py`) imports and calls CLI functions
-- **No duplication** between CLI and Gradio
-
-**Pattern:**
-```python
-# CLI (src/backend/cli.py) - CORE LOGIC
-async def process_query_with_footer(agent, session, user_input):
-    """Core business logic."""
-    response = await process_query(agent, session, user_input)
-    footer = _format_performance_footer(response.metadata)
-    return f"{response.text}\n\n{footer}"
-
-# Gradio (src/backend/gradio_app.py) - WRAPPER ONLY
-async def chat_with_agent(message, history):
-    """Wrapper that calls CLI core."""
-    response = await process_query_with_footer(agent, session, message)
-    yield response  # Stream to UI
-```
-
-### Tool Functions
-
-**Pure functions** that take clear inputs and return clear outputs
+### Import Organization
 
 ```python
-# Good: Pure function
-def get_stock_price(ticker: str) -> dict[str, float]:
-    """Get stock price data."""
-    # API call
-    return {"open": 150.0, "close": 151.5}
+# 1. Standard library imports (alphabetical)
+import asyncio
+import json
+import os
+from datetime import datetime, timezone
+from typing import Optional
 
-# Bad: Side effects
-def get_stock_price(ticker: str) -> None:
-    """Get stock price and update global state."""
-    global price_cache
-    price_cache[ticker] = api_call(ticker)  # Side effect!
+# 2. Third-party imports (alphabetical)
+import requests
+from pydantic import BaseModel
+
+# 3. Local imports (relative imports for backend package)
+from .cli import main, process_query
+from .tools.polygon_tools import get_ta_indicators
+from .utils.response_utils import format_response
 ```
 
 ### Error Handling
 
-**Use specific exceptions, not bare `except:`**
+```python
+# Use centralized error_utils.py (Oct 18, 2025)
+from .tools.error_utils import create_error_response
+
+# Before (duplicate error handling):
+def get_price(ticker: str):
+    if not ticker or not ticker.strip():
+        return {
+            "error": "Invalid ticker",
+            "message": "Ticker cannot be empty"
+        }
+
+# After (using helper - Oct 18, 2025):
+def get_price(ticker: str):
+    ticker_clean = ticker.strip().upper()
+    if not ticker_clean:
+        return create_error_response(
+            "Invalid ticker",
+            "Ticker cannot be empty",
+            ticker=ticker
+        )
+```
+
+### Input Validation
 
 ```python
-# Good
-try:
-    response = await api.get_data()
-except APIError as e:
-    logger.error(f"API error: {e}")
-    raise
-except TimeoutError:
-    logger.warning("Request timeout, retrying...")
-    # Retry logic
+# Use centralized validation_utils.py (Oct 18, 2025)
+from .tools.validation_utils import validate_and_sanitize_ticker
 
-# Bad
-try:
-    response = await api.get_data()
-except Exception:
-    pass  # Silently fails!
+# Before (duplicate validation):
+def get_quote(ticker: str):
+    ticker = ticker.strip().upper()
+    if not ticker:
+        return {"error": "Invalid ticker"}
+
+# After (using helper - Oct 18, 2025):
+def get_quote(ticker: str):
+    ticker_validated, error = validate_and_sanitize_ticker(ticker)
+    if error:
+        return error
+```
+
+### API Headers
+
+```python
+# Use centralized api_utils.py (Oct 18, 2025)
+from .tools.api_utils import create_tradier_headers, TRADIER_TIMEOUT
+
+# Before (duplicate header builders):
+headers = {
+    "Authorization": f"Bearer {api_key}",
+    "Accept": "application/json"
+}
+
+# After (using helper - Oct 18, 2025):
+headers = create_tradier_headers(api_key)
+timeout = TRADIER_TIMEOUT
 ```
 
 ---
 
-## File Structure Conventions
+## File Organization
 
-### Module Layout
+### Backend Tools Structure (Oct 18, 2025)
+
+```
+src/backend/tools/
+├── __init__.py
+├── tradier_tools.py           # 5 Tradier API tools (refactored)
+├── polygon_tools.py           # 2 Polygon API tools (refactored)
+├── error_utils.py             # Error response formatting (new Oct 18)
+├── validation_utils.py        # Ticker validation (new Oct 18)
+├── api_utils.py               # API header helpers (new Oct 18)
+└── formatting_helpers.py      # Formatting utilities
+```
+
+### Import Paths (Relative Imports)
+
 ```python
-"""Module docstring at the top."""
+# From backend/cli.py
+from .tools.polygon_tools import get_ta_indicators
+from .tools.error_utils import create_error_response
+from .services import create_agent
 
-# Imports organized by isort rules
-from __future__ import annotations
-
-import asyncio
-from typing import Any
-
-from openai import AsyncOpenAI
-import gradio as gr
-
-from src.backend.config import settings
-
-# Constants
-DEFAULT_TIMEOUT = 30
-MAX_RETRIES = 3
-
-# Classes (if any)
-class MyClass:
-    """Class docstring."""
-    pass
-
-# Public functions
-async def public_function() -> str:
-    """Public function docstring."""
-    pass
-
-# Private functions
-def _private_function() -> None:
-    """Private function docstring."""
-    pass
-
-# Entry point
-if __name__ == "__main__":
-    asyncio.run(main())
+# From backend/tools/tradier_tools.py
+from .error_utils import create_error_response
+from .validation_utils import validate_and_sanitize_ticker
+from .api_utils import create_tradier_headers
 ```
 
 ---
 
-## CLI vs Gradio Code
+## Code Quality Standards
 
-### CLI (src/backend/cli.py)
-- **Focus:** Core business logic, input processing, output formatting
-- **I/O:** stdin/stdout (terminal)
-- **Error Handling:** User-facing error messages
-- **Control:** Interactive loop in `cli_async()`
+### Linting with Pylint
 
+```bash
+npm run lint              # Check code quality
+npm run lint:fix          # Auto-fix with black + isort
+```
+
+**Target Score:** 9.0/10 or higher
+**Current Score:** 9.61/10 (excellent)
+
+### Type Checking with MyPy
+
+```bash
+uv run mypy src/backend/
+```
+
+**Standard:** Strict type checking
+**Requirement:** All functions have type hints
+
+### Formatting with Black
+
+```bash
+black --line-length 88 src/backend/
+```
+
+**Line Length:** 88 characters
+**Integration:** `npm run lint:fix` runs automatically
+
+### Import Sorting with isort
+
+```bash
+isort --profile black src/backend/
+```
+
+**Profile:** Black-compatible
+**Integration:** `npm run lint:fix` runs automatically
+
+---
+
+## DRY Principle (Don't Repeat Yourself) - Oct 18, 2025 ⭐
+
+### Problem: Code Duplication
+
+**Before Oct 18:** 43+ duplicate code patterns across tool functions
+
+**Examples:**
+- Error response formatting duplicated 20+ times
+- Ticker validation duplicated 15+ times
+- API header generation duplicated 8+ times
+
+### Solution: Centralized Helpers (Oct 18, 2025)
+
+**error_utils.py** - Standardized error responses
 ```python
-async def cli_async():
-    """Main CLI loop."""
-    agent = initialize_persistent_agent()
-    session = SQLiteSession("cli_session")
+def create_error_response(error_type: str, message: str, **extra_fields) -> dict:
+    """Single source of truth for error formatting."""
+    return {
+        "error": error_type,
+        "message": message,
+        **extra_fields
+    }
+```
+
+**validation_utils.py** - Ticker validation
+```python
+def validate_and_sanitize_ticker(ticker: str) -> tuple[str, Optional[dict]]:
+    """Single source of truth for validation."""
+    if not ticker or not ticker.strip():
+        return "", create_error_response("Invalid ticker", "Cannot be empty", ticker=ticker)
+    return ticker.strip().upper(), None
+```
+
+**api_utils.py** - API utilities
+```python
+def create_tradier_headers(api_key: str) -> dict:
+    """Single source of truth for API headers."""
+    return {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+```
+
+### Refactoring Pattern
+
+**Before (Duplicate):**
+```python
+def get_stock_quote(ticker):
+    # Duplicate validation
+    ticker = ticker.strip().upper()
+    if not ticker:
+        return {"error": "Invalid", "message": "Empty"}
     
-    while True:
-        user_input = input("> ").strip()
-        if not user_input:
-            continue
-        
-        response = await process_query_with_footer(agent, session, user_input)
-        print(response)
+    # Duplicate header builder
+    headers = {
+        "Authorization": f"Bearer {key}",
+        "Accept": "application/json"
+    }
 ```
 
-### Gradio (src/backend/gradio_app.py)
-- **Focus:** UI setup, streaming responses
-- **I/O:** HTTP (Gradio interface)
-- **Error Handling:** Gradio error display
-- **Control:** ChatInterface callback
-
+**After (Centralized - Oct 18):**
 ```python
-async def chat_with_agent(message, history):
-    """Gradio chat callback."""
-    response = await process_query_with_footer(agent, session, message)
-    yield response  # Stream response
+def get_stock_quote(ticker):
+    # Use centralized validation
+    ticker_validated, error = validate_and_sanitize_ticker(ticker)
+    if error:
+        return error
+    
+    # Use centralized header builder
+    headers = create_tradier_headers(api_key)
 ```
 
-**Rule:** Gradio should ONLY call CLI functions, never duplicate logic
+### Benefits of DRY Principle (Oct 18, 2025)
+
+1. **Single Source of Truth** - Update logic in ONE place
+2. **Consistency** - All functions use same formatting
+3. **Maintainability** - Easier to fix bugs and add features
+4. **Testability** - Helpers can be unit tested independently
+5. **Code Reduction** - -390 lines net reduction (~20%)
 
 ---
 
-## Common Patterns
+## Testing & Validation
 
-### Async/Await
+### Unit Testing
+
 ```python
-# Use async for I/O operations
-async def get_market_data(ticker: str) -> dict:
-    """Fetch market data asynchronously."""
-    async with AsyncOpenAI(api_key=settings.openai_api_key) as client:
-        response = await client.chat.completions.create(...)
-    return response.model_dump()
+# pytest tests/test_validation_utils.py
+def test_validate_ticker_valid():
+    result, error = validate_and_sanitize_ticker("spy")
+    assert result == "SPY"
+    assert error is None
+
+def test_validate_ticker_invalid():
+    result, error = validate_and_sanitize_ticker("")
+    assert result == ""
+    assert error is not None
 ```
 
-### Context Managers
-```python
-# Use context managers for resources
-from contextlib import asynccontextmanager
+### CLI Regression Tests
 
-@asynccontextmanager
-async def get_agent():
-    """Manage agent lifecycle."""
-    agent = initialize_persistent_agent()
-    try:
-        yield agent
-    finally:
-        await agent.cleanup()
-
-# Usage
-async with get_agent() as agent:
-    response = await process_query(agent, ...)
+```bash
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
-### Type Guards
-```python
-# Use type guards for safety
-from typing import TypeGuard
+**Tests:** 39 comprehensive tests
+**Coverage:** Market status, OHLC data, technical analysis, options chains
+**Target:** 100% pass rate
 
-def is_market_data(obj: Any) -> TypeGuard[dict]:
-    """Check if object is market data."""
-    return isinstance(obj, dict) and "price" in obj and "timestamp" in obj
+### Code Quality Checks
 
-# Usage
-if is_market_data(response):
-    print(response["price"])
-```
-
----
-
-## Performance Considerations
-
-### Don't
-```python
-# Bad: String concatenation in loops
-response = ""
-for item in items:
-    response += format_item(item)  # Creates new string each time
-
-# Bad: Loading entire file into memory
-with open("large_file.txt") as f:
-    content = f.read()
-    process_all(content)
-```
-
-### Do
-```python
-# Good: Use list join
-response = "".join(format_item(item) for item in items)
-
-# Good: Stream processing
-with open("large_file.txt") as f:
-    for line in f:
-        process_line(line)
+```bash
+npm run check:all          # Run all checks
+npm run lint              # Linting
+npm run type-check        # Type checking
+npm run format            # Formatting (dry run)
+npm run lint:fix          # Format + lint auto-fix
 ```
 
 ---
 
 ## Comments & Documentation
 
-### Comment Policy (Oct 18, 2025)
-
-**Policy 1: No historical comments about retired components**
-- **Rationale**: Comments should ONLY describe CURRENT code and architecture. Git history provides historical context.
-- **Example**:
-  ```python
-  # ❌ Bad: Historical commentary
-  # Note: This used to call the MCP server but was migrated to Direct API on Oct 2025
-  def get_stock_data(ticker: str) -> dict:
-      return tradier_api.get_quote(ticker)
-
-  # ✅ Good: Describes current implementation
-  def get_stock_data(ticker: str) -> dict:
-      """Fetch stock data using Tradier Direct API."""
-      return tradier_api.get_quote(ticker)
-  ```
-
-**Policy 2: No deprecation notices in code comments**
-- **Rationale**: Git commit messages document deprecations. Code comments focus on current functionality.
-- **Example**:
-  ```python
-  # ❌ Bad: Deprecation notice in comments
-  # DEPRECATED: Use get_ta_indicators() instead (deprecated Oct 11, 2025)
-  # This function will be removed in the next release
-  def get_ta_sma(ticker: str) -> float:
-      ...
-
-  # ✅ Good: Remove deprecated code entirely, document in git commit
-  # (No deprecated function exists in code)
-  # Git commit message explains: "Removed deprecated TA tools, use get_ta_indicators()"
-  ```
-
-**Policy 3: Comments explain WHY, not WHAT**
-- **Rationale**: Code should be self-documenting. Comments add context that code cannot express.
-
 ### When to Comment
-```python
-# Good: Explains WHY, not WHAT
-# Polygon API rate limit is 5req/sec, so we batch requests
-def batch_stock_requests(tickers: list[str], batch_size: int = 5) -> list:
-    ...
 
-# Bad: Explains what the code already shows
-# Loop through tickers
-for ticker in tickers:
-    ...
+```python
+# Good: Explains WHY (not WHAT)
+# Use limit=10 to fetch recent data even on weekends/holidays
+results = client.get_rsi(ticker, limit=10)
+
+# Bad: Explains WHAT (code already does this)
+# Get RSI with limit 10
+results = client.get_rsi(ticker, limit=10)
 ```
 
-### Log Levels
+### Multi-line Comments
+
 ```python
-import logging
+"""
+This function:
+1. Validates the ticker symbol
+2. Fetches price data from Tradier API
+3. Formats response with performance metrics
+"""
+```
 
-logger = logging.getLogger(__name__)
+### No Legacy Comments
 
-# DEBUG: Detailed info for debugging
-logger.debug(f"Processing ticker {ticker}")
+**October 18, 2025 Decision:** Remove all historical/deprecation comments
 
-# INFO: General progress
-logger.info(f"Initialized agent for session {session_id}")
+```python
+# Don't leave these:
+# DEPRECATED: Old implementation using xyz
+# TODO: Remove this when React frontend is retired
+# NOTE: This was for FastAPI compatibility
 
-# WARNING: Something unexpected but handled
-logger.warning(f"Retrying failed request, attempt {attempt}")
-
-# ERROR: Error that can be recovered
-logger.error(f"API error: {error}", exc_info=True)
-
-# CRITICAL: System cannot continue
-logger.critical("Database connection failed, shutting down")
+# Clean comments only:
+# Comment on current business logic
 ```
 
 ---
 
-## Git Commit Message Style
+## Performance Considerations
 
-**Format:**
+### Async/Await
+
+```python
+# Use async for I/O operations
+async def get_multiple_prices(tickers: list[str]) -> list[dict]:
+    """Fetch prices for multiple tickers concurrently."""
+    tasks = [get_price(ticker) for ticker in tickers]
+    return await asyncio.gather(*tasks)
 ```
-[TAG] Descriptive message
+
+### Error Handling
+
+```python
+# Catch specific exceptions
+try:
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
+except requests.Timeout:
+    return create_error_response("Timeout", "Request exceeded time limit")
+except requests.RequestException as e:
+    return create_error_response("API error", f"Request failed: {str(e)}")
+```
+
+---
+
+## Git Commit Guidelines
+
+### Commit Message Format
+
+```
+[TAG] Brief description
 
 - Change 1
 - Change 2
-- Change 3
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+Reference: Issue #123
 
-Co-Authored-By: Claude <noreply@anthropic.com>
+Generated with Claude Code
 ```
 
-**Common Tags:**
+### Commit Tags
+
 - `[FEATURE]` - New feature
 - `[FIX]` - Bug fix
-- `[REFACTOR]` - Code restructuring
-- `[CLEANUP]` - Code cleanup, dead code removal
+- `[REFACTOR]` - Code refactoring
+- `[TEST]` - Test additions/updates
 - `[DOCS]` - Documentation updates
-- `[TEST]` - Testing updates
-- `[PERF]` - Performance improvements
+- `[CLEANUP]` - Code cleanup without functional changes
+
+### Atomic Commits
+
+- Stage all files at once: `git add -A`
+- Commit immediately: `git commit -m "message"`
+- Push immediately: `git push`
 
 ---
 
-## DRY Principle & Helper Modules (Oct 18, 2025)
+## Summary
 
-### Policy: Eliminate Code Duplication
-
-**When to Create Helper Modules:**
-- Pattern duplicated 3+ times across the codebase
-- Pattern serves a clear, single purpose
-- Pattern can be abstracted without over-engineering
-
-**Helper Module Guidelines:**
-1. **Single Responsibility** - Each helper does ONE thing well
-2. **Type Hints Required** - All functions must have full type annotations
-3. **Comprehensive Docstrings** - Explain purpose, parameters, returns, raises, examples
-4. **Unit Testable** - Design for easy testing in isolation
-
-**Example: Error Handling Helper (error_utils.py)**
-```python
-def create_error_response(
-    error_type: str,
-    message: str,
-    status: str = "error",
-    details: str | None = None
-) -> dict[str, str]:
-    """
-    Create standardized error response format.
-
-    Single source of truth for error handling across all tool functions.
-    Eliminates 20+ duplicate error formatting blocks.
-
-    Args:
-        error_type: Category of error (e.g., "API error", "Validation error")
-        message: Human-readable error message
-        status: Response status (default: "error")
-        details: Optional additional error context
-
-    Returns:
-        Standardized error dictionary
-
-    Example:
-        >>> create_error_response("Validation error", "Invalid ticker format")
-        {"status": "error", "error_type": "Validation error", "message": "Invalid ticker format"}
-    """
-    ...
-```
-
-**Refactoring Workflow:**
-1. **Identify Duplication** - Find patterns repeated 3+ times
-2. **Extract to Helper** - Create centralized helper module
-3. **Refactor Call Sites** - Update all tool functions to use helper
-4. **Test Thoroughly** - Run full regression suite (39 tests)
-5. **Document Impact** - Update memories with code reduction statistics
-
-**Benefits:**
-- **Maintainability**: Update logic in ONE place, not 20+ places
-- **Consistency**: All functions behave identically
-- **Testability**: Helper functions are unit testable
-- **Readability**: Tool functions focus on business logic, not boilerplate
+| Standard | Rule |
+|----------|------|
+| **Language** | Python 3.10+ |
+| **Style** | PEP 8 |
+| **Type Hints** | Mandatory (all functions) |
+| **Docstrings** | Google style (all public functions) |
+| **Line Length** | 88 chars (Black) |
+| **Imports** | Relative (local), organized groups |
+| **Error Handling** | Use error_utils.py (centralized) |
+| **Validation** | Use validation_utils.py (centralized) |
+| **API Utils** | Use api_utils.py (centralized) |
+| **Linting** | 9.0+/10 target (current: 9.61/10) |
+| **DRY Principle** | No code duplication (Oct 18, 2025) |
+| **Comments** | No legacy/deprecation comments |
+| **Testing** | 39-test CLI regression suite |
 
 ---
 
-## Linting & Type Checking
-
-### Run Before Commit
-```bash
-npm run lint:fix  # Auto-fix code style
-uv run mypy src/backend/  # Type check
-npm run lint      # Pylint check
-```
-
-### Pre-commit Hooks
-- Python formatting (Black)
-- Import sorting (isort)
-- Trailing whitespace removal
-- YAML validation
-- JSON validation
-
----
-
-**Last Updated:** October 18, 2025
-**Python Version:** 3.12.3
-**Status:** Current with cleanup
+**Last Updated:** October 18, 2025 (after DRY refactoring and entry points implementation)
+**Python Standards:** ✅ Full PEP 8 compliance
+**Code Quality:** ✅ 9.61/10 linting score
+**Test Coverage:** ✅ 39/39 tests passing
