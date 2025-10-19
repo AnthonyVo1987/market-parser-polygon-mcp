@@ -4,19 +4,15 @@
 
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s) using sub-agents task(s) for parallel optimized performance and speed when applicable:
 
-
-## Task 1: Research & Investigate and potential performance improvments & optimizations in our code base after user has sucessfully deployed the app to be hosted as a PWA on Hugging Face Spaces
-
-- Python, Gradio, PWA etc
-
+NONE - already previously researched in '.serena/memories/performance_optimizations_research_oct_2025.md' & 'docs/implementation_plans/phase_1_quick_wins.md'
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
 ---
 
- 
+ <Phase 2: Planning>
 
-Based on the latest Research, Analysis & Scoping 'research_task_plan.md', delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s) & using sub-agents task(s) for parallel optimized performance and speed when applicable:
+Based on the latest Research, delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s) & using sub-agents task(s) for parallel optimized performance and speed when applicable
 
 ---
 

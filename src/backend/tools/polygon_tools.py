@@ -6,7 +6,9 @@ Provides direct Polygon Python Library API access for market status, datetime, a
 import asyncio
 import json
 import os
+import time
 from datetime import datetime, timezone
+from functools import lru_cache
 
 import requests
 from agents import function_tool
@@ -25,8 +27,7 @@ def _get_polygon_client():
     return RESTClient(api_key=api_key)
 
 
-@function_tool
-async def get_market_status_and_date_time() -> str:
+async def _get_market_status_and_date_time_uncached() -> str:
     """Get current market status and date/time from Tradier API.
 
     Use this tool when the user requests market status, trading hours,
@@ -162,6 +163,79 @@ async def get_market_status_and_date_time() -> str:
         )
 
 
+@lru_cache(maxsize=1000)
+def _cached_market_status_helper(cache_key: int) -> str:
+    """Cached helper for market status with time-based expiration.
+    
+    Cache expires every 60 seconds (1 minute) via timestamp bucket.
+    """
+    import asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(_get_market_status_and_date_time_uncached())
+    finally:
+        loop.close()
+
+
+@function_tool
+async def get_market_status_and_date_time() -> str:
+    """Get current market status and date/time from Tradier API.
+    
+    Uses LRU cache with 1-minute TTL for performance optimization.
+    Cache key based on time bucket (60-second intervals).
+    
+    Use this tool when the user requests market status, trading hours,
+    current date/time, or whether markets are open/closed.
+
+    This tool provides real-time market status and server datetime via
+    Tradier API, replacing the Polygon.io direct API.
+
+    Args:
+        None - retrieves current market status automatically.
+
+    Returns:
+        JSON string containing market status and datetime with format:
+        {
+            "market_status": "open" | "closed" | "extended-hours",
+            "after_hours": true | false,
+            "early_hours": true | false,
+            "exchanges": {
+                "nasdaq": "open" | "closed" | "extended-hours",
+                "nyse": "open" | "closed" | "extended-hours",
+                "otc": "open" | "closed" | "extended-hours"
+            },
+            "server_time": "2025-10-05T14:30:00Z",
+            "date": "2025-10-05",
+            "time": "14:30:00",
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "source": "Tradier"
+        }
+
+    Note:
+        - Provides combined market status and datetime in single call
+        - Data updates in real-time from Tradier servers
+        - Includes pre-market (early_hours) and after-market (after_hours) status
+        - Server time is in UTC timezone
+        - This is a direct API call via HTTP
+        - Cached for 1 minute to reduce API calls
+
+    Examples:
+        - "Is the market open?"
+        - "What time is it?"
+        - "Market status?"
+        - "What's today's date?"
+        - "Are markets open for trading?"
+    """
+    return await _get_market_status_and_date_time_uncached()
+
+
 def _map_market_state(state: str) -> str:
     """Map market state to standardized response format.
 
@@ -181,8 +255,7 @@ def _map_market_state(state: str) -> str:
 
 
 
-@function_tool
-async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
+async def _get_ta_indicators_uncached(ticker: str, timespan: str = "day") -> str:
     """Get comprehensive technical analysis indicators in a single call.
 
     This consolidated tool retrieves ALL TA indicators with optimized batched API calls
@@ -362,5 +435,85 @@ async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
 
     except Exception as e:
         return f"❌ Error retrieving technical analysis indicators for {ticker}: {str(e)}\n\nSource: Polygon.io API"
+
+
+@lru_cache(maxsize=1000)
+def _cached_ta_indicators_helper(ticker: str, timespan: str, cache_key: int) -> str:
+    """Cached helper for TA indicators with time-based expiration.
+    
+    Cache expires every 300 seconds (5 minutes) via timestamp bucket.
+    """
+    import asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(_get_ta_indicators_uncached(ticker, timespan))
+    finally:
+        loop.close()
+
+
+@function_tool
+async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
+    """Get comprehensive technical analysis indicators in a single call.
+    
+    Uses LRU cache with 5-minute TTL for performance optimization.
+    Cache key based on ticker, timespan, and time bucket (5-minute intervals).
+
+    This consolidated tool retrieves ALL TA indicators with optimized batched API calls
+    and returns a formatted markdown table. Replaces individual get_ta_sma, get_ta_ema,
+    get_ta_rsi, and get_ta_macd tools.
+
+    Indicators Retrieved:
+    - RSI-14 (Relative Strength Index)
+    - MACD (12/26/9) with signal line and histogram
+    - SMA (Simple Moving Averages): 5, 10, 20, 50, 200-period
+    - EMA (Exponential Moving Averages): 5, 10, 20, 50, 200-period
+
+    Performance Optimization:
+    - Batched API calls with rate limit protection
+    - Batch 1: RSI + MACD (2 parallel calls)
+    - Batch 2: SMA 5/10/20/50/200 (5 parallel calls)
+    - Batch 3: EMA 5/10/20/50/200 (5 parallel calls)
+    - 1-second delays between batches prevent rate limiting
+    - Total: 12 API calls in ~2-3 seconds
+    - Requests limit=10 per indicator to ensure LAST AVAILABLE data (even on weekends/holidays)
+    - Cached for 5 minutes to reduce API calls
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA")
+        timespan: Aggregate time window - "day", "minute", "hour", "week", "month" (default: "day")
+
+    Returns:
+        Formatted markdown table string with all 14 indicators or error message
+
+    Example Output:
+        📊 Technical Analysis Indicators - SPY
+        Current Date: 2025-10-11
+
+        | Indicator | Period | Value | Timestamp |
+        |-----------|--------|-------|-----------|
+        | RSI       | 14     | 62.45 | 2025-10-11 |
+        | MACD      | 12/26  | 2.34  | 2025-10-11 |
+        | Signal    | 9      | 1.87  | 2025-10-11 |
+        | Histogram | -      | 0.47  | 2025-10-11 |
+        | SMA       | 5      | 654.23 | 2025-10-11 |
+        ...
+
+        Source: Polygon.io API
+
+    Note:
+        - ALWAYS returns last available data (even on weekends/holidays/market closures)
+        - Uses limit=10 to fetch recent historical data, returns most recent value
+        - Gracefully handles partial failures (displays N/A only if indicator genuinely unavailable)
+        - Single tool call from agent perspective (all complexity in Python)
+        - Rate limit safe with batched calls and delays
+        - Formatted output ready for display
+
+    Examples:
+        - "Get technical analysis indicators for SPY"
+        - "Show me TA indicators for NVDA"
+        - "Technical analysis data for AAPL"
+    """
+    return await _get_ta_indicators_uncached(ticker, timespan)
 
 

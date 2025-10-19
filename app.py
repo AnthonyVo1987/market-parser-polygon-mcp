@@ -24,11 +24,15 @@ if str(src_path) not in sys.path:
 # Import the demo from our main app
 from backend.gradio_app import demo
 
-# Launch with HF Spaces-compatible settings
+# Launch with HF Spaces-compatible settings and queue configuration
 if __name__ == "__main__":
-    demo.launch(
-        server_name="0.0.0.0",  # Required for HF Spaces (accept external connections)
-        server_port=7860,        # HF Spaces default port
-        share=False,             # Not needed in HF Spaces (already hosted)
-        show_error=True,         # Show errors for debugging
+    demo.queue(
+        default_concurrency_limit=10,  # Allow 10 concurrent requests (default=1)
+        max_size=100,                  # Queue max 100 requests
+    ).launch(
+        server_name="0.0.0.0",         # Required for HF Spaces (accept external connections)
+        server_port=7860,              # HF Spaces default port
+        max_threads=80,                # Increase from 40 to 80 (monitor memory)
+        share=False,                   # Not needed in HF Spaces (already hosted)
+        show_error=True,               # Show errors for debugging
     )

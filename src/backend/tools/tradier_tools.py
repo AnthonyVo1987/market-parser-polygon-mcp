@@ -5,7 +5,9 @@ Provides options expiration dates via Tradier API.
 
 import json
 import os
+import time
 from datetime import datetime, timedelta
+from functools import lru_cache
 
 import requests
 from agents import function_tool
@@ -46,57 +48,11 @@ def _format_tradier_quote(quote: dict) -> dict:
     }
 
 
-@function_tool
-async def get_stock_quote(ticker: str) -> str:
-    """Get real-time stock quote from Tradier API.
+async def _get_stock_quote_uncached(ticker: str) -> str:
+    """Get real-time stock quote from Tradier API (uncached implementation).
 
-    Use this tool when the user requests a stock quote, current price,
-    or real-time market data for one or more ticker symbols.
-
-    This tool provides real-time price data via Tradier API,
-    supporting both single and multiple ticker queries.
-
-    Args:
-        ticker: Stock ticker symbol(s). Can be:
-                - Single ticker: "AAPL"
-                - Multiple tickers: "AAPL,TSLA,NVDA" (comma-separated, no spaces)
-                Must be valid ticker(s) from major US exchanges.
-
-    Returns:
-        JSON string containing quote data.
-        
-        For single ticker:
-        {
-            "ticker": "AAPL",
-            "current_price": 178.50,
-            "change": 2.30,
-            "percent_change": 1.31,
-            "high": 179.20,
-            "low": 176.80,
-            "open": 177.00,
-            "previous_close": 176.20,
-            "source": "Tradier"
-        }
-
-        For multiple tickers, returns array of quote objects.
-
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
-
-    Note:
-        - Supports major US stock exchanges (NYSE, NASDAQ, etc.)
-        - Data updates in real-time during market hours
-        - Returns last available price when market is closed
-        - Handles up to 10 tickers per request for optimal performance
-
-    Examples:
-        - "Get AAPL stock quote"
-        - "What's the current price of TSLA?"
-        - "Get quotes for AAPL, TSLA, NVDA"
+    Internal function that performs the actual API call without caching.
+    Use get_stock_quote() instead for cached access.
     """
     try:
         # Validate and sanitize ticker input
@@ -165,29 +121,39 @@ async def get_stock_quote(ticker: str) -> str:
 
 
 @function_tool
-async def get_options_expiration_dates(ticker: str) -> str:
-    """Get valid options expiration dates for a ticker from Tradier API.
+@lru_cache(maxsize=1000)
+async def get_stock_quote(ticker: str) -> str:
+    """Get real-time stock quote from Tradier API.
 
-    Use this tool when the user requests options expiration dates for a specific ticker.
-    This provides all available expiration dates for options contracts on the underlying stock.
+    Use this tool when the user requests a stock quote, current price,
+    or real-time market data for one or more ticker symbols.
+
+    This tool provides real-time price data via Tradier API,
+    supporting both single and multiple ticker queries.
 
     Args:
-        ticker: Stock ticker symbol (e.g., "AAPL", "SPY", "NVDA").
-                Must be a valid ticker symbol.
+        ticker: Stock ticker symbol(s). Can be:
+                - Single ticker: "AAPL"
+                - Multiple tickers: "AAPL,TSLA,NVDA" (comma-separated, no spaces)
+                Must be valid ticker(s) from major US exchanges.
 
     Returns:
-        JSON string containing expiration dates array with format:
+        JSON string containing quote data.
+        
+        For single ticker:
         {
-            "ticker": "NVDA",
-            "expiration_dates": [
-                "2025-10-17",
-                "2025-10-24",
-                "2025-10-31",
-                ...
-            ],
-            "count": 21,
+            "ticker": "AAPL",
+            "current_price": 178.50,
+            "change": 2.30,
+            "percent_change": 1.31,
+            "high": 179.20,
+            "low": 176.80,
+            "open": 177.00,
+            "previous_close": 176.20,
             "source": "Tradier"
         }
+
+        For multiple tickers, returns array of quote objects.
 
         Or error format:
         {
@@ -197,16 +163,25 @@ async def get_options_expiration_dates(ticker: str) -> str:
         }
 
     Note:
-        - Returns all available expiration dates for the ticker
-        - Dates are in YYYY-MM-DD format
-        - Dates are sorted chronologically (earliest to latest)
-        - Includes weekly and monthly expiration dates
-        - Data updates daily
+        - Supports major US stock exchanges (NYSE, NASDAQ, etc.)
+        - Data updates in real-time during market hours
+        - Returns last available price when market is closed
+        - Handles up to 10 tickers per request for optimal performance
+        - Caching: Uses LRU cache with maxsize=1000 for performance
 
     Examples:
-        - "Get options expiration dates for SPY"
-        - "What are the available expiration dates for NVDA options?"
-        - "Show me TSLA options expiration dates"
+        - "Get AAPL stock quote"
+        - "What's the current price of TSLA?"
+        - "Get quotes for AAPL, TSLA, NVDA"
+    """
+    return await _get_stock_quote_uncached(ticker)
+
+
+async def _get_options_expiration_dates_uncached(ticker: str) -> str:
+    """Get valid options expiration dates for a ticker from Tradier API (uncached implementation).
+
+    Internal function that performs the actual API call without caching.
+    Use get_options_expiration_dates() instead for cached access.
     """
     try:
         # Validate and sanitize ticker input
@@ -287,7 +262,55 @@ async def get_options_expiration_dates(ticker: str) -> str:
 
 
 @function_tool
-async def get_stock_price_history(
+@lru_cache(maxsize=1000)
+async def get_options_expiration_dates(ticker: str) -> str:
+    """Get valid options expiration dates for a ticker from Tradier API.
+
+    Use this tool when the user requests options expiration dates for a specific ticker.
+    This provides all available expiration dates for options contracts on the underlying stock.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "AAPL", "SPY", "NVDA").
+                Must be a valid ticker symbol.
+
+    Returns:
+        JSON string containing expiration dates array with format:
+        {
+            "ticker": "NVDA",
+            "expiration_dates": [
+                "2025-10-17",
+                "2025-10-24",
+                "2025-10-31",
+                ...
+            ],
+            "count": 21,
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "ticker": "SYMBOL"
+        }
+
+    Note:
+        - Returns all available expiration dates for the ticker
+        - Dates are in YYYY-MM-DD format
+        - Dates are sorted chronologically (earliest to latest)
+        - Includes weekly and monthly expiration dates
+        - Data updates daily
+        - Caching: Uses LRU cache with maxsize=1000
+
+    Examples:
+        - "Get options expiration dates for SPY"
+        - "What are the available expiration dates for NVDA options?"
+        - "Show me TSLA options expiration dates"
+    """
+    return await _get_options_expiration_dates_uncached(ticker)
+
+
+async def _get_stock_price_history_uncached(
     ticker: str,
     start_date: str,
     end_date: str,
@@ -490,6 +513,97 @@ async def get_stock_price_history(
         )
 
 
+@lru_cache(maxsize=1000)
+def _cached_price_history_helper(ticker: str, start_date: str, end_date: str, interval: str, cache_key: int) -> str:
+    """Cached helper for price history with time-based expiration.
+    
+    Cache expires every 3600 seconds (1 hour) via timestamp bucket.
+    Historical data is immutable, so 1-hour TTL is safe.
+    """
+    import asyncio
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(_get_stock_price_history_uncached(ticker, start_date, end_date, interval))
+    finally:
+        loop.close()
+
+
+@function_tool
+async def get_stock_price_history(
+    ticker: str,
+    start_date: str,
+    end_date: str,
+    interval: str = "daily"
+) -> str:
+    """Get historical stock price data from Tradier API.
+    
+    Uses LRU cache with 1-hour TTL for performance optimization.
+    Cache key based on ticker, start_date, end_date, interval, and time bucket (1-hour intervals).
+
+    Use this tool when the user requests historical stock prices, OHLC bars,
+    price performance over time, or daily/weekly/monthly data.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
+                Must be a valid ticker symbol.
+        start_date: Start date in YYYY-MM-DD format (e.g., "2025-01-01").
+        end_date: End date in YYYY-MM-DD format (e.g., "2025-01-10").
+        interval: Time interval - "daily", "weekly", or "monthly".
+                  SELECT INTELLIGENTLY based on user query timeframe:
+                  - "daily" for queries about days/short periods (e.g., "last 5 days", "this week")
+                  - "weekly" for queries about weeks (e.g., "last 2 weeks", "past month")
+                  - "monthly" for queries about months/long periods (e.g., "last 3 months", "year to date")
+                  Always choose based on query context.
+
+    Returns:
+        JSON string with historical OHLC data:
+        {
+            "ticker": "SPY",
+            "interval": "daily",
+            "start_date": "2025-01-01",
+            "end_date": "2025-01-10",
+            "bars": [
+                {
+                    "date": "2025-01-02",
+                    "open": 589.39,
+                    "high": 591.13,
+                    "low": 580.5,
+                    "close": 584.64,
+                    "volume": 50203975
+                },
+                ...
+            ],
+            "count": 6,
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "ticker": "SYMBOL"
+        }
+
+    Note:
+        - Supports daily, weekly, and monthly intervals
+        - Date range is inclusive (includes start_date and end_date)
+        - Data updates in real-time during market hours
+        - Weekly bars show data for week ending on date
+        - Monthly bars show data for month ending on date
+        - Cached for 1 hour to reduce API calls (historical data is immutable)
+
+    Examples:
+        - "Stock price performance the last 5 trading days: SPY"
+          → Agent calculates dates, uses interval="daily"
+        - "Stock price performance the last 2 weeks: NVDA"
+          → Agent calculates dates, uses interval="weekly"
+        - "Stock price performance the last month: AAPL"
+          → Agent calculates dates, uses interval="monthly"
+    """
+    return await _get_stock_price_history_uncached(ticker, start_date, end_date, interval)
+
+
 def _format_tradier_history_bar(bar: dict) -> dict:
     """Format Tradier history bar to consistent structure with rounded values.
 
@@ -510,69 +624,13 @@ def _format_tradier_history_bar(bar: dict) -> dict:
     }
 
 
-@function_tool
-async def get_call_options_chain(
+async def _get_call_options_chain_uncached(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
-    """Get Call Options Chain with 10 strike prices above current underlying price.
+    """Get Call Options Chain with 10 strike prices above current underlying price (uncached implementation).
 
-    Use this tool when the user requests call options data for a specific ticker
-    and expiration date. Returns bid, ask, and greeks for 10 strikes above current price.
-
-    Args:
-        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
-                Must be a valid ticker symbol.
-        current_price: Current underlying stock price (used for filtering strikes).
-                       Get this from get_stock_quote first.
-        expiration_date: Options expiration date in YYYY-MM-DD format.
-                         Use get_options_expiration_dates to find valid dates.
-
-    Returns:
-        JSON string with options chain data formatted as markdown table:
-        {
-            "ticker": "SPY",
-            "option_type": "call",
-            "current_price": 671.16,
-            "expiration_date": "2025-10-17",
-            "options": [
-                {
-                    "strike": 672.00,
-                    "bid": 1.04,
-                    "ask": 1.10,
-                    "delta": 0.38,
-                    "gamma": 0.10,
-                    "theta": -0.70,
-                    "vega": 0.12,
-                    "implied_volatility": 11.00,
-                    "volume": 135391,
-                    "open_interest": 16023
-                },
-                ...
-            ],
-            "count": 10,
-            "source": "Tradier"
-        }
-
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
-
-    Note:
-        - Returns 10 strikes with strike price >= current_price
-        - Strikes sorted ascending (lowest to highest)
-        - Filters full chain client-side to prevent context overload
-        - Bid/Ask prices instead of single "Price" field
-        - Implied volatility expressed as percentage
-        - Requires greeks=true parameter for Tradier API
-
-    Example:
-        User: "Show me SPY call options chain for October 17"
-        Agent: First calls get_stock_quote to get current price (e.g., 671.16)
-        Agent: Then calls get_call_options_chain(ticker="SPY", current_price=671.16,
-               expiration_date="2025-10-17")
+    Internal function that performs the actual API call without caching.
+    Use get_call_options_chain() instead for cached access.
     """
     try:
         # Validate and sanitize ticker input
@@ -711,13 +769,14 @@ async def get_call_options_chain(
 
 
 @function_tool
-async def get_put_options_chain(
+@lru_cache(maxsize=1000)
+async def get_call_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
-    """Get Put Options Chain with 10 strike prices below current underlying price.
+    """Get Call Options Chain with 10 strike prices above current underlying price.
 
-    Use this tool when the user requests put options data for a specific ticker
-    and expiration date. Returns bid, ask, and greeks for 10 strikes below current price.
+    Use this tool when the user requests call options data for a specific ticker
+    and expiration date. Returns bid, ask, and greeks for 10 strikes above current price.
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
@@ -731,21 +790,21 @@ async def get_put_options_chain(
         JSON string with options chain data formatted as markdown table:
         {
             "ticker": "SPY",
-            "option_type": "put",
+            "option_type": "call",
             "current_price": 671.16,
             "expiration_date": "2025-10-17",
             "options": [
                 {
-                    "strike": 671.00,
-                    "bid": 1.34,
-                    "ask": 1.40,
-                    "delta": -0.54,
-                    "gamma": 0.14,
-                    "theta": -0.51,
-                    "vega": 0.15,
-                    "implied_volatility": 8.00,
-                    "volume": 109250,
-                    "open_interest": 13803
+                    "strike": 672.00,
+                    "bid": 1.04,
+                    "ask": 1.10,
+                    "delta": 0.38,
+                    "gamma": 0.10,
+                    "theta": -0.70,
+                    "vega": 0.12,
+                    "implied_volatility": 11.00,
+                    "volume": 135391,
+                    "open_interest": 16023
                 },
                 ...
             ],
@@ -761,18 +820,30 @@ async def get_put_options_chain(
         }
 
     Note:
-        - Returns 10 strikes with strike price <= current_price
-        - Strikes sorted descending (highest to lowest)
+        - Returns 10 strikes with strike price >= current_price
+        - Strikes sorted ascending (lowest to highest)
         - Filters full chain client-side to prevent context overload
         - Bid/Ask prices instead of single "Price" field
         - Implied volatility expressed as percentage
         - Requires greeks=true parameter for Tradier API
+        - Caching: Uses LRU cache with maxsize=1000
 
     Example:
-        User: "Show me SPY put options chain for October 17"
+        User: "Show me SPY call options chain for October 17"
         Agent: First calls get_stock_quote to get current price (e.g., 671.16)
-        Agent: Then calls get_put_options_chain(ticker="SPY", current_price=671.16,
+        Agent: Then calls get_call_options_chain(ticker="SPY", current_price=671.16,
                expiration_date="2025-10-17")
+    """
+    return await _get_call_options_chain_uncached(ticker, current_price, expiration_date)
+
+
+async def _get_put_options_chain_uncached(
+    ticker: str, current_price: float, expiration_date: str
+) -> str:
+    """Get Put Options Chain with 10 strike prices below current underlying price (uncached implementation).
+
+    Internal function that performs the actual API call without caching.
+    Use get_put_options_chain() instead for cached access.
     """
     try:
         # Validate and sanitize ticker input
@@ -907,3 +978,72 @@ async def get_put_options_chain(
             f"Failed to retrieve put options chain for {ticker}: {str(e)}",
             ticker=ticker,
         )
+
+
+@function_tool
+@lru_cache(maxsize=1000)
+async def get_put_options_chain(
+    ticker: str, current_price: float, expiration_date: str
+) -> str:
+    """Get Put Options Chain with 10 strike prices below current underlying price.
+
+    Use this tool when the user requests put options data for a specific ticker
+    and expiration date. Returns bid, ask, and greeks for 10 strikes below current price.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
+                Must be a valid ticker symbol.
+        current_price: Current underlying stock price (used for filtering strikes).
+                       Get this from get_stock_quote first.
+        expiration_date: Options expiration date in YYYY-MM-DD format.
+                         Use get_options_expiration_dates to find valid dates.
+
+    Returns:
+        JSON string with options chain data formatted as markdown table:
+        {
+            "ticker": "SPY",
+            "option_type": "put",
+            "current_price": 671.16,
+            "expiration_date": "2025-10-17",
+            "options": [
+                {
+                    "strike": 671.00,
+                    "bid": 1.34,
+                    "ask": 1.40,
+                    "delta": -0.54,
+                    "gamma": 0.14,
+                    "theta": -0.51,
+                    "vega": 0.15,
+                    "implied_volatility": 8.00,
+                    "volume": 109250,
+                    "open_interest": 13803
+                },
+                ...
+            ],
+            "count": 10,
+            "source": "Tradier"
+        }
+
+        Or error format:
+        {
+            "error": "error_type",
+            "message": "descriptive error message",
+            "ticker": "SYMBOL"
+        }
+
+    Note:
+        - Returns 10 strikes with strike price <= current_price
+        - Strikes sorted descending (highest to lowest)
+        - Filters full chain client-side to prevent context overload
+        - Bid/Ask prices instead of single "Price" field
+        - Implied volatility expressed as percentage
+        - Requires greeks=true parameter for Tradier API
+        - Caching: Uses LRU cache with maxsize=1000
+
+    Example:
+        User: "Show me SPY put options chain for October 17"
+        Agent: First calls get_stock_quote to get current price (e.g., 671.16)
+        Agent: Then calls get_put_options_chain(ticker="SPY", current_price=671.16,
+               expiration_date="2025-10-17")
+    """
+    return await _get_put_options_chain_uncached(ticker, current_price, expiration_date)

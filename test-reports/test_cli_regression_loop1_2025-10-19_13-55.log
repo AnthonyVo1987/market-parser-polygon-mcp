@@ -1,0 +1,89 @@
+=== CLI REGRESSION TEST REPORT (Loop 1/1) ===
+Timestamp: Sun Oct 19 13:55:19 PDT 2025
+Loop Number: 1/1
+Total Tests: 39
+Completed: 39
+Incomplete: 0
+Generation Rate: 100%
+Total Session Duration: 0 min 1 sec
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 0
+0
+Loop Status: COMPLETED
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_SPY_Market_Status - COMPLETED
+Test 2: Test_2_SPY_Current_Price_OHLC - COMPLETED
+Test 3: Test_3_SPY_Yesterday_Price_OHLC - COMPLETED
+Test 4: Test_4_SPY_Last_Week_Performance_OHLC - COMPLETED
+Test 5: Test_5_SPY_Previous_Week_Friday_OHLC - COMPLETED
+Test 6: Test_6_SPY_Last_5_Trading_Days_OHLC - COMPLETED
+Test 7: Test_7_SPY_Past_2_Weeks_OHLC - COMPLETED
+Test 8: Test_8_SPY_Past_Month - COMPLETED
+Test 9: Test_9_SPY_Past_3_Months - COMPLETED
+Test 10: Test_10_SPY_TA_Indicator_DATA_Only - COMPLETED
+Test 11: Test_11_SPY_Support_Resistance - COMPLETED
+Test 12: Test_12_SPY_Full_TA_Analysis - COMPLETED
+Test 13: Test_13_SPY_Options_Expiration_Dates - COMPLETED
+Test 14: Test_14_SPY_Call_Options_Chain - COMPLETED
+Test 15: Test_15_SPY_Put_Options_Chain - COMPLETED
+Test 16: Test_16_SPY_Options_Wall_Analysis - COMPLETED
+Test 17: Test_17_NVDA_Current_Price_OHLC - COMPLETED
+Test 18: Test_18_NVDA_Yesterday_Price_OHLC - COMPLETED
+Test 19: Test_19_NVDA_Last_Week_Performance_OHLC - COMPLETED
+Test 20: Test_20_NVDA_Previous_Week_Friday_OHLC - COMPLETED
+Test 21: Test_21_NVDA_Last_5_Trading_Days_OHLC - COMPLETED
+Test 22: Test_22_NVDA_Past_2_Weeks_OHLC - COMPLETED
+Test 23: Test_23_NVDA_Past_Month - COMPLETED
+Test 24: Test_24_NVDA_Past_3_Months - COMPLETED
+Test 25: Test_25_NVDA_TA_Indicator_DATA_Only - COMPLETED
+Test 26: Test_26_NVDA_Support_Resistance - COMPLETED
+Test 27: Test_27_NVDA_Full_TA_Analysis - COMPLETED
+Test 28: Test_28_NVDA_Options_Expiration_Dates - COMPLETED
+Test 29: Test_29_NVDA_Call_Options_Chain - COMPLETED
+Test 30: Test_30_NVDA_Put_Options_Chain - COMPLETED
+Test 31: Test_31_NVDA_Options_Wall_Analysis - COMPLETED
+Test 32: Test_32_Multi_Current_Price_OHLC_WDC_AMD_SOUN - COMPLETED
+Test 33: Test_33_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN - COMPLETED
+Test 34: Test_34_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN - COMPLETED
+Test 35: Test_35_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN - COMPLETED
+Test 36: Test_36_Multi_TA_Indicator_DATA_Only_WDC_AMD_SOUN - COMPLETED
+Test 37: Test_37_Multi_Support_Resistance_WDC_AMD_SOUN - COMPLETED
+Test 38: Test_38_Multi_Full_TA_Analysis_WDC_AMD_SOUN - COMPLETED
+Test 39: Test_39_Multi_Options_Expiration_Dates_WDC_AMD_SOUN - COMPLETED
+
+=== FULL CLI OUTPUT ===
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/anthony/Github/market-parser-polygon-mcp/src/backend/cli.py", line 9, in <module>
+    from .services import create_agent
+  File "/home/anthony/Github/market-parser-polygon-mcp/src/backend/services/__init__.py", line 3, in <module>
+    from .agent_service import create_agent, get_enhanced_agent_instructions
+  File "/home/anthony/Github/market-parser-polygon-mcp/src/backend/services/agent_service.py", line 7, in <module>
+    from ..tools.tradier_tools import (
+  File "/home/anthony/Github/market-parser-polygon-mcp/src/backend/tools/__init__.py", line 5, in <module>
+    from .tradier_tools import (
+  File "/home/anthony/Github/market-parser-polygon-mcp/src/backend/tools/tradier_tools.py", line 123, in <module>
+    @function_tool
+     ^^^^^^^^^^^^^
+  File "/home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/agents/tool.py", line 468, in function_tool
+    return _create_function_tool(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/agents/tool.py", line 377, in _create_function_tool
+    schema = function_schema(
+             ^^^^^^^^^^^^^^^^
+  File "/home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/agents/function_schema.py", line 339, in function_schema
+    dynamic_model = create_model(f"{func_name}_args", __base__=BaseModel, **fields)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/pydantic/main.py", line 1763, in create_model
+    return meta(
+           ^^^^^
+  File "/home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 112, in __new__
+    private_attributes = inspect_namespace(
+                         ^^^^^^^^^^^^^^^^^^
+  File "/home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/pydantic/_internal/_model_construction.py", line 434, in inspect_namespace
+    raise NameError(
+NameError: Fields must not use names with leading underscores; e.g., use 'cache_time' instead of '_cache_time'.
+
+=== END CLI REGRESSION TEST REPORT (Loop 1/1) ===

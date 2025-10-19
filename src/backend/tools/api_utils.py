@@ -40,3 +40,90 @@ def create_tradier_headers(api_key: str) -> dict:
         "Accept": "application/json",
         "Authorization": f"Bearer {api_key}"
     }
+
+
+# ============================================================================
+# Phase 1: Connection Pooling Infrastructure (October 19, 2025)
+# ============================================================================
+
+import aiohttp
+from typing import Optional
+
+
+class APIConnectionPool:
+    """
+    Singleton connection pool for API requests.
+
+    Provides persistent HTTP sessions with connection pooling for:
+    - Polygon.io API
+    - Tradier API
+    - Other external APIs
+    """
+
+    _instance: Optional['APIConnectionPool'] = None
+
+    def __new__(cls):
+        """Implement singleton pattern."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+
+    def __init__(self):
+        """Initialize connection pool if not already done."""
+        if self._initialized:
+            return
+
+        # Create aiohttp session with connection pooling
+        self.session: Optional[aiohttp.ClientSession] = None
+        self._initialized = True
+
+    async def get_session(self) -> aiohttp.ClientSession:
+        """Get or create HTTP session with connection pooling.
+
+        Returns:
+            aiohttp.ClientSession: HTTP session with connection pooling configured
+
+        Configuration:
+            - limit=100: Max 100 concurrent connections
+            - limit_per_host=10: Max 10 connections per host
+            - ttl_dns_cache=300: Cache DNS entries for 5 minutes
+            - timeout=30s: Overall request timeout
+        """
+        if self.session is None or self.session.closed:
+            self.session = aiohttp.ClientSession(
+                connector=aiohttp.TCPConnector(
+                    limit=100,          # Max 100 concurrent connections
+                    limit_per_host=10,  # Max 10 per host
+                    ttl_dns_cache=300,  # Cache DNS for 5 minutes
+                ),
+                timeout=aiohttp.ClientTimeout(total=30),  # 30s timeout
+            )
+        return self.session
+
+    async def close(self):
+        """Close HTTP session and cleanup resources."""
+        if self.session and not self.session.closed:
+            await self.session.close()
+
+
+# Singleton instance
+_connection_pool: Optional[APIConnectionPool] = None
+
+
+def get_connection_pool() -> APIConnectionPool:
+    """Get singleton connection pool instance.
+
+    Returns:
+        APIConnectionPool: The global connection pool singleton
+
+    Usage:
+        pool = get_connection_pool()
+        session = await pool.get_session()
+        async with session.get(url) as response:
+            data = await response.json()
+    """
+    global _connection_pool
+    if _connection_pool is None:
+        _connection_pool = APIConnectionPool()
+    return _connection_pool

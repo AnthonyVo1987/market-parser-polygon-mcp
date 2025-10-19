@@ -1,0 +1,903 @@
+=== CLI REGRESSION TEST REPORT (Loop 1/1) ===
+Timestamp: Sun Oct 19 14:00:50 PDT 2025
+Loop Number: 1/1
+Total Tests: 39
+Completed: 39
+Incomplete: 0
+Generation Rate: 100%
+Total Session Duration: 3 min 30 sec
+Session Mode: PERSISTENT (single session)
+Session Count Detected: 1
+Loop Status: COMPLETED
+
+=== RESPONSE TIME ANALYSIS ===
+Min Response Time: 1.928s
+Max Response Time: 10.765s
+Avg Response Time: 5.51s
+Performance Rating: EXCELLENT
+
+=== TEST RESULTS DETAIL ===
+Test 1: Test_1_SPY_Market_Status - COMPLETED
+  Response Time: 9.216s
+Test 2: Test_2_SPY_Current_Price_OHLC - COMPLETED
+  Response Time: 8.067s
+Test 3: Test_3_SPY_Yesterday_Price_OHLC - COMPLETED
+  Response Time: 7.612s
+Test 4: Test_4_SPY_Last_Week_Performance_OHLC - COMPLETED
+  Response Time: 6.921s
+Test 5: Test_5_SPY_Previous_Week_Friday_OHLC - COMPLETED
+  Response Time: 8.652s
+Test 6: Test_6_SPY_Last_5_Trading_Days_OHLC - COMPLETED
+  Response Time: 6.835s
+Test 7: Test_7_SPY_Past_2_Weeks_OHLC - COMPLETED
+  Response Time: 4.632s
+Test 8: Test_8_SPY_Past_Month - COMPLETED
+  Response Time: 4.285s
+Test 9: Test_9_SPY_Past_3_Months - COMPLETED
+  Response Time: 5.794s
+Test 10: Test_10_SPY_TA_Indicator_DATA_Only - COMPLETED
+  Response Time: 6.466s
+Test 11: Test_11_SPY_Support_Resistance - COMPLETED
+  Response Time: 3.077s
+Test 12: Test_12_SPY_Full_TA_Analysis - COMPLETED
+  Response Time: 4.083s
+Test 13: Test_13_SPY_Options_Expiration_Dates - COMPLETED
+  Response Time: 6.427s
+Test 14: Test_14_SPY_Call_Options_Chain - COMPLETED
+  Response Time: 7.750s
+Test 15: Test_15_SPY_Put_Options_Chain - COMPLETED
+  Response Time: 2.371s
+Test 16: Test_16_SPY_Options_Wall_Analysis - COMPLETED
+  Response Time: 2.306s
+Test 17: Test_17_NVDA_Current_Price_OHLC - COMPLETED
+  Response Time: 5.139s
+Test 18: Test_18_NVDA_Yesterday_Price_OHLC - COMPLETED
+  Response Time: 2.517s
+Test 19: Test_19_NVDA_Last_Week_Performance_OHLC - COMPLETED
+  Response Time: 2.303s
+Test 20: Test_20_NVDA_Previous_Week_Friday_OHLC - COMPLETED
+  Response Time: 4.842s
+Test 21: Test_21_NVDA_Last_5_Trading_Days_OHLC - COMPLETED
+  Response Time: 2.871s
+Test 22: Test_22_NVDA_Past_2_Weeks_OHLC - COMPLETED
+  Response Time: 2.970s
+Test 23: Test_23_NVDA_Past_Month - COMPLETED
+  Response Time: 1.928s
+Test 24: Test_24_NVDA_Past_3_Months - COMPLETED
+  Response Time: 4.270s
+Test 25: Test_25_NVDA_TA_Indicator_DATA_Only - COMPLETED
+  Response Time: 4.901s
+Test 26: Test_26_NVDA_Support_Resistance - COMPLETED
+  Response Time: 4.801s
+Test 27: Test_27_NVDA_Full_TA_Analysis - COMPLETED
+  Response Time: 6.517s
+Test 28: Test_28_NVDA_Options_Expiration_Dates - COMPLETED
+  Response Time: 7.241s
+Test 29: Test_29_NVDA_Call_Options_Chain - COMPLETED
+  Response Time: 6.545s
+Test 30: Test_30_NVDA_Put_Options_Chain - COMPLETED
+  Response Time: 3.710s
+Test 31: Test_31_NVDA_Options_Wall_Analysis - COMPLETED
+  Response Time: 7.881s
+Test 32: Test_32_Multi_Current_Price_OHLC_WDC_AMD_SOUN - COMPLETED
+  Response Time: 10.765s
+Test 33: Test_33_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN - COMPLETED
+  Response Time: 3.265s
+Test 34: Test_34_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN - COMPLETED
+  Response Time: 3.444s
+Test 35: Test_35_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN - COMPLETED
+  Response Time: 9.465s
+Test 36: Test_36_Multi_TA_Indicator_DATA_Only_WDC_AMD_SOUN - COMPLETED
+  Response Time: 8.593s
+Test 37: Test_37_Multi_Support_Resistance_WDC_AMD_SOUN - COMPLETED
+  Response Time: 4.144s
+Test 38: Test_38_Multi_Full_TA_Analysis_WDC_AMD_SOUN - COMPLETED
+  Response Time: 3.656s
+Test 39: Test_39_Multi_Options_Expiration_Dates_WDC_AMD_SOUN - COMPLETED
+  Response Time: 8.575s
+
+=== FULL CLI OUTPUT ===
+Welcome to the GPT-5 powered Market Analysis Agent. Type 'exit' to quit.
+📊 CLI session 'cli_session' initialized for conversation memory
+🤖 Persistent agent initialized - agent will be reused for all messages
+> /home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/agents/tool.py:455: RuntimeWarning: coroutine '_get_market_status_and_date_time_uncached' was never awaited
+  return result
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+
+✅ Query processed successfully!
+Agent Response:
+
+- Market Status: CLOSED
+- Server Time: 2025-10-19 13:57:19 (Sunday)
+
+Tools Used:
+- get_market_status_and_date_time() - Attempted to fetch real-time market 
+status; tool call failed due to runtime error. No data returned from tool. 
+Relying on provided context: market is Closed.
+
+Performance Metrics:
+   Response Time: 9.216s
+   Tokens Used: 21,667 (Input: 21,313, Output: 354)
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY Current Price OHLC: Quote fetch currently unavailable due to a tool error.
+Market is CLOSED.
+
+- If you’d like, I can retry fetching the SPY quote or provide the latest 
+available OHLC from the last successful retrieval.
+
+Tools Used:
+- get_stock_quote(ticker='SPY') - Attempted to fetch current SPY quote; tool 
+call returned a coroutine error (runtime issue) and did not provide data.
+
+Performance Metrics:
+   Response Time: 8.067s
+   Tokens Used: 33,212 (Input: 32,754, Output: 458) | Cached Input: 21,248
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> /home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/agents/tool.py:455: RuntimeWarning: coroutine '_get_stock_price_history_uncached' was never awaited
+  return result
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+
+✅ Query processed successfully!
+Agent Response:
+
+- Yesterday's Price OHLC: SPY data unavailable due to a tool error. I can retry 
+if you’d like.
+
+Tools Used:
+- get_stock_price_history(ticker='SPY', start_date='2025-10-15', 
+end_date='2025-10-18', interval='daily') - Attempted to fetch yesterday's OHLC 
+but encountered a runtime loop error.
+
+Performance Metrics:
+   Response Time: 7.612s
+   Tokens Used: 23,203 (Input: 22,431, Output: 772) | Cached Input: 22,016
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Last week's Performance OHLC: SPY data unavailable due to a tool error. I can 
+retry or provide the last known price if you’d like.
+
+Tools Used:
+- get_stock_price_history(ticker='SPY', start_date='2025-10-13', 
+end_date='2025-10-17', interval='weekly') - Attempted to fetch last week's OHLC;
+tool call returned a runtime loop error.
+
+Performance Metrics:
+   Response Time: 6.921s
+   Tokens Used: 23,385 (Input: 22,605, Output: 780) | Cached Input: 22,272
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price on the previous week's Friday OHLC: SPY data unavailable due to a 
+tool error. I can retry if you’d like.
+
+Tools Used:
+- get_stock_quote(ticker='SPY') - Attempted to fetch SPY quote; tool returned a 
+coroutine runtime error.
+
+Performance Metrics:
+   Response Time: 8.652s
+   Tokens Used: 23,701 (Input: 23,103, Output: 598) | Cached Input: 22,656
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the last 5 Trading Days OHLC: SPY data unavailable due
+to a tool error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- get_stock_price_history(ticker='SPY', start_date='2025-10-03', 
+end_date='2025-10-10', interval='daily') - Attempted to fetch last 5 trading 
+days OHLC; tool encountered a runtime loop error.
+
+Performance Metrics:
+   Response Time: 6.835s
+   Tokens Used: 11,804 (Input: 11,447, Output: 357) | Cached Input: 11,264
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the past 2 Weeks OHLC: SPY data unavailable due to a 
+tool error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- get_stock_price_history(ticker='SPY', start_date='2025-10-05', 
+end_date='2025-10-19', interval='weekly') - Attempted to fetch last 2 weeks 
+OHLC; tool returned a runtime loop error.
+
+Performance Metrics:
+   Response Time: 4.632s
+   Tokens Used: 23,889 (Input: 23,489, Output: 400) | Cached Input: 23,168
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the past month OHLC: SPY data unavailable due to a 
+tool error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 4.285s
+   Tokens Used: 12,200 (Input: 11,761, Output: 439) | Cached Input: 11,520
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the past 3 months: SPY data unavailable due to a tool 
+error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- get_stock_price_history(ticker='SPY', start_date='2025-07-19', 
+end_date='2025-10-19', interval='monthly') - Attempted to fetch last 3 months 
+OHLC; tool returned a runtime loop error.
+
+Performance Metrics:
+   Response Time: 5.794s
+   Tokens Used: 24,453 (Input: 23,989, Output: 464) | Cached Input: 23,680
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> /home/anthony/Github/market-parser-polygon-mcp/.venv/lib/python3.12/site-packages/agents/tool.py:455: RuntimeWarning: coroutine '_get_ta_indicators_uncached' was never awaited
+  return result
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+
+✅ Query processed successfully!
+Agent Response:
+
+- Data not available: TA indicators for SPY could not be retrieved due to a 
+runtime error. 
+  Error: Cannot run the event loop while another loop is running. I can retry if
+you’d like.
+
+Tools Used:
+- `get_ta_indicators(ticker='SPY', timespan='day')` - Attempted to fetch TA 
+indicators; tool returned a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 6.466s
+   Tokens Used: 24,593 (Input: 24,222, Output: 371) | Cached Input: 23,808
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY Support & Resistance Levels: data unavailable due to previous tool errors;
+unable to compute levels without price data. I can retry fetching quotes/history
+to derive S/R, or provide rough guidance once data is retrieved.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 3.077s
+   Tokens Used: 12,577 (Input: 12,192, Output: 385) | Cached Input: 11,904
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+I’m unable to perform a full technical analysis due to lack of available data 
+for SPY in this chat. No TA indicators or price data are currently retrievable 
+from our history.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 4.083s
+   Tokens Used: 12,598 (Input: 12,285, Output: 313) | Cached Input: 12,160
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY options expiration dates: retrieval failed due to a runtime error. I can 
+retry fetching the dates if you’d like.
+
+Tools Used:
+- get_options_expiration_dates(ticker='SPY') - Attempted to fetch expiration 
+dates; tool returned a coroutine/runtime error.
+- get_options_expiration_dates(ticker='SPY') - Second attempt; tool returned a 
+coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 6.427s
+   Tokens Used: 37,875 (Input: 37,550, Output: 325) | Cached Input: 37,120
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY Call Options Chain (Expiring 2025-10-24) could not be retrieved: unable to
+fetch current price due to a runtime error with the quote tool. Once price is 
+available, I can pull the chain.
+
+Tools Used:
+- get_stock_quote(ticker='SPY') - Attempted to fetch current SPY price to 
+determine strikes; tool returned a coroutine/runtime error.
+- get_call_options_chain(ticker='SPY', current_price=UNKNOWN, 
+expiration_date='2025-10-24') - Not executed due to missing price data from the 
+quote step.
+
+Performance Metrics:
+   Response Time: 7.750s
+   Tokens Used: 38,931 (Input: 38,379, Output: 552) | Cached Input: 35,712
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY Put Options Chain (Expiring 2025-10-24) could not be retrieved: price data
+unavailable due to a runtime error with the quote tool. I can retry once price 
+is available.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 2.371s
+   Tokens Used: 13,069 (Input: 12,813, Output: 256) | Cached Input: 12,544
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY Options Chain analysis could not be performed: no valid options data 
+available due to prior tool errors.
+
+- I can retry and compute potential Call & Put wall strikes once price data and 
+expiration dates are retrievable.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 2.306s
+   Tokens Used: 13,094 (Input: 12,901, Output: 193) | Cached Input: 10,496
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NVDA Current Price OHLC: data unavailable due to a tool error. I can retry 
+fetching the quote if you’d like.
+
+- Note: NVDA is a single ticker request.
+
+Tools Used:
+- get_stock_quote(ticker='NVDA') - Attempted to fetch current NVDA quote; tool 
+returned a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 5.139s
+   Tokens Used: 26,368 (Input: 26,144, Output: 224) | Cached Input: 25,472
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Yesterday's Price OHLC: NVDA data unavailable due to a tool error. I can retry
+if you’d like.
+
+Tools Used:
+- get_stock_quote(ticker='NVDA') - Attempted to fetch NVDA quote; tool returned 
+a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 2.517s
+   Tokens Used: 13,303 (Input: 13,115, Output: 188) | Cached Input: 12,928
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Last week's Performance OHLC: NVDA data unavailable due to a tool error. I can
+retry or provide the last known data if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 2.303s
+   Tokens Used: 13,304 (Input: 13,188, Output: 116) | Cached Input: 12,928
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price on the previous week's Friday OHLC: NVDA data unavailable due to a
+tool error. I can retry if you’d like.
+
+Tools Used:
+- get_stock_quote(ticker='NVDA') - Attempted to fetch NVDA quote; tool returned 
+a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 4.842s
+   Tokens Used: 26,776 (Input: 26,564, Output: 212) | Cached Input: 26,240
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the last 5 Trading Days OHLC: NVDA data unavailable 
+due to a tool error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 2.871s
+   Tokens Used: 13,704 (Input: 13,390, Output: 314) | Cached Input: 13,184
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the past 2 Weeks OHLC: NVDA data unavailable due to a 
+tool error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 2.970s
+   Tokens Used: 13,651 (Input: 13,466, Output: 185) | Cached Input: 13,312
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the past month: NVDA data unavailable due to tool 
+errors. I can retry or provide last known data if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 1.928s
+   Tokens Used: 13,652 (Input: 13,537, Output: 115) | Cached Input: 13,440
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Stock Price Performance the past 3 months: NVDA data unavailable due to a tool
+error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- get_stock_price_history(ticker='NVDA', start_date='2025-07-19', 
+end_date='2025-10-19', interval='monthly') - Attempted to fetch last 3 months 
+OHLC; tool returned a runtime loop error.
+
+Performance Metrics:
+   Response Time: 4.270s
+   Tokens Used: 27,430 (Input: 27,290, Output: 140) | Cached Input: 27,008
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Data not available: TA indicators for NVDA could not be retrieved due to a 
+runtime error. I can retry if you’d like.
+
+Tools Used:
+- `get_ta_indicators(ticker='NVDA', timespan='day')` - Attempted to fetch TA 
+indicators; tool returned a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 4.901s
+   Tokens Used: 28,164 (Input: 27,808, Output: 356) | Cached Input: 27,520
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NVDA Support & Resistance Levels: data unavailable due to prior tool errors; 
+unable to compute levels without price data. I can retry fetching quotes/history
+to derive S/R, or provide rough guidance once data is retrieved.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 4.801s
+   Tokens Used: 14,142 (Input: 13,949, Output: 193) | Cached Input: 13,696
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NVDA: Unable to perform TA analysis due to missing data from prior tool 
+errors. I can retry fetching quotes/TA if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 6.517s
+   Tokens Used: 14,285 (Input: 14,042, Output: 243) | Cached Input: 13,824
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NVDA options expiration dates: retrieval failed due to a runtime error. I can 
+retry fetching the dates if you’d like.
+
+Tools Used:
+- get_options_expiration_dates(ticker='NVDA') - Attempted to fetch expiration 
+dates; tool returned a coroutine/runtime error.
+- get_options_expiration_dates(ticker='NVDA') - Second attempt; tool returned a 
+coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 7.241s
+   Tokens Used: 42,610 (Input: 42,483, Output: 127) | Cached Input: 39,552
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NVDA Call Options Chain (Expiring 2025-10-24) could not be retrieved: unable 
+to fetch current price due to a runtime error with the quote tool. Once price is
+available, I can pull the chain.
+
+Tools Used:
+- get_stock_quote(ticker='NVDA') - Attempted to fetch current NVDA price to 
+determine strikes; tool returned a coroutine/runtime error.
+- get_call_options_chain(ticker='NVDA', current_price=UNKNOWN, 
+expiration_date='2025-10-24') - Not executed due to missing price data from the 
+quote step.
+
+Performance Metrics:
+   Response Time: 6.545s
+   Tokens Used: 43,268 (Input: 43,104, Output: 164) | Cached Input: 28,544
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- SPY Call Options Chain (Expiring 2025-10-24) could not be retrieved: unable to
+fetch current price due to a runtime error with the quote tool. Once price is 
+available, I can pull the chain.
+
+Tools Used:
+- get_stock_quote(ticker='SPY') - Attempted to fetch current SPY price to 
+determine strikes; tool returned a coroutine/runtime error.
+- get_call_options_chain(ticker='SPY', current_price=UNKNOWN, 
+expiration_date='2025-10-24') - Not executed due to missing price data from the 
+quote step.
+
+Performance Metrics:
+   Response Time: 3.710s
+   Tokens Used: 14,749 (Input: 14,560, Output: 189) | Cached Input: 14,464
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NVDA Options Chain Walls: cannot determine without current price and 
+expiration data. Data currently unavailable due to prior tool errors.
+
+- Plan: once SPNVDA price and expiration data are retrievable, compute candidate
+call/put wall strikes.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 7.881s
+   Tokens Used: 14,972 (Input: 14,775, Output: 197) | Cached Input: 14,720
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Current Price OHLC: WDC, AMD, SOUN data unavailable due to a tool error. I can
+retry fetching quotes if you’d like.
+
+Tools Used:
+- get_stock_quote(ticker='WDC,AMD,SOUN') - Single multi-ticker request; tool 
+returned a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 10.765s
+   Tokens Used: 30,330 (Input: 29,980, Output: 350) | Cached Input: 28,800
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Yesterday's Price OHLC: WDC, AMD, SOUN data unavailable due to a tool error. I
+can retry.
+
+Tools Used:
+- get_stock_quote(ticker='WDC,AMD,SOUN') - Attempted multi-ticker quote; tool 
+returned a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 3.265s
+   Tokens Used: 15,197 (Input: 15,005, Output: 192) | Cached Input: 14,720
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Yesterday's Closing Price: WDC, AMD, SOUN data unavailable due to a tool 
+error. I can retry fetching quotes if you’d like.
+
+Tools Used:
+- get_stock_quote(ticker='WDC,AMD,SOUN') - Attempted multi-ticker quote; tool 
+returned a coroutine/runtime error.
+
+Performance Metrics:
+   Response Time: 3.444s
+   Tokens Used: 15,285 (Input: 15,088, Output: 197) | Cached Input: 14,976
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Last week's Performance OHLC: WDC, AMD, SOUN data unavailable due to a tool 
+error. I can retry or provide the last known data if you’d like.
+
+Tools Used:
+- No tool calls needed - using existing data from previous queries
+
+Performance Metrics:
+   Response Time: 9.465s
+   Tokens Used: 15,490 (Input: 15,177, Output: 313) | Cached Input: 14,976
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- Data not available: TA indicators for WDC, AMD, and SOUN could not be 
+retrieved due to a runtime error.
+
+Tools Used:
+- get_ta_indicators(ticker='WDC', timespan='day') - Attempted to fetch TA 
+indicators; runtime error.
+- get_ta_indicators(ticker='AMD', timespan='day') - Attempted to fetch TA 
+indicators; runtime error.
+- get_ta_indicators(ticker='SOUN', timespan='day') - Attempted to fetch TA 
+indicators; runtime error.
+
+Performance Metrics:
+   Response Time: 8.593s
+   Tokens Used: 21,712 (Input: 20,930, Output: 782) | Cached Input: 19,968
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- WDC, AMD, SOUN Support & Resistance Levels: data unavailable due to prior tool
+errors. I can retry fetching quotes/history to derive S/R, or provide rough 
+guidance once data is retrieved.
+
+- Plan if data comes back: derive S/R from recent highs/lows and current price 
+relative to key moving averages.
+
+Tools Used:
+- No tool calls needed this turn — relying on existing data from previous 
+queries awaiting retrial.
+
+Performance Metrics:
+   Response Time: 4.144s
+   Tokens Used: 15,866 (Input: 15,581, Output: 285) | Cached Input: 15,232
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NV: I cannot perform TA for WDC, AMD, SOUN due to missing data from prior tool
+errors. I can retry fetching quotes/TA when data is available.
+
+- Plan: once price data and TA indicators are retrievable, provide a holistic TA
+covering Trends, Volatility, Momentum, and Trading Patterns.
+
+Tools Used:
+- No tool calls needed this turn — relying on existing data from previous 
+queries awaiting retrial.
+
+Performance Metrics:
+   Response Time: 3.656s
+   Tokens Used: 15,930 (Input: 15,709, Output: 221) | Cached Input: 15,488
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> 
+✅ Query processed successfully!
+Agent Response:
+
+- NV: Expiration dates for WDC, AMD, SOUN could not be retrieved due to runtime 
+errors from the options API. I can retry fetching the dates.
+
+- Plan: Retry once price/environment stabilizes to obtain expiration dates for 
+all three tickers.
+
+Tools Used:
+- get_options_expiration_dates(ticker='WDC') - Attempted to fetch expiration 
+dates for WDC; runtime issue occurred.
+- get_options_expiration_dates(ticker='AMD') - Attempted to fetch expiration 
+dates for AMD; runtime issue occurred.
+- get_options_expiration_dates(ticker='SOUN') - Attempted to fetch expiration 
+dates for SOUN; runtime issue occurred.
+
+Performance Metrics:
+   Response Time: 8.575s
+   Tokens Used: 22,083 (Input: 21,485, Output: 598) | Cached Input: 21,120
+   Model: gpt-5-nano
+
+
+──────────────────────────────────────────────────
+
+> Goodbye!
+📊 CLI session cleaned up
+sys:1: RuntimeWarning: coroutine 'get_stock_quote' was never awaited
+sys:1: RuntimeWarning: coroutine 'get_options_expiration_dates' was never awaited
+
+=== END CLI REGRESSION TEST REPORT (Loop 1/1) ===

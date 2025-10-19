@@ -1,1261 +1,882 @@
-# TODO Task Plan - Entry Points & Gradio Features Implementation
+# Performance Optimization Implementation TODO Plan
 
-**Created:** 2025-10-18
-**Project:** Market Parser - Add main.py Entry Point + Gradio PWA & Hot Reload
-**Approach:** Option A (RECOMMENDED) - Add entry points, keep nested structure
-**Total Estimated Time:** ~3 hours
-**Risk Level:** 🟢 LOW (zero breaking changes)
-
----
-
-## Implementation Overview
-
-### Tasks to Complete
-
-**Task 1:** Add main.py entry point for standard Python convention (`uv run main.py`)
-**Task 2:** Add pyproject.toml scripts for professional commands (`uv run market-parser`)
-**Task 3:** Enable Gradio PWA (Progressive Web App) functionality
-**Task 4:** Enable Gradio Hot Reload for faster development
-
-### Goals Achieved
-
-✅ Enable `uv run main.py` (standard Python convention)
-✅ Enable `uv run market-parser` (professional command)
-✅ Gradio PWA support (installable app)
-✅ Gradio Hot Reload (faster development)
-✅ Zero import refactoring (backward compatible)
-✅ Python standards compliance (PEP 8)
-
-### Files to Create (2 new files)
-
-1. `src/backend/__init__.py` - Make backend a proper Python package
-2. `src/main.py` - Main entry point
-
-### Files to Modify (5 existing files)
-
-1. `pyproject.toml` - Add [project.scripts] section
-2. `src/backend/cli.py` - Ensure main() function exists
-3. `src/backend/gradio_app.py` - Add pwa=True, update startup messages
-4. `CLAUDE.md` - Document new entry points and Gradio features
-5. `.serena/memories/tech_stack_oct_2025.md` - Document entry points and features
-6. `.serena/memories/project_architecture.md` - Update structure documentation
+**Branch**: `v1.0.0.0_performance-optimizations`
+**Status**: Phase 1 Ready for Implementation
+**Created**: 2025-10-19
+**Last Updated**: 2025-10-19
 
 ---
 
-## 🔴 MANDATORY: Tool Usage Requirements
+## 📋 Quick Reference
 
-**YOU MUST systematically use the following tools throughout ALL phases:**
+**Detailed Implementation Plans**:
+- 📄 Phase 1: `docs/implementation_plans/phase_1_quick_wins.md` (28 KB)
+- 📄 Phase 2: `docs/implementation_plans/phase_2_api_optimization.md` (52 KB)
+- 📄 Phase 3: `docs/implementation_plans/phase_3_pwa_features.md` (57 KB)
+- 📄 Phase 4: `docs/implementation_plans/phase_4_advanced_optimization.md` (82 KB)
 
-- ✅ **Sequential-Thinking:** MANDATORY at START of every phase for systematic approach
-- ✅ **Serena Tools:** For code analysis, symbol operations, file structure analysis
-- ✅ **Standard Read/Write/Edit:** For file operations when Serena doesn't support the operation
-- ✅ **Bash:** For testing commands and git operations
-
-**NEVER stop using advanced tools unless the specific action is only supported by Standard Tools.**
-
----
-
-## PHASE 1: Entry Point Setup
-
-**Objective:** Create entry point infrastructure for standard Python convention
-
-### Task 1.1: Check Backend Package Structure
-
-**Tool:** Serena `mcp__serena__list_dir`
-
-**Action:**
-- Check if `src/backend/__init__.py` exists
-- If not exists, mark for creation
-
-**Success Criteria:**
-- [ ] Determined whether __init__.py exists
-
-### Task 1.2: Create Backend Package Init File
-
-**Tool:** Write tool (if file doesn't exist)
-
-**Action:**
-Create `src/backend/__init__.py` with minimal content:
-
-```python
-"""Backend package for Market Parser application."""
-# Empty __init__.py to make backend a proper Python package
-```
-
-**Success Criteria:**
-- [ ] File created at `src/backend/__init__.py`
-- [ ] Backend is now a proper Python package
-
-### Task 1.3: Analyze CLI Main Function
-
-**Tool:** Serena `mcp__serena__get_symbols_overview` and `mcp__serena__find_symbol`
-
-**Action:**
-- Get symbols overview of `src/backend/cli.py`
-- Check if `main()` function exists
-- If exists, verify it's the entry point
-- If not exists, determine where to add it
-
-**Success Criteria:**
-- [ ] Determined if main() function exists
-- [ ] Identified entry point structure
-
-### Task 1.4: Update CLI for Entry Point (if needed)
-
-**Tool:** Serena `mcp__serena__replace_symbol_body` or Edit tool
-
-**Action:**
-If main() doesn't exist, add it to cli.py:
-
-```python
-def main():
-    """Main entry point for Market Parser CLI.
-
-    This function serves as the entry point for console scripts defined
-    in pyproject.toml and for the src/main.py entry point.
-    """
-    import asyncio
-
-    # Existing CLI initialization code
-    session = SQLiteSession(settings.agent_session_name)
-    agent = initialize_persistent_agent()
-
-    print("\n" + "=" * 60)
-    print("🏦 Market Parser - Financial Analysis CLI")
-    print("=" * 60)
-    print("📊 Powered by GPT-5-Nano + Polygon.io + Tradier")
-    print("💬 Type your financial queries below")
-    print("🔄 Type 'quit' or 'exit' to end session")
-    print("=" * 60 + "\n")
-
-    # Existing CLI loop code
-    while True:
-        user_input = input("\n> ").strip()
-
-        if user_input.lower() in ["quit", "exit"]:
-            print("\n👋 Goodbye! Thanks for using Market Parser.\n")
-            break
-
-        if not user_input:
-            continue
-
-        result = asyncio.run(process_query_with_footer(agent, session, user_input))
-        print(result)
-```
-
-**Note:** This is pseudocode - actual implementation should preserve existing CLI functionality.
-
-**Success Criteria:**
-- [ ] main() function exists in cli.py
-- [ ] Function is properly documented
-- [ ] Function serves as entry point
-
-### Task 1.5: Check PyProject Configuration
-
-**Tool:** Read tool
-
-**Action:**
-- Check if `pyproject.toml` exists in project root
-- If exists, read current content to understand structure
-- Plan where to add [project.scripts] section
-
-**Success Criteria:**
-- [ ] Determined if pyproject.toml exists
-- [ ] Reviewed current structure
-
-### Task 1.6: Create Main Entry Point
-
-**Tool:** Write tool
-
-**Action:**
-Create `src/main.py`:
-
-```python
-"""Market Parser main entry point.
-
-This file enables the standard Python convention:
-    uv run main.py
-
-It imports and calls the CLI main() function from the backend package.
-
-Architecture:
-    src/main.py → backend.cli.main() → CLI business logic
-
-See Also:
-    - backend.cli.main() - CLI entry point
-    - backend.gradio_app.main() - Gradio entry point (if implemented)
-"""
-
-from backend.cli import main
-
-if __name__ == "__main__":
-    main()
-```
-
-**Success Criteria:**
-- [ ] File created at `src/main.py`
-- [ ] Imports backend.cli.main correctly
-- [ ] Properly documented
+**Research Documentation**:
+- 📄 Research Memory: `.serena/memories/performance_optimizations_research_oct_2025.md`
 
 ---
 
-## PHASE 2: PyProject Scripts Configuration
+## 🎯 Implementation Status
 
-**Objective:** Add professional console scripts for easy command access
+### Phase 1: Quick Wins (1-2 hours, 50-70% improvement)
+- [ ] **READY TO START** - All prerequisites met
 
-### Task 2.1: Add Console Scripts to PyProject
+### Phase 2: API Optimization (8-12 hours, 3-5x faster)
+- [ ] **PENDING** - Start after Phase 1 complete
 
-**Tool:** Edit tool or Write tool (depending on if pyproject.toml exists)
+### Phase 3: PWA Features (8-16 hours, instant UI + offline)
+- [ ] **PENDING** - Start after Phase 2 complete
 
-**Action:**
-Add [project.scripts] section to `pyproject.toml`:
-
-```toml
-[project.scripts]
-market-parser = "backend.cli:main"
-market-parser-gradio = "backend.gradio_app:main"
-```
-
-**If pyproject.toml doesn't exist, create with:**
-
-```toml
-[project]
-name = "market-parser"
-version = "0.1.0"
-description = "Natural language financial analysis using GPT-5-Nano and Polygon.io"
-
-[project.scripts]
-market-parser = "backend.cli:main"
-market-parser-gradio = "backend.gradio_app:main"
-```
-
-**Success Criteria:**
-- [ ] [project.scripts] section added to pyproject.toml
-- [ ] market-parser script points to backend.cli:main
-- [ ] market-parser-gradio script points to backend.gradio_app:main
-
-### Task 2.2: Test Main.py Entry Point
-
-**Tool:** Bash
-
-**Action:**
-Test the new entry point works:
-
-```bash
-uv run main.py
-```
-
-**Expected Output:**
-```
-============================================================
-🏦 Market Parser - Financial Analysis CLI
-============================================================
-📊 Powered by GPT-5-Nano + Polygon.io + Tradier
-💬 Type your financial queries below
-🔄 Type 'quit' or 'exit' to end session
-============================================================
-
->
-```
-
-**Success Criteria:**
-- [ ] Command executes without errors
-- [ ] CLI starts correctly
-- [ ] Can type 'quit' to exit
-
-### Task 2.3: Test Console Script Entry Points
-
-**Tool:** Bash
-
-**Action:**
-Test the console scripts work (may need to run `uv sync` or `uv pip install -e .` first):
-
-```bash
-# Test CLI script
-uv run market-parser
-
-# Test Gradio script (after Phase 3 implementation)
-uv run market-parser-gradio
-```
-
-**Note:** If commands fail, may need to install project in editable mode:
-
-```bash
-uv pip install -e .
-```
-
-**Success Criteria:**
-- [ ] uv run market-parser works
-- [ ] uv run market-parser-gradio works (after Gradio main() added)
+### Phase 4: Advanced Optimization (20-26 hours, enterprise-grade)
+- [ ] **PENDING** - Start after Phase 3 complete
 
 ---
 
-## PHASE 3: Gradio PWA & Hot Reload Implementation
+## 🚀 PHASE 1: QUICK WINS (IMMEDIATE PRIORITY)
 
-**Objective:** Enable PWA and document Hot Reload usage
+**Time Estimate**: 1-2 hours
+**Expected Impact**: 50-70% performance improvement, 10x concurrent capacity
+**Risk Level**: LOW (backwards compatible, additive changes)
 
-### Task 3.1: Check Gradio App Main Function
+### Task 1.1: Gradio Queue Configuration ⏱️ 10 minutes
 
-**Tool:** Serena `mcp__serena__get_symbols_overview`
+**Goal**: Enable concurrent request handling (10x capacity increase)
 
-**Action:**
-- Check if `src/backend/gradio_app.py` has a main() function
-- If not, plan to add one for pyproject.toml script compatibility
+**File to Modify**: `app.py` (line ~17)
 
-**Success Criteria:**
-- [ ] Determined if main() exists in gradio_app.py
+**Implementation Steps**:
 
-### Task 3.2: Update Gradio App for PWA
+1. **Use Sequential-Thinking** to plan the modification approach
 
-**Tool:** Edit tool
+2. **Use Serena Tools** to locate the exact launch configuration:
+   ```
+   mcp__serena__get_symbols_overview("app.py")
+   mcp__serena__find_symbol("launch", "app.py")
+   ```
 
-**Action:**
-Update the `if __name__ == "__main__":` block in `src/backend/gradio_app.py`:
+3. **Modify app.py**:
 
-**Find:**
-```python
-if __name__ == "__main__":
-    demo.launch(
-        server_name="127.0.0.1",
-        server_port=8000,
-        share=False,
-        show_error=True,
-        quiet=False,
-        show_api=False,
-        allowed_paths=[],
-    )
-```
+   **Current Code** (app.py line ~17):
+   ```python
+   demo.launch(
+       server_name="0.0.0.0",
+       server_port=7860,
+       share=False,
+       show_error=True,
+   )
+   ```
 
-**Replace with:**
-```python
-def main():
-    """Main entry point for Market Parser Gradio interface.
+   **New Code** (add queue configuration):
+   ```python
+   demo.queue(
+       default_concurrency_limit=10,  # Allow 10 concurrent requests (default=1)
+       max_size=100,                  # Queue max 100 requests
+   ).launch(
+       server_name="0.0.0.0",
+       server_port=7860,
+       max_threads=80,                # Increase from 40 to 80 (monitor memory)
+       share=False,
+       show_error=True,
+   )
+   ```
 
-    This function serves as the entry point for the console script defined
-    in pyproject.toml: market-parser-gradio
+4. **Testing**:
+   - [ ] Start Gradio: `uv run python app.py`
+   - [ ] Verify app loads without errors
+   - [ ] Check console for queue initialization messages
+   - [ ] Test with single query (should work normally)
 
-    Features:
-        - PWA (Progressive Web App) support - installable on desktop/mobile
-        - Hot Reload - use 'uv run gradio src/backend/gradio_app.py' for dev mode
-    """
-    print("\n" + "="*60)
-    print("🎨 Market Parser Gradio Interface")
-    print("="*60)
-    print("📍 Server: http://127.0.0.1:8000")
-    print("🔄 Hot Reload: Use 'uv run gradio src/backend/gradio_app.py'")
-    print("📱 PWA: Install from browser (Chrome/Edge install icon)")
-    print("💡 Tip: Changes auto-reload on file save in hot reload mode")
-    print("="*60 + "\n")
+**Success Criteria**:
+- ✅ Queue configuration added
+- ✅ App starts without errors
+- ✅ Gradio UI loads correctly
+- ✅ Single query works as before
 
-    demo.launch(
-        server_name="127.0.0.1",
-        server_port=8000,
-        pwa=True,  # ⭐ Enable Progressive Web App functionality
-        share=False,
-        show_error=True,
-        quiet=False,
-        show_api=False,
-        allowed_paths=[],
-    )
-
-if __name__ == "__main__":
-    main()
-```
-
-**Success Criteria:**
-- [ ] main() function added to gradio_app.py
-- [ ] pwa=True parameter added to launch()
-- [ ] Startup messages updated with hot reload and PWA info
-- [ ] Function properly documented
-
-### Task 3.3: Test Gradio Hot Reload
-
-**Tool:** Bash
-
-**Action:**
-Test hot reload functionality:
-
-```bash
-# Start Gradio with hot reload
-uv run gradio src/backend/gradio_app.py
-```
-
-Then in another terminal, make a small change to gradio_app.py (add a comment) and save. Verify the app auto-reloads.
-
-**Success Criteria:**
-- [ ] Gradio starts with hot reload mode
-- [ ] File changes trigger automatic reload
-- [ ] App remains accessible during reload
-
-### Task 3.4: Test PWA Installation
-
-**Tool:** Manual browser testing
-
-**Action:**
-1. Start Gradio: `uv run python src/backend/gradio_app.py`
-2. Open Chrome/Edge browser to http://127.0.0.1:8000
-3. Look for install icon in address bar (⊕ or download icon)
-4. Click install icon
-5. Verify app opens in standalone window
-6. Test that financial queries still work in PWA mode
-
-**Success Criteria:**
-- [ ] PWA install icon appears in browser
-- [ ] App successfully installs
-- [ ] App opens in standalone window
-- [ ] All functionality works in PWA mode
+**Rollback**: Comment out `.queue()` if issues arise
 
 ---
 
-## PHASE 4: Documentation Updates
-
-**Objective:** Update all project documentation to reflect new features
-
-### Task 4.1: Update CLAUDE.md Quick Start
-
-**Tool:** Edit tool
-
-**Action:**
-Update the "Quick Start" section in CLAUDE.md:
-
-**Find:**
-```markdown
-### CLI Interface
-
-```bash
-uv run src/backend/cli.py
-
-> Tesla stock analysis
-KEY TAKEAWAYS
-• TSLA showing bullish momentum...
-```
-```
-
-**Replace with:**
-```markdown
-### CLI Interface
-
-```bash
-# Standard Python entry point (recommended)
-uv run main.py
-
-# OR using installed script
-uv run market-parser
-
-# OR legacy method
-uv run src/backend/cli.py
-
-> Tesla stock analysis
-KEY TAKEAWAYS
-• TSLA showing bullish momentum...
-```
-```
-
-**Success Criteria:**
-- [ ] Quick Start section updated
-- [ ] All three entry point methods documented
-- [ ] Recommended method clearly marked
-
-### Task 4.2: Update CLAUDE.md Application Startup
-
-**Tool:** Edit tool
-
-**Action:**
-Update the "Application Startup" section in CLAUDE.md:
-
-**Find:**
-```markdown
-### Simple Command Startup
-
-**Prerequisites:** uv, API keys in .env
-
-```bash
-# CLI Interface (recommended for automation/scripting)
-uv run src/backend/cli.py
-
-# Gradio Web UI (recommended for interactive analysis)
-uv run python src/backend/gradio_app.py
-# Access at http://127.0.0.1:8000
-```
-```
-
-**Replace with:**
-```markdown
-### Application Startup
-
-**Prerequisites:** uv, API keys in .env
-
-#### CLI Interface
-
-```bash
-# Method 1: Standard Python entry point (recommended)
-uv run main.py
-
-# Method 2: Installed console script
-uv run market-parser
-
-# Method 3: Direct module execution (legacy, still supported)
-uv run src/backend/cli.py
-```
-
-#### Gradio Web Interface
-
-```bash
-# Development with Hot Reload (RECOMMENDED for development)
-uv run gradio src/backend/gradio_app.py
-
-# OR using installed script
-uv run market-parser-gradio
-
-# Production mode (without hot reload)
-uv run python src/backend/gradio_app.py
-
-# Access at http://127.0.0.1:8000
-```
-
-**Features:**
-- 🔄 **Hot Reload:** Changes auto-reload on file save (use `gradio` command)
-- 📱 **PWA Support:** Install app from browser (Chrome/Edge install icon)
-- 💬 **Chat Interface:** Interactive financial analysis with streaming responses
-```
-```
-
-**Success Criteria:**
-- [ ] Application Startup section updated
-- [ ] All entry point methods documented
-- [ ] Hot reload and PWA features highlighted
-
-### Task 4.3: Update CLAUDE.md Available Commands
-
-**Tool:** Edit tool
-
-**Action:**
-Update or add "Available Commands" section in CLAUDE.md:
-
-**Find:**
-```markdown
-### Available Commands
-
-```bash
-# CLI Interface
-uv run src/backend/cli.py
-
-# Gradio Web UI
-uv run python src/backend/gradio_app.py
-
-# Testing
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # 39-test suite
-
-# Code quality
-npm run lint              # Python linting
-npm run lint:fix          # Auto-fix with black + isort
-```
-```
-
-**Replace with:**
-```markdown
-### Available Commands
-
-```bash
-# CLI Interface - Entry Points
-uv run main.py                    # Standard Python entry point (recommended)
-uv run market-parser              # Installed console script
-uv run src/backend/cli.py         # Legacy method (still supported)
-
-# Gradio Web Interface
-uv run gradio src/backend/gradio_app.py    # Development with hot reload (recommended)
-uv run market-parser-gradio                # Installed console script
-uv run python src/backend/gradio_app.py    # Production mode
-
-# Testing
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh  # 39-test suite
-
-# Code quality
-npm run lint              # Python linting
-npm run lint:fix          # Auto-fix with black + isort
-```
-```
-
-**Success Criteria:**
-- [ ] Available Commands section updated
-- [ ] All entry points listed with descriptions
-- [ ] Recommended methods clearly marked
-
-### Task 4.4: Update Tech Stack Memory
-
-**Tool:** Edit tool
-
-**Action:**
-Update `.serena/memories/tech_stack_oct_2025.md` to add entry points and Gradio features:
-
-Add new section:
-
-```markdown
-## Entry Points & Scripts
-
-**Main Entry Point:**
-- `src/main.py` - Standard Python entry point for CLI
-- Enables: `uv run main.py` (following Python conventions)
-
-**Console Scripts (pyproject.toml):**
-- `market-parser` → `backend.cli:main` - CLI interface
-- `market-parser-gradio` → `backend.gradio_app:main` - Gradio web interface
-
-**Legacy Entry Points (still supported):**
-- `uv run src/backend/cli.py` - Direct CLI execution
-- `uv run python -m src.backend.cli` - Module execution
-
-## Gradio Features
-
-**Progressive Web App (PWA):**
-- Enabled via `pwa=True` in `demo.launch()`
-- Allows users to install app on desktop/mobile devices
-- Provides native-like experience with standalone window
-- Install from browser address bar (Chrome/Edge)
-
-**Hot Reload:**
-- Enabled via `uv run gradio src/backend/gradio_app.py` command
-- Auto-reloads app on file save for faster development
-- 2x-10x less CPU than standard server auto-reload
-- Compatible with ChatInterface and all Gradio components
-- Production mode: `uv run python src/backend/gradio_app.py` (no hot reload)
-```
-
-**Success Criteria:**
-- [ ] Entry Points section added to tech stack
-- [ ] Gradio Features section added with PWA and Hot Reload docs
-
-### Task 4.5: Update Project Architecture Memory
-
-**Tool:** Edit tool
-
-**Action:**
-Update `.serena/memories/project_architecture.md` to reflect new entry points:
-
-Update the "Project Structure" section:
-
-**Find:**
-```markdown
-src/
-├── backend/              # All application code
-│   ├── cli.py           # CLI interface (CORE BUSINESS LOGIC)
-│   ├── gradio_app.py    # Gradio web UI (wraps CLI core)
-```
-
-**Replace with:**
-```markdown
-src/
-├── main.py              # Standard Python entry point (→ backend.cli.main)
-├── backend/             # All application code (proper Python package)
-│   ├── __init__.py      # Package initialization
-│   ├── cli.py           # CLI interface (CORE BUSINESS LOGIC, main() entry point)
-│   ├── gradio_app.py    # Gradio web UI (wraps CLI core, main() entry point, PWA enabled)
-```
-
-Add new section on entry points:
-
-```markdown
-## Entry Point Architecture
-
-**Standard Python Entry Point:**
-```
-uv run main.py
-    ↓
-src/main.py
-    ↓
-backend.cli.main()
-    ↓
-CLI business logic
-```
-
-**Console Scripts (via pyproject.toml):**
-```
-uv run market-parser
-    ↓
-pyproject.toml [project.scripts]
-    ↓
-backend.cli:main
-    ↓
-CLI business logic
-```
-
-**Design Rationale:**
-- `src/main.py` provides standard Python convention entry point
-- Console scripts provide professional command-line interface
-- Legacy entry points (`uv run src/backend/cli.py`) remain for backward compatibility
-- All entry points call the same `main()` function (single source of truth)
-```
-
-**Success Criteria:**
-- [ ] Project structure updated to show main.py and __init__.py
-- [ ] Entry Point Architecture section added
-- [ ] Design rationale documented
-
-### Task 4.6: Verify Documentation Accuracy
-
-**Tool:** Read tool + manual review
-
-**Action:**
-- Read all updated documentation files
-- Verify commands are accurate
-- Verify code examples are correct
-- Verify all cross-references are valid
-
-**Success Criteria:**
-- [ ] All documentation is accurate
-- [ ] No broken references
-- [ ] Commands can be copy-pasted and work
+### Task 1.2: API Response Caching (LRU) ⏱️ 30 minutes
+
+**Goal**: Implement in-memory LRU caching for API responses (50-80% API call reduction)
+
+**Files to Modify**:
+- `src/backend/tools/polygon_tools.py` (3 functions)
+- `src/backend/tools/tradier_tools.py` (4 functions)
+
+**Implementation Steps**:
+
+1. **Use Sequential-Thinking** to plan caching strategy for each function
+
+2. **Use Serena Tools** to find all tool functions:
+   ```
+   mcp__serena__get_symbols_overview("src/backend/tools/polygon_tools.py")
+   mcp__serena__get_symbols_overview("src/backend/tools/tradier_tools.py")
+   ```
+
+3. **PARALLEL WORK OPPORTUNITY**: Use sub-agents to modify both files simultaneously:
+   - Sub-agent 1: Add caching to polygon_tools.py
+   - Sub-agent 2: Add caching to tradier_tools.py
+
+4. **Modify polygon_tools.py** - Add imports and caching:
+
+   **Add to imports** (top of file):
+   ```python
+   from functools import lru_cache
+   import time
+   ```
+
+   **Wrap each function** with caching logic:
+
+   **Example for get_stock_price_history**:
+   ```python
+   def _get_stock_price_history_uncached(symbol: str, from_date: str, to_date: str, timespan: str = "day"):
+       """Internal uncached version"""
+       # Move existing function body here
+       ...
+
+   @function_tool
+   @lru_cache(maxsize=1000)
+   def get_stock_price_history(symbol: str, from_date: str, to_date: str, timespan: str = "day"):
+       """Get historical stock price data (OHLCV) - CACHED VERSION
+
+       Cache expires based on timestamp minute buckets.
+       Historical data cached for 24 hours.
+       """
+       # Create cache key with time bucket
+       timestamp_bucket = int(time.time() / 3600)  # 1-hour buckets for historical
+       return _get_stock_price_history_uncached(symbol, from_date, to_date, timespan)
+   ```
+
+   **Functions to cache in polygon_tools.py**:
+   - [ ] `get_stock_price_history` (TTL: 1 hour - historical is immutable)
+   - [ ] `get_market_status_and_date_time` (TTL: 1 minute - changes frequently)
+   - [ ] `get_ta_indicators` (TTL: 5 minutes - technical analysis)
+
+5. **Modify tradier_tools.py** - Same pattern:
+
+   **Functions to cache in tradier_tools.py**:
+   - [ ] `get_stock_quote` (TTL: 1 minute - real-time price)
+   - [ ] `get_options_expiration_dates` (TTL: 24 hours - dates don't change daily)
+   - [ ] `get_call_options_chain` (TTL: 1 minute - high volatility)
+   - [ ] `get_put_options_chain` (TTL: 1 minute - high volatility)
+
+6. **Caching Strategy by Data Type**:
+   ```python
+   # Adjust time buckets based on data volatility:
+
+   # Real-time prices (1-minute cache)
+   timestamp_bucket = int(time.time() / 60)
+
+   # Historical data (1-hour cache)
+   timestamp_bucket = int(time.time() / 3600)
+
+   # Options expiration dates (24-hour cache)
+   timestamp_bucket = int(time.time() / 86400)
+   ```
+
+7. **Testing**:
+   - [ ] Run same query twice - second should be faster (cache hit)
+   - [ ] Check logs for cache behavior (if logging implemented)
+   - [ ] Verify response correctness (cached data matches fresh data)
+
+**Success Criteria**:
+- ✅ @lru_cache decorators added to all 7 functions
+- ✅ Time-based cache expiration implemented
+- ✅ Cache hits measurably faster than cache misses
+- ✅ All functions still return correct data
+
+**Rollback**: Remove @lru_cache decorators and time bucket logic
 
 ---
 
-## PHASE 5: Comprehensive Testing
+### Task 1.3: Connection Pooling Setup ⏱️ 20 minutes
 
-**Objective:** Validate all changes work correctly using mandatory two-phase testing
+**Goal**: Prepare infrastructure for connection pooling (30-50% faster repeated calls)
 
-### 🔴 MANDATORY CHECKPOINT - DO NOT SKIP 🔴
+**Files to Create/Modify**:
+- `src/backend/tools/api_utils.py` (create if doesn't exist)
+- Update imports in polygon_tools.py and tradier_tools.py
 
-⚠️ **CRITICAL: You MUST run tests BEFORE claiming completion** ⚠️
-⚠️ **CRITICAL: Task is INCOMPLETE without test execution and results** ⚠️
+**Implementation Steps**:
 
-### Task 5.1: Test All Entry Points
+1. **Use Sequential-Thinking** to plan connection pooling architecture
 
-**Tool:** Bash
+2. **Check if api_utils.py exists**:
+   ```
+   mcp__serena__find_file("api_utils.py", "src/backend/tools")
+   ```
 
-**Action:**
-Test each entry point individually:
+3. **Create/Update api_utils.py**:
 
-```bash
-# Test 1: Standard Python entry point
-echo "Testing: uv run main.py"
-uv run main.py
-# Type 'quit' to exit after verifying it works
+   ```python
+   """
+   API utilities for connection pooling and HTTP client management.
+   """
+   import aiohttp
+   from typing import Optional
 
-# Test 2: Console script (CLI)
-echo "Testing: uv run market-parser"
-uv run market-parser
-# Type 'quit' to exit after verifying it works
 
-# Test 3: Legacy method
-echo "Testing: uv run src/backend/cli.py"
-uv run src/backend/cli.py
-# Type 'quit' to exit after verifying it works
+   class APIConnectionPool:
+       """
+       Singleton connection pool for API requests.
 
-# Test 4: Gradio standard
-echo "Testing: uv run python src/backend/gradio_app.py"
-timeout 10 uv run python src/backend/gradio_app.py &
-sleep 5
-curl http://127.0.0.1:8000 > /dev/null 2>&1 && echo "✅ Gradio server started" || echo "❌ Gradio server failed"
-pkill -f gradio_app
+       Provides persistent HTTP sessions with connection pooling for:
+       - Polygon.io API
+       - Tradier API
+       - Other external APIs
+       """
 
-# Test 5: Gradio hot reload
-echo "Testing: uv run gradio src/backend/gradio_app.py"
-timeout 10 uv run gradio src/backend/gradio_app.py &
-sleep 5
-curl http://127.0.0.1:8000 > /dev/null 2>&1 && echo "✅ Gradio hot reload works" || echo "❌ Gradio hot reload failed"
-pkill -f gradio_app
+       _instance: Optional['APIConnectionPool'] = None
 
-# Test 6: Gradio console script
-echo "Testing: uv run market-parser-gradio"
-timeout 10 uv run market-parser-gradio &
-sleep 5
-curl http://127.0.0.1:8000 > /dev/null 2>&1 && echo "✅ Gradio console script works" || echo "❌ Gradio console script failed"
-pkill -f gradio_app
-```
+       def __new__(cls):
+           if cls._instance is None:
+               cls._instance = super().__new__(cls)
+               cls._instance._initialized = False
+           return cls._instance
 
-**Success Criteria:**
-- [ ] uv run main.py launches CLI correctly
-- [ ] uv run market-parser works
-- [ ] uv run src/backend/cli.py still works (backward compat)
-- [ ] uv run python src/backend/gradio_app.py starts Gradio
-- [ ] uv run gradio src/backend/gradio_app.py enables hot reload
-- [ ] uv run market-parser-gradio starts Gradio
+       def __init__(self):
+           if self._initialized:
+               return
 
-### Task 5.2: Run Full CLI Regression Test Suite (Phase 1: Automated)
+           # Create aiohttp session with connection pooling
+           self.session: Optional[aiohttp.ClientSession] = None
+           self._initialized = True
 
-**Tool:** Bash
+       async def get_session(self) -> aiohttp.ClientSession:
+           """Get or create HTTP session with connection pooling."""
+           if self.session is None or self.session.closed:
+               self.session = aiohttp.ClientSession(
+                   connector=aiohttp.TCPConnector(
+                       limit=100,          # Max 100 concurrent connections
+                       limit_per_host=10,  # Max 10 per host
+                       ttl_dns_cache=300,  # Cache DNS for 5 minutes
+                   ),
+                   timeout=aiohttp.ClientTimeout(total=30),  # 30s timeout
+               )
+           return self.session
 
-**Action:**
-Execute the 39-test CLI regression suite:
+       async def close(self):
+           """Close HTTP session."""
+           if self.session and not self.session.closed:
+               await self.session.close()
+
+
+   # Singleton instance
+   _connection_pool: Optional[APIConnectionPool] = None
+
+
+   def get_connection_pool() -> APIConnectionPool:
+       """Get singleton connection pool instance."""
+       global _connection_pool
+       if _connection_pool is None:
+           _connection_pool = APIConnectionPool()
+       return _connection_pool
+   ```
+
+4. **Add cleanup handler to app.py**:
+
+   ```python
+   # At top of app.py
+   from src.backend.tools.api_utils import get_connection_pool
+   import atexit
+
+   # Before if __name__ == "__main__":
+   async def cleanup():
+       """Cleanup resources on shutdown."""
+       pool = get_connection_pool()
+       await pool.close()
+
+   atexit.register(lambda: asyncio.run(cleanup()))
+   ```
+
+5. **Testing**:
+   - [ ] Import api_utils in Python console - should not error
+   - [ ] Run app - should start without errors
+   - [ ] Connection pool will be used in Phase 2 (aiohttp integration)
+
+**Success Criteria**:
+- ✅ api_utils.py created with connection pool infrastructure
+- ✅ No import errors
+- ✅ App starts successfully
+- ✅ Infrastructure ready for Phase 2 async integration
+
+**Note**: Connection pooling will be fully utilized in Phase 2 when we integrate aiohttp for async HTTP requests.
+
+**Rollback**: Remove api_utils.py and cleanup handler
+
+---
+
+## 🧪 PHASE 1 TESTING (MANDATORY - DO NOT SKIP)
+
+### Testing Checkpoint 1: Initial Validation
+
+**Before running CLI regression tests**:
+
+1. **Manual Smoke Test**:
+   ```bash
+   # Start Gradio
+   uv run python app.py
+
+   # Test single query in UI:
+   # Query: "What is Tesla stock price?"
+   # Expected: Normal response with price data
+   ```
+
+2. **Verify Changes Applied**:
+   - [ ] Queue configuration visible in app.py
+   - [ ] @lru_cache decorators present in both tool files
+   - [ ] api_utils.py exists with connection pool code
+   - [ ] No import errors or syntax errors
+
+---
+
+### Testing Checkpoint 2: CLI Regression Suite
+
+**Run Full Test Suite**:
 
 ```bash
 chmod +x test_cli_regression.sh && ./test_cli_regression.sh
 ```
 
-**Expected Output:**
-```
-============================================================
-MARKET PARSER CLI REGRESSION TEST SUITE
-============================================================
-Testing 39 prompts to verify CLI functionality...
+**Expected Output**:
+- All 39 tests complete (39/39 COMPLETED)
+- Test report generated in `test-reports/`
+- No Python exceptions or errors
 
-Test 1/39: SPY_Current_Price
-[Response details...]
-✅ COMPLETED
-
-Test 2/39: NVDA_Technical_Analysis
-[Response details...]
-✅ COMPLETED
-
-...
-
-Test 39/39: Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN
-[Response details...]
-✅ COMPLETED
-
-============================================================
-TEST SUMMARY
-============================================================
-Total Tests: 39/39
-Completed: 39/39
-Average Response Time: X.XXs
-Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-============================================================
-```
-
-**Success Criteria:**
-- [ ] Test script executed successfully
-- [ ] 39/39 tests COMPLETED
-- [ ] Test report generated in test-reports/
-- [ ] No execution errors
-
-### Task 5.3: Phase 2 Verification - Mandatory Grep Commands
-
-**Tool:** Bash
-
-**Action:**
-Run the 3 MANDATORY grep commands to detect errors:
-
-```bash
-# Command 1: Find all errors/failures
-echo "=== Command 1: Searching for errors/failures ==="
-grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
-
-# Command 2: Count 'data unavailable' errors
-echo ""
-echo "=== Command 2: Counting 'data unavailable' errors ==="
-grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
-
-# Command 3: Count completed tests
-echo ""
-echo "=== Command 3: Counting completed tests ==="
-grep -c "COMPLETED" test-reports/test_cli_regression_loop1_*.log
-```
-
-**🔴 REQUIRED OUTPUT: Paste ALL grep command outputs here**
-
-**Success Criteria:**
-- [ ] All 3 grep commands executed
-- [ ] Grep output captured and documented
-- [ ] Error count: 0 (or documented if any found)
-- [ ] Completed count: 39/39
-
-### Task 5.4: Manual Response Verification
-
-**Tool:** Manual review of test report
-
-**Action:**
-For tests that didn't show errors in Phase 2 grep commands, verify:
-
-1. Response directly addresses the prompt query
-2. Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
-3. Appropriate tool calls made (Polygon, Tradier)
-4. Data formatting matches expected format (OHLC, tables, etc.)
-5. No hallucinated data or made-up values
-6. Options chains show Bid/Ask columns (NOT midpoint)
-7. Technical analysis includes proper indicators
-8. Response is complete (not truncated)
-
-**Success Criteria:**
-- [ ] All 39 responses manually verified
-- [ ] No data quality issues found
-- [ ] All responses accurate and complete
-
-### Task 5.5: Document Test Results
-
-**Tool:** Manual documentation
-
-**Action:**
-Document final test results:
-
-**Test Results Summary:**
-
-```
-Phase 1 (Automated Execution):
-- Total Tests: 39/39
-- Completed: 39/39
-- Average Response Time: X.XXs
-- Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-
-Phase 2 (Verification):
-- Command 1 (Error Detection): X errors found
-- Command 2 (Data Unavailable Count): X failures
-- Command 3 (Completed Count): 39/39
-
-Manual Verification:
-- Responses Verified: 39/39
-- Accuracy: 100%
-- Data Quality: PASS
-- Formatting: PASS
-
-Entry Point Tests:
-- uv run main.py: ✅ PASS
-- uv run market-parser: ✅ PASS
-- uv run src/backend/cli.py: ✅ PASS (backward compat)
-- uv run python src/backend/gradio_app.py: ✅ PASS
-- uv run gradio src/backend/gradio_app.py: ✅ PASS (hot reload)
-- uv run market-parser-gradio: ✅ PASS
-
-PWA Test:
-- PWA install icon visible: ✅ YES
-- App installs successfully: ✅ YES
-- Standalone window works: ✅ YES
-- Queries work in PWA mode: ✅ YES
-
-Overall Result: ✅ ALL TESTS PASSED
-```
-
-**Success Criteria:**
-- [ ] All test results documented
-- [ ] Evidence provided for Phase 2 grep commands
-- [ ] Entry point tests documented
-- [ ] PWA functionality verified
+**Phase 1 Requirements**:
+- ✅ Test suite executes without errors
+- ✅ 39/39 tests complete successfully
+- ✅ Test report file created
 
 ---
 
-## PHASE 6: Git Commit & Final Documentation
+### Testing Checkpoint 3: Manual Response Verification (CRITICAL)
 
-**Objective:** Create atomic commit following proper workflow
+🔴 **MANDATORY**: You MUST verify EACH test response manually 🔴
 
-### 🔴 CRITICAL: PROPER ATOMIC COMMIT WORKFLOW 🔴
+**Verification Process**:
 
-**MANDATORY: Stage ONLY Immediately Before Commit**
+1. **Open test report**: `test-reports/test_cli_regression_loop1_*.log`
 
-### Task 6.1: Review All Changes
+2. **For EACH of 39 tests, verify**:
+   - [ ] Response directly addresses the prompt
+   - [ ] Correct tool calls made (Polygon, Tradier APIs)
+   - [ ] Proper response formatting (tables, OHLC data, etc.)
+   - [ ] No "data unavailable" errors
+   - [ ] No hallucinated data
+   - [ ] Response is complete (not truncated)
 
-**Tool:** Bash
+3. **Use grep to find issues**:
+   ```bash
+   # Find any errors
+   grep -i "error\|unavailable\|failed\|invalid" test-reports/test_cli_regression_loop1_*.log
 
-**Action:**
-Review all changes made during implementation:
+   # Count data unavailable errors
+   grep -c "data unavailable" test-reports/test_cli_regression_loop1_*.log
 
-```bash
-# See all changed/new files
-git status
+   # Should be 0 or very low
+   ```
 
-# Review all changes in detail
-git diff
+4. **Document failures** (if any):
+   - Test number and name
+   - Line number in log file
+   - Error message
+   - Expected vs actual behavior
 
-# Review new untracked files
-git status | grep "Untracked files" -A 100
-```
+**Phase 1 Requirements**:
+- ✅ All 39 test responses manually verified
+- ✅ Tool calls are correct for each query type
+- ✅ Response formatting matches expected format
+- ✅ No critical errors or data issues
+- ✅ Failure rate < 5% (if any failures, document and fix)
 
-**Verify these files are changed/new:**
-- ✅ src/backend/__init__.py (NEW)
-- ✅ src/main.py (NEW)
-- ✅ pyproject.toml (MODIFIED - added [project.scripts])
-- ✅ src/backend/cli.py (MODIFIED - added/updated main())
-- ✅ src/backend/gradio_app.py (MODIFIED - PWA + main())
-- ✅ CLAUDE.md (MODIFIED - documentation)
-- ✅ .serena/memories/tech_stack_oct_2025.md (MODIFIED)
-- ✅ .serena/memories/project_architecture.md (MODIFIED)
-- ✅ test-reports/test_cli_regression_loop1_*.log (NEW - test evidence)
+---
 
-**Success Criteria:**
-- [ ] All expected files are shown in git status
-- [ ] No unexpected files are changed
-- [ ] Changes look correct in git diff
+### Testing Checkpoint 4: Performance Validation
 
-### Task 6.2: Stage All Files At Once
+**Measure Performance Improvement**:
 
-**Tool:** Bash
+1. **Cache Hit Testing**:
+   ```bash
+   # Run same query twice:
+   # First run: Cold cache (slower)
+   # Second run: Cache hit (faster)
 
-**Action:**
-⚠️ This is the FIRST time running `git add` - stage everything at once:
+   # Monitor response times in output
+   # Second query should be noticeably faster
+   ```
 
-```bash
-git add -A
-```
+2. **Expected Improvements**:
+   - Cache hits: 50-80% faster than cold queries
+   - Concurrent capacity: 10x (queue allows 10 simultaneous requests)
+   - No degradation in response quality
 
-**Success Criteria:**
-- [ ] Command executed
-- [ ] All files staged in one operation
+**Phase 1 Requirements**:
+- ✅ Cache hits measurably faster (show timing comparison)
+- ✅ Queue configuration allows multiple concurrent requests
+- ✅ Performance improvement documented
 
-### Task 6.3: Verify Staging
+---
 
-**Tool:** Bash
+## 📝 PHASE 1 DOCUMENTATION UPDATES
 
-**Action:**
-Immediately verify staging:
+### Update CLAUDE.md
 
-```bash
-git status
-```
-
-**Expected Output:**
-```
-On branch react_retirement
-Changes to be committed:
-  (use "git restore --staged <file>..." to unstage)
-        new file:   src/backend/__init__.py
-        new file:   src/main.py
-        modified:   pyproject.toml
-        modified:   src/backend/cli.py
-        modified:   src/backend/gradio_app.py
-        modified:   CLAUDE.md
-        modified:   .serena/memories/tech_stack_oct_2025.md
-        modified:   .serena/memories/project_architecture.md
-        new file:   test-reports/test_cli_regression_loop1_*.log
-```
-
-**If anything is missing:**
-```bash
-git add [missing-file]
-```
-
-**Success Criteria:**
-- [ ] All files properly staged
-- [ ] Nothing left unstaged
-- [ ] No unexpected files staged
-
-### Task 6.4: Create Atomic Commit
-
-**Tool:** Bash
-
-**Action:**
-Create commit within 60 seconds of staging (IMMEDIATELY):
-
-```bash
-git commit -m "$(cat <<'EOF'
-[FEATURE] Add main.py entry point + Gradio PWA & Hot Reload
-
-**Entry Points Implementation:**
-- Add src/main.py for standard Python convention (uv run main.py)
-- Add src/backend/__init__.py to make backend proper package
-- Add [project.scripts] to pyproject.toml for professional commands
-- Add/update main() functions in cli.py and gradio_app.py
-- All entry points tested and working (uv run main.py, uv run market-parser)
-
-**Gradio Features:**
-- Enable PWA (Progressive Web App) with pwa=True in launch()
-- Add startup messages for hot reload and PWA installation
-- Document hot reload usage: uv run gradio src/backend/gradio_app.py
-- PWA installation tested and verified in Chrome/Edge
-
-**Testing:**
-- ✅ 39/39 CLI regression tests PASSED
-- ✅ Phase 2 verification: 0 errors, 39/39 completed
-- ✅ All entry points tested and working
-- ✅ PWA installation verified
-- ✅ Hot reload functionality confirmed
-- Test report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-
-**Documentation Updates:**
-- Update CLAUDE.md: Quick Start, Application Startup, Available Commands
-- Update .serena/memories/tech_stack_oct_2025.md: Entry points + Gradio features
-- Update .serena/memories/project_architecture.md: Structure + entry point flow
-
-**Impact:**
-- Zero breaking changes (100% backward compatible)
-- Low risk implementation (~3 hours)
-- Python standards compliance (PEP 8)
-- Professional command-line interface
-- Better developer experience (hot reload)
-- Better user experience (PWA installable app)
-
-**Files Changed:**
-- NEW: src/backend/__init__.py
-- NEW: src/main.py
-- MODIFIED: pyproject.toml (add [project.scripts])
-- MODIFIED: src/backend/cli.py (add/update main())
-- MODIFIED: src/backend/gradio_app.py (pwa=True, main(), messages)
-- MODIFIED: CLAUDE.md (documentation)
-- MODIFIED: .serena/memories/tech_stack_oct_2025.md
-- MODIFIED: .serena/memories/project_architecture.md
-- NEW: test-reports/test_cli_regression_loop1_*.log
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
-```
-
-**Success Criteria:**
-- [ ] Commit created successfully
-- [ ] Commit message is comprehensive
-- [ ] All changes included in commit
-
-### Task 6.5: Push to Remote
-
-**Tool:** Bash
-
-**Action:**
-Push immediately after commit:
-
-```bash
-git push
-```
-
-**Success Criteria:**
-- [ ] Push successful
-- [ ] No errors
-- [ ] Remote updated
-
-### Task 6.6: Update CLAUDE.md Last Completed Task
-
-**Tool:** Edit tool
-
-**Action:**
-Update the "Last Completed Task Summary" section in CLAUDE.md:
-
-**Replace the <!-- LAST_COMPLETED_TASK_START --> section with:**
+**Section**: Last Completed Task Summary
 
 ```markdown
 <!-- LAST_COMPLETED_TASK_START -->
-[FEATURE] Add main.py entry point + Gradio PWA & Hot Reload
+[PHASE 1] Quick Wins - Performance Optimization Implementation
 
-**Summary:** Implemented standard Python entry points and enabled Gradio Progressive Web App (PWA) + Hot Reload features. Following Python best practices (Option A from research), added main.py entry point while keeping nested folder structure. Enabled PWA for better user experience and hot reload for faster development.
+**Summary:** Implemented Phase 1 performance optimizations: Gradio queue configuration, API response caching (LRU), and connection pooling infrastructure.
 
-**Entry Points Implementation:**
-- Created src/main.py for standard Python convention (`uv run main.py`)
-- Created src/backend/__init__.py to make backend a proper Python package
-- Added [project.scripts] to pyproject.toml: `market-parser` and `market-parser-gradio`
-- Added/updated main() functions in cli.py and gradio_app.py
-- All entry points tested: uv run main.py, uv run market-parser, uv run market-parser-gradio
+**Changes Implemented:**
 
-**Gradio Features:**
-- Enabled PWA (Progressive Web App) with pwa=True parameter
-- Users can now install Market Parser as desktop/mobile app
-- Added startup messages documenting hot reload and PWA usage
-- Hot reload: `uv run gradio src/backend/gradio_app.py` for auto-reload on file save
-- PWA tested and verified in Chrome/Edge browsers
+1. **Gradio Queue Configuration** (app.py)
+   - Added .queue() with concurrency_limit=10, max_size=100
+   - Increased max_threads to 80
+   - **Impact**: 10x concurrent user capacity
+
+2. **API Response Caching** (polygon_tools.py, tradier_tools.py)
+   - Added @lru_cache decorators to 7 API tool functions
+   - Implemented time-based cache expiration (1min-24hr TTL by data type)
+   - **Impact**: 50-80% API call reduction, 3-10x faster cache hits
+
+3. **Connection Pooling Infrastructure** (api_utils.py - NEW)
+   - Created APIConnectionPool singleton class
+   - aiohttp session with connection pooling (100 max connections)
+   - Cleanup handlers for graceful shutdown
+   - **Impact**: Ready for Phase 2 async integration
 
 **Testing Results:**
-- ✅ Phase 1: 39/39 CLI regression tests COMPLETED
-- ✅ Phase 2 Verification: 3 grep commands executed, 0 errors found
-- ✅ All entry points tested and working correctly
-- ✅ PWA installation verified (installable, standalone window, queries work)
-- ✅ Hot reload functionality confirmed (auto-reload on save)
-- ✅ Backward compatibility maintained (legacy commands still work)
-- Test Report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
+- ✅ All 39/39 CLI regression tests passed
+- ✅ Manual verification of test responses completed
+- ✅ Cache hit performance improvement: [X]% faster
+- ✅ Test report: `test-reports/test_cli_regression_loop1_[timestamp].log`
 
-**Documentation Updates:**
-- Updated CLAUDE.md: Quick Start, Application Startup, Available Commands sections
-- Updated .serena/memories/tech_stack_oct_2025.md: Entry points and Gradio features
-- Updated .serena/memories/project_architecture.md: Structure and entry point architecture
+**Performance Improvements:**
+- Concurrent capacity: 1-2 users → 10-20 users (10x improvement)
+- Cache hit response time: [before]s → [after]s ([X]% faster)
+- API call reduction: [X]% (estimated based on cache hits)
 
-**Impact Statistics:**
-- Files created: 2 (src/main.py, src/backend/__init__.py)
-- Files modified: 6 (pyproject.toml, cli.py, gradio_app.py, CLAUDE.md, 2 memory files)
-- Lines added: ~150 (entry points + documentation)
-- Breaking changes: 0 (100% backward compatible)
-- Implementation time: ~3 hours (as estimated)
-- Risk level: LOW (zero breaking changes)
-- Standards compliance: ✅ Full PEP 8 and Python Packaging Guide compliance
+**Files Modified:**
+- app.py (queue configuration)
+- src/backend/tools/polygon_tools.py (caching added)
+- src/backend/tools/tradier_tools.py (caching added)
+- src/backend/tools/api_utils.py (NEW - connection pooling)
 
-**Benefits Delivered:**
-- ✅ Standard Python entry point (uv run main.py)
-- ✅ Professional console commands (uv run market-parser)
-- ✅ PWA installable app (better UX)
-- ✅ Hot reload development (faster iteration)
-- ✅ Zero import refactoring (backward compatible)
-- ✅ Python standards compliance (professional appearance)
-- ✅ AI agent friendly (standard nested structure)
+**Documentation Updated:**
+- CLAUDE.md (this summary)
+- .serena/memories/phase_1_quick_wins_completion_oct_2025.md (NEW)
 
-**Research Decision:**
-- Chose Option A (Add main.py, keep nested structure) over Option B (Flatten with prefixes)
-- Rationale: Python standards compliance, lower risk, zero breaking changes
-- Research found file naming prefixes (backend_xxx) are non-standard in Python ecosystem
-- Current nested structure (src/backend/tools/) follows Django/Flask/FastAPI patterns
-
-**Code Quality:**
-- All changes tested with 39-test regression suite
-- 100% backward compatibility maintained
-- Zero breaking changes
-- Professional Python project structure
+**Next Phase**: Phase 2 - API Optimization (aiohttp async integration, request batching, rate limiting)
 <!-- LAST_COMPLETED_TASK_END -->
 ```
 
-**Success Criteria:**
-- [ ] Last Completed Task section updated
-- [ ] Comprehensive summary provided
-- [ ] All statistics documented
+---
+
+### Create Serena Memory File
+
+**File**: `.serena/memories/phase_1_quick_wins_completion_oct_2025.md`
+
+**Content** (template - fill in actual values after testing):
+
+```markdown
+# Phase 1: Quick Wins Implementation Completion - October 2025
+
+## Overview
+Phase 1 performance optimizations successfully implemented and tested.
+
+## Changes Implemented
+
+### 1. Gradio Queue Configuration
+**File**: app.py
+**Changes**:
+- Added .queue() with concurrency_limit=10, max_size=100
+- Increased max_threads from 40 to 80
+**Impact**: 10x concurrent user capacity (1-2 → 10-20 users)
+
+### 2. API Response Caching (LRU)
+**Files**: polygon_tools.py, tradier_tools.py
+**Changes**:
+- Added @lru_cache(maxsize=1000) to 7 functions
+- Time-based cache expiration (timestamp buckets)
+- Cache TTL by data type:
+  - Real-time prices: 1 minute
+  - Historical data: 1 hour
+  - Options expiration dates: 24 hours
+**Impact**: 50-80% API call reduction, 3-10x faster cache hits
+
+### 3. Connection Pooling Infrastructure
+**File**: api_utils.py (NEW)
+**Changes**:
+- Created APIConnectionPool singleton
+- aiohttp ClientSession with connection pooling
+- 100 max concurrent connections, 10 per host
+- Cleanup handlers for graceful shutdown
+**Impact**: Infrastructure ready for Phase 2 async integration
+
+## Testing Results
+
+### CLI Regression Tests
+- Total tests: 39/39
+- Passed: 39
+- Failed: 0
+- Test report: `test-reports/test_cli_regression_loop1_[timestamp].log`
+
+### Manual Verification
+- All 39 test responses verified for correctness
+- Tool calls appropriate for each query type
+- Response formatting correct
+- No data quality issues
+
+### Performance Measurements
+- Cache hit improvement: [X]% faster
+- Concurrent capacity: 10x increase
+- API call reduction: [X]% (estimated)
+
+## Lessons Learned
+- LRU caching with time buckets works well for time-sensitive data
+- Gradio queue configuration is simple but high-impact
+- Connection pooling infrastructure sets foundation for Phase 2
+
+## Next Steps
+- Phase 2: aiohttp async integration (use connection pool)
+- Phase 2: Request batching with asyncio.gather()
+- Phase 2: Rate limit protection
+- Phase 2: Persistent caching (upgrade from LRU to SQLite/Redis)
+
+## References
+- Implementation plan: `docs/implementation_plans/phase_1_quick_wins.md`
+- Research: `.serena/memories/performance_optimizations_research_oct_2025.md`
+```
 
 ---
 
-## COMPLETION CHECKLIST
+### Update README.md (if needed)
 
-### Phase 1: Entry Point Setup
-- [ ] 1.1: Checked backend package structure
-- [ ] 1.2: Created src/backend/__init__.py
-- [ ] 1.3: Analyzed CLI main function
-- [ ] 1.4: Updated cli.py for entry point
-- [ ] 1.5: Checked pyproject.toml
-- [ ] 1.6: Created src/main.py
-
-### Phase 2: PyProject Scripts
-- [ ] 2.1: Added console scripts to pyproject.toml
-- [ ] 2.2: Tested main.py entry point
-- [ ] 2.3: Tested console script entry points
-
-### Phase 3: Gradio Features
-- [ ] 3.1: Checked Gradio app main function
-- [ ] 3.2: Updated Gradio app for PWA
-- [ ] 3.3: Tested Gradio hot reload
-- [ ] 3.4: Tested PWA installation
-
-### Phase 4: Documentation
-- [ ] 4.1: Updated CLAUDE.md Quick Start
-- [ ] 4.2: Updated CLAUDE.md Application Startup
-- [ ] 4.3: Updated CLAUDE.md Available Commands
-- [ ] 4.4: Updated tech_stack_oct_2025.md
-- [ ] 4.5: Updated project_architecture.md
-- [ ] 4.6: Verified documentation accuracy
-
-### Phase 5: Testing
-- [ ] 5.1: Tested all entry points
-- [ ] 5.2: Ran 39-test CLI regression suite
-- [ ] 5.3: Executed Phase 2 verification (grep commands)
-- [ ] 5.4: Manual response verification
-- [ ] 5.5: Documented test results
-
-### Phase 6: Git Commit
-- [ ] 6.1: Reviewed all changes
-- [ ] 6.2: Staged all files at once
-- [ ] 6.3: Verified staging
-- [ ] 6.4: Created atomic commit
-- [ ] 6.5: Pushed to remote
-- [ ] 6.6: Updated CLAUDE.md Last Completed Task
+**Only if architecture significantly changed** - Phase 1 changes are mostly internal, so README likely doesn't need updates yet.
 
 ---
 
-## FINAL VERIFICATION
+## 🎯 PHASE 1 COMMIT
 
-**Before marking complete, verify:**
+### Pre-Commit Checklist
 
-- ✅ All 28 tasks completed
-- ✅ All entry points tested and working
-- ✅ PWA functionality verified
-- ✅ Hot reload tested
-- ✅ 39/39 tests PASSED
-- ✅ Phase 2 verification completed with evidence
-- ✅ All documentation updated
-- ✅ Atomic commit created and pushed
-- ✅ Zero breaking changes
-- ✅ 100% backward compatibility
+**Before running `git add`**:
 
-**SUCCESS CRITERIA MET:**
-
-- ✅ Can use `uv run main.py` (standard Python convention)
-- ✅ Can use `uv run market-parser` (professional command)
-- ✅ PWA installable from browser
-- ✅ Hot reload works with Gradio
-- ✅ All tests passing
-- ✅ Python standards compliant
-- ✅ Low risk, zero breaking changes
+- [ ] All code changes complete
+- [ ] CLI regression tests passed (39/39)
+- [ ] Manual verification complete
+- [ ] CLAUDE.md updated
+- [ ] Serena memory created
+- [ ] Test report generated
 
 ---
 
-**End of TODO Task Plan**
+### Atomic Commit Workflow
 
-**Status:** Ready for Phase 3 (Implementation)
-**Next Action:** Begin Phase 1: Entry Point Setup using Sequential-Thinking and Serena tools
+🔴 **CRITICAL: STAGE ONLY IMMEDIATELY BEFORE COMMIT** 🔴
+
+1. **DO ALL WORK FIRST** (DO NOT stage anything yet):
+   ```bash
+   # Verify all work complete
+   git status
+   git diff
+   ```
+
+2. **STAGE EVERYTHING AT ONCE**:
+   ```bash
+   git add -A
+   ```
+
+3. **VERIFY STAGING**:
+   ```bash
+   git status  # ALL files should be staged
+   ```
+
+4. **COMMIT IMMEDIATELY**:
+   ```bash
+   git commit -m "$(cat <<'EOF'
+   [PHASE 1] Quick Wins - Performance Optimization Implementation
+
+   Implemented Phase 1 performance optimizations with 50-70% improvement:
+
+   Code Changes:
+   - Gradio queue configuration (10x concurrent capacity)
+   - API response caching with LRU (50-80% API reduction)
+   - Connection pooling infrastructure (ready for Phase 2)
+
+   Files Modified:
+   - app.py: Queue configuration (.queue() with concurrency_limit=10)
+   - src/backend/tools/polygon_tools.py: Added @lru_cache to 3 functions
+   - src/backend/tools/tradier_tools.py: Added @lru_cache to 4 functions
+   - src/backend/tools/api_utils.py: NEW - Connection pooling infrastructure
+
+   Testing:
+   - All 39/39 CLI regression tests passed
+   - Manual verification of test responses completed
+   - Performance improvement validated (cache hits X% faster)
+   - Test report: test-reports/test_cli_regression_loop1_[timestamp].log
+
+   Documentation:
+   - CLAUDE.md updated with completion summary
+   - .serena/memories/phase_1_quick_wins_completion_oct_2025.md created
+
+   Performance Impact:
+   - Concurrent capacity: 1-2 users → 10-20 users (10x)
+   - Cache hit response time: X% faster
+   - API call reduction: 50-80% (estimated)
+
+   Next Phase: Phase 2 - API Optimization (aiohttp, batching, rate limiting)
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   EOF
+   )"
+   ```
+
+5. **PUSH IMMEDIATELY**:
+   ```bash
+   git push
+   ```
+
+---
+
+## 📊 PHASE 2-4 OVERVIEW (Implementation After Phase 1)
+
+### Phase 2: API Optimization (8-12 hours)
+
+**Reference**: `docs/implementation_plans/phase_2_api_optimization.md`
+
+**Tasks**:
+- [ ] Task 2.1: aiohttp Integration (2-4 hours)
+  - Convert requests to async aiohttp
+  - Use connection pool from Phase 1
+  - Update all 7 tool functions
+
+- [ ] Task 2.2: Request Batching (1-2 hours)
+  - Add asyncio.gather() for parallel requests
+  - Create batch query helpers
+
+- [ ] Task 2.3: Rate Limit Protection (1 hour)
+  - Install ratelimit library
+  - Add decorators to API calls
+
+- [ ] Task 2.4: Intelligent Caching (2-3 hours)
+  - Upgrade from LRU to SQLite/Redis
+  - Persistent cache across restarts
+
+- [ ] Testing: CLI regression suite + manual verification
+- [ ] Documentation: CLAUDE.md + Serena memory
+- [ ] Commit: Atomic commit
+
+---
+
+### Phase 3: PWA Features (8-16 hours)
+
+**Reference**: `docs/implementation_plans/phase_3_pwa_features.md`
+
+**Tasks**:
+- [ ] Task 3.1: Service Worker Foundation (2-3 hours)
+- [ ] Task 3.2: Workbox Caching Strategies (3-4 hours)
+- [ ] Task 3.3: Offline Fallback Page (1-2 hours)
+- [ ] Task 3.4: Background Sync - OPTIONAL (2-3 hours)
+- [ ] Task 3.5: Testing & Lighthouse Audit (2-4 hours)
+
+- [ ] Testing: Lighthouse PWA audit (target 90+)
+- [ ] Documentation: CLAUDE.md + Serena memory
+- [ ] Commit: Atomic commit
+
+---
+
+### Phase 4: Advanced Optimization (20-26 hours)
+
+**Reference**: `docs/implementation_plans/phase_4_advanced_optimization.md`
+
+**Tasks**:
+- [ ] Task 4.1: Production Logging & Metrics (4-5 hours)
+- [ ] Task 4.2: Performance Dashboard (5-6 hours)
+- [ ] Task 4.3: Cold Start Optimization (2-3 hours)
+- [ ] Task 4.4: Advanced Async Patterns (4-5 hours)
+- [ ] Task 4.5: Load Testing (2-3 hours)
+- [ ] Task 4.6: Production Hardening & Docs (3-4 hours)
+
+- [ ] Testing: Load testing with Locust
+- [ ] Documentation: Complete operational playbooks
+- [ ] Commit: Atomic commit
+
+---
+
+## 🛠️ TOOL USAGE GUIDELINES
+
+### When to Use Sequential-Thinking
+
+**MANDATORY Uses**:
+- [ ] Before starting each phase (plan approach)
+- [ ] Before modifying complex functions (understand structure)
+- [ ] When encountering errors (diagnose systematically)
+- [ ] Before testing (plan test strategy)
+- [ ] Before committing (verify completeness)
+
+**Example Pattern**:
+```
+1. Use Sequential-Thinking to plan modification
+2. Use Serena tools to locate code
+3. Implement changes
+4. Use Sequential-Thinking to plan testing
+5. Execute tests
+6. Use Sequential-Thinking to verify completeness
+```
+
+---
+
+### When to Use Serena Tools
+
+**Code Analysis**:
+- `mcp__serena__get_symbols_overview` - Understand file structure
+- `mcp__serena__find_symbol` - Locate specific functions
+- `mcp__serena__find_referencing_symbols` - Find where function is used
+
+**Code Modification**:
+- `mcp__serena__replace_symbol_body` - Clean function replacement
+- `mcp__serena__insert_after_symbol` - Add new code after function
+- `mcp__serena__insert_before_symbol` - Add imports or new functions
+
+**Code Search**:
+- `mcp__serena__search_for_pattern` - Find patterns in code
+- `mcp__serena__find_file` - Locate files by name
+
+---
+
+### When to Use Sub-Agents
+
+**Parallel Work Opportunities**:
+- Phase 1, Task 1.2: Modify polygon_tools.py and tradier_tools.py simultaneously
+- Phase 2, Task 2.1: Convert multiple tool files to async in parallel
+- Documentation: Update multiple docs while testing runs
+- Testing: Run different test categories in parallel (if applicable)
+
+---
+
+## 📈 SUCCESS CRITERIA
+
+### Phase 1 Success Metrics
+
+**Performance**:
+- [ ] Concurrent capacity: 10x increase (measured by Gradio config)
+- [ ] Cache hit rate: > 60% for repeated queries
+- [ ] Cache hit speed: 3-10x faster than cold queries
+- [ ] API call reduction: 50-80% (measured over time)
+
+**Reliability**:
+- [ ] All 39 CLI regression tests pass
+- [ ] No introduction of new bugs or errors
+- [ ] Backwards compatible (existing queries work unchanged)
+
+**Code Quality**:
+- [ ] Clean, readable code changes
+- [ ] Proper error handling maintained
+- [ ] No code duplication
+- [ ] Comments explain caching strategy
+
+**Documentation**:
+- [ ] CLAUDE.md updated with comprehensive summary
+- [ ] Serena memory created with lessons learned
+- [ ] Test reports saved and referenced
+
+---
+
+### Overall Project Success Criteria
+
+**Phase 1**: 50-70% improvement, 10x capacity ✅
+**Phase 2**: 3-5x faster responses, 80% cost reduction
+**Phase 3**: Instant UI loading, offline support
+**Phase 4**: Enterprise-grade monitoring, 99.9% uptime
+
+**Combined Target**:
+- 10-20x concurrent user capacity
+- 5-10x faster response times (with caching)
+- 50-80% API cost reduction
+- 99.9% uptime (with resilience patterns)
+- Lighthouse PWA score 90+
+- Production-ready monitoring and documentation
+
+---
+
+## 🔧 TROUBLESHOOTING
+
+### Common Issues
+
+**Issue: Import errors after adding caching**
+- Solution: Verify `from functools import lru_cache` at top of file
+- Check: `import time` also present
+
+**Issue: Cache not expiring**
+- Solution: Verify timestamp bucket logic is correct
+- Check: Time division matches intended TTL (60s, 3600s, 86400s)
+
+**Issue: Queue configuration causes memory issues**
+- Solution: Reduce max_threads from 80 to 60 or 40
+- Monitor: Check memory usage with `htop` or system monitor
+
+**Issue: CLI regression tests fail**
+- Solution: Check if caching broke any function behavior
+- Debug: Add print statements to verify cache hits/misses
+- Rollback: Remove @lru_cache if necessary
+
+---
+
+## 📚 REFERENCE MATERIALS
+
+### Implementation Plans (Detailed)
+- Phase 1: `docs/implementation_plans/phase_1_quick_wins.md`
+- Phase 2: `docs/implementation_plans/phase_2_api_optimization.md`
+- Phase 3: `docs/implementation_plans/phase_3_pwa_features.md`
+- Phase 4: `docs/implementation_plans/phase_4_advanced_optimization.md`
+
+### Research Documentation
+- Research Memory: `.serena/memories/performance_optimizations_research_oct_2025.md`
+- Serena Memories: `.serena/memories/` (all project memories)
+
+### External References
+- Gradio Performance: https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+- Python asyncio: https://docs.python.org/3/library/asyncio.html
+- aiohttp: https://docs.aiohttp.org/
+- Workbox (PWA): https://developer.chrome.com/docs/workbox/
+- Polygon.io API: https://polygon.io/knowledge-base/categories/rest
+
+---
+
+## 🎯 NEXT STEPS
+
+### Immediate Action (Start Phase 1)
+
+1. **Read implementation plan**: `docs/implementation_plans/phase_1_quick_wins.md`
+2. **Use Sequential-Thinking**: Plan Phase 1 implementation approach
+3. **Start with Task 1.1**: Gradio queue configuration (10 min)
+4. **Continue with Task 1.2**: API caching (30 min)
+5. **Complete Task 1.3**: Connection pooling (20 min)
+6. **RUN TESTING**: CLI regression suite + manual verification
+7. **UPDATE DOCS**: CLAUDE.md + Serena memory
+8. **COMMIT**: Atomic commit with all changes + test reports
+
+### After Phase 1 Complete
+
+- Review Phase 1 results and lessons learned
+- Plan Phase 2 implementation
+- Consider architecture changes needed for async integration
+- Begin Phase 2 implementation
+
+---
+
+**Last Updated**: 2025-10-19
+**Status**: Ready to begin Phase 1 implementation
+**Branch**: v1.0.0.0_performance-optimizations
+**Next Action**: Read `docs/implementation_plans/phase_1_quick_wins.md` and start Task 1.1
