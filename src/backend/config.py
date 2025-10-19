@@ -61,45 +61,58 @@ class Settings(BaseSettings):
         os.environ["POLYGON_API_KEY"] = self.polygon_api_key
         os.environ["TRADIER_API_KEY"] = self.tradier_api_key
 
-        # Load configuration from JSON file and override defaults
+        # Load configuration from JSON file and override defaults (if file exists)
+        # This is optional for cloud deployments (HF Spaces) where config file may not be present
         config_path = Path(__file__).parent.parent.parent / "config" / "app.config.json"
-        with open(config_path, encoding="utf-8") as f:
-            config = json.load(f)
 
-        # Extract backend config
-        backend_config = config["backend"]
+        if config_path.exists():
+            try:
+                with open(config_path, encoding="utf-8") as f:
+                    config = json.load(f)
 
-        # Override defaults with config file values
-        self.mcp_timeout_seconds = backend_config["mcp"]["timeoutSeconds"]
-        self.polygon_mcp_version = backend_config["mcp"]["version"]
+                # Extract backend config
+                backend_config = config["backend"]
 
-        # Agent configuration
-        agent_config = backend_config["agent"]
-        self.agent_session_name = agent_config["sessionName"]
-        self.reports_directory = agent_config["reportsDirectory"]
-        self.cli_session_name = agent_config["cliSessionName"]
-        self.session_timeout_minutes = agent_config["sessionTimeoutMinutes"]
-        self.session_cleanup_interval_minutes = agent_config["sessionCleanupIntervalMinutes"]
-        self.max_session_size = agent_config["maxSessionSize"]
-        self.enable_session_persistence = agent_config["enableSessionPersistence"]
+                # Override defaults with config file values
+                self.mcp_timeout_seconds = backend_config["mcp"]["timeoutSeconds"]
+                self.polygon_mcp_version = backend_config["mcp"]["version"]
 
-        # AI configuration
-        ai_config = backend_config["ai"]
-        self.default_active_model = ai_config["default_active_model"]
-        self.available_models = ["gpt-5-nano"]  # Only GPT-5-Nano supported
-        self.max_context_length = ai_config["maxContextLength"]
-        self.ai_pricing = ai_config["pricing"]
+                # Agent configuration
+                agent_config = backend_config["agent"]
+                self.agent_session_name = agent_config["sessionName"]
+                self.reports_directory = agent_config["reportsDirectory"]
+                self.cli_session_name = agent_config["cliSessionName"]
+                self.session_timeout_minutes = agent_config["sessionTimeoutMinutes"]
+                self.session_cleanup_interval_minutes = agent_config["sessionCleanupIntervalMinutes"]
+                self.max_session_size = agent_config["maxSessionSize"]
+                self.enable_session_persistence = agent_config["enableSessionPersistence"]
 
-        # Logging configuration
-        self.log_mode = backend_config["logging"]["mode"]
+                # AI configuration
+                ai_config = backend_config["ai"]
+                self.default_active_model = ai_config["default_active_model"]
+                self.available_models = ["gpt-5-nano"]  # Only GPT-5-Nano supported
+                self.max_context_length = ai_config["maxContextLength"]
+                self.ai_pricing = ai_config["pricing"]
 
-        # Monitoring configuration
-        monitoring_config = backend_config["monitoring"]
-        self.enable_performance_monitoring = monitoring_config["enablePerformanceMonitoring"]
-        self.enable_error_tracking = monitoring_config["enableErrorTracking"]
-        self.enable_resource_monitoring = monitoring_config["enableResourceMonitoring"]
-        self.monitoring_log_level = monitoring_config["logLevel"]
-        self.metrics_retention_days = monitoring_config["metricsRetentionDays"]
+                # Logging configuration
+                self.log_mode = backend_config["logging"]["mode"]
+
+                # Monitoring configuration
+                monitoring_config = backend_config["monitoring"]
+                self.enable_performance_monitoring = monitoring_config["enablePerformanceMonitoring"]
+                self.enable_error_tracking = monitoring_config["enableErrorTracking"]
+                self.enable_resource_monitoring = monitoring_config["enableResourceMonitoring"]
+                self.monitoring_log_level = monitoring_config["logLevel"]
+                self.metrics_retention_days = monitoring_config["metricsRetentionDays"]
+            except (json.JSONDecodeError, KeyError) as e:
+                # Log error but continue with defaults
+                print(f"Warning: Failed to load config from {config_path}: {e}")
+                print("Continuing with default configuration values")
+        else:
+            # Config file not present (expected in cloud deployments like HF Spaces)
+            # Use default values already set in class definition
+            print(f"Info: Config file not found at {config_path}")
+            print("Using default configuration values (expected for cloud deployments)")
 
 
 # Initialize settings instance
