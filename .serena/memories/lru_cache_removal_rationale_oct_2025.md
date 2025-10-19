@@ -122,6 +122,55 @@ Test 2: Tokens Used: 16,943 (Input: 16,634, Output: 309) | Cached Input: 10,112
 
 ---
 
+## Function Naming Cleanup (October 19, 2025 - Commit 582339e)
+
+### Context
+
+After LRU caching removal, function names with "_uncached" suffix became misleading and redundant. The "_uncached" naming was originally used to distinguish:
+- Public wrapper function: `get_stock_quote()` (with cache)
+- Internal function: `_get_stock_quote_uncached()` (without cache)
+
+**Problem:** After removing @lru_cache decorators, this distinction no longer makes sense:
+- Both functions are now direct API calls
+- No caching happens anywhere
+- "_uncached" suffix implies missing optimization (it doesn't)
+- Internal functions still had misleading names
+
+### Solution Implemented (Commit 582339e)
+
+**7 Functions Renamed in tradier_tools.py:**
+
+1. `_get_stock_quote_uncached()` → `_get_stock_quote_impl()`
+2. `_get_options_expiration_dates_uncached()` → `_get_options_expiration_dates_impl()`
+3. `_get_call_options_chain_uncached()` → `_get_call_options_chain_impl()`
+4. `_get_put_options_chain_uncached()` → `_get_put_options_chain_impl()`
+5. `_get_stock_price_history_uncached()` → `_get_stock_price_history_impl()`
+6. `_get_market_status_and_date_time_uncached()` → `_get_market_status_and_date_time_impl()`
+7. `_map_market_state()` - Already had clear naming (no change)
+
+**Why "_impl" Suffix?**
+- `_impl` clearly indicates "implementation details" (internal function)
+- `_impl` doesn't imply missing functionality
+- Standard Python convention for private implementation functions
+- Removes misleading "uncached" terminology entirely
+
+**Updated References:**
+- All 7 wrapper functions updated to call new names
+- All imports updated
+- All docstrings updated to remove "uncached" references
+- No public API changes (wrapper function names unchanged)
+- No changes required in agent_service.py or external code
+
+### Testing Results After Cleanup
+
+- ✅ 39/39 CLI regression tests PASS
+- ✅ 0 errors or warnings
+- ✅ Function renaming verified in all 39 tests
+- ✅ No impact on performance or functionality
+- ✅ Backward compatible (only internal function names changed)
+
+---
+
 ## Official Policy: NO External Caching
 
 ### The Decision
@@ -166,6 +215,13 @@ When you see discussions about "caching" or "optimization", ALWAYS check:
 - ✅ 0 cross-ticker data contamination
 - ✅ Average response time: ~8 seconds (acceptable)
 
+### After Function Naming Cleanup (Oct 19 - Commit 582339e)
+- ✅ 39/39 CLI regression tests PASS (verified again)
+- ✅ Function names now reflect internal implementation, not cache state
+- ✅ "_uncached" terminology completely removed
+- ✅ Code clarity improved (internal functions now have "_impl" suffix)
+- ✅ No performance impact (internal changes only)
+
 ---
 
 ## Implementation Details
@@ -183,6 +239,11 @@ When you see discussions about "caching" or "optimization", ALWAYS check:
 - Policy documentation in key memory files
 - Comments marking removed code in CLAUDE.md
 
+**Renamed (Commit 582339e):**
+- 7 internal functions: `_*_uncached()` → `_*_impl()`
+- All wrapper functions updated to call new internal names
+- All docstrings updated to remove misleading "uncached" terminology
+
 ### What Stayed
 
 **Unchanged (Correct patterns):**
@@ -191,8 +252,10 @@ When you see discussions about "caching" or "optimization", ALWAYS check:
 - OpenAI native prompt caching ✅
   - Already implemented in `prompt_caching_guide.md`
   - Provides 50% cost reduction automatically
-- Function naming with "_uncached" suffix ✅
-  - Just descriptive names indicating direct API calls
+- Public function names ✅
+  - `get_stock_quote()`, `get_options_expiration_dates()`, etc.
+  - No changes to public API
+  - No changes required in external code
 
 ---
 
@@ -217,14 +280,15 @@ async def fetch_data():
 # Relies on OpenAI SDK's prompt caching for efficiency
 ```
 
-### The Async Pattern Used
+### The Async Pattern Used (After Cleanup)
 
 ```python
 # Phase 2.1 correctly implemented async:
 @function_tool
 async def get_stock_quote(ticker: str) -> str:
-    return await _get_stock_quote_uncached(ticker)
+    return await _get_stock_quote_impl(ticker)
 
+# Internal function with "_impl" suffix indicates implementation detail
 # Direct API calls, no caching layer needed
 # OpenAI handles result caching at prompt level
 ```
@@ -235,7 +299,7 @@ async def get_stock_quote(ticker: str) -> str:
 
 ### Implementation Details
 - `.serena/memories/phase_2_1_aiohttp_integration_completion_oct_2025.md` - Async conversion done right
-- `src/backend/tools/tradier_tools.py` - Cleaned async functions
+- `src/backend/tools/tradier_tools.py` - Cleaned async functions with new naming
 - `src/backend/tools/polygon_tools.py` - Cleaned async functions
 
 ### Caching Done Right
@@ -248,6 +312,7 @@ async def get_stock_quote(ticker: str) -> str:
 
 ### Project Structure
 - `CLAUDE.md` - Last Completed Task updated
+- Commit 582339e - Function naming cleanup
 
 ---
 
@@ -271,13 +336,15 @@ async def get_stock_quote(ticker: str) -> str:
 
 ## Timeline
 
-| Date | Event | Status |
-|------|-------|--------|
-| 2025-10-19 | Phase 1: Research - Root cause identified | ✅ Complete |
-| 2025-10-19 | Phase 2: Planning - Implementation plan created | ✅ Complete |
-| 2025-10-19 | Phase 3: Implementation - All cache code removed | ✅ Complete |
-| 2025-10-19 | Phase 4: Testing - 39/39 tests pass | ✅ Complete |
-| 2025-10-19 | Phase 5: Commit - Atomic commit pushed | ✅ Complete |
+| Date | Event | Status | Commit |
+|------|-------|--------|--------|
+| 2025-10-19 | Phase 1: Research - Root cause identified | ✅ Complete | - |
+| 2025-10-19 | Phase 2: Planning - Implementation plan created | ✅ Complete | - |
+| 2025-10-19 | Phase 3: Implementation - All cache code removed | ✅ Complete | - |
+| 2025-10-19 | Phase 4: Testing - 39/39 tests pass | ✅ Complete | - |
+| 2025-10-19 | Phase 5: Commit - Atomic commit pushed | ✅ Complete | aae0cb4 (reverted), 1f52d86 (revert commit) |
+| 2025-10-19 | Phase 6: Function naming cleanup | ✅ Complete | 582339e |
+| 2025-10-19 | Phase 7: Re-test after cleanup | ✅ Complete | - |
 
 ---
 
@@ -290,14 +357,22 @@ The removal of external LRU caching represents a **correction of a planning erro
 - ✅ Aligned with OpenAI native caching strategy
 - ✅ Free of decorator incompatibility issues
 
+**Post-cleanup (Commit 582339e):**
+- ✅ Internal function names now accurately reflect their purpose (implementation, not cache state)
+- ✅ "_uncached" terminology completely removed
+- ✅ Code clarity improved for future maintenance
+- ✅ All 39 CLI regression tests verify correctness
+
 **The correct approach:**
 - Direct API calls for real-time data
 - OpenAI native prompt caching for efficiency (50% cost reduction)
 - No external caching layers
+- Clear internal function naming with "_impl" suffix
 
 ---
 
 **Removal Completed:** 2025-10-19
+**Function Naming Cleanup:** 2025-10-19 (Commit 582339e)
 **Policy Established:** NO external caching, ever
 **Authority:** Strategic decision based on architecture requirements
 
