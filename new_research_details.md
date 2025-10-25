@@ -4,15 +4,16 @@
 
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed: 
 
-[NEW_FEATURE] Update both Call and Put Options Chains Tools to now output additional strike prices that will now show 10 Immediate Strike Prices ABOVE AND BELOW the current price for both Call and Put Options Chain, for a total of 20 Strike prices EACH for both Calls and Puts centered around the current underlying price
 
-- Current the Call Options Chain only outputs 10 immediate sequential strikes ABove the current price, and now Call options chain needs to also output 10 immediate sequential strikes BELOW the current price, for a total of 20 strikes
+[NEW_FEATURE] Create a brand new tool called 'get_options_chain_both' that will now fetch and output BOTH the complete call and put options chain in a single tool call instead of having two separate tool calls. This should consolidate two separate tool calls and some duplicate code into a single all-in-one comprehensive tool call.  We will still keep the existin separate call\put options chains tools for now for backward compatibility, and eventually the old tools will be retired at a later date TDB
 
-- Current the Put Options Chain only outputs 10 immediate sequential strikes Below the current price, and now Put options chain needs to also output 10 immediate sequential strikes ABOVE the current price, for a total of 20 strikes
+- The single 'get_options_chain_both' tool call should output BOTH the full Call & Put Options Chain in a single response and table\chart, matching the same as reponse formatting and tables as the individual tool calls
 
-- Now both Call and Put options chains will each haave identical strikes centered around the current price
+- You will need to update AI Agent Instructions on using the new Proper tool calls
 
-- Both Call and Put options chain now will have to be sorted and output in DESCENDING Strike price order, with HIGHEST strikes at top of table, followed by the lower strikes 
+- We will also change around some of the AI Agent rules to make the following rule the very FIRST TOP CRITICAL RULE: 'ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS'.  By moving this rule to the top with the critical messages, this will prevent some issues where AI Agent still makes some redundant tool calls evn though data is already availble, since the current rule is located at Rule # 8, and it can sometimes be missed, so we can make it rule #1
+
+- Test scripts 'test_cli_regression.sh' also needs to be updated to call the new tool
 
 - After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out a few manual Call\Put Options chain calls, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
 
