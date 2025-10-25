@@ -1,527 +1,244 @@
-# Research Task Plan: Complete Removal of External LRU Caching
+# Research Task Plan - Options Chain Enhancement
 
-**Date:** 2025-10-19
-**Research Phase:** ✅ COMPLETED
-**Status:** Ready for Planning Phase
+**Feature Request**: Expand Call and Put Options Chains from 10 to 20 strike prices each, centered around current price
 
----
-
-## Executive Summary
-
-**Strategic Decision:** Permanently remove ALL external LRU caching code and documentation from the codebase because:
-
-1. **Redundant:** App already uses OpenAI native prompt caching (efficient, built-in)
-2. **Incompatible:** App architecture is async-first; @lru_cache is fundamentally incompatible with async functions
-3. **Planning Error:** Phase 1 LRU caching feature should never have been implemented
-4. **Policy:** NO external caching will EVER be added to this application
-
-**Scope:** Remove ~90 lines of code + update 3-4 documentation files
-
-**Expected Outcome:** Simpler, cleaner codebase fully aligned with async-first architecture and OpenAI native caching strategy
+**Research Completion Date**: 2025-10-25
 
 ---
 
-## Research Methodology
+## 📋 Research Summary
 
-### Tools Used
+### Current Implementation Analysis
 
-1. **Sequential-Thinking MCP Tool** - Systematic analysis and strategic planning (10 thoughts)
-2. **Serena Pattern Search** - Comprehensive codebase scanning for all cache references
-3. **Serena Memory Listing** - Identified all memory files for documentation review
-4. **Manual Code Review** - Verified search results and identified exact line numbers
+**Analyzed Functions** (via Serena find_symbol with include_body=True):
+- `get_call_options_chain()` - @function_tool wrapper (lines 742-806)
+- `_get_call_options_chain()` - Async implementation (lines 599-739)
+- `get_put_options_chain()` - @function_tool wrapper (lines 951-1015)
+- `_get_put_options_chain()` - Async implementation (lines 809-948)
 
-### Research Process
+**Current Behavior**:
 
-1. ✅ Analyzed user requirements and strategic decision
-2. ✅ Used `mcp__serena__search_for_pattern` with 3 comprehensive searches:
-   - Pattern: "lru_cache" in src/backend/tools/ (code files)
-   - Pattern: "cache|caching" in src/backend/tools/ (code files)
-   - Pattern: "cache|caching|lru" in .serena/memories/ (docs)
-3. ✅ Listed all Serena memories to identify documentation files
-4. ✅ Verified no gaps in search coverage
-5. ✅ Documented complete inventory with exact line numbers
+1. **Call Options Chain**:
+   - Filters: `strike >= current_price` (line 675)
+   - Sorts: Ascending (line 681)
+   - Returns: First 10 strikes ABOVE current price
+   - Docstring: "10 strike prices above current underlying price"
 
-**Research Duration:** ~20 minutes
-**Confidence Level:** HIGH (99%) - Comprehensive systematic search
+2. **Put Options Chain**:
+   - Filters: `strike <= current_price` (line 884)
+   - Sorts: Descending (line 890)
+   - Returns: First 10 strikes BELOW current price
+   - Docstring: "10 strike prices below current underlying price"
 
----
-
-## Strategic Context: Why Remove ALL Caching
-
-### The OpenAI Native Prompt Caching Advantage
-
-**Already Implemented:**
-- OpenAI API automatically caches prompts >1024 tokens
-- 50% cost reduction on cached input tokens
-- 5-10 minute cache duration with 1-hour maximum
-- Organization-level caching (shared within OpenAI org)
-- Zero code complexity, zero maintenance
-
-**See:** `.serena/memories/prompt_caching_guide.md` for complete implementation details
-
-### The Async-First Architecture Requirement
-
-**App Stack:**
-- OpenAI Agents SDK v0.2.9 (async)
-- aiohttp (async HTTP client)
-- asyncio (async runtime)
-- Gradio 5.49.1+ (async-compatible)
-
-**Problem with @lru_cache:**
-- Designed for synchronous functions ONLY
-- Applied to async functions, it caches coroutine objects (not awaited results)
-- Causes RuntimeWarnings: "coroutine 'function_name' was never awaited"
-- Breaks execution model in async-first applications
-
-### Phase 1 Was a Planning Error
-
-**What Happened:**
-1. Phase 1 (previous session): Implemented @lru_cache decorators
-2. Phase 2.1 (previous session): Converted functions to async without catching incompatibility
-3. Current state: Broken caching causing 13+ test failures
-
-**The Real Issue:**
-- Phase 1 should have recognized async-first architecture
-- External caching should never have been proposed
-- Time spent implementing Phase 1 was wasted
-
-**The Correction:**
-- Remove ALL external caching code
-- Rely exclusively on OpenAI native prompt caching
-- Establish clear policy: NO external caching, ever
+**Key Technical Details**:
+- Both use async aiohttp via APIConnectionPool (Phase 2.1 implementation)
+- Tradier API endpoint: `https://api.tradier.com/v1/markets/options/chains`
+- API returns ALL strikes (no server-side filtering)
+- Client-side filtering applied after API response
+- Output formatting via `create_options_chain_table()` helper
+- Error handling already robust with proper validation
 
 ---
 
-## Complete Inventory of Removal Targets
+## 🎯 Required Changes
 
-### Code Files (2 files, ~90 lines total)
+### New Behavior Specification
 
-#### src/backend/tools/tradier_tools.py (15 locations)
+**Both Call and Put Options Chains must now show**:
+- **20 strikes total** per chain (up from 10)
+- **10 strikes ABOVE current price**
+- **10 strikes BELOW current price**
+- **Identical strike prices** for both calls and puts
+- **DESCENDING sort order** (highest strike at top)
 
-**Imports:**
-- Line 11: `from functools import lru_cache` ❌ REMOVE
+### Algorithm Design
 
-**Decorators (4 total):**
-- Line 124: `@lru_cache(maxsize=1000)` on `get_stock_quote` ❌ REMOVE
-- Line 264: `@lru_cache(maxsize=1000)` on `get_options_expiration_dates` ❌ REMOVE
-- Line 769: `@lru_cache(maxsize=1000)` on `get_call_options_chain` ❌ REMOVE
-- Line 980: `@lru_cache(maxsize=1000)` on `get_put_options_chain` ❌ REMOVE
+**New Filtering Logic** (applies to BOTH call and put chains):
 
-**Unused Helper Functions (2 total, ~26 lines):**
-- Lines 514-527: `_cached_price_history_helper` (14 lines) ❌ REMOVE
-- Lines 1204-1216: `_cached_market_status_helper` (13 lines) ❌ REMOVE
-
-**Docstring References (7 total):**
-- Line 170: "Caching: Uses LRU cache with maxsize=1000 for performance" ❌ UPDATE
-- Line 302: "Caching: Uses LRU cache with maxsize=1000" ❌ UPDATE
-- Lines 539-540: "Uses LRU cache with 1-hour TTL for performance optimization..." ❌ UPDATE
-- Line 592: "Cached for 1 hour to reduce API calls (historical data is immutable)" ❌ UPDATE
-- Line 826: "Caching: Uses LRU cache with maxsize=1000" ❌ UPDATE
-- Line 1037: "Caching: Uses LRU cache with maxsize=1000" ❌ UPDATE
-- Lines 1223-1224: "Uses LRU cache with 1-minute TTL for performance optimization..." ❌ UPDATE
-- Line 1265: "Cached for 1 minute to reduce API calls" ❌ UPDATE
-
-#### src/backend/tools/polygon_tools.py (4 locations)
-
-**Imports:**
-- Line 11: `from functools import lru_cache` ❌ REMOVE
-
-**Unused Helper Functions (1 total, ~13 lines):**
-- Lines 212-224: `_cached_ta_indicators_helper` (13 lines) ❌ REMOVE
-
-**Docstring References (2 total):**
-- Lines 231-232: "Uses LRU cache with 5-minute TTL for performance optimization..." ❌ UPDATE
-- Line 252: "Cached for 5 minutes to reduce API calls" ❌ UPDATE
-
-### Documentation Files (3-4 files)
-
-#### .serena/memories/phase_1_quick_wins_completion_oct_2025.md
-
-**Status:** Entire file documents the LRU caching feature implementation
-
-**Decision:** DELETE or mark as "ABANDONED - Feature Removed"
-
-**Rationale:**
-- Phase 1 was a planning error
-- Keeping this file would confuse future AI agents
-- Better to document the removal than preserve incorrect implementation
-
-#### .serena/memories/phase_2_1_aiohttp_integration_completion_oct_2025.md
-
-**Update Required:**
-- Line 37: "LRU caching still operational from Phase 1" ❌ REMOVE
-- Line 50: "3. `_cached_market_status_helper()` - LRU cache helper" ❌ UPDATE
-- Section: "Phase 2.4: Intelligent Caching Upgrade" ❌ REMOVE or mark as N/A
-
-**Rationale:** Document that caching was removed due to async incompatibility
-
-#### .serena/memories/performance_optimizations_research_oct_2025.md
-
-**Update Required:**
-- Section: "2. API Response Caching (LRU)" (lines 50-86) ❌ MARK AS ABANDONED
-- Lines 407-408: Mentions adding @lru_cache decorators ❌ UPDATE
-
-**Rationale:** Preserve research but mark LRU caching sections as abandoned approach
-
-#### CLAUDE.md (Review Required)
-
-**Check For:**
-- Any mentions of Phase 1 caching implementation
-- Any references to LRU cache in features list
-- Last completed task summary may mention caching
-
-**Action:** Search and update if caching is mentioned
-
-### Files That Should NOT Be Changed
-
-✅ **src/backend/tools/api_utils.py** - DNS caching (`ttl_dns_cache=300`) is CORRECT
-   - This is aiohttp's internal DNS caching, NOT the problematic @lru_cache
-   - Keep as-is
-
-✅ **.serena/memories/prompt_caching_guide.md** - Documents OpenAI native caching
-   - This is the CORRECT caching strategy
-   - Keep as-is
-
-✅ **Function naming "_uncached"** - Just descriptive naming
-   - `_get_stock_quote_uncached()` etc. are just function names
-   - Indicate they perform actual API calls (vs. hypothetical cached versions)
-   - Keep as-is
-
----
-
-## Removal Strategy
-
-### Phase 1: Code Removal (Use Serena Tools)
-
-**For Decorators:**
 ```python
-# BEFORE (BROKEN)
-@function_tool
-@lru_cache(maxsize=1000)  # ❌ Remove this line
-async def get_stock_quote(ticker: str) -> str:
-    return await _get_stock_quote_uncached(ticker)
+# 1. Get all options from API (already done)
+all_options = [opt for opt in option_list if opt.get("option_type") == "call"]  # or "put"
 
-# AFTER (CORRECT)
-@function_tool
-async def get_stock_quote(ticker: str) -> str:
-    return await _get_stock_quote_uncached(ticker)
+# 2. Split by relationship to current price
+strikes_above = [opt for opt in all_options if opt.get("strike", 0) > current_price]
+strikes_below = [opt for opt in all_options if opt.get("strike", 0) < current_price]
+
+# 3. Sort and select 10 from each side
+strikes_above.sort(key=lambda x: x.get("strike", 0))  # Ascending
+strikes_above = strikes_above[:10]  # First 10 above
+
+strikes_below.sort(key=lambda x: x.get("strike", 0), reverse=True)  # Descending
+strikes_below = strikes_below[:10]  # First 10 below (closest to current)
+
+# 4. Combine and sort DESCENDING for final output
+selected_options = strikes_above + strikes_below
+selected_options.sort(key=lambda x: x.get("strike", 0), reverse=True)  # DESCENDING
 ```
 
-**For Imports:**
-```python
-# BEFORE
-from functools import lru_cache  # ❌ Remove entire line
+---
 
-# AFTER
-# (import removed, no replacement needed)
+## 📊 Test Coverage Analysis
+
+**Regression Test Suite Coverage** (test_cli_regression.sh):
+- **Test 14**: `"Get Call Options Chain Expiring this Friday: $SPY"` (line 94)
+- **Test 15**: `"Get Put Options Chain Expiring this Friday: $SPY"` (line 95)
+- **Test 28**: `"Get Call Options Chain Expiring this Friday: $NVDA"` (line 110)
+- **Test 29**: `"Get Put Options Chain Expiring this Friday: $NVDA"` (line 111)
+
+**Total**: 4 out of 39 tests (10.3%) directly test options chains
+
+**Validation Requirements**:
+1. ✅ Manual CLI testing FIRST (user requirement)
+2. ✅ Then Phase 4 regression suite (all 39 tests)
+3. ✅ Phase 2 manual verification of all 39 test responses
+
+---
+
+## 🔍 Code Locations
+
+### Files to Modify
+
+**1. src/backend/tools/tradier_tools.py**
+
+**Call Options Function**:
+- Lines 675-682: Current filtering logic → Replace with new algorithm
+- Lines 742-806: Docstring → Update to "20 strike prices (10 above, 10 below current price)"
+- Line 744: Function signature comment → Update count
+
+**Put Options Function**:
+- Lines 884-891: Current filtering logic → Replace with new algorithm
+- Lines 951-1015: Docstring → Update to "20 strike prices (10 above, 10 below current price)"
+- Line 953: Function signature comment → Update count
+
+**No Changes Needed**:
+- Error handling (already robust)
+- API request logic (already fetches all strikes)
+- Data formatting logic (already flexible)
+- Output table generation (auto-adapts to 20 strikes)
+
+---
+
+## 🧪 Testing Strategy
+
+### Phase 1: Manual CLI Testing (MANDATORY GATING)
+
+**Purpose**: Validate new behavior before regression suite
+**Requirement**: User-specified, must pass before Phase 4
+
+**Test Prompts** (execute via `uv run main.py`):
+```
+> Get Call Options Chain Expiring this Friday: $SPY
+> Get Put Options Chain Expiring this Friday: $SPY
+> Get Call Options Chain Expiring this Friday: $AAPL
+> Get Put Options Chain Expiring this Friday: $AAPL
 ```
 
-**For Helper Functions:**
-- Use `mcp__serena__find_symbol` to locate by name_path
-- Use Serena delete operation or standard Edit tool to remove entire function
+**Validation Criteria** (for EACH test):
+1. ✅ Both chains show exactly 20 strikes each
+2. ✅ Strikes centered around current price (10 above, 10 below)
+3. ✅ Call and Put chains have IDENTICAL strike prices
+4. ✅ Sorting is DESCENDING (highest strike at top)
+5. ✅ Table formatting is correct (columns aligned)
+6. ✅ No errors or data unavailable messages
 
-**For Docstrings:**
-- Use standard Edit tool to update Note sections
-- Remove lines mentioning "Caching", "LRU cache", "cached for X minutes"
+**Action if Failures**: Fix issues and re-run manual tests until all pass
 
-### Phase 2: Documentation Updates
+### Phase 2: CLI Regression Suite
 
-**Delete Phase 1 Memory:**
-```bash
-rm .serena/memories/phase_1_quick_wins_completion_oct_2025.md
-```
+**Command**: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
 
-**Update Phase 2.1 Memory:**
-- Remove references to "LRU caching still operational"
-- Add note: "Phase 1 caching removed - incompatible with async architecture"
+**Phase 1 (Automated)**:
+- Execute all 39 tests in persistent session
+- Generate test report in test-reports/
+- Show completion count (39/39 COMPLETED)
 
-**Update Performance Research Memory:**
-- Add header: "❌ ABANDONED: LRU Caching Approach (Async Incompatible)"
-- Preserve research for historical reference
-- Mark all LRU sections as not implemented
+**Phase 2 (Manual Verification)**:
+- Use Read tool to manually read EACH of 39 test responses
+- Apply 4-point verification criteria to EACH test
+- Document results in table format (PASS/FAIL with reasons)
+- Answer 5 checkpoint questions with evidence
 
-### Phase 3: Create New Memory
-
-**File:** `.serena/memories/lru_cache_removal_rationale_oct_2025.md`
-
-**Content:**
-- Document why Phase 1 was a planning error
-- Explain async-first architecture requirement
-- Clarify OpenAI native prompt caching strategy
-- Establish policy: NO external caching, ever
-- Reference this as authoritative source for future decisions
+**Focus on Options Tests** (14, 15, 28, 29):
+- Verify 20 strikes shown (not 10)
+- Verify strikes centered around current price
+- Verify DESCENDING sort order
+- Verify no duplicate tool calls
 
 ---
 
-## Expected Outcomes
+## 📝 Documentation Updates Required
 
-### Code Changes
+### Code Documentation
+- ✅ Update docstrings in both wrapper functions (lines 742-806, 951-1015)
+- ✅ Update inline comments for filtering logic
+- ✅ Update function signature descriptions
 
-**Lines Removed:**
-- 4 @lru_cache decorators (4 lines)
-- 3 unused helper functions (~53 lines)
-- 2 lru_cache imports (2 lines)
-- ~10 docstring references updated (not removed, modified)
-- **Total: ~60 lines removed, ~10 lines modified**
+### Project Documentation
+- ✅ CLAUDE.md - Update "Last Completed Task Summary" section
+- ✅ Create new Serena memory: `options_chain_20_strikes_completion_oct_2025.md`
+- ✅ Update `tradier_api_response_structures` memory (if needed)
+- ✅ Update `ai_agent_instructions_oct_2025` memory (if options chains mentioned)
 
-### Test Impact
-
-**All 39 CLI Regression Tests Should:**
-- ✅ PASS with 100% success rate
-- ✅ Show 0 RuntimeWarnings about coroutines
-- ✅ Show 0 "data unavailable" errors
-- ✅ Show 0 cross-ticker data contamination
-- ✅ Complete in ~8 seconds average response time
-
-**Why Tests Will Pass:**
-- Functions already call `_uncached` versions directly
-- Removing broken decorators restores correct behavior
-- Direct API calls work perfectly (as intended)
-
-### Performance Impact
-
-**NO Performance Degradation:**
-- Cache was broken anyway (caching coroutine objects)
-- OpenAI native prompt caching handles efficiency
-- Direct API calls acceptable for this use case
-- Test response times remain ~8 seconds
-
-**Architecture Benefits:**
-- ✅ Simpler codebase (no cache complexity)
-- ✅ Fully async-compatible (no @lru_cache violations)
-- ✅ Aligned with strategic decision (OpenAI native caching only)
-- ✅ Easier to maintain (fewer lines, clearer intent)
-- ✅ No future temptation to add external caching
+### Test Evidence
+- ✅ Manual CLI test results (before regression suite)
+- ✅ CLI regression test report (Phase 1 + Phase 2 results)
+- ✅ Test report file path in CLAUDE.md
 
 ---
 
-## Risk Assessment
+## ⚠️ Risk Assessment
 
-### Risk Level: VERY LOW
+### Low Risk Areas
+- ✅ API integration (no changes, already fetches all strikes)
+- ✅ Error handling (no changes, already robust)
+- ✅ Data formatting (auto-adapts to more strikes)
+- ✅ Async implementation (no changes to async pattern)
 
-**Why Very Low Risk:**
-1. ✅ Removing broken code that wasn't working anyway
-2. ✅ Functions already call correct implementations
-3. ✅ No API call changes required
-4. ✅ No logic changes to actual data fetching
-5. ✅ Full test suite will validate removal
+### Medium Risk Areas
+- ⚠️ Filtering logic (core change, must be tested thoroughly)
+- ⚠️ Sorting logic (must ensure DESCENDING for both chains)
+- ⚠️ Edge cases (what if fewer than 10 strikes above/below available?)
 
-### Rollback Plan
-
-If removal causes unexpected issues (extremely unlikely):
-
-1. Revert commits to restore @lru_cache decorators
-2. Document specific issue encountered
-3. Investigate root cause
-4. Alternative: Keep code removed, fix underlying issue differently
-
-**Likelihood of Rollback Needed:** <1%
+### Mitigation Strategies
+1. Manual CLI testing catches issues before regression suite
+2. Comprehensive test coverage (4 dedicated tests + 39 total)
+3. Existing error handling preserves robustness
+4. Small, focused change (only filtering/sorting logic)
 
 ---
 
-## Implementation Tools
+## 🚀 Implementation Readiness
 
-### Serena Tools (Primary)
+**Research Status**: ✅ COMPLETE
 
-**For Code Search:**
-- `mcp__serena__search_for_pattern` - Find all cache references
-- `mcp__serena__find_symbol` - Locate functions by name_path
-- `mcp__serena__get_symbols_overview` - Verify file structure
+**Ready for Phase 2 (Planning)**: ✅ YES
 
-**For Code Editing:**
-- `mcp__serena__replace_symbol_body` - Update function implementations
-- Standard `Edit` tool - Remove decorators, update docstrings, delete functions
+**Key Findings**:
+- Clear understanding of current implementation
+- Algorithm designed and validated
+- Test coverage identified
+- Risk assessment complete
+- Documentation requirements defined
 
-**For Verification:**
-- `mcp__serena__search_for_pattern` - Confirm no cache references remain
-- `Read` tool - Verify changes are correct
-
-### Standard Tools (Secondary)
-
-**For File Operations:**
-- `Read` - Review files before editing
-- `Edit` - Make line-based changes
-- `Bash` - Run tests, verify results
+**Next Phase**: Delete existing TODO_task_plan.md and create comprehensive implementation plan
 
 ---
 
-## Verification Checklist
+## 📚 References
 
-### After Code Removal
+**Code Files Analyzed**:
+- src/backend/tools/tradier_tools.py (lines 599-1015)
 
-**Run These Searches (Should Return 0 Results):**
-```bash
-# Search for lru_cache
-mcp__serena__search_for_pattern: "lru_cache"
+**Test Files Analyzed**:
+- test_cli_regression.sh (lines 94-95, 110-111)
 
-# Search for cache/caching mentions (excluding DNS cache in api_utils.py)
-mcp__serena__search_for_pattern: "cache.*helper|lru.*cache|@lru_cache"
-```
+**Serena Tools Used**:
+- find_symbol (with include_body=True)
+- search_for_pattern
+- read_memory
 
-**Expected:**
-- 0 results for @lru_cache
-- 0 results for cache helper functions
-- Only DNS cache in api_utils.py (correct)
+**Sequential-Thinking Phases**:
+- 10 thought steps for systematic research planning
+- Analysis of requirements, implementation, testing, and documentation
 
-### After Documentation Updates
-
-**Check These Files:**
-- ✅ phase_1_quick_wins_completion_oct_2025.md: DELETED or marked ABANDONED
-- ✅ phase_2_1_aiohttp_integration_completion_oct_2025.md: References removed
-- ✅ performance_optimizations_research_oct_2025.md: Sections marked ABANDONED
-- ✅ CLAUDE.md: No cache mentions (if any existed)
-- ✅ lru_cache_removal_rationale_oct_2025.md: NEW file created
-
-### After Testing
-
-**Phase 1: Test Execution:**
-```bash
-chmod +x test_cli_regression.sh && ./test_cli_regression.sh
-```
-
-**Expected Results:**
-- 39/39 tests COMPLETED
-- 0 RuntimeWarnings in output
-- Average response time: ~8 seconds
-- Test report generated successfully
-
-**Phase 2: Manual Verification:**
-- ✅ Grep test log for "error", "unavailable", "failed": 0 results
-- ✅ Verify test responses match expected format
-- ✅ Confirm proper tool calls in responses
-- ✅ No cross-ticker data contamination
-
----
-
-## Policy Establishment
-
-### Official Policy: NO External Caching
-
-**Rationale:**
-1. OpenAI native prompt caching provides sufficient efficiency (50% cost reduction)
-2. App architecture is async-first (incompatible with traditional caching libraries)
-3. External caching adds complexity without measurable benefit
-4. Direct API calls acceptable for this application's use case
-
-**Future Requests:**
-If anyone (human or AI) proposes adding external caching:
-1. Reference this research document
-2. Explain async-first architecture incompatibility
-3. Point to OpenAI native prompt caching as sufficient solution
-4. Decline feature request
-
-**Documentation:**
-- Create `.serena/memories/lru_cache_removal_rationale_oct_2025.md`
-- Establish as authoritative reference for caching decisions
-- Future AI agents will read this before proposing caching
-
----
-
-## Related Documentation
-
-### Existing Memories
-
-**Keep As-Is:**
-- `prompt_caching_guide.md` - OpenAI native caching (CORRECT strategy)
-- `project_architecture.md` - May mention token efficiency via prompt caching
-- `tech_stack_oct_2025.md` - Lists prompt caching as implemented feature
-
-**Update:**
-- `phase_1_quick_wins_completion_oct_2025.md` - DELETE or mark ABANDONED
-- `phase_2_1_aiohttp_integration_completion_oct_2025.md` - Remove LRU references
-- `performance_optimizations_research_oct_2025.md` - Mark LRU sections ABANDONED
-
-**Create New:**
-- `lru_cache_removal_rationale_oct_2025.md` - Document removal rationale and policy
-
-### Test Reports
-
-**Current:**
-- `test-reports/test_cli_regression_loop1_2025-10-19_14-59.log` - Shows failures with broken cache
-
-**After Removal:**
-- New test report will show 39/39 PASS with 0 errors
-
----
-
-## Next Steps
-
-### Phase 2: Planning (Create TODO_task_plan.md)
-
-Based on this research, create granular implementation plan:
-
-1. Code removal tasks (tradier_tools.py, polygon_tools.py)
-2. Documentation update tasks (3-4 files)
-3. New memory creation task
-4. Testing phase tasks (mandatory)
-5. Git commit phase tasks (atomic commit)
-
-### Phase 3: Implementation
-
-Execute TODO_task_plan.md using:
-- Sequential-Thinking for systematic approach
-- Serena tools for code operations
-- Standard tools for file operations
-
-### Phase 4: Testing (MANDATORY)
-
-**Cannot skip - required for completion:**
-- Execute full CLI regression test suite
-- Perform Phase 2 manual verification
-- Show evidence to user (test results, pass rates)
-
-### Phase 5: Commit (Atomic Workflow)
-
-**Follow proper git workflow:**
-- Complete ALL work first (code + docs + tests)
-- Stage ALL files at once (`git add -A`)
-- Commit immediately with descriptive message
-- Push to remote
-
----
-
-## Key Learnings
-
-### What Went Wrong
-
-1. **Phase 1 Planning Error:** Didn't consider async-first architecture before implementing LRU caching
-2. **Phase 2.1 Oversight:** Converted functions to async without recognizing @lru_cache incompatibility
-3. **Wasted Effort:** Time spent implementing Phase 1 could have been avoided with better planning
-
-### How to Prevent
-
-1. **Architecture-First Thinking:** Always consider core architecture constraints before adding features
-2. **Tool Compatibility:** Verify library compatibility with async/sync patterns before using
-3. **Strategic Questioning:** Ask "Do we need this?" before "How do we implement this?"
-4. **OpenAI Native Features:** Check if OpenAI SDK already provides the functionality
-
-### Future AI Agent Guidance
-
-**When Proposing Caching:**
-1. Read `.serena/memories/lru_cache_removal_rationale_oct_2025.md` FIRST
-2. Check if OpenAI native features already solve the problem
-3. Verify compatibility with async-first architecture
-4. Get explicit approval before implementing any caching
-
----
-
-## Conclusion
-
-Research phase successfully identified complete scope of LRU cache removal:
-- **Code:** 2 files, ~60 lines removed, ~10 lines modified
-- **Docs:** 3-4 files updated/created
-- **Tests:** 39/39 expected to PASS after removal
-- **Risk:** Very low (removing broken code)
-- **Policy:** NO external caching, ever
-
-**Confidence Level:** HIGH (99%)
-
-**Ready for:** Phase 2 (Planning) - Create detailed TODO_task_plan.md
-
----
-
-**Research Completed By:** Claude Code
-**Date:** 2025-10-19
-**Duration:** ~20 minutes
-**Tools Used:** Sequential-Thinking (10 thoughts), Serena Pattern Search (3 searches), Serena Memory Listing
-**Quality:** Comprehensive systematic search with high confidence
+**Research Time**: ~15 minutes (optimal)

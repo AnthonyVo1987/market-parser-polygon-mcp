@@ -670,24 +670,34 @@ async def _get_call_options_chain(
                 ticker=ticker,
             )
 
-        # Filter for CALL options with strike >= current_price
+        # Filter for CALL options only (all strikes)
         call_options = [
             opt
             for opt in option_list
             if opt.get("option_type") == "call"
-            and opt.get("strike", 0) >= current_price
         ]
 
         if not call_options:
             return create_error_response(
                 "No call options found",
-                f"No call options found with strike >= {current_price}",
+                f"No call options found for {ticker}",
                 ticker=ticker,
             )
 
-        # Sort by strike ascending and take first 10
-        call_options.sort(key=lambda x: x.get("strike", 0))
-        call_options = call_options[:10]
+        # Split into strikes above and below current price
+        strikes_above = [opt for opt in call_options if opt.get("strike", 0) > current_price]
+        strikes_below = [opt for opt in call_options if opt.get("strike", 0) < current_price]
+
+        # Sort and select 10 from each side
+        strikes_above.sort(key=lambda x: x.get("strike", 0))  # Ascending
+        strikes_above = strikes_above[:10]  # First 10 above
+
+        strikes_below.sort(key=lambda x: x.get("strike", 0), reverse=True)  # Descending
+        strikes_below = strikes_below[:10]  # First 10 below (closest to current)
+
+        # Combine and sort DESCENDING for final output
+        call_options = strikes_above + strikes_below
+        call_options.sort(key=lambda x: x.get("strike", 0), reverse=True)  # DESCENDING
 
         # Format options data
         formatted_options = []
@@ -744,10 +754,11 @@ async def _get_call_options_chain(
 async def get_call_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
-    """Get Call Options Chain with 10 strike prices above current underlying price.
+    """Get Call Options Chain with 20 strike prices centered around current underlying price.
 
     Use this tool when the user requests call options data for a specific ticker
-    and expiration date. Returns bid, ask, and greeks for 10 strikes above current price.
+    and expiration date. Returns bid, ask, and greeks for 20 strikes centered around
+    current price (10 above, 10 below), sorted descending.
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
@@ -779,7 +790,7 @@ async def get_call_options_chain(
                 },
                 ...
             ],
-            "count": 10,
+            "count": 20,
             "source": "Tradier"
         }
 
@@ -791,8 +802,8 @@ async def get_call_options_chain(
         }
 
     Note:
-        - Returns 10 strikes with strike price >= current_price
-        - Strikes sorted ascending (lowest to highest)
+        - Returns 20 strikes: 10 above current_price, 10 below current_price
+        - Strikes sorted descending (highest to lowest)
         - Filters full chain client-side to prevent context overload
         - Bid/Ask prices instead of single "Price" field
         - Implied volatility expressed as percentage
@@ -880,23 +891,34 @@ async def _get_put_options_chain(
                 ticker=ticker,
             )
 
-        # Filter for PUT options with strike <= current_price
+        # Filter for PUT options only (all strikes)
         put_options = [
             opt
             for opt in option_list
-            if opt.get("option_type") == "put" and opt.get("strike", 0) <= current_price
+            if opt.get("option_type") == "put"
         ]
 
         if not put_options:
             return create_error_response(
                 "No put options found",
-                f"No put options found with strike <= {current_price}",
+                f"No put options found for {ticker}",
                 ticker=ticker,
             )
 
-        # Sort by strike DESCENDING (highest to lowest for puts) and take first 10
-        put_options.sort(key=lambda x: x.get("strike", 0), reverse=True)
-        put_options = put_options[:10]
+        # Split into strikes above and below current price
+        strikes_above = [opt for opt in put_options if opt.get("strike", 0) > current_price]
+        strikes_below = [opt for opt in put_options if opt.get("strike", 0) < current_price]
+
+        # Sort and select 10 from each side
+        strikes_above.sort(key=lambda x: x.get("strike", 0))  # Ascending
+        strikes_above = strikes_above[:10]  # First 10 above
+
+        strikes_below.sort(key=lambda x: x.get("strike", 0), reverse=True)  # Descending
+        strikes_below = strikes_below[:10]  # First 10 below (closest to current)
+
+        # Combine and sort DESCENDING for final output
+        put_options = strikes_above + strikes_below
+        put_options.sort(key=lambda x: x.get("strike", 0), reverse=True)  # DESCENDING
 
         # Format options data
         formatted_options = []
@@ -953,10 +975,11 @@ async def _get_put_options_chain(
 async def get_put_options_chain(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
-    """Get Put Options Chain with 10 strike prices below current underlying price.
+    """Get Put Options Chain with 20 strike prices centered around current underlying price.
 
     Use this tool when the user requests put options data for a specific ticker
-    and expiration date. Returns bid, ask, and greeks for 10 strikes below current price.
+    and expiration date. Returns bid, ask, and greeks for 20 strikes centered around
+    current price (10 above, 10 below), sorted descending.
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
@@ -988,7 +1011,7 @@ async def get_put_options_chain(
                 },
                 ...
             ],
-            "count": 10,
+            "count": 20,
             "source": "Tradier"
         }
 
@@ -1000,7 +1023,7 @@ async def get_put_options_chain(
         }
 
     Note:
-        - Returns 10 strikes with strike price <= current_price
+        - Returns 20 strikes: 10 above current_price, 10 below current_price
         - Strikes sorted descending (highest to lowest)
         - Filters full chain client-side to prevent context overload
         - Bid/Ask prices instead of single "Price" field
