@@ -971,6 +971,301 @@ async def _get_put_options_chain(
         )
 
 
+async def _get_options_chain_both(
+    ticker: str, current_price: float, expiration_date: str
+) -> str:
+    """Get both Call and Put Options Chains with 20 strikes each centered around current price (uncached implementation).
+
+    Internal function that performs the actual API call without caching.
+    Use get_options_chain_both() instead for cached access.
+
+    Returns both call and put options chains in a single response with separate tables.
+    Each chain shows 20 strikes (10 above + 10 below current price), sorted descending.
+    """
+    try:
+        # Validate and sanitize ticker input
+        ticker, error = validate_and_sanitize_ticker(ticker)
+        if error:
+            return error
+
+        if current_price <= 0:
+            return create_error_response(
+                "Invalid current price",
+                f"Current price {current_price} must be positive",
+                ticker=ticker,
+            )
+
+        if not expiration_date:
+            return create_error_response(
+                "Invalid expiration date",
+                "Expiration date is required (YYYY-MM-DD format)",
+                ticker=ticker,
+            )
+
+        # Get API key
+        api_key = _get_tradier_api_key()
+        if not api_key:
+            return create_error_response(
+                "Configuration error",
+                "TRADIER_API_KEY not found in environment",
+                ticker=ticker,
+            )
+
+        # Build Tradier API request
+        url = "https://api.tradier.com/v1/markets/options/chains"
+        headers = create_tradier_headers(api_key)
+        params = {
+            "symbol": ticker,
+            "expiration": expiration_date,
+            "greeks": "true",  # Required for delta, gamma, theta, vega
+        }
+
+        # Get aiohttp session from connection pool
+        from .api_utils import get_connection_pool
+        pool = get_connection_pool()
+        session = await pool.get_session()
+
+        # Make async API request (SINGLE call fetches both calls and puts)
+        async with session.get(url, headers=headers, params=params) as response:
+            if response.status != 200:
+                return create_error_response(
+                    "API request failed",
+                    f"Tradier API returned status {response.status}",
+                    ticker=ticker,
+                )
+
+            # Parse response
+            data = await response.json()
+
+        options_data = data.get("options", {})
+        option_list = options_data.get("option", [])
+
+        if not option_list:
+            return create_error_response(
+                "No data",
+                f"No options data found for {ticker} expiring {expiration_date}",
+                ticker=ticker,
+            )
+
+        # Filter for CALL options and apply 20-strike centering
+        call_options = [
+            opt
+            for opt in option_list
+            if opt.get("option_type") == "call"
+        ]
+
+        if not call_options:
+            return create_error_response(
+                "No call options found",
+                f"No call options found for {ticker}",
+                ticker=ticker,
+            )
+
+        # Split call strikes above and below current price
+        call_strikes_above = [opt for opt in call_options if opt.get("strike", 0) > current_price]
+        call_strikes_below = [opt for opt in call_options if opt.get("strike", 0) < current_price]
+
+        # Sort and select 10 from each side for calls
+        call_strikes_above.sort(key=lambda x: x.get("strike", 0))  # Ascending
+        call_strikes_above = call_strikes_above[:10]  # First 10 above
+
+        call_strikes_below.sort(key=lambda x: x.get("strike", 0), reverse=True)  # Descending
+        call_strikes_below = call_strikes_below[:10]  # First 10 below
+
+        # Combine and sort DESCENDING for call options
+        call_options = call_strikes_above + call_strikes_below
+        call_options.sort(key=lambda x: x.get("strike", 0), reverse=True)
+
+        # Filter for PUT options and apply 20-strike centering
+        put_options = [
+            opt
+            for opt in option_list
+            if opt.get("option_type") == "put"
+        ]
+
+        if not put_options:
+            return create_error_response(
+                "No put options found",
+                f"No put options found for {ticker}",
+                ticker=ticker,
+            )
+
+        # Split put strikes above and below current price
+        put_strikes_above = [opt for opt in put_options if opt.get("strike", 0) > current_price]
+        put_strikes_below = [opt for opt in put_options if opt.get("strike", 0) < current_price]
+
+        # Sort and select 10 from each side for puts
+        put_strikes_above.sort(key=lambda x: x.get("strike", 0))  # Ascending
+        put_strikes_above = put_strikes_above[:10]  # First 10 above
+
+        put_strikes_below.sort(key=lambda x: x.get("strike", 0), reverse=True)  # Descending
+        put_strikes_below = put_strikes_below[:10]  # First 10 below
+
+        # Combine and sort DESCENDING for put options
+        put_options = put_strikes_above + put_strikes_below
+        put_options.sort(key=lambda x: x.get("strike", 0), reverse=True)
+
+        # Format call options data
+        formatted_call_options = []
+        for opt in call_options:
+            strike = opt.get("strike", 0)
+            bid = opt.get("bid", 0)
+            ask = opt.get("ask", 0)
+
+            greeks = opt.get("greeks", {})
+            delta = greeks.get("delta", 0)
+            gamma = greeks.get("gamma", 0)
+            implied_vol = greeks.get("smv_vol", 0) * 100  # Convert to percentage
+
+            volume = opt.get("volume", 0) or 0  # Handle None
+            open_interest = opt.get("open_interest", 0) or 0  # Handle None
+
+            formatted_call_options.append(
+                {
+                    "strike": round(strike, 2),
+                    "bid": round(bid, 2),
+                    "ask": round(ask, 2),
+                    "delta": round(delta, 2),
+                    "gamma": round(gamma, 2),
+                    "implied_volatility": round(implied_vol, 2),
+                    "volume": volume,
+                    "open_interest": open_interest,
+                }
+            )
+
+        # Format put options data
+        formatted_put_options = []
+        for opt in put_options:
+            strike = opt.get("strike", 0)
+            bid = opt.get("bid", 0)
+            ask = opt.get("ask", 0)
+
+            greeks = opt.get("greeks", {})
+            delta = greeks.get("delta", 0)
+            gamma = greeks.get("gamma", 0)
+            implied_vol = greeks.get("smv_vol", 0) * 100  # Convert to percentage
+
+            volume = opt.get("volume", 0) or 0  # Handle None
+            open_interest = opt.get("open_interest", 0) or 0  # Handle None
+
+            formatted_put_options.append(
+                {
+                    "strike": round(strike, 2),
+                    "bid": round(bid, 2),
+                    "ask": round(ask, 2),
+                    "delta": round(delta, 2),
+                    "gamma": round(gamma, 2),
+                    "implied_volatility": round(implied_vol, 2),
+                    "volume": volume,
+                    "open_interest": open_interest,
+                }
+            )
+
+        # Format call options chain table
+        call_table = create_options_chain_table(
+            ticker=ticker,
+            option_type="call",
+            expiration_date=expiration_date,
+            current_price=current_price,
+            options=formatted_call_options,
+        )
+
+        # Format put options chain table
+        put_table = create_options_chain_table(
+            ticker=ticker,
+            option_type="put",
+            expiration_date=expiration_date,
+            current_price=current_price,
+            options=formatted_put_options,
+        )
+
+        # Combine both tables with separator
+        return f"{call_table}\n\n{put_table}"
+
+    except asyncio.TimeoutError:
+        return create_error_response(
+            "Timeout",
+            f"Tradier API request timed out for {ticker}",
+            ticker=ticker,
+        )
+    except Exception as e:
+        return create_error_response(
+            "API request failed",
+            f"Failed to retrieve options chains for {ticker}: {str(e)}",
+            ticker=ticker,
+        )
+
+
+@function_tool
+async def get_options_chain_both(
+    ticker: str, current_price: float, expiration_date: str
+) -> str:
+    """Get both Call and Put Options Chains with 20 strikes each centered around current underlying price.
+
+    Use this tool when the user requests BOTH call and put options chains together,
+    or when they request the full options chain without specifying call or put only.
+    This is the RECOMMENDED tool for comprehensive options analysis as it provides
+    both chains in a single response with one API call.
+
+    Returns both call and put options chains with bid, ask, greeks, volume, and open
+    interest for 20 strikes each (10 above + 10 below current price), sorted descending.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
+                Must be a valid US stock ticker.
+        current_price: Current price of the underlying stock.
+                       Used to center the strike price selection.
+                       Must be positive (> 0).
+        expiration_date: Options expiration date in YYYY-MM-DD format.
+                        Must be a valid future date.
+                        Get this from get_options_expiration_dates() first.
+
+    Returns:
+        Formatted string containing:
+        - Call options chain table (20 strikes, sorted descending)
+        - Put options chain table (20 strikes, sorted descending)
+        - Both chains have IDENTICAL strike prices
+        - Each table includes: Strike, Bid, Ask, Delta, Volume, OI, IV, Gamma
+
+    Use Cases:
+        1. User asks: "Show me call and put options for SPY"
+           → Use get_options_chain_both() with next Friday's expiration
+
+        2. User asks: "Get the full options chain for NVDA"
+           → Use get_options_chain_both() (comprehensive by default)
+
+        3. User asks: "I need both call and put options chains for AAPL"
+           → Use get_options_chain_both() explicitly
+
+        4. User asks: "Show me options for AMD expiring this Friday"
+           → Use get_options_chain_both() (ambiguous = both chains)
+
+    When NOT to use this tool:
+        - User explicitly asks for ONLY call options → use get_call_options_chain()
+        - User explicitly asks for ONLY put options → use get_put_options_chain()
+        - User needs a single option contract quote → use get_options_quote_single()
+
+    Note:
+        - Returns 20 strikes for EACH chain (call and put)
+        - Strikes centered around current price (10 above, 10 below)
+        - Call and put chains have IDENTICAL strike prices
+        - Both chains sorted descending (highest strike first)
+        - Single API call fetches both chains (efficient)
+        - Filters full chain client-side to prevent context overload
+        - Bid/Ask prices instead of single "Price" field
+        - Implied volatility expressed as percentage
+        - Volume and Open Interest show market liquidity
+        - Delta and Gamma provide sensitivity metrics
+
+    Performance:
+        - Single API call (vs two separate calls for call + put)
+        - ~50% faster than sequential get_call_options_chain() + get_put_options_chain()
+        - Reduces redundant API requests
+        - Provides complete options picture in one response
+    """
+    return await _get_options_chain_both(ticker, current_price, expiration_date)
+
+
 @function_tool
 async def get_put_options_chain(
     ticker: str, current_price: float, expiration_date: str

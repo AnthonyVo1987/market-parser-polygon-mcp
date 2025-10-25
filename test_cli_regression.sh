@@ -93,8 +93,9 @@ declare -a prompts=(
     "Get options expiration dates: \$SPY"
     "Get Call Options Chain Expiring this Friday: \$SPY"
     "Get Put Options Chain Expiring this Friday: \$SPY"
+    "Get both Call and Put Options Chains Expiring this Friday: \$SPY"
     "Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
-    # NVDA Test Sequence (Tests 17-31)
+    # NVDA Test Sequence (Tests 17-32)
     "Current Price OHLC: \$NVDA"
     "Yesterday's Price OHLC: \$NVDA"
     "Last week's Performance OHLC: \$NVDA"
@@ -109,8 +110,9 @@ declare -a prompts=(
     "Get options expiration dates for \$NVDA"
     "Get Call Options Chain Expiring this Friday: \$NVDA"
     "Get Put Options Chain Expiring this Friday: \$NVDA"
+    "Get both Call and Put Options Chains Expiring this Friday: \$NVDA"
     "Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
-    # Multi-Ticker Test Sequence (Tests 32-39)
+    # Multi-Ticker Test Sequence (Tests 33-41)
     "Current Price OHLC: \$WDC, \$AMD, \$SOUN"
     "Yesterday's Price OHLC: \$WDC, \$AMD, \$SOUN"
     "Yesterday's Closing Price: \$WDC, \$AMD, \$SOUN"
@@ -122,7 +124,7 @@ declare -a prompts=(
 )
 
 declare -a test_names=(
-    # SPY Test Sequence (Tests 1-16)
+    # SPY Test Sequence (Tests 1-17)
     "Test_1_SPY_Market_Status"
     "Test_2_SPY_Current_Price_OHLC"
     "Test_3_SPY_Yesterday_Price_OHLC"
@@ -138,32 +140,34 @@ declare -a test_names=(
     "Test_13_SPY_Options_Expiration_Dates"
     "Test_14_SPY_Call_Options_Chain"
     "Test_15_SPY_Put_Options_Chain"
-    "Test_16_SPY_Options_Wall_Analysis"
-    # NVDA Test Sequence (Tests 17-31)
-    "Test_17_NVDA_Current_Price_OHLC"
-    "Test_18_NVDA_Yesterday_Price_OHLC"
-    "Test_19_NVDA_Last_Week_Performance_OHLC"
-    "Test_20_NVDA_Previous_Week_Friday_OHLC"
-    "Test_21_NVDA_Last_5_Trading_Days_OHLC"
-    "Test_22_NVDA_Past_2_Weeks_OHLC"
-    "Test_23_NVDA_Past_Month"
-    "Test_24_NVDA_Past_3_Months"
-    "Test_25_NVDA_TA_Indicator_DATA_Only"
-    "Test_26_NVDA_Support_Resistance"
-    "Test_27_NVDA_Full_TA_Analysis"
-    "Test_28_NVDA_Options_Expiration_Dates"
-    "Test_29_NVDA_Call_Options_Chain"
-    "Test_30_NVDA_Put_Options_Chain"
-    "Test_31_NVDA_Options_Wall_Analysis"
-    # Multi-Ticker Test Sequence (Tests 32-39)
-    "Test_32_Multi_Current_Price_OHLC_WDC_AMD_SOUN"
-    "Test_33_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN"
-    "Test_34_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN"
-    "Test_35_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN"
-    "Test_36_Multi_TA_Indicator_DATA_Only_WDC_AMD_SOUN"
-    "Test_37_Multi_Support_Resistance_WDC_AMD_SOUN"
-    "Test_38_Multi_Full_TA_Analysis_WDC_AMD_SOUN"
-    "Test_39_Multi_Options_Expiration_Dates_WDC_AMD_SOUN"
+    "Test_16_SPY_Both_Options_Chains"
+    "Test_17_SPY_Options_Wall_Analysis"
+    # NVDA Test Sequence (Tests 18-32)
+    "Test_18_NVDA_Current_Price_OHLC"
+    "Test_19_NVDA_Yesterday_Price_OHLC"
+    "Test_20_NVDA_Last_Week_Performance_OHLC"
+    "Test_21_NVDA_Previous_Week_Friday_OHLC"
+    "Test_22_NVDA_Last_5_Trading_Days_OHLC"
+    "Test_23_NVDA_Past_2_Weeks_OHLC"
+    "Test_24_NVDA_Past_Month"
+    "Test_25_NVDA_Past_3_Months"
+    "Test_26_NVDA_TA_Indicator_DATA_Only"
+    "Test_27_NVDA_Support_Resistance"
+    "Test_28_NVDA_Full_TA_Analysis"
+    "Test_29_NVDA_Options_Expiration_Dates"
+    "Test_30_NVDA_Call_Options_Chain"
+    "Test_31_NVDA_Put_Options_Chain"
+    "Test_32_NVDA_Both_Options_Chains"
+    "Test_33_NVDA_Options_Wall_Analysis"
+    # Multi-Ticker Test Sequence (Tests 34-41)
+    "Test_34_Multi_Current_Price_OHLC_WDC_AMD_SOUN"
+    "Test_35_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN"
+    "Test_36_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN"
+    "Test_37_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN"
+    "Test_38_Multi_TA_Indicator_DATA_Only_WDC_AMD_SOUN"
+    "Test_39_Multi_Support_Resistance_WDC_AMD_SOUN"
+    "Test_40_Multi_Full_TA_Analysis_WDC_AMD_SOUN"
+    "Test_41_Multi_Options_Expiration_Dates_WDC_AMD_SOUN"
 )
 
 # Initialize test tracking

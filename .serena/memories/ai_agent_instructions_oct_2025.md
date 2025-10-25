@@ -113,12 +113,12 @@ Frontend/GUI calls CLI functions
 ## Key Features of Current Instructions
 
 ### 1. Tool Count and Architecture
-- Lists exactly **11 SUPPORTED TOOLS**
+- Lists exactly **13 SUPPORTED TOOLS** ⭐ UPDATED Oct 25, 2025
 - All tools use **Direct Python APIs** (no MCP)
-- Clear categorization: Finnhub (1) + Polygon (10)
+- Clear categorization: Finnhub (1) + Polygon (9) + Tradier (3)
 - **Parallel get_stock_quote() calls** for multiple tickers
-- **OHLC display requirements** (RULE #5 - Oct 7 evening)
-- **Chat history analysis** with Support/Resistance fix (RULE #9 - Oct 7 evening)
+- **OHLC display requirements** (RULE #6 - Oct 7 evening)
+- **Chat history analysis** as RULE #1 (CRITICAL - Oct 25)
 - **Persistent agent** (ONE agent per lifecycle, reused for all messages)
 
 ### 2. Direct API Tool Descriptions
@@ -127,7 +127,7 @@ Frontend/GUI calls CLI functions
 - `get_stock_quote(symbol: str)` - Real-time stock quotes from Finnhub
   - Supports parallel calls for multiple tickers
 
-**Polygon Direct API (10 tools):**
+**Polygon Direct API (9 tools):**
 
 **Market Data:**
 1. `get_market_status_and_date_time()` - Market status and current datetime
@@ -144,17 +144,78 @@ Frontend/GUI calls CLI functions
 8. `get_ta_rsi(ticker, timestamp, timespan, adjusted, window, series_type, order, limit)` - RSI indicator
 9. `get_ta_macd(ticker, timestamp, timespan, adjusted, short_window, long_window, signal_window, series_type, order, limit)` - MACD indicator
 
+**Tradier API (3 tools):** ⭐ NEW Oct 25, 2025
+
+**Options Chains:**
+10. `get_options_chain_both(ticker, current_price, expiration_date)` - Both call and put options chains (RECOMMENDED)
+    - Returns 20 strikes for each chain (10 above + 10 below current price)
+    - Single API call, efficient and comprehensive
+    - Identical strike prices for both call and put chains
+    - Sorted descending (highest strike first)
+    - Use for comprehensive options analysis
+
+11. `get_call_options_chain(ticker, current_price, expiration_date)` - Call options chain only
+    - Returns 20 strikes centered around current price
+    - Use when user explicitly requests ONLY call options
+    - Sorted descending
+
+12. `get_put_options_chain(ticker, current_price, expiration_date)` - Put options chain only
+    - Returns 20 strikes centered around current price
+    - Use when user explicitly requests ONLY put options
+    - Sorted descending
+
 **Removed (Oct 7, 2025 afternoon):**
 - ~~`get_stock_quote_multi(symbols: str)`~~ - Replaced by parallel get_stock_quote() calls
 
-### 3. Critical Rules for Tool Usage (UPDATED Oct 7, 2025 Evening)
+### 3. Critical Rules for Tool Usage (UPDATED Oct 25, 2025 - Restructured)
 
-**RULE #1: Single Ticker Selection**
+**RULE #1: 🔴 ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS** ⭐ CRITICAL
+- **MANDATORY**: Analyze conversation history for existing data BEFORE making ANY tool calls
+- **Purpose**: Prevent redundant API calls, improve response time, reduce costs
+- **Process**:
+  1. Review chat history for previously retrieved data
+  2. Check if current request can be answered with existing data
+  3. Only make NEW tool calls if data is missing or outdated
+  4. State "No tool calls needed - using existing data from previous queries" when reusing data
+
+**Key Scenarios:**
+
+**Scenario 1 - Technical Analysis After Price Retrieval:**
+- Previous: Retrieved SPY price, SMA 20/50/200, EMA 20/50/200, RSI-14, MACD
+- Current: User asks "Perform technical analysis: SPY"
+- ✅ **CORRECT**: Use existing data, NO new tool calls
+- ❌ **WRONG**: Making NEW calls for SMA/EMA/RSI/MACD when already retrieved
+
+**Scenario 2 - Support & Resistance Levels:**
+- Previous: Already retrieved SPY price, SMA 20/50/200, EMA 20/50/200, RSI-14, MACD
+- Current: User asks "Support & Resistance Levels: SPY"
+- ✅ **CORRECT**: Use existing data, NO new tool calls
+- **REASONING**: Support/Resistance derived from existing price, SMA/EMA levels
+- ❌ **WRONG**: Making NEW calls for SMA/EMA/RSI/MACD when already retrieved
+
+**Scenario 3 - Options Analysis After Options Chain Retrieval:**
+- Previous: Retrieved SPY call and put options chains
+- Current: User asks "Analyze options chain and find call/put walls: SPY"
+- ✅ **CORRECT**: Use existing options data, NO new tool calls
+- ❌ **WRONG**: Re-fetching options chains when already retrieved
+
+**Scenario 4 - Multi-Step Analysis:**
+- Previous: Retrieved WDC, AMD, SOUN prices and TA indicators
+- Current: User asks "Compare technical analysis: WDC, AMD, SOUN"
+- ✅ **CORRECT**: Use existing data for all three tickers, NO new tool calls
+- ❌ **WRONG**: Re-fetching any data that was already retrieved
+
+**Transparency Requirements:**
+- Always state when reusing data: "No tool calls needed - using existing data from previous queries"
+- Be explicit about which data is being reused
+- Only make new calls when truly necessary
+
+**RULE #2: Single Ticker Selection**
 - Single ticker → ALWAYS use `get_stock_quote(ticker='SYMBOL')`
 - Examples: "NVDA price", "GME closing price", "TSLA snapshot"
 - Uses Finnhub API for real-time quote data
 
-**RULE #2: Multiple Tickers = PARALLEL get_stock_quote() CALLS**
+**RULE #3: Multiple Tickers = PARALLEL get_stock_quote() CALLS**
 - Multiple tickers → Make PARALLEL calls to `get_stock_quote()`
 - Max 3 parallel calls per batch (rate limiting protection)
 - Examples: "SPY, QQQ, IWM prices", "NVDA and AMD"
@@ -163,16 +224,56 @@ Frontend/GUI calls CLI functions
 - ✅ OpenAI Agents SDK executes tool calls in PARALLEL automatically
 - 🔴 CRITICAL: Each get_stock_quote call is INDEPENDENT - make them ALL at once
 
-**RULE #3: Options Selection**
-- Options contracts → use `get_options_quote_single()`
-- Always show strike prices and expiration dates clearly
-- Uses Polygon.io Direct API
+**RULE #4: Options Chain Selection** ⭐ UPDATED Oct 25, 2025
 
-**RULE #4: Market Status & Date/Time**
+**For BOTH Call AND Put Options Chains (RECOMMENDED - DEFAULT):**
+- ✅ **FIRST CHOICE**: Use `get_options_chain_both(ticker, current_price, expiration_date)`
+- Returns BOTH call and put options chains in ONE response
+- Single API call, more efficient than separate calls
+- Shows 20 strikes for each chain (10 above + 10 below current price)
+- Identical strike prices for both call and put chains
+- **Use when**: User asks for "both", "call and put", "options chain", or is ambiguous
+- Examples:
+  - "Show me call and put options for SPY" → get_options_chain_both()
+  - "Get the full options chain for NVDA" → get_options_chain_both()
+  - "I need options for AAPL" → get_options_chain_both() (default to comprehensive)
+
+**For ONLY Call Options OR ONLY Put Options (SPECIFIC):**
+- Call options only → use `get_call_options_chain(ticker, current_price, expiration_date)`
+- Put options only → use `get_put_options_chain(ticker, current_price, expiration_date)`
+- Shows 20 strikes centered around current price (10 above + 10 below)
+- **Use when**: User explicitly requests ONLY calls or ONLY puts
+- Examples:
+  - "Show me ONLY call options for SPY" → get_call_options_chain()
+  - "Get PUT options for NVDA" → get_put_options_chain()
+
+**For Single Option Contracts:**
+- Single option quote → use `get_options_quote_single()`
+- Uses Polygon.io Direct API
+- **Use when**: User asks for a specific option contract with strike and expiration
+
+**Decision Tree:**
+```
+User Query → Analyze Intent → Select Tool
+
+"call and put options" → BOTH chains → get_options_chain_both()
+"full options chain" → BOTH chains → get_options_chain_both()
+"options for [ticker]" → Ambiguous → get_options_chain_both() (default)
+"call options only" → Calls only → get_call_options_chain()
+"put options only" → Puts only → get_put_options_chain()
+"[ticker] SPY250131C00680000" → Single contract → get_options_quote_single()
+```
+
+**Performance Note:**
+- get_options_chain_both() makes ONE API call (vs two separate calls)
+- ~50% faster response time for full options analysis
+- Recommended as default choice for comprehensive options data
+
+**RULE #5: Market Status & Date/Time**
 - Market status queries → use `get_market_status_and_date_time()`
 - Returns market status, exchange statuses, server datetime
 
-**RULE #5: OHLC Data with Display Requirements** ⭐ UPDATED Oct 7 Evening
+**RULE #6: OHLC Data with Display Requirements** ⭐ UPDATED Oct 7 Evening
 - Historical OHLC prices → use get_OHLC_bars_* tools
 - Date validation required (weekends/holidays/future dates)
 - **CRITICAL DISPLAY REQUIREMENTS FOR OHLC BARS:**
@@ -183,31 +284,21 @@ Frontend/GUI calls CLI functions
   - ✅ Example GOOD: "SPY Q1 2025: Started 1/2/25 at $580.50, ended 3/31/25 at $612.30 (+$31.80, +5.48%), High: $615.25, Low: $575.10, 60 days"
   - ❌ Example BAD: "SPY daily OHLC bars retrieved for Q1 2025" [USELESS!]
 
-**RULE #6: Work with Available Data**
+**RULE #7: Work with Available Data**
 - ALWAYS use whatever data is returned, even if less than expected
 - NEVER fail or refuse because got less data than requested
 
-**RULE #7: Market Closed = Still Provide Data**
+**RULE #8: Market Closed = Still Provide Data**
 - 🔴 CRITICAL: Market being CLOSED is NOT a reason to refuse
 - ALWAYS provide last available price when market closed
 - Use fallback sequence: get_stock_quote → get_OHLC_bars_previous_close
 
-**RULE #8: Technical Analysis - Check Chat History First**
+**RULE #9: Technical Analysis - Check Chat History First**
 - Minimum TA requirements: RSI-14, MACD, SMA 20/50/200, EMA 20/50/200
 - FIRST: Check chat history for existing TA data
 - IF all minimum TA data already retrieved → NO NEW TOOL CALLS
 - Provide actual ANALYSIS (trends, momentum, volatility, patterns)
 - NOT just raw numbers
-
-**RULE #9: Chat History Analysis - Avoid Redundant Calls** ⭐ UPDATED Oct 7 Evening
-- CRITICAL: Analyze conversation history for existing data BEFORE making tool calls
-- **NEW Scenario 5 - Support & Resistance Levels:**
-  - Previous: Already retrieved SPY price, SMA 20/50/200, EMA 20/50/200, RSI-14, MACD
-  - Current: User asks "Support & Resistance Levels: SPY"
-  - **CORRECT**: Use existing data, NO new tool calls
-  - **REASONING**: Support/Resistance derived from existing price, SMA/EMA levels
-  - ❌ WRONG: Making NEW calls for SMA/EMA/RSI/MACD when already retrieved
-- Transparency: State "No tool calls needed - using existing data from previous queries"
 
 ### 4. Decision Tree (UPDATED Oct 7, 2025)
 
