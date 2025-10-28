@@ -5,11 +5,10 @@
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed: 
 
 
- 1. Retire the 2x tools for 'get_call_options_chain' & 'get_put_options_chain' since we now have a single consolidated tool that can handle both cases in 'get_options_chain_both'
- - This should streamline the code even more and reduce duplicate code and complexity, since our new tool that fetches both call and put options chain has been validated.  So we can remove the initial tools and no longer need backward compatibility
- - You will need to also update AI agent instructions, and the test scripts test_cli_regression.shin order to validate and verify 
+ 1. Clean up, consolidate, streamline & optimize to reduce the verbosity & complexity of the AI Agent System Instructions Prompt because there’s been a lot of rules and decision paths and they may be redundant\duplicate information and guidelines because we kept adding on rules
+ - Now let’s see if we can streamline and reduce the verbosity, complexity, reduce number of rules, but without losing any regression capability, so we still need to pass all of our regression test even with the optimized AI agent system instructions, so make sure you find the best balance between detailed verbosity versus more optimized efficient token usage.
 
-- After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out a few Options chain calls, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
+- After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out a few prompts PER rule to ensure the new system instructions do NOT break any current capabilty, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
