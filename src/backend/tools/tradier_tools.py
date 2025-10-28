@@ -121,55 +121,16 @@ async def _get_stock_quote(ticker: str) -> str:
 
 @function_tool
 async def get_stock_quote(ticker: str) -> str:
-    """Get real-time stock quote from Tradier API.
-
-    Use this tool when the user requests a stock quote, current price,
-    or real-time market data for one or more ticker symbols.
-
-    This tool provides real-time price data via Tradier API,
-    supporting both single and multiple ticker queries.
+    """Get real-time stock quote(s) for one or more tickers from Tradier API.
 
     Args:
-        ticker: Stock ticker symbol(s). Can be:
-                - Single ticker: "AAPL"
-                - Multiple tickers: "AAPL,TSLA,NVDA" (comma-separated, no spaces)
-                Must be valid ticker(s) from major US exchanges.
+        ticker: Single "AAPL" or multiple "AAPL,TSLA,NVDA" (comma-separated, no spaces).
 
     Returns:
-        JSON string containing quote data.
-        
-        For single ticker:
-        {
-            "ticker": "AAPL",
-            "current_price": 178.50,
-            "change": 2.30,
-            "percent_change": 1.31,
-            "high": 179.20,
-            "low": 176.80,
-            "open": 177.00,
-            "previous_close": 176.20,
-            "source": "Tradier"
-        }
+        JSON string with quote data (ticker, current_price, change, percent_change, high, low, open, previous_close, source).
+        Multiple tickers return array of quote objects.
 
-        For multiple tickers, returns array of quote objects.
-
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
-
-    Note:
-        - Supports major US stock exchanges (NYSE, NASDAQ, etc.)
-        - Data updates in real-time during market hours
-        - Returns last available price when market is closed
-        - Handles up to 10 tickers per request for optimal performance
-
-    Examples:
-        - "Get AAPL stock quote"
-        - "What's the current price of TSLA?"
-        - "Get quotes for AAPL, TSLA, NVDA"
+    Note: Handles up to 10 tickers. Real-time updates during market hours.
     """
     return await _get_stock_quote(ticker)
 
@@ -259,47 +220,16 @@ async def _get_options_expiration_dates(ticker: str) -> str:
 
 @function_tool
 async def get_options_expiration_dates(ticker: str) -> str:
-    """Get valid options expiration dates for a ticker from Tradier API.
-
-    Use this tool when the user requests options expiration dates for a specific ticker.
-    This provides all available expiration dates for options contracts on the underlying stock.
+    """Get available options expiration dates for a ticker from Tradier API.
 
     Args:
-        ticker: Stock ticker symbol (e.g., "AAPL", "SPY", "NVDA").
-                Must be a valid ticker symbol.
+        ticker: Stock ticker symbol (e.g., "AAPL", "SPY").
 
     Returns:
-        JSON string containing expiration dates array with format:
-        {
-            "ticker": "NVDA",
-            "expiration_dates": [
-                "2025-10-17",
-                "2025-10-24",
-                "2025-10-31",
-                ...
-            ],
-            "count": 21,
-            "source": "Tradier"
-        }
+        JSON string with expiration dates array (ticker, expiration_dates[], count, source).
+        Dates in YYYY-MM-DD format, sorted chronologically.
 
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
-
-    Note:
-        - Returns all available expiration dates for the ticker
-        - Dates are in YYYY-MM-DD format
-        - Dates are sorted chronologically (earliest to latest)
-        - Includes weekly and monthly expiration dates
-        - Data updates daily
-
-    Examples:
-        - "Get options expiration dates for SPY"
-        - "What are the available expiration dates for NVDA options?"
-        - "Show me TSLA options expiration dates"
+    Note: Includes weekly and monthly expirations.
     """
     return await _get_options_expiration_dates(ticker)
 
@@ -513,66 +443,19 @@ async def get_stock_price_history(
     end_date: str,
     interval: str = "daily"
 ) -> str:
-    """Get historical stock price data from Tradier API.
-
-    Use this tool when the user requests historical stock prices, OHLC bars,
-    price performance over time, or daily/weekly/monthly data.
+    """Get historical stock price data (OHLC bars) from Tradier API.
 
     Args:
-        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
-                Must be a valid ticker symbol.
-        start_date: Start date in YYYY-MM-DD format (e.g., "2025-01-01").
-        end_date: End date in YYYY-MM-DD format (e.g., "2025-01-10").
-        interval: Time interval - "daily", "weekly", or "monthly".
-                  SELECT INTELLIGENTLY based on user query timeframe:
-                  - "daily" for queries about days/short periods (e.g., "last 5 days", "this week")
-                  - "weekly" for queries about weeks (e.g., "last 2 weeks", "past month")
-                  - "monthly" for queries about months/long periods (e.g., "last 3 months", "year to date")
-                  Always choose based on query context.
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
+        start_date: Start date in YYYY-MM-DD format.
+        end_date: End date in YYYY-MM-DD format.
+        interval: "daily", "weekly", or "monthly". See RULE #3 for selection logic.
 
     Returns:
-        JSON string with historical OHLC data:
-        {
-            "ticker": "SPY",
-            "interval": "daily",
-            "start_date": "2025-01-01",
-            "end_date": "2025-01-10",
-            "bars": [
-                {
-                    "date": "2025-01-02",
-                    "open": 589.39,
-                    "high": 591.13,
-                    "low": 580.5,
-                    "close": 584.64,
-                    "volume": 50203975
-                },
-                ...
-            ],
-            "count": 6,
-            "source": "Tradier"
-        }
+        JSON string with historical OHLC data (ticker, interval, start_date, end_date, bars[], count, source).
+        Each bar includes date, open, high, low, close, volume.
 
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "ticker": "SYMBOL"
-        }
-
-    Note:
-        - Supports daily, weekly, and monthly intervals
-        - Date range is inclusive (includes start_date and end_date)
-        - Data updates in real-time during market hours
-        - Weekly bars show data for week ending on date
-        - Monthly bars show data for month ending on date
-
-    Examples:
-        - "Stock price performance the last 5 trading days: SPY"
-          → Agent calculates dates, uses interval="daily"
-        - "Stock price performance the last 2 weeks: NVDA"
-          → Agent calculates dates, uses interval="weekly"
-        - "Stock price performance the last month: AAPL"
-          → Agent calculates dates, uses interval="monthly"
+    Note: Date range inclusive. Tool auto-adjusts weekend dates to previous Friday.
     """
     return await _get_stock_price_history(ticker, start_date, end_date, interval)
 
@@ -830,68 +713,21 @@ async def _get_options_chain_both(
 async def get_options_chain_both(
     ticker: str, current_price: float, expiration_date: str
 ) -> str:
-    """Get both Call and Put Options Chains with 20 strikes each centered around current underlying price.
+    """Get both Call and Put Options Chains (20 strikes each, centered around current price).
 
-    Use this tool when the user requests BOTH call and put options chains together,
-    or when they request the full options chain without specifying call or put only.
-    This is the RECOMMENDED tool for comprehensive options analysis as it provides
-    both chains in a single response with one API call.
-
-    Returns both call and put options chains with bid, ask, greeks, volume, and open
-    interest for 20 strikes each (10 above + 10 below current price), sorted descending.
+    Use for comprehensive options analysis. Returns both chains in single API call.
 
     Args:
-        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA").
-                Must be a valid US stock ticker.
-        current_price: Current price of the underlying stock.
-                       Used to center the strike price selection.
-                       Must be positive (> 0).
-        expiration_date: Options expiration date in YYYY-MM-DD format.
-                        Must be a valid future date.
-                        Get this from get_options_expiration_dates() first.
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
+        current_price: Current price of underlying stock (must be > 0).
+        expiration_date: Options expiration date in YYYY-MM-DD format. Get from get_options_expiration_dates() first.
 
     Returns:
-        Formatted string containing:
-        - Call options chain table (20 strikes, sorted descending)
-        - Put options chain table (20 strikes, sorted descending)
-        - Both chains have IDENTICAL strike prices
-        - Each table includes: Strike, Bid, Ask, Delta, Volume, OI, IV, Gamma
+        Formatted string with two markdown tables (Call and Put chains, 20 strikes each).
+        Strikes centered around current price (10 above, 10 below).
+        Columns: Strike, Bid, Ask, Delta, Volume, OI, IV, Gamma.
 
-    Use Cases:
-        1. User asks: "Show me call and put options for SPY"
-           → Use get_options_chain_both() with next Friday's expiration
-
-        2. User asks: "Get the full options chain for NVDA"
-           → Use get_options_chain_both() (comprehensive by default)
-
-        3. User asks: "I need both call and put options chains for AAPL"
-           → Use get_options_chain_both() explicitly
-
-        4. User asks: "Show me options for AMD expiring this Friday"
-           → Use get_options_chain_both() (ambiguous = both chains)
-
-    When NOT to use this tool:
-        - User explicitly asks for ONLY call options → use get_call_options_chain()
-        - User explicitly asks for ONLY put options → use get_put_options_chain()
-        - User needs a single option contract quote → use get_options_quote_single()
-
-    Note:
-        - Returns 20 strikes for EACH chain (call and put)
-        - Strikes centered around current price (10 above, 10 below)
-        - Call and put chains have IDENTICAL strike prices
-        - Both chains sorted descending (highest strike first)
-        - Single API call fetches both chains (efficient)
-        - Filters full chain client-side to prevent context overload
-        - Bid/Ask prices instead of single "Price" field
-        - Implied volatility expressed as percentage
-        - Volume and Open Interest show market liquidity
-        - Delta and Gamma provide sensitivity metrics
-
-    Performance:
-        - Single API call (vs two separate calls for call + put)
-        - ~50% faster than sequential get_call_options_chain() + get_put_options_chain()
-        - Reduces redundant API requests
-        - Provides complete options picture in one response
+    Note: Single API call fetches both chains. See RULE #5 for usage guidance.
     """
     return await _get_options_chain_both(ticker, current_price, expiration_date)
 
@@ -1058,51 +894,12 @@ async def _get_market_status_and_date_time() -> str:
 async def get_market_status_and_date_time() -> str:
     """Get current market status and date/time from Tradier API.
 
-    Use this tool when the user requests market status, trading hours,
-    current date/time, or whether markets are open/closed.
-
-    This tool provides real-time market status and server datetime via
-    Tradier API, replacing the Polygon.io direct API.
-
     Args:
-        None - retrieves current market status automatically.
+        None - retrieves current status automatically.
 
     Returns:
-        JSON string containing market status and datetime with format:
-        {
-            "market_status": "open" | "closed" | "extended-hours",
-            "after_hours": true | false,
-            "early_hours": true | false,
-            "exchanges": {
-                "nasdaq": "open" | "closed" | "extended-hours",
-                "nyse": "open" | "closed" | "extended-hours",
-                "otc": "open" | "closed" | "extended-hours"
-            },
-            "server_time": "2025-10-05T14:30:00Z",
-            "date": "2025-10-05",
-            "time": "14:30:00",
-            "source": "Tradier"
-        }
+        JSON string with market status and datetime (market_status, after_hours, early_hours, exchanges{}, server_time, date, time, source).
 
-        Or error format:
-        {
-            "error": "error_type",
-            "message": "descriptive error message",
-            "source": "Tradier"
-        }
-
-    Note:
-        - Provides combined market status and datetime in single call
-        - Data updates in real-time from Tradier servers
-        - Includes pre-market (early_hours) and after-market (after_hours) status
-        - Server time is in UTC timezone
-        - This is a direct API call via HTTP
-
-    Examples:
-        - "Is the market open?"
-        - "What time is it?"
-        - "Market status?"
-        - "What's today's date?"
-        - "Are markets open for trading?"
+    Note: Server time in UTC. Includes pre-market and after-market status.
     """
     return await _get_market_status_and_date_time()

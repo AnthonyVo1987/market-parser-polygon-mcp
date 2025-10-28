@@ -1,919 +1,652 @@
-# TODO Task Plan: AI Agent System Instructions Optimization
+# AI Agent Tool Descriptions Optimization - Implementation TODO Task Plan
 
-## Plan Overview
+## Overview
 
-**Objective:** Implement optimized AI Agent System Instructions with 30-40% token reduction while maintaining 100% regression test coverage (all 37 tests must pass).
+**Goal:** Optimize all 6 AI Agent Tool descriptions to reduce token usage by 60-70% while maintaining full functionality and regression test coverage.
 
-**Strategy:** Systematic rule-by-rule consolidation using Sequential-Thinking and Serena tools throughout the entire implementation process.
+**Current State:** 6 tools with ~2,670 tokens in descriptions
+**Target State:** 6 tools with ~800-900 tokens in descriptions
+**Expected Reduction:** ~1,870 tokens (70% reduction)
 
-**Total Phases:** 5 (Research ✅ Complete → Planning → Implementation → Testing → Commit)
-
----
-
-## Phase 1: Research ✅ COMPLETE
-
-- [x] Read new_research_details.md
-- [x] Use Sequential-Thinking to analyze scope
-- [x] Locate AI Agent System Instructions file
-- [x] Read get_enhanced_agent_instructions function
-- [x] Identify redundant/duplicate rules
-- [x] Research best practices (OpenAI Agents + 2025 industry)
-- [x] Analyze all 13 RULES for consolidation
-- [x] Document findings in research_task_plan.md
-
-**Result:** Comprehensive research plan with 30-40% token reduction opportunity identified.
+**Phases:**
+1. ✅ Phase 1: Research (COMPLETED)
+2. ✅ Phase 2: Planning (CURRENT - Generating this plan)
+3. ⏭️ Phase 3: Implementation
+4. ⏭️ Phase 4: Testing
+5. ⏭️ Phase 5: Final Commit
 
 ---
 
-## Phase 2: Planning (CURRENT PHASE)
-
-### Checklist
-
-- [x] Delete current TODO_task_plan.md
-- [x] Generate granular implementation plan
-- [ ] Present plan to user for review and approval
-- [ ] Await user approval before proceeding to Phase 3
-
----
-
-## Phase 3: Implementation 🔴 DO NOT START UNTIL USER APPROVES PLAN 🔴
-
-### Prerequisites
-- [ ] User has reviewed and approved this TODO plan
-- [ ] User has confirmed understanding of implementation strategy
-
-### 🔴 CRITICAL: MANDATORY TOOL USAGE ENFORCEMENT
+## 🔴 CRITICAL: MANDATORY TOOL USAGE ENFORCEMENT
 
 **YOU MUST use Sequential-Thinking and Serena tools throughout ENTIRE implementation:**
 
-- **START every implementation step** with Sequential-Thinking for systematic approach
-- **Use Serena tools** for code analysis and symbol manipulation
-- **Use Sequential-Thinking repeatedly** for complex reasoning and validation
-- **NEVER stop using advanced tools** until implementation complete
+- **START every phase** with Sequential-Thinking for systematic approach
+- **Use Serena tools** for code analysis (`mcp__serena__find_symbol`, `mcp__serena__replace_symbol_body`)
+- **Use Sequential-Thinking** repeatedly for complex reasoning and planning
+- **Use Standard Read/Write/Edit** only when Serena doesn't support the specific operation
+- **NEVER stop using advanced tools** until task completion
 
 ---
 
-### Step 3.1: Preparation & Backup
+## Phase 3: Implementation
 
-#### 3.1.1: Use Sequential-Thinking to plan implementation approach
-- [ ] Sequential-Thinking: Analyze implementation strategy
-- [ ] Sequential-Thinking: Plan rule-by-rule consolidation sequence
-- [ ] Sequential-Thinking: Identify potential issues and mitigations
+### Step 1: Pre-Implementation Analysis
 
-#### 3.1.2: Create git backup before ANY changes
-- [ ] Bash: `git status` - verify clean working directory
-- [ ] Bash: `git add -A` - stage any uncommitted work
-- [ ] Bash: `git commit -m "[BACKUP] Before AI agent instructions optimization"`
-- [ ] Bash: `git log -1` - verify backup commit created
+**Objective:** Verify current state and prepare for optimization
 
-#### 3.1.3: Use Serena tools to analyze current structure
-- [ ] Serena: `find_symbol` - locate get_enhanced_agent_instructions function
-- [ ] Serena: Read function body with `include_body=true`
-- [ ] Sequential-Thinking: Analyze current structure before modifications
+**Sub-tasks:**
 
----
+1.1. **Use Sequential-Thinking** to plan implementation approach
+   - Analyze research findings
+   - Determine optimization order (which tool first)
+   - Plan validation checkpoints
 
-### Step 3.2: Implement New Rule Structure (9 Rules)
+1.2. **Use Serena** to read all 6 tool descriptions
+   - `mcp__serena__find_symbol(name_path="get_stock_quote", relative_path="src/backend/tools/tradier_tools.py", include_body=true)`
+   - Repeat for all 6 tools
+   - Document current token counts
 
-**🔴 CRITICAL: Use Sequential-Thinking at START of EACH rule consolidation**
+1.3. **Create backup git commit** (optional safety measure)
+   - `git add -A && git commit -m "[BACKUP] Before tool descriptions optimization"`
+   - This allows easy rollback if needed
 
----
-
-#### 3.2.1: Consolidate RULE #1 (Stock Quotes) - Merges old RULE #1 + #2
-
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan consolidation of old RULE #1 + #2
-- [ ] Sequential-Thinking: Validate no functionality will be lost
-
-**Implementation:**
-- [ ] Serena: `find_symbol` - locate old RULE #1 section in function
-- [ ] Identify lines: Old RULE #1 (~lines 23-68) + Old RULE #2 (~lines 70-105)
-- [ ] Replace with new consolidated RULE #1:
-  ```markdown
-  RULE #1: STOCK QUOTES = USE get_stock_quote()
-
-  When to Use: User requests price, quote, snapshot, or ticker data
-
-  Tool: get_stock_quote(ticker: str)
-
-  Ticker Format:
-  - Single ticker: ticker='SPY'
-  - Multiple tickers: ticker='SPY,QQQ,IWM' (comma-separated, no spaces)
-  - Uses Tradier API (supports native multi-ticker)
-
-  Examples:
-  ✅ "NVDA price" → get_stock_quote(ticker='NVDA')
-  ✅ "SPY, QQQ prices" → get_stock_quote(ticker='SPY,QQQ')
-
-  Returns: Price, change, %, high, low, open, previous close
-  ```
-
-**Validation:**
-- [ ] Sequential-Thinking: Verify consolidated rule maintains all logic
-- [ ] Check: Single-ticker examples preserved
-- [ ] Check: Multi-ticker comma-separated format documented
-- [ ] Check: Tradier API mention preserved
-- [ ] Lines saved: ~40 lines (80 → 40)
+**Validation:** All 6 tool descriptions read and current state documented
 
 ---
 
-#### 3.2.2: Keep RULE #2 (Market Status & Time) - Old RULE #3 unchanged
+### Step 2: Optimize tradier_tools.py - get_stock_quote()
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Confirm no changes needed to market status rule
+**Current:** ~450 tokens (53 lines docstring)
+**Target:** ~130 tokens (15-18 lines docstring)
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #3 section (~lines 107-127)
-- [ ] Renumber as RULE #2 (no content changes)
-- [ ] Validate tool name: get_market_status_and_date_time()
+**Sub-tasks:**
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify rule remains clear and concise
-- [ ] Check: Tool name correct
-- [ ] Check: Use cases documented
-- [ ] Lines: ~20 lines (no change)
+2.1. **Use Sequential-Thinking** to plan optimization for this specific tool
+   - Analyze current description structure
+   - Identify what to remove vs keep
+   - Draft optimized version
 
----
+2.2. **Draft optimized description:**
+```python
+"""Get real-time stock quote(s) for one or more tickers from Tradier API.
 
-#### 3.2.3: Consolidate RULE #3 (Historical Price Data) - Merges old RULE #4 + #11
+Args:
+    ticker: Stock ticker symbol(s). Single: "AAPL" or multiple: "AAPL,TSLA,NVDA" (comma-separated, no spaces).
 
-**🔴 MOST SIGNIFICANT CONSOLIDATION - SAVE ~105 LINES**
+Returns:
+    JSON string with quote data (ticker, current_price, change, percent_change, high, low, open, previous_close, source).
+    Multiple tickers return array of quote objects.
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan consolidation of old RULE #4 + verbose RULE #11
-- [ ] Sequential-Thinking: Design concise interval selection table
+Note: Handles up to 10 tickers. Real-time updates during market hours.
+"""
+```
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #4 section (~lines 129-209)
-- [ ] Serena: Locate old RULE #11 section (~lines 463-548, 85 verbose lines!)
-- [ ] Replace both with new consolidated RULE #3:
-  ```markdown
-  RULE #3: HISTORICAL PRICE DATA = USE get_stock_price_history()
+2.3. **Use Serena** to replace symbol body
+   - `mcp__serena__replace_symbol_body(name_path="get_stock_quote", relative_path="src/backend/tools/tradier_tools.py", body="[NEW BODY]")`
+   - Replace entire function body including optimized docstring
 
-  Tool: get_stock_price_history(ticker, start_date, end_date, interval)
+2.4. **Verify replacement**
+   - `mcp__serena__find_symbol(name_path="get_stock_quote", include_body=true)`
+   - Confirm new description is correct
 
-  Parameters:
-  - ticker (str): Stock ticker symbol
-  - start_date (str): YYYY-MM-DD format
-  - end_date (str): YYYY-MM-DD format
-  - interval (str): "daily", "weekly", or "monthly"
-
-  Interval Selection (Pattern Matching):
-  | User Query Contains | Interval Value |
-  |---------------------|---------------|
-  | "week"/"weeks"/"weekly" | "weekly" |
-  | "month"/"months"/"monthly" | "monthly" |
-  | "day"/"days"/"daily"/"yesterday" | "daily" (default) |
-
-  Date Calculation:
-  - Tool auto-adjusts weekend dates to previous Friday
-  - Calculate from current date (see datetime context at top)
-
-  Examples:
-  ✅ "Last week: SPY" → interval="weekly" (contains "week")
-  ✅ "Past 5 days: NVDA" → interval="daily" (contains "days")
-  ✅ "Last month: AAPL" → interval="monthly" (contains "month")
-
-  Display: Copy tool response exactly (pre-formatted markdown)
-  ```
-
-**Validation:**
-- [ ] Sequential-Thinking: Verify interval table covers all test cases
-- [ ] Check: Week pattern → weekly (Test 5-7, 19-21, 33-35)
-- [ ] Check: Month pattern → monthly (tests covered)
-- [ ] Check: Day pattern → daily (default, tests covered)
-- [ ] Check: Weekend handling documented
-- [ ] Check: Display instruction preserved (table formatting)
-- [ ] Lines saved: **~105 lines (165 → 60)**
+**Validation:** Tool description reduced from ~450 to ~130 tokens (71% reduction)
 
 ---
 
-#### 3.2.4: Streamline RULE #4 (Technical Analysis) - Reduces old RULE #7
+### Step 3: Optimize tradier_tools.py - get_options_expiration_dates()
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan reduction of verbose RULE #7
-- [ ] Sequential-Thinking: Identify which examples to keep (most essential)
+**Current:** ~330 tokens (45 lines docstring)
+**Target:** ~100 tokens (12-15 lines docstring)
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #7 section (~lines 211-331, 120 lines)
-- [ ] Reduce examples, keep core logic
-- [ ] Replace with streamlined RULE #4:
-  ```markdown
-  RULE #4: TECHNICAL ANALYSIS
+**Sub-tasks:**
 
-  ACTION 1: GET TA Indicators
-  - Tool: get_ta_indicators(ticker)
-  - Omit timespan parameter (defaults to 'day')
-  - Returns: Pre-formatted markdown table (RSI, MACD, SMA, EMA)
-  - Display: Copy table exactly as returned
+3.1. **Use Sequential-Thinking** to plan optimization
 
-  ACTION 2: ANALYZE TA Data
-  - Use ALL available data (not just TA indicators)
-  - Check chat history first for existing data
-  - Required topics (4 minimum):
-    1. Trends (SMA/EMA analysis)
-    2. Volatility (price swings, risk)
-    3. Momentum (RSI, MACD interpretation)
-    4. Trading Patterns (support/resistance, crossovers)
+3.2. **Draft optimized description:**
+```python
+"""Get available options expiration dates for a ticker from Tradier API.
 
-  Examples:
-  ✅ "Get TA for SPY" → get_ta_indicators(ticker='SPY')
-  ✅ "Perform TA for SPY" → Holistic analysis with 4 topics
-  ```
+Args:
+    ticker: Stock ticker symbol (e.g., "AAPL", "SPY").
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify ACTION 1 vs ACTION 2 distinction clear
-- [ ] Check: GET data logic preserved (Test 10)
-- [ ] Check: ANALYZE data logic preserved (Test 12, 24-26)
-- [ ] Check: Holistic approach documented (4 topics)
-- [ ] Check: Chat history check documented
-- [ ] Check: Table display instruction preserved
-- [ ] Lines saved: ~40 lines (120 → 80)
+Returns:
+    JSON string with expiration dates array (ticker, expiration_dates[], count, source).
+    Dates in YYYY-MM-DD format, sorted chronologically.
+
+Note: Includes weekly and monthly expirations.
+"""
+```
+
+3.3. **Use Serena** to replace symbol body
+   - `mcp__serena__replace_symbol_body()`
+
+3.4. **Verify replacement**
+
+**Validation:** Tool description reduced from ~330 to ~100 tokens (70% reduction)
 
 ---
 
-#### 3.2.5: Consolidate RULE #5 (Options Tools) - Merges old RULE #9 + #10
+### Step 4: Optimize tradier_tools.py - get_stock_price_history()
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan consolidation of options tools
-- [ ] Sequential-Thinking: Identify shared date handling logic
+**Current:** ~500 tokens (69 lines docstring)
+**Target:** ~150 tokens (18-20 lines docstring)
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #9 section (~lines 393-458, 65 lines)
-- [ ] Serena: Locate old RULE #10 section (~lines 460-485, 25 lines)
-- [ ] Replace both with consolidated RULE #5:
-  ```markdown
-  RULE #5: OPTIONS TOOLS
+**Sub-tasks:**
 
-  TOOL 1: get_options_chain_both(ticker, current_price, expiration_date)
-  - Use for ALL options chain requests (calls, puts, or both)
-  - Returns both call and put chains in single response
-  - Requires current_price (use get_stock_quote if needed)
-  - Date format: YYYY-MM-DD
+4.1. **Use Sequential-Thinking** to plan optimization
 
-  TOOL 2: get_options_expiration_dates(ticker)
-  - Use when user requests available expiration dates
-  - Returns: Array of dates in YYYY-MM-DD format
-  - Includes weekly and monthly expirations
+4.2. **Draft optimized description:**
+```python
+"""Get historical stock price data (OHLC bars) from Tradier API.
 
-  Shared Date Handling:
-  - "this Friday" → Calculate next Friday in YYYY-MM-DD
-  - "Oct 10" → Convert to YYYY-MM-DD (2025-10-10)
+Args:
+    ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
+    start_date: Start date in YYYY-MM-DD format.
+    end_date: End date in YYYY-MM-DD format.
+    interval: Time interval - "daily", "weekly", or "monthly".
+              See RULE #3 for selection logic.
 
-  Examples:
-  ✅ "Both chains for SPY" → get_options_chain_both(...)
-  ✅ "SPY expiration dates" → get_options_expiration_dates(ticker='SPY')
+Returns:
+    JSON string with historical OHLC data (ticker, interval, start_date, end_date, bars[], count, source).
+    Each bar includes date, open, high, low, close, volume.
 
-  Display: Copy tool responses exactly (pre-formatted markdown tables)
-  ```
+Note: Date range is inclusive. Tool auto-adjusts weekend dates to previous Friday.
+"""
+```
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify both tools documented clearly
-- [ ] Check: get_options_chain_both primary tool (Test 14, 28)
-- [ ] Check: get_options_expiration_dates documented
-- [ ] Check: Date handling logic preserved
-- [ ] Check: Table display instruction preserved
-- [ ] Lines saved: ~20 lines (90 → 70)
+4.3. **Use Serena** to replace symbol body
+
+4.4. **Verify replacement**
+
+**Validation:** Tool description reduced from ~500 to ~150 tokens (70% reduction)
 
 ---
 
-#### 3.2.6: Consolidate RULE #6 (Chat History & Tool Efficiency) - Merges old RULE #8 + decision tree
+### Step 5: Optimize tradier_tools.py - get_options_chain_both()
 
-**🔴 CRITICAL FOR TEST 11 (Support & Resistance)
+**Current:** ~580 tokens (68 lines docstring)
+**Target:** ~160 tokens (20-22 lines docstring)
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan consolidation of chat history logic
-- [ ] Sequential-Thinking: Ensure Test 11 scenario explicitly documented
+**Sub-tasks:**
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #8 section (~lines 333-403, 70 lines)
-- [ ] Serena: Locate final decision tree STEP 0 (~lines 620-650)
-- [ ] Replace with consolidated RULE #6:
-  ```markdown
-  RULE #6: CHAT HISTORY & TOOL EFFICIENCY
+5.1. **Use Sequential-Thinking** to plan optimization
 
-  Before ANY tool call:
-  1. Review last 5-10 messages in conversation
-  2. Identify what data you already have
-  3. Determine if existing data is sufficient
+5.2. **Draft optimized description:**
+```python
+"""Get both Call and Put Options Chains (20 strikes each, centered around current price).
 
-  When to SKIP tool calls:
-  - Already have relevant data for same ticker(s)
-  - User asks follow-up question about existing data
-  - Example: Have SPY price/TA → User asks "SPY trend?" → Use existing data
-  - 🔴 CRITICAL: Have SPY SMA/EMA/RSI/MACD → User asks "Support & Resistance" → NO NEW CALLS
+Use for comprehensive options analysis. Returns both chains in single API call.
 
-  When to MAKE new tool calls:
-  - No existing data for requested ticker(s)
-  - User requests different data type not yet retrieved
-  - User explicitly requests "latest"/"current"/"refresh"
+Args:
+    ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
+    current_price: Current price of underlying stock (must be > 0).
+    expiration_date: Options expiration date in YYYY-MM-DD format.
+                     Get from get_options_expiration_dates() first.
 
-  Transparency:
-  - When using existing data: "Based on the [data] we already retrieved..."
-  - When making new calls: "After retrieving latest data..."
+Returns:
+    Formatted string with two markdown tables:
+    - Call options chain (20 strikes, sorted descending)
+    - Put options chain (20 strikes, sorted descending)
+    Both chains have identical strikes (10 above, 10 below current price).
+    Columns: Strike, Bid, Ask, Delta, Volume, OI, IV, Gamma.
 
-  Examples:
-  ✅ Previous: Have SPY price, User: "Is SPY up?" → NO TOOL CALL, use existing
-  ✅ Previous: Have SPY price, User: "SPY full TA" → ONLY call get_ta_indicators
-  ❌ Previous: Have SPY TA, User: "SPY support/resistance" → NEW TA CALLS [WASTE!]
-  ```
+Note: Single API call fetches both chains. See RULE #5 for usage guidance.
+"""
+```
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify Test 11 scenario explicitly covered
-- [ ] Check: "Support & Resistance" example included
-- [ ] Check: Chat history review logic preserved
-- [ ] Check: When to SKIP vs MAKE logic clear
-- [ ] Check: Transparency requirements documented
-- [ ] Lines saved: ~40 lines (90 → 50)
+5.3. **Use Serena** to replace symbol body
+
+5.4. **Verify replacement**
+
+**Validation:** Tool description reduced from ~580 to ~160 tokens (72% reduction)
 
 ---
 
-#### 3.2.7: Consolidate RULE #7 (Error & Data Handling) - Merges old RULE #5 + #6 + #13
+### Step 6: Optimize tradier_tools.py - get_market_status_and_date_time()
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan consolidation of error handling rules
-- [ ] Sequential-Thinking: Ensure fallback sequence preserved
+**Current:** ~370 tokens (52 lines docstring)
+**Target:** ~110 tokens (13-15 lines docstring)
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #5 section (~lines 211-226, 15 lines)
-- [ ] Serena: Locate old RULE #6 section (~lines 228-253, 25 lines)
-- [ ] Serena: Locate old RULE #13 section (~lines 593-613, 20 lines)
-- [ ] Replace all three with consolidated RULE #7:
-  ```markdown
-  RULE #7: ERROR & DATA HANDLING
+**Sub-tasks:**
 
-  Work with Available Data:
-  - ALWAYS use whatever data is returned
-  - If request 2 weeks but get 1 week → PROCEED with 1 week
-  - NEVER require exact data counts
+6.1. **Use Sequential-Thinking** to plan optimization
 
-  Market Closed Fallback Sequence:
-  1. Try get_stock_quote (returns last trade when closed)
-  2. If fails, try get_stock_price_history for last 5 days
-  3. Only after all fallbacks fail, explain limitation
+6.2. **Draft optimized description:**
+```python
+"""Get current market status and date/time from Tradier API.
 
-  Error Transparency:
-  - ALWAYS report EXACT verbatim error message
-  - NEVER use vague phrases: "API Issue", "data unavailable"
-  - Include complete error for debugging
+Args:
+    None - retrieves current status automatically.
 
-  Examples:
-  ✅ "API Error: 'str' object has no attribute 'get'" (exact error)
-  ❌ "There was an API issue" (too vague)
-  ```
+Returns:
+    JSON string with market status and datetime (market_status, after_hours, early_hours, exchanges{}, server_time, date, time, source).
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify all error handling scenarios covered
-- [ ] Check: Work with available data philosophy preserved
-- [ ] Check: Market closed fallback sequence documented
-- [ ] Check: Error transparency requirement preserved
-- [ ] Lines saved: ~25 lines (60 → 35)
+Note: Server time in UTC. Includes pre-market and after-market status.
+"""
+```
+
+6.3. **Use Serena** to replace symbol body
+
+6.4. **Verify replacement**
+
+**Validation:** Tool description reduced from ~370 to ~110 tokens (70% reduction)
 
 ---
 
-#### 3.2.8: Keep RULE #8 (Single-Ticker Tool Constraint) - Old RULE #12 unchanged
+### Step 7: Optimize polygon_tools.py - get_ta_indicators()
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Confirm importance of single-ticker constraint
+**Current:** ~440 tokens (59 lines docstring)
+**Target:** ~150 tokens (18-20 lines docstring)
 
-**Implementation:**
-- [ ] Serena: Locate old RULE #12 section (~lines 550-570, 20 lines)
-- [ ] Renumber as RULE #8 (no content changes)
-- [ ] Validate constraint examples preserved
+**Sub-tasks:**
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify constraint clear for all tools
-- [ ] Check: Tool list documented (get_stock_price_history, get_ta_indicators, etc.)
-- [ ] Check: Parallel call pattern documented for multi-ticker
-- [ ] Check: Critical for Tests 33-35 (multi-ticker historical)
-- [ ] Lines: ~20 lines (no change)
+7.1. **Use Sequential-Thinking** to plan optimization
 
----
+7.2. **Draft optimized description:**
+```python
+"""Get comprehensive technical analysis indicators (RSI, MACD, SMA, EMA) in a single call.
 
-#### 3.2.9: Create NEW RULE #9 (Output Formatting) - Extracted from multiple rules
+Consolidated tool replaces individual TA indicator tools with optimized batched API calls.
 
-**🔴 NEW RULE - Extract repeated formatting instructions**
+Indicators: RSI-14, MACD (12/26/9), SMA (5/10/20/50/200), EMA (5/10/20/50/200).
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Plan extraction of all formatting instructions
-- [ ] Sequential-Thinking: Identify all locations with table preservation logic
+Args:
+    ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
+    timespan: Aggregate window - "day", "minute", "hour", "week", "month" (default: "day").
 
-**Implementation:**
-- [ ] Extract table formatting from old RULE #4, #7, #9
-- [ ] Extract emoji guidelines from scattered locations
-- [ ] Extract tool transparency from final section
-- [ ] Create new consolidated RULE #9:
-  ```markdown
-  RULE #9: OUTPUT FORMATTING
+Returns:
+    Formatted markdown table with all 14 indicators (indicator, period, value, timestamp).
+    Always returns last available data (even on weekends/holidays).
 
-  Table Preservation (ALL TOOLS):
-  - When tool returns markdown table → Copy exactly as returned
-  - ❌ DO NOT reformat to bullet points
-  - ❌ DO NOT convert to plain text
-  - ❌ DO NOT remove headers/rows
-  - ✅ Preserve markdown syntax with pipe separators (|)
-  - Applies to: Options chains, price history, TA indicators, any tool-generated table
+Note: 12 API calls in ~2-3 seconds with rate limit protection. Gracefully handles partial failures (displays N/A).
+"""
+```
 
-  Lists vs Tables Decision:
-  - Use lists (bullets/numbered): Simple responses, 1-5 items, single ticker
-  - Use tables: Complex data, 6+ items, multi-ticker comparisons, OHLC bars
+7.3. **Use Serena** to replace symbol body
 
-  Emoji Usage:
-  - Financial: 📊 (data), 📈 (bullish), 📉 (bearish), 💹 (financial)
-  - Status: ✅ (positive), ⚠️ (caution), 🔴 (critical), 🟢 (good)
-  - Use sparingly: 2-5 emojis per response max
+7.4. **Verify replacement**
 
-  Tool Call Transparency:
-  - END of EVERY response: List tools used with reasoning
-  - If no tool calls: "No tool calls needed - using existing data from previous queries"
-
-  Format:
-  ---
-  **Tools Used:**
-  - `tool_name(parameters)` - Reasoning for selection
-  ```
-
-**Validation:**
-- [ ] Sequential-Thinking: Verify all formatting guidelines consolidated
-- [ ] Check: Table preservation rule applies to ALL tools
-- [ ] Check: Lists vs tables logic clear
-- [ ] Check: Emoji guidelines concise
-- [ ] Check: Tool transparency requirement documented
-- [ ] Lines saved: ~35 lines (consolidates 85 lines scattered → 50 lines)
+**Validation:** Tool description reduced from ~440 to ~150 tokens (66% reduction)
 
 ---
 
-### Step 3.3: Remove Redundant Sections
+### Step 8: Verify All Optimizations
 
-**Before Implementation:**
-- [ ] Sequential-Thinking: Identify all redundant sections to remove
+**Objective:** Confirm all 6 tools have been optimized correctly
 
-**Implementation:**
-- [ ] Serena: Locate and remove old final decision tree (redundant with RULE #6)
-- [ ] Serena: Remove redundant formatting sections (now in RULE #9)
-- [ ] Serena: Remove verbose emoji sections (consolidated in RULE #9)
+**Sub-tasks:**
 
-**Validation:**
-- [ ] Sequential-Thinking: Verify no functionality lost by removing redundant sections
-- [ ] Check: All decision logic preserved in RULE #6
-- [ ] Check: All formatting logic preserved in RULE #9
+8.1. **Use Sequential-Thinking** to review all changes
+   - Analyze each optimized description
+   - Verify token reduction achieved
+   - Confirm essential information retained
 
----
+8.2. **Use Serena** to read all 6 tool descriptions again
+   - Verify all changes applied correctly
+   - Check for any syntax errors
+   - Confirm docstring format is valid
 
-### Step 3.4: Final Structure Validation
+8.3. **Count total tokens saved**
+   - Calculate actual token reduction
+   - Compare against target (60-70% reduction)
+   - Document final token counts
 
-**Before Validation:**
-- [ ] Sequential-Thinking: Plan comprehensive validation strategy
-- [ ] Sequential-Thinking: Prepare test scenarios for manual CLI testing
-
-**Validation:**
-- [ ] Serena: `find_symbol` - read complete updated function
-- [ ] Count total lines: Target ~400-450 lines (from 657)
-- [ ] Verify all 9 RULES present and correctly numbered
-- [ ] Verify no duplicate formatting instructions
-- [ ] Verify datetime context preserved at top
-- [ ] Verify function structure intact (def, docstring, return)
-
-**Line Count Validation:**
-- [ ] Old structure: 657 lines
-- [ ] New structure: ~425 lines
-- [ ] Reduction: ~230 lines (35%)
-- [ ] Sequential-Thinking: Verify reduction meets 30-40% target
+**Validation:** All 6 tools optimized, ~1,800-1,900 tokens saved (60-70% reduction)
 
 ---
 
-### Step 3.5: Manual CLI Testing (Before Regression Suite)
+## Phase 4: Testing
 
-**🔴 CRITICAL: MUST PASS BEFORE PROCEEDING TO PHASE 4**
+### Step 9: Manual CLI Testing (PER TOOL)
 
-**Strategy:** Test 1-2 prompts per rule to validate agent understands new structure
+**Objective:** Test each tool individually with 1-2 representative prompts
 
-**Before Testing:**
-- [ ] Sequential-Thinking: Plan manual test prompts covering all 9 rules
-- [ ] Sequential-Thinking: Define pass criteria for each test
+**🔴 CRITICAL: These manual tests MUST pass before proceeding to regression testing 🔴**
 
-**Test Execution:**
+**Sub-tasks:**
 
-#### Test Set 1: RULE #1 (Stock Quotes)
-- [ ] Test Prompt 1.1: "Stock Snapshot: SPY"
-  - Expected: get_stock_quote(ticker='SPY')
-  - Validation: Single ticker handled correctly
-- [ ] Test Prompt 1.2: "Prices for AAPL, MSFT, GOOGL"
-  - Expected: get_stock_quote(ticker='AAPL,MSFT,GOOGL')
-  - Validation: Multi-ticker comma-separated format used
+9.1. **Test get_stock_quote()**
+   - Prompt 1: "Get AAPL stock quote"
+   - Prompt 2: "Get quotes for SPY, QQQ, DIA"
+   - **Verify:**
+     - ✅ Agent selects get_stock_quote()
+     - ✅ Single ticker returns correct data
+     - ✅ Multiple tickers return array
+     - ✅ Response formatting correct
 
-#### Test Set 2: RULE #2 (Market Status)
-- [ ] Test Prompt 2.1: "Is the market open?"
-  - Expected: get_market_status_and_date_time()
-  - Validation: Correct tool called
+9.2. **Test get_options_expiration_dates()**
+   - Prompt 1: "Get options expiration dates for SPY"
+   - **Verify:**
+     - ✅ Agent selects get_options_expiration_dates()
+     - ✅ Returns date array
+     - ✅ Dates sorted chronologically
 
-#### Test Set 3: RULE #3 (Historical Price Data)
-- [ ] Test Prompt 3.1: "Last week's Performance OHLC: SPY"
-  - Expected: interval="weekly" (contains "week")
-  - Validation: Interval pattern matching working
-- [ ] Test Prompt 3.2: "Stock Price Performance the last 5 Trading Days: NVDA"
-  - Expected: interval="daily" (contains "days")
-  - Validation: Daily interval selected correctly
+9.3. **Test get_stock_price_history()**
+   - Prompt 1: "Stock price performance the last 5 trading days: SPY"
+   - Prompt 2: "Stock price performance the last 2 weeks: NVDA"
+   - **Verify:**
+     - ✅ Agent selects get_stock_price_history()
+     - ✅ Correct interval selected (daily for days, weekly for weeks)
+     - ✅ OHLC data returned correctly
+     - ✅ Date range correct
 
-#### Test Set 4: RULE #4 (Technical Analysis)
-- [ ] Test Prompt 4.1: "Get technical analysis for SPY"
-  - Expected: get_ta_indicators(ticker='SPY')
-  - Validation: GET action recognized
-- [ ] Test Prompt 4.2: "Perform full technical analysis for NVDA"
-  - Expected: Holistic analysis with 4 topics (Trends, Volatility, Momentum, Trading Patterns)
-  - Validation: ANALYZE action recognized, all 4 topics covered
+9.4. **Test get_options_chain_both()**
+   - Prompt 1: "Get both call and put options chains for SPY expiring this Friday"
+   - **Verify:**
+     - ✅ Agent selects get_options_chain_both()
+     - ✅ Agent gets current price first
+     - ✅ Both call and put tables returned
+     - ✅ 20 strikes each, centered around current price
+     - ✅ Markdown tables preserved (NOT converted to bullets)
 
-#### Test Set 5: RULE #5 (Options Tools)
-- [ ] Test Prompt 5.1: "Get both Call and Put Options Chains Expiring this Friday: SPY"
-  - Expected: get_options_chain_both(ticker='SPY', current_price=..., expiration_date='...')
-  - Validation: Correct tool used, both chains returned
+9.5. **Test get_market_status_and_date_time()**
+   - Prompt 1: "Is the market open?"
+   - Prompt 2: "What's today's date?"
+   - **Verify:**
+     - ✅ Agent selects get_market_status_and_date_time()
+     - ✅ Returns market status
+     - ✅ Returns date and time
 
-#### Test Set 6: RULE #6 (Chat History & Tool Efficiency)
-- [ ] Test Prompt 6.1: First query: "Get TA for SPY", Second query: "What's SPY trend?"
-  - Expected: Second query uses existing TA data, NO new tool calls
-  - Validation: Chat history reuse working
-- [ ] Test Prompt 6.2: First query: "SPY price and TA", Second query: "Support & Resistance Levels: SPY"
-  - Expected: Second query uses existing data, NO new TA calls
-  - Validation: **CRITICAL TEST 11 scenario - must NOT make redundant calls**
+9.6. **Test get_ta_indicators()**
+   - Prompt 1: "Get technical analysis indicators for SPY"
+   - **Verify:**
+     - ✅ Agent selects get_ta_indicators()
+     - ✅ Returns markdown table with 14 indicators
+     - ✅ Table formatting preserved
 
-#### Test Set 7: RULE #7 (Error & Data Handling)
-- [ ] Test Prompt 7.1: "NVDA price" (when market closed)
-  - Expected: Uses fallback sequence, provides last available price
-  - Validation: No refusal, fallback working
+**Validation:** All 6 tools tested manually, all tests pass
 
-#### Test Set 8: RULE #8 (Single-Ticker Constraint)
-- [ ] Test Prompt 8.1: "Last week's Performance OHLC: WDC, AMD, SOUN"
-  - Expected: 3 parallel calls to get_stock_price_history (one per ticker)
-  - Validation: Parallel calls for multi-ticker historical data
-
-#### Test Set 9: RULE #9 (Output Formatting)
-- [ ] Test Prompt 9.1: Any options chain query
-  - Expected: Markdown table preserved exactly as returned
-  - Validation: Table NOT reformatted to bullets
-- [ ] Test Prompt 9.2: Any query
-  - Expected: "Tools Used:" section at end with reasoning
-  - Validation: Tool transparency working
-
-**Manual Testing Validation:**
-- [ ] Sequential-Thinking: Analyze all manual test results
-- [ ] All tests passed: Proceed to Phase 4 (Regression Testing)
-- [ ] Any test failed: Fix issue, re-run failed test, repeat until all pass
-- [ ] Sequential-Thinking: Document any issues discovered and fixes applied
-
-**🔴 GATE: DO NOT PROCEED TO PHASE 4 UNTIL ALL MANUAL TESTS PASS**
+**🔴 IF ANY MANUAL TEST FAILS:**
+1. Analyze why tool selection or response failed
+2. Identify missing critical information in optimized description
+3. Add back essential information
+4. Re-test until all pass
+5. **DO NOT proceed to Step 10 until all manual tests pass**
 
 ---
 
-## Phase 4: Regression Testing 🔴 MANDATORY CHECKPOINT
+### Step 10: Full Regression Testing - Phase 1 (Automated Response Generation)
 
-### 🔴 CRITICAL: TWO-PHASE TESTING WORKFLOW
+**Objective:** Execute full 37-test suite to generate all responses
 
-**Phase 4 enforces the mandatory testing workflow from CLAUDE.md:**
-1. **Phase 1:** Automated response generation (test suite execution)
-2. **Phase 2:** Manual verification of EACH test response (correctness validation)
+**Sub-tasks:**
+
+10.1. **Execute regression test suite**
+```bash
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+```
+
+10.2. **Monitor test execution**
+   - Watch for completion messages
+   - Check for any script errors
+   - Verify session persistence
+
+10.3. **Verify test completion**
+   - **Expected:** "37/37 COMPLETED" (all responses received)
+   - **Check:** Test report file generated in test-reports/
+   - **Note:** Average response time (should be ~10-11 seconds)
+
+10.4. **Document Phase 1 results**
+   - Test report path
+   - Completion count (must be 37/37)
+   - Average response time
+   - Any script errors or warnings
+
+**Validation:** 37/37 tests completed, test report generated
+
+**🔴 IF PHASE 1 FAILS (less than 37/37 completed):**
+1. Check for script errors
+2. Check for API connection issues
+3. Verify all tools are importable
+4. Fix issues and re-run
+5. **DO NOT proceed to Step 11 until Phase 1 shows 37/37**
 
 ---
 
-### Step 4.1: Phase 1 - Automated Response Generation
+### Step 11: Full Regression Testing - Phase 2 (Manual Verification)
 
-**Before Execution:**
-- [ ] Sequential-Thinking: Plan regression testing strategy
-- [ ] Sequential-Thinking: Review test suite to understand all 37 test scenarios
+**Objective:** Manually verify EACH of the 37 test responses for correctness
 
-**Execution:**
-- [ ] Bash: `chmod +x test_cli_regression.sh && ./test_cli_regression.sh`
-- [ ] Wait for completion: All 37 tests execute in persistent session
-- [ ] Save test report path (e.g., `test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log`)
+**🔴 CRITICAL: This is NOT optional - YOU MUST manually review EVERY test response 🔴**
 
-**Phase 1 Validation:**
-- [ ] Test suite completed: X/37 tests received responses
-- [ ] Test report generated successfully
-- [ ] No script errors or crashes
-- [ ] Session persistence verified (single session for all tests)
+**Why Grep is Insufficient:**
+- ❌ Misses duplicate/unnecessary tool calls
+- ❌ Misses wrong tool selection
+- ❌ Misses data inconsistencies
+- ❌ Only catches explicit error messages
 
-**Phase 1 Deliverables:**
-- [ ] Test completion count: ___/37 COMPLETED
-- [ ] Test report path: test-reports/test_cli_regression_loop1___________.log
-- [ ] Min response time: ___s
-- [ ] Max response time: ___s
-- [ ] Average response time: ___s
+**Sub-tasks:**
 
-**🔴 LIMITATION:** Phase 1 script CANNOT validate response correctness - only confirms responses received
+11.1. **Use Read tool to read test report file**
+   - `Read(file_path="test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log")`
+   - Read in sections (use offset and limit for large file)
 
----
+11.2. **Apply 4-Point Verification Criteria to EACH test (1-37)**
 
-### Step 4.2: Phase 2 - Manual Verification of ALL 37 Tests
+For EACH test, verify ALL 4 criteria:
 
-**🔴 CRITICAL: You MUST manually review EACH of the 37 test responses**
+**Criterion 1: Does the response address the query?**
+   - Is the agent's response relevant to the test prompt?
+   - Is the response complete (not truncated)?
+   - Does it answer what was asked?
 
-**Why Grep is INSUFFICIENT:**
-- ❌ Misses duplicate/unnecessary tool calls (agent calling same tool twice)
-- ❌ Misses wrong tool selection (agent calling wrong API for data)
-- ❌ Misses data inconsistencies (cross-ticker contamination, wrong data)
-- ❌ Only catches explicit error messages, not logic errors
+**Criterion 2: Were the RIGHT tools called (no duplicate/unnecessary calls)?**
+   - **Check conversation context**: If previous test retrieved data, agent should NOT call same tool again
+   - Are the tools appropriate for the query?
+   - Are there any redundant API calls?
+   - Example FAIL: Test 10 calls `get_ta_indicators()`, Test 12 should NOT call it again
 
-**MANDATORY Process for EACH of the 37 Tests:**
+**Criterion 3: Is the data correct?**
+   - Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+   - Data formatting matches expected format (OHLC, tables, etc.)
+   - No hallucinated data or made-up values
+   - No cross-ticker contamination
+   - Options chains show Bid/Ask columns (NOT midpoint)
 
-#### Step 2A: Read Test Response Using Read Tool
-- [ ] Use `Read` tool to read test log file section for each test
-- [ ] Read lines corresponding to test's Agent Response, Tools Used, Performance Metrics
-- [ ] **NO scripts, NO grep shortcuts - READ each test manually**
+**Criterion 4: Are there any errors?**
+   - No error messages in response
+   - No "data unavailable" messages
+   - No RuntimeWarnings
+   - No API errors
 
-#### Step 2B: Apply 4-Point Verification Criteria (PER TEST)
+11.3. **Document EACH test result in a table**
 
-**For EACH test, verify ALL 4 criteria:**
+| Test # | Test Name | Status | Tool(s) Called | Issue (if failed) | Failure Type |
+|--------|-----------|--------|----------------|-------------------|--------------|
+| 1 | Market_Status | ✅ PASS | get_market_status_and_date_time | - | - |
+| 2 | SPY_Price | ✅ PASS | get_stock_quote | - | - |
+| ... | ... | ... | ... | ... | ... |
+| 37 | Multi_Options_Dates | ✅ PASS | 3× get_options_expiration_dates | - | - |
 
-1. **✅ Does the response address the query?**
-   - [ ] Agent's response directly answers test prompt
-   - [ ] Response relevant to ticker(s) mentioned
-   - [ ] Response complete (not truncated)
-
-2. **✅ Were the RIGHT tools called (not duplicate/unnecessary calls)?**
-   - [ ] **Check conversation context**: If previous test already retrieved data, agent should NOT call same tool again
-   - [ ] Tools appropriate for query (Tradier for quotes, Polygon for TA)
-   - [ ] No redundant API calls
-
-3. **✅ Is the data correct?**
-   - [ ] Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
-   - [ ] Data formatting matches expected format (OHLC, tables, etc.)
-   - [ ] No hallucinated data or made-up values
-   - [ ] No cross-ticker contamination (NVDA query shouldn't return SPY data)
-   - [ ] Options chains show Bid/Ask columns (NOT midpoint)
-
-4. **✅ Are there any errors?**
-   - [ ] No error messages in response
-   - [ ] No "data unavailable" messages
-   - [ ] No RuntimeWarnings
-   - [ ] No API errors
-
-#### Step 2C: Document Each Test Result
-
-**Create verification table for ALL 37 tests:**
-
-| Test # | Test Name | Status | Issue (if failed) | Failure Type |
-|--------|-----------|--------|-------------------|--------------|
-| 1 | Market_Status | PASS/FAIL | - | - |
-| 2 | SPY_Price | PASS/FAIL | - | - |
-| ... | ... | ... | ... | ... |
-| 37 | ... | PASS/FAIL | - | - |
-
-**Failure Types:**
+**Failure Types (if any):**
 - Code Error: Syntax/runtime errors, import errors
-- Logic Error (Duplicate Tool Call): Unnecessary redundant API calls
-- Logic Error (Wrong Tool): Agent called wrong tool for query
+- Logic Error (Duplicate Tool Call): Agent made unnecessary redundant API calls
+- Logic Error (Wrong Tool): Agent called wrong tool for the query
 - Data Error: Wrong data returned, cross-ticker contamination
 - Response Error: Incomplete response, doesn't address query
 
-#### Step 2D: Critical Tests to Verify (High Priority)
+11.4. **Answer Mandatory Checkpoint Questions**
 
-**MUST verify these tests explicitly:**
+**Question 1:** ✅ Did you READ all 37 test responses manually using the Read tool?
+**Answer:** [YES/NO]
 
-- [ ] **Test 1:** Market Status
-  - Tool: get_market_status_and_date_time()
-  - Validation: Market status returned, date/time included
+**Question 2:** ✅ Did you apply all 4 verification criteria to EACH test?
+**Answer:** [YES/NO]
 
-- [ ] **Test 2:** Stock Snapshot: SPY
-  - Tool: get_stock_quote(ticker='SPY')
-  - Validation: Single ticker format, price data returned
+**Question 3:** ✅ How many tests PASSED all 4 criteria?
+**Answer:** [X/37 PASSED]
 
-- [ ] **Test 5-7:** Daily/Weekly intervals
-  - Tool: get_stock_price_history(..., interval='daily'/'weekly')
-  - Validation: Correct interval based on query pattern
+**Question 4:** ✅ How many tests FAILED (any criterion)?
+**Answer:** [X/37 FAILED]
 
-- [ ] **Test 10:** Get TA Indicators: SPY
-  - Tool: get_ta_indicators(ticker='SPY')
-  - Validation: TA table returned, NOT reformatted
+**Question 5:** ✅ Did you document ALL failures with test #, issue, and failure type?
+**Answer:** [YES/NO + Provide table of failures]
 
-- [ ] **Test 11:** Support & Resistance Levels: SPY
-  - **CRITICAL:** Should NOT make new TA calls if already have SPY SMA/EMA/RSI/MACD
-  - Validation: Uses existing data, NO redundant calls
+**Validation:** All 37 tests manually verified, results table created, checkpoint questions answered
 
-- [ ] **Test 12:** Perform Full TA: SPY
-  - Tools: Check if get_ta_indicators needed OR uses existing data
-  - Validation: Holistic analysis with 4 topics (Trends, Volatility, Momentum, Trading Patterns)
-
-- [ ] **Test 14:** Both Call and Put Options Chains: SPY
-  - Tool: get_options_chain_both(ticker='SPY', ...)
-  - Validation: Both call and put tables returned
-
-- [ ] **Test 16:** Stock Snapshot: NVDA
-  - Tool: get_stock_quote(ticker='NVDA')
-  - Validation: Single ticker format
-
-- [ ] **Test 19-21:** More interval tests
-  - Validation: Correct interval pattern matching
-
-- [ ] **Test 28:** Both Call and Put Options Chains: NVDA
-  - Tool: get_options_chain_both(ticker='NVDA', ...)
-  - Validation: Both call and put tables returned
-
-- [ ] **Test 33-35:** Multi-ticker historical data
-  - Tools: Parallel calls to get_stock_price_history (one per ticker)
-  - Validation: Single-ticker constraint respected
-
-#### Step 2E: Verification Summary
-
-**After reviewing ALL 37 tests, document:**
-
-- [ ] Total tests PASSED: ___/37
-- [ ] Total tests FAILED: ___/37
-- [ ] Pass rate: ___%
-
-**If ANY tests failed:**
-- [ ] Document ALL failures in table with test #, issue, and failure type
-- [ ] Analyze root cause (rule unclear? logic missing? example needed?)
-- [ ] Fix issues in agent instructions
-- [ ] Re-run FULL test suite (Phase 1 + Phase 2)
-- [ ] Repeat until 100% pass rate
-
-**🔴 GATE: CANNOT PROCEED TO PHASE 5 WITHOUT 100% PASS RATE**
+**🔴 IF ANY TESTS FAIL:**
+1. Analyze which tool description optimization caused the failure
+2. Identify missing critical information
+3. Update tool description to restore essential information
+4. Re-run manual CLI testing for that tool (Step 9.X)
+5. Re-run full regression suite (Step 10)
+6. Re-do Phase 2 manual verification (Step 11)
+7. **DO NOT proceed to Phase 5 until 37/37 PASS**
 
 ---
 
-### Step 4.3: Final Checkpoint Questions
+### Step 12: Final Validation Before Commit
 
-**Answer ALL checkpoint questions with evidence:**
+**Objective:** Confirm everything is ready for commit
 
-1. **✅ Did you READ all 37 test responses manually using the Read tool?**
-   - [ ] YES / NO
-   - Evidence: ___
+**Sub-tasks:**
 
-2. **✅ Did you apply all 4 verification criteria to EACH test?**
-   - [ ] YES / NO
-   - Evidence: ___
+12.1. **Use Sequential-Thinking** to review entire implementation
+   - All 6 tools optimized?
+   - All manual tests passed?
+   - All 37 regression tests passed with manual verification?
+   - Token reduction target achieved?
 
-3. **✅ How many tests PASSED all 4 criteria?**
-   - [ ] ___/37 PASSED
+12.2. **Verify test evidence**
+   - Test report file exists
+   - 37/37 completion confirmed
+   - Phase 2 manual verification table complete
+   - All checkpoint questions answered
 
-4. **✅ How many tests FAILED (any criterion)?**
-   - [ ] ___/37 FAILED
+12.3. **Check git status**
+   - Which files have been modified?
+   - Are there any untracked files?
+   - Is everything ready to stage?
 
-5. **✅ Did you document ALL failures with test #, issue, and failure type?**
-   - [ ] YES / NO + TABLE ATTACHED
-
-**🔴 CANNOT MARK TASK COMPLETE WITHOUT:**
-- Reading all 37 test responses manually (using Read tool, NOT grep)
-- Applying all 4 verification criteria to each test
-- Documenting ALL 37 tests in results table
-- Providing failure count and failure details table
-- Answering all 5 checkpoint questions with evidence
+**Validation:** All requirements met, ready for Phase 5
 
 ---
 
-## Phase 5: Final Git Commit 🔴 PROPER ATOMIC COMMIT WORKFLOW
+## Phase 5: Final Commit
 
-### 🔴 CRITICAL: Stage ONLY Immediately Before Commit
+### Step 13: Update Documentation
 
-**CORRECT Workflow (follow EXACTLY):**
+**Objective:** Update CLAUDE.md with task completion summary
+
+**Sub-tasks:**
+
+13.1. **Read current CLAUDE.md Last Completed Task Summary section**
+   - Find the section marked with `<!-- LAST_COMPLETED_TASK_START -->`
+
+13.2. **Draft completion summary**
+   - Include all 6 tool optimizations
+   - Document token reduction achieved
+   - Include test results (37/37 PASS with Phase 2 verification)
+   - List files modified
+   - Include risk assessment (VERY LOW)
+
+13.3. **Use Edit tool to replace Last Completed Task Summary**
+   - Replace content between `<!-- LAST_COMPLETED_TASK_START -->` and `<!-- LAST_COMPLETED_TASK_END -->`
+
+**Validation:** CLAUDE.md updated with complete task summary
 
 ---
 
-### Step 5.1: Complete ALL Work FIRST (DO NOT stage anything yet)
+### Step 14: Atomic Git Commit Workflow
 
-**Before ANY staging:**
-- [ ] Sequential-Thinking: Verify ALL work complete before staging
-- [ ] ALL code changes complete (agent_service.py modified)
-- [ ] ALL tests passing (37/37 with Phase 2 verification complete)
-- [ ] ALL documentation updated (see Step 5.2)
-- [ ] NO `git add` commands run yet
+**Objective:** Create single atomic commit with ALL changes
 
----
+**🔴 CRITICAL: Follow atomic commit workflow EXACTLY 🔴**
 
-### Step 5.2: Update ALL Documentation
+**Sub-tasks:**
 
-**Update CLAUDE.md:**
-- [ ] Sequential-Thinking: Plan CLAUDE.md updates
-- [ ] Update "Last Completed Task Summary" section with optimization details
-- [ ] Include before/after line counts (657 → ~425 lines)
-- [ ] Include token reduction (30-40%, ~230 lines saved)
-- [ ] Include test results (37/37 PASSED)
-- [ ] Include rule consolidation summary (13 → 9 RULES)
-- [ ] Include key optimizations applied
+14.1. **DO ALL WORK FIRST** (DO NOT stage anything yet)
+   - ✅ All 6 tool descriptions optimized
+   - ✅ All tests run and passing
+   - ✅ CLAUDE.md updated
+   - ✅ research_task_plan.md complete
+   - ✅ TODO_task_plan.md complete
+   - ⚠️ **DO NOT RUN `git add` YET**
 
-**Example CLAUDE.md update:**
-```markdown
-<!-- LAST_COMPLETED_TASK_START -->
-[OPTIMIZE_AI_AGENT_INSTRUCTIONS] AI Agent System Instructions Optimization - 35% Token Reduction
-
-**Summary:** Successfully optimized AI Agent System Instructions from 657 lines to ~425 lines (35% reduction) while maintaining 100% regression test coverage. Consolidated 13 RULES into 9 well-organized rules, removing verbose examples and redundant formatting instructions. All 37 regression tests passed with Phase 2 manual verification complete.
-
-**Optimization Details:**
-- **Before:** 657 lines, 13 RULES, ~8,000-10,000 tokens
-- **After:** ~425 lines, 9 RULES, ~5,500-6,500 tokens
-- **Reduction:** 230 lines (35%), ~2,500-3,500 tokens saved
-
-**Major Consolidations:**
-1. RULE #1 + #2 → Stock Quotes (single rule, -40 lines)
-2. RULE #4 + #11 → Historical Price Data with interval table (-105 lines)
-3. RULE #9 + #10 → Options Tools (-20 lines)
-4. RULE #5 + #6 + #13 → Error & Data Handling (-25 lines)
-5. NEW RULE #9: Output Formatting (extracted from multiple rules, -35 lines)
-
-**Testing Results:**
-- ✅ Phase 1: 37/37 automated tests completed
-- ✅ Phase 2: Manual verification of all 37 test responses (100% pass rate)
-- ✅ Average response time: X.XXs
-- ✅ Test report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-
-**Files Modified:**
-- ✅ src/backend/services/agent_service.py (get_enhanced_agent_instructions function optimized)
-- ✅ CLAUDE.md (this summary)
-- ✅ research_task_plan.md (comprehensive research findings)
-- ✅ TODO_task_plan.md (granular implementation plan)
-
-**Code Quality:**
-- ✅ No syntax errors
-- ✅ No functionality lost
-- ✅ Better organization improves agent understanding
-- ✅ 35% token reduction = significant cost savings at scale
-
-**Performance Impact:**
-- Per test run: 111,000 input tokens saved (37 queries × 3,000 tokens)
-- Production (1,000 daily queries): 3,000,000 tokens saved per day
-<!-- LAST_COMPLETED_TASK_END -->
+14.2. **VERIFY EVERYTHING IS COMPLETE**
+```bash
+git status  # Review ALL changed/new files
+git diff    # Review ALL changes
 ```
+   - Ensure ALL work is done
+   - Ensure ALL files are present
 
----
+14.3. **STAGE EVERYTHING AT ONCE**
+```bash
+git add -A  # Stage ALL files in ONE command
+```
+   - ⚠️ This is the FIRST time you run `git add`
+   - ⚠️ Stage ALL related files together
 
-### Step 5.3: Verify EVERYTHING Complete
+14.4. **VERIFY STAGING IMMEDIATELY**
+```bash
+git status  # Verify ALL files staged, NOTHING unstaged
+```
+   - If anything is missing: `git add [missing-file]`
 
-**Before staging:**
-- [ ] Sequential-Thinking: Comprehensive review of all changes
-- [ ] Bash: `git status` - review ALL changed/new files
-- [ ] Bash: `git diff src/backend/services/agent_service.py` - review code changes
-- [ ] Bash: `git diff CLAUDE.md` - review documentation updates
-- [ ] Verify test report file exists: test-reports/test_cli_regression_loop1_*.log
-- [ ] Verify all work done, nothing left pending
-
-**Files to commit (checklist):**
-- [ ] src/backend/services/agent_service.py (optimized instructions)
-- [ ] CLAUDE.md (last completed task summary)
-- [ ] research_task_plan.md (research findings)
-- [ ] TODO_task_plan.md (this implementation plan)
-- [ ] test-reports/test_cli_regression_loop1_*.log (test evidence)
-
----
-
-### Step 5.4: Stage EVERYTHING AT ONCE
-
-**🔴 CRITICAL: This is the FIRST time you run `git add`**
-
-- [ ] Bash: `git add -A` - stage ALL files in ONE command
-- [ ] **Verify this is the FIRST `git add` of this task**
-
----
-
-### Step 5.5: Verify Staging IMMEDIATELY
-
-**Immediately after staging:**
-- [ ] Bash: `git status` - verify ALL files staged, NOTHING unstaged
-- [ ] Check: src/backend/services/agent_service.py staged
-- [ ] Check: CLAUDE.md staged
-- [ ] Check: research_task_plan.md staged
-- [ ] Check: TODO_task_plan.md staged
-- [ ] Check: test-reports/*.log staged
-- [ ] If anything missing: `git add [missing-file]`
-
----
-
-### Step 5.6: Commit IMMEDIATELY (within 60 seconds of staging)
-
-**Commit message template:**
+14.5. **COMMIT IMMEDIATELY** (within 60 seconds of staging)
 ```bash
 git commit -m "$(cat <<'EOF'
-[OPTIMIZE_AI_AGENT_INSTRUCTIONS] AI Agent System Instructions Optimization - 35% Token Reduction
+[TOOL_DESCRIPTIONS_OPTIMIZATION] Optimize tool descriptions - 70% token reduction
 
-- Consolidated 13 RULES into 9 well-organized rules (~425 lines from 657)
-- Merged RULE #1 + #2 → Stock Quotes (single rule)
-- Merged RULE #4 + #11 → Historical Price Data with concise interval table
-- Merged RULE #9 + #10 → Options Tools (shared date handling)
-- Merged RULE #5 + #6 + #13 → Error & Data Handling
-- Created NEW RULE #9: Output Formatting (extracted from multiple rules)
-- Removed verbose examples (kept 2-3 essential per rule)
-- Eliminated redundant formatting instructions across rules
-- Streamlined Technical Analysis rule (reduced 120 → 80 lines)
-- Token reduction: ~230 lines saved (35% reduction, ~2,500-3,500 tokens)
+Phase 1-4 Complete: Research, Planning, Implementation, and Full Testing
+
+Major Changes:
+- Optimized 6 AI Agent Tool descriptions (tradier_tools.py + polygon_tools.py)
+- Token reduction breakdown:
+  * get_stock_quote: 450→130 tokens (71% reduction)
+  * get_options_expiration_dates: 330→100 tokens (70% reduction)
+  * get_stock_price_history: 500→150 tokens (70% reduction)
+  * get_options_chain_both: 580→160 tokens (72% reduction)
+  * get_market_status_and_date_time: 370→110 tokens (70% reduction)
+  * get_ta_indicators: 440→150 tokens (66% reduction)
+
+Optimization Strategy:
+- Removed verbose JSON response examples (~900 tokens saved)
+- Condensed "Use this tool when" sections (~175 tokens saved)
+- Consolidated redundant notes (~350 tokens saved)
+- Removed usage examples (~200 tokens saved)
+- Simplified parameter descriptions (~100 tokens saved)
+- Removed duplication with system instructions (~200 tokens saved)
+
+Total Token Reduction:
+- Before: ~2,670 tokens
+- After: ~800 tokens
+- Savings: ~1,870 tokens (70% reduction)
 
 Testing Results:
-✅ Manual CLI testing: All 9 rules validated (1-2 prompts per rule)
-✅ Phase 1 automated testing: 37/37 tests completed
-✅ Phase 2 manual verification: 100% pass rate (all 37 tests reviewed)
-✅ Test report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
-✅ Average response time: X.XXs (EXCELLENT performance)
-✅ Critical Test 11 (Support & Resistance) verified: No redundant TA calls
+- Phase 1: 37/37 automated test responses COMPLETED
+- Phase 2: 37 tests manually verified with 4-point criteria
+- 37/37 PASS (100% pass rate, 0 failures)
+- Manual CLI testing: 6/6 tools tested and passing
+- All tools correctly selected by agent
+- All responses correctly formatted
+- No regression detected
 
 Files Modified:
-- src/backend/services/agent_service.py (optimized get_enhanced_agent_instructions)
-- CLAUDE.md (last completed task summary)
-- research_task_plan.md (comprehensive research findings)
-- TODO_task_plan.md (granular implementation plan)
-- test-reports/test_cli_regression_loop1_*.log (test evidence)
+- src/backend/tools/tradier_tools.py: 5 tool descriptions optimized
+- src/backend/tools/polygon_tools.py: 1 tool description optimized
+- CLAUDE.md: Updated with completion summary
+- research_task_plan.md: Complete research findings
+- TODO_task_plan.md: Detailed implementation checklist
 
-Code Quality:
-✅ No functionality lost (all 37 tests pass)
-✅ Better organization improves agent clarity
-✅ Significant cost savings at scale (3M tokens/day for 1k queries)
-✅ Follows 2025 best practices for prompt optimization
+Documentation:
+- research_task_plan.md: Token inefficiency analysis and optimization strategy
+- TODO_task_plan.md: Granular implementation steps
+- Test report: test-reports/test_cli_regression_loop1_YYYY-MM-DD_HH-MM.log
+
+Risk Assessment: VERY LOW
+- No functionality removed (docstring optimization only)
+- All 37 regression tests pass with manual verification
+- All tools maintain correct behavior
+- Token efficiency improved 70% without regression
+
+Performance Impact:
+- Token reduction: 70% (from ~2,670 to ~800 tokens)
+- Cost savings: Significant reduction in tokens per API call
+- Maintenance: Simpler, more concise tool descriptions
+- Clarity: More focused, less verbose descriptions
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
@@ -922,122 +655,170 @@ EOF
 )"
 ```
 
-**Execute commit:**
-- [ ] Bash: Run commit command with template above
-- [ ] Replace YYYY-MM-DD_HH-MM with actual test report timestamp
-- [ ] Replace X.XXs with actual average response time
-- [ ] Sequential-Thinking: Verify commit message accurate and complete
+14.6. **PUSH IMMEDIATELY**
+```bash
+git push
+```
+
+**Validation:** Atomic commit created and pushed to remote
 
 ---
 
-### Step 5.7: Verify Commit Created
+## Success Criteria
 
-**Immediately after commit:**
-- [ ] Bash: `git log -1` - verify commit created with correct message
-- [ ] Bash: `git show --stat` - verify all expected files in commit
-- [ ] Sequential-Thinking: Review commit to ensure completeness
+### Quantitative Metrics
 
----
+- ✅ **Token Reduction:** 60-70% achieved (~1,870 tokens saved)
+- ✅ **Test Pass Rate:** 37/37 (100%) with Phase 2 manual verification
+- ✅ **Tools Optimized:** 6/6 (100%)
+- ✅ **Manual Tests:** 6/6 (100%) passed
 
-### Step 5.8: Push IMMEDIATELY
+### Qualitative Metrics
 
-**Push to remote:**
-- [ ] Bash: `git push`
-- [ ] Verify push successful (no errors)
-- [ ] Sequential-Thinking: Confirm task completion
-
----
-
-## What Belongs in Atomic Commit
-
-**✅ MUST INCLUDE:**
-- ✅ Code changes (src/backend/services/agent_service.py)
-- ✅ Test reports (test-reports/*.log - evidence of passing tests)
-- ✅ Documentation updates (CLAUDE.md, research_task_plan.md, TODO_task_plan.md)
-
-**❌ NEVER DO THIS:**
-- ❌ Stage files early during development
-- ❌ Stage files "as you go"
-- ❌ Run `git add` before ALL work is complete
-- ❌ Delay between `git add` and `git commit`
-- ❌ Commit without test reports
-- ❌ Commit without documentation updates
+- ✅ **Improved Clarity:** Descriptions more concise and focused
+- ✅ **Better Alignment:** Follows OpenAI best practices
+- ✅ **No Regression:** All functionality maintained
+- ✅ **Maintainability:** Simpler, easier to update
 
 ---
 
-## Final Task Completion Checklist
+## Risk Mitigation
 
-### Research Phase ✅
-- [x] Research complete
-- [x] research_task_plan.md created
+### If Tests Fail
 
-### Planning Phase
-- [x] TODO_task_plan.md created
-- [ ] Plan presented to user for review
-- [ ] User approval received
+**Symptom:** Agent doesn't select correct tool
+**Solution:**
+1. Review tool description - is purpose clear?
+2. Add back critical "when to use" guidance
+3. Ensure one-sentence description is action-oriented
 
-### Implementation Phase (Pending User Approval)
-- [ ] All 9 RULES implemented
-- [ ] Redundant sections removed
-- [ ] Manual CLI testing complete (all tests passed)
+**Symptom:** Agent misunderstands parameters
+**Solution:**
+1. Review parameter descriptions - are they clear?
+2. Add back critical examples if needed
+3. Ensure format guidance is present
 
-### Testing Phase (Pending User Approval)
-- [ ] Phase 1: Test suite executed (37/37 completed)
-- [ ] Phase 2: Manual verification (100% pass rate, all 37 tests reviewed)
-- [ ] Test report generated
-- [ ] All checkpoint questions answered
+**Symptom:** Output formatting breaks
+**Solution:**
+1. Review notes section - is critical formatting mentioned?
+2. Add back essential formatting constraints
+3. Ensure return description mentions key structure
 
-### Commit Phase (Pending User Approval)
-- [ ] ALL work complete (code + tests + docs)
-- [ ] git status reviewed
-- [ ] git add -A (FIRST and ONLY staging)
-- [ ] git status verified (all staged)
-- [ ] git commit with proper message
-- [ ] git push successful
+### Rollback Plan
 
----
-
-## Success Criteria Summary
-
-**✅ Task complete when:**
-1. AI Agent System Instructions optimized (657 → ~425 lines, 35% reduction)
-2. All 9 consolidated RULES implemented correctly
-3. Manual CLI testing passed (1-2 prompts per rule, all working)
-4. Phase 1 automated testing: 37/37 tests completed
-5. Phase 2 manual verification: 100% pass rate (all 37 tests reviewed with 4-point criteria)
-6. All 5 checkpoint questions answered with evidence
-7. Documentation updated (CLAUDE.md, research_task_plan.md, TODO_task_plan.md)
-8. Atomic git commit created with all changes
-9. Changes pushed to remote repository
-
-**Token Savings Achieved:** ~2,500-3,500 tokens per query (35% reduction)
-**Functionality Preserved:** 100% (all 37 tests pass)
-**Organization Improved:** 13 → 9 well-structured rules
+If optimization causes too many test failures:
+1. Use git to restore previous version
+2. Analyze which information was essential
+3. Create less aggressive optimization
+4. Re-test and iterate
 
 ---
 
-## Risk Mitigation Summary
+## Timeline Estimate
 
-**Risk Level:** LOW
-
-**Mitigations Applied:**
-1. ✅ Comprehensive research phase before implementation
-2. ✅ Manual CLI testing before regression suite
-3. ✅ Phase 2 manual verification (not just automated)
-4. ✅ Sequential-Thinking used throughout for systematic approach
-5. ✅ Serena tools used for precise code manipulation
-6. ✅ Git backup created before any changes
-7. ✅ Rollback plan defined (revert to backup commit if >5 tests fail)
-
-**Rollback Plan:**
-- If >3 tests fail in manual CLI testing → investigate and fix before regression suite
-- If >5 tests fail in regression suite → rollback to backup commit and re-analyze
-- Backup commit: `[BACKUP] Before AI agent instructions optimization`
+- **Step 1-8 (Implementation):** 30-40 minutes
+- **Step 9 (Manual CLI Testing):** 15-20 minutes
+- **Step 10-11 (Regression Testing):** 20-30 minutes
+- **Step 12 (Final Validation):** 5 minutes
+- **Step 13-14 (Documentation & Commit):** 10-15 minutes
+- **Total:** ~80-110 minutes
 
 ---
 
-## End of TODO Task Plan
+## Tools and Commands Reference
 
-**Next Action:** Present this plan to user for review and approval before proceeding to Phase 3 (Implementation).
+### Serena Tools
 
-🔴 **DO NOT START IMPLEMENTATION UNTIL USER APPROVES THIS PLAN** 🔴
+```python
+# Read symbol
+mcp__serena__find_symbol(name_path="get_stock_quote", relative_path="src/backend/tools/tradier_tools.py", include_body=true)
+
+# Replace symbol body
+mcp__serena__replace_symbol_body(name_path="get_stock_quote", relative_path="src/backend/tools/tradier_tools.py", body="[NEW BODY]")
+```
+
+### Sequential-Thinking
+
+```python
+# Start every phase with sequential thinking
+mcp__sequential-thinking__sequentialthinking(
+    thought="Analyze current step and plan approach...",
+    nextThoughtNeeded=true,
+    thoughtNumber=1,
+    totalThoughts=5
+)
+```
+
+### Testing Commands
+
+```bash
+# Manual CLI testing
+uv run main.py
+
+# Regression testing
+chmod +x test_cli_regression.sh && ./test_cli_regression.sh
+```
+
+### Git Commands
+
+```bash
+# Check status
+git status
+git diff
+
+# Stage all
+git add -A
+
+# Commit
+git commit -m "message"
+
+# Push
+git push
+```
+
+---
+
+## Completion Checklist
+
+### Phase 3: Implementation
+- [ ] Step 1: Pre-implementation analysis complete
+- [ ] Step 2: get_stock_quote() optimized and verified
+- [ ] Step 3: get_options_expiration_dates() optimized and verified
+- [ ] Step 4: get_stock_price_history() optimized and verified
+- [ ] Step 5: get_options_chain_both() optimized and verified
+- [ ] Step 6: get_market_status_and_date_time() optimized and verified
+- [ ] Step 7: get_ta_indicators() optimized and verified
+- [ ] Step 8: All optimizations verified, token counts confirmed
+
+### Phase 4: Testing
+- [ ] Step 9.1: get_stock_quote() manual testing (2 prompts) - PASS
+- [ ] Step 9.2: get_options_expiration_dates() manual testing (1 prompt) - PASS
+- [ ] Step 9.3: get_stock_price_history() manual testing (2 prompts) - PASS
+- [ ] Step 9.4: get_options_chain_both() manual testing (1 prompt) - PASS
+- [ ] Step 9.5: get_market_status_and_date_time() manual testing (2 prompts) - PASS
+- [ ] Step 9.6: get_ta_indicators() manual testing (1 prompt) - PASS
+- [ ] Step 10: Phase 1 regression testing - 37/37 COMPLETED
+- [ ] Step 11: Phase 2 manual verification - 37/37 PASS with 4-point criteria
+- [ ] Step 12: Final validation - all requirements met
+
+### Phase 5: Final Commit
+- [ ] Step 13: CLAUDE.md updated with completion summary
+- [ ] Step 14.1: All work complete, no staging yet
+- [ ] Step 14.2: Git status and diff reviewed
+- [ ] Step 14.3: All files staged at once (git add -A)
+- [ ] Step 14.4: Staging verified (git status)
+- [ ] Step 14.5: Atomic commit created
+- [ ] Step 14.6: Changes pushed to remote
+
+---
+
+## Next Steps
+
+**Immediate Action:** Begin Phase 3 - Implementation (Step 1)
+
+**Use Sequential-Thinking** to start the implementation:
+- Analyze research findings
+- Plan approach for first tool optimization
+- Prepare for systematic execution of all steps
+
+**Remember:** Use Serena tools for all code modifications, Sequential-Thinking for all planning and analysis.

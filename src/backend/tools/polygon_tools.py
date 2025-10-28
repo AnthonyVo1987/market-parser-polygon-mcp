@@ -210,61 +210,20 @@ async def _get_ta_indicators(ticker: str, timespan: str = "day") -> str:
 
 @function_tool
 async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
-    """Get comprehensive technical analysis indicators in a single call.
+    """Get comprehensive technical analysis indicators (RSI, MACD, SMA, EMA) in a single call.
 
-    This consolidated tool retrieves ALL TA indicators with optimized batched API calls
-    and returns a formatted markdown table. Replaces individual get_ta_sma, get_ta_ema,
-    get_ta_rsi, and get_ta_macd tools.
+    Consolidated tool retrieves all 14 TA indicators with optimized batched API calls and returns formatted markdown table.
 
-    Indicators Retrieved:
-    - RSI-14 (Relative Strength Index)
-    - MACD (12/26/9) with signal line and histogram
-    - SMA (Simple Moving Averages): 5, 10, 20, 50, 200-period
-    - EMA (Exponential Moving Averages): 5, 10, 20, 50, 200-period
-
-    Performance Optimization:
-    - Batched API calls with rate limit protection
-    - Batch 1: RSI + MACD (2 parallel calls)
-    - Batch 2: SMA 5/10/20/50/200 (5 parallel calls)
-    - Batch 3: EMA 5/10/20/50/200 (5 parallel calls)
-    - 1-second delays between batches prevent rate limiting
-    - Total: 12 API calls in ~2-3 seconds
-    - Requests limit=10 per indicator to ensure LAST AVAILABLE data (even on weekends/holidays)
+    Indicators: RSI-14, MACD (12/26/9), SMA (5/10/20/50/200), EMA (5/10/20/50/200).
 
     Args:
-        ticker: Stock ticker symbol (e.g., "SPY", "AAPL", "NVDA")
-        timespan: Aggregate time window - "day", "minute", "hour", "week", "month" (default: "day")
+        ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
+        timespan: Aggregate window - "day", "minute", "hour", "week", "month" (default: "day").
 
     Returns:
-        Formatted markdown table string with all 14 indicators or error message
+        Formatted markdown table with all 14 indicators (indicator, period, value, timestamp).
 
-    Example Output:
-        📊 Technical Analysis Indicators - SPY
-        Current Date: 2025-10-11
-
-        | Indicator | Period | Value | Timestamp |
-        |-----------|--------|-------|-----------|
-        | RSI       | 14     | 62.45 | 2025-10-11 |
-        | MACD      | 12/26  | 2.34  | 2025-10-11 |
-        | Signal    | 9      | 1.87  | 2025-10-11 |
-        | Histogram | -      | 0.47  | 2025-10-11 |
-        | SMA       | 5      | 654.23 | 2025-10-11 |
-        ...
-
-        Source: Polygon.io API
-
-    Note:
-        - ALWAYS returns last available data (even on weekends/holidays/market closures)
-        - Uses limit=10 to fetch recent historical data, returns most recent value
-        - Gracefully handles partial failures (displays N/A only if indicator genuinely unavailable)
-        - Single tool call from agent perspective (all complexity in Python)
-        - Rate limit safe with batched calls and delays
-        - Formatted output ready for display
-
-    Examples:
-        - "Get technical analysis indicators for SPY"
-        - "Show me TA indicators for NVDA"
-        - "Technical analysis data for AAPL"
+    Note: 12 API calls in ~2-3 seconds with rate limit protection. Always returns last available data (even on weekends/holidays).
     """
     return await _get_ta_indicators(ticker, timespan)
 
