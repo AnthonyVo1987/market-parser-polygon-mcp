@@ -5,17 +5,11 @@
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed: 
 
 
-[NEW_FEATURE] Create a brand new tool called 'get_options_chain_both' that will now fetch and output BOTH the complete call and put options chain in a single tool call instead of having two separate tool calls. This should consolidate two separate tool calls and some duplicate code into a single all-in-one comprehensive tool call.  We will still keep the existin separate call\put options chains tools for now for backward compatibility, and eventually the old tools will be retired at a later date TDB
+ 1. Retire the 2x tools for 'get_call_options_chain' & 'get_put_options_chain' since we now have a single consolidated tool that can handle both cases in 'get_options_chain_both'
+ - This should streamline the code even more and reduce duplicate code and complexity, since our new tool that fetches both call and put options chain has been validated.  So we can remove the initial tools and no longer need backward compatibility
+ - You will need to also update AI agent instructions, and the test scripts test_cli_regression.shin order to validate and verify 
 
-- The single 'get_options_chain_both' tool call should output BOTH the full Call & Put Options Chain in a single response and table\chart, matching the same as reponse formatting and tables as the individual tool calls
-
-- You will need to update AI Agent Instructions on using the new Proper tool calls
-
-- We will also change around some of the AI Agent rules to make the following rule the very FIRST TOP CRITICAL RULE: 'ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS'.  By moving this rule to the top with the critical messages, this will prevent some issues where AI Agent still makes some redundant tool calls evn though data is already availble, since the current rule is located at Rule # 8, and it can sometimes be missed, so we can make it rule #1
-
-- Test scripts 'test_cli_regression.sh' also needs to be updated to call the new tool
-
-- After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out a few manual Call\Put Options chain calls, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
+- After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out a few Options chain calls, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 

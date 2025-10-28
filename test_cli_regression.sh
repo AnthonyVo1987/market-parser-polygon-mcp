@@ -91,8 +91,6 @@ declare -a prompts=(
     "Support & Resistance Levels: \$SPY"
     "Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$SPY"
     "Get options expiration dates: \$SPY"
-    "Get Call Options Chain Expiring this Friday: \$SPY"
-    "Get Put Options Chain Expiring this Friday: \$SPY"
     "Get both Call and Put Options Chains Expiring this Friday: \$SPY"
     "Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: \$SPY"
     # NVDA Test Sequence (Tests 17-32)
@@ -108,8 +106,6 @@ declare -a prompts=(
     "Support & Resistance Levels: \$NVDA"
     "Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: \$NVDA"
     "Get options expiration dates for \$NVDA"
-    "Get Call Options Chain Expiring this Friday: \$NVDA"
-    "Get Put Options Chain Expiring this Friday: \$NVDA"
     "Get both Call and Put Options Chains Expiring this Friday: \$NVDA"
     "Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: \$NVDA"
     # Multi-Ticker Test Sequence (Tests 33-41)

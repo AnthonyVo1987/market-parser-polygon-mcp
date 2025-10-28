@@ -5,11 +5,9 @@ from openai.types.shared import Reasoning
 
 from ..config import settings
 from ..tools.tradier_tools import (
-    get_call_options_chain,
     get_market_status_and_date_time,
     get_options_chain_both,
     get_options_expiration_dates,
-    get_put_options_chain,
     get_stock_price_history,
     get_stock_quote,
 )
@@ -331,29 +329,19 @@ RULE #8: ANALYZE CHAT HISTORY BEFORE MAKING TOOL CALLS - AVOID REDUNDANT CALLS
 ❌ User asks about 3 tickers, you have data for 2 → Making calls for ALL 3 [WASTE! Only call for missing 1 ticker]
 ❌ **Already have SPY SMA/EMA/RSI/MACD, user asks "Support & Resistance" → Making NEW TA calls [CRITICAL WASTE!]**
 
-RULE #9: OPTIONS CHAIN = PREFER get_options_chain_both, FALLBACK to specific tools ⭐ UPDATED Oct 25
+RULE #9: OPTIONS CHAIN = Use get_options_chain_both for ALL options requests ⭐ UPDATED Oct 27
 - 🔴 **WHEN TO USE**: User requests options chain data (calls, puts, or both)
 
-**FOR BOTH CALL AND PUT OPTIONS CHAINS (RECOMMENDED - DEFAULT):**
-- ✅ **FIRST CHOICE**: Use `get_options_chain_both(ticker, current_price, expiration_date)`
+**USE get_options_chain_both FOR ALL REQUESTS:**
+- ✅ **ONLY TOOL**: Use `get_options_chain_both(ticker, current_price, expiration_date)`
   - Tool: get_options_chain_both(ticker, current_price, expiration_date)
   - Example: "Get both Call and Put Options Chains for SPY" → get_options_chain_both(ticker='SPY', current_price=677.25, expiration_date='2025-10-31')
   - Returns BOTH call and put options in ONE response
-  - Single API call (more efficient than two separate calls)
+  - Single API call (efficient)
   - Shows 20 strikes for each chain (10 above + 10 below current price)
-  - When to use: User asks for "both", "call and put", "full options chain", or is ambiguous
+  - When to use: ALL options chain requests (calls, puts, or both)
 
-**FOR ONLY CALL OPTIONS (SPECIFIC REQUEST):**
-- Tool: get_call_options_chain(ticker, current_price, expiration_date)
-- Example: "SPY Call Options Chain expiring Oct 10" → get_call_options_chain(ticker='SPY', current_price=673.0, expiration_date='2025-10-10')
-- When to use: User explicitly requests ONLY call options
-
-**FOR ONLY PUT OPTIONS (SPECIFIC REQUEST):**
-- Tool: get_put_options_chain(ticker, current_price, expiration_date)
-- Example: "NVDA Put Options Chain expiring this Friday" → get_put_options_chain(ticker='NVDA', current_price=<current>, expiration_date=<this_friday>)
-- When to use: User explicitly requests ONLY put options
-
-- 🔴 **REQUIRED PARAMETERS** (all three tools):
+- 🔴 **REQUIRED PARAMETERS**:
   - ticker (str): Stock ticker symbol
   - current_price (float): Current underlying stock price - use get_stock_quote if needed
   - expiration_date (str): Expiration date in YYYY-MM-DD format
@@ -374,20 +362,18 @@ RULE #9: OPTIONS CHAIN = PREFER get_options_chain_both, FALLBACK to specific too
   * ✅ Display the markdown table with pipe separators intact
 - 📊 Uses Tradier API for options chain data with client-side filtering
 - ✅ **DECISION TREE**:
-  - User asks "call and put options" → get_options_chain_both()
+  - User asks "call options" → get_options_chain_both() (returns both, user can focus on calls)
+  - User asks "put options" → get_options_chain_both() (returns both, user can focus on puts)
+  - User asks "both options" → get_options_chain_both()
   - User asks "full options chain" → get_options_chain_both()
-  - User asks "options for [ticker]" (ambiguous) → get_options_chain_both() (DEFAULT)
-  - User asks "ONLY call options" → get_call_options_chain()
-  - User asks "ONLY put options" → get_put_options_chain()
+  - User asks "options for [ticker]" → get_options_chain_both()
 - ✅ **WORKFLOW**:
-  1. Analyze if user wants both chains, calls only, or puts only
-  2. If ambiguous or asks for both → Use get_options_chain_both()
-  3. If specific (calls or puts only) → Use specific tool
-  4. Get current_price via get_stock_quote if not already available
-  5. Parse/calculate expiration_date in YYYY-MM-DD format
-  6. Call appropriate tool with all 3 required parameters
+  1. Get current_price via get_stock_quote if not already available
+  2. Parse/calculate expiration_date in YYYY-MM-DD format
+  3. Call get_options_chain_both with all 3 required parameters
+  4. User receives both call and put chains in single response
 - ❌ **COMMON MISTAKES**:
-  - Making TWO separate calls (get_call_options_chain + get_put_options_chain) when get_options_chain_both exists
+  - Not using get_options_chain_both for options chain requests
   - Not fetching current_price before calling options chain tool
   - Incorrect date format (must be YYYY-MM-DD)
   - Using get_stock_quote for options data (wrong tool!)
@@ -413,7 +399,7 @@ RULE #10: OPTIONS EXPIRATION DATES = USE get_options_expiration_dates
   - Example: "SPY options expiration dates: 2025-10-17, 2025-10-24, 2025-10-31, 2025-11-07..."
   - Or: "Available NVDA expiration dates:\n• 2025-10-17\n• 2025-10-24\n• 2025-10-31..."
 - ❌ **COMMON MISTAKES**:
-  - Using get_call_options_chain or get_put_options_chain when user only wants expiration dates
+  - Using get_options_chain_both when user only wants expiration dates
   - Not calling the tool when user asks about "when options expire"
   - Confusing expiration dates with options chain data
 
@@ -463,8 +449,7 @@ RULE #12: SINGLE-TICKER TOOLS - NO COMMA-SEPARATED TICKERS
 
 **TOOLS THAT REQUIRE SINGLE TICKER:**
 - get_options_expiration_dates(ticker) - ONE ticker only
-- get_call_options_chain(ticker, current_price, expiration_date) - ONE ticker only
-- get_put_options_chain(ticker, current_price, expiration_date) - ONE ticker only
+- get_options_chain_both(ticker, current_price, expiration_date) - ONE ticker only
 - get_stock_price_history(ticker, start_date, end_date, interval) - ONE ticker only
 - get_ta_indicators(ticker, timespan) - ONE ticker only
 
@@ -722,9 +707,7 @@ def create_agent():
             get_stock_price_history,
             get_market_status_and_date_time,
             get_ta_indicators,
-            get_call_options_chain,
-            get_put_options_chain,
-        ],  # 6 Tradier + 2 Polygon = 8 tools total
+        ],  # 4 Tradier + 2 Polygon = 6 tools total
         model=settings.default_active_model,
         model_settings=get_optimized_model_settings(),
     )

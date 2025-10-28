@@ -1,0 +1,443 @@
+[0;36m🧪 CLI Test Regression - NEW 39 Test Suite (Two-Phase Validation)[0m
+[0;36m=================================================================[0m
+Timestamp: Mon Oct 27 20:18:41 PDT 2025
+Loop Count: [0;32m1x[0m
+Max Response Time: 60s per test
+CLI Command: uv run python -m src.backend.cli
+Session Mode: [0;32mPERSISTENT[0m (all 39 tests in same session per loop)
+Test Features: [0;32mParallel Tool Calls (max 3)[0m, [0;32mChat History Analysis[0m, [0;32mOptions Chain Tests[0m
+Validation: [1;33mPhase 1 (Automated)[0m + [1;33mPhase 2 (Manual Verification)[0m
+
+[0;36m╔══════════════════════════════════════════════════════════════╗[0m
+[0;36m║  LOOP 1/1 - Starting Test Iteration[0m
+[0;36m╚══════════════════════════════════════════════════════════════╝[0m
+
+[0;36m🚀 Starting CLI Regression Test - Phase 1 (Loop 1/1)...[0m
+[0;36mSession will run all 39 tests sequentially[0m
+Output file: test-reports/test_cli_regression_loop1_2025-10-27_20-18.log
+
+[1;33m⏳ Monitoring CLI session...[0m
+
+[1;33m⏳ Waiting for CLI session to complete...[0m
+[0;32m✅ CLI session completed[0m
+[0;32m⏱️  Total Session Duration: 6 min 12 sec[0m
+
+[0;36m📊 Parsing test results...[0m
+[0;36m📊 Parsing test results from CLI output...[0m
+
+[0;34m📝 Test 1: Test_1_SPY_Market_Status[0m
+[1;33mPrompt: 'Market Status'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 6.388s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 2: Test_2_SPY_Current_Price_OHLC[0m
+[1;33mPrompt: 'Current Price OHLC: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 6.380s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 3: Test_3_SPY_Yesterday_Price_OHLC[0m
+[1;33mPrompt: 'Yesterday's Price OHLC: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.778s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 4: Test_4_SPY_Last_Week_Performance_OHLC[0m
+[1;33mPrompt: 'Last week's Performance OHLC: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.088s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 5: Test_5_SPY_Previous_Week_Friday_OHLC[0m
+[1;33mPrompt: 'Stock Price on the previous week's Friday OHLC: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.374s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 6: Test_6_SPY_Last_5_Trading_Days_OHLC[0m
+[1;33mPrompt: 'Stock Price Performance the last 5 Trading Days OHLC: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.349s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 7: Test_7_SPY_Past_2_Weeks_OHLC[0m
+[1;33mPrompt: 'Stock Price Performance the past 2 Weeks OHLC: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 6.008s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 8: Test_8_SPY_Past_Month[0m
+[1;33mPrompt: 'Stock Price Performance the past month: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.878s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 9: Test_9_SPY_Past_3_Months[0m
+[1;33mPrompt: 'Stock Price Performance the past 3 months: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 10.252s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 10: Test_10_SPY_TA_Indicator_DATA_Only[0m
+[1;33mPrompt: 'Get technical analysis indicator DATA only with NO ANALYSIS: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 13.333s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 11: Test_11_SPY_Support_Resistance[0m
+[1;33mPrompt: 'Support & Resistance Levels: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 6.106s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 12: Test_12_SPY_Full_TA_Analysis[0m
+[1;33mPrompt: 'Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 10.103s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 13: Test_13_SPY_Options_Expiration_Dates[0m
+[1;33mPrompt: 'Get options expiration dates: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.512s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 14: Test_14_SPY_Call_Options_Chain[0m
+[1;33mPrompt: 'Get both Call and Put Options Chains Expiring this Friday: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 23.921s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 15: Test_15_SPY_Put_Options_Chain[0m
+[1;33mPrompt: 'Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: $SPY'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.182s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 16: Test_16_SPY_Both_Options_Chains[0m
+[1;33mPrompt: 'Current Price OHLC: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.190s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 17: Test_17_SPY_Options_Wall_Analysis[0m
+[1;33mPrompt: 'Yesterday's Price OHLC: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.171s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 18: Test_18_NVDA_Current_Price_OHLC[0m
+[1;33mPrompt: 'Last week's Performance OHLC: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.337s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 19: Test_19_NVDA_Yesterday_Price_OHLC[0m
+[1;33mPrompt: 'Stock Price on the previous week's Friday OHLC: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.011s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 20: Test_20_NVDA_Last_Week_Performance_OHLC[0m
+[1;33mPrompt: 'Stock Price Performance the last 5 Trading Days OHLC: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.013s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 21: Test_21_NVDA_Previous_Week_Friday_OHLC[0m
+[1;33mPrompt: 'Stock Price Performance the past 2 Weeks OHLC: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.050s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 22: Test_22_NVDA_Last_5_Trading_Days_OHLC[0m
+[1;33mPrompt: 'Stock Price Performance the past month: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.580s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 23: Test_23_NVDA_Past_2_Weeks_OHLC[0m
+[1;33mPrompt: 'Stock Price Performance the past 3 months: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 6.627s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 24: Test_24_NVDA_Past_Month[0m
+[1;33mPrompt: 'Get technical analysis indicator DATA only with NO ANALYSIS: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 14.619s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 25: Test_25_NVDA_Past_3_Months[0m
+[1;33mPrompt: 'Support & Resistance Levels: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 4.998s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 26: Test_26_NVDA_TA_Indicator_DATA_Only[0m
+[1;33mPrompt: 'Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 7.078s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 27: Test_27_NVDA_Support_Resistance[0m
+[1;33mPrompt: 'Get options expiration dates for $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.210s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 28: Test_28_NVDA_Full_TA_Analysis[0m
+[1;33mPrompt: 'Get both Call and Put Options Chains Expiring this Friday: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 23.922s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 29: Test_29_NVDA_Options_Expiration_Dates[0m
+[1;33mPrompt: 'Analyze the Options Chain WITH NO TOOL CALLS based on all CURRENT ALREADY available Data & provide potential Call & Put Wall(s) Strike Prices: $NVDA'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.494s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 30: Test_30_NVDA_Call_Options_Chain[0m
+[1;33mPrompt: 'Current Price OHLC: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.835s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 31: Test_31_NVDA_Put_Options_Chain[0m
+[1;33mPrompt: 'Yesterday's Price OHLC: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 19.498s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 32: Test_32_NVDA_Both_Options_Chains[0m
+[1;33mPrompt: 'Yesterday's Closing Price: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 4.687s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 33: Test_33_NVDA_Options_Wall_Analysis[0m
+[1;33mPrompt: 'Last week's Performance OHLC: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 12.296s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 34: Test_34_Multi_Current_Price_OHLC_WDC_AMD_SOUN[0m
+[1;33mPrompt: 'Get technical analysis indicator DATA only with NO ANALYSIS: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 25.218s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 35: Test_35_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN[0m
+[1;33mPrompt: 'Support & Resistance Levels: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 8.492s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 36: Test_36_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN[0m
+[1;33mPrompt: 'Perform technical analysis WITH NO TOOL CALLS based on all CURRENT ALREADY available price & TA data for Trends, Volatility, Momentum, Trading Patterns\Signals: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 13.613s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+[0;34m📝 Test 37: Test_37_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN[0m
+[1;33mPrompt: 'Get options expiration dates: $WDC, $AMD, $SOUN'[0m
+[0;32m✅ Response received[0m
+[0;32m⏱️  Response Time: 13.405s[0m
+[0;32m📈 Performance: EXCELLENT (< 30s)[0m
+
+
+[0;36m📊 Test Results Analysis[0m
+[0;36m========================[0m
+📋 Phase 1 Results Summary (Responses Generated):
+[0;32m   Test 1: Test_1_SPY_Market_Status - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 2: Test_2_SPY_Current_Price_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 3: Test_3_SPY_Yesterday_Price_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 4: Test_4_SPY_Last_Week_Performance_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 5: Test_5_SPY_Previous_Week_Friday_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 6: Test_6_SPY_Last_5_Trading_Days_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 7: Test_7_SPY_Past_2_Weeks_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 8: Test_8_SPY_Past_Month - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 9: Test_9_SPY_Past_3_Months - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 10: Test_10_SPY_TA_Indicator_DATA_Only - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 11: Test_11_SPY_Support_Resistance - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 12: Test_12_SPY_Full_TA_Analysis - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 13: Test_13_SPY_Options_Expiration_Dates - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 14: Test_14_SPY_Call_Options_Chain - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 15: Test_15_SPY_Put_Options_Chain - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 16: Test_16_SPY_Both_Options_Chains - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 17: Test_17_SPY_Options_Wall_Analysis - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 18: Test_18_NVDA_Current_Price_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 19: Test_19_NVDA_Yesterday_Price_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 20: Test_20_NVDA_Last_Week_Performance_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 21: Test_21_NVDA_Previous_Week_Friday_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 22: Test_22_NVDA_Last_5_Trading_Days_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 23: Test_23_NVDA_Past_2_Weeks_OHLC - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 24: Test_24_NVDA_Past_Month - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 25: Test_25_NVDA_Past_3_Months - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 26: Test_26_NVDA_TA_Indicator_DATA_Only - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 27: Test_27_NVDA_Support_Resistance - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 28: Test_28_NVDA_Full_TA_Analysis - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 29: Test_29_NVDA_Options_Expiration_Dates - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 30: Test_30_NVDA_Call_Options_Chain - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 31: Test_31_NVDA_Put_Options_Chain - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 32: Test_32_NVDA_Both_Options_Chains - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 33: Test_33_NVDA_Options_Wall_Analysis - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 34: Test_34_Multi_Current_Price_OHLC_WDC_AMD_SOUN - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 35: Test_35_Multi_Yesterday_Price_OHLC_WDC_AMD_SOUN - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 36: Test_36_Multi_Yesterday_Closing_Price_WDC_AMD_SOUN - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;32m   Test 37: Test_37_Multi_Last_Week_Performance_OHLC_WDC_AMD_SOUN - Response Received (REQUIRES MANUAL VALIDATION)[0m
+[0;31m   Test 38: Test_38_Multi_TA_Indicator_DATA_Only_WDC_AMD_SOUN - UNKNOWN[0m
+[0;31m   Test 39: Test_39_Multi_Support_Resistance_WDC_AMD_SOUN - UNKNOWN[0m
+[0;31m   Test 40: Test_40_Multi_Full_TA_Analysis_WDC_AMD_SOUN - UNKNOWN[0m
+[0;31m   Test 41: Test_41_Multi_Options_Expiration_Dates_WDC_AMD_SOUN - UNKNOWN[0m
+
+📊 Response Time Analysis:
+   Min Response Time: 4.687s
+   Max Response Time: 25.218s
+   Avg Response Time: 10.03s
+   Successful Tests: 37/37
+[0;32m📈 Overall Performance Rating: EXCELLENT[0m
+
+[0;36m📊 Session Persistence Validation[0m
+[0;36m=================================[0m
+[0;32m✅ Session Persistence: VERIFIED[0m
+[0;32m   All tests ran in SINGLE session (count: 1)[0m
+
+[0;36m📊 Loop 1/1 Phase 1 Summary[0m
+[0;36m====================================[0m
+Total Tests: 37
+[0;32mCompleted: 37[0m
+[0;31mIncomplete: 0[0m
+Generation Rate: 100%
+Total Session Duration: 6 min 12 sec
+Session Mode: [0;32mPERSISTENT[0m
+[0;32m🎉 All 37 responses received in Loop 1![0m
+[0;32m✅ Loop 1 Phase 1: All responses received (REQUIRES MANUAL VALIDATION)[0m
+
+[0;34m📄 Loop 1 results saved to: test-reports/test_cli_regression_loop1_2025-10-27_20-18.log[0m
+[0;34m📄 Loop 1 raw output: ./tmp/cli_output_loop1_2025-10-27_20-18.log[0m
+
+[0;36m╔══════════════════════════════════════════════════════════════╗[0m
+[0;36m║  LOOP 1/1 - Phase 1 Response Generation Complete[0m
+[0;36m║  ⚠️  Phase 2 Manual Validation REQUIRED[0m
+[0;36m╚══════════════════════════════════════════════════════════════╝[0m
+
+[1;33m╔══════════════════════════════════════════════════════════════╗[0m
+[1;33m║  PHASE 2: MANDATORY MANUAL VERIFICATION REQUIRED[0m
+[1;33m╚══════════════════════════════════════════════════════════════╝[0m
+
+[1;33m🔴 CRITICAL: Phase 1 ONLY verified that responses were received (37/37).[0m
+[1;33m   It CANNOT verify response correctness, tool calls, or formatting.[0m
+[1;33m   Phase 2 is MANDATORY and requires MANUAL review of ALL 37 tests.[0m
+
+[0;31m╔══════════════════════════════════════════════════════════════╗[0m
+[0;31m║  ❌ GREP COMMANDS ARE INSUFFICIENT - MISS LOGIC ERRORS[0m
+[0;31m╚══════════════════════════════════════════════════════════════╝[0m
+
+[0;31mWhy Grep Fails:[0m
+[0;31m  ❌ Misses duplicate/unnecessary tool calls (agent calling same tool twice)[0m
+[0;31m  ❌ Misses wrong tool selection (agent calling wrong API for data)[0m
+[0;31m  ❌ Misses data inconsistencies (cross-ticker contamination)[0m
+[0;31m  ❌ Only catches explicit error messages, not logic errors[0m
+
+[0;36m╔══════════════════════════════════════════════════════════════╗[0m
+[0;36m║  MANDATORY PROCESS - REVIEW ALL 37 TESTS MANUALLY[0m
+[0;36m╚══════════════════════════════════════════════════════════════╝[0m
+
+[0;36m📋 Step 1: Read Test Response Using Read Tool[0m
+  • Use Read tool to read test log file section for EACH test
+  • Read lines for Agent Response, Tools Used, Performance Metrics
+  • NO scripts, NO grep shortcuts - READ each test manually
+
+[0;36m📋 Step 2: Apply 4-Point Verification Criteria to EACH Test[0m
+
+  [0;32m1. ✅ Does the response address the query?[0m
+     • Does agent's response directly answer the test prompt?
+     • Is response relevant to ticker(s) mentioned?
+     • Is response complete (not truncated)?
+
+  [0;32m2. ✅ Were the RIGHT tools called (no duplicate/unnecessary calls)?[0m
+     • Check conversation context: If previous test retrieved data, agent should NOT call again
+     • Example FAIL: Test 10 calls get_ta_indicators(), Test 12 should NOT call it again
+     • Are tools appropriate for query (Tradier for quotes, Polygon for TA)?
+     • Are there any redundant API calls?
+
+  [0;32m3. ✅ Is the data correct?[0m
+     • Correct ticker symbols used ($SPY, $NVDA, $WDC, $AMD, $SOUN)
+     • Data formatting matches expected format (OHLC, tables, etc.)
+     • No hallucinated data or made-up values
+     • No cross-ticker contamination (NVDA query shouldn't return SPY data)
+     • Options chains show Bid/Ask columns (NOT midpoint)
+
+  [0;32m4. ✅ Are there any errors?[0m
+     • No error messages in response
+     • No "data unavailable" messages
+     • No RuntimeWarnings
+     • No API errors
+
+[0;36m📋 Step 3: Document Each Test Result[0m
+
+  Create table documenting ALL 37 tests:
+  | Test # | Test Name | Status | Issue (if failed) | Failure Type |
+  |--------|-----------|--------|-------------------|--------------|
+  | 1      | Market_Status | ❌ FAIL | timezone error | Code Error |
+  | 2      | SPY_Price | ✅ PASS | - | - |
+  | 12     | SPY_Full_TA | ❌ FAIL | Duplicate get_ta_indicators() | Logic Error |
+
+  Failure Types:
+  • Code Error: Syntax/runtime errors, import errors
+  • Logic Error (Duplicate Tool Call): Unnecessary redundant API calls
+  • Logic Error (Wrong Tool): Wrong tool for the query
+  • Data Error: Wrong data, cross-ticker contamination
+  • Response Error: Incomplete response, doesn't address query
+
+[0;36m📋 Step 4: Final Checkpoint Questions[0m
+
+[1;33m⚠️  MANDATORY CHECKPOINT QUESTIONS:[0m
+[1;33m   1. Did you READ all 37 test responses manually using Read tool?[0m
+[1;33m   2. Did you apply all 4 verification criteria to EACH test?[0m
+[1;33m   3. How many tests PASSED all 4 criteria? (X/37 PASSED)[0m
+[1;33m   4. How many tests FAILED (any criterion)? (X/37 FAILED)[0m
+[1;33m   5. Did you document ALL failures with test #, issue, and failure type?[0m
+
+[0;31m🔴 CANNOT MARK TASK COMPLETE WITHOUT:[0m
+[0;31m   • Reading all 37 test responses manually (using Read tool, NOT grep)[0m
+[0;31m   • Applying all 4 verification criteria to each test[0m
+[0;31m   • Documenting ALL 37 tests in a results table[0m
+[0;31m   • Providing failure count and failure details table[0m
+[0;31m   • Answering all 5 checkpoint questions with evidence[0m
+
+[0;36m📄 Test Report (read manually with Read tool): test-reports/test_cli_regression_loop1_2025-10-27_20-18.log[0m
+[0;36m📄 Raw Output: ./tmp/cli_output_loop1_2025-10-27_20-18.log[0m
+
+
+[0;36m╔══════════════════════════════════════════════════════════════╗[0m
+[0;36m║  AGGREGATE STATISTICS - ALL 1 LOOPS[0m
+[0;36m╚══════════════════════════════════════════════════════════════╝[0m
+
+[0;36m📊 Overall Phase 1 Summary[0m
+[0;36m===========================[0m
+Total Loops Run: 1
+[0;32mLoops Completed: 1[0m
+[0;31mLoops Incomplete: 0[0m
+Overall Generation Rate: 100%
+
+[0;36m📊 Aggregate Response Time Analysis[0m
+[0;36m===================================[0m
+Min Average Response Time (across loops): 10.03s
+Max Average Response Time (across loops): 10.03s
+Overall Average Response Time: 10.03s
+
+[0;36m📄 Test Reports Generated[0m
+[0;36m========================[0m
+Loop 1: test-reports/test_cli_regression_loop1_2025-10-27_20-18.log
+
+[0;32m🎉 All 1 loop(s) - responses received![0m
+[0;32m✅ Phase 1 Complete: All responses received (REQUIRES MANUAL VALIDATION)[0m
+
+[1;33m╔══════════════════════════════════════════════════════════════╗[0m
+[1;33m║  🔴 PHASE 2 REQUIRED: Manual Verification for Each Test[0m
+[1;33m║  Read each test response and verify using 4-point criteria[0m
+[1;33m╚══════════════════════════════════════════════════════════════╝[0m
