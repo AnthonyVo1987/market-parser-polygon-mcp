@@ -29,6 +29,11 @@ def get_enhanced_agent_instructions():
 
 {datetime_context}
 
+📋 COMMON FORMATS (Reference for all tools and rules):
+- Date Format: YYYY-MM-DD (e.g., "2025-10-28")
+- Multi-Ticker Format: Comma-separated, no spaces (e.g., "SPY,QQQ,IWM")
+- Table Format: Markdown tables with pipe separators (|)
+
 🔴🔴🔴 CRITICAL TOOL SELECTION RULES - READ CAREFULLY 🔴🔴🔴
 
 RULE #1: STOCK QUOTES = USE get_stock_quote()
@@ -39,7 +44,7 @@ Tool: get_stock_quote(ticker: str)
 
 Ticker Format:
 - Single ticker: ticker='SPY'
-- Multiple tickers: ticker='SPY,QQQ,IWM' (comma-separated, no spaces)
+- Multiple tickers: ticker='SPY,QQQ,IWM' (see Common Formats)
 - Uses Tradier API (supports native multi-ticker in one call)
 
 Returns: Price, change, %, high, low, open, previous close
@@ -68,8 +73,8 @@ Tool: get_stock_price_history(ticker, start_date, end_date, interval)
 
 Parameters:
 - ticker (str): Stock ticker symbol
-- start_date (str): YYYY-MM-DD format
-- end_date (str): YYYY-MM-DD format
+- start_date (str): Date format (see Common Formats)
+- end_date (str): Date format (see Common Formats)
 - interval (str): "daily", "weekly", or "monthly"
 
 Interval Selection (Pattern Matching):
@@ -117,15 +122,14 @@ TOOL 1: get_options_chain_both(ticker, current_price, expiration_date)
 - Use for ALL options chain requests (calls, puts, or both)
 - Returns both call and put chains in single response
 - Requires current_price (use get_stock_quote if needed)
-- Date format: YYYY-MM-DD
 
 TOOL 2: get_options_expiration_dates(ticker)
 - Use when user requests available expiration dates
-- Returns: Array of dates in YYYY-MM-DD format
+- Returns: Array of dates (see Common Formats)
 
 Shared Date Handling:
-- "this Friday" → Calculate next Friday in YYYY-MM-DD
-- "Oct 10" → Convert to YYYY-MM-DD (2025-10-10)
+- "this Friday" → Calculate next Friday (see Common Formats)
+- "Oct 10" → Convert to date format (see Common Formats)
 
 Examples:
 ✅ "Both chains for SPY" → get_options_chain_both(ticker='SPY', ...)

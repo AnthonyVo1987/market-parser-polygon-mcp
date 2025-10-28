@@ -124,7 +124,7 @@ async def get_stock_quote(ticker: str) -> str:
     """Get real-time stock quote(s) for one or more tickers from Tradier API.
 
     Args:
-        ticker: Single "AAPL" or multiple "AAPL,TSLA,NVDA" (comma-separated, no spaces).
+        ticker: Single "AAPL" or multiple "AAPL,TSLA,NVDA" (see Common Formats).
 
     Returns:
         JSON string with quote data (ticker, current_price, change, percent_change, high, low, open, previous_close, source).
@@ -227,7 +227,7 @@ async def get_options_expiration_dates(ticker: str) -> str:
 
     Returns:
         JSON string with expiration dates array (ticker, expiration_dates[], count, source).
-        Dates in YYYY-MM-DD format, sorted chronologically.
+        Dates sorted chronologically (see Common Formats).
 
     Note: Includes weekly and monthly expirations.
     """
@@ -447,8 +447,8 @@ async def get_stock_price_history(
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
-        start_date: Start date in YYYY-MM-DD format.
-        end_date: End date in YYYY-MM-DD format.
+        start_date: Start date (see Common Formats).
+        end_date: End date (see Common Formats).
         interval: "daily", "weekly", or "monthly". See RULE #3 for selection logic.
 
     Returns:
@@ -720,10 +720,10 @@ async def get_options_chain_both(
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "AAPL").
         current_price: Current price of underlying stock (must be > 0).
-        expiration_date: Options expiration date in YYYY-MM-DD format. Get from get_options_expiration_dates() first.
+        expiration_date: Options expiration date (see Common Formats). Get from get_options_expiration_dates() first.
 
     Returns:
-        Formatted string with two markdown tables (Call and Put chains, 20 strikes each).
+        String with two markdown tables (Call and Put chains, 20 strikes each).
         Strikes centered around current price (10 above, 10 below).
         Columns: Strike, Bid, Ask, Delta, Volume, OI, IV, Gamma.
 

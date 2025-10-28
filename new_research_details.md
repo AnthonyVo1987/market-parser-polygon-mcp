@@ -5,11 +5,11 @@
 <Phase 1: Research> ULTRA-THINK & systematically use relevant Research Tools Docs Gradio\OpenAI, Context7, Web Fetch etc to investigate the requested task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed: 
 
 
- 1. Optimize & Reduce Token Usage, Clean up, consolidate, streamline & reduce the verbosity & complexity of ALL the AI Agent Tools Instructions\Descriptions
+ 1. Optimize & Reduce Token Usage, Clean up, consolidate, streamline & reduce the verbosity & complexity of BOTh all AI Agent Tools Instructions AND AI Agent System Instructions Prompt\Rules together holistically
  - There are potentially redundant\duplicate information and guidelines in each of the Tools Descriptions AND the AI Agent System Instuctions Prompt 
- - Let’s see if we can Optimize & Reduce Token Usage, streamline and reduce the verbosity, complexity, but without losing any regression capability, so we still need to pass all of our regression test even with the optimized AI Tool instructions, so make sure you find the best balance between detailed verbosity versus more optimized efficient token usage.
+ - Let’s see if we can Optimize & Reduce Token Usage, streamline and reduce the verbosity, complexity, but without losing any regression capability for BOTH tools and agent instructions together, so we still need to pass all of our regression test even with the optimized AI Agent Tools Instructions AND AI Agent System Instructions Prompt\Rules, so make sure you find the best balance between detailed verbosity versus more optimized efficient token usage.
 
-- After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out a few prompts PER TOOL to ensure the new changes do NOT break any current capability, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
+- After Implementing, perform some basic manual bench testing of some manual CLI Test Prompts using 'uv run main.py' to test out targeted prompts to ensure the new changes do NOT break any current capability, and verify the output responses matches the new changes and the table\charts are formatted and sorted correctly.  Fix any issues if needed from manual CLI testing and re-run manual testing if needed until new feature has been validated with no issues.  <Phase 4: Testing> will be gated by these initial manual test prompts, so your test prompts MUST all pass first before proceeding to <Phase 4: Testing> CLI Regression
 
 🔴 CRITICAL: After research is complete, Delete the current file 'reasearch_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new 'reasearch_task_plan.md' based on the reasearch task(s)🔴
 
@@ -17,7 +17,7 @@
 
 <Phase 2: Planning>
 
-Based on the latest Research, delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes.  The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed
+Based on the latest Research, delete the current file 'TODO_task_plan.md' WITHOUT READING IT and then ULTRA-THINK AND GENERATE a brand new granular detailed Implementation Plan TODO Task Checklist file 'TODO_task_plan.md' for you to systemtically use your Mandatory Tools Toolkit for Sequential-Thinking & Serena tools to Implement the requested task(s) with Comprehensive Documentation Updates to reflect the latest updates to remove outdated info, and You MUST create a CLI Testing Phase as part of the Plan to run testing to validate any code changes. The plan MUST enforce that YOU MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Serena tools to enhance your workflow to perform all task(s). If needed, you may OPTIONALLY use sub-agents task(s) for parallel optimized performance and speed
 
 ---
 
@@ -84,7 +84,7 @@ You MUST Systemtically use your Mandatory Tools Toolkit Sequential-Thinking & Se
 1. **DO ALL WORK FIRST** (DO NOT stage anything yet):
    - ✅ Complete ALL code changes
    - ✅ Run ALL tests and generate test reports
-   - ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)s
+   - ✅ Update ALL documentation (CLAUDE.md, tech_stack.md, etc.)
    - ✅ Update ALL config files (.claude/settings.local.json, etc.)
    - ✅ Update ALL task plans
    - ⚠️ **DO NOT RUN `git add` YET**

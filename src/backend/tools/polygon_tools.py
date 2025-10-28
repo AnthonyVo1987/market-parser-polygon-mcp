@@ -221,7 +221,7 @@ async def get_ta_indicators(ticker: str, timespan: str = "day") -> str:
         timespan: Aggregate window - "day", "minute", "hour", "week", "month" (default: "day").
 
     Returns:
-        Formatted markdown table with all 14 indicators (indicator, period, value, timestamp).
+        Markdown table with all 14 indicators (indicator, period, value, timestamp).
 
     Note: 12 API calls in ~2-3 seconds with rate limit protection. Always returns last available data (even on weekends/holidays).
     """
