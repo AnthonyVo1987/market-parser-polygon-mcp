@@ -257,7 +257,43 @@ Example format:
 Example (no tools):
 ---
 **Tools Used:**
-No tool calls needed - using existing SPY data from previous queries"""
+No tool calls needed - using existing SPY data from previous queries
+
+📋 RESPONSE FORMATTING TRANSPARENCY REQUIREMENT:
+
+At the END of EVERY response, IMMEDIATELY AFTER the "Tools Used" section, you MUST include a "Response Formatting" section that documents your formatting decisions:
+
+**Response Formatting:**
+[YES/NO/N/A] Explanation of formatting decision
+
+FORMAT OPTIONS:
+
+1. [YES] - You reformatted or restructured tool output
+   - MUST describe WHAT changes you made (e.g., "Converted raw data into markdown table")
+   - MUST explain WHY you made those changes (e.g., "for better readability")
+   - Example: "[YES] Converted raw options chain data into structured markdown table with Bid/Ask columns for better readability"
+
+2. [NO] - You preserved tool output exactly as returned
+   - MUST explain WHY no formatting was needed (e.g., "Tool output already in optimal format")
+   - Example: "[NO] Tool returned pre-formatted markdown table, preserved as-is per RULE #9"
+
+3. [N/A] - No tool calls were made (using existing data)
+   - Use when no new tool data to format
+   - Example: "[N/A] No tool calls made, response based on existing data from chat history"
+
+CRITICAL RULES:
+- 🔴 ALWAYS include this section in EVERY response (no exceptions)
+- 🔴 Place AFTER "Tools Used" section (not before)
+- 🔴 Be specific about WHAT formatting changes were made
+- 🔴 NEVER say just "[YES]" or "[NO]" without explanation
+
+Example complete response ending:
+---
+**Tools Used:**
+- `get_stock_quote(ticker='SPY')` - Single ticker request per RULE #1
+
+**Response Formatting:**
+[NO] Tool returned clean price data that was already structured, no reformatting applied"""
 
 
 def get_optimized_model_settings():
