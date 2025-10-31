@@ -7,26 +7,23 @@ markdown output instead of returning raw JSON.
 
 
 def format_strike_price(strike: float) -> str:
-    """Format strike price: remove decimals for whole integers.
+    """Format strike price: always show 2 decimal places for consistent width.
 
     Args:
         strike: Strike price as float (e.g., 185.0, 192.50)
 
     Returns:
-        Formatted string with $ prefix:
-        - Whole integers: "$185" (no decimals)
-        - Non-integers: "$192.50" (with decimals)
+        Formatted string with $ prefix and 2 decimal places:
+        - All strikes: "$XXX.XX" format (7 characters)
 
     Examples:
         >>> format_strike_price(185.0)
-        '$185'
+        '$185.00'
         >>> format_strike_price(192.50)
         '$192.50'
         >>> format_strike_price(197.0)
-        '$197'
+        '$197.00'
     """
-    if strike % 1 == 0:
-        return f"${int(strike)}"
     return f"${strike:.2f}"
 
 
@@ -79,7 +76,7 @@ def create_options_chain_table(
 ) -> str:
     """Create formatted markdown table for options chain.
 
-    Column Order: Strike ($), Bid ($), Ask ($), Delta, Vol, OI, IV, Gamma
+    Column Order: Strike ($), Bid ($), Ask ($), Delta, Vol, OI, IV
 
     Args:
         ticker: Stock ticker symbol (e.g., "SPY", "NVDA")
@@ -87,7 +84,7 @@ def create_options_chain_table(
         expiration_date: Expiration date in YYYY-MM-DD format
         current_price: Current underlying stock price
         options: List of option dicts with required fields:
-                 - strike, bid, ask, delta, gamma, implied_volatility,
+                 - strike, bid, ask, delta, implied_volatility,
                    volume, open_interest
 
     Returns:
@@ -110,6 +107,18 @@ def create_options_chain_table(
         Source: Tradier
         ```
     """
+    # Define column specifications: (header, width, alignment)
+    # Width is calculated as max(header_len, typical_max_content_len)
+    columns = [
+        ("Strike ($)", 10, ">"),    # Right-aligned, max "672" or "$697.50"
+        ("Bid ($)", 7, ">"),        # Right-aligned, max "$9.53"
+        ("Ask ($)", 7, ">"),        # Right-aligned, max "$9.60"
+        ("Delta", 5, ">"),          # Right-aligned, max "0.85"
+        ("Vol", 9, ">"),            # Right-aligned, max "135,391" + padding
+        ("OI", 9, ">"),             # Right-aligned, max "135,391" + padding
+        ("IV", 4, ">"),             # Right-aligned, max "149%"
+    ]
+
     # Format option type for display
     option_type_display = "Call" if option_type == "call" else "Put"
 
@@ -121,13 +130,15 @@ def create_options_chain_table(
     lines.append(f"Current Price: ${current_price:.2f}")
     lines.append("")
 
-    # Table header with new column order
-    lines.append(
-        "| Strike ($) | Bid ($) | Ask ($) | Delta | Vol     | OI     | IV  | Gamma |"
-    )
-    lines.append(
-        "|-----------|---------|---------|-------|---------|--------|-----|-------|"
-    )
+    # Build header line dynamically
+    header_parts = [header for header, _, _ in columns]
+    header_line = "| " + " | ".join(f"{h:^{columns[i][1]}}" for i, h in enumerate(header_parts)) + " |"
+    lines.append(header_line)
+
+    # Build separator line dynamically (dashes match column widths, colon REPLACES last dash)
+    separator_parts = ["-" * (width - 1) + ":" for _, width, _ in columns]
+    separator_line = "| " + " | ".join(separator_parts) + " |"
+    lines.append(separator_line)
 
     # Table rows
     for opt in options:
@@ -138,9 +149,12 @@ def create_options_chain_table(
         vol = format_number_with_commas(opt["volume"])
         oi = format_number_with_commas(opt["open_interest"])
         iv = format_percentage_int(opt["implied_volatility"])
-        gamma = f"{opt['gamma']:.2f}"
 
-        lines.append(f"| {strike:9} | {bid:7} | {ask:7} | {delta:5} | {vol:7} | {oi:6} | {iv:3} | {gamma:5} |")
+        # Format row with proper alignment
+        values = [strike, bid, ask, delta, vol, oi, iv]
+        row_parts = [f"{val:>{columns[i][1]}}" for i, val in enumerate(values)]
+        row_line = "| " + " | ".join(row_parts) + " |"
+        lines.append(row_line)
 
     lines.append("")
     lines.append("Source: Tradier")

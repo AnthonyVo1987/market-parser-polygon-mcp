@@ -530,7 +530,7 @@ async def _get_options_chain_both(
         params = {
             "symbol": ticker,
             "expiration": expiration_date,
-            "greeks": "true",  # Required for delta, gamma, theta, vega
+            "greeks": "true",  # Required for delta and other greek values
         }
 
         # Get aiohttp session from connection pool
@@ -627,7 +627,6 @@ async def _get_options_chain_both(
 
             greeks = opt.get("greeks", {})
             delta = greeks.get("delta", 0)
-            gamma = greeks.get("gamma", 0)
             implied_vol = greeks.get("smv_vol", 0) * 100  # Convert to percentage
 
             volume = opt.get("volume", 0) or 0  # Handle None
@@ -639,7 +638,6 @@ async def _get_options_chain_both(
                     "bid": round(bid, 2),
                     "ask": round(ask, 2),
                     "delta": round(delta, 2),
-                    "gamma": round(gamma, 2),
                     "implied_volatility": round(implied_vol, 2),
                     "volume": volume,
                     "open_interest": open_interest,
@@ -655,7 +653,6 @@ async def _get_options_chain_both(
 
             greeks = opt.get("greeks", {})
             delta = greeks.get("delta", 0)
-            gamma = greeks.get("gamma", 0)
             implied_vol = greeks.get("smv_vol", 0) * 100  # Convert to percentage
 
             volume = opt.get("volume", 0) or 0  # Handle None
@@ -667,7 +664,6 @@ async def _get_options_chain_both(
                     "bid": round(bid, 2),
                     "ask": round(ask, 2),
                     "delta": round(delta, 2),
-                    "gamma": round(gamma, 2),
                     "implied_volatility": round(implied_vol, 2),
                     "volume": volume,
                     "open_interest": open_interest,
